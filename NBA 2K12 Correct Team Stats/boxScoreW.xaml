@@ -1,0 +1,67 @@
+﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.boxScoreW"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Insert Box Score" Height="300" Width="709">
+    <Grid>
+        <Label Content="Please insert the box score of your latest match" HorizontalAlignment="Left" Margin="12,8,0,0" Name="label1" VerticalAlignment="Top" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,37,0,0" Name="cmbTeam1" VerticalAlignment="Top" Width="120" TabIndex="0" SelectionChanged="cmbTeam1_SelectionChanged" />
+        <Label Content="PTS" HorizontalAlignment="Left" Margin="12,66,0,0" Name="label2" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,95,0,0" Name="txtPTS1" VerticalAlignment="Top" Width="36" TabIndex="1" IsReadOnly="True" IsTabStop="False" />
+        <Label Content="REB" HorizontalAlignment="Left" Margin="54,66,0,0" Name="label3" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="54,95,0,0" Name="txtREB1" VerticalAlignment="Top" Width="36" TabIndex="2" />
+        <Label Content="AST" HorizontalAlignment="Left" Margin="96,66,0,0" Name="label4" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="96,95,0,0" Name="txtAST1" VerticalAlignment="Top" Width="36" TabIndex="3" />
+        <Label Content="STL" HorizontalAlignment="Left" Margin="138,66,0,0" Name="label5" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="138,95,0,0" Name="txtSTL1" VerticalAlignment="Top" Width="36" TabIndex="4" />
+        <Label Content="BLK" HorizontalAlignment="Left" Margin="180,66,0,0" Name="label6" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="180,95,0,0" Name="txtBLK1" VerticalAlignment="Top" Width="36" TabIndex="5" />
+        <Label Content="TO" HorizontalAlignment="Left" Margin="222,66,0,0" Name="label7" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="222,95,0,0" Name="txtTO1" VerticalAlignment="Top" Width="36" TabIndex="6" />
+        <Label Content="FGM" HorizontalAlignment="Left" Margin="264,66,0,0" Name="label8" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="264,95,0,0" Name="txtFGM1" VerticalAlignment="Top" Width="36" TabIndex="7" TextChanged="txtFGM1_TextChanged" />
+        <Label Content="FGA" HorizontalAlignment="Left" Margin="306,66,0,0" Name="label9" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="306,95,0,0" Name="txtFGA1" VerticalAlignment="Top" Width="36" TabIndex="8" />
+        <Label Content="3PM" HorizontalAlignment="Left" Margin="348,66,0,0" Name="label10" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="348,95,0,0" Name="txt3PM1" VerticalAlignment="Top" Width="36" TabIndex="9" TextChanged="txt3PM1_TextChanged" />
+        <Label Content="3PA" HorizontalAlignment="Left" Margin="390,66,0,0" Name="label11" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="390,95,0,0" Name="txt3PA1" VerticalAlignment="Top" Width="36" TabIndex="10" />
+        <Label Content="FTM" HorizontalAlignment="Left" Margin="432,66,0,0" Name="label12" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="432,95,0,0" Name="txtFTM1" VerticalAlignment="Top" Width="36" TabIndex="11" TextChanged="txtFTM1_TextChanged" />
+        <Label Content="FTA" HorizontalAlignment="Left" Margin="474,66,0,0" Name="label13" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="474,95,0,0" Name="txtFTA1" VerticalAlignment="Top" Width="36" TabIndex="12" />
+        <Label Content="OFF" HorizontalAlignment="Left" Margin="516,66,0,0" Name="label14" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="516,95,0,0" Name="txtOFF1" VerticalAlignment="Top" Width="36" TabIndex="13" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,146,0,0" Name="cmbTeam2" VerticalAlignment="Top" Width="120" TabIndex="15" SelectionChanged="cmbTeam2_SelectionChanged" />
+        <Label Content="PTS" HorizontalAlignment="Left" Margin="12,175,0,0" Name="label15" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,204,0,0" Name="txtPTS2" VerticalAlignment="Top" Width="36" TabIndex="16" IsReadOnly="True" IsTabStop="False" />
+        <Label Content="REB" HorizontalAlignment="Left" Margin="54,175,0,0" Name="label16" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="54,204,0,0" Name="txtREB2" VerticalAlignment="Top" Width="36" TabIndex="17" />
+        <Label Content="AST" HorizontalAlignment="Left" Margin="96,175,0,0" Name="label17" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="96,204,0,0" Name="txtAST2" VerticalAlignment="Top" Width="36" TabIndex="18" />
+        <Label Content="STL" HorizontalAlignment="Left" Margin="138,175,0,0" Name="label18" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="138,204,0,0" Name="txtSTL2" VerticalAlignment="Top" Width="36" TabIndex="19" />
+        <Label Content="BLK" HorizontalAlignment="Left" Margin="180,175,0,0" Name="label19" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="180,204,0,0" Name="txtBLK2" VerticalAlignment="Top" Width="36" TabIndex="20" />
+        <Label Content="TO" HorizontalAlignment="Left" Margin="222,175,0,0" Name="label20" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="222,204,0,0" Name="txtTO2" VerticalAlignment="Top" Width="36" TabIndex="21" />
+        <Label Content="FGM" HorizontalAlignment="Left" Margin="264,175,0,0" Name="label21" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="264,204,0,0" Name="txtFGM2" VerticalAlignment="Top" Width="36" TabIndex="22" TextChanged="txtFGM2_TextChanged" />
+        <Label Content="FGA" HorizontalAlignment="Left" Margin="306,175,0,0" Name="label22" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="306,204,0,0" Name="txtFGA2" VerticalAlignment="Top" Width="36" TabIndex="23" />
+        <Label Content="3PM" HorizontalAlignment="Left" Margin="348,175,0,0" Name="label23" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="348,204,0,0" Name="txt3PM2" VerticalAlignment="Top" Width="36" TabIndex="24" TextChanged="txt3PM2_TextChanged" />
+        <Label Content="3PA" HorizontalAlignment="Left" Margin="390,175,0,0" Name="label24" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="390,204,0,0" Name="txt3PA2" VerticalAlignment="Top" Width="36" TabIndex="25" />
+        <Label Content="FTM" HorizontalAlignment="Left" Margin="432,175,0,0" Name="label25" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="432,204,0,0" Name="txtFTM2" VerticalAlignment="Top" Width="36" TabIndex="26" TextChanged="txtFTM2_TextChanged" />
+        <Label Content="FTA" HorizontalAlignment="Left" Margin="474,175,0,0" Name="label26" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="474,204,0,0" Name="txtFTA2" VerticalAlignment="Top" Width="36" TabIndex="27" />
+        <Label Content="PF" HorizontalAlignment="Left" Margin="558,66,0,0" Name="label27" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="558,95,0,0" Name="txtPF1" VerticalAlignment="Top" Width="36" TabIndex="14" />
+        <Label Content="OFF" HorizontalAlignment="Left" Margin="516,175,0,0" Name="label28" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="516,204,0,0" Name="txtOFF2" VerticalAlignment="Top" Width="36" TabIndex="28" />
+        <Label Content="PF" HorizontalAlignment="Left" Margin="558,175,0,0" Name="label29" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2" VerticalAlignment="Top" Width="36" TabIndex="29" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="306,238,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" TabIndex="30" />
+    </Grid>
+</Window>
