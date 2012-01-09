@@ -5,7 +5,7 @@
     <Grid>
         <Button Content="Select" Height="23" HorizontalAlignment="Left" Margin="416,12,0,0" Name="btnSelect" VerticalAlignment="Top" Width="75" Click="btnSelect_Click" />
         <Button Content="CRC" Height="23" HorizontalAlignment="Left" Margin="12,41,0,0" Name="btnCRC" VerticalAlignment="Top" Width="75" Click="btnCRC_Click" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="txtFile" VerticalAlignment="Top" Width="398" IsReadOnly="True" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="txtFile" VerticalAlignment="Top" Width="398" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" />
         <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="93,41,0,0" Name="btnSave" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
         <Button Content="Load &amp; Update Team Stats" Height="23" HorizontalAlignment="Left" Margin="335,333,0,0" Name="btnLoadUpdate" VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" />
         <Button Content="Erase Settings" Height="23" HorizontalAlignment="Left" Margin="398,41,0,0" Name="btnEraseSettings" VerticalAlignment="Top" Width="93" Click="btnEraseSettings_Click" />
@@ -48,5 +48,7 @@
         <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="178,123,0,0" Name="txtPA1" VerticalAlignment="Top" Width="54" />
         <Button Content="Save Team Stats" Height="23" HorizontalAlignment="Left" Margin="24,333,0,0" Name="btnSaveTS" VerticalAlignment="Top" Width="119" Click="btnSaveTS_Click" />
         <Button Content="Scouting Report" Height="23" HorizontalAlignment="Left" IsDefault="True" Margin="398,123,0,0" Name="btnScout" VerticalAlignment="Top" Width="92" Click="btnScout_Click" />
+        <Button Content="Team Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="True" Margin="354,236,0,0" Name="btnTeamCSV" VerticalAlignment="Top" Width="136" Click="btnTeamCSV_Click" />
+        <Button Content="League Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="True" Margin="354,265,0,0" Name="btnLeagueCSV" VerticalAlignment="Top" Width="136" Click="btnLeagueCSV_Click" />
     </Grid>
 </Window>

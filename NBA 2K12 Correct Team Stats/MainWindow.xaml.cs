@@ -19,6 +19,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Reflection;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -99,6 +100,8 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             InitializeComponent();
 
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+
             btnSave.Visibility = Visibility.Hidden;
             btnCRC.Visibility = Visibility.Hidden;
 
@@ -166,13 +169,20 @@ namespace NBA_2K12_Correct_Team_Stats
             if (ofd.FileName == "") return;
             txtFile.Text = ofd.FileName;
 
-            GetStats(txtFile.Text);
+            TeamStats[] temp = GetStats(txtFile.Text);
+            if (temp.Length > 1) tst = temp;
 
-            cmbTeam1.SelectedIndex = 0;
+            cmbTeam1.SelectedIndex = 0; 
+            txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
         }
 
-        private void GetStats(string fn, bool havePT = false)
+        private TeamStats[] GetStats(string fn, bool havePT = false)
         {
+            TeamStats[] _teamStats = new TeamStats[30];
+            for (int i = 0; i < 30; i++)
+            {
+                _teamStats[i] = new TeamStats();
+            }
             if (!havePT) pt = null;
             if (ext == "PMG")
             {
@@ -184,7 +194,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     {
                         playoffTreeW ptw = new playoffTreeW();
                         ptw.ShowDialog();
-                        if (!pt.done) return;
+                        if (!pt.done) return new TeamStats[1];
 
                         SaveFileDialog spt = new SaveFileDialog();
                         spt.Title = "Please select a file to save the Playoff Tree to...";
@@ -192,7 +202,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         spt.Filter = "Playoff Tree files (*.ptr)|*.ptr";
                         spt.ShowDialog();
 
-                        if (spt.FileName == "") return;
+                        if (spt.FileName == "") return new TeamStats[1];
 
                         try
                         {
@@ -215,7 +225,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         ofd.Title = "Please select the file you saved the Playoff Tree to for " + getSafeFilename(fn) + "...";
                         ofd.ShowDialog();
 
-                        if (ofd.FileName == "") return;
+                        if (ofd.FileName == "") return new TeamStats[1];
 
                         FileStream stream = File.Open(ofd.FileName, FileMode.Open);
                         BinaryFormatter bf = new BinaryFormatter();
@@ -223,10 +233,10 @@ namespace NBA_2K12_Correct_Team_Stats
                         pt = (PlayoffTree)bf.Deserialize(stream);
                         stream.Close();
                     }
-                    else return;
+                    else return new TeamStats[1];
                 }
             }
-            prepareOffsets(fn);
+            prepareOffsets(fn, _teamStats);
 
             BinaryReader br = new BinaryReader(File.OpenRead(fn));
             MemoryStream ms = new MemoryStream(br.ReadBytes(Convert.ToInt32(br.BaseStream.Length)), true);
@@ -237,14 +247,14 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 for (int i = 0; i < 30; i++)
                 {
-                    ms.Seek(tst[i].offset, SeekOrigin.Begin);
+                    ms.Seek(_teamStats[i].offset, SeekOrigin.Begin);
                     ms.Read(buf, 0, 2);
-                    tst[i].winloss[0] = buf[0];
-                    tst[i].winloss[1] = buf[1];
+                    _teamStats[i].winloss[0] = buf[0];
+                    _teamStats[i].winloss[1] = buf[1];
                     for (int j = 0; j < 18; j++)
                     {
                         ms.Read(buf, 0, 2);
-                        tst[i].stats[j] = BitConverter.ToUInt16(buf, 0);
+                        _teamStats[i].stats[j] = BitConverter.ToUInt16(buf, 0);
                     }
                 }
             }
@@ -256,20 +266,27 @@ namespace NBA_2K12_Correct_Team_Stats
                 {
                     newteams.Add(pt.teams[i]);
                     int id = TeamNames[pt.teams[i]];
-                    ms.Seek(tst[id].offset, SeekOrigin.Begin);
+                    ms.Seek(_teamStats[id].offset, SeekOrigin.Begin);
                     ms.Read(buf, 0, 2);
-                    tst[id].winloss[0] = buf[0];
-                    tst[id].winloss[1] = buf[1];
+                    _teamStats[id].winloss[0] = buf[0];
+                    _teamStats[id].winloss[1] = buf[1];
                     for (int j = 0; j < 18; j++)
                     {
                         ms.Read(buf, 0, 2);
-                        tst[id].stats[j] = BitConverter.ToUInt16(buf, 0);
+                        _teamStats[id].stats[j] = BitConverter.ToUInt16(buf, 0);
                     }
                 }
                 newteams.Sort();
                 foreach (string team in newteams)
                     cmbTeam1.Items.Add(team);
             }
+            int temp;
+            for (int i = 0; i < 30; i++)
+            {
+                temp = _teamStats[i].calcAvg();
+            }
+
+            return _teamStats;
         }
 
         private string getExtension(string fn)
@@ -278,7 +295,7 @@ namespace NBA_2K12_Correct_Team_Stats
             return parts[parts.Length - 1];
         }
 
-        private int checkIfIntoPlayoffs(string fn)
+        private int checkIfIntoPlayoffs(string fn, TeamStats[] _teamStats)
         {
             int gamesInSeason = -1;
             string ptFile = "";
@@ -321,7 +338,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             for (int i = 0; i < 30; i++)
             {
-                ms.Seek(tst[i].offset, SeekOrigin.Begin);
+                ms.Seek(_teamStats[i].offset, SeekOrigin.Begin);
                 byte w = (byte)ms.ReadByte();
                 byte l = (byte)ms.ReadByte();
                 uint total = Convert.ToUInt32(w + l);
@@ -384,35 +401,35 @@ namespace NBA_2K12_Correct_Team_Stats
             else return 0;
         }
 
-        private void prepareOffsets(string fn)
+        private void prepareOffsets(string fn, TeamStats[] _teamStats)
         {
             ext = getExtension(fn);
             if (ext == "FXG" || ext == "RFG")
             {
-                tst[0].offset = 3240532;
+                _teamStats[0].offset = 3240532;
             }
             else if (ext == "CMG")
             {
-                tst[0].offset = 5722996;
+                _teamStats[0].offset = 5722996;
             }
             else if (ext == "PMG")
             {
-                tst[TeamNames[pt.teams[0]]].offset = 1813028;
+                _teamStats[TeamNames[pt.teams[0]]].offset = 1813028;
             }
 
             if (ext != "PMG")
             {
                 for (int i = 1; i < 30; i++)
                 {
-                    tst[i].offset = tst[i - 1].offset + 40;
+                    _teamStats[i].offset = _teamStats[i - 1].offset + 40;
                 }
-                int inPlayoffs = checkIfIntoPlayoffs(fn);
+                int inPlayoffs = checkIfIntoPlayoffs(fn, _teamStats);
                 if (inPlayoffs == 1)
                 {
-                    tst[TeamNames[pt.teams[0]]].offset = tst[0].offset - 1440;
+                    _teamStats[TeamNames[pt.teams[0]]].offset = _teamStats[0].offset - 1440;
                     for (int i = 1; i < 16; i++)
                     {
-                        tst[TeamNames[pt.teams[i]]].offset = tst[TeamNames[pt.teams[i - 1]]].offset + 40;
+                        _teamStats[TeamNames[pt.teams[i]]].offset = _teamStats[TeamNames[pt.teams[i - 1]]].offset + 40;
                     }
                 }
                 else if (inPlayoffs == -1) return;
@@ -421,7 +438,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 for (int i = 1; i < 16; i++)
                 {
-                    tst[TeamNames[pt.teams[i]]].offset = tst[TeamNames[pt.teams[i-1]]].offset + 40;
+                    _teamStats[TeamNames[pt.teams[i]]].offset = _teamStats[TeamNames[pt.teams[i-1]]].offset + 40;
                 }
             }
         }
@@ -740,8 +757,27 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (ofd.FileName == "") return;
             string fn = ofd.FileName;
-            GetStats(fn, havePT);
+            TeamStats[] temp = GetStats(fn, havePT);
+            if (temp.Length == 1)
+            {
+                MessageBox.Show("Couldn't get stats from " + getSafeFilename(fn) + ". Update failed.");
+                return;
+            }
 
+            // Check if Win/Loss remain the same
+            if ((temp[id1].winloss != temptst[id1].winloss) || (temp[id2].winloss != temptst[id2].winloss))
+            {
+                MessageBoxResult r = MessageBox.Show("Your updates to the saved team stats don't seem to be compatible with the save you've selected.\n" +
+                    "Making these updates would mean that the Wins/Losses stats would be different than what NBA 2K12 has saved inside the file.\n\n" +
+                    "Probable causes:\n\t1. You didn't save your Association and then the team stats in the tool right before the game started.\n" +
+                    "\t2. You didn't save your Association right after the game ended.\n\n" +
+                    "Make sure you're using the saved Team Stats from right before the game, and an Association save from right after the game ended.\n\n" +
+                    "You can continue, but this may cause stat corruption.\nAre you sure you want to continue?",
+                    "NBA 2K12 Correct Team Stats", MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+                if (r == MessageBoxResult.No) return;
+            }
+
+            tst = temp;
             tst[id1].winloss = temptst[id1].winloss;
             tst[id2].winloss = temptst[id2].winloss;
             tst[id1].stats = temptst[id1].stats;
@@ -749,6 +785,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             saveTeamStats(fn);
 
+            cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
             txtFile.Text = ofd.FileName;
 
@@ -811,11 +848,6 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
         {
-            calculateRankings();
-        }
-
-        private int[] calculateRankings(bool showMsg = true)
-        {
             int id = -1;
             try
             {
@@ -823,58 +855,58 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             catch
             {
-                return new int[1];
+                return;
             }
-
-            int games = 0, temp;
-            for (int i = 0; i < 30; i++)
-            {
-                temp = tst[i].calcAvg();
-                if (i == id) games = temp;
-            }
-            if (games == -1) return new int[1];
-
-            int[] rating = new int[19];
-            for (int i = 0; i < 18; i++)
-            {
-                rating[i] = 1;
-                for (int j = 0; j < 30; j++)
-                {
-                    if (j != id)
-                    {
-                        if (tst[j].averages[i] > tst[id].averages[i])
-                        {
-                            rating[i]++;
-                        }
-                    }
-                }
-            }
-            rating[18] = games;
-            if (showMsg)
-            {
-                string text = String.Format("Win %: {32:F3} ({33})\nWin eff: {34:F1} ({35})\n\nPPG: {0:F2} ({16})\nPAPG: {1:F2} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F1} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F1} ({21})\n"
+            int[][] rating = calculateRankings(tst);
+            string text = String.Format("Win %: {32:F3} ({33})\nWin eff: {34:F1} ({35})\n\nPPG: {0:F2} ({16})\nPAPG: {1:F2} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F1} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F1} ({21})\n"
                     + "FT%: {6:F3} ({22})\nFTeff: {7:F1} ({23})\n\nRPG: {8:F1} ({24})\nORPG: {9:F1} ({25})\nDRPG: {10:F1} ({26})\n\nSPG: {11:F1} ({27})\nBPG: {12:F1} ({28})\n"
                     + "TPG: {13:F1} ({29})\nAPG: {14:F1} ({30})\nFPG: {15:F1} ({31})",
                     tst[id].averages[PPG], tst[id].averages[PAPG], tst[id].averages[FGp],
                     tst[id].averages[FGeff], tst[id].averages[TPp], tst[id].averages[TPeff],
                     tst[id].averages[FTp], tst[id].averages[FTeff], tst[id].averages[RPG], tst[id].averages[ORPG], tst[id].averages[DRPG], tst[id].averages[SPG],
                     tst[id].averages[BPG], tst[id].averages[TPG], tst[id].averages[APG], tst[id].averages[FPG],
-                    rating[0], 31 - rating[1], rating[2], rating[3], rating[4], rating[5], rating[6], rating[7], rating[8], rating[9],
-                    rating[10], rating[11], rating[12], 31 - rating[13], rating[14], 31 - rating[15], tst[id].averages[Wp], rating[16], tst[id].averages[Weff], rating[Weff]);
-                MessageBox.Show(text, cmbTeam1.SelectedItem.ToString());
+                    rating[id][0], 31 - rating[id][1], rating[id][2], rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
+                    rating[id][10], rating[id][11], rating[id][12], 31 - rating[id][13], rating[id][14], 31 - rating[id][15], tst[id].averages[Wp], rating[id][16], tst[id].averages[Weff], rating[id][Weff]);
+            MessageBox.Show(text, cmbTeam1.SelectedItem.ToString());
+        }
+
+        private int[][] calculateRankings(TeamStats[] _teamStats)
+        {
+            int[][] rating = new int[30][];
+            for (int i = 0; i < 30; i++)
+            {
+                rating[i] = new int[19];
+            }
+            for (int k = 0; k < 30; k++)
+            {
+                for (int i = 0; i < 18; i++)
+                {
+                    rating[k][i] = 1;
+                    for (int j = 0; j < 30; j++)
+                    {
+                        if (j != k)
+                        {
+                            if (_teamStats[j].averages[i] > _teamStats[k].averages[i])
+                            {
+                                rating[k][i]++;
+                            }
+                        }
+                    }
+                }
+                rating[k][18] = _teamStats[k].getGames();
             }
             return rating;
         }
 
-        private void scoutReport(int[] rating)
+        private void scoutReport(int[][] rating, int teamID)
         {
             //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
             //TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
 
             string msg;
-            msg = String.Format("{0}, the {1}", cmbTeam1.SelectedItem.ToString(), rating[17]);
-            switch (rating[17])
+            msg = String.Format("{0}, the {1}", cmbTeam1.SelectedItem.ToString(), rating[teamID][17]);
+            switch (rating[teamID][17])
             {
                 case 1:
                 case 21:
@@ -892,11 +924,11 @@ namespace NBA_2K12_Correct_Team_Stats
                     msg += "th";
                     break;
             }
-            msg += " strongest team in the league right now, after having played " + rating[18].ToString() + " games.\n\n";
+            msg += " strongest team in the league right now, after having played " + rating[teamID][18].ToString() + " games.\n\n";
 
-            if ((rating[3] <= 5) && (rating[5] <= 5))
+            if ((rating[teamID][3] <= 5) && (rating[teamID][5] <= 5))
             {
-                if (rating[7] <= 5)
+                if (rating[teamID][7] <= 5)
                 {
                     msg += "This team just can't be beaten offensively. One of the strongest in the league in all aspects.";
                 }
@@ -906,9 +938,9 @@ namespace NBA_2K12_Correct_Team_Stats
                         + "efficiency in both 2 and 3 pointers.";
                 }
             }
-            else if ((rating[3] <= 10) && (rating[5] <= 10))
+            else if ((rating[teamID][3] <= 10) && (rating[teamID][5] <= 10))
             {
-                if (rating[7] <= 10)
+                if (rating[teamID][7] <= 10)
                 {
                     msg += "Top 10 in the league in everything offense, and they're one to worry about.";
                 }
@@ -918,9 +950,9 @@ namespace NBA_2K12_Correct_Team_Stats
                         + "when playing against them. Top 10 in field goals and 3 pointers.";
                 }
             }
-            else if ((rating[3] <= 20) && (rating[5] <= 20))
+            else if ((rating[teamID][3] <= 20) && (rating[teamID][5] <= 20))
             {
-                if (rating[7] <= 10)
+                if (rating[teamID][7] <= 10)
                 {
                     msg += "Although an average offensive team (their field goal efficiency isn't that high in or out of the "
                         + "arc), they can get back at you with their efficiency from the line.";
@@ -933,7 +965,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                if (rating[7] <= 10)
+                if (rating[teamID][7] <= 10)
                 {
                     msg += "They aren't consistent from the floor, but still manage to get to the line enough times and "
                         + "be good enough to make a difference.";
@@ -946,45 +978,45 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             msg += "\n\n";
 
-            if (rating[3] <= 5)
+            if (rating[teamID][3] <= 5)
                 msg += "Top scoring team, one of the top 5 in field goal efficiency.";
-            else if (rating[3] <= 10)
+            else if (rating[teamID][3] <= 10)
                 msg += "You'll have to worry about their scoring efficiency, as they're one of the Top 10 in the league.";
-            else if (rating[3] <= 20)
+            else if (rating[teamID][3] <= 20)
                 msg += "Scoring is not their virtue, but they're not that bad either.";
-            else if (rating[3] <= 30)
+            else if (rating[teamID][3] <= 30)
                 msg += "You won't have to worry about their scoring, one of the least 10 efficient in the league.";
 
             msg += "\n";
 
-            if (rating[5] <= 5)
+            if (rating[teamID][5] <= 5)
                 msg += "You'll need to always have an eye on the perimeter. They can turn a game around with their 3 pointers. "
                     + "They score well, they score a lot.";
-            else if (rating[5] <= 10)
+            else if (rating[teamID][5] <= 10)
                 msg += "Their 3pt shooting is bad news. They're in the top 10, and you can't relax playing against them.";
-            else if (rating[5] <= 20)
+            else if (rating[teamID][5] <= 20)
                 msg += "Not much to say about their 3pt shooting. Average, but it is there.";
-            else if (rating[5] <= 30)
+            else if (rating[teamID][5] <= 30)
                 msg += "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
 
             msg += "\n";
 
-            if (rating[7] <= 5)
+            if (rating[teamID][7] <= 5)
                 msg += "They tend to attack the lanes hard, getting to the line and making the most of it. They're one of the best "
                     + "teams in the league at it.";
-            else if (rating[7] <= 10)
+            else if (rating[teamID][7] <= 10)
                 msg += "One of the best teams in the league at getting to the line. And they don't miss many. Top 10.";
-            else if (rating[7] <= 20)
+            else if (rating[teamID][7] <= 20)
                 msg += "Average free throw efficiency, you don't have to worry about sending them to the line; at least as much as other aspects of their game.";
-            else if (rating[7] <= 30)
+            else if (rating[teamID][7] <= 30)
                 msg += "A team that you'll enjoy playing hard and aggressively against. They don't know how to go to the line, and when they get a chance, they "
                     + "mostly blow it.";
 
             msg += "\n";
 
-            if (rating[14] <= 15)
+            if (rating[teamID][14] <= 15)
                 msg += "They know how to find the open man, and they get their offense going by getting it around the perimeter until a clean shot is there.";
-            else if ((rating[14] > 15) && (rating[3] < 10))
+            else if ((rating[teamID][14] > 15) && (rating[teamID][3] < 10))
                 msg += "A team that prefers to run its offense through its core players in isolation. Not very good in assists, but they know how to get the job"
                     + "done more times than not.";
             else
@@ -992,39 +1024,39 @@ namespace NBA_2K12_Correct_Team_Stats
 
             msg += "\n\n";
 
-            if ((rating[9] <= 10) && (rating[11] <= 10) && (rating[12] <= 10))
+            if ((rating[teamID][9] <= 10) && (rating[teamID][11] <= 10) && (rating[teamID][12] <= 10))
                 msg += "Hustle is their middle name. They attack the offensive glass, they block, they steal. Don't even dare to blink or get complacent.\n\n";
-            else if ((rating[9] >= 20) && (rating[11] >= 20) && (rating[12] >= 20))
+            else if ((rating[teamID][9] >= 20) && (rating[teamID][11] >= 20) && (rating[teamID][12] >= 20))
                 msg += "This team just doesn't know what hustle means. You'll be doing circles around them if you're careful.\n\n";
 
-            if (rating[8] <= 5)
+            if (rating[teamID][8] <= 5)
                 msg += "Sensational rebounding team, everybody jumps for the ball, no missed shot is left loose.";
-            else if (rating[8] <= 10)
+            else if (rating[teamID][8] <= 10)
                 msg += "You can't ignore their rebounding ability, they work together and are in the top 10 in rebounding.";
-            else if (rating[8] <= 20)
+            else if (rating[teamID][8] <= 20)
                 msg += "They crash the boards as much as the next guy, but they won't give up any freebies.";
-            else if (rating[8] <= 30)
+            else if (rating[teamID][8] <= 30)
                 msg += "Second chance points? One of their biggest fears. Low low LOW rebounding numbers; just jump for the ball and you'll keep your score high.";
 
             msg += " ";
 
-            if ((rating[9] <= 10) && (rating[10] <= 10))
+            if ((rating[teamID][9] <= 10) && (rating[teamID][10] <= 10))
                 msg += "The work they put on rebounding on both sides of the court is commendable. Both offensive and defensive rebounds, their bread and butter.";
 
             msg += "\n\n";
 
-            if ((rating[11] <= 10) && (rating[12] <= 10))
+            if ((rating[teamID][11] <= 10) && (rating[teamID][12] <= 10))
                 msg += "A team that knows how to play defense. They're one of the best in steals and blocks, and they make you work hard on offense.\n";
-            else if (rating[11] <= 10)
+            else if (rating[teamID][11] <= 10)
                 msg += "Be careful dribbling and passing. They won't be much trouble once you shoot the ball, but the trouble is getting there. Great in steals.\n";
-            else if (rating[12] <= 10)
+            else if (rating[teamID][12] <= 10)
                 msg += "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.\n";
 
-            if ((rating[13] <= 10) && (rating[15] <= 10))
+            if ((rating[teamID][13] <= 10) && (rating[teamID][15] <= 10))
                 msg += "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
-            else if (rating[13] < 10)
+            else if (rating[teamID][13] < 10)
                 msg += "Not good ball handlers, and that's being polite. Bottom 10 in turnovers, they have work to do until they get their offense going.";
-            else if (rating[12] < 10)
+            else if (rating[teamID][12] < 10)
                 msg += "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
             else
                 msg += "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw "
@@ -1036,11 +1068,171 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnScout_Click(object sender, RoutedEventArgs e)
         {
-            int[] rating = calculateRankings(false);
+            int id = -1;
+            try
+            {
+                id = TeamNames[cmbTeam1.SelectedItem.ToString()];
+            }
+            catch
+            {
+                return;
+            }
+
+            int[][] rating = calculateRankings(tst);
             if (rating.Length != 1)
             {
-                scoutReport(rating);
+                scoutReport(rating, id);
             }
+        }
+
+        private void btnTeamCSV_Click(object sender, RoutedEventArgs e)
+        {
+            int id = -1;
+            try
+            {
+                id = TeamNames[cmbTeam1.SelectedItem.ToString()];
+            }
+            catch
+            {
+                return;
+            }
+
+            string header1 = "GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL";
+            /*
+            string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
+                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[FGM], tst[id].stats[FGA], tst[id].stats[TPM], tst[id].stats[TPA],
+                tst[id].stats[FTM], tst[id].stats[FTA], tst[
+             */
+            string data1 = String.Format("{0},{1},{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
+            for (int j = 1; j <= 16; j++)
+            {
+                if (j != 3)
+                {
+                    data1 += "," + tst[id].stats[j].ToString();
+                }
+            }
+
+            NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
+
+            string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            string data2 = String.Format("{0:F3}", tst[id].averages[Wp]) + "," + String.Format("{0:F1}", tst[id].averages[Weff]);
+            for (int j = 0; j <= 15; j++)
+            {
+                switch (j)
+                {
+                    case 2:
+                    case 4:
+                    case 6:
+                        data2 += String.Format(",{0:F3}", tst[id].averages[j]);
+                        break;
+                    default:
+                        data2 += String.Format(",{0:F1}", tst[id].averages[j]);
+                        break;
+                }
+            }
+
+            int[][] rankings = calculateRankings(tst);
+
+            string data3 = String.Format("{0:F3}", rankings[id][Wp]) + "," + String.Format("{0:F1}", rankings[id][Weff]);
+            for (int j = 0; j <= 15; j++)
+            {
+                switch (j)
+                {
+                    case 1:
+                    case 13:
+                    case 15:
+                        data3 += "," + (31 - rankings[id][j]).ToString();
+                        break;
+                    default:
+                        data3 += "," + rankings[id][j].ToString();
+                        break;
+                }
+            }
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            sfd.Title = "Select a file to save the CSV to...";
+            sfd.ShowDialog();
+            if (sfd.FileName == "") return;
+
+            StreamWriter sw = new StreamWriter(sfd.FileName);
+            /*
+            sw.WriteLine(header1);
+            sw.WriteLine(data1);
+            sw.WriteLine();
+            sw.WriteLine(header2);
+            sw.WriteLine(data2);
+            sw.WriteLine(data3);
+            */
+            sw.WriteLine(header1 + "," + header2);
+            sw.WriteLine(data1 + "," + data2);
+            sw.WriteLine();
+            sw.WriteLine(header2);
+            sw.WriteLine(data3);
+            sw.Close();
+        }
+
+        private void btnLeagueCSV_Click(object sender, RoutedEventArgs e)
+        {
+            string header1 = ",Team,GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL,";
+            //string header2 = "Team,W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            /*
+            string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
+                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[FGM], tst[id].stats[FGA], tst[id].stats[TPM], tst[id].stats[TPA],
+                tst[id].stats[FTM], tst[id].stats[FTA], tst[
+             */
+            string data1 = "";
+            for (int id = 0; id < 30; id++)
+            {
+                data1 += (id + 1).ToString() + ",";
+                foreach (KeyValuePair<string, int> kvp in TeamNames)
+                {
+                    if (kvp.Value == id)
+                    {
+                        data1 += kvp.Key + ",";
+                        break;
+                    }
+                }
+                data1 += String.Format("{0},{1},{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
+                for (int j = 1; j <= 16; j++)
+                {
+                    if (j != 3)
+                    {
+                        data1 += "," + tst[id].stats[j].ToString();
+                    }
+                }
+                data1 += ",";
+                data1 += String.Format("{0:F3}", tst[id].averages[Wp]) + "," + String.Format("{0:F1}", tst[id].averages[Weff]);
+                for (int j = 0; j <= 15; j++)
+                {
+                    switch (j)
+                    {
+                        case 2:
+                        case 4:
+                        case 6:
+                            data1 += String.Format(",{0:F3}", tst[id].averages[j]);
+                            break;
+                        default:
+                            data1 += String.Format(",{0:F1}", tst[id].averages[j]);
+                            break;
+                    }
+                }
+                data1 += "\n";
+            }
+            
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            sfd.Title = "Select a file to save the CSV to...";
+            sfd.ShowDialog();
+            if (sfd.FileName == "") return;
+
+            StreamWriter sw = new StreamWriter(sfd.FileName);
+            sw.WriteLine(header1 + header2);
+            sw.WriteLine(data1);
+            sw.Close();
         }
     }
 
@@ -1107,6 +1299,12 @@ namespace NBA_2K12_Correct_Team_Stats
             averages[TPG] = (float)stats[TO] / games;
             averages[APG] = (float)stats[AST] / games;
             averages[FPG] = (float)stats[FOUL] / games;
+            return games;
+        }
+
+        internal int getGames()
+        {
+            int games = winloss[0] + winloss[1];
             return games;
         }
     }

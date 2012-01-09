@@ -84,6 +84,15 @@ Credits to
 	   the CRC checks
 	
 Version History
+	v0.5 - Jan 9
+		- Tool can now export any team's stats, averages and rankings to CSV
+		- Tool can now export league-wide team stats and averages to CSV
+		- Tool now checks for saved team stats and Association file compatibility
+		   when the user uses "Load & Update Team Stats"; if updating the team
+		   stats with the info the user provided in the Box Score would cause
+		   a different Wins/Losses stat for any team than the game has saved,
+		   the tool shows a warning
+
 	v0.4 - Jan 9
 		- Scouting Reports implemented, translating the stat rankings of each
 		   team into natural comments about their play, combining different
