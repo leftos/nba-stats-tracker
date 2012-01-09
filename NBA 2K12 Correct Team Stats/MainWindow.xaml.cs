@@ -36,7 +36,7 @@ namespace NBA_2K12_Correct_Team_Stats
             FOUL = 16;
         public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15;
+            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
 
         /// <summary>
         /// TeamStats array.
@@ -811,11 +811,236 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
         {
-            int id = TeamNames[cmbTeam1.SelectedItem.ToString()];
-            tst[id].calcAvg();
-            string text = String.Format("PPG: {0:F2}\nPAPG: {1:F2}\nFG%: {2:F3}\nFGeff: {3:F1}", tst[id].averages[PPG], tst[id].averages[PAPG], tst[id].averages[FGp],
-                tst[id].averages[FGeff]);
-            MessageBox.Show(text);
+            calculateRankings();
+        }
+
+        private int[] calculateRankings(bool showMsg = true)
+        {
+            int id = -1;
+            try
+            {
+                id = TeamNames[cmbTeam1.SelectedItem.ToString()];
+            }
+            catch
+            {
+                return new int[1];
+            }
+
+            int games = 0, temp;
+            for (int i = 0; i < 30; i++)
+            {
+                temp = tst[i].calcAvg();
+                if (i == id) games = temp;
+            }
+            if (games == -1) return new int[1];
+
+            int[] rating = new int[19];
+            for (int i = 0; i < 18; i++)
+            {
+                rating[i] = 1;
+                for (int j = 0; j < 30; j++)
+                {
+                    if (j != id)
+                    {
+                        if (tst[j].averages[i] > tst[id].averages[i])
+                        {
+                            rating[i]++;
+                        }
+                    }
+                }
+            }
+            rating[18] = games;
+            if (showMsg)
+            {
+                string text = String.Format("Win %: {32:F3} ({33})\nWin eff: {34:F1} ({35})\n\nPPG: {0:F2} ({16})\nPAPG: {1:F2} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F1} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F1} ({21})\n"
+                    + "FT%: {6:F3} ({22})\nFTeff: {7:F1} ({23})\n\nRPG: {8:F1} ({24})\nORPG: {9:F1} ({25})\nDRPG: {10:F1} ({26})\n\nSPG: {11:F1} ({27})\nBPG: {12:F1} ({28})\n"
+                    + "TPG: {13:F1} ({29})\nAPG: {14:F1} ({30})\nFPG: {15:F1} ({31})",
+                    tst[id].averages[PPG], tst[id].averages[PAPG], tst[id].averages[FGp],
+                    tst[id].averages[FGeff], tst[id].averages[TPp], tst[id].averages[TPeff],
+                    tst[id].averages[FTp], tst[id].averages[FTeff], tst[id].averages[RPG], tst[id].averages[ORPG], tst[id].averages[DRPG], tst[id].averages[SPG],
+                    tst[id].averages[BPG], tst[id].averages[TPG], tst[id].averages[APG], tst[id].averages[FPG],
+                    rating[0], 31 - rating[1], rating[2], rating[3], rating[4], rating[5], rating[6], rating[7], rating[8], rating[9],
+                    rating[10], rating[11], rating[12], 31 - rating[13], rating[14], 31 - rating[15], tst[id].averages[Wp], rating[16], tst[id].averages[Weff], rating[Weff]);
+                MessageBox.Show(text, cmbTeam1.SelectedItem.ToString());
+            }
+            return rating;
+        }
+
+        private void scoutReport(int[] rating)
+        {
+            //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
+            //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
+            //TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
+
+            string msg;
+            msg = String.Format("{0}, the {1}", cmbTeam1.SelectedItem.ToString(), rating[17]);
+            switch (rating[17])
+            {
+                case 1:
+                case 21:
+                    msg += "st";
+                    break;
+                case 2:
+                case 22:
+                    msg += "nd";
+                    break;
+                case 3:
+                case 23:
+                    msg += "rd";
+                    break;
+                default:
+                    msg += "th";
+                    break;
+            }
+            msg += " strongest team in the league right now, after having played " + rating[18].ToString() + " games.\n\n";
+
+            if ((rating[3] <= 5) && (rating[5] <= 5))
+            {
+                if (rating[7] <= 5)
+                {
+                    msg += "This team just can't be beaten offensively. One of the strongest in the league in all aspects.";
+                }
+                else
+                {
+                    msg += "Great team offensively. Even when they don't get to the line, they know how to raise the bar with "
+                        + "efficiency in both 2 and 3 pointers.";
+                }
+            }
+            else if ((rating[3] <= 10) && (rating[5] <= 10))
+            {
+                if (rating[7] <= 10)
+                {
+                    msg += "Top 10 in the league in everything offense, and they're one to worry about.";
+                }
+                else
+                {
+                    msg += "Although their free throwing is not on par with their other offensive qualities, you can't relax "
+                        + "when playing against them. Top 10 in field goals and 3 pointers.";
+                }
+            }
+            else if ((rating[3] <= 20) && (rating[5] <= 20))
+            {
+                if (rating[7] <= 10)
+                {
+                    msg += "Although an average offensive team (their field goal efficiency isn't that high in or out of the "
+                        + "arc), they can get back at you with their efficiency from the line.";
+                }
+                else
+                {
+                    msg += "Average offensive team. Not really efficient in anything they do when they bring the ball down "
+                        + "the court.";
+                }
+            }
+            else
+            {
+                if (rating[7] <= 10)
+                {
+                    msg += "They aren't consistent from the floor, but still manage to get to the line enough times and "
+                        + "be good enough to make a difference.";
+                }
+                else
+                {
+                    msg += "One of the most inconsistent teams at the offensive end, and they aren't efficient enough from "
+                        +"the line to make up for it.";
+                }
+            }
+            msg += "\n\n";
+
+            if (rating[3] <= 5)
+                msg += "Top scoring team, one of the top 5 in field goal efficiency.";
+            else if (rating[3] <= 10)
+                msg += "You'll have to worry about their scoring efficiency, as they're one of the Top 10 in the league.";
+            else if (rating[3] <= 20)
+                msg += "Scoring is not their virtue, but they're not that bad either.";
+            else if (rating[3] <= 30)
+                msg += "You won't have to worry about their scoring, one of the least 10 efficient in the league.";
+
+            msg += "\n";
+
+            if (rating[5] <= 5)
+                msg += "You'll need to always have an eye on the perimeter. They can turn a game around with their 3 pointers. "
+                    + "They score well, they score a lot.";
+            else if (rating[5] <= 10)
+                msg += "Their 3pt shooting is bad news. They're in the top 10, and you can't relax playing against them.";
+            else if (rating[5] <= 20)
+                msg += "Not much to say about their 3pt shooting. Average, but it is there.";
+            else if (rating[5] <= 30)
+                msg += "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
+
+            msg += "\n";
+
+            if (rating[7] <= 5)
+                msg += "They tend to attack the lanes hard, getting to the line and making the most of it. They're one of the best "
+                    + "teams in the league at it.";
+            else if (rating[7] <= 10)
+                msg += "One of the best teams in the league at getting to the line. And they don't miss many. Top 10.";
+            else if (rating[7] <= 20)
+                msg += "Average free throw efficiency, you don't have to worry about sending them to the line; at least as much as other aspects of their game.";
+            else if (rating[7] <= 30)
+                msg += "A team that you'll enjoy playing hard and aggressively against. They don't know how to go to the line, and when they get a chance, they "
+                    + "mostly blow it.";
+
+            msg += "\n";
+
+            if (rating[14] <= 15)
+                msg += "They know how to find the open man, and they get their offense going by getting it around the perimeter until a clean shot is there.";
+            else if ((rating[14] > 15) && (rating[3] < 10))
+                msg += "A team that prefers to run its offense through its core players in isolation. Not very good in assists, but they know how to get the job"
+                    + "done more times than not.";
+            else
+                msg += "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
+
+            msg += "\n\n";
+
+            if ((rating[9] <= 10) && (rating[11] <= 10) && (rating[12] <= 10))
+                msg += "Hustle is their middle name. They attack the offensive glass, they block, they steal. Don't even dare to blink or get complacent.\n\n";
+            else if ((rating[9] >= 20) && (rating[11] >= 20) && (rating[12] >= 20))
+                msg += "This team just doesn't know what hustle means. You'll be doing circles around them if you're careful.\n\n";
+
+            if (rating[8] <= 5)
+                msg += "Sensational rebounding team, everybody jumps for the ball, no missed shot is left loose.";
+            else if (rating[8] <= 10)
+                msg += "You can't ignore their rebounding ability, they work together and are in the top 10 in rebounding.";
+            else if (rating[8] <= 20)
+                msg += "They crash the boards as much as the next guy, but they won't give up any freebies.";
+            else if (rating[8] <= 30)
+                msg += "Second chance points? One of their biggest fears. Low low LOW rebounding numbers; just jump for the ball and you'll keep your score high.";
+
+            msg += " ";
+
+            if ((rating[9] <= 10) && (rating[10] <= 10))
+                msg += "The work they put on rebounding on both sides of the court is commendable. Both offensive and defensive rebounds, their bread and butter.";
+
+            msg += "\n\n";
+
+            if ((rating[11] <= 10) && (rating[12] <= 10))
+                msg += "A team that knows how to play defense. They're one of the best in steals and blocks, and they make you work hard on offense.\n";
+            else if (rating[11] <= 10)
+                msg += "Be careful dribbling and passing. They won't be much trouble once you shoot the ball, but the trouble is getting there. Great in steals.\n";
+            else if (rating[12] <= 10)
+                msg += "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.\n";
+
+            if ((rating[13] <= 10) && (rating[15] <= 10))
+                msg += "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
+            else if (rating[13] < 10)
+                msg += "Not good ball handlers, and that's being polite. Bottom 10 in turnovers, they have work to do until they get their offense going.";
+            else if (rating[12] < 10)
+                msg += "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
+            else
+                msg += "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw "
+                    + "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the "
+                    + "one you expected.";
+
+            MessageBox.Show(msg);
+        }
+
+        private void btnScout_Click(object sender, RoutedEventArgs e)
+        {
+            int[] rating = calculateRankings(false);
+            if (rating.Length != 1)
+            {
+                scoutReport(rating);
+            }
         }
     }
 
@@ -828,7 +1053,7 @@ namespace NBA_2K12_Correct_Team_Stats
             FOUL = 16;
         public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15;
+            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
         /// <summary>
         /// Stats for each team.
         /// 0: M, 1: PF, 2: PA, 3: 0x0000, 4: FGM, 5: FGA, 6: 3PM, 7: 3PA, 8: FTM, 9: FTA,
@@ -839,9 +1064,9 @@ namespace NBA_2K12_Correct_Team_Stats
         /// <summary>
         /// Averages for each team.
         /// 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
-        /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG
+        /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%
         /// </summary>
-        public float[] averages = new float[16];
+        public float[] averages = new float[18];
         public byte[] winloss = new byte[2];
 
         public TeamStats()
@@ -860,9 +1085,12 @@ namespace NBA_2K12_Correct_Team_Stats
             winloss = (byte[])info.GetValue("winloss", typeof(byte[]));
         }
 
-        public void calcAvg()
+        public int calcAvg()
         {
             int games = winloss[0] + winloss[1];
+            if (games == 0) games = -1;
+            averages[Wp] = (float)winloss[0] / games;
+            averages[Weff] = averages[Wp] * winloss[0];
             averages[PPG] = (float)stats[PF] / games;
             averages[PAPG] = (float)stats[PA] / games;
             averages[FGp] = (float)stats[FGM] / stats[FGA];
@@ -879,6 +1107,7 @@ namespace NBA_2K12_Correct_Team_Stats
             averages[TPG] = (float)stats[TO] / games;
             averages[APG] = (float)stats[AST] / games;
             averages[FPG] = (float)stats[FOUL] / games;
+            return games;
         }
     }
 
