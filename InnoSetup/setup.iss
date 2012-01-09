@@ -30,7 +30,7 @@
 ;#define use_sql2008express
 
 #define MyAppSetupName 'NBA 2K12 Correct Team Stats'
-#define MyAppVersion '0.2'
+#define MyAppVersion '0.4'
 #define MyAppVerInfo 'beta'
 
 [Setup]
