@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Media;
+using Microsoft.Win32;
+using System.IO;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -56,6 +58,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            tryParseBS();
+            this.Close();
+        }
+
+        private void tryParseBS()
+        {
             if (cmbTeam1.SelectedItem.ToString() == cmbTeam2.SelectedItem.ToString())
             {
                 MessageBox.Show("You can't have the same team in both Home & Away.");
@@ -77,6 +85,16 @@ namespace NBA_2K12_Correct_Team_Stats
                 MainWindow.bs.TPM1 = Convert.ToUInt16(txt3PM1.Text);
                 MainWindow.bs.TPA1 = Convert.ToUInt16(txt3PA1.Text);
 
+                if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
+                {
+                    MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
+                    return;
+                }
+                if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
+                {
+                    MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
+                    return;
+                }
                 if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
@@ -85,8 +103,13 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
                 MainWindow.bs.FTA1 = Convert.ToUInt16(txtFTA1.Text);
-                MainWindow.bs.OFF1 = Convert.ToUInt16(txtOFF1.Text);
+                if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
+                {
+                    MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
+                    return;
+                }
 
+                MainWindow.bs.OFF1 = Convert.ToUInt16(txtOFF1.Text);
                 if (MainWindow.bs.OFF1 > MainWindow.bs.REB1)
                 {
                     MessageBox.Show("The OFF stat can't be higher than the REB stat.");
@@ -110,6 +133,16 @@ namespace NBA_2K12_Correct_Team_Stats
                 MainWindow.bs.TPM2 = Convert.ToUInt16(txt3PM2.Text);
                 MainWindow.bs.TPA2 = Convert.ToUInt16(txt3PA2.Text);
 
+                if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
+                {
+                    MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
+                    return;
+                }
+                if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
+                {
+                    MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
+                    return;
+                }
                 if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
@@ -123,6 +156,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
                 MainWindow.bs.FTA2 = Convert.ToUInt16(txtFTA2.Text);
+                if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
+                {
+                    MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
+                    return;
+                }
+
                 MainWindow.bs.OFF2 = Convert.ToUInt16(txtOFF2.Text);
 
                 if (MainWindow.bs.OFF2 > MainWindow.bs.REB2)
@@ -138,7 +177,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 MainWindow.bs.done = false;
             }
-            this.Close();
+            return;
         }
 
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -257,6 +296,49 @@ namespace NBA_2K12_Correct_Team_Stats
         private void txtFTM2_TextChanged(object sender, TextChangedEventArgs e)
         {
             calculateScore2();
+        }
+
+        private void btnCSVOK_Click(object sender, RoutedEventArgs e)
+        {
+            tryParseBS();
+            if (MainWindow.bs.done)
+            {
+                string header1 = "Team,PTS,REB,OREB,DREB,"
+                + "AST,STL,BLK,TO,FGM,"
+                + "FGA,FG%,3PM,3PA,3P%,"
+                + "FTM,FTA,FT%,PF";
+
+                string data1 = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                    cmbTeam1.SelectedItem.ToString(), MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OFF1, MainWindow.bs.REB1 - MainWindow.bs.OFF1,
+                    MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1, MainWindow.bs.FGM1,
+                    MainWindow.bs.FGA1, MainWindow.bs.FGM1 / (float)MainWindow.bs.FGA1, MainWindow.bs.TPM1, MainWindow.bs.TPA1, MainWindow.bs.TPM1 / (float)MainWindow.bs.TPA1,
+                    MainWindow.bs.FTM1, MainWindow.bs.FTA1, MainWindow.bs.FTM1 / (float)MainWindow.bs.FTA1, MainWindow.bs.PF1);
+
+                string data2 = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                    cmbTeam2.SelectedItem.ToString(), MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OFF2, MainWindow.bs.REB2 - MainWindow.bs.OFF2,
+                    MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2, MainWindow.bs.FGM2,
+                    MainWindow.bs.FGA2, MainWindow.bs.FGM2 / (float)MainWindow.bs.FGA2, MainWindow.bs.TPM2, MainWindow.bs.TPA2, MainWindow.bs.TPM2 / (float)MainWindow.bs.TPA2,
+                    MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2 / (float)MainWindow.bs.FTA2, MainWindow.bs.PF2);
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
+                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                sfd.Title = "Select a file to save the CSV to...";
+                sfd.ShowDialog();
+                if (sfd.FileName == "") return;
+
+                StreamWriter sw = new StreamWriter(sfd.FileName);
+                sw.WriteLine(header1);
+                sw.WriteLine(data1);
+                sw.WriteLine(data2);
+                sw.Close();
+            }
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.bs.done = false;
+            this.Close();
         }
     }
 }

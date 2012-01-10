@@ -67,11 +67,12 @@ Stat Averages, Ranking and Scout Reports
 	league, preparing you for a game against them.
 	
 Export to CSV
-	You can also export any individual team's stats, averages and rankings to
-	a CSV file, if you'd like. You can also export the whole league's team
-	stats and averages into a big table that works exactly like NBA 2K12's
-	Team Stats screen, if you import them into a spreadsheet, database or table
-	editing tool like Excel.
+	The tool allows you to export the following into CSV files, for use in
+	spreadsheet, database or table-editing software (such as Excel), to make
+	your life easier if you want to post them to the web.
+		- Individual team's stats, averages and rankings
+		- League-wide stats and averages
+		- Box scores (that you enter manually; can't be extracted from the save)
 
 Custom Leagues
 	You can also use all the features this tool offers with any custom league
@@ -129,10 +130,12 @@ Version History
 		- Tool can now create and edit custom leagues, offering features such
 		   as updating with Box Scores, team averages and rankings and CSV
 		   exporting to other leagues too, besides NBA 2K12 Saves (more info
-		   above)
+		   above); when the tool's in custom league mode, all stats are directly
+		   editable
 		- Tool can now inject the directly editable custom league stats into
 		   an NBA 2K12 save; so there is a way to directly edit the stats of
 		   your save if you so choose, it's explained above
+		- Tool can now export manually inputted Box Scores to CSV
 		   
 	v0.5 - Jan 9
 		- Tool can now export any team's stats, averages and rankings to CSV

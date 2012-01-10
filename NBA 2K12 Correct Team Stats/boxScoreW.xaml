@@ -62,6 +62,8 @@
         <TextBox Height="23" HorizontalAlignment="Left" Margin="516,204,0,0" Name="txtOFF2" VerticalAlignment="Top" Width="36" TabIndex="28" />
         <Label Content="PF" HorizontalAlignment="Left" Margin="558,175,0,0" Name="label29" VerticalAlignment="Top" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2" VerticalAlignment="Top" Width="36" TabIndex="29" />
-        <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="306,238,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" TabIndex="30" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="222,238,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" TabIndex="30" />
+        <Button Content="Export to CSV" Height="23" HorizontalAlignment="Left" Margin="304,238,0,0" Name="btnCSVOK" TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCSVOK_Click" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="389,238,0,0" Name="button2" TabIndex="30" VerticalAlignment="Top" Width="75" Click="button2_Click" />
     </Grid>
 </Window>
