@@ -37,7 +37,7 @@ Quick notes
 		7. Choose the Career file you're playing in the new dialog.
 		8. You're done!
 
-Stat Averages and Ranking	
+Stat Averages, Ranking and Scout Reports
 	See how well your team is doing, and scout your next opponent for their 
 	strengths and weaknesses in a quick glance!
 	
@@ -61,6 +61,13 @@ Stat Averages and Ranking
 	you the relative winning strength of a team in the league, taking account
 	not only the winning percentage, but also how many wins they've got so far
 	and how close they are to the end of the season.
+
+	You can also view a Scouting Report of any team, in natural language,
+	commenting on their pros and cons based on their stat rankings in the
+	league, preparing you for a game against them.
+
+Custom Leagues
+	
 		
 Known Issues
 	The tool only works during the first season & playoffs of each career.

@@ -31,6 +31,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public static string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA 2K12 Correct Team Stats\";
         public static string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
+        public static bool isCustom = false;
 
         public const int M = 0, PF = 1, PA = 2, FGM = 4, FGA = 5, TPM = 6, TPA = 7,
             FTM = 8, FTA = 9, OREB = 10, DREB = 11, STL = 12, TO = 13, BLK = 14, AST = 15,
@@ -53,39 +54,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public static PlayoffTree pt;
         public static string ext;
 
-        public static Dictionary<string, int> TeamNames = new Dictionary<string, int>
-        {
-            {"76ers", 20},
-            {"Bobcats", 22},
-            {"Bucks", 9},
-            {"Bulls", 28},
-            {"Cavaliers", 11},
-            {"Celtics", 12},
-            {"Clippers", 7},
-            {"Grizzlies", 6},
-            {"Hawks", 16},
-            {"Heat", 4},
-            {"Hornets", 15},
-            {"Jazz", 27},
-            {"Kings", 13},
-            {"Knicks", 5},
-            {"Lakers", 25},
-            {"Magic", 23},
-            {"Mavericks", 29},
-            {"Nets", 18},
-            {"Nuggets", 0},
-            {"Pacers", 2},
-            {"Pistons", 3},
-            {"Raptors", 21},
-            {"Rockets", 26},
-            {"Spurs", 10},
-            {"Suns", 14},
-            {"Thunder", 24},
-            {"Timberwolves", 17},
-            {"Trail Blazers", 1},
-            {"Warriors", 8},
-            {"Wizards", 19}
-        };
+        public static SortedDictionary<string, int> TeamNames; 
 
         public static List<string> West = new List<string>
         {
@@ -104,6 +73,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             btnSave.Visibility = Visibility.Hidden;
             btnCRC.Visibility = Visibility.Hidden;
+            btnSaveCustomTeam.Visibility = Visibility.Hidden;
 
             if (Directory.Exists(AppDocsPath) == false) Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
@@ -112,6 +82,8 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 tst[i] = new TeamStats();
             }
+
+            setRealTeamNames();
 
             foreach (KeyValuePair<string, int> kvp in TeamNames)
             {
@@ -143,6 +115,43 @@ namespace NBA_2K12_Correct_Team_Stats
             checkForUpdates();
         }
 
+        private static void setRealTeamNames()
+        {
+            TeamNames = new SortedDictionary<string, int>
+            {
+                {"76ers", 20},
+                {"Bobcats", 22},
+                {"Bucks", 9},
+                {"Bulls", 28},
+                {"Cavaliers", 11},
+                {"Celtics", 12},
+                {"Clippers", 7},
+                {"Grizzlies", 6},
+                {"Hawks", 16},
+                {"Heat", 4},
+                {"Hornets", 15},
+                {"Jazz", 27},
+                {"Kings", 13},
+                {"Knicks", 5},
+                {"Lakers", 25},
+                {"Magic", 23},
+                {"Mavericks", 29},
+                {"Nets", 18},
+                {"Nuggets", 0},
+                {"Pacers", 2},
+                {"Pistons", 3},
+                {"Raptors", 21},
+                {"Rockets", 26},
+                {"Spurs", 10},
+                {"Suns", 14},
+                {"Thunder", 24},
+                {"Timberwolves", 17},
+                {"Trail Blazers", 1},
+                {"Warriors", 8},
+                {"Wizards", 19}
+            };
+        }
+
         private void checkForRedundantSettings()
         {
             string[] stgFiles = Directory.GetFiles(AppDocsPath, "*.cfg");
@@ -171,6 +180,16 @@ namespace NBA_2K12_Correct_Team_Stats
 
             TeamStats[] temp = GetStats(txtFile.Text);
             if (temp.Length > 1) tst = temp;
+
+            isCustom = false;
+            setRealTeamNames();
+
+            cmbTeam1.Items.Clear();
+            foreach (KeyValuePair<string, int> kvp in TeamNames)
+            {
+                cmbTeam1.Items.Add(kvp.Key);
+                tst[kvp.Value].name = kvp.Key;
+            }
 
             cmbTeam1.SelectedIndex = 0; 
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
@@ -564,23 +583,24 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 string team = cmbTeam1.SelectedItem.ToString();
-                txtW1.Text = tst[TeamNames[team]].winloss[0].ToString();
-                txtL1.Text = tst[TeamNames[team]].winloss[1].ToString();
-                txtPF1.Text = tst[TeamNames[team]].stats[PF].ToString();
-                txtPA1.Text = tst[TeamNames[team]].stats[PA].ToString();
-                txtFGM1.Text = tst[TeamNames[team]].stats[FGM].ToString();
-                txtFGA1.Text = tst[TeamNames[team]].stats[FGA].ToString();
-                txt3PM1.Text = tst[TeamNames[team]].stats[TPM].ToString();
-                txt3PA1.Text = tst[TeamNames[team]].stats[TPA].ToString();
-                txtFTM1.Text = tst[TeamNames[team]].stats[FTM].ToString();
-                txtFTA1.Text = tst[TeamNames[team]].stats[FTA].ToString();
-                txtOREB1.Text = tst[TeamNames[team]].stats[OREB].ToString();
-                txtDREB1.Text = tst[TeamNames[team]].stats[DREB].ToString();
-                txtSTL1.Text = tst[TeamNames[team]].stats[STL].ToString();
-                txtTO1.Text = tst[TeamNames[team]].stats[TO].ToString();
-                txtBLK1.Text = tst[TeamNames[team]].stats[BLK].ToString();
-                txtAST1.Text = tst[TeamNames[team]].stats[AST].ToString();
-                txtFOUL1.Text = tst[TeamNames[team]].stats[FOUL].ToString();
+                int id = TeamNames[team];
+                txtW1.Text = tst[id].winloss[0].ToString();
+                txtL1.Text = tst[id].winloss[1].ToString();
+                txtPF1.Text = tst[id].stats[PF].ToString();
+                txtPA1.Text = tst[id].stats[PA].ToString();
+                txtFGM1.Text = tst[id].stats[FGM].ToString();
+                txtFGA1.Text = tst[id].stats[FGA].ToString();
+                txt3PM1.Text = tst[id].stats[TPM].ToString();
+                txt3PA1.Text = tst[id].stats[TPA].ToString();
+                txtFTM1.Text = tst[id].stats[FTM].ToString();
+                txtFTA1.Text = tst[id].stats[FTA].ToString();
+                txtOREB1.Text = tst[id].stats[OREB].ToString();
+                txtDREB1.Text = tst[id].stats[DREB].ToString();
+                txtSTL1.Text = tst[id].stats[STL].ToString();
+                txtTO1.Text = tst[id].stats[TO].ToString();
+                txtBLK1.Text = tst[id].stats[BLK].ToString();
+                txtAST1.Text = tst[id].stats[AST].ToString();
+                txtFOUL1.Text = tst[id].stats[FOUL].ToString();
             }
             catch
             { }
@@ -622,15 +642,16 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
+        private void mnuFileOpenCustom_Click(object sender, RoutedEventArgs e)
         {
-            TeamStats[] temptst = new TeamStats[30];
+            tst = new TeamStats[30];
+            TeamNames = new SortedDictionary<string,int>();
             bool havePT = false;
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Team Stats Table (*.tst)|*.tst";
             ofd.InitialDirectory = AppDocsPath;
-            ofd.Title = "Please select the TST file that you saved before the game...";
+            ofd.Title = "Please select the TST file that you want to edit...";
             ofd.ShowDialog();
 
             if (ofd.FileName == "") return;
@@ -640,156 +661,348 @@ namespace NBA_2K12_Correct_Team_Stats
 
             for (int i = 0; i < 30; i++)
             {
-                temptst[i] = new TeamStats();
-                temptst[i] = (TeamStats)bf.Deserialize(stream);
+                tst[i] = new TeamStats();
+                tst[i] = (TeamStats)bf.Deserialize(stream);
+                if (tst[i].name == "") continue;
+                try
+                {
+                    TeamNames.Add(tst[i].name, i);
+                    tst[i].calcAvg();
+                }
+                catch
+                { }
+            }
+
+            cmbTeam1.Items.Clear();
+            foreach (KeyValuePair<string, int> kvp in TeamNames)
+            {
+                cmbTeam1.Items.Add(kvp.Key);
             }
             pt = (PlayoffTree)bf.Deserialize(stream);
             stream.Close();
 
-            bs = new BoxScore();
-            boxScoreW bsW = new boxScoreW();
-            bsW.ShowDialog();
-
-            if (bs.done == false) return;
-
-            int id1 = -1;
-            int id2 = -1;
-
-            if (pt.teams[0] == "Invalid")
-            {
-                id1 = TeamNames[bs.Team1];
-                id2 = TeamNames[bs.Team2];
-                havePT = false;
-            }
-            else
-            {
-                for (int i = 0; i < 16; i++)
-                {
-                    if (pt.teams[i] == bs.Team1)
-                        id1 = TeamNames[pt.teams[i]];
-                    else if (pt.teams[i] == bs.Team2)
-                        id2 = TeamNames[pt.teams[i]];
-                }
-                havePT = true;
-            }
-
-            // Add win & loss
-            if (bs.PTS1 > bs.PTS2)
-            {
-                temptst[id1].winloss[0]++;
-                temptst[id2].winloss[1]++;
-            }
-            else
-            {
-                temptst[id1].winloss[1]++;
-                temptst[id2].winloss[0]++;
-            }
-            // Add minutes played
-            temptst[id1].stats[M] += 48;
-            temptst[id2].stats[M] += 48;
-
-            // Add Points For
-            temptst[id1].stats[PF] += bs.PTS1;
-            temptst[id2].stats[PF] += bs.PTS2;
-
-            // Add Points Against
-            temptst[id1].stats[PA] += bs.PTS2;
-            temptst[id2].stats[PA] += bs.PTS1;
-
-            //
-            temptst[id1].stats[FGM] += bs.FGM1;
-            temptst[id2].stats[FGM] += bs.FGM2;
-
-            temptst[id1].stats[FGA] += bs.FGA1;
-            temptst[id2].stats[FGA] += bs.FGA2;
-
-            //
-            temptst[id1].stats[TPM] += bs.TPM1;
-            temptst[id2].stats[TPM] += bs.TPM2;
-
-            //
-            temptst[id1].stats[TPA] += bs.TPA1;
-            temptst[id2].stats[TPA] += bs.TPA2;
-
-            //
-            temptst[id1].stats[FTM] += bs.FTM1;
-            temptst[id2].stats[FTM] += bs.FTM2;
-
-            //
-            temptst[id1].stats[FTA] += bs.FTA1;
-            temptst[id2].stats[FTA] += bs.FTA2;
-
-            //
-            temptst[id1].stats[OREB] += bs.OFF1;
-            temptst[id2].stats[OREB] += bs.OFF2;
-
-            //
-            temptst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-            temptst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
-
-            //
-            temptst[id1].stats[STL] += bs.STL1;
-            temptst[id2].stats[STL] += bs.STL2;
-
-            //
-            temptst[id1].stats[TO] += bs.TO1;
-            temptst[id2].stats[TO] += bs.TO2;
-
-            //
-            temptst[id1].stats[BLK] += bs.BLK1;
-            temptst[id2].stats[BLK] += bs.BLK2;
-
-            //
-            temptst[id1].stats[AST] += bs.AST1;
-            temptst[id2].stats[AST] += bs.AST2;
-
-            //
-            temptst[id1].stats[FOUL] += bs.PF1;
-            temptst[id2].stats[FOUL] += bs.PF2;
-
-            ofd = new OpenFileDialog();
-            ofd.Title = "Please select the Career file you want to update...";
-            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-            + "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                "Create A Legend files (*.SMG)|*.SMG";
-            if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
-            ofd.ShowDialog();
-
-            if (ofd.FileName == "") return;
-            string fn = ofd.FileName;
-            TeamStats[] temp = GetStats(fn, havePT);
-            if (temp.Length == 1)
-            {
-                MessageBox.Show("Couldn't get stats from " + getSafeFilename(fn) + ". Update failed.");
-                return;
-            }
-
-            // Check if Win/Loss remain the same
-            if ((temp[id1].winloss != temptst[id1].winloss) || (temp[id2].winloss != temptst[id2].winloss))
-            {
-                MessageBoxResult r = MessageBox.Show("Your updates to the saved team stats don't seem to be compatible with the save you've selected.\n" +
-                    "Making these updates would mean that the Wins/Losses stats would be different than what NBA 2K12 has saved inside the file.\n\n" +
-                    "Probable causes:\n\t1. You didn't save your Association and then the team stats in the tool right before the game started.\n" +
-                    "\t2. You didn't save your Association right after the game ended.\n\n" +
-                    "Make sure you're using the saved Team Stats from right before the game, and an Association save from right after the game ended.\n\n" +
-                    "You can continue, but this may cause stat corruption.\nAre you sure you want to continue?",
-                    "NBA 2K12 Correct Team Stats", MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
-                if (r == MessageBoxResult.No) return;
-            }
-
-            tst = temp;
-            tst[id1].winloss = temptst[id1].winloss;
-            tst[id2].winloss = temptst[id2].winloss;
-            tst[id1].stats = temptst[id1].stats;
-            tst[id2].stats = temptst[id2].stats;
-
-            saveTeamStats(fn);
+            isCustom = true;
+            prepareWindow(isCustom);
 
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
-            txtFile.Text = ofd.FileName;
+        }
 
-            MessageBox.Show("Team Stats updated in " + getSafeFilename(fn) + " succesfully!");
+        private void prepareWindow(bool isCustom)
+        {
+            if (isCustom)
+            {
+                txt3PA1.IsReadOnly = false;
+                txt3PM1.IsReadOnly = false;
+                txtAST1.IsReadOnly = false;
+                txtBLK1.IsReadOnly = false;
+                txtDREB1.IsReadOnly = false;
+                txtFGA1.IsReadOnly = false;
+                txtFGM1.IsReadOnly = false;
+                txtFOUL1.IsReadOnly = false;
+                txtFTA1.IsReadOnly = false;
+                txtFTM1.IsReadOnly = false;
+                txtL1.IsReadOnly = false;
+                txtOREB1.IsReadOnly = false;
+                txtPA1.IsReadOnly = false;
+                txtPF1.IsReadOnly = false;
+                txtSTL1.IsReadOnly = false;
+                txtTO1.IsReadOnly = false;
+                txtW1.IsReadOnly = false;
+                btnSaveTS.Content = "Save To Disk";
+                btnLoadUpdate.Content = "Update with new Box Score";
+                btnSaveCustomTeam.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txt3PA1.IsReadOnly = true;
+                txt3PM1.IsReadOnly = true;
+                txtAST1.IsReadOnly = true;
+                txtBLK1.IsReadOnly = true;
+                txtDREB1.IsReadOnly = true;
+                txtFGA1.IsReadOnly = true;
+                txtFGM1.IsReadOnly = true;
+                txtFOUL1.IsReadOnly = true;
+                txtFTA1.IsReadOnly = true;
+                txtFTM1.IsReadOnly = true;
+                txtL1.IsReadOnly = true;
+                txtOREB1.IsReadOnly = true;
+                txtPA1.IsReadOnly = true;
+                txtPF1.IsReadOnly = true;
+                txtSTL1.IsReadOnly = true;
+                txtTO1.IsReadOnly = true;
+                txtW1.IsReadOnly = true;
+                btnSaveTS.Content = "Save Team Stats";
+                btnLoadUpdate.Content = "Load & Update Team Stats";
+                btnSaveCustomTeam.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isCustom)
+            {
+                TeamStats[] temptst = new TeamStats[30];
+                bool havePT = false;
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Team Stats Table (*.tst)|*.tst";
+                ofd.InitialDirectory = AppDocsPath;
+                ofd.Title = "Please select the TST file that you saved before the game...";
+                ofd.ShowDialog();
+
+                if (ofd.FileName == "") return;
+
+                FileStream stream = File.Open(ofd.FileName, FileMode.Open);
+                BinaryFormatter bf = new BinaryFormatter();
+
+                for (int i = 0; i < 30; i++)
+                {
+                    temptst[i] = new TeamStats();
+                    temptst[i] = (TeamStats)bf.Deserialize(stream);
+                }
+                pt = (PlayoffTree)bf.Deserialize(stream);
+                stream.Close();
+
+                bs = new BoxScore();
+                boxScoreW bsW = new boxScoreW();
+                bsW.ShowDialog();
+
+                if (bs.done == false) return;
+
+                int id1 = -1;
+                int id2 = -1;
+
+                if (pt.teams[0] == "Invalid")
+                {
+                    id1 = TeamNames[bs.Team1];
+                    id2 = TeamNames[bs.Team2];
+                    havePT = false;
+                }
+                else
+                {
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if (pt.teams[i] == bs.Team1)
+                            id1 = TeamNames[pt.teams[i]];
+                        else if (pt.teams[i] == bs.Team2)
+                            id2 = TeamNames[pt.teams[i]];
+                    }
+                    havePT = true;
+                }
+
+                // Add win & loss
+                if (bs.PTS1 > bs.PTS2)
+                {
+                    temptst[id1].winloss[0]++;
+                    temptst[id2].winloss[1]++;
+                }
+                else
+                {
+                    temptst[id1].winloss[1]++;
+                    temptst[id2].winloss[0]++;
+                }
+                // Add minutes played
+                temptst[id1].stats[M] += 48;
+                temptst[id2].stats[M] += 48;
+
+                // Add Points For
+                temptst[id1].stats[PF] += bs.PTS1;
+                temptst[id2].stats[PF] += bs.PTS2;
+
+                // Add Points Against
+                temptst[id1].stats[PA] += bs.PTS2;
+                temptst[id2].stats[PA] += bs.PTS1;
+
+                //
+                temptst[id1].stats[FGM] += bs.FGM1;
+                temptst[id2].stats[FGM] += bs.FGM2;
+
+                temptst[id1].stats[FGA] += bs.FGA1;
+                temptst[id2].stats[FGA] += bs.FGA2;
+
+                //
+                temptst[id1].stats[TPM] += bs.TPM1;
+                temptst[id2].stats[TPM] += bs.TPM2;
+
+                //
+                temptst[id1].stats[TPA] += bs.TPA1;
+                temptst[id2].stats[TPA] += bs.TPA2;
+
+                //
+                temptst[id1].stats[FTM] += bs.FTM1;
+                temptst[id2].stats[FTM] += bs.FTM2;
+
+                //
+                temptst[id1].stats[FTA] += bs.FTA1;
+                temptst[id2].stats[FTA] += bs.FTA2;
+
+                //
+                temptst[id1].stats[OREB] += bs.OFF1;
+                temptst[id2].stats[OREB] += bs.OFF2;
+
+                //
+                temptst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                temptst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                //
+                temptst[id1].stats[STL] += bs.STL1;
+                temptst[id2].stats[STL] += bs.STL2;
+
+                //
+                temptst[id1].stats[TO] += bs.TO1;
+                temptst[id2].stats[TO] += bs.TO2;
+
+                //
+                temptst[id1].stats[BLK] += bs.BLK1;
+                temptst[id2].stats[BLK] += bs.BLK2;
+
+                //
+                temptst[id1].stats[AST] += bs.AST1;
+                temptst[id2].stats[AST] += bs.AST2;
+
+                //
+                temptst[id1].stats[FOUL] += bs.PF1;
+                temptst[id2].stats[FOUL] += bs.PF2;
+
+                ofd = new OpenFileDialog();
+                ofd.Title = "Please select the Career file you want to update...";
+                ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                + "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                    "Create A Legend files (*.SMG)|*.SMG";
+                if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
+                ofd.ShowDialog();
+
+                if (ofd.FileName == "") return;
+                string fn = ofd.FileName;
+                TeamStats[] temp = GetStats(fn, havePT);
+                if (temp.Length == 1)
+                {
+                    MessageBox.Show("Couldn't get stats from " + getSafeFilename(fn) + ". Update failed.");
+                    return;
+                }
+
+                // Check if Win/Loss remain the same
+                if ((temp[id1].winloss != temptst[id1].winloss) || (temp[id2].winloss != temptst[id2].winloss))
+                {
+                    MessageBoxResult r = MessageBox.Show("Your updates to the saved team stats don't seem to be compatible with the save you've selected.\n" +
+                        "Making these updates would mean that the Wins/Losses stats would be different than what NBA 2K12 has saved inside the file.\n\n" +
+                        "Probable causes:\n\t1. You didn't save your Association and then the team stats in the tool right before the game started.\n" +
+                        "\t2. You didn't save your Association right after the game ended.\n\n" +
+                        "Make sure you're using the saved Team Stats from right before the game, and an Association save from right after the game ended.\n\n" +
+                        "You can continue, but this may cause stat corruption.\nAre you sure you want to continue?",
+                        "NBA 2K12 Correct Team Stats", MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+                    if (r == MessageBoxResult.No) return;
+                }
+
+                tst = temp;
+                tst[id1].winloss = temptst[id1].winloss;
+                tst[id2].winloss = temptst[id2].winloss;
+                tst[id1].stats = temptst[id1].stats;
+                tst[id2].stats = temptst[id2].stats;
+
+                saveTeamStats(fn);
+
+                cmbTeam1.SelectedIndex = -1;
+                cmbTeam1.SelectedIndex = 0;
+                txtFile.Text = ofd.FileName;
+
+                MessageBox.Show("Team Stats updated in " + getSafeFilename(fn) + " succesfully!");
+            }
+            else
+            {
+                bs = new BoxScore();
+                boxScoreW bsW = new boxScoreW();
+                bsW.ShowDialog();
+
+                if (bs.done == false) return;
+
+                int id1 = -1;
+                int id2 = -1;
+                
+                id1 = TeamNames[bs.Team1];
+                id2 = TeamNames[bs.Team2]; 
+
+                // Add win & loss
+                if (bs.PTS1 > bs.PTS2)
+                {
+                    tst[id1].winloss[0]++;
+                    tst[id2].winloss[1]++;
+                }
+                else
+                {
+                    tst[id1].winloss[1]++;
+                    tst[id2].winloss[0]++;
+                }
+                // Add minutes played
+                tst[id1].stats[M] += 48;
+                tst[id2].stats[M] += 48;
+
+                // Add Points For
+                tst[id1].stats[PF] += bs.PTS1;
+                tst[id2].stats[PF] += bs.PTS2;
+
+                // Add Points Against
+                tst[id1].stats[PA] += bs.PTS2;
+                tst[id2].stats[PA] += bs.PTS1;
+
+                //
+                tst[id1].stats[FGM] += bs.FGM1;
+                tst[id2].stats[FGM] += bs.FGM2;
+
+                tst[id1].stats[FGA] += bs.FGA1;
+                tst[id2].stats[FGA] += bs.FGA2;
+
+                //
+                tst[id1].stats[TPM] += bs.TPM1;
+                tst[id2].stats[TPM] += bs.TPM2;
+
+                //
+                tst[id1].stats[TPA] += bs.TPA1;
+                tst[id2].stats[TPA] += bs.TPA2;
+
+                //
+                tst[id1].stats[FTM] += bs.FTM1;
+                tst[id2].stats[FTM] += bs.FTM2;
+
+                //
+                tst[id1].stats[FTA] += bs.FTA1;
+                tst[id2].stats[FTA] += bs.FTA2;
+
+                //
+                tst[id1].stats[OREB] += bs.OFF1;
+                tst[id2].stats[OREB] += bs.OFF2;
+
+                //
+                tst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                tst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                //
+                tst[id1].stats[STL] += bs.STL1;
+                tst[id2].stats[STL] += bs.STL2;
+
+                //
+                tst[id1].stats[TO] += bs.TO1;
+                tst[id2].stats[TO] += bs.TO2;
+
+                //
+                tst[id1].stats[BLK] += bs.BLK1;
+                tst[id2].stats[BLK] += bs.BLK2;
+
+                //
+                tst[id1].stats[AST] += bs.AST1;
+                tst[id2].stats[AST] += bs.AST2;
+
+                //
+                tst[id1].stats[FOUL] += bs.PF1;
+                tst[id2].stats[FOUL] += bs.PF2;
+
+                tst[id1].calcAvg();
+                tst[id2].calcAvg();
+
+                cmbTeam1.SelectedIndex = -1;
+                cmbTeam1.SelectedIndex = 0;
+            }
         }
 
         private static void checkForUpdates()
@@ -903,7 +1116,6 @@ namespace NBA_2K12_Correct_Team_Stats
             //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
             //TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
-
             string msg;
             msg = String.Format("{0}, the {1}", cmbTeam1.SelectedItem.ToString(), rating[teamID][17]);
             switch (rating[teamID][17])
@@ -1186,6 +1398,8 @@ namespace NBA_2K12_Correct_Team_Stats
             string data1 = "";
             for (int id = 0; id < 30; id++)
             {
+                if (tst[id].name == "") continue;
+
                 data1 += (id + 1).ToString() + ",";
                 foreach (KeyValuePair<string, int> kvp in TeamNames)
                 {
@@ -1234,11 +1448,71 @@ namespace NBA_2K12_Correct_Team_Stats
             sw.WriteLine(data1);
             sw.Close();
         }
+
+        private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
+        {
+            btnSelect_Click(sender, e);
+        }
+
+        private void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
+        {
+            int id = TeamNames[cmbTeam1.SelectedItem.ToString()];
+            tst[id].winloss[0] = Convert.ToByte(txtW1.Text);
+            tst[id].winloss[1] = Convert.ToByte(txtL1.Text);
+            tst[id].stats[PF] = Convert.ToUInt16(txtPF1.Text);
+            tst[id].stats[PA] = Convert.ToUInt16(txtPA1.Text);
+            tst[id].stats[FGM] = Convert.ToUInt16(txtFGM1.Text);
+            tst[id].stats[FGA] = Convert.ToUInt16(txtFGA1.Text);
+            tst[id].stats[TPM] = Convert.ToUInt16(txt3PM1.Text);
+            tst[id].stats[TPA] = Convert.ToUInt16(txt3PA1.Text);
+            tst[id].stats[FTM] = Convert.ToUInt16(txtFTM1.Text);
+            tst[id].stats[FTA] = Convert.ToUInt16(txtFTA1.Text);
+            tst[id].stats[OREB] = Convert.ToUInt16(txtOREB1.Text);
+            tst[id].stats[DREB] = Convert.ToUInt16(txtDREB1.Text);
+            tst[id].stats[STL] = Convert.ToUInt16(txtSTL1.Text);
+            tst[id].stats[TO] = Convert.ToUInt16(txtTO1.Text);
+            tst[id].stats[BLK] = Convert.ToUInt16(txtBLK1.Text);
+            tst[id].stats[AST] = Convert.ToUInt16(txtAST1.Text);
+            tst[id].stats[FOUL] = Convert.ToUInt16(txtFOUL1.Text);
+
+            tst[id].calcAvg();
+        }
+
+        private void mnuFileCreateCustom_Click(object sender, RoutedEventArgs e)
+        {
+            customLeagueW clw = new customLeagueW();
+            clw.ShowDialog();
+
+            isCustom = true;
+            prepareWindow(isCustom);
+            pt = new PlayoffTree();
+
+            cmbTeam1.Items.Clear();
+            TeamNames = new SortedDictionary<string, int>();
+            for (int i = 0; i < 30; i++)
+            {
+                if (tst[i].name != "")
+                {
+                    TeamNames.Add(tst[i].name, i);
+                }
+            }
+
+            foreach (KeyValuePair<string, int> kvp in TeamNames)
+            {
+                cmbTeam1.Items.Add(kvp.Key);
+            }
+        }
+
+        private void mnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(-1);
+        }
     }
 
     [Serializable()]
     public class TeamStats : ISerializable
     {
+        public string name;
         public Int32 offset = 0;
         public const int M = 0, PF = 1, PA = 2, FGM = 4, FGA = 5, TPM = 6, TPA = 7,
             FTM = 8, FTA = 9, OREB = 10, DREB = 11, STL = 12, TO = 13, BLK = 14, AST = 15,
@@ -1267,12 +1541,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
         {
+            info.AddValue("name", name);
             info.AddValue("stats", stats);
             info.AddValue("winloss", winloss);
         }
 
         public TeamStats(SerializationInfo info, StreamingContext ctxt)
         {
+            name = (string)info.GetValue("name", typeof(string));
             stats = (UInt16[])info.GetValue("stats", typeof(UInt16[]));
             winloss = (byte[])info.GetValue("winloss", typeof(byte[]));
         }
@@ -1324,7 +1600,10 @@ namespace NBA_2K12_Correct_Team_Stats
         public string[] teams = new string[16];
         public bool done = false;
 
-        public PlayoffTree() { }
+        public PlayoffTree() 
+        {
+            this.teams[0] = "Invalid";
+        }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
         {

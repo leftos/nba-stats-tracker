@@ -65,6 +65,9 @@
     <Compile Include="playoffTreeW.xaml.cs">
       <DependentUpon>playoffTreeW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="customLeagueW.xaml.cs">
+      <DependentUpon>customLeagueW.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -83,6 +86,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="playoffTreeW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="customLeagueW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
