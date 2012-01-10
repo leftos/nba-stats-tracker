@@ -74,6 +74,7 @@ namespace NBA_2K12_Correct_Team_Stats
             btnSave.Visibility = Visibility.Hidden;
             btnCRC.Visibility = Visibility.Hidden;
             btnSaveCustomTeam.Visibility = Visibility.Hidden;
+            btnInject.Visibility = Visibility.Hidden;
 
             if (Directory.Exists(AppDocsPath) == false) Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
@@ -184,13 +185,6 @@ namespace NBA_2K12_Correct_Team_Stats
             isCustom = false;
             setRealTeamNames();
 
-            cmbTeam1.Items.Clear();
-            foreach (KeyValuePair<string, int> kvp in TeamNames)
-            {
-                cmbTeam1.Items.Add(kvp.Key);
-                tst[kvp.Value].name = kvp.Key;
-            }
-
             cmbTeam1.SelectedIndex = 0; 
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
         }
@@ -264,6 +258,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if ((pt == null) || (pt.teams[0] == "Invalid"))
             {
+                cmbTeam1.Items.Clear();
+                foreach (KeyValuePair<string, int> kvp in TeamNames)
+                {
+                    cmbTeam1.Items.Add(kvp.Key);
+                    _teamStats[kvp.Value].name = kvp.Key;
+                }
                 for (int i = 0; i < 30; i++)
                 {
                     ms.Seek(_teamStats[i].offset, SeekOrigin.Begin);
@@ -287,6 +287,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     int id = TeamNames[pt.teams[i]];
                     ms.Seek(_teamStats[id].offset, SeekOrigin.Begin);
                     ms.Read(buf, 0, 2);
+                    _teamStats[id].name = pt.teams[i];
                     _teamStats[id].winloss[0] = buf[0];
                     _teamStats[id].winloss[1] = buf[1];
                     for (int j = 0; j < 18; j++)
@@ -712,6 +713,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 btnSaveTS.Content = "Save To Disk";
                 btnLoadUpdate.Content = "Update with new Box Score";
                 btnSaveCustomTeam.Visibility = Visibility.Visible;
+                btnInject.Visibility = Visibility.Visible;
             }
             else
             {
@@ -735,6 +737,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 btnSaveTS.Content = "Save Team Stats";
                 btnLoadUpdate.Content = "Load & Update Team Stats";
                 btnSaveCustomTeam.Visibility = Visibility.Hidden;
+                btnInject.Visibility = Visibility.Hidden;
             }
         }
 
@@ -1506,6 +1509,34 @@ namespace NBA_2K12_Correct_Team_Stats
         private void mnuExit_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(-1);
+        }
+
+        private void btnInject_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Please select the Career file you want to update...";
+            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+            + "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                "Create A Legend files (*.SMG)|*.SMG";
+            if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
+            ofd.ShowDialog();
+
+            if (ofd.FileName == "") return;
+            string fn = ofd.FileName;
+
+            prepareOffsets(fn, tst);
+
+            TeamStats[] temp = GetStats(fn);
+            if (temp.Length == 1)
+            {
+                MessageBox.Show("Couldn't get stats from " + getSafeFilename(fn) + ". Update failed.");
+                return;
+            }
+
+            saveTeamStats(fn);
+            MessageBox.Show("Injected custom Team Stats into " + getSafeFilename(fn) + " successfully!");
+            cmbTeam1.SelectedIndex = -1;
+            cmbTeam1.SelectedIndex = 0;
         }
     }
 

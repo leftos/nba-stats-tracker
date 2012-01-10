@@ -65,9 +65,43 @@ Stat Averages, Ranking and Scout Reports
 	You can also view a Scouting Report of any team, in natural language,
 	commenting on their pros and cons based on their stat rankings in the
 	league, preparing you for a game against them.
+	
+Export to CSV
+	You can also export any individual team's stats, averages and rankings to
+	a CSV file, if you'd like. You can also export the whole league's team
+	stats and averages into a big table that works exactly like NBA 2K12's
+	Team Stats screen, if you import them into a spreadsheet, database or table
+	editing tool like Excel.
 
 Custom Leagues
+	You can also use all the features this tool offers with any custom league
+	up to 30 teams (such as a local league, a league between friends, a college
+	league, etc.) Go to File > Create Custom League, enter the names of the
+	league's teams, and the tool switches into custom mode. In Custom Mode, all
+	Team Stats are directly editable so that you can enter the current league
+	stats. Just make sure you click on "Save Team" after you finish changing the
+	values manually for each team, and of course "Save To Disk" when you're done
+	with the whole league.
 	
+	Then, after each game, you can use the "Update with new Box Score" feature 
+	to have the tool automatically add the box score to the proper stats.
+	
+	The rest of the features work as well. You can get averages and rankings,
+	Scout Reports (they'll only make sense though if the league has 25 to 30 
+	teams), and export team and league stats to CSV.
+	
+	The Custom Leagues feature works for Team Stats files you've saved from
+	NBA 2K12 Saves, if you feel the need to experiment with the Team Stats
+	directly instead of just updating with Box Scores. You can then inject
+	the changes back into your savegame. Be really careful though, as this
+	feature, if not used carefully, can screw up your save. Always keep backups,
+	and remember that the tool, each time you update an Association file either
+	with a Box Score or with an injection, makes a backup of the file before
+	the changes that you can find in the same folder, with the same name, and
+	the added extension ".bak". This, however, could still be keeping a backup
+	of an already screwed up save if you mess around with the edits too much,
+	so always keep a manual backup of a save you know that works, in another
+	folder.
 		
 Known Issues
 	The tool only works during the first season & playoffs of each career.

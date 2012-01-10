@@ -61,5 +61,6 @@
             </MenuItem>
         </Menu>
         <Button Content="Save Team" Height="23" HorizontalAlignment="Left" Margin="249,87,0,0" Name="btnSaveCustomTeam" VerticalAlignment="Top" Width="75" Click="btnSaveCustomTeam_Click" />
+        <Button Content="Inject into NBA 2K12 Save File" Height="23" HorizontalAlignment="Left" Margin="157,350,0,0" Name="btnInject" VerticalAlignment="Top" Width="167" Click="btnInject_Click" />
     </Grid>
 </Window>
