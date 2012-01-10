@@ -125,6 +125,15 @@ Credits to
 	   the CRC checks
 	
 Version History
+	v0.6 - Jan 10
+		- Tool can now create and edit custom leagues, offering features such
+		   as updating with Box Scores, team averages and rankings and CSV
+		   exporting to other leagues too, besides NBA 2K12 Saves (more info
+		   above)
+		- Tool can now inject the directly editable custom league stats into
+		   an NBA 2K12 save; so there is a way to directly edit the stats of
+		   your save if you so choose, it's explained above
+		   
 	v0.5 - Jan 9
 		- Tool can now export any team's stats, averages and rankings to CSV
 		- Tool can now export league-wide team stats and averages to CSV
