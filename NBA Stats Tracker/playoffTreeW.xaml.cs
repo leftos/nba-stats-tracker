@@ -21,12 +21,15 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         Brush defaultBackground;
         bool valid = true;
+        PlayoffTree myPT;
 
         public playoffTreeW()
         {
             InitializeComponent();
 
-            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamNames)
+            myPT = StatsTracker.tempPT;
+
+            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
             {
                 if (MainWindow.West.Contains(kvp.Key))
                 {
@@ -71,7 +74,7 @@ namespace NBA_2K12_Correct_Team_Stats
             cmbTeam15.SelectedIndex = 6;
             cmbTeam16.SelectedIndex = 7;
 
-            MainWindow.pt.done = false;
+            myPT.done = false;
         }
 
         private void checkIfSameTeamsWest(object sender, SelectionChangedEventArgs e)
@@ -135,7 +138,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             if (!valid)
-                MainWindow.pt.done = false;
+                myPT.done = false;
             else
             {
                 for (int i = 0; i < 16; i++)
@@ -143,9 +146,9 @@ namespace NBA_2K12_Correct_Team_Stats
                     string cur = "cmbTeam" + (16 - i).ToString();
                     object item = this.ptGrid.FindName(cur);
                     ComboBox cmb = (ComboBox)item;
-                    MainWindow.pt.teams[i] = cmb.SelectedItem.ToString();
+                    myPT.teams[i] = cmb.SelectedItem.ToString();
                 }
-                MainWindow.pt.done = true;
+                myPT.done = true;
             }
 
             this.Close();
@@ -207,6 +210,11 @@ namespace NBA_2K12_Correct_Team_Stats
                 cmbTeam16.Background = defaultBackground;
                 valid = true;
             }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            StatsTracker.tempPT = myPT;
         }
     }
 }

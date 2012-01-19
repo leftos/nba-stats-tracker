@@ -1,4 +1,4 @@
-﻿NBA 2K12 Correct Team Stats
+﻿NBA Stats Tracker
 	by Lefteris "Leftos" Aslanoglou
 
 
@@ -66,6 +66,11 @@ Stat Averages, Ranking and Scout Reports
 	commenting on their pros and cons based on their stat rankings in the
 	league, preparing you for a game against them.
 	
+	Another feature is the Versus window, which compares any two teams' averages
+	side-by-side. You can either compare two different teams from the same file
+	or custom league, a team to its real life counterpart, or to the same team
+	from another file.
+	
 Export to CSV
 	The tool allows you to export the following into CSV files, for use in
 	spreadsheet, database or table-editing software (such as Excel), to make
@@ -103,12 +108,25 @@ Custom Leagues
 	of an already screwed up save if you mess around with the edits too much,
 	so always keep a manual backup of a save you know that works, in another
 	folder.
+	
+Real NBA Stats
+	This feature allows you to automatically grab the real league's Team Stats 
+	and import them into the tool. All that with just a single-click! From there
+	on, you can use all the tool's features, including averages, rankings, 
+	scouting reports, comparisons, CSV exports, and anything else that finds
+	its way into the tool's features, onto the real NBA team stats.
+	
+	You can also compare any team from your saves or custom leagues (as long as
+	it has a real NBA counterpart) to the real NBA team in a head-to-head
+	comparison!
+	
 		
 Known Issues
-	The tool only works during the first season & playoffs of each career.
-	
-	It has only been tested with Association, Season & Playoffs files. My Player
-	and Create A Legend haven't been tested yet.
+	I can't tell you if the tool will work for you or not. It may work for one 
+	Association you have, but not for another. See the discussion thread (link
+	at the bottom of this readme file) for the reason.
+
+	It's working fine with Custom Leagues.
 
 Disclaimer
 	The tool is still in beta. I've tested it in my environment, on my
@@ -121,12 +139,29 @@ Disclaimer
 	I won't take any responsibility if this tool messes up your Saves. You've
 	been warned.
 	
+	
 Credits to
 	- JaoSming, for his roster editing tutorial, especially the part regarding
 	   the CRC checks
+	- Onisak, for his help with debugging
+    - Vl@d Zola Jr, for helping make NBA Stats Tracker what it is and will be
+    - albidnis, for his idea to export to CSV
+	- jrlocke, for being the first donator, and a generous one
+	- zizoux, for his idea to inject real stats, which ended up being the Custom
+       Leagues & Real NBA Stats features
+	- Everyone at the NLSC community, for their continued support
 	
 Version History
-	v0.6 - Jan 10
+	v0.7 - Jan 16
+		- Real NBA Stats feature added; the tool can now grab all the real
+		   league's team stats and import them so you can use all its features
+		   on them
+		- Added feature to compare your team to its real life counterpart in a 
+		   head-to-head comparison
+		- Added feature to compare the same team from two different Team Stats 
+		   files
+		   
+	v0.6 - Jan 15
 		- Tool can now create and edit custom leagues, offering features such
 		   as updating with Box Scores, team averages and rankings and CSV
 		   exporting to other leagues too, besides NBA 2K12 Saves (more info
@@ -136,6 +171,7 @@ Version History
 		   an NBA 2K12 save; so there is a way to directly edit the stats of
 		   your save if you so choose, it's explained above
 		- Tool can now export manually inputted Box Scores to CSV
+		- Versus window implemented, comparing any two teams' averages
 		   
 	v0.5 - Jan 9
 		- Tool can now export any team's stats, averages and rankings to CSV

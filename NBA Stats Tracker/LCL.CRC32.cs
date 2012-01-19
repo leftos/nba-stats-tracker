@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace LeftosCommonLibrary
 {
     public class Crc32 : HashAlgorithm
     {

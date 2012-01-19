@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBA 2K12 Correct Team Stats", "NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats.csproj", "{FF743E0C-5018-4BE6-AE6F-2703F1CEE2D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBA Stats Tracker", "NBA Stats Tracker\NBA Stats Tracker.csproj", "{FF743E0C-5018-4BE6-AE6F-2703F1CEE2D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

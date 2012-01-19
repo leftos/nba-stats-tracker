@@ -29,7 +29,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (MainWindow.pt.teams[0] == "Invalid")
             {
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamNames)
+                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
                 {
                     cmbTeam1.Items.Add(kvp.Key);
                     cmbTeam2.Items.Add(kvp.Key);
@@ -88,17 +88,17 @@ namespace NBA_2K12_Correct_Team_Stats
                 if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
                 {
                     MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
@@ -106,19 +106,19 @@ namespace NBA_2K12_Correct_Team_Stats
                 if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
                 {
                     MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.OFF1 = Convert.ToUInt16(txtOFF1.Text);
                 if (MainWindow.bs.OFF1 > MainWindow.bs.REB1)
                 {
                     MessageBox.Show("The OFF stat can't be higher than the REB stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.FGA1 < MainWindow.bs.TPA1)
                 {
                     MessageBox.Show("The 3PA stat can't be higher than the FGA stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.PF1 = Convert.ToUInt16(txtPF1.Text);
@@ -136,22 +136,22 @@ namespace NBA_2K12_Correct_Team_Stats
                 if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
                 {
                     MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
                 {
                     MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
-                    return;
+                    throw (new Exception());
                 }
                 if (MainWindow.bs.FGA2 < MainWindow.bs.TPA2)
                 {
                     MessageBox.Show("The 3PA stat can't be higher than the FGA stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
@@ -159,7 +159,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
                 {
                     MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.OFF2 = Convert.ToUInt16(txtOFF2.Text);
@@ -167,7 +167,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 if (MainWindow.bs.OFF2 > MainWindow.bs.REB2)
                 {
                     MessageBox.Show("The OFF stat can't be higher than the REB stat.");
-                    return;
+                    throw (new Exception());
                 }
 
                 MainWindow.bs.PF2 = Convert.ToUInt16(txtPF2.Text);
@@ -339,6 +339,12 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             MainWindow.bs.done = false;
             this.Close();
+        }
+
+        private void _bsAnyTextbox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox tb = (TextBox)sender;
+            tb.SelectAll();
         }
     }
 }

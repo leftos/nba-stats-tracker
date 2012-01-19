@@ -59,15 +59,41 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="aboutW.xaml.cs">
+      <DependentUpon>aboutW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="askTeamW.xaml.cs">
+      <DependentUpon>askTeamW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="boxScoreW.xaml.cs">
       <DependentUpon>boxScoreW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="getRealStatsW.xaml.cs">
+      <DependentUpon>getRealStatsW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LCL.Common.cs" />
     <Compile Include="playoffTreeW.xaml.cs">
       <DependentUpon>playoffTreeW.xaml</DependentUpon>
     </Compile>
     <Compile Include="customLeagueW.xaml.cs">
       <DependentUpon>customLeagueW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StatsTracker.cs" />
+    <Compile Include="versusW.xaml.cs">
+      <DependentUpon>versusW.xaml</DependentUpon>
+    </Compile>
+    <Page Include="aboutW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="askTeamW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="getRealStatsW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -76,7 +102,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CRC32.cs" />
+    <Compile Include="LCL.CRC32.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -90,6 +116,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="customLeagueW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="versusW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -129,9 +159,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"D:\Program Files\Inno Setup 5\ISCC.exe" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\InnoSetup\setup.iss"
+    <PostBuildEvent>"D:\Program Files\Inno Setup 5\ISCC.exe" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\InnoSetup\setup.iss"
 
-"D:\Program Files\WinRAR\rar.exe" a -ep "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\[Leftos] NBA 2K12 Correct Team Stats.rar" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\NBA 2K12 Correct Team Stats.exe" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\NBA 2K12 Correct Team Stats.pdb" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\Readme.txt"</PostBuildEvent>
+"D:\Program Files\WinRAR\rar.exe" a -ep "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\[Leftos] NBA Stats Tracker.rar" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.exe" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.pdb" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

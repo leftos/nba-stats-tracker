@@ -29,7 +29,7 @@
 ;#define use_sql2005express
 ;#define use_sql2008express
 
-#define MyAppSetupName 'NBA 2K12 Correct Team Stats'
+#define MyAppSetupName 'NBA Stats Tracker'
 #define MyAppVersion ''
 #define MyAppVerInfo ''
 
@@ -47,7 +47,7 @@ AppSupportURL=http://forums.nba-live.com/viewtopic.php?f=143&t=83896
 OutputBaseFilename=[Leftos] {#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
 DefaultGroupName={#MyAppSetupName}
 DefaultDirName={pf}\{#MyAppSetupName}
-UninstallDisplayIcon={app}\NBA 2K12 Correct Team Stats.exe
+UninstallDisplayIcon={app}\NBA Stats Tracker.exe
 OutputDir=..
 SourceDir=.
 AllowNoIcons=yes
@@ -66,17 +66,17 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\NBA 2K12 Correct Team Stats.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA 2K12 Correct Team Stats\NBA 2K12 Correct Team Stats\bin\Release\NBA 2K12 Correct Team Stats.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\NBA 2K12 Correct Team Stats"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"
-Name: "{group}\{cm:UninstallProgram,NBA 2K12 Correct Team Stats}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\NBA 2K12 Correct Team Stats"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"; Tasks: desktopicon
+Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"
+Name: "{group}\{cm:UninstallProgram,NBA Stats Tracker}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\NBA Stats Tracker"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; Flags: nowait postinstall runascurrentuser skipifsilent; Description: "{cm:LaunchProgram,NBA 2K12 Correct Team Stats}"
+Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; Flags: nowait postinstall runascurrentuser skipifsilent; Description: "{cm:LaunchProgram,NBA Stats Tracker}"
 
 #include "scripts\products.iss"
 
