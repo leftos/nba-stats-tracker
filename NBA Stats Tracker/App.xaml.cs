@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
-using System.IO;
-using System.Diagnostics;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -15,6 +11,8 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class App : Application
     {
+        public static bool realNBAonly = false;
+
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Add code to output the exception details to a message box/event log/log file,   etc.
@@ -82,11 +80,18 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 // If ther is more than one, than it is already running.
                 MessageBox.Show("Application is already running.");
-                Application.Current.Shutdown();
-                return;
+                Environment.Exit(-1);
             }
 
             base.OnStartup(e);
+
+            if (e.Args.Length > 0)
+            {
+                if (e.Args[0] == "-realnbaonly")
+                {
+                    realNBAonly = true;
+                }
+            }
         }
     }
 }

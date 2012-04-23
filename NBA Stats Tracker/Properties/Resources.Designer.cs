@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NBA_2K12_Correct_Team_Stats.Properties {
-    using System;
-    
-    
+namespace NBA_2K12_Correct_Team_Stats.Properties
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

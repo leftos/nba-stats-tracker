@@ -1,27 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Net;
 using System.ComponentModel;
-using System.Reflection;
 using System.Diagnostics;
 using System.Globalization;
-using NBA_2K12_Correct_Team_Stats;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using LeftosCommonLibrary;
+using Microsoft.Win32;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -33,7 +25,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public static string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\";
         public static string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
-        public static string AppPath = Environment.CurrentDirectory;
+        public static string AppPath = Environment.CurrentDirectory + "\\";
         public static bool isCustom = false;
 
         public static MainWindow mwInstance;
@@ -50,11 +42,12 @@ namespace NBA_2K12_Correct_Team_Stats
         public static TeamStats[] tst = new TeamStats[30];
         public static TeamStats[] realtst = new TeamStats[30];
         public static BoxScore bs;
+        public static IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
         public static PlayoffTree pt;
         public static string ext;
         public static string myTeam;
 
-        public static SortedDictionary<string, int> TeamOrder; 
+        public static SortedDictionary<string, int> TeamOrder;
 
         public static List<string> West = new List<string>
         {
@@ -84,13 +77,13 @@ namespace NBA_2K12_Correct_Team_Stats
             btnCRC.Visibility = Visibility.Hidden;
             btnSaveCustomTeam.Visibility = Visibility.Hidden;
             btnInject.Visibility = Visibility.Hidden;
-            //btnTest.Visibility = Visibility.Hidden;
+            btnTest.Visibility = Visibility.Hidden;
 
             if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA 2K12 Correct Team Stats"))
                 if (Directory.Exists(AppDocsPath) == false)
                     Directory.Move(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA 2K12 Correct Team Stats",
                         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker");
-            
+
             if (Directory.Exists(AppDocsPath) == false) Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
 
@@ -131,9 +124,43 @@ namespace NBA_2K12_Correct_Team_Stats
                 SavesPath = rk.GetValue("Saves").ToString();
             }
 
-            StatsTracker.checkForRedundantSettings();
+            checkForRedundantSettings();
 
-            checkForUpdates();
+            if (App.realNBAonly)
+            {
+                mnuFileGetRealStats_Click(null, new RoutedEventArgs());
+                MessageBox.Show("Nothing but net! Thanks for using NBA Stats Tracker!");
+                Environment.Exit(-1);
+            }
+            else
+            {
+                checkForUpdates();
+            }
+        }
+
+        public static void checkForRedundantSettings()
+        {
+            string[] stgFiles = Directory.GetFiles(AppDocsPath, "*.cfg");
+            if (Directory.Exists(SavesPath))
+            {
+                foreach (string file in stgFiles)
+                {
+                    string realfile = file.Substring(0, file.Length - 4);
+                    if (File.Exists(SavesPath + Tools.getSafeFilename(realfile)) == false)
+                        File.Delete(file);
+                }
+            }
+            
+            string[] bshFiles = Directory.GetFiles(AppDocsPath, "*.bsh");
+            if (Directory.Exists(SavesPath))
+            {
+                foreach (string file in stgFiles)
+                {
+                    string realfile = file.Substring(0, file.Length - 4);
+                    if (File.Exists(SavesPath + Tools.getSafeFilename(realfile)) == false)
+                        File.Delete(file);
+                }
+            }
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e)
@@ -151,6 +178,7 @@ namespace NBA_2K12_Correct_Team_Stats
             cmbTeam1.SelectedIndex = -1;
 
             isCustom = false;
+            prepareWindow(isCustom);
             TeamOrder = StatsTracker.setTeamOrder("Mode 0");
 
             TeamStats[] temp = StatsTracker.GetStats(txtFile.Text, ref TeamOrder, ref pt);
@@ -160,9 +188,92 @@ namespace NBA_2K12_Correct_Team_Stats
                 populateTeamsComboBox(TeamOrder, pt);
             }
 
-            cmbTeam1.SelectedIndex = 0; 
-            txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
-        }  
+            cmbTeam1.SelectedIndex = 0;
+
+            if (File.Exists(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh"))
+            {
+                BinaryReader stream = new BinaryReader(File.OpenRead(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh"));
+                string cur = stream.ReadString();
+                string expect = "NST_BSH_FILE_START";
+                if (cur != expect)
+                    MessageBox.Show("Error while reading box score history: Expected " + expect);
+
+                cur = stream.ReadString();
+                expect = "BOXSCOREHISTORY_START";
+                if (cur != expect)
+                    MessageBox.Show("Error while reading box score history: Expected " + expect);
+
+                int bshistlen = stream.ReadInt32();
+                bshist = new List<BoxScoreEntry>(bshistlen);
+                for (int i = 0; i < bshistlen; i++)
+                {
+                    BoxScore bs = new BoxScore();
+                    cur = stream.ReadString();
+                    expect = "BOXSCORE_START";
+                    if (cur != expect)
+                    {
+                        MessageBox.Show("Error while reading stats: Expected " + expect);
+                    }
+
+                    bs.Team1 = stream.ReadString();
+                    bs.PTS1 = stream.ReadUInt16();
+                    bs.REB1 = stream.ReadUInt16();
+                    bs.AST1 = stream.ReadUInt16();
+                    bs.STL1 = stream.ReadUInt16();
+                    bs.BLK1 = stream.ReadUInt16();
+                    bs.TO1 = stream.ReadUInt16();
+                    bs.FGM1 = stream.ReadUInt16();
+                    bs.FGA1 = stream.ReadUInt16();
+                    bs.TPM1 = stream.ReadUInt16();
+                    bs.TPA1 = stream.ReadUInt16();
+                    bs.FTM1 = stream.ReadUInt16();
+                    bs.FTA1 = stream.ReadUInt16();
+                    bs.OFF1 = stream.ReadUInt16();
+                    bs.PF1 = stream.ReadUInt16();
+                    bs.Team2 = stream.ReadString();
+                    bs.PTS2 = stream.ReadUInt16();
+                    bs.REB2 = stream.ReadUInt16();
+                    bs.AST2 = stream.ReadUInt16();
+                    bs.STL2 = stream.ReadUInt16();
+                    bs.BLK2 = stream.ReadUInt16();
+                    bs.TO2 = stream.ReadUInt16();
+                    bs.FGM2 = stream.ReadUInt16();
+                    bs.FGA2 = stream.ReadUInt16();
+                    bs.TPM2 = stream.ReadUInt16();
+                    bs.TPA2 = stream.ReadUInt16();
+                    bs.FTM2 = stream.ReadUInt16();
+                    bs.FTA2 = stream.ReadUInt16();
+                    bs.OFF2 = stream.ReadUInt16();
+                    bs.PF2 = stream.ReadUInt16();
+                    DateTime date = new DateTime(stream.ReadInt32(), stream.ReadInt32(), stream.ReadInt32(), stream.ReadInt32(),
+                        stream.ReadInt32(), stream.ReadInt32());
+
+                    cur = stream.ReadString();
+                    expect = "BOXSCORE_END";
+                    if (cur != expect)
+                    {
+                        MessageBox.Show("Error while reading stats: Expected " + expect);
+                    }
+                    BoxScoreEntry bse = new BoxScoreEntry(bs, date);
+                    bshist.Add(bse);
+                }
+
+                cur = stream.ReadString();
+                expect = "BOXSCOREHISTORY_END";
+                if (cur != expect)
+                {
+                    MessageBox.Show("Error while reading stats: Expected " + expect);
+                }
+
+                cur = stream.ReadString();
+                expect = "NST_BSH_FILE_END";
+                if (cur != expect)
+                {
+                    MessageBox.Show("Error while reading stats: Expected " + expect);
+                }
+            }
+            //cmbTeam1.SelectedItem = "Pistons";
+        }
 
         private void btnCRC_Click(object sender, RoutedEventArgs e)
         {
@@ -173,7 +284,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            StatsTracker.saveTeamStats(txtFile.Text, tst, TeamOrder, pt);
+            StatsTracker.updateSavegame(txtFile.Text, tst, TeamOrder, pt);
         }
 
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -213,26 +324,80 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (sfd.FileName == "") return;
 
+            string file = sfd.FileName;
+
+            saveTeamStatsFile(file);
+        }
+
+        private static void saveTeamStatsFile(string file)
+        {
             try
             {
-                FileStream stream = File.Open(sfd.FileName, FileMode.Create);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
+                BinaryWriter stream = new BinaryWriter(File.Open(file, FileMode.Create));
+                
+                stream.Write("NST_STATS_FILE_START");
 
-                for (int i = 0; i < 30; i++)
-                    bf.Serialize(stream, tst[i]);
+                // Team Stats
+                stream.Write("TEAMSTATS_START");
+                stream.Write(tst.GetLength(0));
+                for (int i = 0; i < tst.GetLength(0); i++)
+                {
+                    stream.Write("TEAM_START");
+                    stream.Write("NAME");
+                    if (tst[i].name == null)
+                    {
+                        stream.Write("__NOTEAM");
+                        continue;
+                    }
+                    else
+                    {
+                        stream.Write(tst[i].name);
+                    }
+                    stream.Write("OFFSET");
+                    stream.Write(tst[i].offset);
+                    stream.Write("WINLOSS");
+                    stream.Write(tst[i].winloss);
+                    stream.Write("STATS_START");
+                    stream.Write(tst[i].stats.Length);
+                    for (int j = 0; j < tst[i].stats.Length; j++)
+                    {
+                        stream.Write(tst[i].stats[j]);
+                    }
+                    stream.Write("STATS_END");
+                    stream.Write("TEAM_END");
+                }
+                stream.Write("TEAMSTATS_END");
 
+                // Playoff Tree
                 if (pt != null)
                 {
-                    bf.Serialize(stream, pt);
+                    stream.Write("PLAYOFFTREE_START");
+                    stream.Write(pt.teams.GetLength(0));
+                    for (int i = 0; i < pt.teams.GetLength(0); i++)
+                    {
+                        stream.Write(pt.teams[i]);
+                    }
+                    stream.Write("PLAYOFFTREE_END");
                 }
                 else
                 {
                     pt = new PlayoffTree();
-                    pt.teams[0] = "Invalid";
-                    bf.Serialize(stream, pt);
+                    stream.Write("PLAYOFFTREE_START");
+                    stream.Write(pt.teams.GetLength(0));
+                    for (int i = 0; i < pt.teams.GetLength(0); i++)
+                    {
+                        stream.Write("Invalid");
+                    }
+                    stream.Write("PLAYOFFTREE_END");
                     pt = null;
                 }
+
+                // Box Score History
+                writeBoxScoreHistory(stream);
+
+                // End
+                stream.Write("NST_STATS_FILE_END");
+
                 stream.Close();
             }
             catch (Exception ex)
@@ -241,11 +406,59 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
+        private static void writeBoxScoreHistory(BinaryWriter stream)
+        {
+            stream.Write("BOXSCOREHISTORY_START");
+            stream.Write(bshist.Count);
+            for (int i = 0; i < bshist.Count; i++)
+            {
+                stream.Write("BOXSCORE_START");
+                stream.Write(bshist[i].bs.Team1);
+                stream.Write(bshist[i].bs.PTS1);
+                stream.Write(bshist[i].bs.REB1);
+                stream.Write(bshist[i].bs.AST1);
+                stream.Write(bshist[i].bs.STL1);
+                stream.Write(bshist[i].bs.BLK1);
+                stream.Write(bshist[i].bs.TO1);
+                stream.Write(bshist[i].bs.FGM1);
+                stream.Write(bshist[i].bs.FGA1);
+                stream.Write(bshist[i].bs.TPM1);
+                stream.Write(bshist[i].bs.TPA1);
+                stream.Write(bshist[i].bs.FTM1);
+                stream.Write(bshist[i].bs.FTA1);
+                stream.Write(bshist[i].bs.OFF1);
+                stream.Write(bshist[i].bs.PF1);
+                stream.Write(bshist[i].bs.Team2);
+                stream.Write(bshist[i].bs.PTS2);
+                stream.Write(bshist[i].bs.REB2);
+                stream.Write(bshist[i].bs.AST2);
+                stream.Write(bshist[i].bs.STL2);
+                stream.Write(bshist[i].bs.BLK2);
+                stream.Write(bshist[i].bs.TO2);
+                stream.Write(bshist[i].bs.FGM2);
+                stream.Write(bshist[i].bs.FGA2);
+                stream.Write(bshist[i].bs.TPM2);
+                stream.Write(bshist[i].bs.TPA2);
+                stream.Write(bshist[i].bs.FTM2);
+                stream.Write(bshist[i].bs.FTA2);
+                stream.Write(bshist[i].bs.OFF2);
+                stream.Write(bshist[i].bs.PF2);
+                stream.Write(bshist[i].date.Year);
+                stream.Write(bshist[i].date.Month);
+                stream.Write(bshist[i].date.Day);
+                stream.Write(bshist[i].date.Hour);
+                stream.Write(bshist[i].date.Minute);
+                stream.Write(bshist[i].date.Second);
+                stream.Write("BOXSCORE_END");
+            }
+            stream.Write("BOXSCOREHISTORY_END");
+        }
+
         private void mnuFileOpenCustom_Click(object sender, RoutedEventArgs e)
         {
             tst = new TeamStats[30];
-            TeamOrder = new SortedDictionary<string,int>();
-            bool havePT = false;
+            TeamOrder = new SortedDictionary<string, int>();
+            bshist = new List<BoxScoreEntry>();
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Team Stats Table (*.tst)|*.tst";
@@ -255,37 +468,253 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (ofd.FileName == "") return;
 
-            FileStream stream = File.Open(ofd.FileName, FileMode.Open);
-            BinaryFormatter bf = new BinaryFormatter();
-            bf.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
-
-            for (int i = 0; i < 30; i++)
-            {
-                tst[i] = new TeamStats();
-                tst[i] = (TeamStats)bf.Deserialize(stream);
-                if (tst[i].name == "") continue;
-                try
-                {
-                    TeamOrder.Add(tst[i].name, i);
-                    tst[i].calcAvg();
-                }
-                catch
-                { }
-            }
-
-            cmbTeam1.Items.Clear();
-            foreach (KeyValuePair<string, int> kvp in TeamOrder)
-            {
-                cmbTeam1.Items.Add(kvp.Key);
-            }
-            pt = (PlayoffTree)bf.Deserialize(stream);
-            stream.Close();
+            tst = getCustomStats(ofd.FileName, ref TeamOrder, ref pt, ref bshist);
 
             isCustom = true;
             prepareWindow(isCustom);
 
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
+            txtFile.Text = ofd.FileName;
+
+            //MessageBox.Show(bshist.Count.ToString());
+        }
+
+        private TeamStats[] getCustomStats(string file, ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt, ref IList<BoxScoreEntry> _bshist, bool updateCombo = true)
+        {
+            BinaryReader stream = new BinaryReader(File.Open(file, FileMode.Open));
+            /*
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
+
+            TeamStats[] _tst = new TeamStats[30];
+            _TeamOrder = new SortedDictionary<string,int>();
+
+            for (int i = 0; i < 30; i++)
+            {
+                _tst[i] = new TeamStats();
+                _tst[i] = (TeamStats)bf.Deserialize(stream);
+
+                if (_tst[i].name == "") 
+                    continue;
+
+                _TeamOrder.Add(_tst[i].name, i);
+                _tst[i].calcAvg();
+            }
+
+            if (updateCombo)
+            {
+                cmbTeam1.Items.Clear();
+                foreach (KeyValuePair<string, int> kvp in _TeamOrder)
+                {
+                    cmbTeam1.Items.Add(kvp.Key);
+                }
+            }
+            _pt = (PlayoffTree)bf.Deserialize(stream);
+             */
+            string cur = stream.ReadString();
+            string expect = "NST_STATS_FILE_START";
+            if (cur != expect)
+            {
+                MessageBox.Show("Error while reading stats: Expected " + expect);
+                return new TeamStats[30];
+            }
+
+            cur = stream.ReadString();
+            expect = "TEAMSTATS_START";
+            if (cur != expect)
+            {
+                MessageBox.Show("Error while reading stats: Expected " + expect);
+                return new TeamStats[30];
+            }
+
+            int len = stream.ReadInt32();
+
+            TeamStats[] _tst = new TeamStats[len];
+            _TeamOrder = new SortedDictionary<string, int>();
+
+            for (int i = 0; i < len; i++)
+            {
+                cur = stream.ReadString();
+                expect = "TEAM_START";
+                if (cur != expect)
+                {
+                    MessageBox.Show("Error while reading stats: Expected " + expect);
+                    return new TeamStats[30];
+                }
+
+                _tst[i] = new TeamStats();
+
+                bool done = false;
+                bool invalid = false;
+                while (!done)
+                {
+                    cur = stream.ReadString();
+                    switch (cur)
+                    {
+                        case "NAME":
+                            _tst[i].name = stream.ReadString();
+                            if (_tst[i].name == "__NOTEAM")
+                            {
+                                done = true;
+                                invalid = true;
+                                break;
+                            }
+                            _TeamOrder.Add(_tst[i].name, i);
+                            break;
+                        case "OFFSET":
+                            _tst[i].offset = stream.ReadInt32();
+                            break;
+                        case "WINLOSS":
+                            _tst[i].winloss = stream.ReadBytes(2);
+                            break;
+                        case "STATS_START":
+                            int statslen = stream.ReadInt32();
+                            for (int j = 0; j < statslen; j++)
+                            {
+                                _tst[i].stats[j] = stream.ReadUInt16();
+                            }
+
+                            cur = stream.ReadString();
+                            expect = "STATS_END";
+                            if (cur != expect)
+                            {
+                                MessageBox.Show("Error while reading stats: Expected " + expect);
+                                return new TeamStats[30];
+                            }
+                            break;
+                        case "TEAM_END":
+                            done = true;
+                            break;
+                    }
+                }
+                if (!invalid) _tst[i].calcAvg();
+            }
+
+            cur = stream.ReadString();
+            expect = "TEAMSTATS_END";
+            if (cur != expect)
+            {
+                MessageBox.Show("Error while reading stats: Expected " + expect);
+                return new TeamStats[30];
+            }
+
+            bool done2 = false;
+            while (!done2)
+            {
+                cur = stream.ReadString();
+                switch (cur)
+                {
+                    case "NST_STATS_FILE_END":
+                        done2 = true;
+                        break;
+
+                    case "PLAYOFFTREE_START":
+                        int ptlen = stream.ReadInt32();
+                        _pt = new PlayoffTree();
+                        for (int i = 0; i < ptlen; i++)
+                        {
+                            _pt.teams[i] = stream.ReadString();
+                        }
+
+                        cur = stream.ReadString();
+                        expect = "PLAYOFFTREE_END";
+                        if (cur != expect)
+                        {
+                            MessageBox.Show("Error while reading stats: Expected " + expect);
+                            return new TeamStats[30];
+                        }
+
+                        if (_pt.teams[0] == "Invalid")
+                            _pt = null;
+
+                        break;
+
+                    case "BOXSCOREHISTORY_START":
+                        int bshistlen = stream.ReadInt32();
+                        _bshist = new List<BoxScoreEntry>(bshistlen);
+                        for (int i = 0; i < bshistlen; i++)
+                        {
+                            BoxScore bs = new BoxScore();
+                            cur = stream.ReadString();
+                            expect = "BOXSCORE_START";
+                            if (cur != expect)
+                            {
+                                MessageBox.Show("Error while reading stats: Expected " + expect);
+                                return new TeamStats[30];
+                            }
+
+                            bs.Team1 = stream.ReadString();
+                            bs.PTS1 = stream.ReadUInt16();
+                            bs.REB1 = stream.ReadUInt16();
+                            bs.AST1 = stream.ReadUInt16();
+                            bs.STL1 = stream.ReadUInt16();
+                            bs.BLK1 = stream.ReadUInt16();
+                            bs.TO1 = stream.ReadUInt16();
+                            bs.FGM1 = stream.ReadUInt16();
+                            bs.FGA1 = stream.ReadUInt16();
+                            bs.TPM1 = stream.ReadUInt16();
+                            bs.TPA1 = stream.ReadUInt16();
+                            bs.FTM1 = stream.ReadUInt16();
+                            bs.FTA1 = stream.ReadUInt16();
+                            bs.OFF1 = stream.ReadUInt16();
+                            bs.PF1 = stream.ReadUInt16();
+                            bs.Team2 = stream.ReadString();
+                            bs.PTS2 = stream.ReadUInt16();
+                            bs.REB2 = stream.ReadUInt16();
+                            bs.AST2 = stream.ReadUInt16();
+                            bs.STL2 = stream.ReadUInt16();
+                            bs.BLK2 = stream.ReadUInt16();
+                            bs.TO2 = stream.ReadUInt16();
+                            bs.FGM2 = stream.ReadUInt16();
+                            bs.FGA2 = stream.ReadUInt16();
+                            bs.TPM2 = stream.ReadUInt16();
+                            bs.TPA2 = stream.ReadUInt16();
+                            bs.FTM2 = stream.ReadUInt16();
+                            bs.FTA2 = stream.ReadUInt16();
+                            bs.OFF2 = stream.ReadUInt16();
+                            bs.PF2 = stream.ReadUInt16();
+                            DateTime date = new DateTime(stream.ReadInt32(), stream.ReadInt32(), stream.ReadInt32(), stream.ReadInt32(),
+                                stream.ReadInt32(), stream.ReadInt32());
+
+                            cur = stream.ReadString();
+                            expect = "BOXSCORE_END";
+                            if (cur != expect)
+                            {
+                                MessageBox.Show("Error while reading stats: Expected " + expect);
+                                return new TeamStats[30];
+                            }
+                            BoxScoreEntry bse = new BoxScoreEntry(bs, date);
+                            _bshist.Add(bse);
+                        }
+
+                        cur = stream.ReadString();
+                        expect = "BOXSCOREHISTORY_END";
+                        if (cur != expect)
+                        {
+                            MessageBox.Show("Error while reading stats: Expected " + expect);
+                            return new TeamStats[30];
+                        }
+                        break;
+
+                    default:
+                        MessageBox.Show("Warning while reading stats: Unknown section " + cur);
+                        break;
+                }
+            }
+
+            if (updateCombo)
+            {
+                cmbTeam1.Items.Clear();
+                foreach (KeyValuePair<string, int> kvp in _TeamOrder)
+                {
+                    cmbTeam1.Items.Add(kvp.Key);
+                }
+            }
+
+            stream.Close();
+
+            return (_tst);
         }
 
         private void prepareWindow(bool isCustom)
@@ -345,6 +774,7 @@ namespace NBA_2K12_Correct_Team_Stats
             if (!isCustom)
             {
                 TeamStats[] temptst = new TeamStats[30];
+                bshist = new List<BoxScoreEntry>();
                 bool havePT = false;
 
                 OpenFileDialog ofd = new OpenFileDialog();
@@ -355,6 +785,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (ofd.FileName == "") return;
 
+                /*
                 FileStream stream = File.Open(ofd.FileName, FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
@@ -366,6 +797,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
                 pt = (PlayoffTree)bf.Deserialize(stream);
                 stream.Close();
+                */
+                temptst = getCustomStats(ofd.FileName, ref TeamOrder, ref pt, ref bshist);
 
                 bs = new BoxScore();
                 boxScoreW bsW = new boxScoreW();
@@ -376,7 +809,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 int id1 = -1;
                 int id2 = -1;
 
-                if (pt.teams[0] == "Invalid")
+                if ((pt == null) || (pt.teams[0] == "Invalid"))
                 {
                     id1 = TeamOrder[bs.Team1];
                     id2 = TeamOrder[bs.Team2];
@@ -506,13 +939,22 @@ namespace NBA_2K12_Correct_Team_Stats
                 tst[id1].calcAvg();
                 tst[id2].calcAvg();
 
-                StatsTracker.saveTeamStats(fn, tst, TeamOrder, pt);
+                StatsTracker.updateSavegame(fn, tst, TeamOrder, pt);
 
                 cmbTeam1.SelectedIndex = -1;
-                cmbTeam1.SelectedIndex = 0;
+                //cmbTeam1.SelectedIndex = 0;
+                cmbTeam1.SelectedItem = bs.Team1;
                 txtFile.Text = ofd.FileName;
 
+                BoxScoreEntry bse = new BoxScoreEntry(bs);
+                bshist.Add(bse);
+
                 MessageBox.Show("Team Stats updated in " + Tools.getSafeFilename(fn) + " succesfully!");
+                BinaryWriter bw = new BinaryWriter(File.Open(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh", FileMode.Append));
+                bw.Write("NST_BSH_FILE_START");
+                writeBoxScoreHistory(bw);
+                bw.Write("NST_BSH_FILE_END");
+                bw.Close();
             }
             else
             {
@@ -524,9 +966,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 int id1 = -1;
                 int id2 = -1;
-                
+
                 id1 = TeamOrder[bs.Team1];
-                id2 = TeamOrder[bs.Team2]; 
+                id2 = TeamOrder[bs.Team2];
 
                 // Add win & loss
                 if (bs.PTS1 > bs.PTS2)
@@ -606,7 +1048,10 @@ namespace NBA_2K12_Correct_Team_Stats
                 tst[id2].calcAvg();
 
                 cmbTeam1.SelectedIndex = -1;
-                cmbTeam1.SelectedIndex = 0;
+                cmbTeam1.SelectedItem = bs.Team1;
+
+                BoxScoreEntry bse = new BoxScoreEntry(bs);
+                bshist.Add(bse);
             }
         }
 
@@ -619,7 +1064,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 if (pt.teams[0] != "Invalid")
                 {
-                    List< string> newteams = new List<string>();
+                    List<string> newteams = new List<string>();
                     for (int i = 0; i < 16; i++)
                         newteams.Add(pt.teams[i]);
                     newteams.Sort();
@@ -659,8 +1104,17 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private static void Completed(object sender, AsyncCompletedEventArgs e)
         {
-            string[] updateInfo = File.ReadAllLines(AppDocsPath + @"ctsversion.txt");
-            string[] versionParts = updateInfo[0].Split('.');
+            string[] updateInfo;
+            string[] versionParts;
+            try
+            {
+                updateInfo = File.ReadAllLines(AppDocsPath + @"ctsversion.txt");
+                versionParts = updateInfo[0].Split('.');
+            }
+            catch
+            {
+                return;
+            }
             string[] curVersionParts = Assembly.GetExecutingAssembly().GetName().Version.ToString().Split('.');
             int[] iVP = new int[versionParts.Length];
             int[] iCVP = new int[versionParts.Length];
@@ -699,7 +1153,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
         {
-            StatsTracker.averagesAndRankings(cmbTeam1.SelectedItem.ToString(), tst, TeamOrder);
+            string msg = StatsTracker.averagesAndRankings(cmbTeam1.SelectedItem.ToString(), tst, TeamOrder);
+            if (msg != "")
+            {
+                copyableW cw = new copyableW(msg, cmbTeam1.SelectedItem.ToString(), TextAlignment.Center);
+                cw.ShowDialog();
+            }
         }
 
         private void btnScout_Click(object sender, RoutedEventArgs e)
@@ -717,7 +1176,9 @@ namespace NBA_2K12_Correct_Team_Stats
             int[][] rating = StatsTracker.calculateRankings(tst);
             if (rating.Length != 1)
             {
-                StatsTracker.scoutReport(rating, id, cmbTeam1.SelectedItem.ToString());
+                string msg = StatsTracker.scoutReport(rating, id, cmbTeam1.SelectedItem.ToString());
+                copyableW cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
+                cw.ShowDialog();
             }
         }
 
@@ -859,7 +1320,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
                 data1 += "\n";
             }
-            
+
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
             sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -954,7 +1415,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 return;
             }
 
-            StatsTracker.saveTeamStats(fn, tst, TeamOrder, pt);
+            StatsTracker.updateSavegame(fn, tst, TeamOrder, pt);
             MessageBox.Show("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
@@ -986,12 +1447,38 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
         {
+            string file = AppDocsPath + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
+            if (File.Exists(file))
+            {
+                if (App.realNBAonly)
+                {
+                    MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    if (r == MessageBoxResult.No)
+                        return;
+                }
+                else
+                {
+                    MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    if (r == MessageBoxResult.No)
+                    {
+                        tst = getCustomStats(file, ref TeamOrder, ref pt, ref bshist);
+
+                        isCustom = true;
+                        prepareWindow(isCustom);
+
+                        cmbTeam1.SelectedIndex = -1;
+                        cmbTeam1.SelectedIndex = 0;
+                        txtFile.Text = file;
+                        return;
+                    }
+                }
+            }
             getRealStatsW grsw = new getRealStatsW();
             grsw.ShowDialog();
             if (realtst[0].name != "Canceled")
             {
                 tst = realtst;
-                StatsTracker.saveTeamStats(AppDocsPath + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst", tst, TeamOrder, pt);
+                saveTeamStatsFile(file);
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
                 txtFile.Text = "Real NBA Stats";
@@ -1006,10 +1493,24 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 FileInfo fi = new FileInfo(AppDocsPath + cmbTeam1.SelectedItem.ToString() + ".rst");
                 TimeSpan sinceLastModified = DateTime.Now - fi.LastWriteTime;
-                if (sinceLastModified.Days > 1)
+                if (sinceLastModified.Days >= 1)
                     realteam = StatsTracker.getRealStats(cmbTeam1.SelectedItem.ToString());
                 else
-                    realteam = StatsTracker.getRealStats(cmbTeam1.SelectedItem.ToString(), true);
+                    try
+                    {
+                        realteam = StatsTracker.getRealStats(cmbTeam1.SelectedItem.ToString(), true);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            realteam = StatsTracker.getRealStats(cmbTeam1.SelectedItem.ToString());
+                        }
+                        catch
+                        {
+                            MessageBox.Show("An incomplete real stats file is present and locked in the disk. Please restart NBA Stats Tracker and try again.");
+                        }
+                    }
             }
             else
             {
@@ -1026,6 +1527,7 @@ namespace NBA_2K12_Correct_Team_Stats
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Select the TST file that has the team stats you want to compare to...";
             ofd.Filter = "Team Stats files (*.tst)|*.tst";
+            ofd.InitialDirectory = AppDocsPath;
             ofd.ShowDialog();
 
             string file = ofd.FileName;
@@ -1033,11 +1535,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 string team = cmbTeam1.SelectedItem.ToString();
                 string safefn = Tools.getSafeFilename(file);
-                SortedDictionary<string, int> _newTeamOrder = new SortedDictionary<string,int>();
-                /*
-                PlayoffTree _newpt = new PlayoffTree();
-                TeamStats[] _newtst = StatsTracker.GetStats(file, ref _newTeamOrder, ref _newpt);
-                */
+                SortedDictionary<string, int> _newTeamOrder = new SortedDictionary<string, int>();
 
                 FileStream stream = File.Open(ofd.FileName, FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
@@ -1064,6 +1562,161 @@ namespace NBA_2K12_Correct_Team_Stats
                 versusW vw = new versusW(curteam, "Current", newteam, "Other");
                 vw.ShowDialog();
             }
+        }
+
+        private void txtFile_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
+        }
+
+        private void btnTrends_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd1 = new OpenFileDialog();
+            if (txtFile.Text == "")
+            {
+                ofd1.Title = "Select the TST file that has the current team stats...";
+                ofd1.Filter = "Team Stats files (*.tst)|*.tst";
+                ofd1.InitialDirectory = AppDocsPath;
+                ofd1.ShowDialog();
+
+                if (ofd1.FileName == "") return;
+
+                tst = getCustomStats(ofd1.FileName, ref TeamOrder, ref pt, ref bshist, true);
+                cmbTeam1.SelectedIndex = 0;
+            }
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Select the TST file that has the team stats you want to compare to...";
+            ofd.Filter = "Team Stats files (*.tst)|*.tst";
+            ofd.InitialDirectory = AppDocsPath;
+            ofd.ShowDialog();
+
+            if (ofd.FileName == "") return;
+
+            string team = cmbTeam1.SelectedItem.ToString();
+            int id = TeamOrder[team];
+
+            TeamStats[] curTST = tst;
+
+            SortedDictionary<string, int> oldTeamOrder = new SortedDictionary<string, int>();
+            PlayoffTree oldPT = new PlayoffTree();
+            IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
+            TeamStats[] oldTST = getCustomStats(ofd.FileName, ref oldTeamOrder, ref oldPT, ref oldbshist, false);
+
+            Rankings curR = new Rankings(tst);
+            Rankings oldR = new Rankings(oldTST);
+            int[][] diffrnk = calculateDifferenceRanking(curR, oldR);
+            float[][] diffavg = calculateDifferenceAverage(curTST, oldTST);
+
+            int maxi = 0;
+            int mini = 0;
+            for (int i = 1; i < 30; i++)
+            {
+                if (diffavg[i][0] > diffavg[maxi][0])
+                    maxi = i;
+                if (diffavg[i][0] < diffavg[mini][0])
+                    mini = i;
+            }
+
+            string str = "";
+
+            string team1 = tst[maxi].name;
+            if (diffrnk[maxi][0] > 0)
+            {
+                str = String.Format("Most improved in {7}, the {0}. They were #{1} ({4:F1}), climbing {3} places they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
+                    tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0], oldTST[maxi].averages[0], tst[maxi].averages[0], diffavg[maxi][0], "PPG");
+            }
+            else
+            {
+                str = String.Format("Most improved in {7}, the {0}. They were #{1} ({4:F1}) and they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
+                    tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0], oldTST[maxi].averages[0], tst[maxi].averages[0], diffavg[maxi][0], "PPG");
+            }
+            str += " ";
+            str += String.Format("Taking this improvement apart, their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
+                oldTST[maxi].averages[FGp], tst[maxi].averages[FGp], oldTST[maxi].averages[TPp], tst[maxi].averages[TPp], tst[maxi].averages[FTp], oldTST[maxi].averages[FTp]);
+
+            if (curR.rankings[maxi][FGeff] <= 5)
+            {
+                str += " ";
+                if (oldR.rankings[maxi][FGeff] > 20) str += "Huge leap in Field Goal efficiency. Back then they were on of the worst teams on the offensive end, now in the Top 5.";
+                else if (oldR.rankings[maxi][FGeff] > 10) str += "An average offensive team turned great. From the middle of the pack, they are now in Top 5 in Field Goal efficiency.";
+                else if (oldR.rankings[maxi][FGeff] > 5) str += "They were already hot, and they're just getting better. Moving on up from Top 10 in FGeff, to Top 5.";
+                else str += "They just know how to stay hot at the offensive end. Still in the Top 5 of the most efficient teams from the floor.";
+            }
+            if (curR.rankings[maxi][FTeff] <= 5) str += " They're not afraid of contact, and they know how to make the most from the line. Top 5 in Free Throw efficiency.";
+            if (diffavg[maxi][APG] > 0) str += String.Format(" They are getting better at finding the open man with a timely pass. {0:F1} improvement in assists per game.", diffavg[maxi][APG]);
+            if (diffavg[maxi][RPG] > 0) str += String.Format(" Their additional rebounds have helped as well.");
+            if (diffavg[maxi][TPG] < 0) str += String.Format(" Also taking better care of the ball, making {0:F1} less turnovers per game.", -diffavg[maxi][TPG]);
+
+            ///////////////////////////
+            str += "$";
+            ///////////////////////////
+
+            string team2 = tst[mini].name;
+            if (diffrnk[mini][0] < 0)
+            {
+                str += String.Format("On the other end, the {0} have lost some of their scoring power. They were #{1} ({4:F1}), dropping {3} places they are now at #{2} ({5:F1}).",
+                    tst[mini].name, oldR.rankings[mini][0], curR.rankings[mini][0], -diffrnk[mini][0], oldTST[mini].averages[0], tst[mini].averages[0]);
+            }
+            else
+            {
+                str += String.Format("On the other end, the {0} have lost some of their scoring power. They were #{1} ({4:F1}) and are now in #{2} ({5:F1}). Guess even that {6:F1} PPG drop wasn't enough to knock them down!",
+                    tst[mini].name, oldR.rankings[mini][0], curR.rankings[mini][0], -diffrnk[mini][0], oldTST[mini].averages[0], tst[mini].averages[0], -diffavg[mini][0]);
+            }
+            str += " ";
+            str += String.Format("So why has this happened? Their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
+                 oldTST[mini].averages[FGp], tst[mini].averages[FGp], oldTST[mini].averages[TPp], tst[mini].averages[TPp], tst[mini].averages[FTp], oldTST[mini].averages[FTp]);
+            if (diffavg[mini][TPG] > 0) str += String.Format(" You can't score as many points when you commit turnovers; they've seen them increase by {0:F1} per game.", diffavg[mini][TPG]);
+
+            trendsW tw = new trendsW(str, team1, team2);
+            tw.ShowDialog();
+        }
+
+        private int[][] calculateDifferenceRanking(Rankings curR, Rankings newR)
+        {
+            int[][] diff = new int[30][];
+            for (int i = 0; i < 30; i++)
+            {
+                diff[i] = new int[18];
+                for (int j = 0; j < 18; j++)
+                {
+                    diff[i][j] = newR.rankings[i][j] - curR.rankings[i][j];
+                }
+            }
+            return diff;
+        }
+
+        private float[][] calculateDifferenceAverage(TeamStats[] curTST, TeamStats[] oldTST)
+        {
+            float[][] diff = new float[30][];
+            for (int i = 0; i < 30; i++)
+            {
+                diff[i] = new float[18];
+                for (int j = 0; j < 18; j++)
+                {
+                    diff[i][j] = curTST[i].averages[j] - oldTST[i].averages[j];
+                }
+            }
+            return diff;
+        }
+        public static string AppDocsPath1
+        {
+            get
+            {
+                return AppDocsPath;
+            }
+        }
+
+        private void btnTest_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
+        {
+            bs = new BoxScore();
+            boxScoreW bsw = new boxScoreW(boxScoreW.Mode.View);
+            bsw.ShowDialog();
         }
     }
 }

@@ -23,20 +23,23 @@ Quick notes
 	Just follow these steps:
 		1. From in-game, select Play Game, and let it save your career.
 		2. Alt-Tab out of the game and into the tool, click on Select, load
-		    your Career file, and click on Save Team Stats.
+			your Career file, and click on Save Team Stats.
 		3. Pick a name, any name for the temporary Team Stats file.
 			e.g. "Pistons Association, Jan 3rd, vs Lakers"
 			It doesn't have to be this descriptive, just something to help you
 			remember it.
 		4. Alt-Tab into the game and play it or watch it, then after it's done
-		    let it save your association again.
+			let it save your association again.
 		5. Alt-Tab into the tool, and click on Load & Update Team Stats. Select
-		    the Team Stats file that you saved in Step 3.
+			the Team Stats file that you saved in Step 3.
 		6. Enter the Box Score (you may want to note it down on a piece of paper
-		    to avoid Alt-Tabbing all the time), click OK.
+			to avoid Alt-Tabbing all the time), click OK.
 		7. Choose the Career file you're playing in the new dialog.
 		8. You're done!
 
+		
+Additional Features
+-----------------------
 Stat Averages, Ranking and Scout Reports
 	See how well your team is doing, and scout your next opponent for their 
 	strengths and weaknesses in a quick glance!
@@ -66,10 +69,19 @@ Stat Averages, Ranking and Scout Reports
 	commenting on their pros and cons based on their stat rankings in the
 	league, preparing you for a game against them.
 	
+Team Comparisons and Trends
 	Another feature is the Versus window, which compares any two teams' averages
-	side-by-side. You can either compare two different teams from the same file
-	or custom league, a team to its real life counterpart, or to the same team
-	from another file.
+	side-by-side. You can do the following comparisons:
+		- Two different teams from the same file
+		- A team to its real life counterpart
+		- A team to the same team in a different file
+		
+	The Trends feature allows you to select two different saved team stats
+	files and get a report on the developing stats trends between them; which 
+	teams are getting better or worse on offense, defense, hustle, etc.
+	Before using the Trends feature, load the current stats first, and then
+	when you use it you'll be asked to select the older team stats to compare
+	to.
 	
 Export to CSV
 	The tool allows you to export the following into CSV files, for use in
@@ -108,6 +120,11 @@ Custom Leagues
 	of an already screwed up save if you mess around with the edits too much,
 	so always keep a manual backup of a save you know that works, in another
 	folder.
+
+History
+	The tool currently keeps track of the following as you use it for a particular
+	save or custom league:
+		- Box Scores
 	
 Real NBA Stats
 	This feature allows you to automatically grab the real league's Team Stats 
@@ -127,6 +144,7 @@ Known Issues
 	at the bottom of this readme file) for the reason.
 
 	It's working fine with Custom Leagues.
+	
 
 Disclaimer
 	The tool is still in beta. I've tested it in my environment, on my
@@ -144,15 +162,28 @@ Credits to
 	- JaoSming, for his roster editing tutorial, especially the part regarding
 	   the CRC checks
 	- Onisak, for his help with debugging
-    - Vl@d Zola Jr, for helping make NBA Stats Tracker what it is and will be
-    - albidnis, for his idea to export to CSV
+	- Vl@d Zola Jr, for helping make NBA Stats Tracker what it is and will be
+	- albidnis, for his idea to export to CSV
 	- jrlocke, for being the first donator, and a generous one
 	- zizoux, for his idea to inject real stats, which ended up being the Custom
-       Leagues & Real NBA Stats features
+	   Leagues & Real NBA Stats features
 	- Everyone at the NLSC community, for their continued support
 	
+	
 Version History
-	v0.7 - Jan 16
+	v0.8 - Mar 21
+		- Added keeping history of Box Score updates
+		- Changed Team Stats file structure to allow for further expansion and
+		   changes; this means that Saved Team Stats from versions previous to
+		   this one aren't compatible
+		- Other minor fixes and improvements
+		
+	v0.7.3 - Jan 23
+		- Added preview of Trends feature
+		- Uncluttered interface; many buttons moved to menus, keyboard shortcuts
+		   added
+		
+	v0.7 - Jan 21
 		- Real NBA Stats feature added; the tool can now grab all the real
 		   league's team stats and import them so you can use all its features
 		   on them

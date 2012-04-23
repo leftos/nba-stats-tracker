@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Media;
 using Microsoft.Win32;
-using System.IO;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -23,11 +16,14 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         Brush defaultBackground;
 
-        public boxScoreW()
+        public enum Mode { Update, View };
+        public static Mode curmode = Mode.Update;
+
+        public boxScoreW(Mode _curmode = Mode.Update)
         {
             InitializeComponent();
 
-            if (MainWindow.pt.teams[0] == "Invalid")
+            if ((MainWindow.pt == null) || (MainWindow.pt.teams[0] == "Invalid"))
             {
                 foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
                 {
@@ -54,11 +50,25 @@ namespace NBA_2K12_Correct_Team_Stats
             cmbTeam2.SelectedIndex = 1;
 
             MainWindow.bs.done = false;
+
+            foreach (BoxScoreEntry cur in MainWindow.bshist)
+            {
+                cbHistory.Items.Add(cur.date.ToShortDateString() + " " + cur.date.ToShortTimeString() + " - " + cur.bs.Team1 + " vs " + cur.bs.Team2);
+            }
+
+            curmode = _curmode;
+
+            if (curmode == Mode.View)
+                label1.Content = "Select a box score to view";
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            tryParseBS();
+            if (curmode == Mode.Update)
+            {
+                tryParseBS();
+                if (MainWindow.bs.done == false) return;
+            }
             this.Close();
         }
 
@@ -345,6 +355,42 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             TextBox tb = (TextBox)sender;
             tb.SelectAll();
+        }
+
+        private void cbHistory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int i = cbHistory.SelectedIndex;
+            BoxScore bs = MainWindow.bshist[i].bs;
+            cmbTeam1.SelectedItem = bs.Team1;
+            txtPTS1.Text = bs.PTS1.ToString();
+            txtREB1.Text = bs.REB1.ToString();
+            txtAST1.Text = bs.AST1.ToString();
+            txtSTL1.Text = bs.STL1.ToString();
+            txtBLK1.Text = bs.BLK1.ToString();
+            txtTO1.Text = bs.TO1.ToString();
+            txtFGM1.Text = bs.FGM1.ToString();
+            txtFGA1.Text = bs.FGA1.ToString();
+            txt3PM1.Text = bs.TPM1.ToString();
+            txt3PA1.Text = bs.TPA1.ToString();
+            txtFTM1.Text = bs.FTM1.ToString();
+            txtFTA1.Text = bs.FTA1.ToString();
+            txtOFF1.Text = bs.OFF1.ToString();
+            txtPF1.Text = bs.PF1.ToString();
+            cmbTeam2.SelectedItem = bs.Team2;
+            txtPTS2.Text = bs.PTS2.ToString();
+            txtREB2.Text = bs.REB2.ToString();
+            txtAST2.Text = bs.AST2.ToString();
+            txtSTL2.Text = bs.STL2.ToString();
+            txtBLK2.Text = bs.BLK2.ToString();
+            txtTO2.Text = bs.TO2.ToString();
+            txtFGM2.Text = bs.FGM2.ToString();
+            txtFGA2.Text = bs.FGA2.ToString();
+            txt3PM2.Text = bs.TPM2.ToString();
+            txt3PA2.Text = bs.TPA2.ToString();
+            txtFTM2.Text = bs.FTM2.ToString();
+            txtFTA2.Text = bs.FTA2.ToString();
+            txtOFF2.Text = bs.OFF2.ToString();
+            txtPF2.Text = bs.PF2.ToString();
         }
     }
 }

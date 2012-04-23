@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.IO;
-using Microsoft.Win32;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using LeftosCommonLibrary;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
+using LeftosCommonLibrary;
+using Microsoft.Win32;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -18,6 +16,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public static string SavesPath = MainWindow.SavesPath;
         public static string AppTempPath = MainWindow.AppTempPath;
         public static string mode = "Mode 0";
+        public static bool errorRealStats = false;
 
         public static PlayoffTree tempPT;
 
@@ -304,20 +303,6 @@ namespace NBA_2K12_Correct_Team_Stats
                 rating[k][18] = _teamStats[k].getGames();
             }
             return rating;
-        }
-
-        public static void checkForRedundantSettings()
-        {
-            string[] stgFiles = Directory.GetFiles(AppDocsPath, "*.cfg");
-            if (Directory.Exists(SavesPath))
-            {
-                foreach (string file in stgFiles)
-                {
-                    string realfile = file.Substring(0, file.Length - 4);
-                    if (File.Exists(SavesPath + Tools.getSafeFilename(realfile)) == false)
-                        File.Delete(file);
-                }
-            }
         }
 
         public static TeamStats[] GetStats(string fn, ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt, bool havePT = false)
@@ -619,7 +604,7 @@ namespace NBA_2K12_Correct_Team_Stats
             sw2.Close();
         }
 
-        public static void saveTeamStats(string fn, TeamStats[] tst, SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
+        public static void updateSavegame(string fn, TeamStats[] tst, SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
         {
             BinaryReader br = new BinaryReader(File.OpenRead(fn));
             MemoryStream ms = new MemoryStream(br.ReadBytes(Convert.ToInt32(br.BaseStream.Length)), true);
@@ -686,7 +671,7 @@ namespace NBA_2K12_Correct_Team_Stats
             File.Delete(AppTempPath + Tools.getSafeFilename(fn));
         }
 
-        public static void averagesAndRankings(string teamName, TeamStats[] tst, SortedDictionary<string, int> TeamOrder)
+        public static string averagesAndRankings(string teamName, TeamStats[] tst, SortedDictionary<string, int> TeamOrder)
         {
             int id = -1;
             try
@@ -695,7 +680,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             catch
             {
-                return;
+                return "";
             }
             int[][] rating = StatsTracker.calculateRankings(tst);
             string text = String.Format("Win %: {32:F3} ({33})\nWin eff: {34:F2} ({35})\n\nPPG: {0:F1} ({16})\nPAPG: {1:F1} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F2} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F2} ({21})\n"
@@ -707,10 +692,10 @@ namespace NBA_2K12_Correct_Team_Stats
                     tst[id].averages[BPG], tst[id].averages[TPG], tst[id].averages[APG], tst[id].averages[FPG],
                     rating[id][0], 31 - rating[id][1], rating[id][2], rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
                     rating[id][10], rating[id][11], rating[id][12], 31 - rating[id][13], rating[id][14], 31 - rating[id][15], tst[id].averages[Wp], rating[id][16], tst[id].averages[Weff], rating[id][Weff]);
-            MessageBox.Show(text, teamName);
+            return text;
         }
 
-        public static void scoutReport(int[][] rating, int teamID, string teamName)
+        public static string scoutReport(int[][] rating, int teamID, string teamName)
         {
             //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
@@ -905,7 +890,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     + "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the "
                     + "one you expected.";
 
-            MessageBox.Show(msg);
+            return msg;
         }
 
         public static TeamStats getRealStats(string team, bool useLocal = false)
@@ -958,6 +943,12 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 grs_getStats(ref ts, file);
 
+                if (errorRealStats)
+                {
+                    web.DownloadFile("http://www.basketball-reference.com/teams/" + tns + "/2012.html", file);
+                    grs_getStats(ref ts, file);
+                }
+
                 ts.calcAvg();
             }
             else
@@ -969,12 +960,22 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private static void grs_getStats(ref TeamStats ts, string file)
         {
+            errorRealStats = false;
             StreamReader sr = new StreamReader(file);
             string line;
-            do
+            try
             {
-                line = sr.ReadLine();
-            } while (line.Contains("Team Splits") == false);
+                do
+                {
+                    line = sr.ReadLine();
+                } while (line.Contains("Team Splits") == false);
+            }
+            catch
+            {
+                errorRealStats = true;
+                sr.Close();
+                return;
+            }
 
             for (int i = 0; i < 3; i++)
                 line = sr.ReadLine();
@@ -1113,6 +1114,42 @@ namespace NBA_2K12_Correct_Team_Stats
         }
     }
 
+    public class Rankings
+    {
+        public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
+            FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
+            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
+
+        public int[][] rankings = new int[30][];
+
+        public Rankings(TeamStats[] _tst)
+        {
+            for (int i = 0; i < 30; i++)
+            {
+                rankings[i] = new int[18];
+            }
+            for (int j = 0; j < 18; j++)
+            {
+                Dictionary<int, float> averages = new Dictionary<int,float>();
+                for (int i = 0; i<30;i++)
+                {
+                    averages.Add(i, _tst[i].averages[j]);
+                }
+
+                List<KeyValuePair<int, float>> tempList = new List<KeyValuePair<int,float>>(averages);
+                tempList.Sort((x,y) => x.Value.CompareTo(y.Value));
+                tempList.Reverse();
+
+                int k = 1;
+                foreach (KeyValuePair<int, float> kvp in tempList)
+                {
+                    rankings[kvp.Key][j] = k;
+                    k++;
+                }
+            }
+        }
+    }
+
     public class BoxScore
     {
         public string Team1;
@@ -1120,6 +1157,24 @@ namespace NBA_2K12_Correct_Team_Stats
         public UInt16 PTS1, REB1, AST1, STL1, BLK1, TO1, FGM1, FGA1, TPM1, TPA1, FTM1, FTA1, OFF1, PF1;
         public UInt16 PTS2, REB2, AST2, STL2, BLK2, TO2, FGM2, FGA2, TPM2, TPA2, FTM2, FTA2, OFF2, PF2;
         public bool done = false;
+    }
+
+    public class BoxScoreEntry
+    {
+        public BoxScore bs;
+        public DateTime date;
+
+        public BoxScoreEntry(BoxScore bs)
+        {
+            this.bs = bs;
+            this.date = DateTime.Now;
+        }
+
+        public BoxScoreEntry(BoxScore bs, DateTime date)
+        {
+            this.bs = bs;
+            this.date = date;
+        }
     }
 
     [Serializable()]
