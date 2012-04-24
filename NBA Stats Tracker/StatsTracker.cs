@@ -282,11 +282,11 @@ namespace NBA_2K12_Correct_Team_Stats
             int[][] rating = new int[30][];
             for (int i = 0; i < 30; i++)
             {
-                rating[i] = new int[19];
+                rating[i] = new int[20];
             }
             for (int k = 0; k < 30; k++)
             {
-                for (int i = 0; i < 18; i++)
+                for (int i = 0; i < 19; i++)
                 {
                     rating[k][i] = 1;
                     for (int j = 0; j < 30; j++)
@@ -300,7 +300,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         }
                     }
                 }
-                rating[k][18] = _teamStats[k].getGames();
+                rating[k][19] = _teamStats[k].getGames();
             }
             return rating;
         }
@@ -690,8 +690,8 @@ namespace NBA_2K12_Correct_Team_Stats
                     tst[id].averages[FGeff], tst[id].averages[TPp], tst[id].averages[TPeff],
                     tst[id].averages[FTp], tst[id].averages[FTeff], tst[id].averages[RPG], tst[id].averages[ORPG], tst[id].averages[DRPG], tst[id].averages[SPG],
                     tst[id].averages[BPG], tst[id].averages[TPG], tst[id].averages[APG], tst[id].averages[FPG],
-                    rating[id][0], 31 - rating[id][1], rating[id][2], rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
-                    rating[id][10], rating[id][11], rating[id][12], 31 - rating[id][13], rating[id][14], 31 - rating[id][15], tst[id].averages[Wp], rating[id][16], tst[id].averages[Weff], rating[id][Weff]);
+                    rating[id][0], tst.GetLength(0) + 1 - rating[id][1], rating[id][2], rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
+                    rating[id][10], rating[id][11], rating[id][12], tst.GetLength(0) + 1 - rating[id][13], rating[id][14], tst.GetLength(0) + 1 - rating[id][15], tst[id].averages[Wp], rating[id][16], tst[id].averages[Weff], rating[id][Weff]);
             return text;
         }
 
@@ -720,7 +720,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     msg += "th";
                     break;
             }
-            msg += " strongest team in the league right now, after having played " + rating[teamID][18].ToString() + " games.\n\n";
+            msg += " strongest team in the league right now, after having played " + rating[teamID][19].ToString() + " games.\n\n";
 
             if ((rating[teamID][3] <= 5) && (rating[teamID][5] <= 5))
             {
@@ -1038,8 +1038,7 @@ namespace NBA_2K12_Correct_Team_Stats
         }
     }
 
-    [Serializable()]
-    public class TeamStats : ISerializable
+    public class TeamStats
     {
         public string name;
         public Int32 offset = 0;
@@ -1048,7 +1047,7 @@ namespace NBA_2K12_Correct_Team_Stats
             FOUL = 16;
         public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
+            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17, PD = 18;
         /// <summary>
         /// Stats for each team.
         /// 0: M, 1: PF, 2: PA, 3: 0x0000, 4: FGM, 5: FGA, 6: 3PM, 7: 3PA, 8: FTM, 9: FTA,
@@ -1061,25 +1060,32 @@ namespace NBA_2K12_Correct_Team_Stats
         /// 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
         /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%
         /// </summary>
-        public float[] averages = new float[18];
+        public float[] averages = new float[19];
         public byte[] winloss = new byte[2];
 
         public TeamStats()
         {
+            prepareEmpty();
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+        private void prepareEmpty()
         {
-            info.AddValue("name", name);
-            info.AddValue("stats", stats);
-            info.AddValue("winloss", winloss);
+            winloss[0] = Convert.ToByte(0);
+            winloss[1] = Convert.ToByte(0);
+            for (int i = 0; i < stats.Length; i++)
+            {
+                stats[i] = 0;
+            }
+            for (int i = 0; i < averages.Length; i++)
+            {
+                averages[i] = 0;
+            }
         }
 
-        public TeamStats(SerializationInfo info, StreamingContext ctxt)
+        public TeamStats(string name)
         {
-            name = (string)info.GetValue("name", typeof(string));
-            stats = (UInt16[])info.GetValue("stats", typeof(UInt16[]));
-            winloss = (byte[])info.GetValue("winloss", typeof(byte[]));
+            this.name = name;
+            prepareEmpty();
         }
 
         public int calcAvg()
@@ -1104,6 +1110,7 @@ namespace NBA_2K12_Correct_Team_Stats
             averages[TPG] = (float)stats[TO] / games;
             averages[APG] = (float)stats[AST] / games;
             averages[FPG] = (float)stats[FOUL] / games;
+            averages[PD] = (float)averages[PPG] - (float)averages[PAPG];
             return games;
         }
 
@@ -1118,7 +1125,7 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
+            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17, PD = 18;
 
         public int[][] rankings = new int[30][];
 
@@ -1126,9 +1133,9 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             for (int i = 0; i < 30; i++)
             {
-                rankings[i] = new int[18];
+                rankings[i] = new int[19];
             }
-            for (int j = 0; j < 18; j++)
+            for (int j = 0; j < 19; j++)
             {
                 Dictionary<int, float> averages = new Dictionary<int,float>();
                 for (int i = 0; i<30;i++)
@@ -1152,6 +1159,13 @@ namespace NBA_2K12_Correct_Team_Stats
 
     public class BoxScore
     {
+        public int id = -1;
+        public int SeasonNum;
+        public DateTime gamedate;
+        public bool isPlayoff;
+        public bool doNotUpdate = false;
+        public int bshistid = -1;
+
         public string Team1;
         public string Team2;
         public UInt16 PTS1, REB1, AST1, STL1, BLK1, TO1, FGM1, FGA1, TPM1, TPA1, FTM1, FTA1, OFF1, PF1;
@@ -1163,6 +1177,7 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         public BoxScore bs;
         public DateTime date;
+        public bool mustUpdate = false;
 
         public BoxScoreEntry(BoxScore bs)
         {

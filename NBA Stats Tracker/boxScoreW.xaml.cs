@@ -19,10 +19,26 @@ namespace NBA_2K12_Correct_Team_Stats
         public enum Mode { Update, View };
         public static Mode curmode = Mode.Update;
 
+        public static BoxScore curBoxScore;
+
         public boxScoreW(Mode _curmode = Mode.Update)
         {
             InitializeComponent();
 
+            prepareWindow(_curmode);
+        }
+
+        public boxScoreW(Mode _curmode, int id)
+        {
+            InitializeComponent();
+
+            prepareWindow(_curmode);
+
+            cbHistory.SelectedIndex = id;
+        }
+
+        private void prepareWindow(Mode _curmode)
+        {
             if ((MainWindow.pt == null) || (MainWindow.pt.teams[0] == "Invalid"))
             {
                 foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
@@ -51,15 +67,20 @@ namespace NBA_2K12_Correct_Team_Stats
 
             MainWindow.bs.done = false;
 
+            dtpGameDate.SelectedDate = DateTime.Today;
+
             foreach (BoxScoreEntry cur in MainWindow.bshist)
             {
-                cbHistory.Items.Add(cur.date.ToShortDateString() + " " + cur.date.ToShortTimeString() + " - " + cur.bs.Team1 + " vs " + cur.bs.Team2);
+                cbHistory.Items.Add(cur.date.ToShortDateString() + " - " + cur.bs.Team1 + " @ " + cur.bs.Team2);
             }
 
             curmode = _curmode;
 
             if (curmode == Mode.View)
+            {
                 label1.Content = "Select a box score to view";
+                chkDoNotUpdate.Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -68,6 +89,23 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 tryParseBS();
                 if (MainWindow.bs.done == false) return;
+            }
+            else
+            {
+                if (MainWindow.isCustom)
+                {
+                    MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?", "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    if (r == MessageBoxResult.Cancel) return;
+                    else if (r == MessageBoxResult.Yes)
+                    {
+                        tryParseBS();
+                        if (MainWindow.bs.done == false) return;
+                    }
+                    else
+                    {
+                        MainWindow.bs.done = false;
+                    }
+                }
             }
             this.Close();
         }
@@ -80,8 +118,26 @@ namespace NBA_2K12_Correct_Team_Stats
                 return;
             }
             if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A")) return;
+            if (txtSeasonNum.Text == "")
+            {
+                MessageBox.Show("You have to enter the Season number (e.g. '1' for the first season of your Association, or '2010', etc.)");
+                return;
+            }
             try
             {
+                try
+                {
+                    MainWindow.bs.id = curBoxScore.id;
+                    MainWindow.bs.bshistid = curBoxScore.bshistid;
+                }
+                catch
+                {
+                    MainWindow.bs.id = -1;
+                    MainWindow.bs.bshistid = -1;
+                }
+                MainWindow.bs.isPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
+                MainWindow.bs.gamedate = dtpGameDate.SelectedDate.GetValueOrDefault();
+                MainWindow.bs.SeasonNum = Convert.ToInt32(txtSeasonNum.Text);
                 MainWindow.bs.Team1 = cmbTeam1.SelectedItem.ToString();
                 MainWindow.bs.Team2 = cmbTeam2.SelectedItem.ToString();
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
@@ -181,6 +237,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
 
                 MainWindow.bs.PF2 = Convert.ToUInt16(txtPF2.Text);
+
+                MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
                 MainWindow.bs.done = true;
             }
             catch
@@ -193,6 +251,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
+            tabTeam1.Header = cmbTeam1.SelectedItem;
         }
 
         private void checkIfSameTeams()
@@ -252,6 +311,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
+            tabTeam2.Header = cmbTeam2.SelectedItem;
         }
 
         private void txtFGM1_TextChanged(object sender, TextChangedEventArgs e)
@@ -361,6 +421,8 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             int i = cbHistory.SelectedIndex;
             BoxScore bs = MainWindow.bshist[i].bs;
+            curBoxScore = MainWindow.bshist[i].bs;
+            curBoxScore.bshistid = i;
             cmbTeam1.SelectedItem = bs.Team1;
             txtPTS1.Text = bs.PTS1.ToString();
             txtREB1.Text = bs.REB1.ToString();
@@ -391,6 +453,10 @@ namespace NBA_2K12_Correct_Team_Stats
             txtFTA2.Text = bs.FTA2.ToString();
             txtOFF2.Text = bs.OFF2.ToString();
             txtPF2.Text = bs.PF2.ToString();
+
+            dtpGameDate.SelectedDate = bs.gamedate;
+            txtSeasonNum.Text = bs.SeasonNum.ToString();
+            chkIsPlayoff.IsChecked = bs.isPlayoff;
         }
     }
 }

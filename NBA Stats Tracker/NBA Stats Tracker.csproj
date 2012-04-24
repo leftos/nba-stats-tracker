@@ -86,7 +86,11 @@
     <Compile Include="customLeagueW.xaml.cs">
       <DependentUpon>customLeagueW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SQLiteDatabase.cs" />
     <Compile Include="StatsTracker.cs" />
+    <Compile Include="teamOverviewW.xaml.cs">
+      <DependentUpon>teamOverviewW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="trendsW.xaml.cs">
       <DependentUpon>trendsW.xaml</DependentUpon>
     </Compile>
@@ -130,6 +134,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="customLeagueW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="teamOverviewW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -270,10 +278,14 @@
     <Content Include="Readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SQLite.Interop.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"D:\Program Files\Inno Setup 5\ISCC.exe" "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\InnoSetup\setup.iss"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
