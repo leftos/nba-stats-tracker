@@ -47,41 +47,39 @@
         <Button Content="Team Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="722,120,0,0" Name="btnTeamCSV" VerticalAlignment="Top" Width="136" Click="btnTeamCSV_Click" TabIndex="25" />
         <Button Content="League Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="722,149,0,0" Name="btnLeagueCSV" VerticalAlignment="Top" Width="136" Click="btnLeagueCSV_Click" TabIndex="26" />
         <Menu Height="23" HorizontalAlignment="Stretch" Name="menu1" VerticalAlignment="Top">
-            <MenuItem Header="File">
-                <MenuItem Header="New NST Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
                 <Separator />
-                <MenuItem Header="Open NST Database..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" InputGestureText="Ctrl+Shift+O" />
-                <MenuItem Header="Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" InputGestureText="Ctrl+Shift+R" />
+                <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" />
+                <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" />
                 <Separator />
-                <MenuItem Header="Save Team Stats As..." Name="mnuFileSaveTeamStats" Click="btnSaveTS_Click" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="btnSaveTS_Click" />
                 <Separator />
-                <MenuItem Header="Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats" Click="btnLoadUpdate_Click" InputGestureText="Ctrl+U" />
+                <MenuItem Header="_Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats" Click="btnLoadUpdate_Click" />
                 <Separator />
-                <MenuItem Header="Create Custom League..." Name="mnuFileCreateCustom" Click="btnAdd_Click" InputGestureText="Ctrl+N" />
-                <Separator />
-                <MenuItem Header="Exit" Name="mnuExit" Click="mnuExit_Click" />                
+                <MenuItem Header="_Exit" Name="mnuExit" Click="mnuExit_Click" />                
             </MenuItem>
-            <MenuItem Header="History">
-                <MenuItem Header="Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
+            <MenuItem Header="_History">
+                <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
             </MenuItem>
-            <MenuItem Header="Compare To">
-                <MenuItem Header="Another team in the same file" Name="mnuCompareSameFile" Click="btnCompare_Click" />
-                <MenuItem Header="The same team in another file" Name="mnuCompareOtherFile" Click="btnCompareOtherFile_Click" />
-                <MenuItem Header="The real NBA team" Name="mnuCompareRealTeam" Click="btnCompareToReal_Click" />
+            <MenuItem Header="_Compare To">
+                <MenuItem Header="_Another team in the same file" Name="mnuCompareSameFile" Click="btnCompare_Click" />
+                <MenuItem Header="The _same team in another file" Name="mnuCompareOtherFile" Click="btnCompareOtherFile_Click" />
+                <MenuItem Header="The _real NBA team" Name="mnuCompareRealTeam" Click="btnCompareToReal_Click" />
                 <Separator />
-                <MenuItem Header="Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
+                <MenuItem Header="_Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
             </MenuItem>
-            <MenuItem Header="Export (CSV)">
-                <MenuItem Header="Team Stats to CSV" Name="mnuExportTeam" Click="btnTeamCSV_Click" />
-                <MenuItem Header="League Stats to CSV" Name="mnuExportLeague" Click="btnLeagueCSV_Click" />
+            <MenuItem Header="_Export (CSV)">
+                <MenuItem Header="_Team Stats to CSV" Name="mnuExportTeam" Click="btnTeamCSV_Click" />
+                <MenuItem Header="_League Stats to CSV" Name="mnuExportLeague" Click="btnLeagueCSV_Click" />
             </MenuItem>
-            <MenuItem Header="Miscellanous">
-                <MenuItem Header="Start New Season" Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
+            <MenuItem Header="_Miscellanous">
+                <MenuItem Header="_Start New Season" Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
             </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Header="Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
                 <Separator />
-                <MenuItem Header="About" Name="mnuHelpAbout" Click="mnuHelpAbout_Click" />
+                <MenuItem Header="_About" Name="mnuHelpAbout" Click="mnuHelpAbout_Click" />
             </MenuItem>
         </Menu>
         <Button Content="Save Team" Height="23" HorizontalAlignment="Left" Margin="1114,87,0,0" Name="btnSaveCustomTeam" VerticalAlignment="Top" Width="75" Click="btnSaveCustomTeam_Click" TabIndex="22" />
@@ -102,12 +100,17 @@
         </GroupBox>
         <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
             <Grid>
-                <Button Content="Save Team Stats" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,14" Name="btnSaveTeamStats" Width="160" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52" VerticalAlignment="Bottom" />
+                <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,8,69" Name="btnSaveTeamStats" Width="160" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52" VerticalAlignment="Bottom" >
+                    <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">Save Current Season<LineBreak />to Database</TextBlock>
+                </Button>
                 <Button Height="46" HorizontalAlignment="Left" Margin="6,9,0,0" Name="btnLoadUpdate" VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="29" >
                     <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">Update with<LineBreak />Box Score</TextBlock>
                 </Button>
-                <Button Height="46" HorizontalAlignment="Left" Margin="6,84,0,0" Name="btnAdd" TabIndex="29" VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
+                <Button Height="46" HorizontalAlignment="Left" Margin="6,59,0,0" Name="btnAdd" TabIndex="29" VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
                     <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">Add<LineBreak />Teams/Players</TextBlock>
+                </Button>
+                <Button FontSize="14" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True" Margin="6,0,8,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="160" Click="btnSaveAllSeasons_Click">
+                    <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">Save All Seasons<LineBreak />to Database</TextBlock>
                 </Button>
             </Grid>
         </GroupBox>

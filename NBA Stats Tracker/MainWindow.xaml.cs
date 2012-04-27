@@ -340,7 +340,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             string file = sfd.FileName;
 
-            saveTeamStatsFile(file, tst);
+            saveAllSeasons(file);
         }
 
         private static void OBSOLETE_saveTeamStatsFile(string file)
@@ -420,7 +420,29 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        public static void saveTeamStatsFile(string file, TeamStats[] tst)
+        private static void saveAllSeasons(string file)
+        {
+            string oldDB = currentDB;
+            int oldSeason = curSeason;
+
+            int maxSeason = getMaxSeason(oldDB);
+
+            saveSeasonToDatabase(file, tst, curSeason, maxSeason);
+
+            for (int i = 1; i <= maxSeason; i++)
+            {
+                if (i != oldSeason)
+                {
+                    tst = getCustomStats(oldDB, ref TeamOrder, ref pt, ref bshist, true, i);
+                    saveSeasonToDatabase(file, tst, curSeason, maxSeason);
+                }
+            }
+            tst = getCustomStats(file, ref TeamOrder, ref pt, ref bshist, true, oldSeason);
+
+            mwInstance.updateStatus("All seasons saved successfully.");
+        }
+
+        public static void saveSeasonToDatabase(string file, TeamStats[] tst, int season, int maxSeason)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
             // we won't delete the file before all this.
@@ -433,16 +455,16 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 db = new SQLiteDatabase(file);
-                prepareNewDB(db, curSeason, getMaxSeason(file));
+                prepareNewDB(db, season, maxSeason);
                 DataTable res;
 
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
 
-                if (curSeason != getMaxSeason(file))
+                if (season != maxSeason)
                 {
-                    teamsT += "S" + curSeason.ToString();
-                    pl_teamsT += "S" + curSeason.ToString();
+                    teamsT += "S" + season.ToString();
+                    pl_teamsT += "S" + season.ToString();
                 }
 
                 String q = "select Name from " + teamsT + ";";
@@ -577,7 +599,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 mwInstance.txtFile.Text = file;
                 currentDB = file;
                 isCustom = true;
-                mwInstance.updateStatus("File saved successfully. Season " + curSeason.ToString() + " updated.");
+                mwInstance.updateStatus("File saved successfully. Season " + season.ToString() + " updated.");
             }
             catch (Exception ex)
             {
@@ -1321,6 +1343,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 id1 = TeamOrder[bs.Team1];
                 id2 = TeamOrder[bs.Team2];
 
+                tst = getCustomStats(currentDB, ref TeamOrder, ref pt, ref bshist, seasonNum: bs.SeasonNum);
+
                 if (!bs.doNotUpdate)
                 {
                     if (!bs.isPlayoff)
@@ -1964,7 +1988,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
 
                 tst = realtst;
-                saveTeamStatsFile(file, tst);
+                saveSeasonToDatabase(file, tst, curSeason, curSeason);
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
                 txtFile.Text = file;
@@ -2276,7 +2300,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                saveTeamStatsFile(currentDB, tst);
+                saveSeasonToDatabase(currentDB, tst, curSeason, getMaxSeason(currentDB));
                 txtFile.Text = currentDB;
             }
         }
@@ -2389,9 +2413,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if (!isTSTEmpty())
             {
-                MessageBoxResult r = MessageBox.Show("Are you sure you want to do this? All current regular season & playoff\n"
-                                                   + "stats for all teams will be erased permanently. This is an irreversible\n"
-                                                   + "action. Box Scores will be retained.", "NBA Stats Tracker", MessageBoxButton.YesNo,
+                MessageBoxResult r = MessageBox.Show("Are you sure you want to do this? This is an irreversible action.\nStats and box Scores will be retained, and you'll be able to use all the tool's features on them.", "NBA Stats Tracker", MessageBoxButton.YesNo,
                                                    MessageBoxImage.Question);
                 if (r == MessageBoxResult.Yes)
                 {
@@ -2422,10 +2444,15 @@ namespace NBA_2K12_Correct_Team_Stats
                         ts.calcAvg();
                     }
 
-                    saveTeamStatsFile(currentDB, tst);
+                    saveSeasonToDatabase(currentDB, tst, curSeason, curSeason);
+                    updateStatus("New season started. Database saved.");
                 }
-                updateStatus("New season started. Database saved.");
             }
+        }
+
+        private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
+        {
+            saveAllSeasons(currentDB);
         }
     }
 }

@@ -178,7 +178,7 @@ Credits to
 	
 	
 Version History
-	v0.9.1 - Apr 25
+	Nightly - Apr 25
 		- Change: The program now uses SQLite 3 databases instead of the custom 
 		   binary format; this means that previously saved Team Stats file are
 		   incompatible with this version
@@ -215,6 +215,10 @@ Version History
 		   teams; the 30 team limit is no more; the Scouting Reports still work
 		   optimally for 30 teams, they do not adjust to leagues with less or
 		   more teams (yet!)
+		- Added: Support for multiple seasons; the tool now retains stats and
+		   box scores between seasons, so that you can compare performances
+		   and stats with those of previous years, with clear distinction of
+		   the stats of each season
 		   
 	v0.8 - Mar 21
 		- Added keeping history of Box Score updates

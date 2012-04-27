@@ -12,7 +12,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Split Stats" Name="tabSplitStats">
-                <Grid Name="grid1">
+                <Grid>
                     <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" ItemsSource="{Binding Path=.}" Name="dgvSplit" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" />
                 </Grid>
             </TabItem>
@@ -34,6 +34,11 @@
                     <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Left" Margin="598,11,0,0" Name="rbHTHStatsEachOther" VerticalAlignment="Top" Checked="rbHTHStatsEachOther_Checked" />
                 </Grid>
             </TabItem>
+            <TabItem Header="Yearly Report" Name="tabYearly">
+                <Grid>
+                    <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" />
+                </Grid>
+            </TabItem>
         </TabControl>
         <ComboBox Height="23" HorizontalAlignment="Center" Margin="0,12,0,0" Name="cmbTeam" VerticalAlignment="Top" Width="153" SelectionChanged="cmbTeam_SelectionChanged" />
         <Button Content="&lt;" Height="23" HorizontalAlignment="Center" Margin="160,12,348,0" Name="btnPrev" VerticalAlignment="Top" Width="24" Click="btnPrev_Click" />
@@ -41,11 +46,11 @@
         <GroupBox HorizontalAlignment="Left" Margin="7,0,0,12" Name="groupBox1" Width="327" Header="Actions" Height="175" VerticalAlignment="Bottom">
             <Grid>
                 <Button Content="Alternate Averages &amp; Rankings Window" Height="23" HorizontalAlignment="Center" Margin="0,6,0,0" Name="btnShowAvg" VerticalAlignment="Top" Width="249" Click="btnShowAvg_Click" Grid.ColumnSpan="2" />
-                <Button Content="Save this Team &amp; Re-calculate" Height="23" HorizontalAlignment="Center" Margin="0,64,0,0" Name="btnSaveCustomTeam" TabIndex="22" VerticalAlignment="Top" Width="249" Click="btnSaveCustomTeam_Click" Grid.ColumnSpan="2">
+                <Button Content="Save This Team's Season Stats &amp; Re-Calculate" Height="23" HorizontalAlignment="Center" Margin="0,64,0,0" Name="btnSaveCustomTeam" TabIndex="22" VerticalAlignment="Top" Width="249" Click="btnSaveCustomTeam_Click" Grid.ColumnSpan="2">
                     <Button.ToolTip>
                         <StackPanel>
-                            <TextBlock Text="Remember that this option DOES not save changes to the Team Stats file, but just in memory."></TextBlock>
-                            <TextBlock Text="If you want to make the changes permanent, exit the Team Overview screen and save all Team Stats from the main window."></TextBlock>
+                            <TextBlock Text="This option does NOT save changes for all seasons, but just for the current one."></TextBlock>
+                            <TextBlock Text="Remember to save the stats before you switch to another team or season, or your changes will be lost."></TextBlock>
                         </StackPanel>
                     </Button.ToolTip>
                 </Button>
@@ -60,7 +65,7 @@
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpStart_SelectedDateChanged" />
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="173,79,0,0" Name="dtpEnd" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpEnd_SelectedDateChanged" />
                 <Label Content="and" HorizontalAlignment="Left" Margin="139,81,0,0" Name="label2" VerticalAlignment="Top" />
-                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1" Text="* Availability of stats between dates depend on whether there are box-scores saved for this team." VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
+                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1" Text="* Availability of stats between dates depends on whether there are box-scores saved for this team." VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,31,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
             </Grid>
         </GroupBox>

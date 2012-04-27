@@ -28,7 +28,7 @@
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" SelectedDateChanged="dtpStart_SelectedDateChanged" VerticalAlignment="Top" Width="115" />
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,135,0,0" Name="dtpEnd" SelectedDateChanged="dtpEnd_SelectedDateChanged" VerticalAlignment="Top" Width="115" />
                 <Label Content="and" HorizontalAlignment="Left" Margin="58,106,0,0" Name="label2" VerticalAlignment="Top" />
-                <TextBlock HorizontalAlignment="Left" Margin="6,184,0,0" Name="textBlock1" Text="* Availability of stats between dates depend on whether there are box-scores saved for each team." TextWrapping="Wrap" VerticalAlignment="Top" Width="132" />
+                <TextBlock HorizontalAlignment="Left" Margin="6,184,0,0" Name="textBlock1" Text="* Availability of stats between dates depends on whether there are box-scores saved for each team." TextWrapping="Wrap" VerticalAlignment="Top" Width="132" />
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="112,31,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="38" SelectionChanged="cmbSeasonNum_SelectionChanged" />
             </Grid>
         </GroupBox>

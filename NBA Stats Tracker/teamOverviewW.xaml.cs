@@ -16,7 +16,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private TeamStats[] tst;
         private int[][] rankings;
         private int[][] pl_rankings;
-        private DataTable dt_ov, dt_bs, dt_hth, dt_ss;
+        private DataTable dt_ov, dt_bs, dt_hth, dt_ss, dt_yea;
         private string showSeason;
 
         DataView dv_hth;
@@ -109,6 +109,32 @@ namespace NBA_2K12_Correct_Team_Stats
             dt_ss.Columns.Add("BLK");
             dt_ss.Columns.Add("FOUL");
 
+            dt_yea = new DataTable();
+
+            dt_yea.Columns.Add("Type");
+            dt_yea.Columns.Add("Games");
+            dt_yea.Columns.Add("Wins");
+            dt_yea.Columns.Add("Losses");
+            dt_yea.Columns.Add("W%");
+            dt_yea.Columns.Add("Weff");
+            dt_yea.Columns.Add("PF");
+            dt_yea.Columns.Add("PA");
+            dt_yea.Columns.Add("PD");
+            dt_yea.Columns.Add("FG");
+            dt_yea.Columns.Add("FGeff");
+            dt_yea.Columns.Add("3PT");
+            dt_yea.Columns.Add("3Peff");
+            dt_yea.Columns.Add("FT");
+            dt_yea.Columns.Add("FTeff");
+            dt_yea.Columns.Add("REB");
+            dt_yea.Columns.Add("OREB");
+            dt_yea.Columns.Add("DREB");
+            dt_yea.Columns.Add("AST");
+            dt_yea.Columns.Add("TO");
+            dt_yea.Columns.Add("STL");
+            dt_yea.Columns.Add("BLK");
+            dt_yea.Columns.Add("FOUL");
+
             dt_bs = new DataTable();
             dt_bs.Columns.Add("Date");
             dt_bs.Columns.Add("Opponent");
@@ -184,6 +210,7 @@ namespace NBA_2K12_Correct_Team_Stats
             dt_ov.Clear();
             dt_hth.Clear();
             dt_ss.Clear();
+            dt_yea.Clear();
 
             int i = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
             showSeason = cmbSeasonNum.SelectedItem.ToString();
@@ -805,6 +832,56 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 cmbOppTeam_SelectionChanged(sender, e);
             }
+            else if (tbcTeamOverview.SelectedItem == tabYearly)
+            {
+                #region Prepare Yearly Stats
+                string currentDB = MainWindow.currentDB;
+                int curSeason = MainWindow.curSeason;
+                int maxSeason = MainWindow.getMaxSeason(currentDB);
+
+                DataRow drcur = dt_yea.NewRow();
+                DataRow drcur_pl = dt_yea.NewRow();
+                CreateDataRowFromTeamStats(ts, ref drcur, "Season " + curSeason.ToString());
+
+                bool playedInPlayoffs = false;
+                if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
+                {
+                    CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + curSeason.ToString(), true);
+                    playedInPlayoffs = true;
+                }
+
+                for (int j = 1; j <= maxSeason; j++)
+                {
+                    if (j != curSeason)
+                    {
+                        tst = MainWindow.getCustomStats(currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: j);
+                        DataRow dr3 = dt_yea.NewRow();
+                        DataRow dr3_pl = dt_yea.NewRow();
+                        CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3, "Season " + j.ToString(), false);
+                        dt_yea.Rows.Add(dr3);
+                        if (tst[MainWindow.TeamOrder[curTeam]].pl_winloss[0] + tst[MainWindow.TeamOrder[curTeam]].pl_winloss[1] > 0)
+                        {
+                            CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3_pl, "Playoffs " + j.ToString(), true);
+                            dt_yea.Rows.Add(dr3_pl);
+                        }
+                    }
+                    else
+                    {
+                        dt_yea.Rows.Add(drcur);
+                        if (playedInPlayoffs) dt_yea.Rows.Add(drcur_pl);
+                    }
+                }
+
+                tst = MainWindow.getCustomStats(currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: curSeason);
+                ts = tst[MainWindow.TeamOrder[curTeam]];
+
+                DataView dv_yea = new DataView(dt_yea);
+                dv_yea.AllowNew = false;
+                dv_yea.AllowEdit = false;
+
+                dgvYearly.DataContext = dv_yea;
+                #endregion
+            }
         }
 
         static UInt16 getUshort(DataRow r, string ColumnName)
@@ -860,7 +937,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             tst[id].calcAvg();
 
-            MainWindow.saveTeamStatsFile(MainWindow.currentDB, tst);
+            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()), MainWindow.getMaxSeason(MainWindow.currentDB));
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -1574,7 +1651,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void tbcTeamOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((tbcTeamOverview.SelectedItem == tabSplitStats) || (tbcTeamOverview.SelectedItem == tabHTH))
+            if ((tbcTeamOverview.SelectedItem == tabSplitStats) || (tbcTeamOverview.SelectedItem == tabHTH) || (tbcTeamOverview.SelectedItem == tabYearly))
             {
                 cmbTeam_SelectionChanged(null, null);
             }
