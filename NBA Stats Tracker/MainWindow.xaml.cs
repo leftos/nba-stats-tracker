@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -9,15 +10,13 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
-using System.Data.SQLite;
-using System.Data;
-using System.Windows.Threading;
-using System.Text.RegularExpressions;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -341,7 +340,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             string file = sfd.FileName;
 
-            saveTeamStatsFile(file);
+            saveTeamStatsFile(file, tst);
         }
 
         private static void OBSOLETE_saveTeamStatsFile(string file)
@@ -421,21 +420,32 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private void saveTeamStatsFile(string file)
+        public static void saveTeamStatsFile(string file, TeamStats[] tst)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
             // we won't delete the file before all this.
-            File.Delete(file); 
+            //File.Delete(file); 
 
             // Isn't really needed since we delete the file, but is left for partial updating efforts later.
             bool FileExists = File.Exists(file);
+
             // SQLite
             try
             {
                 db = new SQLiteDatabase(file);
-                prepareNewDB(db);
+                prepareNewDB(db, curSeason, getMaxSeason(file));
                 DataTable res;
-                String q = "select Name from Teams;";
+
+                string teamsT = "Teams";
+                string pl_teamsT = "PlayoffTeams";
+
+                if (curSeason != getMaxSeason(file))
+                {
+                    teamsT += "S" + curSeason.ToString();
+                    pl_teamsT += "S" + curSeason.ToString();
+                }
+
+                String q = "select Name from " + teamsT + ";";
                 res = db.GetDataTable(q);
 
                 foreach (TeamStats ts in tst)
@@ -488,8 +498,8 @@ namespace NBA_2K12_Correct_Team_Stats
                     {
                         if (r[0].ToString().Equals(ts.name))
                         {
-                            bool success = db.Update("Teams", dict, "Name LIKE \'" + ts.name + "\'");
-                            bool success2 = db.Update("PlayoffTeams", pl_dict, "Name LIKE \'" + ts.name + "\'");
+                            bool success = db.Update(teamsT, dict, "Name LIKE \'" + ts.name + "\'");
+                            bool success2 = db.Update(pl_teamsT, pl_dict, "Name LIKE \'" + ts.name + "\'");
                             found = true;
                             break;
                         }
@@ -497,8 +507,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
                     if (!found)
                     {
-                        bool success = db.Insert("Teams", dict);
-                        bool success2 = db.Insert("PlayoffTeams", pl_dict);
+                        bool success = db.Insert(teamsT, dict);
+                        bool success2 = db.Insert(pl_teamsT, pl_dict);
                     }
                 }
 
@@ -564,10 +574,10 @@ namespace NBA_2K12_Correct_Team_Stats
                         }
                     }
                 }
-                txtFile.Text = file;
+                mwInstance.txtFile.Text = file;
                 currentDB = file;
                 isCustom = true;
-                updateStatus("File saved successfully.");
+                mwInstance.updateStatus("File saved successfully. Season " + curSeason.ToString() + " updated.");
             }
             catch (Exception ex)
             {
@@ -575,21 +585,45 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private static void prepareNewDB(SQLiteDatabase sqldb)
+        private static void prepareNewDB(SQLiteDatabase sqldb, int curSeason, int maxSeason, bool onlyNewSeason = false)
         {
             try
             {
-                String qr = "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" BOOLEAN NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL )";
+                String qr;
+
+                if (!onlyNewSeason)
+                {
+                    qr = "DROP TABLE IF EXISTS \"GameResults\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" BOOLEAN NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL )";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "DROP TABLE IF EXISTS \"PlayerResults\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"PlayerResults\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"TeamID\" INTEGER NOT NULL ,\"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0) ,\"MINS\" INTEGER NOT NULL  DEFAULT (0) )";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "DROP TABLE IF EXISTS \"Players\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"Players\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"CurTeam\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0), \"Position\" TEXT, \"Injured\" BOOL )";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "DROP TABLE IF EXISTS \"Misc\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"Misc\" (\"CurSeason\" INTEGER);";
+                    sqldb.ExecuteNonQuery(qr);
+                }
+                string teamsT = "Teams";
+                string pl_teamsT = "PlayoffTeams";
+                if (curSeason != maxSeason)
+                {
+                    teamsT += "S" + curSeason.ToString();
+                    pl_teamsT += "S" + curSeason.ToString();
+                }
+                qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
-                qr = "CREATE TABLE \"PlayerResults\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"TeamID\" INTEGER NOT NULL ,\"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0) ,\"MINS\" INTEGER NOT NULL  DEFAULT (0) )";
+                qr = "CREATE TABLE \"" + pl_teamsT + "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
-                qr = "CREATE TABLE \"Players\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"CurTeam\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0), \"Position\" TEXT, \"Injured\" BOOL )";
+                qr = "DROP TABLE IF EXISTS \"" + teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
-                qr = "CREATE TABLE \"PlayoffTeams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
-                qr = "CREATE TABLE \"Teams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
-                qr = "CREATE TABLE \"Misc\" (\"CurSeason\" INTEGER);";
+                qr = "CREATE TABLE \"" + teamsT + "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
             }
             catch
@@ -882,12 +916,56 @@ namespace NBA_2K12_Correct_Team_Stats
             return (_tst);
         }
 
-        private TeamStats[] getCustomStats(string file, ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt, ref IList<BoxScoreEntry> _bshist, bool updateCombo = true)
+        public static int getMaxSeason(string file)
         {
             db = new SQLiteDatabase(file);
 
             DataTable res;
-            String q = "select * from Teams;";
+
+            String q;
+            q = "select Name from sqlite_master";
+            res = db.GetDataTable(q);
+
+            int maxseason = 0;
+
+            foreach (DataRow r in res.Rows)
+            {
+                string name = r["Name"].ToString();
+                if (name.Length > 5 && name.Substring(0, 5) == "Teams")
+                {
+                    int season = Convert.ToInt32(name.Substring(6, 1));
+                    if (season > maxseason)
+                    {
+                        maxseason = season;
+                    }
+                }
+            }
+
+            maxseason++;
+
+            return maxseason;
+        }
+
+        public static TeamStats[] getCustomStats(string file, ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt, ref IList<BoxScoreEntry> _bshist, bool updateCombo = true, int seasonNum = 0)
+        {
+            db = new SQLiteDatabase(file);
+
+            DataTable res;
+
+            String q;
+            int maxseason = getMaxSeason(file);
+
+            if (seasonNum == 0) seasonNum = maxseason;
+
+            if (maxseason == seasonNum)
+            {
+                q = "select * from Teams;";
+            }
+            else
+            {
+                q = "select * from TeamsS" + seasonNum.ToString() + ";";
+            }
+
             res = db.GetDataTable(q);
 
             TeamStats[] _tst = new TeamStats[res.Rows.Count];
@@ -921,7 +999,14 @@ namespace NBA_2K12_Correct_Team_Stats
                 i++;
             }
 
-            q = "select * from PlayoffTeams;";
+            if (maxseason == seasonNum)
+            {
+                q = "select * from PlayoffTeams;";
+            }
+            else
+            {
+                q = "select * from PlayoffTeamsS" + seasonNum.ToString() + ";";
+            }
             res = db.GetDataTable(q);
             
             i = 0;
@@ -1000,6 +1085,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 _bshist.Add(bse);
             }
 
+            /*
             try
             {
                 q = "select CurSeason from Misc limit 1;";
@@ -1010,15 +1096,20 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 curSeason = 1;
             }
+            */
+            curSeason = seasonNum;
+            mwInstance.txbCurSeason.Text = "Current Season: " + curSeason.ToString() + "/" + maxseason.ToString();
 
+            /*
             if (updateCombo)
             {
-                cmbTeam1.Items.Clear();
+                mwInstance.cmbTeam1.Items.Clear();
                 foreach (KeyValuePair<string, int> kvp in _TeamOrder)
                 {
-                    cmbTeam1.Items.Add(kvp.Key);
+                    mwInstance.cmbTeam1.Items.Add(kvp.Key);
                 }
             }
+            */
 
             return _tst;
         }
@@ -1873,7 +1964,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
 
                 tst = realtst;
-                saveTeamStatsFile(file);
+                saveTeamStatsFile(file, tst);
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
                 txtFile.Text = file;
@@ -2185,7 +2276,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                saveTeamStatsFile(currentDB);
+                saveTeamStatsFile(currentDB, tst);
                 txtFile.Text = currentDB;
             }
         }
@@ -2223,7 +2314,10 @@ namespace NBA_2K12_Correct_Team_Stats
 
             db = new SQLiteDatabase(sfd.FileName);
 
-            prepareNewDB(db);
+            prepareNewDB(db, 1, 1);
+
+            curSeason = 1;
+            txbCurSeason.Text = "Current Season: 1/1";
 
             tst = new TeamStats[1];
             tst[0] = new TeamStats("$$NewDB");
@@ -2301,7 +2395,19 @@ namespace NBA_2K12_Correct_Team_Stats
                                                    MessageBoxImage.Question);
                 if (r == MessageBoxResult.Yes)
                 {
-                    MainWindow.curSeason++;
+                    curSeason = getMaxSeason(currentDB);
+
+                    string q = "alter table Teams rename to TeamsS" + curSeason;
+                    int code = db.ExecuteNonQuery(q);
+
+                    q = "alter table PlayoffTeams rename to PlayoffTeamsS" + curSeason;
+                    code = db.ExecuteNonQuery(q);
+
+                    curSeason++;
+
+                    prepareNewDB(db, curSeason, curSeason, true);
+
+                    txbCurSeason.Text = "Current Season: " + curSeason.ToString() + "/" + curSeason.ToString();
                     foreach (TeamStats ts in tst)
                     {
                         for (int i = 0; i < ts.stats.Length; i++)
@@ -2315,8 +2421,10 @@ namespace NBA_2K12_Correct_Team_Stats
                         ts.pl_winloss[1] = 0;
                         ts.calcAvg();
                     }
+
+                    saveTeamStatsFile(currentDB, tst);
                 }
-                updateStatus("New season started. You should save the database.");
+                updateStatus("New season started. Database saved.");
             }
         }
     }

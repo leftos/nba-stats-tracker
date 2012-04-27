@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Data;
-using System.Windows.Controls.Primitives;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -67,6 +58,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
             this.tst = tst;
 
+            PopulateSeasonCombo();
+
             dtpEnd.SelectedDate = DateTime.Today;
             dtpStart.SelectedDate = DateTime.Today.AddMonths(-1);
         }
@@ -89,6 +82,16 @@ namespace NBA_2K12_Correct_Team_Stats
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
+        private void PopulateSeasonCombo()
+        {
+            for (int i = MainWindow.getMaxSeason(MainWindow.currentDB); i > 0; i--)
+            {
+                cmbSeasonNum.Items.Add(i.ToString());
+            }
+
+            cmbSeasonNum.SelectedItem = MainWindow.curSeason.ToString();
+        }
+
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
@@ -104,6 +107,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+
                     foreach (TeamStats cur in tst)
                     {
                         DataRow r = dt_ts.NewRow();
@@ -149,6 +154,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+
                     foreach (TeamStats cur in tst)
                     {
                         if (cur.getPlayoffGames() == 0) continue;
@@ -194,9 +201,13 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 dt_bs.Clear();
 
-                q = "select * from GameResults;";
+                q = "select * from GameResults";
 
-                if (rbStatsBetween.IsChecked.GetValueOrDefault())
+                if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+                {
+                    q += " where SeasonNum = " + cmbSeasonNum.SelectedItem.ToString();
+                }
+                else
                 {
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                         dtpEnd.SelectedDate.GetValueOrDefault(), true);
@@ -228,17 +239,36 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                dtpEnd.IsEnabled = false;
+                dtpStart.IsEnabled = false;
+                cmbSeasonNum.IsEnabled = true;
+            }
+            catch { }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                dtpEnd.IsEnabled = true;
+                dtpStart.IsEnabled = true;
+                cmbSeasonNum.IsEnabled = false;
+            }
+            catch { }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
+        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            tbcLeagueOverview_SelectionChanged(null, null);
         }
     }
 }

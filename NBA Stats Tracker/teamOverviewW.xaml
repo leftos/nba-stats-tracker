@@ -55,13 +55,13 @@
         <GroupBox HorizontalAlignment="Right" Margin="0,0,6,12" Name="groupBox2" Width="328" Header="Timeframe" Height="175" VerticalAlignment="Bottom">
             <Grid Margin="0,0,0,0">
                 <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" />
-                <RadioButton Content="All-Time" Height="16" HorizontalAlignment="Left" Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" IsChecked="True" Checked="rbStatsAllTime_Checked" />
+                <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left" Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" IsChecked="True" Checked="rbStatsAllTime_Checked" />
                 <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0" Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpStart_SelectedDateChanged" />
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="173,79,0,0" Name="dtpEnd" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpEnd_SelectedDateChanged" />
                 <Label Content="and" HorizontalAlignment="Left" Margin="139,81,0,0" Name="label2" VerticalAlignment="Top" />
                 <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1" Text="* Availability of stats between dates depend on whether there are box-scores saved for this team." VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
-                <Button Content="Reload" Height="23" HorizontalAlignment="Left" Margin="235,35,0,0" Name="btnReloadStats" VerticalAlignment="Top" Width="75" Click="btnReloadStats_Click" Visibility="Visible" />
+                <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,31,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
             </Grid>
         </GroupBox>
     </Grid>

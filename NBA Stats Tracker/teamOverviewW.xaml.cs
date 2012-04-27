@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Data;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -23,6 +17,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private int[][] rankings;
         private int[][] pl_rankings;
         private DataTable dt_ov, dt_bs, dt_hth, dt_ss;
+        private string showSeason;
 
         DataView dv_hth;
 
@@ -137,10 +132,20 @@ namespace NBA_2K12_Correct_Team_Stats
             dtpEnd.SelectedDate = DateTime.Today;
             dtpStart.SelectedDate = DateTime.Today.AddMonths(-1);
 
-            btnReloadStats.Visibility = Visibility.Hidden;
+            PopulateSeasonCombo();
 
             cmbTeam.SelectedIndex = -1;
             cmbTeam.SelectedIndex = 0;            
+        }
+
+        private void PopulateSeasonCombo()
+        {
+            for (int i = MainWindow.getMaxSeason(MainWindow.currentDB); i > 0; i--)
+            {
+                cmbSeasonNum.Items.Add(i.ToString());
+            }
+
+            cmbSeasonNum.SelectedItem = MainWindow.curSeason.ToString();
         }
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)
@@ -160,6 +165,7 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 if (cmbTeam.SelectedIndex == -1) return;
+                if (cmbSeasonNum.SelectedIndex == -1) return;
             }
             catch
             {
@@ -180,6 +186,7 @@ namespace NBA_2K12_Correct_Team_Stats
             dt_ss.Clear();
 
             int i = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
+            showSeason = cmbSeasonNum.SelectedItem.ToString();
 
             string curTeam = cmbTeam.SelectedItem.ToString();
             TeamStats ts = new TeamStats(curTeam);
@@ -190,11 +197,12 @@ namespace NBA_2K12_Correct_Team_Stats
             #region Prepare Team Overview & Box Scores
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
+                tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(showSeason));
                 ts = tst[i];
 
                 DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                    + curTeam + "'));";
+                    + curTeam + "')) AND SeasonNum = " + showSeason + ";";
                 res = db.GetDataTable(q);
                 dt_bs_res = res;
 
@@ -824,33 +832,36 @@ namespace NBA_2K12_Correct_Team_Stats
             }
 
             int id = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
-            tst[id].winloss[0] = Convert.ToByte(myCell(0, 1));
-            tst[id].winloss[1] = Convert.ToByte(myCell(0, 2));
-            tst[id].stats[PF] = Convert.ToUInt16(myCell(0, 3));
-            tst[id].stats[PA] = Convert.ToUInt16(myCell(0, 4));
+            tst[id].winloss[0] = Convert.ToByte(myCell(0, 2));
+            tst[id].winloss[1] = Convert.ToByte(myCell(0, 3));
+            tst[id].stats[PF] = Convert.ToUInt16(myCell(0, 4));
+            tst[id].stats[PA] = Convert.ToUInt16(myCell(0, 5));
 
-            string[] parts = myCell(0, 6).Split('-');
+            string[] parts = myCell(0, 7).Split('-');
             tst[id].stats[FGM] = Convert.ToUInt16(parts[0]);
             tst[id].stats[FGA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(0, 8).Split('-');
+            parts = myCell(0, 9).Split('-');
             tst[id].stats[TPM] = Convert.ToUInt16(parts[0]);
             tst[id].stats[TPA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(0, 10).Split('-');
+            parts = myCell(0, 11).Split('-');
             tst[id].stats[FTM] = Convert.ToUInt16(parts[0]);
             tst[id].stats[FTA] = Convert.ToUInt16(parts[1]);
 
-            tst[id].stats[OREB] = Convert.ToUInt16(myCell(0, 13));
-            tst[id].stats[DREB] = Convert.ToUInt16(myCell(0, 14));
+            tst[id].stats[OREB] = Convert.ToUInt16(myCell(0, 14));
+            tst[id].stats[DREB] = Convert.ToUInt16(myCell(0, 15));
 
-            tst[id].stats[AST] = Convert.ToUInt16(myCell(0, 15));
-            tst[id].stats[TO] = Convert.ToUInt16(myCell(0, 16));
-            tst[id].stats[STL] = Convert.ToUInt16(myCell(0, 17));
-            tst[id].stats[BLK] = Convert.ToUInt16(myCell(0, 18));
-            tst[id].stats[FOUL] = Convert.ToUInt16(myCell(0, 19));
+            tst[id].stats[AST] = Convert.ToUInt16(myCell(0, 16));
+            tst[id].stats[TO] = Convert.ToUInt16(myCell(0, 17));
+            tst[id].stats[STL] = Convert.ToUInt16(myCell(0, 18));
+            tst[id].stats[BLK] = Convert.ToUInt16(myCell(0, 19));
+            tst[id].stats[FOUL] = Convert.ToUInt16(myCell(0, 20));
 
             tst[id].calcAvg();
+
+            MainWindow.saveTeamStatsFile(MainWindow.currentDB, tst);
+
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
             cmbTeam.SelectedIndex = temp;
@@ -933,12 +944,26 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                dtpEnd.IsEnabled = false;
+                dtpStart.IsEnabled = false;
+                cmbSeasonNum.IsEnabled = true;
+            }
+            catch { }
             cmbTeam_SelectionChanged(sender, null);
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             FixTimeFrameForSplitStats();
+            try
+            {
+                dtpEnd.IsEnabled = true;
+                dtpStart.IsEnabled = true;
+                cmbSeasonNum.IsEnabled = false;
+            }
+            catch { }
             cmbTeam_SelectionChanged(sender, null);
         }
 
@@ -1060,9 +1085,10 @@ namespace NBA_2K12_Correct_Team_Stats
                 string q = String.Format("select * from GameResults " +
                     "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
                     "OR " + 
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')))",
+                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2};",
                     cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString());
+                    cmbOppTeam.SelectedItem.ToString(),
+                    showSeason);
 
                 res = db.GetDataTable(q);
 
@@ -1095,9 +1121,10 @@ namespace NBA_2K12_Correct_Team_Stats
                     q = String.Format("select * from GameResults " +
                     "where ((((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
                     "OR " +
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND IsPlayoff = 'False');",
+                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND IsPlayoff = 'False' AND SeasonNum = {2});",
                     cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString());
+                    cmbOppTeam.SelectedItem.ToString(),
+                    showSeason);
 
                     DataTable res2 = db.GetDataTable(q);
                     AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, false);
@@ -1105,9 +1132,10 @@ namespace NBA_2K12_Correct_Team_Stats
                     q = String.Format("select * from GameResults " +
                     "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
                     "OR " +
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')) AND IsPlayoff = 'True');",
+                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')) AND IsPlayoff = 'True' AND SeasonNum = {2});",
                     cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString());
+                    cmbOppTeam.SelectedItem.ToString(),
+                    showSeason);
 
                     res2 = db.GetDataTable(q);
                     AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, true);
@@ -1559,6 +1587,11 @@ namespace NBA_2K12_Correct_Team_Stats
         }
 
         private void rbBSSimple_Checked(object sender, RoutedEventArgs e)
+        {
+            cmbTeam_SelectionChanged(null, null);
+        }
+
+        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             cmbTeam_SelectionChanged(null, null);
         }

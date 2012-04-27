@@ -125,5 +125,6 @@
                 </Button>
             </Grid>
         </GroupBox>
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="431,63,0,0" Name="txbCurSeason" Text="" VerticalAlignment="Top" TextAlignment="Right" Width="148" />
     </Grid>
 </Window>
