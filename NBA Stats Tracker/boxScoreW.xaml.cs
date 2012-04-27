@@ -69,12 +69,17 @@ namespace NBA_2K12_Correct_Team_Stats
 
             dtpGameDate.SelectedDate = DateTime.Today;
 
+            txtSeasonNum.Text = MainWindow.curSeason.ToString();
+
             foreach (BoxScoreEntry cur in MainWindow.bshist)
             {
                 cbHistory.Items.Add(cur.date.ToShortDateString() + " - " + cur.bs.Team1 + " @ " + cur.bs.Team2);
             }
 
             curmode = _curmode;
+
+            calculateScore1();
+            calculateScore2();
 
             if (curmode == Mode.View)
             {
@@ -319,15 +324,24 @@ namespace NBA_2K12_Correct_Team_Stats
             calculateScore1();
         }
 
-        private void calculateScore1()
+        private void calculateScore1(object sender, TextChangedEventArgs e)
         {
             try
             {
-                txtPTS1.Text = ((Convert.ToInt32(txtFGM1.Text) - Convert.ToInt32(txt3PM1.Text)) * 2 + Convert.ToInt32(txt3PM1.Text) * 3 + Convert.ToInt32(txtFTM1.Text)).ToString();
+                int fgm = Convert.ToInt32(txtFGM1.Text);
+                int tpm = Convert.ToInt32(txt3PM1.Text);
+                int ftm = Convert.ToInt32(txtFTM1.Text);
+                txtPTS1.Text = ((fgm - tpm) * 2 + tpm * 3 + ftm).ToString();
+
+                int fga = Convert.ToInt32(txtFGA1.Text);
+                int tpa = Convert.ToInt32(txt3PA1.Text);
+                int fta = Convert.ToInt32(txtFTA1.Text);
+                txbT1Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%{2:F3}", (float)fgm / fga, (float)tpm / tpa, (float)ftm / fta);
             }
             catch
             {
                 txtPTS1.Text = "N/A";
+                txbT1Avg.Text = "";
             }
         }
 
@@ -346,15 +360,24 @@ namespace NBA_2K12_Correct_Team_Stats
             calculateScore2();
         }
 
-        private void calculateScore2()
+        private void calculateScore2(object sender, TextChangedEventArgs e)
         {
             try
             {
-                txtPTS2.Text = ((Convert.ToInt32(txtFGM2.Text) - Convert.ToInt32(txt3PM2.Text)) * 2 + Convert.ToInt32(txt3PM2.Text) * 3 + Convert.ToInt32(txtFTM2.Text)).ToString();
+                int fgm = Convert.ToInt32(txtFGM2.Text);
+                int tpm = Convert.ToInt32(txt3PM2.Text);
+                int ftm = Convert.ToInt32(txtFTM2.Text);
+                txtPTS2.Text = ((fgm - tpm) * 2 + tpm * 3 + ftm).ToString();
+
+                int fga = Convert.ToInt32(txtFGA2.Text);
+                int tpa = Convert.ToInt32(txt3PA2.Text);
+                int fta = Convert.ToInt32(txtFTA2.Text);
+                txbT2Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float)fgm / fga, (float)tpm / tpa, (float)ftm / fta);
             }
             catch
             {
                 txtPTS2.Text = "N/A";
+                txbT2Avg.Text = "";
             }
         }
 
@@ -457,6 +480,19 @@ namespace NBA_2K12_Correct_Team_Stats
             dtpGameDate.SelectedDate = bs.gamedate;
             txtSeasonNum.Text = bs.SeasonNum.ToString();
             chkIsPlayoff.IsChecked = bs.isPlayoff;
+
+            calculateScore1();
+            calculateScore2();
+        }
+
+        private void calculateScore1()
+        {
+
+        }
+
+        private void calculateScore2()
+        {
+
         }
     }
 }

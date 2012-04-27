@@ -17,6 +17,7 @@ using Microsoft.Win32;
 using System.Data.SQLite;
 using System.Data;
 using System.Windows.Threading;
+using System.Text.RegularExpressions;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -29,7 +30,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public static string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
         public static string AppPath = Environment.CurrentDirectory + "\\";
-        public static bool isCustom = false;
+        public static bool isCustom;
 
         public static MainWindow mwInstance;
 
@@ -42,7 +43,7 @@ namespace NBA_2K12_Correct_Team_Stats
         /// 20: 76ers, 21: Raptors, 22: Bobcats, 23: Magic, 24: Thunder,
         /// 25: Lakers, 26: Rockets, 27: Jazz, 28: Bulls, 29: Mavericks
         /// </summary>
-        public static TeamStats[] tst = new TeamStats[30];
+        public static TeamStats[] tst = new TeamStats[1];
         public static TeamStats[] realtst = new TeamStats[30];
         public static BoxScore bs;
         public static IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
@@ -50,6 +51,8 @@ namespace NBA_2K12_Correct_Team_Stats
         public static string ext;
         public static string myTeam;
         public static string currentDB = "";
+        public static string addInfo;
+        public static int curSeason = 1;
 
         public static SortedDictionary<string, int> TeamOrder;
 
@@ -84,8 +87,10 @@ namespace NBA_2K12_Correct_Team_Stats
             btnSave.Visibility = Visibility.Hidden;
             btnCRC.Visibility = Visibility.Hidden;
             btnSaveCustomTeam.Visibility = Visibility.Hidden;
-            btnInject.Visibility = Visibility.Hidden;
+            //btnInject.Visibility = Visibility.Hidden;
             btnTest.Visibility = Visibility.Hidden;
+
+            isCustom = true;
 
             if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA 2K12 Correct Team Stats"))
                 if (Directory.Exists(AppDocsPath) == false)
@@ -95,17 +100,15 @@ namespace NBA_2K12_Correct_Team_Stats
             if (Directory.Exists(AppDocsPath) == false) Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
 
-            for (int i = 0; i < 30; i++)
-            {
-                tst[i] = new TeamStats();
-            }
+            tst[0] = new TeamStats("$$NewDB");
 
             for (int i = 0; i < 30; i++)
             {
                 realtst[i] = new TeamStats();
             }
 
-            TeamOrder = StatsTracker.setTeamOrder("Mode 0");
+            //TeamOrder = StatsTracker.setTeamOrder("Mode 0");
+            TeamOrder = new SortedDictionary<string, int>();
 
             foreach (KeyValuePair<string, int> kvp in TeamOrder)
             {
@@ -181,15 +184,14 @@ namespace NBA_2K12_Correct_Team_Stats
             if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
             ofd.ShowDialog();
             if (ofd.FileName == "") return;
-            txtFile.Text = ofd.FileName;
 
             cmbTeam1.SelectedIndex = -1;
 
-            isCustom = false;
-            prepareWindow(isCustom);
+            isCustom = true;
+            //prepareWindow(isCustom);
             TeamOrder = StatsTracker.setTeamOrder("Mode 0");
 
-            TeamStats[] temp = StatsTracker.GetStats(txtFile.Text, ref TeamOrder, ref pt);
+            TeamStats[] temp = StatsTracker.GetStats(ofd.FileName, ref TeamOrder, ref pt);
             if (temp.Length > 1)
             {
                 tst = temp;
@@ -198,6 +200,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
             cmbTeam1.SelectedIndex = 0;
 
+            // Following is commented out since Box Scores are now kept in the Database file
+            /*
             if (File.Exists(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh"))
             {
                 BinaryReader stream = new BinaryReader(File.OpenRead(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh"));
@@ -280,6 +284,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     MessageBox.Show("Error while reading stats: Expected " + expect);
                 }
             }
+            */
 
             updateStatus("NBA 2K12 Save loaded successfully!");
             //cmbTeam1.SelectedItem = "Pistons";
@@ -428,24 +433,7 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 db = new SQLiteDatabase(file);
-                try
-                {
-                    String qr = "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" BOOLEAN NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL )";
-                    db.ExecuteNonQuery(qr);
-                    qr = "CREATE TABLE \"PlayerResults\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"TeamID\" INTEGER NOT NULL ,\"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0) ,\"MINS\" INTEGER NOT NULL  DEFAULT (0) )";
-                    db.ExecuteNonQuery(qr);
-                    qr = "CREATE TABLE \"Players\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"CurTeam\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0), \"Position\" TEXT, \"Injured\" BOOL )";
-                    db.ExecuteNonQuery(qr);
-                    qr = "CREATE TABLE \"PlayoffTeams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                    db.ExecuteNonQuery(qr);
-                    qr = "CREATE TABLE \"Teams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                    db.ExecuteNonQuery(qr);
-
-                }
-                catch
-                {
-
-                }
+                prepareNewDB(db);
                 DataTable res;
                 String q = "select Name from Teams;";
                 res = db.GetDataTable(q);
@@ -475,11 +463,33 @@ namespace NBA_2K12_Correct_Team_Stats
                     dict.Add("FOUL", ts.stats[FOUL].ToString());
                     dict.Add("OFFSET", ts.offset.ToString());
 
+                    Dictionary<string, string> pl_dict = new Dictionary<string, string>();
+                    pl_dict.Add("Name", ts.name);
+                    pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
+                    pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
+                    pl_dict.Add("PF", ts.pl_stats[PF].ToString());
+                    pl_dict.Add("PA", ts.pl_stats[PA].ToString());
+                    pl_dict.Add("FGM", ts.pl_stats[FGM].ToString());
+                    pl_dict.Add("FGA", ts.pl_stats[FGA].ToString());
+                    pl_dict.Add("TPM", ts.pl_stats[TPM].ToString());
+                    pl_dict.Add("TPA", ts.pl_stats[TPA].ToString());
+                    pl_dict.Add("FTM", ts.pl_stats[FTM].ToString());
+                    pl_dict.Add("FTA", ts.pl_stats[FTA].ToString());
+                    pl_dict.Add("OREB", ts.pl_stats[OREB].ToString());
+                    pl_dict.Add("DREB", ts.pl_stats[DREB].ToString());
+                    pl_dict.Add("STL", ts.pl_stats[STL].ToString());
+                    pl_dict.Add("TOS", ts.pl_stats[TO].ToString());
+                    pl_dict.Add("BLK", ts.pl_stats[BLK].ToString());
+                    pl_dict.Add("AST", ts.pl_stats[AST].ToString());
+                    pl_dict.Add("FOUL", ts.pl_stats[FOUL].ToString());
+                    pl_dict.Add("OFFSET", ts.pl_offset.ToString());
+
                     foreach (DataRow r in res.Rows)
                     {
                         if (r[0].ToString().Equals(ts.name))
                         {
                             bool success = db.Update("Teams", dict, "Name LIKE \'" + ts.name + "\'");
+                            bool success2 = db.Update("PlayoffTeams", pl_dict, "Name LIKE \'" + ts.name + "\'");
                             found = true;
                             break;
                         }
@@ -488,6 +498,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     if (!found)
                     {
                         bool success = db.Insert("Teams", dict);
+                        bool success2 = db.Insert("PlayoffTeams", pl_dict);
                     }
                 }
 
@@ -554,11 +565,36 @@ namespace NBA_2K12_Correct_Team_Stats
                     }
                 }
                 txtFile.Text = file;
+                currentDB = file;
+                isCustom = true;
                 updateStatus("File saved successfully.");
             }
             catch (Exception ex)
             {
                 App.errorReport(ex, "Trying to save team stats - SQLite");
+            }
+        }
+
+        private static void prepareNewDB(SQLiteDatabase sqldb)
+        {
+            try
+            {
+                String qr = "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" BOOLEAN NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL )";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"PlayerResults\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"TeamID\" INTEGER NOT NULL ,\"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0) ,\"MINS\" INTEGER NOT NULL  DEFAULT (0) )";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"Players\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"CurTeam\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0), \"Position\" TEXT, \"Injured\" BOOL )";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"PlayoffTeams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"Teams\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"Misc\" (\"CurSeason\" INTEGER);";
+                sqldb.ExecuteNonQuery(qr);
+            }
+            catch
+            {
+
             }
         }
 
@@ -626,9 +662,6 @@ namespace NBA_2K12_Correct_Team_Stats
             
             tst = getCustomStats(ofd.FileName, ref TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref TeamOrder, ref pt, ref bshist);
-
-            isCustom = true;
-            prepareWindow(isCustom);
 
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
@@ -884,8 +917,37 @@ namespace NBA_2K12_Correct_Team_Stats
                 _tst[i].stats[AST] = Convert.ToUInt16(r["AST"].ToString());
                 _tst[i].stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
-                _tst[i].calcAvg();
                 _TeamOrder.Add(_tst[i].name, i);
+                i++;
+            }
+
+            q = "select * from PlayoffTeams;";
+            res = db.GetDataTable(q);
+            
+            i = 0;
+
+            foreach (DataRow r in res.Rows)
+            {
+                _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
+                _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                _tst[i].pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+
+                _tst[i].calcAvg();
                 i++;
             }
 
@@ -938,6 +1000,17 @@ namespace NBA_2K12_Correct_Team_Stats
                 _bshist.Add(bse);
             }
 
+            try
+            {
+                q = "select CurSeason from Misc limit 1;";
+                res = db.GetDataTable(q);
+                curSeason = Convert.ToInt32(res.Rows[0]["CurSeason"].ToString());
+            }
+            catch
+            {
+                curSeason = 1;
+            }
+
             if (updateCombo)
             {
                 cmbTeam1.Items.Clear();
@@ -950,60 +1023,14 @@ namespace NBA_2K12_Correct_Team_Stats
             return _tst;
         }
 
-        private void prepareWindow(bool isCustom)
-        {
-            if (isCustom)
-            {
-                txt3PA1.IsReadOnly = false;
-                txt3PM1.IsReadOnly = false;
-                txtAST1.IsReadOnly = false;
-                txtBLK1.IsReadOnly = false;
-                txtDREB1.IsReadOnly = false;
-                txtFGA1.IsReadOnly = false;
-                txtFGM1.IsReadOnly = false;
-                txtFOUL1.IsReadOnly = false;
-                txtFTA1.IsReadOnly = false;
-                txtFTM1.IsReadOnly = false;
-                txtL1.IsReadOnly = false;
-                txtOREB1.IsReadOnly = false;
-                txtPA1.IsReadOnly = false;
-                txtPF1.IsReadOnly = false;
-                txtSTL1.IsReadOnly = false;
-                txtTO1.IsReadOnly = false;
-                txtW1.IsReadOnly = false;
-                btnSaveTS.Content = "Save To Disk";
-                btnLoadUpdate.Content = "Update with new Box Score";
-                btnSaveCustomTeam.Visibility = Visibility.Visible;
-                btnInject.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                txt3PA1.IsReadOnly = true;
-                txt3PM1.IsReadOnly = true;
-                txtAST1.IsReadOnly = true;
-                txtBLK1.IsReadOnly = true;
-                txtDREB1.IsReadOnly = true;
-                txtFGA1.IsReadOnly = true;
-                txtFGM1.IsReadOnly = true;
-                txtFOUL1.IsReadOnly = true;
-                txtFTA1.IsReadOnly = true;
-                txtFTM1.IsReadOnly = true;
-                txtL1.IsReadOnly = true;
-                txtOREB1.IsReadOnly = true;
-                txtPA1.IsReadOnly = true;
-                txtPF1.IsReadOnly = true;
-                txtSTL1.IsReadOnly = true;
-                txtTO1.IsReadOnly = true;
-                txtW1.IsReadOnly = true;
-                btnSaveTS.Content = "Save Team Stats";
-                btnLoadUpdate.Content = "Load & Update Team Stats";
-                btnSaveCustomTeam.Visibility = Visibility.Hidden;
-                btnInject.Visibility = Visibility.Hidden;
-            }
-        }
-
         private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
         {
+            if (isTSTEmpty())
+            {
+                updateStatus("No file is loaded or the file currently loaded is empty");
+                return;
+            }
+
             if (!isCustom)
             {
                 TeamStats[] temptst = new TeamStats[30];
@@ -1205,79 +1232,158 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (!bs.doNotUpdate)
                 {
-                    // Add win & loss
-                    if (bs.PTS1 > bs.PTS2)
+                    if (!bs.isPlayoff)
                     {
-                        tst[id1].winloss[0]++;
-                        tst[id2].winloss[1]++;
+                        // Add win & loss
+                        if (bs.PTS1 > bs.PTS2)
+                        {
+                            tst[id1].winloss[0]++;
+                            tst[id2].winloss[1]++;
+                        }
+                        else
+                        {
+                            tst[id1].winloss[1]++;
+                            tst[id2].winloss[0]++;
+                        }
+                        // Add minutes played
+                        tst[id1].stats[M] += 48;
+                        tst[id2].stats[M] += 48;
+
+                        // Add Points For
+                        tst[id1].stats[PF] += bs.PTS1;
+                        tst[id2].stats[PF] += bs.PTS2;
+
+                        // Add Points Against
+                        tst[id1].stats[PA] += bs.PTS2;
+                        tst[id2].stats[PA] += bs.PTS1;
+
+                        //
+                        tst[id1].stats[FGM] += bs.FGM1;
+                        tst[id2].stats[FGM] += bs.FGM2;
+
+                        tst[id1].stats[FGA] += bs.FGA1;
+                        tst[id2].stats[FGA] += bs.FGA2;
+
+                        //
+                        tst[id1].stats[TPM] += bs.TPM1;
+                        tst[id2].stats[TPM] += bs.TPM2;
+
+                        //
+                        tst[id1].stats[TPA] += bs.TPA1;
+                        tst[id2].stats[TPA] += bs.TPA2;
+
+                        //
+                        tst[id1].stats[FTM] += bs.FTM1;
+                        tst[id2].stats[FTM] += bs.FTM2;
+
+                        //
+                        tst[id1].stats[FTA] += bs.FTA1;
+                        tst[id2].stats[FTA] += bs.FTA2;
+
+                        //
+                        tst[id1].stats[OREB] += bs.OFF1;
+                        tst[id2].stats[OREB] += bs.OFF2;
+
+                        //
+                        tst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                        tst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                        //
+                        tst[id1].stats[STL] += bs.STL1;
+                        tst[id2].stats[STL] += bs.STL2;
+
+                        //
+                        tst[id1].stats[TO] += bs.TO1;
+                        tst[id2].stats[TO] += bs.TO2;
+
+                        //
+                        tst[id1].stats[BLK] += bs.BLK1;
+                        tst[id2].stats[BLK] += bs.BLK2;
+
+                        //
+                        tst[id1].stats[AST] += bs.AST1;
+                        tst[id2].stats[AST] += bs.AST2;
+
+                        //
+                        tst[id1].stats[FOUL] += bs.PF1;
+                        tst[id2].stats[FOUL] += bs.PF2;
                     }
                     else
                     {
-                        tst[id1].winloss[1]++;
-                        tst[id2].winloss[0]++;
+                        // Add win & loss
+                        if (bs.PTS1 > bs.PTS2)
+                        {
+                            tst[id1].pl_winloss[0]++;
+                            tst[id2].pl_winloss[1]++;
+                        }
+                        else
+                        {
+                            tst[id1].pl_winloss[1]++;
+                            tst[id2].pl_winloss[0]++;
+                        }
+                        // Add minutes played
+                        tst[id1].pl_stats[M] += 48;
+                        tst[id2].pl_stats[M] += 48;
+
+                        // Add Points For
+                        tst[id1].pl_stats[PF] += bs.PTS1;
+                        tst[id2].pl_stats[PF] += bs.PTS2;
+
+                        // Add Points Against
+                        tst[id1].pl_stats[PA] += bs.PTS2;
+                        tst[id2].pl_stats[PA] += bs.PTS1;
+
+                        //
+                        tst[id1].pl_stats[FGM] += bs.FGM1;
+                        tst[id2].pl_stats[FGM] += bs.FGM2;
+
+                        tst[id1].pl_stats[FGA] += bs.FGA1;
+                        tst[id2].pl_stats[FGA] += bs.FGA2;
+
+                        //
+                        tst[id1].pl_stats[TPM] += bs.TPM1;
+                        tst[id2].pl_stats[TPM] += bs.TPM2;
+
+                        //
+                        tst[id1].pl_stats[TPA] += bs.TPA1;
+                        tst[id2].pl_stats[TPA] += bs.TPA2;
+
+                        //
+                        tst[id1].pl_stats[FTM] += bs.FTM1;
+                        tst[id2].pl_stats[FTM] += bs.FTM2;
+
+                        //
+                        tst[id1].pl_stats[FTA] += bs.FTA1;
+                        tst[id2].pl_stats[FTA] += bs.FTA2;
+
+                        //
+                        tst[id1].pl_stats[OREB] += bs.OFF1;
+                        tst[id2].pl_stats[OREB] += bs.OFF2;
+
+                        //
+                        tst[id1].pl_stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                        tst[id2].pl_stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                        //
+                        tst[id1].pl_stats[STL] += bs.STL1;
+                        tst[id2].pl_stats[STL] += bs.STL2;
+
+                        //
+                        tst[id1].pl_stats[TO] += bs.TO1;
+                        tst[id2].pl_stats[TO] += bs.TO2;
+
+                        //
+                        tst[id1].pl_stats[BLK] += bs.BLK1;
+                        tst[id2].pl_stats[BLK] += bs.BLK2;
+
+                        //
+                        tst[id1].pl_stats[AST] += bs.AST1;
+                        tst[id2].pl_stats[AST] += bs.AST2;
+
+                        //
+                        tst[id1].pl_stats[FOUL] += bs.PF1;
+                        tst[id2].pl_stats[FOUL] += bs.PF2;
                     }
-                    // Add minutes played
-                    tst[id1].stats[M] += 48;
-                    tst[id2].stats[M] += 48;
-
-                    // Add Points For
-                    tst[id1].stats[PF] += bs.PTS1;
-                    tst[id2].stats[PF] += bs.PTS2;
-
-                    // Add Points Against
-                    tst[id1].stats[PA] += bs.PTS2;
-                    tst[id2].stats[PA] += bs.PTS1;
-
-                    //
-                    tst[id1].stats[FGM] += bs.FGM1;
-                    tst[id2].stats[FGM] += bs.FGM2;
-
-                    tst[id1].stats[FGA] += bs.FGA1;
-                    tst[id2].stats[FGA] += bs.FGA2;
-
-                    //
-                    tst[id1].stats[TPM] += bs.TPM1;
-                    tst[id2].stats[TPM] += bs.TPM2;
-
-                    //
-                    tst[id1].stats[TPA] += bs.TPA1;
-                    tst[id2].stats[TPA] += bs.TPA2;
-
-                    //
-                    tst[id1].stats[FTM] += bs.FTM1;
-                    tst[id2].stats[FTM] += bs.FTM2;
-
-                    //
-                    tst[id1].stats[FTA] += bs.FTA1;
-                    tst[id2].stats[FTA] += bs.FTA2;
-
-                    //
-                    tst[id1].stats[OREB] += bs.OFF1;
-                    tst[id2].stats[OREB] += bs.OFF2;
-
-                    //
-                    tst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                    tst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
-
-                    //
-                    tst[id1].stats[STL] += bs.STL1;
-                    tst[id2].stats[STL] += bs.STL2;
-
-                    //
-                    tst[id1].stats[TO] += bs.TO1;
-                    tst[id2].stats[TO] += bs.TO2;
-
-                    //
-                    tst[id1].stats[BLK] += bs.BLK1;
-                    tst[id2].stats[BLK] += bs.BLK2;
-
-                    //
-                    tst[id1].stats[AST] += bs.AST1;
-                    tst[id2].stats[AST] += bs.AST2;
-
-                    //
-                    tst[id1].stats[FOUL] += bs.PF1;
-                    tst[id2].stats[FOUL] += bs.PF2;
 
                     tst[id1].calcAvg();
                     tst[id2].calcAvg();
@@ -1382,10 +1488,19 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnEraseSettings_Click(object sender, RoutedEventArgs e)
         {
-            string safefn = Tools.getSafeFilename(txtFile.Text);
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Please select the Career file you want to reset the settings for...";
+            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+            + "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                "Create A Legend files (*.SMG)|*.SMG";
+            if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
+            ofd.ShowDialog();
+            if (ofd.FileName == "") return;
+
+            string safefn = Tools.getSafeFilename(ofd.FileName);
             string SettingsFile = AppDocsPath + safefn + ".cfg";
             if (File.Exists(SettingsFile)) File.Delete(SettingsFile);
-            MessageBox.Show("Settings for this file have been erased. Please reload the file to set them again.");
+            MessageBox.Show("Settings for this file have been erased. You'll be asked to set them again next time you import it.");
         }
 
         private void _AnyTextbox_GotFocus(object sender, RoutedEventArgs e)
@@ -1606,31 +1721,6 @@ namespace NBA_2K12_Correct_Team_Stats
             tst[id].calcAvg();
         }
 
-        private void mnuFileCreateCustom_Click(object sender, RoutedEventArgs e)
-        {
-            customLeagueW clw = new customLeagueW();
-            clw.ShowDialog();
-
-            isCustom = true;
-            prepareWindow(isCustom);
-            pt = new PlayoffTree();
-
-            cmbTeam1.Items.Clear();
-            TeamOrder = new SortedDictionary<string, int>();
-            for (int i = 0; i < 30; i++)
-            {
-                if (tst[i].name != "")
-                {
-                    TeamOrder.Add(tst[i].name, i);
-                }
-            }
-
-            foreach (KeyValuePair<string, int> kvp in TeamOrder)
-            {
-                cmbTeam1.Items.Add(kvp.Key);
-            }
-        }
-
         private void mnuExit_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(-1);
@@ -1657,9 +1747,51 @@ namespace NBA_2K12_Correct_Team_Stats
                 MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
                 return;
             }
+            else
+            {
+                bool incompatible = false;
+
+                if (temp.Length != tst.Length) incompatible = true;
+                else
+                {
+                    for (int i = 0; i < temp.Length; i++)
+                    {
+                        if (temp[i].name != tst[i].name)
+                        {
+                            incompatible = true;
+                            break;
+                        }
+
+                        if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) || (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                        {
+                            incompatible = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (incompatible)
+                {
+                    MessageBoxResult r = MessageBox.Show("The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
+                        "\nThis could be happening for a number of reasons:\n\n" +
+                        "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
+                        "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
+                        "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
+                        "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
+                        "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
+                        "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
+                        "to export the stats from the database to your 2K save.\n\n" +
+                        "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
+                        "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                    if (r == MessageBoxResult.No) return;
+                }
+            }
+
+            
 
             StatsTracker.updateSavegame(fn, tst, TeamOrder, pt);
-            MessageBox.Show("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
+            updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
         }
@@ -1690,41 +1822,62 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
         {
-            string file = AppDocsPath + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
-            if (File.Exists(file))
+            string file = "";
+
+            if (!String.IsNullOrWhiteSpace(txtFile.Text))
             {
-                if (App.realNBAonly)
+                MessageBoxResult r = MessageBox.Show("This will overwrite the stats in the currently opened file. Are you sure?\n\nClick Yes to overwrite.\nClick No to create a new file automatically. Any unsaved changes to the current file will be lost.\nClick Cancel to return to the main window.", "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (r == MessageBoxResult.Yes) file = currentDB;
+                else if (r == MessageBoxResult.No) txtFile.Text = "";
+                else return;
+
+            }
+
+            if (String.IsNullOrWhiteSpace(txtFile.Text))
+            {
+                file = AppDocsPath + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
+                if (File.Exists(file))
                 {
-                    MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-                    if (r == MessageBoxResult.No)
-                        return;
-                }
-                else
-                {
-                    MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-                    if (r == MessageBoxResult.No)
+                    if (App.realNBAonly)
                     {
-                        tst = getCustomStats(file, ref TeamOrder, ref pt, ref bshist);
+                        MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                        if (r == MessageBoxResult.No)
+                            return;
+                    }
+                    else
+                    {
+                        MessageBoxResult r = MessageBox.Show("Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?", "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                        if (r == MessageBoxResult.No)
+                        {
+                            tst = getCustomStats(file, ref TeamOrder, ref pt, ref bshist);
 
-                        isCustom = true;
-                        prepareWindow(isCustom);
-
-                        cmbTeam1.SelectedIndex = -1;
-                        cmbTeam1.SelectedIndex = 0;
-                        txtFile.Text = file;
-                        return;
+                            cmbTeam1.SelectedIndex = -1;
+                            cmbTeam1.SelectedIndex = 0;
+                            txtFile.Text = file;
+                            return;
+                        }
                     }
                 }
             }
+
             getRealStatsW grsw = new getRealStatsW();
             grsw.ShowDialog();
             if (realtst[0].name != "Canceled")
             {
+                int len = realtst.GetLength(0);
+
+                tst = new TeamStats[len];
+                for (int i = 0; i < len; i++)
+                {
+                    tst[i] = new TeamStats();
+                }
+
                 tst = realtst;
                 saveTeamStatsFile(file);
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
-                txtFile.Text = "Real NBA Stats";
+                txtFile.Text = file;
+                tst = getCustomStats(file, ref TeamOrder, ref pt, ref bshist);
             }
         }
 
@@ -1810,6 +1963,7 @@ namespace NBA_2K12_Correct_Team_Stats
         private void txtFile_TextChanged(object sender, TextChangedEventArgs e)
         {
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
+            currentDB = txtFile.Text;
         }
 
         private void btnTrends_Click(object sender, RoutedEventArgs e)
@@ -1976,8 +2130,24 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnTeamOverview_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrEmpty(currentDB)) return;
+            /*
+            if (!isCustom)
+            {
+                MessageBox.Show("Save the data into a Team Stats file before using the tool's features.");
+                return;
+            }
+            */
+            if (isTSTEmpty())
+            {
+                MessageBox.Show("You need to create a team or import stats before using the Analysis features.");
+                return;
+            }
+
+            dispatcherTimer.Stop();
             teamOverviewW tow = new teamOverviewW(tst);
             tow.ShowDialog();
+            dispatcherTimer.Start();
         }
 
         private void btnOpenCustom_Click(object sender, RoutedEventArgs e)
@@ -2009,8 +2179,145 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnSaveTeamStats_Click(object sender, RoutedEventArgs e)
         {
-            saveTeamStatsFile(currentDB);
-            txtFile.Text = currentDB;
+            if (!isCustom)
+            {
+                btnSaveTS_Click(null, null);
+            }
+            else
+            {
+                saveTeamStatsFile(currentDB);
+                txtFile.Text = currentDB;
+            }
+        }
+
+        private void btnLeagueOverview_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(currentDB)) return;
+            /*
+            if (!isCustom)
+            {
+                MessageBox.Show("Save the data into a Team Stats file before using the tool's features.");
+                return;
+            }
+            */
+            if (isTSTEmpty())
+            {
+                MessageBox.Show("You need to create a team or import stats before using any Analysis features.");
+                return;
+            }
+
+            dispatcherTimer.Stop();
+            leagueOverviewW low = new leagueOverviewW(tst);
+            low.ShowDialog();
+            dispatcherTimer.Start();
+        }
+
+        private void mnuFileNew_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Team Stats Table (*.tst)|*.tst";
+            sfd.InitialDirectory = AppDocsPath;
+            sfd.ShowDialog();
+
+            if (sfd.FileName == "") return;
+
+            db = new SQLiteDatabase(sfd.FileName);
+
+            prepareNewDB(db);
+
+            tst = new TeamStats[1];
+            tst[0] = new TeamStats("$$NewDB");
+
+            txtFile.Text = sfd.FileName;
+
+            //
+            // tst = new TeamStats[2];
+            
+        }
+
+        private bool isTSTEmpty()
+        {
+            try
+            {
+                if (tst[0].name == "$$NewDB") return true;
+                else return false;
+            }
+            catch
+            {
+                tst = new TeamStats[1];
+                tst[0] = new TeamStats("$$NewDB");
+                return true;
+            }
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(currentDB)) return;
+
+            addInfo = "";
+            addW aw = new addW();
+            aw.ShowDialog();
+
+            if (!String.IsNullOrEmpty(addInfo))
+            {
+                string[] parts = Regex.Split(addInfo, "\r\n");
+                List<string> newTeams = new List<string>();
+                foreach (string s in parts)
+                {
+                    if (!String.IsNullOrWhiteSpace(s))
+                        newTeams.Add(s);
+                }
+
+                int oldlen = tst.GetLength(0);
+                if (isTSTEmpty()) oldlen--;
+
+                Array.Resize(ref tst, oldlen + newTeams.Count);
+
+                for (int i = 0; i < newTeams.Count; i++)
+                {
+                    tst[oldlen + i] = new TeamStats(newTeams[i]);
+                    TeamOrder.Add(newTeams[i], oldlen + i);
+                }
+            }
+        }
+
+        private void btnGrabNBAStats_Click(object sender, RoutedEventArgs e)
+        {
+            mnuFileGetRealStats_Click(null, null);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void mnuMiscStartNewSeason_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isTSTEmpty())
+            {
+                MessageBoxResult r = MessageBox.Show("Are you sure you want to do this? All current regular season & playoff\n"
+                                                   + "stats for all teams will be erased permanently. This is an irreversible\n"
+                                                   + "action. Box Scores will be retained.", "NBA Stats Tracker", MessageBoxButton.YesNo,
+                                                   MessageBoxImage.Question);
+                if (r == MessageBoxResult.Yes)
+                {
+                    MainWindow.curSeason++;
+                    foreach (TeamStats ts in tst)
+                    {
+                        for (int i = 0; i < ts.stats.Length; i++)
+                        {
+                            ts.stats[i] = 0;
+                            ts.pl_stats[i] = 0;
+                        }
+                        ts.winloss[0] = 0;
+                        ts.winloss[1] = 0;
+                        ts.pl_winloss[0] = 0;
+                        ts.pl_winloss[1] = 0;
+                        ts.calcAvg();
+                    }
+                }
+                updateStatus("New season started. You should save the database.");
+            }
         }
     }
 }

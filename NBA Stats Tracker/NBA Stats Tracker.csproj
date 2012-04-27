@@ -67,6 +67,9 @@
     <Compile Include="aboutW.xaml.cs">
       <DependentUpon>aboutW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="addW.xaml.cs">
+      <DependentUpon>addW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="askTeamW.xaml.cs">
       <DependentUpon>askTeamW.xaml</DependentUpon>
     </Compile>
@@ -79,12 +82,12 @@
     <Compile Include="getRealStatsW.xaml.cs">
       <DependentUpon>getRealStatsW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="leagueOverviewW.xaml.cs">
+      <DependentUpon>leagueOverviewW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LeftosCommonLibrary.cs" />
     <Compile Include="playoffTreeW.xaml.cs">
       <DependentUpon>playoffTreeW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="customLeagueW.xaml.cs">
-      <DependentUpon>customLeagueW.xaml</DependentUpon>
     </Compile>
     <Compile Include="SQLiteDatabase.cs" />
     <Compile Include="StatsTracker.cs" />
@@ -101,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="addW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="askTeamW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -110,6 +117,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="getRealStatsW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="leagueOverviewW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -130,10 +141,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="playoffTreeW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="customLeagueW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

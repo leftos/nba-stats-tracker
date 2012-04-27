@@ -277,25 +277,36 @@ namespace NBA_2K12_Correct_Team_Stats
             return gamesInSeason;
         }
 
-        public static int[][] calculateRankings(TeamStats[] _teamStats)
+        public static int[][] calculateRankings(TeamStats[] _teamStats, bool playoffs = false)
         {
-            int[][] rating = new int[30][];
-            for (int i = 0; i < 30; i++)
+            int len = _teamStats.GetLength(0);
+            int[][] rating = new int[len][];
+            for (int i = 0; i < len; i++)
             {
                 rating[i] = new int[20];
             }
-            for (int k = 0; k < 30; k++)
+            for (int k = 0; k < len; k++)
             {
                 for (int i = 0; i < 19; i++)
                 {
                     rating[k][i] = 1;
-                    for (int j = 0; j < 30; j++)
+                    for (int j = 0; j < len; j++)
                     {
                         if (j != k)
                         {
-                            if (_teamStats[j].averages[i] > _teamStats[k].averages[i])
+                            if (!playoffs)
                             {
-                                rating[k][i]++;
+                                if (_teamStats[j].averages[i] > _teamStats[k].averages[i])
+                                {
+                                    rating[k][i]++;
+                                }
+                            }
+                            else
+                            {
+                                if (_teamStats[j].pl_averages[i] > _teamStats[k].pl_averages[i])
+                                {
+                                    rating[k][i]++;
+                                }
                             }
                         }
                     }
@@ -376,50 +387,48 @@ namespace NBA_2K12_Correct_Team_Stats
             MemoryStream ms = new MemoryStream(br.ReadBytes(Convert.ToInt32(br.BaseStream.Length)), true);
             br.Close();
             byte[] buf = new byte[2];
-
-            if ((pt == null) || (pt.teams[0] == "Invalid"))
+            
+            foreach (KeyValuePair<string, int> kvp in TeamOrder)
             {
-                foreach (KeyValuePair<string, int> kvp in TeamOrder)
+                if (kvp.Key != "")
                 {
-                    if (kvp.Key != "")
-                    {
-                        _teamStats[kvp.Value].name = kvp.Key;
-                    }
-                }
-                for (int i = 0; i < 30; i++)
-                {
-                    ms.Seek(_teamStats[i].offset, SeekOrigin.Begin);
-                    ms.Read(buf, 0, 2);
-                    _teamStats[i].winloss[0] = buf[0];
-                    _teamStats[i].winloss[1] = buf[1];
-                    for (int j = 0; j < 18; j++)
-                    {
-                        ms.Read(buf, 0, 2);
-                        _teamStats[i].stats[j] = BitConverter.ToUInt16(buf, 0);
-                    }
+                    _teamStats[kvp.Value].name = kvp.Key;
                 }
             }
-            else
+            for (int i = 0; i < 30; i++)
+            {
+                ms.Seek(_teamStats[i].offset, SeekOrigin.Begin);
+                ms.Read(buf, 0, 2);
+                _teamStats[i].winloss[0] = buf[0];
+                _teamStats[i].winloss[1] = buf[1];
+                for (int j = 0; j < 18; j++)
+                {
+                    ms.Read(buf, 0, 2);
+                    _teamStats[i].stats[j] = BitConverter.ToUInt16(buf, 0);
+                }
+            }
+
+            if (pt != null && pt.teams[0] != "Invalid")
             {
                 for (int i = 0; i < 16; i++)
                 {
                     int id = TeamOrder[pt.teams[i]];
-                    ms.Seek(_teamStats[id].offset, SeekOrigin.Begin);
+                    ms.Seek(_teamStats[id].pl_offset, SeekOrigin.Begin);
                     ms.Read(buf, 0, 2);
                     _teamStats[id].name = pt.teams[i];
-                    _teamStats[id].winloss[0] = buf[0];
-                    _teamStats[id].winloss[1] = buf[1];
+                    _teamStats[id].pl_winloss[0] = buf[0];
+                    _teamStats[id].pl_winloss[1] = buf[1];
                     for (int j = 0; j < 18; j++)
                     {
                         ms.Read(buf, 0, 2);
-                        _teamStats[id].stats[j] = BitConverter.ToUInt16(buf, 0);
+                        _teamStats[id].pl_stats[j] = BitConverter.ToUInt16(buf, 0);
                     }
                 }
             }
-            int temp;
-            for (int i = 0; i < 30; i++)
+
+            for (int i = 0; i < _teamStats.Length; i++)
             {
-                temp = _teamStats[i].calcAvg();
+                _teamStats[i].calcAvg();
             }
 
             return _teamStats;
@@ -452,10 +461,10 @@ namespace NBA_2K12_Correct_Team_Stats
                 int inPlayoffs = checkIfIntoPlayoffs(fn, _teamStats, ref TeamOrder, ref pt);
                 if (inPlayoffs == 1)
                 {
-                    _teamStats[TeamOrder[pt.teams[0]]].offset = _teamStats[0].offset - 1440;
+                    _teamStats[TeamOrder[pt.teams[0]]].pl_offset = _teamStats[0].offset - 1440;
                     for (int i = 1; i < 16; i++)
                     {
-                        _teamStats[TeamOrder[pt.teams[i]]].offset = _teamStats[TeamOrder[pt.teams[i - 1]]].offset + 40;
+                        _teamStats[TeamOrder[pt.teams[i]]].pl_offset = _teamStats[TeamOrder[pt.teams[i - 1]]].pl_offset + 40;
                     }
                 }
                 else if (inPlayoffs == -1) return;
@@ -464,7 +473,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 for (int i = 1; i < 16; i++)
                 {
-                    _teamStats[TeamOrder[pt.teams[i]]].offset = _teamStats[TeamOrder[pt.teams[i - 1]]].offset + 40;
+                    _teamStats[TeamOrder[pt.teams[i]]].pl_offset = _teamStats[TeamOrder[pt.teams[i - 1]]].pl_offset + 40;
                 }
             }
         }
@@ -613,26 +622,24 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 for (int i = 0; i < 16; i++)
                 {
-                    ms.Seek(tst[TeamOrder[pt.teams[i]]].offset, SeekOrigin.Begin);
-                    ms.Write(tst[TeamOrder[pt.teams[i]]].winloss, 0, 2);
+                    ms.Seek(tst[TeamOrder[pt.teams[i]]].pl_offset, SeekOrigin.Begin);
+                    ms.Write(tst[TeamOrder[pt.teams[i]]].pl_winloss, 0, 2);
                     for (int j = 0; j < 18; j++)
                     {
-                        ms.Write(BitConverter.GetBytes(tst[TeamOrder[pt.teams[i]]].stats[j]), 0, 2);
+                        ms.Write(BitConverter.GetBytes(tst[TeamOrder[pt.teams[i]]].pl_stats[j]), 0, 2);
                     }
                 }
             }
-            else
+
+            for (int i = 0; i < 30; i++)
             {
-                for (int i = 0; i < 30; i++)
+                ms.Seek(tst[i].offset, SeekOrigin.Begin);
+                ms.Write(tst[i].winloss, 0, 2);
+                for (int j = 0; j < 18; j++)
                 {
-                    ms.Seek(tst[i].offset, SeekOrigin.Begin);
-                    ms.Write(tst[i].winloss, 0, 2);
-                    for (int j = 0; j < 18; j++)
-                    {
-                        ms.Write(BitConverter.GetBytes(tst[i].stats[j]), 0, 2);
-                    }
+                    ms.Write(BitConverter.GetBytes(tst[i].stats[j]), 0, 2);
                 }
-            }
+            }            
 
             BinaryWriter bw = new BinaryWriter(File.OpenWrite(AppTempPath + Tools.getSafeFilename(fn)));
             ms.Position = 4;
@@ -1042,6 +1049,7 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         public string name;
         public Int32 offset = 0;
+        public Int32 pl_offset = 0;
         public const int M = 0, PF = 1, PA = 2, FGM = 4, FGA = 5, TPM = 6, TPA = 7,
             FTM = 8, FTA = 9, OREB = 10, DREB = 11, STL = 12, TO = 13, BLK = 14, AST = 15,
             FOUL = 16;
@@ -1055,13 +1063,16 @@ namespace NBA_2K12_Correct_Team_Stats
         /// 16: FOUL
         /// </summary>
         public UInt16[] stats = new UInt16[18];
+        public UInt16[] pl_stats = new UInt16[18];
         /// <summary>
         /// Averages for each team.
         /// 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
         /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%
         /// </summary>
         public float[] averages = new float[19];
+        public float[] pl_averages = new float[19];
         public byte[] winloss = new byte[2];
+        public byte[] pl_winloss = new byte[2];
 
         public TeamStats()
         {
@@ -1072,13 +1083,17 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             winloss[0] = Convert.ToByte(0);
             winloss[1] = Convert.ToByte(0);
+            pl_winloss[0] = Convert.ToByte(0);
+            pl_winloss[1] = Convert.ToByte(0);
             for (int i = 0; i < stats.Length; i++)
             {
                 stats[i] = 0;
+                pl_stats[i] = 0;
             }
             for (int i = 0; i < averages.Length; i++)
             {
                 averages[i] = 0;
+                pl_averages[i] = 0;
             }
         }
 
@@ -1091,6 +1106,8 @@ namespace NBA_2K12_Correct_Team_Stats
         public int calcAvg()
         {
             int games = winloss[0] + winloss[1];
+            int pl_games = pl_winloss[0] + pl_winloss[1];
+
             if (games == 0) games = -1;
             averages[Wp] = (float)winloss[0] / games;
             averages[Weff] = averages[Wp] * winloss[0];
@@ -1111,6 +1128,27 @@ namespace NBA_2K12_Correct_Team_Stats
             averages[APG] = (float)stats[AST] / games;
             averages[FPG] = (float)stats[FOUL] / games;
             averages[PD] = (float)averages[PPG] - (float)averages[PAPG];
+
+            pl_averages[Wp] = (float)pl_winloss[0] / pl_games;
+            pl_averages[Weff] = pl_averages[Wp] * pl_winloss[0];
+            pl_averages[PPG] = (float)pl_stats[PF] / pl_games;
+            pl_averages[PAPG] = (float)pl_stats[PA] / pl_games;
+            pl_averages[FGp] = (float)pl_stats[FGM] / pl_stats[FGA];
+            pl_averages[FGeff] = pl_averages[FGp] * ((float)pl_stats[FGM] / pl_games);
+            pl_averages[TPp] = (float)pl_stats[TPM] / pl_stats[TPA];
+            pl_averages[TPeff] = pl_averages[TPp] * ((float)pl_stats[TPM] / pl_games);
+            pl_averages[FTp] = (float)pl_stats[FTM] / pl_stats[FTA];
+            pl_averages[FTeff] = pl_averages[FTp] * ((float)pl_stats[FTM] / pl_games);
+            pl_averages[RPG] = (float)(pl_stats[OREB] + pl_stats[DREB]) / pl_games;
+            pl_averages[ORPG] = (float)pl_stats[OREB] / pl_games;
+            pl_averages[DRPG] = (float)pl_stats[DREB] / pl_games;
+            pl_averages[SPG] = (float)pl_stats[STL] / pl_games;
+            pl_averages[BPG] = (float)pl_stats[BLK] / pl_games;
+            pl_averages[TPG] = (float)pl_stats[TO] / pl_games;
+            pl_averages[APG] = (float)pl_stats[AST] / pl_games;
+            pl_averages[FPG] = (float)pl_stats[FOUL] / pl_games;
+            pl_averages[PD] = (float)pl_averages[PPG] - (float)pl_averages[PAPG];
+
             return games;
         }
 
@@ -1118,6 +1156,12 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             int games = winloss[0] + winloss[1];
             return games;
+        }
+
+        internal int getPlayoffGames()
+        {
+            int pl_games = pl_winloss[0] + pl_winloss[1];
+            return pl_games;
         }
     }
 
@@ -1127,18 +1171,19 @@ namespace NBA_2K12_Correct_Team_Stats
             FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
             TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17, PD = 18;
 
-        public int[][] rankings = new int[30][];
+        public int[][] rankings;
 
         public Rankings(TeamStats[] _tst)
         {
-            for (int i = 0; i < 30; i++)
+            rankings = new int[_tst.Length][];
+            for (int i = 0; i < _tst.Length; i++)
             {
                 rankings[i] = new int[19];
             }
             for (int j = 0; j < 19; j++)
             {
                 Dictionary<int, float> averages = new Dictionary<int,float>();
-                for (int i = 0; i<30;i++)
+                for (int i = 0; i<_tst.Length;i++)
                 {
                     averages.Add(i, _tst[i].averages[j]);
                 }

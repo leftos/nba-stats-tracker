@@ -225,8 +225,28 @@ class SQLiteDatabase
         }
     }
     
-    public string ConvertDateTimeToSQLite(DateTime dt)
+    public static string ConvertDateTimeToSQLite(DateTime dt)
     {
         return String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt);
+    }
+
+    public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
+    {
+        if (query.EndsWith(";")) 
+            query = query.Remove(query.Length - 1);
+
+        if (!addWhere)
+        {
+            query = String.Concat(query, String.Format(" AND (Date >= '{0}' AND Date <= '{1}');",
+                SQLiteDatabase.ConvertDateTimeToSQLite(dStart),
+                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd)));
+        }
+        else
+        {
+            query = String.Concat(query, String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}');",
+                SQLiteDatabase.ConvertDateTimeToSQLite(dStart),
+                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd)));
+        }
+        return query;
     }
 }

@@ -103,6 +103,9 @@ Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\up.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Warriors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Wizards.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLite.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.pdb"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"

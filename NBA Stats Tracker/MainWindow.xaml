@@ -1,66 +1,63 @@
 ﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="NBA Stats Tracker PRE-RELEASE - Lefteris &quot;Leftos&quot; Aslanoglou" Height="424" Width="536" Icon="/NBA%202K12%20Correct%20Team%20Stats;component/NBA%202K12.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="NBA Stats Tracker PRE-RELEASE - Lefteris &quot;Leftos&quot; Aslanoglou" Height="415" Width="612" Icon="/NBA%202K12%20Correct%20Team%20Stats;component/NBA%202K12.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
-        <Button Content="Open NBA 2K12 Save" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0" Name="btnSelect" VerticalAlignment="Top" Width="131" Click="btnSelect_Click" TabIndex="2" />
-        <Button Content="CRC" Height="23" HorizontalAlignment="Left" Margin="12,350,0,0" Name="btnCRC" VerticalAlignment="Top" Width="75" Click="btnCRC_Click" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top" Width="490" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TabIndex="1" TextChanged="txtFile_TextChanged" />
-        <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="93,350,0,0" Name="btnSave" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
-        <Button Content="Load &amp; Update Team Stats" Height="23" HorizontalAlignment="Left" Margin="1068,348,0,0" Name="btnLoadUpdate" VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="29" />
-        <Button Content="Erase Settings" Height="23" HorizontalAlignment="Left" Margin="409,58,0,0" Name="btnEraseSettings" VerticalAlignment="Top" Width="93" Click="btnEraseSettings_Click" TabIndex="3" />
-        <Button Content="Show Averages" Height="23" HorizontalAlignment="Left" Margin="1131,107,0,0" Name="btnShowAvg" VerticalAlignment="Top" Width="92" IsDefault="False" Click="btnShowAvg_Click" TabIndex="23" />
-        <Label Content="FGM" HorizontalAlignment="Left" Margin="745,167,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,167,0,0" Name="txtFGM1" VerticalAlignment="Top" Width="54" TabIndex="9" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="FGA" HorizontalAlignment="Left" Margin="745,191,0,0" Name="lblFGA" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,191,0,0" Name="txtFGA1" VerticalAlignment="Top" Width="54" TabIndex="10" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="3PM" HorizontalAlignment="Left" Margin="745,215,0,0" Name="label2" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,215,0,0" Name="txt3PM1" VerticalAlignment="Top" Width="54" TabIndex="11" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="3PA" HorizontalAlignment="Left" Margin="745,239,0,0" Name="label3" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,239,0,0" Name="txt3PA1" VerticalAlignment="Top" Width="54" TabIndex="12" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="FTM" HorizontalAlignment="Left" Margin="745,264,0,0" Name="label4" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,264,0,0" Name="txtFTM1" VerticalAlignment="Top" Width="54" TabIndex="13" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="FTA" Margin="745,288,-272,0" Name="label5" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,288,0,0" Name="txtFTA1" VerticalAlignment="Top" Width="54" TabIndex="14" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="OREB" HorizontalAlignment="Left" Margin="745,312,0,0" Name="label6" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,312,0,0" Name="txtOREB1" VerticalAlignment="Top" Width="54" TabIndex="15" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="DREB" HorizontalAlignment="Left" Margin="872,167,0,0" Name="label7" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,167,0,0" Name="txtDREB1" VerticalAlignment="Top" Width="54" TabIndex="16" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="STL" HorizontalAlignment="Left" Margin="872,191,0,0" Name="label8" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,191,0,0" Name="txtSTL1" VerticalAlignment="Top" Width="54" TabIndex="17" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="TO" HorizontalAlignment="Left" Margin="873,215,0,0" Name="label9" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,215,0,0" Name="txtTO1" VerticalAlignment="Top" Width="54" TabIndex="18" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="BLK" HorizontalAlignment="Left" Margin="873,239,0,0" Name="label10" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,239,0,0" Name="txtBLK1" VerticalAlignment="Top" Width="54" TabIndex="19" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="AST" HorizontalAlignment="Left" Margin="872,264,0,0" Name="label11" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,264,0,0" Name="txtAST1" VerticalAlignment="Top" Width="54" TabIndex="20" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="FOUL" HorizontalAlignment="Left" Margin="872,288,0,0" Name="label12" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,288,0,0" Name="txtFOUL1" VerticalAlignment="Top" Width="54" TabIndex="21" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="Team" HorizontalAlignment="Left" Margin="745,85,0,0" Name="label13" VerticalAlignment="Top" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="845,85,0,0" Name="cmbTeam1" VerticalAlignment="Top" Width="120" SelectionChanged="cmbTeam1_SelectionChanged" TabIndex="4" />
-        <Label Content="W" HorizontalAlignment="Left" Margin="745,114,0,0" Name="label14" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,114,0,0" Name="txtW1" VerticalAlignment="Top" Width="54" TabIndex="5" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="L" HorizontalAlignment="Left" Margin="872,116,0,0" Name="label15" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,114,0,0" Name="txtL1" VerticalAlignment="Top" Width="54" TabIndex="6" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="PF" HorizontalAlignment="Left" Margin="745,143,0,0" Name="label16" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="783,143,0,0" Name="txtPF1" VerticalAlignment="Top" Width="54" TabIndex="7" GotFocus="_AnyTextbox_GotFocus" />
-        <Label Content="PA" HorizontalAlignment="Left" Margin="872,143,0,0" Name="label17" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="911,143,0,0" Name="txtPA1" VerticalAlignment="Top" Width="54" TabIndex="8" GotFocus="_AnyTextbox_GotFocus" />
-        <Button Content="Save Team Stats" Height="23" HorizontalAlignment="Left" Margin="757,348,0,0" Name="btnSaveTS" VerticalAlignment="Top" Width="119" Click="btnSaveTS_Click" TabIndex="27" />
-        <Button Content="Scouting Report" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="1131,136,0,0" Name="btnScout" VerticalAlignment="Top" Width="92" Click="btnScout_Click" TabIndex="24" />
-        <Button Content="Team Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="590,118,0,0" Name="btnTeamCSV" VerticalAlignment="Top" Width="136" Click="btnTeamCSV_Click" TabIndex="25" />
-        <Button Content="League Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="590,147,0,0" Name="btnLeagueCSV" VerticalAlignment="Top" Width="136" Click="btnLeagueCSV_Click" TabIndex="26" />
+        <Button Content="CRC" Height="23" HorizontalAlignment="Left" Margin="925,45,0,0" Name="btnCRC" VerticalAlignment="Top" Width="75" Click="btnCRC_Click" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top" Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TabIndex="1" TextChanged="txtFile_TextChanged" />
+        <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="1006,45,0,0" Name="btnSave" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
+        <Button Content="Show Averages" Height="23" HorizontalAlignment="Left" Margin="1263,109,0,0" Name="btnShowAvg" VerticalAlignment="Top" Width="92" IsDefault="False" Click="btnShowAvg_Click" TabIndex="23" />
+        <Label Content="FGM" HorizontalAlignment="Left" Margin="877,169,0,0" Name="label1" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,169,0,0" Name="txtFGM1" VerticalAlignment="Top" Width="54" TabIndex="9" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="FGA" HorizontalAlignment="Left" Margin="877,193,0,0" Name="lblFGA" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,193,0,0" Name="txtFGA1" VerticalAlignment="Top" Width="54" TabIndex="10" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="3PM" HorizontalAlignment="Left" Margin="877,217,0,0" Name="label2" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,217,0,0" Name="txt3PM1" VerticalAlignment="Top" Width="54" TabIndex="11" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="3PA" HorizontalAlignment="Left" Margin="877,241,0,0" Name="label3" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,241,0,0" Name="txt3PA1" VerticalAlignment="Top" Width="54" TabIndex="12" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="FTM" HorizontalAlignment="Left" Margin="877,266,0,0" Name="label4" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,266,0,0" Name="txtFTM1" VerticalAlignment="Top" Width="54" TabIndex="13" GotFocus="_AnyTextbox_GotFocus" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,290,0,0" Name="txtFTA1" VerticalAlignment="Top" Width="54" TabIndex="14" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="OREB" HorizontalAlignment="Left" Margin="877,314,0,0" Name="label6" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,314,0,0" Name="txtOREB1" VerticalAlignment="Top" Width="54" TabIndex="15" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="DREB" HorizontalAlignment="Left" Margin="1004,169,0,0" Name="label7" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,169,0,0" Name="txtDREB1" VerticalAlignment="Top" Width="54" TabIndex="16" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="STL" HorizontalAlignment="Left" Margin="1004,193,0,0" Name="label8" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,193,0,0" Name="txtSTL1" VerticalAlignment="Top" Width="54" TabIndex="17" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="TO" HorizontalAlignment="Left" Margin="1005,217,0,0" Name="label9" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,217,0,0" Name="txtTO1" VerticalAlignment="Top" Width="54" TabIndex="18" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="BLK" HorizontalAlignment="Left" Margin="1005,241,0,0" Name="label10" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,241,0,0" Name="txtBLK1" VerticalAlignment="Top" Width="54" TabIndex="19" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="AST" HorizontalAlignment="Left" Margin="1004,266,0,0" Name="label11" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,266,0,0" Name="txtAST1" VerticalAlignment="Top" Width="54" TabIndex="20" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="FOUL" HorizontalAlignment="Left" Margin="1004,290,0,0" Name="label12" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,290,0,0" Name="txtFOUL1" VerticalAlignment="Top" Width="54" TabIndex="21" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="Team" HorizontalAlignment="Left" Margin="877,87,0,0" Name="label13" VerticalAlignment="Top" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="977,87,0,0" Name="cmbTeam1" VerticalAlignment="Top" Width="120" SelectionChanged="cmbTeam1_SelectionChanged" TabIndex="4" />
+        <Label Content="W" HorizontalAlignment="Left" Margin="877,116,0,0" Name="label14" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,116,0,0" Name="txtW1" VerticalAlignment="Top" Width="54" TabIndex="5" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="L" HorizontalAlignment="Left" Margin="1004,118,0,0" Name="label15" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,116,0,0" Name="txtL1" VerticalAlignment="Top" Width="54" TabIndex="6" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="PF" HorizontalAlignment="Left" Margin="877,145,0,0" Name="label16" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="915,145,0,0" Name="txtPF1" VerticalAlignment="Top" Width="54" TabIndex="7" GotFocus="_AnyTextbox_GotFocus" />
+        <Label Content="PA" HorizontalAlignment="Left" Margin="1004,145,0,0" Name="label17" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,145,0,0" Name="txtPA1" VerticalAlignment="Top" Width="54" TabIndex="8" GotFocus="_AnyTextbox_GotFocus" />
+        <Button Content="Save Team Stats" Height="23" HorizontalAlignment="Left" Margin="889,350,0,0" Name="btnSaveTS" VerticalAlignment="Top" Width="119" Click="btnSaveTS_Click" TabIndex="27" />
+        <Button Content="Scouting Report" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="1263,138,0,0" Name="btnScout" VerticalAlignment="Top" Width="92" Click="btnScout_Click" TabIndex="24" />
+        <Button Content="Team Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="722,120,0,0" Name="btnTeamCSV" VerticalAlignment="Top" Width="136" Click="btnTeamCSV_Click" TabIndex="25" />
+        <Button Content="League Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="722,149,0,0" Name="btnLeagueCSV" VerticalAlignment="Top" Width="136" Click="btnLeagueCSV_Click" TabIndex="26" />
         <Menu Height="23" HorizontalAlignment="Stretch" Name="menu1" VerticalAlignment="Top">
             <MenuItem Header="File">
-                <MenuItem Header="Open NBA 2K12 Save..." Name="mnuFileOpen" Click="mnuFileOpen_Click" InputGestureText="Ctrl+O" />
-                <MenuItem Header="Open Custom League/Saved Team Stats..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" InputGestureText="Ctrl+Shift+O" />
+                <MenuItem Header="New NST Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
+                <Separator />
+                <MenuItem Header="Open NST Database..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" InputGestureText="Ctrl+Shift+O" />
                 <MenuItem Header="Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" InputGestureText="Ctrl+Shift+R" />
                 <Separator />
                 <MenuItem Header="Save Team Stats As..." Name="mnuFileSaveTeamStats" Click="btnSaveTS_Click" InputGestureText="Ctrl+S" />
                 <Separator />
-                <MenuItem Header="Update By Box Score..." Name="mnuFileLoadAndUpdateTeamStats" Click="btnLoadUpdate_Click" InputGestureText="Ctrl+U" />
+                <MenuItem Header="Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats" Click="btnLoadUpdate_Click" InputGestureText="Ctrl+U" />
                 <Separator />
-                <MenuItem Header="Create Custom League..." Name="mnuFileCreateCustom" Click="mnuFileCreateCustom_Click" InputGestureText="Ctrl+N" />
+                <MenuItem Header="Create Custom League..." Name="mnuFileCreateCustom" Click="btnAdd_Click" InputGestureText="Ctrl+N" />
                 <Separator />
                 <MenuItem Header="Exit" Name="mnuExit" Click="mnuExit_Click" />                
             </MenuItem>
@@ -74,9 +71,12 @@
                 <Separator />
                 <MenuItem Header="Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
             </MenuItem>
-            <MenuItem Header="Export">
+            <MenuItem Header="Export (CSV)">
                 <MenuItem Header="Team Stats to CSV" Name="mnuExportTeam" Click="btnTeamCSV_Click" />
                 <MenuItem Header="League Stats to CSV" Name="mnuExportLeague" Click="btnLeagueCSV_Click" />
+            </MenuItem>
+            <MenuItem Header="Miscellanous">
+                <MenuItem Header="Start New Season" Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
@@ -84,17 +84,46 @@
                 <MenuItem Header="About" Name="mnuHelpAbout" Click="mnuHelpAbout_Click" />
             </MenuItem>
         </Menu>
-        <Button Content="Save Team" Height="23" HorizontalAlignment="Left" Margin="982,85,0,0" Name="btnSaveCustomTeam" VerticalAlignment="Top" Width="75" Click="btnSaveCustomTeam_Click" TabIndex="22" />
-        <Button Content="Inject into NBA 2K12 Save File" Height="23" HorizontalAlignment="Left" Margin="890,348,0,0" Name="btnInject" VerticalAlignment="Top" Width="167" Click="btnInject_Click" TabIndex="28" />
-        <Button Content="Compare to Other" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="590,27,0,0" Name="btnCompare" TabIndex="24" VerticalAlignment="Top" Width="136" Click="btnCompare_Click" />
-        <Button Content="Compare to Real Team" Height="23" HorizontalAlignment="Left" Margin="590,56,0,0" Name="btnCompareToReal" VerticalAlignment="Top" Width="136" Click="btnCompareToReal_Click" />
-        <Button Content="Compare With Other File" Height="23" HorizontalAlignment="Left" Margin="590,85,0,0" Name="btnCompareOtherFile" VerticalAlignment="Top" Width="136" Click="btnCompareOtherFile_Click" />
-        <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="174,350,0,0" Name="btnTest" VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
-        <Button Content="Team Overview" Height="52" HorizontalAlignment="Center" Margin="0,118,0,0" Name="btnTeamOverview" VerticalAlignment="Top" Width="190" FontSize="15" FontWeight="Bold" Click="btnTeamOverview_Click" />
-        <Button Content="Open Saved TST" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnOpenCustom" TabIndex="2" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
-        <StatusBar HorizontalAlignment="Stretch" Margin="0,361,0,0" Name="statusBar1" VerticalAlignment="Bottom">
+        <Button Content="Save Team" Height="23" HorizontalAlignment="Left" Margin="1114,87,0,0" Name="btnSaveCustomTeam" VerticalAlignment="Top" Width="75" Click="btnSaveCustomTeam_Click" TabIndex="22" />
+        <Button Content="Compare to Other" Height="23" HorizontalAlignment="Left" IsDefault="False" Margin="722,29,0,0" Name="btnCompare" TabIndex="24" VerticalAlignment="Top" Width="136" Click="btnCompare_Click" />
+        <Button Content="Compare to Real Team" Height="23" HorizontalAlignment="Left" Margin="722,58,0,0" Name="btnCompareToReal" VerticalAlignment="Top" Width="136" Click="btnCompareToReal_Click" />
+        <Button Content="Compare With Other File" Height="23" HorizontalAlignment="Left" Margin="722,87,0,0" Name="btnCompareOtherFile" VerticalAlignment="Top" Width="136" Click="btnCompareOtherFile_Click" />
+        <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="1087,45,0,0" Name="btnTest" VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
+        <Button Content="Open Saved TST" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0" Name="btnOpenCustom" TabIndex="2" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
+        <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom">
             <StatusBarItem Name="status" Content="Ready" />
         </StatusBar>
-        <Button Content="Save Team Stats" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center" Margin="162,272,162,0" Name="btnSaveTeamStats" VerticalAlignment="Top" Width="190" Click="btnSaveTeamStats_Click" />
+        <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
+            <Grid>
+                <Button Content="Team Overview" Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnTeamOverview" VerticalAlignment="Top" Width="160" FontSize="15" FontWeight="Bold" Click="btnTeamOverview_Click" IsEnabled="True" />
+                <Button Content="League Overview" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" IsEnabled="True" Margin="6,0,6,14" Name="btnLeagueOverview" Width="160" Click="btnLeagueOverview_Click" Height="52" VerticalAlignment="Bottom" />
+                <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True" Margin="6,59,6,0" Name="button1" VerticalAlignment="Top" Width="160" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
+            <Grid>
+                <Button Content="Save Team Stats" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,14" Name="btnSaveTeamStats" Width="160" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52" VerticalAlignment="Bottom" />
+                <Button Height="46" HorizontalAlignment="Left" Margin="6,9,0,0" Name="btnLoadUpdate" VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="29" >
+                    <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">Update with<LineBreak />Box Score</TextBlock>
+                </Button>
+                <Button Height="46" HorizontalAlignment="Left" Margin="6,84,0,0" Name="btnAdd" TabIndex="29" VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
+                    <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">Add<LineBreak />Teams/Players</TextBlock>
+                </Button>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
+            <Grid>
+                <Button Height="46" HorizontalAlignment="Left" Margin="9,8,0,0" Name="btnSelect" VerticalAlignment="Top" Width="158" Click="btnSelect_Click" TabIndex="2" >
+                    <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">Import from<LineBreak />2K12 Save</TextBlock>
+                </Button>
+                <Button Height="46" HorizontalAlignment="Left" Margin="9,58,0,0" Name="btnInject" VerticalAlignment="Top" Width="158" Click="btnInject_Click" TabIndex="28">
+                    <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">Save To<LineBreak />2K12 Save</TextBlock>
+                </Button>
+                <Button Content="Reset 2K Related Settings" HorizontalAlignment="Left" Margin="9,0,0,100" Name="btnEraseSettings" Width="158" Click="btnEraseSettings_Click" TabIndex="3" Height="23" VerticalAlignment="Bottom" />
+                <Button HorizontalAlignment="Left" Margin="9,0,0,15" Name="btnGrabNBAStats" TabIndex="28" Width="158" Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
+                    <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">Download<LineBreak />NBA Stats</TextBlock>
+                </Button>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

@@ -2,6 +2,13 @@
 	by Lefteris "Leftos" Aslanoglou
 
 
+Note regarding the new NBA Stats Tracker (v0.9 and later)
+	The instructions in this Readme file currently apply to v0.8 and earlier.
+	The features are the same and more, but their new locations may not be
+	apparent by reading this file. Visit the tool's thread in NLSC if you
+	need to ask any questions regarding the new tool's format. The URL is
+	at the bottom of this Readme file.
+
 Quick notes
 	This tool was made to offer a temporary workaround to the Association/
 	Season/My Player/Create A Legend team stats bug. Any game you entered and
@@ -171,6 +178,44 @@ Credits to
 	
 	
 Version History
+	v0.9.1 - Apr 25
+		- Change: The program now uses SQLite 3 databases instead of the custom 
+		   binary format; this means that previously saved Team Stats file are
+		   incompatible with this version
+		- Change: Massive UI overhaul, more details below
+		- Change: Tool now gives you access to both regular season and playoff
+		   stats at the same time
+		- Added: Team Overview screen; all statistics can be limited to a 
+		   specific timeframe if the required box scores are available
+			* Overview: View your team's stats; limit them to a timeframe and 
+			   see your opponents' stats against you during that time
+			* Split Stats: See how a team's performing when winning or losing, 
+			   at home or away, during the regular season or the playoffs, as 
+			   well as its monthly progress
+			* Box Scores: View any team's box scores in an easy to search table
+			* Head-To-Head: Compare your team to any other team; compare stats 
+			   against the league, as well as each other
+		- Added: League Overview screen; again, all statistics can be limited 
+		   to a timeframe if you have the box scores
+			* Team Stats: Similar to the 2K Team Stats table, a full overview 
+			   of the league team averages in a sortable table
+			* Playoff Stats: Same as above, but limits the stats to those that
+			   apply to the Playoffs
+			* Box Scores: Easy access to all box scores saved in the loaded 
+			   database
+		- Added: Box Scores can now be edited
+		- Added: Box Scores now require a Season number as well as the date the 
+		   game took place; you can also differentiate between regular season 
+		   and playoff games for the split stats
+		- Added: Box Scores can now be added to an NST Database without being
+		   added to the Team Stats; that way you can add your team's past box
+		   scores without affecting its Team Stats
+		- Added: The tool now works irrelevant of the amount of teams in the
+		   league; it should work without error for leagues with 2 teams or 50
+		   teams; the 30 team limit is no more; the Scouting Reports still work
+		   optimally for 30 teams, they do not adjust to leagues with less or
+		   more teams (yet!)
+		   
 	v0.8 - Mar 21
 		- Added keeping history of Box Score updates
 		- Changed Team Stats file structure to allow for further expansion and

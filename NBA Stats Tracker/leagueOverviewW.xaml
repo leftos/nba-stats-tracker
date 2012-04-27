@@ -1,0 +1,35 @@
+﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.leagueOverviewW"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="League Overview" Height="402" Width="762">
+    <Grid>
+        <TabControl Margin="0,0,179,12" Name="tbcLeagueOverview" Padding="0" SelectionChanged="tbcLeagueOverview_SelectionChanged">
+            <TabItem Header="Team Stats" Name="tabTeamStats">
+                <Grid VerticalAlignment="Stretch">
+                    <DataGrid LoadingRow="dg_LoadingRow" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1" AutoGenerateColumns="True" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}" Margin="6,6,6,0" Name="dgvTeamStats" VerticalAlignment="Stretch" RowHeaderWidth="25" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Playoff Stats" Name="tabPlayoffStats">
+                <Grid VerticalAlignment="Stretch">
+                    <DataGrid LoadingRow="dg_LoadingRow" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1" AutoGenerateColumns="True" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}" Margin="6,6,6,0" Name="dgvPlayoffStats" VerticalAlignment="Stretch" RowHeaderWidth="25" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Box Scores" Name="tabBoxScores">
+                <Grid VerticalAlignment="Stretch">
+                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}" Margin="6,6,6,0" Name="dgvBoxScores" VerticalAlignment="Stretch"  />
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <GroupBox Header="Timeframe" HorizontalAlignment="Right" Name="groupBox2" Width="161" Margin="0,12,12,14">
+            <Grid Margin="0,0,0,0">
+                <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" />
+                <RadioButton Content="All-Time" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
+                <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0" Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
+                <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" SelectedDateChanged="dtpStart_SelectedDateChanged" VerticalAlignment="Top" Width="115" />
+                <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,135,0,0" Name="dtpEnd" SelectedDateChanged="dtpEnd_SelectedDateChanged" VerticalAlignment="Top" Width="115" />
+                <Label Content="and" HorizontalAlignment="Left" Margin="58,106,0,0" Name="label2" VerticalAlignment="Top" />
+                <TextBlock HorizontalAlignment="Left" Margin="6,184,0,0" Name="textBlock1" Text="* Availability of stats between dates depend on whether there are box-scores saved for each team." TextWrapping="Wrap" VerticalAlignment="Top" Width="132" />
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
