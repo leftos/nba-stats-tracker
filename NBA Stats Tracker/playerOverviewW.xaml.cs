@@ -137,7 +137,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             playersActive = new List<PlayerStats>();
 
-            string q = "select * from Players where isActive LIKE 'True'";
+            string q = "select * from " + playersT + " where isActive LIKE 'True'";
             DataTable res = db.GetDataTable(q);
             foreach (DataRow r in res.Rows)
             {
@@ -377,7 +377,25 @@ namespace NBA_2K12_Correct_Team_Stats
                 playersT += "S" + curSeason;
             }
 
-            cmbPlayer_SelectionChanged(null, null);
+            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, curSeason, maxSeason);
+
+            GetActivePlayers();
+            
+            if (cmbPlayer.SelectedIndex != -1)
+            {
+                PlayerStats ps = CreatePlayerStatsFromCurrent();
+                cmbTeam.SelectedIndex = -1;
+                if (ps.isActive)
+                {
+                    cmbTeam.SelectedItem = ps.TeamF;
+                }
+                else
+                {
+                    cmbTeam.SelectedItem = "- Inactive -";
+                }
+                cmbPlayer.SelectedIndex = -1;
+                cmbPlayer.SelectedValue = ps.ID;
+            }
         }
 
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
@@ -387,6 +405,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnSavePlayer_Click(object sender, RoutedEventArgs e)
         {
+            if (cmbPlayer.SelectedIndex == -1) return;
+
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
                 MessageBox.Show(
@@ -396,6 +416,31 @@ namespace NBA_2K12_Correct_Team_Stats
                 return;
             }
 
+            var ps = CreatePlayerStatsFromCurrent();
+
+            List<PlayerStats> pslist = new List<PlayerStats>() {ps};
+
+            MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
+
+            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, curSeason, maxSeason);
+
+            GetActivePlayers();
+            cmbTeam.SelectedIndex = -1;
+            if (ps.isActive)
+            {
+                cmbTeam.SelectedItem = ps.TeamF;
+            }
+            else
+            {
+                cmbTeam.SelectedItem = "- Inactive -";
+            }
+            cmbPlayer.SelectedIndex = -1;
+            cmbPlayer.SelectedValue = ps.ID;
+            //cmbPlayer.SelectedValue = ps.LastName + " " + ps.FirstName + " (" + ps.Position1 + ")";
+        }
+
+        private PlayerStats CreatePlayerStatsFromCurrent()
+        {
             if (cmbPosition2.SelectedItem == null) cmbPosition2.SelectedItem = " ";
 
             string TeamF;
@@ -421,24 +466,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 chkIsActive.IsChecked.GetValueOrDefault(), chkIsInjured.IsChecked.GetValueOrDefault(),
                 chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
                 dt_ov.Rows[0]);
-
-            List<PlayerStats> pslist = new List<PlayerStats>() {ps};
-
-            MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
-
-            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, curSeason, maxSeason);
-
-            GetActivePlayers();
-            if (ps.isActive)
-            {
-                cmbTeam.SelectedItem = ps.TeamF;
-            }
-            else
-            {
-                cmbTeam.SelectedItem = "- Inactive -";
-            }
-            cmbPlayer.SelectedValue = ps.ID;
-            //cmbPlayer.SelectedValue = ps.LastName + " " + ps.FirstName + " (" + ps.Position1 + ")";
+            return ps;
         }
     }
 }
