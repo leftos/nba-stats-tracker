@@ -1,9 +1,6 @@
-﻿using System.Windows;
-using System.Data;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using System.Windows.Data;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -12,11 +9,8 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class addW : Window
     {
+        private readonly List<PlayerStats> pst;
 
-        public ObservableCollection<Player> Players { get; set; }
-        public ObservableCollection<string> Teams { get; set; }
-        public ObservableCollection<string> Positions { get; set; }
-        private List<PlayerStats> pst;
         public addW(ref List<PlayerStats> pst)
         {
             InitializeComponent();
@@ -24,12 +18,12 @@ namespace NBA_2K12_Correct_Team_Stats
             this.pst = pst;
 
             Teams = new ObservableCollection<string>();
-            foreach (KeyValuePair<string,int> kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TeamOrder)
             {
                 Teams.Add(kvp.Key);
             }
 
-            Positions = new ObservableCollection<string>() { "PG", "SG", "SF", "PF", "C" };
+            Positions = new ObservableCollection<string> {"PG", "SG", "SF", "PF", "C"};
 
             Players = new ObservableCollection<Player>();
 
@@ -38,6 +32,10 @@ namespace NBA_2K12_Correct_Team_Stats
             pos2Column.ItemsSource = Positions;
             dgvAddPlayers.ItemsSource = Players;
         }
+
+        public ObservableCollection<Player> Players { get; set; }
+        public ObservableCollection<string> Teams { get; set; }
+        public ObservableCollection<string> Positions { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
@@ -57,13 +55,13 @@ namespace NBA_2K12_Correct_Team_Stats
                 MainWindow.addInfo = "$$NST Players Added";
             }
 
-            this.Close();
+            Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.addInfo = "";
-            this.Close();
+            Close();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             InitializeComponent();
 
-            lblVersion.Content = "version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            lblVersion.Content = "version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             txbThanks.Text =
                 "- JaoSming, for his roster editing tutorial\n" +
@@ -27,7 +27,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnDonate_Click(object sender, RoutedEventArgs e)

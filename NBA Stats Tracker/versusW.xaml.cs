@@ -8,12 +8,27 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class versusW : Window
     {
+        public const int PPG = 0,
+                         PAPG = 1,
+                         FGp = 2,
+                         FGeff = 3,
+                         TPp = 4,
+                         TPeff = 5,
+                         FTp = 6,
+                         FTeff = 7,
+                         RPG = 8,
+                         ORPG = 9,
+                         DRPG = 10,
+                         SPG = 11,
+                         BPG = 12,
+                         TPG = 13,
+                         APG = 14,
+                         FPG = 15,
+                         Wp = 16,
+                         Weff = 17;
+
         public static string _team1 = "";
         public static string _team2 = "";
-
-        public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
-            FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
 
         public versusW(string team1, string team2, TeamStats[] ts)
         {

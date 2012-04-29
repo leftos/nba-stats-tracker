@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -13,9 +11,9 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class playoffTreeW : Window
     {
-        Brush defaultBackground;
-        bool valid = true;
-        PlayoffTree myPT;
+        private readonly Brush defaultBackground;
+        private readonly PlayoffTree myPT;
+        private bool valid = true;
 
         public playoffTreeW()
         {
@@ -23,7 +21,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             myPT = StatsTracker.tempPT;
 
-            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TeamOrder)
             {
                 if (MainWindow.West.Contains(kvp.Key))
                 {
@@ -73,7 +71,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void checkIfSameTeamsWest(object sender, SelectionChangedEventArgs e)
         {
-            string[] tree = new string[8];
+            var tree = new string[8];
             try
             {
                 tree[0] = cmbTeam1.SelectedItem.ToString();
@@ -90,7 +88,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 return;
             }
 
-            List<string> teams = new List<string>();
+            var teams = new List<string>();
             bool found = false;
             for (int i = 0; i < 8; i++)
             {
@@ -138,19 +136,19 @@ namespace NBA_2K12_Correct_Team_Stats
                 for (int i = 0; i < 16; i++)
                 {
                     string cur = "cmbTeam" + (16 - i).ToString();
-                    object item = this.ptGrid.FindName(cur);
-                    ComboBox cmb = (ComboBox)item;
+                    object item = ptGrid.FindName(cur);
+                    var cmb = (ComboBox) item;
                     myPT.teams[i] = cmb.SelectedItem.ToString();
                 }
                 myPT.done = true;
             }
 
-            this.Close();
+            Close();
         }
 
         private void checkIfSameTeamsEast(object sender, SelectionChangedEventArgs e)
         {
-            string[] tree = new string[8];
+            var tree = new string[8];
             try
             {
                 tree[0] = cmbTeam9.SelectedItem.ToString();
@@ -167,7 +165,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 return;
             }
 
-            List<string> teams = new List<string>();
+            var teams = new List<string>();
             bool found = false;
             for (int i = 0; i < 8; i++)
             {

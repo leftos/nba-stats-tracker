@@ -11,15 +11,15 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class App : Application
     {
-        public static bool realNBAonly = false;
+        public static bool realNBAonly;
 
-        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Add code to output the exception details to a message box/event log/log file,   etc.
             // Be sure to include details about any inner exceptions
             try
             {
-                StreamWriter f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+                var f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
                 f.Write(e.Exception.ToString());
                 f.WriteLine();
@@ -31,10 +31,12 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Can't create errorlog!\n\n" + ex.ToString() + "\n\n" + ex.InnerException.ToString());
+                MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + ex.InnerException);
             }
 
-            MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " + NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+            MessageBox.Show(
+                "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
             // Prevent default unhandled exception processing
             e.Handled = true;
@@ -49,7 +51,7 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 //StreamWriter f = new StreamWriter(NBA_2K12_Keep_My_Mod.MainWindow.SaveRootPath + @"\errorlog.txt");
-                StreamWriter f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
+                var f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
 
                 f.WriteLine("Additional: " + additional);
                 f.WriteLine();
@@ -63,10 +65,13 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Can't create errorlog!\n\n" + ex.ToString() + "\n\n" + (e.InnerException == null ? "None" : e.InnerException.Message));
+                MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" +
+                                (e.InnerException == null ? "None" : e.InnerException.Message));
             }
 
-            MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " + NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
+            MessageBox.Show(
+                "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
 
             Environment.Exit(-1);
         }

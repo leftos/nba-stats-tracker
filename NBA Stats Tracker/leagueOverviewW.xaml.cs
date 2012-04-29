@@ -11,50 +11,53 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class leagueOverviewW : Window
     {
-        private TeamStats[] tst;
+        private readonly DataTable dt_bs;
+        private readonly DataTable dt_ts;
         private List<PlayerStats> pst;
-        DataTable dt_ts, dt_bs;
+        private TeamStats[] tst;
 
         public leagueOverviewW(TeamStats[] tst, List<PlayerStats> pst)
         {
             InitializeComponent();
 
             #region Prepare DataTables
+
             dt_ts = new DataTable();
 
             dt_ts.Columns.Add("Name");
-            dt_ts.Columns.Add("Games", typeof(int));
-            dt_ts.Columns.Add("Wins", typeof(int));
-            dt_ts.Columns.Add("Losses", typeof(int));
-            dt_ts.Columns.Add("W%", typeof(float));
-            dt_ts.Columns.Add("Weff", typeof(float));
-            dt_ts.Columns.Add("PF", typeof(float));
-            dt_ts.Columns.Add("PA", typeof(float));
-            dt_ts.Columns.Add("PD", typeof(float));
-            dt_ts.Columns.Add("FG", typeof(float));
-            dt_ts.Columns.Add("FGeff", typeof(float));
-            dt_ts.Columns.Add("3PT", typeof(float));
-            dt_ts.Columns.Add("3Peff", typeof(float));
-            dt_ts.Columns.Add("FT", typeof(float));
-            dt_ts.Columns.Add("FTeff", typeof(float));
-            dt_ts.Columns.Add("REB", typeof(float));
-            dt_ts.Columns.Add("OREB", typeof(float));
-            dt_ts.Columns.Add("DREB", typeof(float));
-            dt_ts.Columns.Add("AST", typeof(float));
-            dt_ts.Columns.Add("TO", typeof(float));
-            dt_ts.Columns.Add("STL", typeof(float));
-            dt_ts.Columns.Add("BLK", typeof(float));
-            dt_ts.Columns.Add("FOUL", typeof(float));
+            dt_ts.Columns.Add("Games", typeof (int));
+            dt_ts.Columns.Add("Wins", typeof (int));
+            dt_ts.Columns.Add("Losses", typeof (int));
+            dt_ts.Columns.Add("W%", typeof (float));
+            dt_ts.Columns.Add("Weff", typeof (float));
+            dt_ts.Columns.Add("PF", typeof (float));
+            dt_ts.Columns.Add("PA", typeof (float));
+            dt_ts.Columns.Add("PD", typeof (float));
+            dt_ts.Columns.Add("FG", typeof (float));
+            dt_ts.Columns.Add("FGeff", typeof (float));
+            dt_ts.Columns.Add("3PT", typeof (float));
+            dt_ts.Columns.Add("3Peff", typeof (float));
+            dt_ts.Columns.Add("FT", typeof (float));
+            dt_ts.Columns.Add("FTeff", typeof (float));
+            dt_ts.Columns.Add("REB", typeof (float));
+            dt_ts.Columns.Add("OREB", typeof (float));
+            dt_ts.Columns.Add("DREB", typeof (float));
+            dt_ts.Columns.Add("AST", typeof (float));
+            dt_ts.Columns.Add("TO", typeof (float));
+            dt_ts.Columns.Add("STL", typeof (float));
+            dt_ts.Columns.Add("BLK", typeof (float));
+            dt_ts.Columns.Add("FOUL", typeof (float));
 
 
             dt_bs = new DataTable();
 
             dt_bs.Columns.Add("Date");
             dt_bs.Columns.Add("Away");
-            dt_bs.Columns.Add("AS", typeof(int));
+            dt_bs.Columns.Add("AS", typeof (int));
             dt_bs.Columns.Add("Home");
-            dt_bs.Columns.Add("HS", typeof(int));
+            dt_bs.Columns.Add("HS", typeof (int));
             dt_bs.Columns.Add("GameID");
+
             #endregion
 
             this.tst = tst;
@@ -96,7 +99,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+            var db = new SQLiteDatabase(MainWindow.currentDB);
             string q;
             DataTable res;
 
@@ -109,7 +112,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                                                    ref MainWindow.pt, ref MainWindow.bshist,
+                                                    seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {
@@ -122,12 +127,14 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                    foreach (var kvp in MainWindow.TeamOrder)
                     {
-                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
-                            kvp.Key);
+                        q =
+                            String.Format(
+                                "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
+                                kvp.Key);
                         q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                            dtpEnd.SelectedDate.GetValueOrDefault());
+                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
 
                         res = db.GetDataTable(q);
 
@@ -143,7 +150,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
 
                 // DataTable's ready, set DataView and fill DataGrid
-                DataView dv_ts = new DataView(dt_ts);
+                var dv_ts = new DataView(dt_ts);
                 dv_ts.AllowNew = false;
                 dv_ts.AllowEdit = false;
                 dv_ts.Sort = "Weff DESC";
@@ -156,7 +163,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                                                    ref MainWindow.pt, ref MainWindow.bshist,
+                                                    seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {
@@ -171,12 +180,14 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                    foreach (var kvp in MainWindow.TeamOrder)
                     {
-                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
-                            kvp.Key);
+                        q =
+                            String.Format(
+                                "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
+                                kvp.Key);
                         q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                            dtpEnd.SelectedDate.GetValueOrDefault());
+                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
 
                         res = db.GetDataTable(q);
 
@@ -192,7 +203,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
 
                 // DataTable's ready, set DataView and fill DataGrid
-                DataView dv_ts = new DataView(dt_ts);
+                var dv_ts = new DataView(dt_ts);
                 dv_ts.AllowNew = false;
                 dv_ts.AllowEdit = false;
                 dv_ts.Sort = "Weff DESC";
@@ -207,16 +218,16 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    q += " where SeasonNum = " + cmbSeasonNum.SelectedItem.ToString();
+                    q += " where SeasonNum = " + cmbSeasonNum.SelectedItem;
                 }
                 else
                 {
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                        dtpEnd.SelectedDate.GetValueOrDefault(), true);
+                                                              dtpEnd.SelectedDate.GetValueOrDefault(), true);
                 }
 
                 res = db.GetDataTable(q);
-                
+
                 foreach (DataRow dr in res.Rows)
                 {
                     DataRow r = dt_bs.NewRow();
@@ -231,7 +242,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     dt_bs.Rows.Add(r);
                 }
 
-                DataView dv_bs = new DataView(dt_bs);
+                var dv_bs = new DataView(dt_bs);
                 dv_bs.AllowNew = false;
                 dv_bs.AllowEdit = false;
 
@@ -247,7 +258,9 @@ namespace NBA_2K12_Correct_Team_Stats
                 dtpStart.IsEnabled = false;
                 cmbSeasonNum.IsEnabled = true;
             }
-            catch { }
+            catch
+            {
+            }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -259,7 +272,9 @@ namespace NBA_2K12_Correct_Team_Stats
                 dtpStart.IsEnabled = true;
                 cmbSeasonNum.IsEnabled = false;
             }
-            catch { }
+            catch
+            {
+            }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 

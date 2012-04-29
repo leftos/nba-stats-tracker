@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace LeftosCommonLibrary
 {
-    class Tools
+    internal class Tools
     {
         public static string getExtension(string fn)
         {
@@ -21,7 +21,7 @@ namespace LeftosCommonLibrary
 
         public static String getCRC(string filename)
         {
-            Crc32 crc32 = new Crc32();
+            var crc32 = new Crc32();
             String hash = String.Empty;
 
             using (FileStream fs = File.Open(filename, FileMode.Open))
@@ -32,7 +32,7 @@ namespace LeftosCommonLibrary
 
         public static byte[] ReverseByteOrder(byte[] original, int length)
         {
-            byte[] newArr = new byte[length];
+            var newArr = new byte[length];
             for (int i = 0; i < length; i++)
             {
                 newArr[length - i - 1] = original[i];
@@ -43,9 +43,9 @@ namespace LeftosCommonLibrary
         public static byte[] StringToByteArray(String hex)
         {
             int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
+            var bytes = new byte[NumberChars/2];
             for (int i = 0; i < NumberChars; i += 2)
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
     }
@@ -54,11 +54,11 @@ namespace LeftosCommonLibrary
     {
         public const UInt32 DefaultPolynomial = 0xedb88320;
         public const UInt32 DefaultSeed = 0xffffffff;
-
-        private UInt32 hash;
-        private UInt32 seed;
-        private UInt32[] table;
         private static UInt32[] defaultTable;
+
+        private readonly UInt32 seed;
+        private readonly UInt32[] table;
+        private UInt32 hash;
 
         public Crc32()
         {
@@ -74,6 +74,11 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
+        public override int HashSize
+        {
+            get { return 32; }
+        }
+
         public override sealed void Initialize()
         {
             hash = seed;
@@ -87,13 +92,8 @@ namespace LeftosCommonLibrary
         protected override byte[] HashFinal()
         {
             byte[] hashBuffer = UInt32ToBigEndianBytes(~hash);
-            this.HashValue = hashBuffer;
+            HashValue = hashBuffer;
             return hashBuffer;
-        }
-
-        public override int HashSize
-        {
-            get { return 32; }
         }
 
         public static UInt32 Compute(byte[] buffer)
@@ -116,10 +116,10 @@ namespace LeftosCommonLibrary
             if (polynomial == DefaultPolynomial && defaultTable != null)
                 return defaultTable;
 
-            UInt32[] createTable = new UInt32[256];
+            var createTable = new UInt32[256];
             for (int i = 0; i < 256; i++)
             {
-                UInt32 entry = (UInt32)i;
+                var entry = (UInt32) i;
                 for (int j = 0; j < 8; j++)
                     if ((entry & 1) == 1)
                         entry = (entry >> 1) ^ polynomial;
@@ -147,12 +147,13 @@ namespace LeftosCommonLibrary
 
         private byte[] UInt32ToBigEndianBytes(UInt32 x)
         {
-            return new byte[] {
-            (byte)((x >> 24) & 0xff),
-            (byte)((x >> 16) & 0xff),
-            (byte)((x >> 8) & 0xff),
-            (byte)(x & 0xff)
-        };
+            return new[]
+                       {
+                           (byte) ((x >> 24) & 0xff),
+                           (byte) ((x >> 16) & 0xff),
+                           (byte) ((x >> 8) & 0xff),
+                           (byte) (x & 0xff)
+                       };
         }
     }
 }

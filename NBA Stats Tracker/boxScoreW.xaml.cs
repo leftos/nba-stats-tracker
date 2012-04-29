@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Microsoft.Win32;
 
@@ -14,12 +13,20 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class boxScoreW : Window
     {
-        Brush defaultBackground;
+        #region Mode enum
 
-        public enum Mode { Update, View };
+        public enum Mode
+        {
+            Update,
+            View
+        };
+
+        #endregion
+
         public static Mode curmode = Mode.Update;
 
         public static BoxScore curBoxScore;
+        private Brush defaultBackground;
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -41,7 +48,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if ((MainWindow.pt == null) || (MainWindow.pt.teams[0] == "Invalid"))
             {
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     cmbTeam1.Items.Add(kvp.Key);
                     cmbTeam2.Items.Add(kvp.Key);
@@ -49,7 +56,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                List<string> newteams = new List<string>();
+                var newteams = new List<string>();
                 foreach (string team in MainWindow.pt.teams)
                     newteams.Add(team);
                 newteams.Sort();
@@ -84,7 +91,7 @@ namespace NBA_2K12_Correct_Team_Stats
             if (curmode == Mode.View)
             {
                 label1.Content = "Select a box score to view";
-                chkDoNotUpdate.Visibility = System.Windows.Visibility.Hidden;
+                chkDoNotUpdate.Visibility = Visibility.Hidden;
             }
         }
 
@@ -99,7 +106,9 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 if (MainWindow.isCustom)
                 {
-                    MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?", "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?",
+                                                         "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
+                                                         MessageBoxImage.Question);
                     if (r == MessageBoxResult.Cancel) return;
                     else if (r == MessageBoxResult.Yes)
                     {
@@ -112,7 +121,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     }
                 }
             }
-            this.Close();
+            Close();
         }
 
         private void tryParseBS()
@@ -122,10 +131,12 @@ namespace NBA_2K12_Correct_Team_Stats
                 MessageBox.Show("You can't have the same team in both Home & Away.");
                 return;
             }
-            if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A")) return;
+            if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
+                return;
             if (txtSeasonNum.Text == "")
             {
-                MessageBox.Show("You have to enter the Season number (e.g. '1' for the first season of your Association, or '2010', etc.)");
+                MessageBox.Show(
+                    "You have to enter the Season number (e.g. '1' for the first season of your Association, or '2010', etc.)");
                 return;
             }
             try
@@ -310,7 +321,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
             }
             catch
-            { }
+            {
+            }
         }
 
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -331,12 +343,13 @@ namespace NBA_2K12_Correct_Team_Stats
                 int fgm = Convert.ToInt32(txtFGM1.Text);
                 int tpm = Convert.ToInt32(txt3PM1.Text);
                 int ftm = Convert.ToInt32(txtFTM1.Text);
-                txtPTS1.Text = ((fgm - tpm) * 2 + tpm * 3 + ftm).ToString();
+                txtPTS1.Text = ((fgm - tpm)*2 + tpm*3 + ftm).ToString();
 
                 int fga = Convert.ToInt32(txtFGA1.Text);
                 int tpa = Convert.ToInt32(txt3PA1.Text);
                 int fta = Convert.ToInt32(txtFTA1.Text);
-                txbT1Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%{2:F3}", (float)fgm / fga, (float)tpm / tpa, (float)ftm / fta);
+                txbT1Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%{2:F3}", (float) fgm/fga, (float) tpm/tpa,
+                                              (float) ftm/fta);
             }
             catch
             {
@@ -367,12 +380,13 @@ namespace NBA_2K12_Correct_Team_Stats
                 int fgm = Convert.ToInt32(txtFGM2.Text);
                 int tpm = Convert.ToInt32(txt3PM2.Text);
                 int ftm = Convert.ToInt32(txtFTM2.Text);
-                txtPTS2.Text = ((fgm - tpm) * 2 + tpm * 3 + ftm).ToString();
+                txtPTS2.Text = ((fgm - tpm)*2 + tpm*3 + ftm).ToString();
 
                 int fga = Convert.ToInt32(txtFGA2.Text);
                 int tpa = Convert.ToInt32(txt3PA2.Text);
                 int fta = Convert.ToInt32(txtFTA2.Text);
-                txbT2Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float)fgm / fga, (float)tpm / tpa, (float)ftm / fta);
+                txbT2Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm/fga, (float) tpm/tpa,
+                                              (float) ftm/fta);
             }
             catch
             {
@@ -397,30 +411,42 @@ namespace NBA_2K12_Correct_Team_Stats
             if (MainWindow.bs.done)
             {
                 string header1 = "Team,PTS,REB,OREB,DREB,"
-                + "AST,STL,BLK,TO,FGM,"
-                + "FGA,FG%,3PM,3PA,3P%,"
-                + "FTM,FTA,FT%,PF";
+                                 + "AST,STL,BLK,TO,FGM,"
+                                 + "FGA,FG%,3PM,3PA,3P%,"
+                                 + "FTM,FTA,FT%,PF";
 
-                string data1 = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
-                    cmbTeam1.SelectedItem.ToString(), MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OFF1, MainWindow.bs.REB1 - MainWindow.bs.OFF1,
-                    MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1, MainWindow.bs.FGM1,
-                    MainWindow.bs.FGA1, MainWindow.bs.FGM1 / (float)MainWindow.bs.FGA1, MainWindow.bs.TPM1, MainWindow.bs.TPA1, MainWindow.bs.TPM1 / (float)MainWindow.bs.TPA1,
-                    MainWindow.bs.FTM1, MainWindow.bs.FTA1, MainWindow.bs.FTM1 / (float)MainWindow.bs.FTA1, MainWindow.bs.PF1);
+                string data1 =
+                    String.Format(
+                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OFF1,
+                        MainWindow.bs.REB1 - MainWindow.bs.OFF1,
+                        MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1,
+                        MainWindow.bs.FGM1,
+                        MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1, MainWindow.bs.TPM1,
+                        MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1,
+                        MainWindow.bs.FTM1, MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1,
+                        MainWindow.bs.PF1);
 
-                string data2 = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
-                    cmbTeam2.SelectedItem.ToString(), MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OFF2, MainWindow.bs.REB2 - MainWindow.bs.OFF2,
-                    MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2, MainWindow.bs.FGM2,
-                    MainWindow.bs.FGA2, MainWindow.bs.FGM2 / (float)MainWindow.bs.FGA2, MainWindow.bs.TPM2, MainWindow.bs.TPA2, MainWindow.bs.TPM2 / (float)MainWindow.bs.TPA2,
-                    MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2 / (float)MainWindow.bs.FTA2, MainWindow.bs.PF2);
+                string data2 =
+                    String.Format(
+                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OFF2,
+                        MainWindow.bs.REB2 - MainWindow.bs.OFF2,
+                        MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2,
+                        MainWindow.bs.FGM2,
+                        MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2, MainWindow.bs.TPM2,
+                        MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2,
+                        MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2,
+                        MainWindow.bs.PF2);
 
-                SaveFileDialog sfd = new SaveFileDialog();
+                var sfd = new SaveFileDialog();
                 sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
                 sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 sfd.Title = "Select a file to save the CSV to...";
                 sfd.ShowDialog();
                 if (sfd.FileName == "") return;
 
-                StreamWriter sw = new StreamWriter(sfd.FileName);
+                var sw = new StreamWriter(sfd.FileName);
                 sw.WriteLine(header1);
                 sw.WriteLine(data1);
                 sw.WriteLine(data2);
@@ -431,12 +457,12 @@ namespace NBA_2K12_Correct_Team_Stats
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.bs.done = false;
-            this.Close();
+            Close();
         }
 
         private void _bsAnyTextbox_GotFocus(object sender, RoutedEventArgs e)
         {
-            TextBox tb = (TextBox)sender;
+            var tb = (TextBox) sender;
             tb.SelectAll();
         }
 
@@ -487,12 +513,10 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void calculateScore1()
         {
-
         }
 
         private void calculateScore2()
         {
-
         }
     }
 }

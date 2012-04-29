@@ -31,7 +31,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private static BitmapImage loadTeamLogo(string team)
         {
-            BitmapImage bi1 = new BitmapImage();
+            var bi1 = new BitmapImage();
             bi1.BeginInit();
             bi1.UriSource = new Uri(MainWindow.AppPath + @"Images\" + team + ".gif");
             bi1.CacheOption = BitmapCacheOption.OnLoad;

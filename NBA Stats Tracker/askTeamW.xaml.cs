@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -29,7 +28,7 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 label1.Content = "Pick the two teams";
                 cmbTeams2.Visibility = Visibility.Visible;
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     cmbTeams1.Items.Add(kvp.Key);
                     cmbTeams2.Items.Add(kvp.Key);
@@ -51,10 +50,11 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                versusW vw = new versusW(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
+                var vw = new versusW(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(),
+                                     MainWindow.tst);
                 vw.ShowDialog();
             }
-            this.Close();
+            Close();
         }
     }
 }

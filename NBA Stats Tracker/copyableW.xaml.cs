@@ -14,18 +14,18 @@ namespace NBA_2K12_Correct_Team_Stats
 
             txbMsg.Text = msg;
             txbMsg.TextAlignment = align;
-            this.Title = title;
+            Title = title;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnCopyToClip_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(txbMsg.Text);
-            this.Title += " (copied to clipboard)";
+            Title += " (copied to clipboard)";
         }
     }
 }

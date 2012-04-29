@@ -4,9 +4,9 @@ using System.Data;
 using System.Data.SQLite;
 using System.Windows;
 
-class SQLiteDatabase
+internal class SQLiteDatabase
 {
-    String dbConnection;
+    private readonly String dbConnection;
 
     /// <summary>
     ///     Default Constructor for SQLiteDatabase Class.
@@ -32,7 +32,7 @@ class SQLiteDatabase
     public SQLiteDatabase(Dictionary<String, String> connectionOpts)
     {
         String str = "";
-        foreach (KeyValuePair<String, String> row in connectionOpts)
+        foreach (var row in connectionOpts)
         {
             str += String.Format("{0}={1}; ", row.Key, row.Value);
         }
@@ -47,12 +47,12 @@ class SQLiteDatabase
     /// <returns>A DataTable containing the result set.</returns>
     public DataTable GetDataTable(string sql)
     {
-        DataTable dt = new DataTable();
+        var dt = new DataTable();
         try
         {
-            SQLiteConnection cnn = new SQLiteConnection(dbConnection);
+            var cnn = new SQLiteConnection(dbConnection);
             cnn.Open();
-            SQLiteCommand mycommand = new SQLiteCommand(cnn);
+            var mycommand = new SQLiteCommand(cnn);
             mycommand.CommandText = sql;
             SQLiteDataReader reader = mycommand.ExecuteReader();
             dt.Load(reader);
@@ -65,7 +65,7 @@ class SQLiteDatabase
         }
         return dt;
     }
-    
+
     /// <summary>
     ///     Allows the programmer to interact with the database for purposes other than a query.
     /// </summary>
@@ -73,9 +73,9 @@ class SQLiteDatabase
     /// <returns>An Integer containing the number of rows updated.</returns>
     public int ExecuteNonQuery(string sql)
     {
-        SQLiteConnection cnn = new SQLiteConnection(dbConnection);
+        var cnn = new SQLiteConnection(dbConnection);
         cnn.Open();
-        SQLiteCommand mycommand = new SQLiteCommand(cnn);
+        var mycommand = new SQLiteCommand(cnn);
         mycommand.CommandText = sql;
         int rowsUpdated = mycommand.ExecuteNonQuery();
         cnn.Close();
@@ -89,9 +89,9 @@ class SQLiteDatabase
     /// <returns>A string.</returns>
     public string ExecuteScalar(string sql)
     {
-        SQLiteConnection cnn = new SQLiteConnection(dbConnection);
+        var cnn = new SQLiteConnection(dbConnection);
         cnn.Open();
-        SQLiteCommand mycommand = new SQLiteCommand(cnn);
+        var mycommand = new SQLiteCommand(cnn);
         mycommand.CommandText = sql;
         object value = mycommand.ExecuteScalar();
         cnn.Close();
@@ -116,20 +116,20 @@ class SQLiteDatabase
         Boolean returnCode = true;
         if (data.Count >= 1)
         {
-            foreach (KeyValuePair<String, String> val in data)
+            foreach (var val in data)
             {
-                vals += String.Format(" {0} = '{1}',", val.Key.ToString(), val.Value.ToString());
+                vals += String.Format(" {0} = '{1}',", val.Key, val.Value);
             }
             vals = vals.Substring(0, vals.Length - 1);
         }
         try
         {
             sql = String.Format("update {0} set {1} where {2};", tableName, vals, where);
-            this.ExecuteNonQuery(sql);
+            ExecuteNonQuery(sql);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message.ToString() + "\n\nQuery: " + sql);
+            MessageBox.Show(ex.Message + "\n\nQuery: " + sql);
             returnCode = false;
         }
         return returnCode;
@@ -146,7 +146,7 @@ class SQLiteDatabase
         Boolean returnCode = true;
         try
         {
-            this.ExecuteNonQuery(String.Format("delete from {0} where {1};", tableName, where));
+            ExecuteNonQuery(String.Format("delete from {0} where {1};", tableName, where));
         }
         catch (Exception fail)
         {
@@ -168,9 +168,9 @@ class SQLiteDatabase
         String values = "";
         string sql = "";
         Boolean returnCode = true;
-        foreach (KeyValuePair<String, String> val in data)
+        foreach (var val in data)
         {
-            columns += String.Format(" {0},", val.Key.ToString());
+            columns += String.Format(" {0},", val.Key);
             values += String.Format(" '{0}',", val.Value);
         }
         columns = columns.Substring(0, columns.Length - 1);
@@ -178,9 +178,9 @@ class SQLiteDatabase
         try
         {
             sql = String.Format("insert into {0}({1}) values({2});", tableName, columns, values);
-            this.ExecuteNonQuery(sql);
+            ExecuteNonQuery(sql);
         }
-        catch(Exception fail)
+        catch (Exception fail)
         {
             MessageBox.Show(fail.Message + "\n\nQuery: " + sql);
             returnCode = false;
@@ -197,10 +197,10 @@ class SQLiteDatabase
         DataTable tables;
         try
         {
-            tables = this.GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
+            tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
             foreach (DataRow table in tables.Rows)
             {
-                this.ClearTable(table["NAME"].ToString());
+                ClearTable(table["NAME"].ToString());
             }
             return true;
         }
@@ -219,8 +219,7 @@ class SQLiteDatabase
     {
         try
         {
-            
-            this.ExecuteNonQuery(String.Format("delete from {0};", table));
+            ExecuteNonQuery(String.Format("delete from {0};", table));
             return true;
         }
         catch
@@ -228,7 +227,7 @@ class SQLiteDatabase
             return false;
         }
     }
-    
+
     public static string ConvertDateTimeToSQLite(DateTime dt)
     {
         return String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt);
@@ -236,20 +235,20 @@ class SQLiteDatabase
 
     public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
     {
-        if (query.EndsWith(";")) 
+        if (query.EndsWith(";"))
             query = query.Remove(query.Length - 1);
 
         if (!addWhere)
         {
             query = String.Concat(query, String.Format(" AND (Date >= '{0}' AND Date <= '{1}');",
-                SQLiteDatabase.ConvertDateTimeToSQLite(dStart),
-                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd)));
+                                                       ConvertDateTimeToSQLite(dStart),
+                                                       ConvertDateTimeToSQLite(dEnd)));
         }
         else
         {
             query = String.Concat(query, String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}');",
-                SQLiteDatabase.ConvertDateTimeToSQLite(dStart),
-                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd)));
+                                                       ConvertDateTimeToSQLite(dStart),
+                                                       ConvertDateTimeToSQLite(dEnd)));
         }
         return query;
     }
