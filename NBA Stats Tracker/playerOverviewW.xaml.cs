@@ -157,6 +157,11 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            dgvOverviewStats.DataContext = null;
+            grdOverview.DataContext = null;
+            cmbPosition1.SelectedIndex = -1;
+            cmbPosition2.SelectedIndex = -1;
+
             if (cmbTeam.SelectedIndex == -1) return;
 
             cmbPlayer.ItemsSource = null;
@@ -214,7 +219,6 @@ namespace NBA_2K12_Correct_Team_Stats
             psr = new PlayerStatsRow(new PlayerStats(res.Rows[0]));
 
             grdOverview.DataContext = psr;
-
 
             q = "select * from " + playersT + " where Position1 LIKE '" + psr.Position1 + "' AND isActive LIKE 'True'";
             res = db.GetDataTable(q);
@@ -384,17 +388,44 @@ namespace NBA_2K12_Correct_Team_Stats
             if (cmbPlayer.SelectedIndex != -1)
             {
                 PlayerStats ps = CreatePlayerStatsFromCurrent();
-                cmbTeam.SelectedIndex = -1;
-                if (ps.isActive)
+
+                string q = "select * from " + playersT + " where ID = " + ps.ID;
+                DataTable res = db.GetDataTable(q);
+
+                string newTeam;
+                bool nowActive;
+                if (res.Rows.Count > 0)
                 {
-                    cmbTeam.SelectedItem = ps.TeamF;
+                    nowActive = StatsTracker.getBoolean(res.Rows[0], "isActive");
+                    if (nowActive)
+                    {
+                        newTeam = res.Rows[0]["TeamFin"].ToString();
+                    }
+                    else
+                    {
+                        newTeam = " - Inactive -";
+                    }
+                    cmbTeam.SelectedIndex = -1;
+                    if (nowActive)
+                    {
+                        if (newTeam != "")
+                        {
+                            cmbTeam.SelectedItem = newTeam;
+                        }
+                    }
+                    else
+                    {
+                        cmbTeam.SelectedItem = "- Inactive -";
+                    }
+                    cmbPlayer.SelectedIndex = -1;
+                    cmbPlayer.SelectedValue = ps.ID;
                 }
                 else
                 {
-                    cmbTeam.SelectedItem = "- Inactive -";
+                    cmbTeam.SelectedIndex = -1;
+                    cmbPlayer.SelectedIndex = -1;
                 }
-                cmbPlayer.SelectedIndex = -1;
-                cmbPlayer.SelectedValue = ps.ID;
+                
             }
         }
 
