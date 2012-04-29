@@ -410,7 +410,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private void btnSaveTS_Click(object sender, RoutedEventArgs e)
+        private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog();
             sfd.Filter = "Team Stats Table (*.tst)|*.tst";
@@ -421,6 +421,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             string file = sfd.FileName;
 
+            File.Delete(file);
             saveAllSeasons(file);
         }
 
@@ -2552,7 +2553,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if (!isCustom)
             {
-                btnSaveTS_Click(null, null);
+                mnuFileSaveAs_Click(null, null);
             }
             else
             {
@@ -2691,6 +2692,9 @@ namespace NBA_2K12_Correct_Team_Stats
                     q = "alter table PlayoffTeams rename to PlayoffTeamsS" + curSeason;
                     code = db.ExecuteNonQuery(q);
 
+                    q = "alter table Players rename to PlayersS" + curSeason;
+                    code = db.ExecuteNonQuery(q);
+
                     curSeason++;
 
                     prepareNewDB(db, curSeason, curSeason, true);
@@ -2708,6 +2712,17 @@ namespace NBA_2K12_Correct_Team_Stats
                         ts.pl_winloss[0] = 0;
                         ts.pl_winloss[1] = 0;
                         ts.calcAvg();
+                    }
+
+                    foreach (PlayerStats ps in pst)
+                    {
+                        for (int i = 0; i < ps.stats.Length; i++)
+                        {
+                            ps.stats[i] = 0;
+                        }
+                        ps.isAllStar = false;
+                        ps.isNBAChampion = false;
+                        ps.calcAvg();
                     }
 
                     saveSeasonToDatabase(currentDB, tst, pst, curSeason, curSeason);

@@ -68,7 +68,7 @@
     <TextBox Height="23" HorizontalAlignment="Left" IsReadOnly="True" Margin="1043,145,0,0" Name="txtPA1"
              VerticalAlignment="Top" Width="54" TabIndex="8" GotFocus="_AnyTextbox_GotFocus" />
     <Button Content="Save Team Stats" Height="23" HorizontalAlignment="Left" Margin="889,350,0,0" Name="btnSaveTS"
-            VerticalAlignment="Top" Width="119" Click="btnSaveTS_Click" TabIndex="27" />
+            VerticalAlignment="Top" Width="119" Click="mnuFileSaveAs_Click" TabIndex="27" />
     <Button Content="Scouting Report" Height="23" HorizontalAlignment="Left" IsDefault="False"
             Margin="1263,138,0,0" Name="btnScout" VerticalAlignment="Top" Width="92" Click="btnScout_Click" TabIndex="24" />
     <Button Content="Team Stats to CSV" Height="23" HorizontalAlignment="Left" IsDefault="False"
@@ -82,7 +82,7 @@
         <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" />
         <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" />
         <Separator />
-        <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="btnSaveTS_Click" />
+        <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="mnuFileSaveAs_Click" />
         <Separator />
         <MenuItem Header="_Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats"
                   Click="btnLoadUpdate_Click" />
