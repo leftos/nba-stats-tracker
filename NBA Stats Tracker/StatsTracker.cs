@@ -1230,79 +1230,126 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        public PlayerStats(DataRow row)
+        public PlayerStats(DataRow dataRow)
         {
-            ID = StatsTracker.getInt(row, "ID");
-            LastName = StatsTracker.getString(row, "LastName");
-            FirstName = StatsTracker.getString(row, "FirstName");
-            Position1 = StatsTracker.getString(row, "Position1");
-            Position2 = StatsTracker.getString(row, "Position2");
-            TeamF = StatsTracker.getString(row, "TeamFin");
-            TeamS = StatsTracker.getString(row, "TeamSta");
-            isActive = StatsTracker.getBoolean(row, "isActive");
-            isInjured = StatsTracker.getBoolean(row, "isInjured");
-            isAllStar = StatsTracker.getBoolean(row, "isAllStar");
-            isNBAChampion = StatsTracker.getBoolean(row, "isNBAChampion");
+            ID = StatsTracker.getInt(dataRow, "ID");
+            LastName = StatsTracker.getString(dataRow, "LastName");
+            FirstName = StatsTracker.getString(dataRow, "FirstName");
+            Position1 = StatsTracker.getString(dataRow, "Position1");
+            Position2 = StatsTracker.getString(dataRow, "Position2");
+            TeamF = StatsTracker.getString(dataRow, "TeamFin");
+            TeamS = StatsTracker.getString(dataRow, "TeamSta");
+            isActive = StatsTracker.getBoolean(dataRow, "isActive");
+            isInjured = StatsTracker.getBoolean(dataRow, "isInjured");
+            isAllStar = StatsTracker.getBoolean(dataRow, "isAllStar");
+            isNBAChampion = StatsTracker.getBoolean(dataRow, "isNBAChampion");
 
-            stats[pGP] = StatsTracker.getUShort(row, "GP");
-            stats[pGS] = StatsTracker.getUShort(row, "GS");
-            stats[pMINS] = StatsTracker.getUShort(row, "MINS");
-            stats[pPTS] = StatsTracker.getUShort(row, "PTS");
-            stats[pFGM] = StatsTracker.getUShort(row, "FGM");
-            stats[pFGA] = StatsTracker.getUShort(row, "FGA");
-            stats[pTPM] = StatsTracker.getUShort(row, "TPM");
-            stats[pTPA] = StatsTracker.getUShort(row, "TPA");
-            stats[pFTM] = StatsTracker.getUShort(row, "FTM");
-            stats[pFTA] = StatsTracker.getUShort(row, "FTA");
-            stats[pOREB] = StatsTracker.getUShort(row, "OREB");
-            stats[pDREB] = StatsTracker.getUShort(row, "DREB");
-            stats[pSTL] = StatsTracker.getUShort(row, "STL");
-            stats[pTO] = StatsTracker.getUShort(row, "TOS");
-            stats[pBLK] = StatsTracker.getUShort(row, "BLK");
-            stats[pAST] = StatsTracker.getUShort(row, "AST");
-            stats[pFOUL] = StatsTracker.getUShort(row, "FOUL");
+            stats[pGP] = StatsTracker.getUShort(dataRow, "GP");
+            stats[pGS] = StatsTracker.getUShort(dataRow, "GS");
+            stats[pMINS] = StatsTracker.getUShort(dataRow, "MINS");
+            stats[pPTS] = StatsTracker.getUShort(dataRow, "PTS");
+            stats[pFGM] = StatsTracker.getUShort(dataRow, "FGM");
+            stats[pFGA] = StatsTracker.getUShort(dataRow, "FGA");
+            stats[pTPM] = StatsTracker.getUShort(dataRow, "TPM");
+            stats[pTPA] = StatsTracker.getUShort(dataRow, "TPA");
+            stats[pFTM] = StatsTracker.getUShort(dataRow, "FTM");
+            stats[pFTA] = StatsTracker.getUShort(dataRow, "FTA");
+            stats[pOREB] = StatsTracker.getUShort(dataRow, "OREB");
+            stats[pDREB] = StatsTracker.getUShort(dataRow, "DREB");
+            stats[pSTL] = StatsTracker.getUShort(dataRow, "STL");
+            stats[pTO] = StatsTracker.getUShort(dataRow, "TOS");
+            stats[pBLK] = StatsTracker.getUShort(dataRow, "BLK");
+            stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
+            stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
 
             calcAvg();
         }
 
-        public PlayerStats(PlayerStatsRow row)
+        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF, string TeamS,
+            bool isActive, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow)
         {
-            LastName = row.LastName;
-            FirstName = row.FirstName;
+            this.ID = ID;
+            this.LastName = LastName;
+            this.FirstName = FirstName;
+            this.Position1 = Position1;
+            this.Position2 = Position2;
+            this.TeamF = TeamF;
+            this.TeamS = TeamS;
+            this.isActive = isActive;
+            this.isAllStar = isAllStar;
+            this.isInjured = isInjured;
+            this.isNBAChampion = isNBAChampion;
 
-            stats[pGP] = row.GP;
-            stats[pGS] = row.GS;
-            stats[pMINS] = row.MINS;
-            stats[pPTS] = row.PTS;
-            stats[pFGM] = row.FGM;
-            stats[pFGA] = row.FGA;
-            stats[pTPM] = row.TPM;
-            stats[pTPA] = row.TPA;
-            stats[pFTM] = row.FTM;
-            stats[pFTA] = row.FTA;
-            stats[pOREB] = row.OREB;
-            stats[pDREB] = row.DREB;
-            stats[pSTL] = row.STL;
-            stats[pTO] = row.TOS;
-            stats[pBLK] = row.BLK;
-            stats[pAST] = row.AST;
-            stats[pFOUL] = row.FOUL;
+            stats[pGP] = StatsTracker.getUShort(dataRow, "GP");
+            stats[pGS] = StatsTracker.getUShort(dataRow, "GS");
+            stats[pMINS] = StatsTracker.getUShort(dataRow, "MINS");
+            stats[pPTS] = StatsTracker.getUShort(dataRow, "PTS");
 
-            ID = row.ID;
-            Position1 = row.Position1;
-            Position2 = row.Position2;
-            TeamF = row.TeamF;
-            TeamS = row.TeamS;
-            isActive = row.isActive;
-            isAllStar = row.isAllStar;
-            isInjured = row.isInjured;
-            isNBAChampion = row.isNBAChampion;
+            string[] parts = StatsTracker.getString(dataRow, "FG").Split('-');
+
+            stats[pFGM] = Convert.ToUInt16(parts[0]);
+            stats[pFGA] = Convert.ToUInt16(parts[1]);
+
+            parts = StatsTracker.getString(dataRow, "3PT").Split('-');
+
+            stats[pTPM] = Convert.ToUInt16(parts[0]);
+            stats[pTPA] = Convert.ToUInt16(parts[1]);
+
+            parts = StatsTracker.getString(dataRow, "FT").Split('-');
+
+            stats[pFTM] = Convert.ToUInt16(parts[0]);
+            stats[pFTA] = Convert.ToUInt16(parts[1]);
+
+            stats[pOREB] = StatsTracker.getUShort(dataRow, "OREB");
+            stats[pDREB] = StatsTracker.getUShort(dataRow, "DREB");
+            stats[pSTL] = StatsTracker.getUShort(dataRow, "STL");
+            stats[pTO] = StatsTracker.getUShort(dataRow, "TO");
+            stats[pBLK] = StatsTracker.getUShort(dataRow, "BLK");
+            stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
+            stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
+
+            calcAvg();
+        }
+
+        public PlayerStats(PlayerStatsRow playerStatsRow)
+        {
+            LastName = playerStatsRow.LastName;
+            FirstName = playerStatsRow.FirstName;
+
+            stats[pGP] = playerStatsRow.GP;
+            stats[pGS] = playerStatsRow.GS;
+            stats[pMINS] = playerStatsRow.MINS;
+            stats[pPTS] = playerStatsRow.PTS;
+            stats[pFGM] = playerStatsRow.FGM;
+            stats[pFGA] = playerStatsRow.FGA;
+            stats[pTPM] = playerStatsRow.TPM;
+            stats[pTPA] = playerStatsRow.TPA;
+            stats[pFTM] = playerStatsRow.FTM;
+            stats[pFTA] = playerStatsRow.FTA;
+            stats[pOREB] = playerStatsRow.OREB;
+            stats[pDREB] = playerStatsRow.DREB;
+            stats[pSTL] = playerStatsRow.STL;
+            stats[pTO] = playerStatsRow.TOS;
+            stats[pBLK] = playerStatsRow.BLK;
+            stats[pAST] = playerStatsRow.AST;
+            stats[pFOUL] = playerStatsRow.FOUL;
+
+            ID = playerStatsRow.ID;
+            Position1 = playerStatsRow.Position1;
+            Position2 = playerStatsRow.Position2;
+            TeamF = playerStatsRow.TeamF;
+            TeamS = playerStatsRow.TeamS;
+            isActive = playerStatsRow.isActive;
+            isAllStar = playerStatsRow.isAllStar;
+            isInjured = playerStatsRow.isInjured;
+            isNBAChampion = playerStatsRow.isNBAChampion;
         }
 
         public int calcAvg()
         {
             int games = stats[pGP];
             if (stats[pGP] == 0) games = -1;
+            averages[pMPG] = (float) stats[pMINS]/games;
             averages[pPPG] = (float) stats[pPTS]/games;
             averages[pFGp] = (float) stats[pFGM]/stats[pFGA];
             averages[pFGeff] = averages[pFGp]*((float) stats[pFGM]/games);
@@ -1321,6 +1368,11 @@ namespace NBA_2K12_Correct_Team_Stats
 
             return games;
         }
+    }
+
+    public class PlayerBoxScore
+    {
+        
     }
 
     public class PlayerRankings
@@ -1342,7 +1394,8 @@ namespace NBA_2K12_Correct_Team_Stats
                          pFTeff = 14,
                          pRPG = 15;
 
-        public int[][] rankings;
+        private int[][] rankings;
+        public Dictionary<int, int[]> list = new Dictionary<int, int[]>(); 
 
         public PlayerRankings(List<PlayerStats> pst)
         {
@@ -1371,6 +1424,10 @@ namespace NBA_2K12_Correct_Team_Stats
                     k++;
                 }
             }
+
+            list = new Dictionary<int, int[]>();
+            for (int i = 0; i<pst.Count; i++)
+                list.Add(pst[i].ID, rankings[i]);
         }
     }
 
@@ -1732,16 +1789,6 @@ namespace NBA_2K12_Correct_Team_Stats
                          pFTeff = 14,
                          pRPG = 15;
 
-        public int ID;
-        public string Position1;
-        public string Position2;
-        public string TeamF;
-        public string TeamS;
-        public bool isActive;
-        public bool isAllStar;
-        public bool isInjured;
-        public bool isNBAChampion;
-
         public PlayerStatsRow(PlayerStats ps)
         {
             LastName = ps.LastName;
@@ -1833,6 +1880,16 @@ namespace NBA_2K12_Correct_Team_Stats
         public float BPG { get; set; }
         public float APG { get; set; }
         public float FPG { get; set; }
+
+        public int ID { get; set; }
+        public string Position1 { get; set; }
+        public string Position2 { get; set; }
+        public string TeamF { get; set; }
+        public string TeamS { get; set; }
+        public bool isActive { get; set; }
+        public bool isAllStar { get; set; }
+        public bool isInjured { get; set; }
+        public bool isNBAChampion { get; set; }
 
         // Not to be shown in DataGrid
     }

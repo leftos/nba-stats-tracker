@@ -112,9 +112,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                    tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                     ref MainWindow.pt, ref MainWindow.bshist,
-                                                    seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                                                    _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {
@@ -163,9 +163,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                    tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                     ref MainWindow.pt, ref MainWindow.bshist,
-                                                    seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                                                    _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {

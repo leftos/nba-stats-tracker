@@ -159,6 +159,7 @@
                     Name="dataGrid1" VerticalAlignment="Top" Width="586">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Player" />
+              <DataGridTextColumn Header="MINS" />
               <DataGridTextColumn Header="PTS" />
               <DataGridTextColumn Header="REB" />
               <DataGridTextColumn Header="AST" />

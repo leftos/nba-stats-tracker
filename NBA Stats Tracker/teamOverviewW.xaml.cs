@@ -238,9 +238,9 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                 ref MainWindow.pt, ref MainWindow.bshist,
-                                                seasonNum: Convert.ToInt32(showSeason));
+                                                _curSeason: Convert.ToInt32(showSeason));
 
                 ts = tst[i];
 
@@ -928,7 +928,7 @@ namespace NBA_2K12_Correct_Team_Stats
             q = "select * from " + playersT + " where TeamFin LIKE '" + curTeam + "'";
             res = db.GetDataTable(q);
 
-            var psr = new ObservableCollection<PlayerStatsRow>();
+            psr = new ObservableCollection<PlayerStatsRow>();
 
             foreach (DataRow r in res.Rows)
             {
@@ -968,8 +968,8 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 if (j != curSeason)
                 {
-                    tst = MainWindow.getCustomStats(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
-                                                    ref MainWindow.bshist, seasonNum: j);
+                    tst = MainWindow.GetStatsFromDatabase(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
+                                                    ref MainWindow.bshist, _curSeason: j);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
                     CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3, "Season " + j.ToString(),
@@ -990,8 +990,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
             }
 
-            tst = MainWindow.getCustomStats(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
-                                            ref MainWindow.bshist, seasonNum: curSeason);
+            tst = MainWindow.GetStatsFromDatabase(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
+                                            ref MainWindow.bshist, _curSeason: curSeason);
             ts = tst[MainWindow.TeamOrder[curTeam]];
 
             var dv_yea = new DataView(dt_yea);
@@ -1055,11 +1055,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
             var playersToUpdate = new List<PlayerStats>();
 
-            foreach (PlayerStatsRow cur in psr)
+            foreach (var cur in psr)
             {
+                playersToUpdate.Add(new PlayerStats(cur));
             }
 
-            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, new List<PlayerStats>(),
+            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, playersToUpdate,
                                             Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()),
                                             MainWindow.getMaxSeason(MainWindow.currentDB));
 

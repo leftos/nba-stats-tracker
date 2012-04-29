@@ -10,6 +10,9 @@ namespace NBA_2K12_Correct_Team_Stats
     public partial class addW : Window
     {
         private readonly List<PlayerStats> pst;
+        private ObservableCollection<Player> Players { get; set; }
+        private ObservableCollection<string> Teams { get; set; }
+        private ObservableCollection<string> Positions { get; set; }
 
         public addW(ref List<PlayerStats> pst)
         {
@@ -32,10 +35,6 @@ namespace NBA_2K12_Correct_Team_Stats
             pos2Column.ItemsSource = Positions;
             dgvAddPlayers.ItemsSource = Players;
         }
-
-        public ObservableCollection<Player> Players { get; set; }
-        public ObservableCollection<string> Teams { get; set; }
-        public ObservableCollection<string> Positions { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {

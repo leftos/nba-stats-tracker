@@ -86,6 +86,9 @@
       <DependentUpon>leagueOverviewW.xaml</DependentUpon>
     </Compile>
     <Compile Include="LeftosCommonLibrary.cs" />
+    <Compile Include="playerOverviewW.xaml.cs">
+      <DependentUpon>playerOverviewW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="playoffTreeW.xaml.cs">
       <DependentUpon>playoffTreeW.xaml</DependentUpon>
     </Compile>
@@ -137,6 +140,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="boxScoreW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="playerOverviewW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

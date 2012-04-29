@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -7,7 +8,8 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class askTeamW : Window
     {
-        public static bool _versus;
+        private bool _versus = false;
+        private bool _oneTeam = false;
 
         public askTeamW(bool versus, int index = 0)
         {
@@ -42,17 +44,36 @@ namespace NBA_2K12_Correct_Team_Stats
                 cmbTeams2.SelectedIndex = 1;
         }
 
+        public askTeamW(List<string> teams)
+        {
+            InitializeComponent();
+
+            _oneTeam = true;
+
+            label1.Content = "Sign the player to which team?";
+            cmbTeams1.ItemsSource = teams;
+            cmbTeams2.Visibility = Visibility.Hidden;
+        }
+
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            if (!_versus)
+            if (!_oneTeam)
             {
-                StatsTracker.mode = cmbTeams1.SelectedItem.ToString();
+                if (!_versus)
+                {
+                    StatsTracker.mode = cmbTeams1.SelectedItem.ToString();
+                }
+                else
+                {
+                    var vw = new versusW(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(),
+                                         MainWindow.tst);
+                    vw.ShowDialog();
+                }
             }
             else
             {
-                var vw = new versusW(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(),
-                                     MainWindow.tst);
-                vw.ShowDialog();
+                if (cmbTeams1.SelectedIndex == -1) return;
+                playerOverviewW.askedTeam = cmbTeams1.SelectedItem.ToString();
             }
             Close();
         }
