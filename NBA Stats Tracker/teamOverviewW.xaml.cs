@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace NBA_2K12_Correct_Team_Stats
@@ -13,26 +13,65 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class teamOverviewW : Window
     {
-        private TeamStats[] tst;
-        private int[][] rankings;
-        private int[][] pl_rankings;
-        private DataTable dt_ov, dt_bs, dt_hth, dt_ss, dt_yea;
+        public const int M = 0,
+                         PF = 1,
+                         PA = 2,
+                         FGM = 4,
+                         FGA = 5,
+                         TPM = 6,
+                         TPA = 7,
+                         FTM = 8,
+                         FTA = 9,
+                         OREB = 10,
+                         DREB = 11,
+                         STL = 12,
+                         TO = 13,
+                         BLK = 14,
+                         AST = 15,
+                         FOUL = 16;
+
+        public const int PPG = 0,
+                         PAPG = 1,
+                         FGp = 2,
+                         FGeff = 3,
+                         TPp = 4,
+                         TPeff = 5,
+                         FTp = 6,
+                         FTeff = 7,
+                         RPG = 8,
+                         ORPG = 9,
+                         DRPG = 10,
+                         SPG = 11,
+                         BPG = 12,
+                         TPG = 13,
+                         APG = 14,
+                         FPG = 15,
+                         Wp = 16,
+                         Weff = 17,
+                         PD = 18;
+
+        private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private readonly DataTable dt_bs;
+        private readonly DataTable dt_hth;
+        private readonly DataTable dt_ov;
+        private readonly DataTable dt_ss;
+        private readonly DataTable dt_yea;
+        private readonly int[][] pl_rankings;
+        private readonly int[][] rankings;
+        private string curTeam;
+        private DataTable dt_bs_res;
+        private DataView dv_hth;
+        private ObservableCollection<PlayerStatsRow> psr;
+        private List<PlayerStats> pst;
         private string showSeason;
+        private TeamStats[] tst;
 
-        DataView dv_hth;
-
-        public const int M = 0, PF = 1, PA = 2, FGM = 4, FGA = 5, TPM = 6, TPA = 7,
-            FTM = 8, FTA = 9, OREB = 10, DREB = 11, STL = 12, TO = 13, BLK = 14, AST = 15,
-            FOUL = 16;
-        public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
-            FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17, PD = 18;
-
-        public teamOverviewW(TeamStats[] tst)
+        public teamOverviewW(TeamStats[] tst, List<PlayerStats> pst)
         {
             InitializeComponent();
 
             #region Prepare Data Tables
+
             dt_ov = new DataTable();
 
             dt_ov.Columns.Add("Type");
@@ -142,11 +181,13 @@ namespace NBA_2K12_Correct_Team_Stats
             dt_bs.Columns.Add("Result");
             dt_bs.Columns.Add("Score");
             dt_bs.Columns.Add("GameID");
+
             #endregion
 
             this.tst = tst;
+            this.pst = pst;
 
-            foreach (KeyValuePair<string,int> kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TeamOrder)
             {
                 cmbTeam.Items.Add(kvp.Key);
                 cmbOppTeam.Items.Add(kvp.Key);
@@ -161,7 +202,7 @@ namespace NBA_2K12_Correct_Team_Stats
             PopulateSeasonCombo();
 
             cmbTeam.SelectedIndex = -1;
-            cmbTeam.SelectedIndex = 0;            
+            cmbTeam.SelectedIndex = 0;
         }
 
         private void PopulateSeasonCombo()
@@ -176,60 +217,36 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == 0) cmbTeam.SelectedIndex = cmbTeam.Items.Count -1;
+            if (cmbTeam.SelectedIndex == 0) cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
             else cmbTeam.SelectedIndex--;
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == cmbTeam.Items.Count-1) cmbTeam.SelectedIndex = 0;
+            if (cmbTeam.SelectedIndex == cmbTeam.Items.Count - 1) cmbTeam.SelectedIndex = 0;
             else cmbTeam.SelectedIndex++;
         }
 
-        private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void UpdateOverviewAndBoxScores()
         {
-            try
-            {
-                if (cmbTeam.SelectedIndex == -1) return;
-                if (cmbSeasonNum.SelectedIndex == -1) return;
-            }
-            catch
-            {
-                return;
-            }
+            var ts = new TeamStats(curTeam);
+            var tsopp = new TeamStats("Opponents");
 
-            DataTable dt_bs_res = new DataTable();
-
-            dgvBoxScores.DataContext = null;
-            dgvTeamStats.DataContext = null;
-            dgvHTHStats.DataContext = null;
-            dgvHTHBoxScores.DataContext = null;
-            dgvSplit.DataContext = null;
-
-            dt_bs.Clear();
-            dt_ov.Clear();
-            dt_hth.Clear();
-            dt_ss.Clear();
-            dt_yea.Clear();
-
-            int i = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
-            showSeason = cmbSeasonNum.SelectedItem.ToString();
-
-            string curTeam = cmbTeam.SelectedItem.ToString();
-            TeamStats ts = new TeamStats(curTeam);
-            TeamStats tsopp = new TeamStats("Opponents");
-
-            SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB); 
+            int i = MainWindow.TeamOrder[curTeam];
 
             #region Prepare Team Overview & Box Scores
+
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(showSeason));
+                tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                                                ref MainWindow.pt, ref MainWindow.bshist,
+                                                seasonNum: Convert.ToInt32(showSeason));
+
                 ts = tst[i];
 
                 DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                    + curTeam + "')) AND SeasonNum = " + showSeason + ";";
+                           + curTeam + "')) AND SeasonNum = " + showSeason + ";";
                 res = db.GetDataTable(q);
                 dt_bs_res = res;
 
@@ -253,7 +270,7 @@ namespace NBA_2K12_Correct_Team_Stats
                             bsr["Result"] = "L";
                         }
 
-                        bsr["Score"] = r["T1PTS"].ToString() + "-" + r["T2PTS"].ToString();
+                        bsr["Score"] = r["T1PTS"] + "-" + r["T2PTS"];
                         bsr["GameID"] = r["GameID"].ToString();
 
                         dt_bs.Rows.Add(bsr);
@@ -274,7 +291,7 @@ namespace NBA_2K12_Correct_Team_Stats
                             bsr["Result"] = "L";
                         }
 
-                        bsr["Score"] = r["T2PTS"].ToString() + "-" + r["T1PTS"].ToString();
+                        bsr["Score"] = r["T2PTS"] + "-" + r["T1PTS"];
                         bsr["GameID"] = r["GameID"].ToString();
 
                         dt_bs.Rows.Add(bsr);
@@ -282,13 +299,15 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
             }
             else
-            {                
+            {
                 if ((dtpStart.SelectedDate.HasValue) && (dtpEnd.SelectedDate.HasValue))
-                {                        
+                {
                     DataTable res;
                     String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                        + curTeam + "')) AND ((Date >= '" + SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
-                        + "') AND (Date <= '" + SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'));";
+                               + curTeam + "')) AND ((Date >= '" +
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
+                               + "') AND (Date <= '" +
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'));";
                     res = db.GetDataTable(q);
                     dt_bs_res = res;
 
@@ -297,7 +316,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
                         int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
                         if (r["T1Name"].ToString().Equals(curTeam))
-                        {                    
+                        {
                             DataRow bsr = dt_bs.NewRow();
                             bsr["Date"] = r["Date"].ToString().Split(' ')[0];
                             bsr["Opponent"] = r["T2Name"].ToString();
@@ -312,7 +331,7 @@ namespace NBA_2K12_Correct_Team_Stats
                                 bsr["Result"] = "L";
                             }
 
-                            bsr["Score"] = r["T1PTS"].ToString() + "-" + r["T2PTS"].ToString();
+                            bsr["Score"] = r["T1PTS"] + "-" + r["T2PTS"];
                             bsr["GameID"] = r["GameID"].ToString();
 
                             dt_bs.Rows.Add(bsr);
@@ -333,7 +352,7 @@ namespace NBA_2K12_Correct_Team_Stats
                                 bsr["Result"] = "L";
                             }
 
-                            bsr["Score"] = r["T2PTS"].ToString() + "-" + r["T1PTS"].ToString();
+                            bsr["Score"] = r["T2PTS"] + "-" + r["T1PTS"];
                             bsr["GameID"] = r["GameID"].ToString();
 
                             dt_bs.Rows.Add(bsr);
@@ -345,8 +364,8 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
             }
 
-
             #region Regular Season
+
             DataRow dr = dt_ov.NewRow();
 
             dr["Type"] = "Stats";
@@ -481,9 +500,11 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 tsopp.calcAvg();
             }
+
             #endregion
 
             #region Playoffs
+
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 dr = dt_ov.NewRow();
@@ -624,9 +645,10 @@ namespace NBA_2K12_Correct_Team_Stats
                     tsopp.calcAvg();
                 }
             }
+
             #endregion
 
-            DataView dv_ov = new DataView(dt_ov);
+            var dv_ov = new DataView(dt_ov);
             dv_ov.AllowNew = false;
 
             dgvTeamStats.DataContext = dv_ov;
@@ -645,248 +667,340 @@ namespace NBA_2K12_Correct_Team_Stats
             dv_bs.AllowNew = false;
 
             dgvBoxScores.DataContext = dv_bs;
-            #endregion
 
+            #endregion
+        }
+
+        private void UpdateSplitStats()
+        {
             #region Prepare Split Stats
-            if (tbcTeamOverview.SelectedItem == tabSplitStats)
+
+            var ts = new TeamStats(curTeam);
+            var tsopp = new TeamStats("Opponents");
+
+            DataRow dr;
+
+            // Prepare Queries
+            string qr_home = String.Format("select * from GameResults where (T2Name LIKE '{0}');", curTeam);
+            string qr_away = String.Format("select * from GameResults where (T1Name LIKE '{0}');", curTeam);
+            string qr_wins = String.Format("select * from GameResults where "
+                                           + "((T1Name LIKE '{0}' AND T1PTS > T2PTS) "
+                                           + "OR (T2Name LIKE '{0}' AND T2PTS > T1PTS));",
+                                           curTeam);
+            string qr_losses = String.Format("select * from GameResults where "
+                                             + "((T1Name LIKE '{0}' AND T1PTS < T2PTS) "
+                                             + "OR (T2Name LIKE '{0}' AND T2PTS < T1PTS));",
+                                             curTeam);
+            string qr_season = String.Format("select * from GameResults where "
+                                             + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
+                                             + "AND IsPlayoff LIKE 'False';",
+                                             curTeam);
+            string qr_playoffs = String.Format("select * from GameResults where "
+                                               + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
+                                               + "AND IsPlayoff LIKE 'True';",
+                                               curTeam);
+
+            if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
-                // Prepare Queries
-                string qr_home = String.Format("select * from GameResults where (T2Name LIKE '{0}');", curTeam);
-                string qr_away = String.Format("select * from GameResults where (T1Name LIKE '{0}');", curTeam);
-                string qr_wins = String.Format("select * from GameResults where "
-                                                + "((T1Name LIKE '{0}' AND T1PTS > T2PTS) "
-                                                + "OR (T2Name LIKE '{0}' AND T2PTS > T1PTS));",
-                                                curTeam);
-                string qr_losses = String.Format("select * from GameResults where "
-                                                + "((T1Name LIKE '{0}' AND T1PTS < T2PTS) "
-                                                + "OR (T2Name LIKE '{0}' AND T2PTS < T1PTS));",
-                                                curTeam);
-                string qr_season = String.Format("select * from GameResults where "
-                                                + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                                                + "AND IsPlayoff = 'False';",
-                                                curTeam);
-                string qr_playoffs = String.Format("select * from GameResults where "
-                                                + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                                                + "AND IsPlayoff = 'True';",
-                                                curTeam);
-
-                if (rbStatsBetween.IsChecked.GetValueOrDefault())
-                {
-                    qr_home = SQLiteDatabase.AddDateRangeToSQLQuery(qr_home, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                    qr_away = SQLiteDatabase.AddDateRangeToSQLQuery(qr_away, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                    qr_wins = SQLiteDatabase.AddDateRangeToSQLQuery(qr_wins, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                    qr_losses = SQLiteDatabase.AddDateRangeToSQLQuery(qr_losses, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                    qr_season = SQLiteDatabase.AddDateRangeToSQLQuery(qr_season, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                    qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                }
-
-                DataTable res2;
-
-                /*
-                dr = dt_ss.NewRow();
-                dr["Type"] = " ";
-                dt_ss.Rows.Add(dr);
-                */
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_home);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Home");
-                dt_ss.Rows.Add(dr);
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_away);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Away");
-                dt_ss.Rows.Add(dr);
-
-                dr = dt_ss.NewRow();
-                dr["Type"] = " ";
-                dt_ss.Rows.Add(dr);
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_wins);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Wins");
-                dt_ss.Rows.Add(dr);
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_losses);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Losses");
-                dt_ss.Rows.Add(dr);
-
-                dr = dt_ss.NewRow();
-                dr["Type"] = " ";
-                dt_ss.Rows.Add(dr);
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_season);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Season");
-                dt_ss.Rows.Add(dr);
-
-                // Clear Team Stats
-                ts = new TeamStats(curTeam);
-                tsopp = new TeamStats("Opponents");
-
-                res2 = db.GetDataTable(qr_playoffs);
-                AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                dr = dt_ss.NewRow();
-                CreateDataRowFromTeamStats(ts, ref dr, "Playoffs");
-                dt_ss.Rows.Add(dr);
-
-                
-                #region Monthly split stats
-                if (rbStatsBetween.IsChecked.GetValueOrDefault())
-                {
-                    DateTime dStart = dtpStart.SelectedDate.GetValueOrDefault();
-                    DateTime dEnd = dtpEnd.SelectedDate.GetValueOrDefault();
-
-                    DateTime dCur = dStart;
-                    List<string> qrm = new List<string>();
-
-                    while (true)
-                    {
-                        if (dCur.AddMonths(1) > dEnd)
-                        {
-                            string s = String.Format("select * from GameResults where "
-                            + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                            + "AND (Date >= '{1}' AND Date <='{2}');",
-                            curTeam,
-                            SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                            SQLiteDatabase.ConvertDateTimeToSQLite(dEnd));
-
-                            qrm.Add(s);
-                            break;
-                        }
-                        else
-                        {
-                            string s = String.Format("select * from GameResults where "
-                            + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                            + "AND (Date >= '{1}' AND Date <='{2}');",
-                            curTeam,
-                            SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                            SQLiteDatabase.ConvertDateTimeToSQLite(new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1).AddDays(-1)));
-
-                            qrm.Add(s);
-
-                            dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
-                        }
-                    }
-
-                    dr = dt_ss.NewRow();
-                    dr["Type"] = " ";
-                    dt_ss.Rows.Add(dr);
-
-                    i = 0;
-                    foreach (string q in qrm)
-                    {
-                        ts = new TeamStats(curTeam);
-                        tsopp = new TeamStats("Opponents");
-
-                        res2 = db.GetDataTable(q);
-                        AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
-                        dr = dt_ss.NewRow();
-                        DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
-                        CreateDataRowFromTeamStats(ts, ref dr, label.Year.ToString() + " " + String.Format("{0:MMMM}", label));
-                        dt_ss.Rows.Add(dr);
-                        i++;
-                    }
-                }
-                #endregion
-
-                // DataTable is done, create DataView and load into DataGrid
-                DataView dv_ss = new DataView(dt_ss);
-                dv_ss.AllowEdit = false;
-                dv_ss.AllowNew = false;
-
-                dgvSplit.DataContext = dv_ss;
+                qr_home = SQLiteDatabase.AddDateRangeToSQLQuery(qr_home, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_away = SQLiteDatabase.AddDateRangeToSQLQuery(qr_away, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_wins = SQLiteDatabase.AddDateRangeToSQLQuery(qr_wins, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_losses = SQLiteDatabase.AddDateRangeToSQLQuery(qr_losses, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_season = SQLiteDatabase.AddDateRangeToSQLQuery(qr_season, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs,
+                                                                    dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                    dtpEnd.SelectedDate.GetValueOrDefault());
             }
-            #endregion
 
-            ts = tst[MainWindow.TeamOrder[curTeam]];
-            Title = cmbTeam.SelectedItem.ToString() + " Team Overview - " + ts.getGames() + " games played";
+            DataTable res2;
 
-            if (tbcTeamOverview.SelectedItem == tabHTH)
+            /*
+            dr = dt_ss.NewRow();
+            dr["Type"] = " ";
+            dt_ss.Rows.Add(dr);
+            */
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_home);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Home");
+            dt_ss.Rows.Add(dr);
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_away);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Away");
+            dt_ss.Rows.Add(dr);
+
+            dr = dt_ss.NewRow();
+            dr["Type"] = " ";
+            dt_ss.Rows.Add(dr);
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_wins);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Wins");
+            dt_ss.Rows.Add(dr);
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_losses);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Losses");
+            dt_ss.Rows.Add(dr);
+
+            dr = dt_ss.NewRow();
+            dr["Type"] = " ";
+            dt_ss.Rows.Add(dr);
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_season);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Season");
+            dt_ss.Rows.Add(dr);
+
+            // Clear Team Stats
+            ts = new TeamStats(curTeam);
+            tsopp = new TeamStats("Opponents");
+
+            res2 = db.GetDataTable(qr_playoffs);
+            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(ts, ref dr, "Playoffs");
+            dt_ss.Rows.Add(dr);
+
+            #region Monthly split stats
+
+            if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
-                cmbOppTeam_SelectionChanged(sender, e);
-            }
-            else if (tbcTeamOverview.SelectedItem == tabYearly)
-            {
-                #region Prepare Yearly Stats
-                string currentDB = MainWindow.currentDB;
-                int curSeason = MainWindow.curSeason;
-                int maxSeason = MainWindow.getMaxSeason(currentDB);
+                DateTime dStart = dtpStart.SelectedDate.GetValueOrDefault();
+                DateTime dEnd = dtpEnd.SelectedDate.GetValueOrDefault();
 
-                DataRow drcur = dt_yea.NewRow();
-                DataRow drcur_pl = dt_yea.NewRow();
-                CreateDataRowFromTeamStats(ts, ref drcur, "Season " + curSeason.ToString());
+                DateTime dCur = dStart;
+                var qrm = new List<string>();
 
-                bool playedInPlayoffs = false;
-                if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
+                while (true)
                 {
-                    CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + curSeason.ToString(), true);
-                    playedInPlayoffs = true;
-                }
-
-                for (int j = 1; j <= maxSeason; j++)
-                {
-                    if (j != curSeason)
+                    if (dCur.AddMonths(1) > dEnd)
                     {
-                        tst = MainWindow.getCustomStats(currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: j);
-                        DataRow dr3 = dt_yea.NewRow();
-                        DataRow dr3_pl = dt_yea.NewRow();
-                        CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3, "Season " + j.ToString(), false);
-                        dt_yea.Rows.Add(dr3);
-                        if (tst[MainWindow.TeamOrder[curTeam]].pl_winloss[0] + tst[MainWindow.TeamOrder[curTeam]].pl_winloss[1] > 0)
-                        {
-                            CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3_pl, "Playoffs " + j.ToString(), true);
-                            dt_yea.Rows.Add(dr3_pl);
-                        }
+                        string s = String.Format("select * from GameResults where "
+                                                 + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
+                                                 + "AND (Date >= '{1}' AND Date <='{2}');",
+                                                 curTeam,
+                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
+                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dEnd));
+
+                        qrm.Add(s);
+                        break;
                     }
                     else
                     {
-                        dt_yea.Rows.Add(drcur);
-                        if (playedInPlayoffs) dt_yea.Rows.Add(drcur_pl);
+                        string s = String.Format("select * from GameResults where "
+                                                 + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
+                                                 + "AND (Date >= '{1}' AND Date <='{2}');",
+                                                 curTeam,
+                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
+                                                 SQLiteDatabase.ConvertDateTimeToSQLite(
+                                                     new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1).AddDays(-1)));
+
+                        qrm.Add(s);
+
+                        dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
 
-                tst = MainWindow.getCustomStats(currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: curSeason);
-                ts = tst[MainWindow.TeamOrder[curTeam]];
+                dr = dt_ss.NewRow();
+                dr["Type"] = " ";
+                dt_ss.Rows.Add(dr);
 
-                DataView dv_yea = new DataView(dt_yea);
-                dv_yea.AllowNew = false;
-                dv_yea.AllowEdit = false;
+                int i = 0;
+                foreach (string q in qrm)
+                {
+                    ts = new TeamStats(curTeam);
+                    tsopp = new TeamStats("Opponents");
 
-                dgvYearly.DataContext = dv_yea;
-                #endregion
+                    res2 = db.GetDataTable(q);
+                    AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+                    dr = dt_ss.NewRow();
+                    DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
+                    CreateDataRowFromTeamStats(ts, ref dr,
+                                               label.Year.ToString() + " " + String.Format("{0:MMMM}", label));
+                    dt_ss.Rows.Add(dr);
+                    i++;
+                }
             }
+
+            #endregion
+
+            // DataTable is done, create DataView and load into DataGrid
+            var dv_ss = new DataView(dt_ss);
+            dv_ss.AllowEdit = false;
+            dv_ss.AllowNew = false;
+
+            dgvSplit.DataContext = dv_ss;
+
+            #endregion
         }
 
-        static UInt16 getUshort(DataRow r, string ColumnName)
+        private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            return Convert.ToUInt16(r[ColumnName].ToString());
+            try
+            {
+                if (cmbTeam.SelectedIndex == -1) return;
+                if (cmbSeasonNum.SelectedIndex == -1) return;
+            }
+            catch
+            {
+                return;
+            }
+
+            var dt_bs_res = new DataTable();
+
+            //DataRow dr;
+
+            dgvBoxScores.DataContext = null;
+            dgvTeamStats.DataContext = null;
+            dgvHTHStats.DataContext = null;
+            dgvHTHBoxScores.DataContext = null;
+            dgvSplit.DataContext = null;
+
+            dt_bs.Clear();
+            dt_ov.Clear();
+            dt_hth.Clear();
+            dt_ss.Clear();
+            dt_yea.Clear();
+
+            int i = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
+            showSeason = cmbSeasonNum.SelectedItem.ToString();
+
+            curTeam = cmbTeam.SelectedItem.ToString();
+            var ts = new TeamStats(curTeam);
+            var tsopp = new TeamStats("Opponents");
+
+            UpdateOverviewAndBoxScores();
+
+            UpdateSplitStats();
+
+            ts = tst[MainWindow.TeamOrder[curTeam]];
+            Title = cmbTeam.SelectedItem + " Team Overview - " + ts.getGames() + " games played";
+
+            UpdateHeadToHead();
+
+            UpdateYearlyStats();
+
+            UpdatePlayerStats();
+        }
+
+        private void UpdatePlayerStats()
+        {
+            int curSeason = MainWindow.curSeason;
+            int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+
+            string playersT = "Players";
+            if (curSeason != maxSeason) playersT += "S" + curSeason;
+
+            string q;
+            DataTable res;
+            q = "select * from " + playersT + " where TeamFin LIKE '" + curTeam + "'";
+            res = db.GetDataTable(q);
+
+            var psr = new ObservableCollection<PlayerStatsRow>();
+
+            foreach (DataRow r in res.Rows)
+            {
+                psr.Add(new PlayerStatsRow(new PlayerStats(r)));
+            }
+
+            dgvPlayerStats.ItemsSource = psr;
+        }
+
+        private void UpdateHeadToHead()
+        {
+            cmbOppTeam_SelectionChanged(null, null);
+        }
+
+        private void UpdateYearlyStats()
+        {
+            #region Prepare Yearly Stats
+
+            string currentDB = MainWindow.currentDB;
+            int curSeason = MainWindow.curSeason;
+            int maxSeason = MainWindow.getMaxSeason(currentDB);
+
+            TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
+
+            DataRow drcur = dt_yea.NewRow();
+            DataRow drcur_pl = dt_yea.NewRow();
+            CreateDataRowFromTeamStats(ts, ref drcur, "Season " + curSeason.ToString());
+
+            bool playedInPlayoffs = false;
+            if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
+            {
+                CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + curSeason.ToString(), true);
+                playedInPlayoffs = true;
+            }
+
+            for (int j = 1; j <= maxSeason; j++)
+            {
+                if (j != curSeason)
+                {
+                    tst = MainWindow.getCustomStats(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
+                                                    ref MainWindow.bshist, seasonNum: j);
+                    DataRow dr3 = dt_yea.NewRow();
+                    DataRow dr3_pl = dt_yea.NewRow();
+                    CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3, "Season " + j.ToString(),
+                                               false);
+                    dt_yea.Rows.Add(dr3);
+                    if (tst[MainWindow.TeamOrder[curTeam]].pl_winloss[0] +
+                        tst[MainWindow.TeamOrder[curTeam]].pl_winloss[1] > 0)
+                    {
+                        CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3_pl,
+                                                   "Playoffs " + j.ToString(), true);
+                        dt_yea.Rows.Add(dr3_pl);
+                    }
+                }
+                else
+                {
+                    dt_yea.Rows.Add(drcur);
+                    if (playedInPlayoffs) dt_yea.Rows.Add(drcur_pl);
+                }
+            }
+
+            tst = MainWindow.getCustomStats(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
+                                            ref MainWindow.bshist, seasonNum: curSeason);
+            ts = tst[MainWindow.TeamOrder[curTeam]];
+
+            var dv_yea = new DataView(dt_yea);
+            dv_yea.AllowNew = false;
+            dv_yea.AllowEdit = false;
+
+            dgvYearly.DataContext = dv_yea;
+
+            #endregion
         }
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
@@ -894,7 +1008,7 @@ namespace NBA_2K12_Correct_Team_Stats
             string msg = StatsTracker.averagesAndRankings(cmbTeam.SelectedItem.ToString(), tst, MainWindow.TeamOrder);
             if (msg != "")
             {
-                copyableW cw = new copyableW(msg, cmbTeam.SelectedItem.ToString(), TextAlignment.Center);
+                var cw = new copyableW(msg, cmbTeam.SelectedItem.ToString(), TextAlignment.Center);
                 cw.ShowDialog();
             }
         }
@@ -903,8 +1017,10 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
-                MessageBox.Show("You can't edit partial stats. You can either edit the total stats (which are kept separately from box-scores"
-                    + ") or edit the box-scores themselves.", "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(
+                    "You can't edit partial stats. You can either edit the total stats (which are kept separately from box-scores"
+                    + ") or edit the box-scores themselves.", "NBA Stats Tracker", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
                 return;
             }
 
@@ -937,7 +1053,15 @@ namespace NBA_2K12_Correct_Team_Stats
 
             tst[id].calcAvg();
 
-            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()), MainWindow.getMaxSeason(MainWindow.currentDB));
+            var playersToUpdate = new List<PlayerStats>();
+
+            foreach (PlayerStatsRow cur in psr)
+            {
+            }
+
+            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, new List<PlayerStats>(),
+                                            Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()),
+                                            MainWindow.getMaxSeason(MainWindow.currentDB));
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -951,7 +1075,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private string GetCellValue(DataGrid dataGrid, int row, int col)
         {
-            return (dataGrid.Items[row] as DataRowView).Row.ItemArray[col].ToString();            
+            return (dataGrid.Items[row] as DataRowView).Row.ItemArray[col].ToString();
         }
 
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
@@ -970,7 +1094,7 @@ namespace NBA_2K12_Correct_Team_Stats
             if (rating.Length != 1)
             {
                 string msg = StatsTracker.scoutReport(rating, id, cmbTeam.SelectedItem.ToString());
-                copyableW cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
+                var cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
         }
@@ -1027,7 +1151,9 @@ namespace NBA_2K12_Correct_Team_Stats
                 dtpStart.IsEnabled = false;
                 cmbSeasonNum.IsEnabled = true;
             }
-            catch { }
+            catch
+            {
+            }
             cmbTeam_SelectionChanged(sender, null);
         }
 
@@ -1040,7 +1166,9 @@ namespace NBA_2K12_Correct_Team_Stats
                 dtpStart.IsEnabled = true;
                 cmbSeasonNum.IsEnabled = false;
             }
-            catch { }
+            catch
+            {
+            }
             cmbTeam_SelectionChanged(sender, null);
         }
 
@@ -1072,7 +1200,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
-                DataRowView row = (DataRowView)dgvBoxScores.SelectedItems[0];
+                var row = (DataRowView) dgvBoxScores.SelectedItems[0];
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
 
                 int i = 0;
@@ -1083,7 +1211,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     {
                         MainWindow.bs = new BoxScore();
 
-                        boxScoreW bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
                         bsw.ShowDialog();
 
                         if (MainWindow.bs.bshistid != -1)
@@ -1093,7 +1221,8 @@ namespace NBA_2K12_Correct_Team_Stats
                                 MainWindow.bshist[MainWindow.bs.bshistid].bs = MainWindow.bs;
                                 MainWindow.bshist[MainWindow.bs.bshistid].mustUpdate = true;
 
-                                MessageBox.Show("It is recommended to save and reload the Team Stats file for changes to take effect.");
+                                MessageBox.Show(
+                                    "It is recommended to save and reload the Team Stats file for changes to take effect.");
                                 //MainWindow.updateStatus("One or more Box Scores have been updated. Save the Team Stats file before continuing.");
                             }
                         }
@@ -1141,38 +1270,38 @@ namespace NBA_2K12_Correct_Team_Stats
             string curTeam = cmbTeam.SelectedItem.ToString();
             string curOpp = cmbOppTeam.SelectedItem.ToString();
 
-            DataTable dt_hth_bs = new DataTable();
+            var dt_hth_bs = new DataTable();
             dt_hth_bs.Columns.Add("Date");
             dt_hth_bs.Columns.Add("Home-Away");
             dt_hth_bs.Columns.Add("Result");
             dt_hth_bs.Columns.Add("Score");
             dt_hth_bs.Columns.Add("GameID");
 
-            TeamStats ts = new TeamStats(curTeam);
-            TeamStats tsopp = new TeamStats(curOpp);
+            var ts = new TeamStats(curTeam);
+            var tsopp = new TeamStats(curOpp);
 
-            SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+            var db = new SQLiteDatabase(MainWindow.currentDB);
 
-            DataTable res = new DataTable();
+            var res = new DataTable();
 
             if (dt_hth.Rows.Count > 1) dt_hth.Rows.RemoveAt(dt_hth.Rows.Count - 1);
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 string q = String.Format("select * from GameResults " +
-                    "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
-                    "OR " + 
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2};",
-                    cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString(),
-                    showSeason);
+                                         "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
+                                         "OR " +
+                                         "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2};",
+                                         cmbTeam.SelectedItem,
+                                         cmbOppTeam.SelectedItem,
+                                         showSeason);
 
                 res = db.GetDataTable(q);
 
                 if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
                 {
                     ts = tst[iown];
-                    ts.calcAvg();                    
+                    ts.calcAvg();
 
                     tsopp = tst[iopp];
                     tsopp.calcAvg();
@@ -1196,23 +1325,23 @@ namespace NBA_2K12_Correct_Team_Stats
                 else
                 {
                     q = String.Format("select * from GameResults " +
-                    "where ((((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
-                    "OR " +
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND IsPlayoff = 'False' AND SeasonNum = {2});",
-                    cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString(),
-                    showSeason);
+                                      "where ((((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
+                                      "OR " +
+                                      "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND IsPlayoff LIKE 'False' AND SeasonNum = {2});",
+                                      cmbTeam.SelectedItem,
+                                      cmbOppTeam.SelectedItem,
+                                      showSeason);
 
                     DataTable res2 = db.GetDataTable(q);
                     AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, false);
-            
+
                     q = String.Format("select * from GameResults " +
-                    "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
-                    "OR " +
-                    "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')) AND IsPlayoff = 'True' AND SeasonNum = {2});",
-                    cmbTeam.SelectedItem.ToString(),
-                    cmbOppTeam.SelectedItem.ToString(),
-                    showSeason);
+                                      "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
+                                      "OR " +
+                                      "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')) AND IsPlayoff LIKE 'True' AND SeasonNum = {2});",
+                                      cmbTeam.SelectedItem,
+                                      cmbOppTeam.SelectedItem,
+                                      showSeason);
 
                     res2 = db.GetDataTable(q);
                     AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, true);
@@ -1220,27 +1349,29 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             else
             {
-                string q = String.Format("select * from GameResults where ((((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
-                        "OR ((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND ((Date >= '{2}') AND (Date <= '{3}')))",
-                        cmbTeam.SelectedItem.ToString(),
-                        cmbOppTeam.SelectedItem.ToString(),
-                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
-                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
+                string q =
+                    String.Format("select * from GameResults where ((((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
+                                  "OR ((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND ((Date >= '{2}') AND (Date <= '{3}')))",
+                                  cmbTeam.SelectedItem,
+                                  cmbOppTeam.SelectedItem,
+                                  SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
+                                  SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
                 res = db.GetDataTable(q);
 
                 if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
                 {
-                    string q2 = String.Format("select * from GameResults where (((T1Name LIKE '{0}') OR (T2Name LIKE '{1}') " +
-                        "OR (T1Name LIKE '{1}') OR (T2Name LIKE '{0}')) AND ((Date >= '{2}') AND (Date <= '{3}')))",
-                        cmbTeam.SelectedItem.ToString(),
-                        cmbOppTeam.SelectedItem.ToString(),
-                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
-                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
+                    string q2 =
+                        String.Format("select * from GameResults where (((T1Name LIKE '{0}') OR (T2Name LIKE '{1}') " +
+                                      "OR (T1Name LIKE '{1}') OR (T2Name LIKE '{0}')) AND ((Date >= '{2}') AND (Date <= '{3}')))",
+                                      cmbTeam.SelectedItem,
+                                      cmbOppTeam.SelectedItem,
+                                      SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
+                                      SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
                     DataTable res2 = db.GetDataTable(q);
                     AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
                 }
                 else
-                {                    
+                {
                     AddTeamStatsFromSQLDataTable(res, ref ts, ref tsopp);
                 }
             }
@@ -1264,7 +1395,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         bsr["Result"] = "L";
                     }
 
-                    bsr["Score"] = r["T1PTS"].ToString() + "-" + r["T2PTS"].ToString();
+                    bsr["Score"] = r["T1PTS"] + "-" + r["T2PTS"];
                     bsr["GameID"] = r["GameID"].ToString();
 
                     dt_hth_bs.Rows.Add(bsr);
@@ -1284,7 +1415,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         bsr["Result"] = "L";
                     }
 
-                    bsr["Score"] = r["T2PTS"].ToString() + "-" + r["T1PTS"].ToString();
+                    bsr["Score"] = r["T2PTS"] + "-" + r["T1PTS"];
                     bsr["GameID"] = r["GameID"].ToString();
 
                     dt_hth_bs.Rows.Add(bsr);
@@ -1326,7 +1457,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             dgvHTHStats.DataContext = dv_hth;
 
-            DataView dv_hth_bs = new DataView(dt_hth_bs);
+            var dv_hth_bs = new DataView(dt_hth_bs);
             dv_hth_bs.AllowNew = false;
             dv_hth_bs.AllowEdit = false;
 
@@ -1401,7 +1532,8 @@ namespace NBA_2K12_Correct_Team_Stats
             cmbOppTeam.SelectedIndex = 1;
         }
 
-        public static void AddTeamStatsFromSQLDataTable(DataTable res, ref TeamStats ts, ref TeamStats tsopp, bool playoffs = false)
+        public static void AddTeamStatsFromSQLDataTable(DataTable res, ref TeamStats ts, ref TeamStats tsopp,
+                                                        bool playoffs = false)
         {
             foreach (DataRow r in res.Rows)
             {
@@ -1411,7 +1543,8 @@ namespace NBA_2K12_Correct_Team_Stats
                     int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
                     if (r["T1Name"].ToString().Equals(ts.name))
                     {
-                        if (t1pts > t2pts) ts.winloss[0]++; else ts.winloss[1]++;
+                        if (t1pts > t2pts) ts.winloss[0]++;
+                        else ts.winloss[1]++;
                         tsopp.stats[PA] = ts.stats[PF] += Convert.ToUInt16(r["T1PTS"].ToString());
                         tsopp.stats[PF] = ts.stats[PA] += Convert.ToUInt16(r["T2PTS"].ToString());
 
@@ -1424,14 +1557,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                         UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        ts.stats[DREB] += (ushort)((int)T1reb - (int)T1oreb);
+                        ts.stats[DREB] += (ushort) (T1reb - T1oreb);
                         ts.stats[OREB] += T1oreb;
 
                         ts.stats[STL] += Convert.ToUInt16(r["T1STL"].ToString());
                         ts.stats[TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        ts.stats[BLK] += getUshort(r, "T1BLK");
-                        ts.stats[AST] += getUshort(r, "T1AST");
-                        ts.stats[FOUL] += getUshort(r, "T1FOUL");
+                        ts.stats[BLK] += StatsTracker.getUShort(r, "T1BLK");
+                        ts.stats[AST] += StatsTracker.getUShort(r, "T1AST");
+                        ts.stats[FOUL] += StatsTracker.getUShort(r, "T1FOUL");
 
                         tsopp.stats[FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                         tsopp.stats[FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1442,18 +1575,19 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                         UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        tsopp.stats[DREB] += (ushort)((int)T2reb - (int)T2oreb);
+                        tsopp.stats[DREB] += (ushort) (T2reb - T2oreb);
                         tsopp.stats[OREB] += T2oreb;
 
                         tsopp.stats[STL] += Convert.ToUInt16(r["T2STL"].ToString());
                         tsopp.stats[TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        tsopp.stats[BLK] += getUshort(r, "T2BLK");
-                        tsopp.stats[AST] += getUshort(r, "T2AST");
-                        tsopp.stats[FOUL] += getUshort(r, "T2FOUL");
+                        tsopp.stats[BLK] += StatsTracker.getUShort(r, "T2BLK");
+                        tsopp.stats[AST] += StatsTracker.getUShort(r, "T2AST");
+                        tsopp.stats[FOUL] += StatsTracker.getUShort(r, "T2FOUL");
                     }
                     else
                     {
-                        if (t2pts > t1pts) ts.winloss[0]++; else ts.winloss[1]++;
+                        if (t2pts > t1pts) ts.winloss[0]++;
+                        else ts.winloss[1]++;
                         tsopp.stats[PA] = ts.stats[PF] += Convert.ToUInt16(r["T2PTS"].ToString());
                         tsopp.stats[PF] = ts.stats[PA] += Convert.ToUInt16(r["T1PTS"].ToString());
 
@@ -1466,14 +1600,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                         UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        ts.stats[DREB] += (ushort)((int)T2reb - (int)T2oreb);
+                        ts.stats[DREB] += (ushort) (T2reb - T2oreb);
                         ts.stats[OREB] += T2oreb;
 
                         ts.stats[STL] += Convert.ToUInt16(r["T2STL"].ToString());
                         ts.stats[TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        ts.stats[BLK] += getUshort(r, "T2BLK");
-                        ts.stats[AST] += getUshort(r, "T2AST");
-                        ts.stats[FOUL] += getUshort(r, "T2FOUL");
+                        ts.stats[BLK] += StatsTracker.getUShort(r, "T2BLK");
+                        ts.stats[AST] += StatsTracker.getUShort(r, "T2AST");
+                        ts.stats[FOUL] += StatsTracker.getUShort(r, "T2FOUL");
 
                         tsopp.stats[FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                         tsopp.stats[FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -1484,14 +1618,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                         UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        tsopp.stats[DREB] += (ushort)((int)T1reb - (int)T1oreb);
+                        tsopp.stats[DREB] += (ushort) (T1reb - T1oreb);
                         tsopp.stats[OREB] += T1oreb;
 
                         tsopp.stats[STL] += Convert.ToUInt16(r["T1STL"].ToString());
                         tsopp.stats[TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        tsopp.stats[BLK] += getUshort(r, "T1BLK");
-                        tsopp.stats[AST] += getUshort(r, "T1AST");
-                        tsopp.stats[FOUL] += getUshort(r, "T1FOUL");
+                        tsopp.stats[BLK] += StatsTracker.getUShort(r, "T1BLK");
+                        tsopp.stats[AST] += StatsTracker.getUShort(r, "T1AST");
+                        tsopp.stats[FOUL] += StatsTracker.getUShort(r, "T1FOUL");
                     }
 
                     tsopp.winloss[1] = ts.winloss[0];
@@ -1503,7 +1637,8 @@ namespace NBA_2K12_Correct_Team_Stats
                     int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
                     if (r["T1Name"].ToString().Equals(ts.name))
                     {
-                        if (t1pts > t2pts) ts.pl_winloss[0]++; else ts.pl_winloss[1]++;
+                        if (t1pts > t2pts) ts.pl_winloss[0]++;
+                        else ts.pl_winloss[1]++;
                         tsopp.pl_stats[PA] = ts.pl_stats[PF] += Convert.ToUInt16(r["T1PTS"].ToString());
                         tsopp.pl_stats[PF] = ts.pl_stats[PA] += Convert.ToUInt16(r["T2PTS"].ToString());
 
@@ -1516,14 +1651,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                         UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        ts.pl_stats[DREB] += (ushort)((int)T1reb - (int)T1oreb);
+                        ts.pl_stats[DREB] += (ushort) (T1reb - T1oreb);
                         ts.pl_stats[OREB] += T1oreb;
 
                         ts.pl_stats[STL] += Convert.ToUInt16(r["T1STL"].ToString());
                         ts.pl_stats[TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        ts.pl_stats[BLK] += getUshort(r, "T1BLK");
-                        ts.pl_stats[AST] += getUshort(r, "T1AST");
-                        ts.pl_stats[FOUL] += getUshort(r, "T1FOUL");
+                        ts.pl_stats[BLK] += StatsTracker.getUShort(r, "T1BLK");
+                        ts.pl_stats[AST] += StatsTracker.getUShort(r, "T1AST");
+                        ts.pl_stats[FOUL] += StatsTracker.getUShort(r, "T1FOUL");
 
                         tsopp.pl_stats[FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                         tsopp.pl_stats[FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1534,18 +1669,19 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                         UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        tsopp.pl_stats[DREB] += (ushort)((int)T2reb - (int)T2oreb);
+                        tsopp.pl_stats[DREB] += (ushort) (T2reb - T2oreb);
                         tsopp.pl_stats[OREB] += T2oreb;
 
                         tsopp.pl_stats[STL] += Convert.ToUInt16(r["T2STL"].ToString());
                         tsopp.pl_stats[TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        tsopp.pl_stats[BLK] += getUshort(r, "T2BLK");
-                        tsopp.pl_stats[AST] += getUshort(r, "T2AST");
-                        tsopp.pl_stats[FOUL] += getUshort(r, "T2FOUL");
+                        tsopp.pl_stats[BLK] += StatsTracker.getUShort(r, "T2BLK");
+                        tsopp.pl_stats[AST] += StatsTracker.getUShort(r, "T2AST");
+                        tsopp.pl_stats[FOUL] += StatsTracker.getUShort(r, "T2FOUL");
                     }
                     else
                     {
-                        if (t2pts > t1pts) ts.pl_winloss[0]++; else ts.pl_winloss[1]++;
+                        if (t2pts > t1pts) ts.pl_winloss[0]++;
+                        else ts.pl_winloss[1]++;
                         tsopp.pl_stats[PA] = ts.pl_stats[PF] += Convert.ToUInt16(r["T2PTS"].ToString());
                         tsopp.pl_stats[PF] = ts.pl_stats[PA] += Convert.ToUInt16(r["T1PTS"].ToString());
 
@@ -1558,14 +1694,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                         UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        ts.pl_stats[DREB] += (ushort)((int)T2reb - (int)T2oreb);
+                        ts.pl_stats[DREB] += (ushort) (T2reb - T2oreb);
                         ts.pl_stats[OREB] += T2oreb;
 
                         ts.pl_stats[STL] += Convert.ToUInt16(r["T2STL"].ToString());
                         ts.pl_stats[TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        ts.pl_stats[BLK] += getUshort(r, "T2BLK");
-                        ts.pl_stats[AST] += getUshort(r, "T2AST");
-                        ts.pl_stats[FOUL] += getUshort(r, "T2FOUL");
+                        ts.pl_stats[BLK] += StatsTracker.getUShort(r, "T2BLK");
+                        ts.pl_stats[AST] += StatsTracker.getUShort(r, "T2AST");
+                        ts.pl_stats[FOUL] += StatsTracker.getUShort(r, "T2FOUL");
 
                         tsopp.pl_stats[FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                         tsopp.pl_stats[FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -1576,14 +1712,14 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                         UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        tsopp.pl_stats[DREB] += (ushort)((int)T1reb - (int)T1oreb);
+                        tsopp.pl_stats[DREB] += (ushort) (T1reb - T1oreb);
                         tsopp.pl_stats[OREB] += T1oreb;
 
                         tsopp.pl_stats[STL] += Convert.ToUInt16(r["T1STL"].ToString());
                         tsopp.pl_stats[TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        tsopp.pl_stats[BLK] += getUshort(r, "T1BLK");
-                        tsopp.pl_stats[AST] += getUshort(r, "T1AST");
-                        tsopp.pl_stats[FOUL] += getUshort(r, "T1FOUL");
+                        tsopp.pl_stats[BLK] += StatsTracker.getUShort(r, "T1BLK");
+                        tsopp.pl_stats[AST] += StatsTracker.getUShort(r, "T1AST");
+                        tsopp.pl_stats[FOUL] += StatsTracker.getUShort(r, "T1FOUL");
                     }
 
                     tsopp.pl_winloss[1] = ts.pl_winloss[0];
@@ -1612,7 +1748,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 DataRowView row;
                 try
                 {
-                   row = (DataRowView)dgvHTHBoxScores.SelectedItems[0];
+                    row = (DataRowView) dgvHTHBoxScores.SelectedItems[0];
                 }
                 catch
                 {
@@ -1628,7 +1764,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     {
                         MainWindow.bs = new BoxScore();
 
-                        boxScoreW bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
                         bsw.ShowDialog();
 
                         if (MainWindow.bs.bshistid != -1)
@@ -1638,7 +1774,8 @@ namespace NBA_2K12_Correct_Team_Stats
                                 MainWindow.bshist[MainWindow.bs.bshistid].bs = MainWindow.bs;
                                 MainWindow.bshist[MainWindow.bs.bshistid].mustUpdate = true;
 
-                                MessageBox.Show("It is recommended to save and reload the Team Stats file for changes to take effect.");
+                                MessageBox.Show(
+                                    "It is recommended to save and reload the Team Stats file for changes to take effect.");
                                 //MainWindow.updateStatus("One or more Box Scores have been updated. Save the Team Stats file before continuing.");
                             }
                         }
@@ -1651,11 +1788,13 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void tbcTeamOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            /*
             if ((tbcTeamOverview.SelectedItem == tabSplitStats) || (tbcTeamOverview.SelectedItem == tabHTH) || (tbcTeamOverview.SelectedItem == tabYearly))
             {
                 cmbTeam_SelectionChanged(null, null);
             }
             FixTimeFrameForSplitStats();
+            */
         }
 
         private void rbBSDetailed_Checked(object sender, RoutedEventArgs e)

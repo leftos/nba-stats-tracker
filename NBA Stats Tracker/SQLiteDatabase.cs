@@ -111,6 +111,7 @@ class SQLiteDatabase
     /// <returns>A boolean true or false to signify success or failure.</returns>
     public bool Update(String tableName, Dictionary<String, String> data, String where)
     {
+        string sql = "";
         String vals = "";
         Boolean returnCode = true;
         if (data.Count >= 1)
@@ -123,11 +124,12 @@ class SQLiteDatabase
         }
         try
         {
-            this.ExecuteNonQuery(String.Format("update {0} set {1} where {2};", tableName, vals, where));
+            sql = String.Format("update {0} set {1} where {2};", tableName, vals, where);
+            this.ExecuteNonQuery(sql);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message.ToString());
+            MessageBox.Show(ex.Message.ToString() + "\n\nQuery: " + sql);
             returnCode = false;
         }
         return returnCode;
@@ -164,6 +166,7 @@ class SQLiteDatabase
     {
         String columns = "";
         String values = "";
+        string sql = "";
         Boolean returnCode = true;
         foreach (KeyValuePair<String, String> val in data)
         {
@@ -174,11 +177,12 @@ class SQLiteDatabase
         values = values.Substring(0, values.Length - 1);
         try
         {
-            this.ExecuteNonQuery(String.Format("insert into {0}({1}) values({2});", tableName, columns, values));
+            sql = String.Format("insert into {0}({1}) values({2});", tableName, columns, values);
+            this.ExecuteNonQuery(sql);
         }
         catch(Exception fail)
         {
-            MessageBox.Show(fail.Message);
+            MessageBox.Show(fail.Message + "\n\nQuery: " + sql);
             returnCode = false;
         }
         return returnCode;

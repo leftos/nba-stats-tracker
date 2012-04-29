@@ -74,7 +74,7 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
-        public override void Initialize()
+        public override sealed void Initialize()
         {
             hash = seed;
         }

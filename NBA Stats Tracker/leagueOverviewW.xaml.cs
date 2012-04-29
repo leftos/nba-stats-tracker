@@ -12,9 +12,10 @@ namespace NBA_2K12_Correct_Team_Stats
     public partial class leagueOverviewW : Window
     {
         private TeamStats[] tst;
+        private List<PlayerStats> pst;
         DataTable dt_ts, dt_bs;
 
-        public leagueOverviewW(TeamStats[] tst)
+        public leagueOverviewW(TeamStats[] tst, List<PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -57,6 +58,7 @@ namespace NBA_2K12_Correct_Team_Stats
             #endregion
 
             this.tst = tst;
+            this.pst = pst;
 
             PopulateSeasonCombo();
 
@@ -107,7 +109,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {
@@ -122,7 +124,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 {
                     foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
                     {
-                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff = 'False');",
+                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
                             kvp.Key);
                         q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                             dtpEnd.SelectedDate.GetValueOrDefault());
@@ -154,7 +156,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                    tst = MainWindow.getCustomStats(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, seasonNum: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
                     foreach (TeamStats cur in tst)
                     {
@@ -171,7 +173,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 {
                     foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
                     {
-                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff = 'True');",
+                        q = String.Format("select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
                             kvp.Key);
                         q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                             dtpEnd.SelectedDate.GetValueOrDefault());

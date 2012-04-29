@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
+using System.Data;
 
 namespace NBA_2K12_Correct_Team_Stats
 {
@@ -1043,6 +1044,214 @@ namespace NBA_2K12_Correct_Team_Stats
             string[] parts2 = parts1[1].Split('<');
             return parts2[0];
         }
+
+        public static UInt16 getUShort(DataRow r, string ColumnName)
+        {
+            return Convert.ToUInt16(r[ColumnName].ToString());
+        }
+
+        public static int getInt(DataRow r, string ColumnName)
+        {
+            return Convert.ToInt32(r[ColumnName].ToString());
+        }
+
+        public static Boolean getBoolean(DataRow r, string ColumnName)
+        {
+            string s = r[ColumnName].ToString();
+            s = s.ToLower();
+            return Convert.ToBoolean(s);
+        }
+
+        public static string getString(DataRow r, string ColumnName)
+        {
+            return r[ColumnName].ToString();
+        }
+    }
+
+    // Unlike TeamStats which was designed before REditor implemented such stats,
+    // PlayerStats were made according to REditor's standards, to make life 
+    // easier when importing/exporting from REditor's CSV
+    public class PlayerStats
+    {
+        public int ID;
+        public string LastName;
+        public string FirstName;
+        public string Position1;
+        public string Position2;
+        public bool isActive;
+        public bool isInjured;
+        // When exporting to REdtior, convert all below to INT
+        public string TeamF;
+        public string TeamS = "";
+        public UInt16[] stats = new UInt16[17];
+        public bool isAllStar;
+        public bool isNBAChampion;
+        // End of REditor export info
+        
+        public float[] averages = new float[16];
+
+        // TODO: Metric Stats here
+
+        public const int pGP = 0, pGS = 1, pMINS = 2, pPTS = 3, pDREB = 4, pOREB = 5,
+            pAST = 6, pSTL = 7, pBLK = 8, pTO = 9, pFOUL = 10, pFGM = 11, pFGA = 12,
+            pTPM = 13, pTPA = 14, pFTM = 15, pFTA = 16;
+        public const int pMPG = 0, pPPG = 1, pDRPG = 2, pORPG = 3, pAPG = 4, pSPG = 5,
+            pBPG = 6, pTPG = 7, pFPG = 8, pFGp = 9, pFGeff = 10, pTPp = 11, pTPeff = 12,
+            pFTp = 13, pFTeff = 14, pRPG = 15;
+
+        public PlayerStats(Player player)
+        {
+            this.ID = player.ID;
+            this.LastName = player.LastName;
+            this.FirstName = player.FirstName;
+            this.Position1 = player.Position;
+            this.Position2 = player.Position2;
+            this.TeamF = player.Team;
+            this.isActive = true;
+            this.isInjured = false;
+            this.isAllStar = false;
+            this.isNBAChampion = false;
+
+            for (int i = 0; i < stats.Length; i++)
+            {
+                stats[i] = 0;
+            }
+
+            for (int i = 0; i < averages.Length; i++)
+            {
+                averages[i] = 0;
+            }
+        }
+
+        public PlayerStats(DataRow row)
+        {
+            ID = StatsTracker.getInt(row, "ID");
+            LastName = StatsTracker.getString(row, "LastName");
+            FirstName = StatsTracker.getString(row, "FirstName");
+            Position1 = StatsTracker.getString(row, "Position1");
+            Position2 = StatsTracker.getString(row, "Position2");
+            TeamF = StatsTracker.getString(row, "TeamFin");
+            TeamS = StatsTracker.getString(row, "TeamSta");
+            isActive = StatsTracker.getBoolean(row, "isActive");
+            isInjured = StatsTracker.getBoolean(row, "isInjured");
+            isAllStar = StatsTracker.getBoolean(row, "isAllStar");
+            isNBAChampion = StatsTracker.getBoolean(row, "isNBAChampion");
+
+            stats[pGP] = StatsTracker.getUShort(row, "GP");
+            stats[pGS] = StatsTracker.getUShort(row, "GS");
+            stats[pMINS] = StatsTracker.getUShort(row, "MINS");
+            stats[pPTS] = StatsTracker.getUShort(row, "PTS");
+            stats[pFGM] = StatsTracker.getUShort(row, "FGM");
+            stats[pFGA] = StatsTracker.getUShort(row, "FGA");
+            stats[pTPM] = StatsTracker.getUShort(row, "TPM");
+            stats[pTPA] = StatsTracker.getUShort(row, "TPA");
+            stats[pFTM] = StatsTracker.getUShort(row, "FTM");
+            stats[pFTA] = StatsTracker.getUShort(row, "FTA");
+            stats[pOREB] = StatsTracker.getUShort(row, "OREB");
+            stats[pDREB] = StatsTracker.getUShort(row, "DREB");
+            stats[pSTL] = StatsTracker.getUShort(row, "STL");
+            stats[pTO] = StatsTracker.getUShort(row, "TOS");
+            stats[pBLK] = StatsTracker.getUShort(row, "BLK");
+            stats[pAST] = StatsTracker.getUShort(row, "AST");
+            stats[pFOUL] = StatsTracker.getUShort(row, "FOUL");
+
+            calcAvg();
+        }
+
+        public PlayerStats(PlayerStatsRow row)
+        {
+            LastName = row.LastName;
+            FirstName = row.FirstName;
+
+            stats[pGP] = row.GP;
+            stats[pGS] = row.GS;
+            stats[pMINS] = row.MINS;
+            stats[pPTS] = row.PTS;
+            stats[pFGM] = row.FGM;
+            stats[pFGA] = row.FGA;
+            stats[pTPM] = row.TPM;
+            stats[pTPA] = row.TPA;
+            stats[pFTM] = row.FTM;
+            stats[pFTA] = row.FTA;
+            stats[pOREB] = row.OREB;
+            stats[pDREB] = row.DREB;
+            stats[pSTL] = row.STL;
+            stats[pTO] = row.TOS;
+            stats[pBLK] = row.BLK;
+            stats[pAST] = row.AST;
+            stats[pFOUL] = row.FOUL;
+
+            ID = row.ID;
+            Position1 = row.Position1;
+            Position2 = row.Position2;
+            TeamF = row.TeamF;
+            TeamS = row.TeamS;
+            isActive = row.isActive;
+            isAllStar = row.isAllStar;
+            isInjured = row.isInjured;
+            isNBAChampion = row.isNBAChampion;
+        }
+
+        public int calcAvg()
+        {
+            int games = stats[pGP];
+            if (stats[pGP] == 0) games = -1;
+            averages[pPPG] = (float)stats[pPTS] / games;
+            averages[pFGp] = (float)stats[pFGM] / stats[pFGA];
+            averages[pFGeff] = averages[pFGp] * ((float)stats[pFGM] / games);
+            averages[pTPp] = (float)stats[pTPM] / stats[pTPA];
+            averages[pTPeff] = averages[pTPp] * ((float)stats[pTPM] / games);
+            averages[pFTp] = (float)stats[pFTM] / stats[pFTA];
+            averages[pFTeff] = averages[pFTp] * ((float)stats[pFTM] / games);
+            averages[pRPG] = (float)(stats[pOREB] + stats[pDREB]) / games;
+            averages[pORPG] = (float)stats[pOREB] / games;
+            averages[pDRPG] = (float)stats[pDREB] / games;
+            averages[pSPG] = (float)stats[pSTL] / games;
+            averages[pBPG] = (float)stats[pBLK] / games;
+            averages[pTPG] = (float)stats[pTO] / games;
+            averages[pAPG] = (float)stats[pAST] / games;
+            averages[pFPG] = (float)stats[pFOUL] / games;
+
+            return games;
+        }
+    }
+
+    public class PlayerRankings
+    {
+        public const int pMPG = 0, pPPG = 1, pDRPG = 2, pORPG = 3, pAPG = 4, pSPG = 5,
+            pBPG = 6, pTPG = 7, pFPG = 8, pFGp = 9, pFGeff = 10, pTPp = 11, pTPeff = 12,
+            pFTp = 13, pFTeff = 14, pRPG = 15;
+
+        public int[][] rankings;
+
+        public PlayerRankings(List <PlayerStats> pst)
+        {
+            rankings = new int[pst.Count][];
+            int avgcount = pst[0].averages.Length;
+            for (int i = 0; i < pst.Count; i++)
+            {
+                rankings[i] = new int[avgcount];
+            }
+            for (int j = 0; j < avgcount; j++)
+            {
+                Dictionary<int, float> averages = new Dictionary<int, float>();
+                for (int i = 0; i < pst.Count; i++)
+                {
+                    averages.Add(i, pst[i].averages[j]);
+                }
+
+                List<KeyValuePair<int, float>> tempList = new List<KeyValuePair<int, float>>(averages);
+                tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
+                tempList.Reverse();
+
+                int k = 1;
+                foreach (KeyValuePair<int, float> kvp in tempList)
+                {
+                    rankings[kvp.Key][j] = k;
+                    k++;
+                }
+            }
+        }
     }
 
     public class TeamStats
@@ -1067,7 +1276,8 @@ namespace NBA_2K12_Correct_Team_Stats
         /// <summary>
         /// Averages for each team.
         /// 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
-        /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%
+        /// 8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%,
+        /// 17: Weff, 18: PD
         /// </summary>
         public float[] averages = new float[19];
         public float[] pl_averages = new float[19];
@@ -1178,9 +1388,9 @@ namespace NBA_2K12_Correct_Team_Stats
             rankings = new int[_tst.Length][];
             for (int i = 0; i < _tst.Length; i++)
             {
-                rankings[i] = new int[19];
+                rankings[i] = new int[_tst[i].averages.Length];
             }
-            for (int j = 0; j < 19; j++)
+            for (int j = 0; j < _tst[0].averages.Length; j++)
             {
                 Dictionary<int, float> averages = new Dictionary<int,float>();
                 for (int i = 0; i<_tst.Length;i++)
@@ -1258,6 +1468,142 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             teams = (string[])info.GetValue("teams", typeof(string[]));
             done = (bool)info.GetValue("done", typeof(bool));
+        }
+    }
+
+    public class Player
+    {
+        public int ID { get; set; }
+        public string Team { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string Position { get; set; }
+        public string Position2 { get; set; }
+
+        public Player() { }
+
+        public Player(int ID, string Team, string LastName, string FirstName, string Position1, string Position2)
+        {
+            this.ID = ID;
+            this.Team = Team;
+            this.LastName = LastName;
+            this.FirstName = FirstName;
+            this.Position = Position1;
+            this.Position2 = Position2;
+        }
+    }
+
+    public class PlayerStatsRow
+    {
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+
+        public UInt16 GP { get; set; }
+        public UInt16 GS { get; set; }
+
+        public UInt16 MINS { get; set; }
+        public UInt16 PTS { get; set; }
+        public UInt16 FGM { get; set; }
+        public UInt16 FGA { get; set; }
+        public UInt16 TPM { get; set; }
+        public UInt16 TPA { get; set; }
+        public UInt16 FTM { get; set; }
+        public UInt16 FTA { get; set; }
+        public UInt16 REB { get; set; }
+        public UInt16 OREB { get; set; }
+        public UInt16 DREB { get; set; }
+        public UInt16 STL { get; set; }
+        public UInt16 TOS { get; set; }
+        public UInt16 BLK { get; set; }
+        public UInt16 AST { get; set; }
+        public UInt16 FOUL { get; set; }
+
+        public float MPG { get; set; }
+        public float PPG { get; set; }
+        public float FGp { get; set; }
+        public float FGeff { get; set; }
+        public float TPp { get; set; }
+        public float TPeff { get; set; }
+        public float FTp { get; set; }
+        public float FTeff { get; set; }
+        public float RPG { get; set; }
+        public float ORPG { get; set; }
+        public float DRPG { get; set; }
+        public float SPG { get; set; }
+        public float TPG { get; set; }
+        public float BPG { get; set; }
+        public float APG { get; set; }
+        public float FPG { get; set; }
+
+        // Not to be shown in DataGrid
+        public int ID;
+        public string Position1;
+        public string Position2;
+        public bool isActive;
+        public bool isInjured;
+        public string TeamF;
+        public string TeamS;
+        public bool isAllStar;
+        public bool isNBAChampion;
+        //
+
+        public const int pGP = 0, pGS = 1, pMINS = 2, pPTS = 3, pDREB = 4, pOREB = 5,
+            pAST = 6, pSTL = 7, pBLK = 8, pTO = 9, pFOUL = 10, pFGM = 11, pFGA = 12,
+            pTPM = 13, pTPA = 14, pFTM = 15, pFTA = 16;
+        public const int pMPG = 0, pPPG = 1, pDRPG = 2, pORPG = 3, pAPG = 4, pSPG = 5,
+            pBPG = 6, pTPG = 7, pFPG = 8, pFGp = 9, pFGeff = 10, pTPp = 11, pTPeff = 12,
+            pFTp = 13, pFTeff = 14, pRPG = 15;
+
+        public PlayerStatsRow(PlayerStats ps)
+        {
+            LastName = ps.LastName;
+            FirstName = ps.FirstName;
+
+            GP = ps.stats[pGP];
+            GS = ps.stats[pGS];
+            MINS = ps.stats[pMINS];
+            PTS = ps.stats[pPTS];
+            FGM = ps.stats[pFGM];
+            FGA = ps.stats[pFGA];
+            TPM = ps.stats[pTPM];
+            TPA = ps.stats[pTPA];
+            FTM = ps.stats[pFTM];
+            FTA = ps.stats[pFTA];
+            OREB = ps.stats[pOREB];
+            DREB = ps.stats[pDREB];
+            REB = (UInt16)(OREB + DREB);
+            STL = ps.stats[pSTL];
+            TOS = ps.stats[pTO];
+            BLK = ps.stats[pBLK];
+            AST = ps.stats[pAST];
+            FOUL = ps.stats[pFOUL];
+
+            MPG = ps.averages[pMPG];
+            PPG = ps.averages[pPPG];
+            FGp = ps.averages[pFGp];
+            FGeff = ps.averages[pFGeff];
+            TPp = ps.averages[pTPp];
+            TPeff = ps.averages[pTPeff];
+            FTp = ps.averages[pFTp];
+            FTeff = ps.averages[pFTeff];
+            RPG = ps.averages[pRPG];
+            ORPG = ps.averages[pORPG];
+            DRPG = ps.averages[pDRPG];
+            SPG = ps.averages[pSPG];
+            TPG = ps.averages[pTPG];
+            BPG = ps.averages[pBPG];
+            APG = ps.averages[pAPG];
+            FPG = ps.averages[pFPG];
+
+            ID = ps.ID;
+            Position1 = ps.Position1;
+            Position2 = ps.Position2;
+            TeamF = ps.TeamF;
+            TeamS = ps.TeamS;
+            isActive = ps.isActive;
+            isAllStar = ps.isAllStar;
+            isInjured = ps.isInjured;
+            isNBAChampion = ps.isNBAChampion;
         }
     }
 }
