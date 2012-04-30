@@ -173,6 +173,8 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 label1.Content = "Select a box score to view";
                 chkDoNotUpdate.Visibility = Visibility.Hidden;
+                txbDoNotUpdate.Visibility = Visibility.Hidden;
+                Title = "View & Edit Box Score";
             }
         }
 
@@ -749,6 +751,81 @@ namespace NBA_2K12_Correct_Team_Stats
             {
                 playersT += "S" + curSeason;
             }
+        }
+
+        private void btnCalculateTeams_Click(object sender, RoutedEventArgs e)
+        {
+            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0,
+                TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
+            
+            foreach (PlayerBoxScore pbs in pbsAwayList)
+            {
+                REB += pbs.REB;
+                AST += pbs.AST;
+                STL += pbs.STL;
+                TOS += pbs.TOS;
+                BLK += pbs.BLK;
+                FGM += pbs.FGM;
+                FGA += pbs.FGA;
+                TPM += pbs.TPM;
+                TPA += pbs.TPA;
+                FTM += pbs.FTM;
+                FTA += pbs.FTA;
+                OREB += pbs.OREB;
+                FOUL += pbs.FOUL;
+            }
+
+            txtREB1.Text = REB.ToString();
+            txtAST1.Text = AST.ToString();
+            txtSTL1.Text = STL.ToString();
+            txtBLK1.Text = BLK.ToString();
+            txtTO1.Text = TOS.ToString();
+            txtFGM1.Text = FGM.ToString();
+            txtFGA1.Text = FGA.ToString();
+            txt3PM1.Text = TPM.ToString();
+            txt3PA1.Text = TPA.ToString();
+            txtFTM1.Text = FTM.ToString();
+            txtFTA1.Text = FTA.ToString();
+            txtOFF1.Text = OREB.ToString();
+            txtPF1.Text = FOUL.ToString();
+
+            calculateScore1();
+
+            REB = 0; AST = 0; STL = 0; TOS = 0; BLK = 0; FGM = 0; FGA = 0;
+            TPM = 0; TPA = 0; FTM = 0; FTA = 0; OREB = 0; FOUL = 0;
+
+            foreach (PlayerBoxScore pbs in pbsHomeList)
+            {
+                REB += pbs.REB;
+                AST += pbs.AST;
+                STL += pbs.STL;
+                TOS += pbs.TOS;
+                BLK += pbs.BLK;
+                FGM += pbs.FGM;
+                FGA += pbs.FGA;
+                TPM += pbs.TPM;
+                TPA += pbs.TPA;
+                FTM += pbs.FTM;
+                FTA += pbs.FTA;
+                OREB += pbs.OREB;
+                FOUL += pbs.FOUL;
+            }
+
+            txtREB2.Text = REB.ToString();
+            txtAST2.Text = AST.ToString();
+            txtSTL2.Text = STL.ToString();
+            txtBLK2.Text = BLK.ToString();
+            txtTO2.Text = TOS.ToString();
+            txtFGM2.Text = FGM.ToString();
+            txtFGA2.Text = FGA.ToString();
+            txt3PM2.Text = TPM.ToString();
+            txt3PA2.Text = TPA.ToString();
+            txtFTM2.Text = FTM.ToString();
+            txtFTA2.Text = FTA.ToString();
+            txtOFF2.Text = OREB.ToString();
+            txtPF2.Text = FOUL.ToString();
+
+            calculateScore2();
         }
     }
 }

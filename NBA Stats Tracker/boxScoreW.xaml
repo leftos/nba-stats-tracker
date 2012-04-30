@@ -127,8 +127,8 @@
                  VerticalAlignment="Top" />
           <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2"
                    VerticalAlignment="Top" Width="36" TabIndex="29" GotFocus="_bsAnyTextbox_GotFocus" />
-          <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="351,252,0,0" Name="button1"
-                  VerticalAlignment="Top" Width="75" Click="btnOK_Click" TabIndex="30" />
+          <Button Content="Calculate" Height="23" HorizontalAlignment="Left" Margin="351,252,0,0" Name="btnCalculateTeams"
+                  VerticalAlignment="Top" Width="75" TabIndex="30" Click="btnCalculateTeams_Click" />
           <Button Content="Export to CSV" Height="23" HorizontalAlignment="Left" Margin="433,252,0,0"
                   Name="btnCSVOK" TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCSVOK_Click" />
           <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="518,252,0,0" Name="button2"
@@ -143,13 +143,16 @@
                     Name="chkIsPlayoff" VerticalAlignment="Top" Width="115" />
           <Label Content="@" HorizontalAlignment="Left" Margin="7,145,0,0" Name="label31"
                  VerticalAlignment="Top" />
-          <CheckBox Content="Don't update Team Stats; just save this Box Score" Height="16"
-                    HorizontalAlignment="Left" Margin="7,257,0,0" Name="chkDoNotUpdate" VerticalAlignment="Top" />
-          <TextBlock HorizontalAlignment="Left" Margin="253,124,0,0" Name="txbT1Avg" Text=""
+                    <CheckBox Content=" " Height="16"
+                    HorizontalAlignment="Left" Margin="7,257,0,0" Name="chkDoNotUpdate" VerticalAlignment="Top" >
+                    </CheckBox>
+                    <TextBlock Name="txbDoNotUpdate" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,248,0,0">Don't update the Team Stats;<LineBreak />just save this Box Score</TextBlock>
+                    <TextBlock HorizontalAlignment="Left" Margin="253,124,0,0" Name="txbT1Avg" Text=""
                      VerticalAlignment="Top" Width="339" />
           <TextBlock HorizontalAlignment="Left" Margin="253,233,0,0" Name="txbT2Avg" Text=""
                      VerticalAlignment="Top" Width="339" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="422,13,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+                    <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="267,252,0,0" Name="button3" TabIndex="30" VerticalAlignment="Top" Width="75" />
                 </Grid>
       </TabItem>
       <TabItem Header="Away Team" Name="tabTeam1">
