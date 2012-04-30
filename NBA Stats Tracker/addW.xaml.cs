@@ -9,12 +9,12 @@ namespace NBA_2K12_Correct_Team_Stats
     /// </summary>
     public partial class addW : Window
     {
-        private readonly List<PlayerStats> pst;
+        private readonly Dictionary<int, PlayerStats> pst;
         private ObservableCollection<Player> Players { get; set; }
         private ObservableCollection<string> Teams { get; set; }
         private ObservableCollection<string> Positions { get; set; }
 
-        public addW(ref List<PlayerStats> pst)
+        public addW(ref Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -49,7 +49,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 {
                     if (p.Position2 == "") p.Position2 = " ";
                     p.ID = ++i;
-                    pst.Add(new PlayerStats(p));
+                    pst.Add(p.ID, new PlayerStats(p));
                 }
                 MainWindow.addInfo = "$$NST Players Added";
             }

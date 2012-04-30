@@ -1,6 +1,6 @@
 ﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.leagueOverviewW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="League Overview" Height="402" Width="758">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="League Overview" Height="402" Width="758" WindowStartupLocation="CenterScreen">
   <Grid>
     <TabControl Margin="0,0,179,12" Name="tbcLeagueOverview" Padding="0"
                 SelectionChanged="tbcLeagueOverview_SelectionChanged">

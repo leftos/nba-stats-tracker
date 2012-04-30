@@ -13,10 +13,10 @@ namespace NBA_2K12_Correct_Team_Stats
     {
         private readonly DataTable dt_bs;
         private readonly DataTable dt_ts;
-        private List<PlayerStats> pst;
+        private Dictionary<int, PlayerStats> pst;
         private TeamStats[] tst;
 
-        public leagueOverviewW(TeamStats[] tst, List<PlayerStats> pst)
+        public leagueOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 

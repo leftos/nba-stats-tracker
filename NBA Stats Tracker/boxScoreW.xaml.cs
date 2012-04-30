@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,8 +27,77 @@ namespace NBA_2K12_Correct_Team_Stats
 
         public static Mode curmode = Mode.Update;
 
+        private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private string playersT;
         public static BoxScore curBoxScore;
         private Brush defaultBackground;
+        private int curSeason;
+        private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private ObservableCollection<PlayerBoxScore> pbsAwayList { get; set; }
+        private ObservableCollection<PlayerBoxScore> pbsHomeList { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
+        private string SelectedPlayer { get; set; }
+
+        private void UpdateDataGrid(int team)
+        {
+            string Team1, Team2;
+            string q;
+            if (team == 1)
+            {
+                try
+                {
+                    Team1 = cmbTeam1.SelectedItem.ToString();
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                q = "select * from " + playersT + " where TeamFin LIKE '" + Team1 + "'";
+            }
+            else
+            {
+                try
+                {
+                    Team2 = cmbTeam2.SelectedItem.ToString();
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                q = "select * from " + playersT + " where TeamFin LIKE '" + Team2 + "'";
+            }
+            DataTable res = db.GetDataTable(q);
+
+            if (team == 1)
+            {
+                PlayersListAway = new ObservableCollection<KeyValuePair<int, string>>();
+                pbsAwayList = new ObservableCollection<PlayerBoxScore>();
+
+                foreach (DataRow r in res.Rows)
+                {
+                    PlayerStats ps = new PlayerStats(r);
+                    PlayersListAway.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                }
+
+                colPlayerAway.ItemsSource = PlayersListAway;
+                dgvPlayersAway.ItemsSource = pbsAwayList;
+            }
+            else
+            {
+                PlayersListHome = new ObservableCollection<KeyValuePair<int, string>>();
+                pbsHomeList = new ObservableCollection<PlayerBoxScore>();
+
+                foreach (DataRow r in res.Rows)
+                {
+                    PlayerStats ps = new PlayerStats(r);
+                    PlayersListHome.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                }
+
+                colPlayerHome.ItemsSource = PlayersListHome;
+                dgvPlayersHome.ItemsSource = pbsHomeList;
+            }
+        }
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -46,6 +117,16 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void prepareWindow(Mode _curmode)
         {
+            curSeason = MainWindow.curSeason;
+
+            PopulateSeasonCombo();
+
+            foreach (var kvp in MainWindow.TeamOrder)
+            {
+                cmbTeam1.Items.Add(kvp.Key);
+                cmbTeam2.Items.Add(kvp.Key);
+            }
+            /*
             if ((MainWindow.pt == null) || (MainWindow.pt.teams[0] == "Invalid"))
             {
                 foreach (var kvp in MainWindow.TeamOrder)
@@ -66,17 +147,17 @@ namespace NBA_2K12_Correct_Team_Stats
                     cmbTeam2.Items.Add(newteam);
                 }
             }
-
+            */
             defaultBackground = cmbTeam1.Background;
 
+            cmbTeam1.SelectedIndex = -1;
+            cmbTeam2.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
             cmbTeam2.SelectedIndex = 1;
 
             MainWindow.bs.done = false;
 
             dtpGameDate.SelectedDate = DateTime.Today;
-
-            txtSeasonNum.Text = MainWindow.curSeason.ToString();
 
             foreach (BoxScoreEntry cur in MainWindow.bshist)
             {
@@ -95,7 +176,18 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void PopulateSeasonCombo()
+        {
+            for (int i = maxSeason; i > 0; i--)
+            {
+                cmbSeasonNum.Items.Add(i.ToString());
+            }
+
+            cmbSeasonNum.SelectedIndex = -1;
+            cmbSeasonNum.SelectedItem = curSeason.ToString();
+        }
+
+        private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             if (curmode == Mode.Update)
             {
@@ -133,7 +225,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
                 return;
-            if (txtSeasonNum.Text == "")
+            if (cmbSeasonNum.SelectedIndex == -1)
             {
                 MessageBox.Show(
                     "You have to enter the Season number (e.g. '1' for the first season of your Association, or '2010', etc.)");
@@ -153,7 +245,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
                 MainWindow.bs.isPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
                 MainWindow.bs.gamedate = dtpGameDate.SelectedDate.GetValueOrDefault();
-                MainWindow.bs.SeasonNum = Convert.ToInt32(txtSeasonNum.Text);
+                MainWindow.bs.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
                 MainWindow.bs.Team1 = cmbTeam1.SelectedItem.ToString();
                 MainWindow.bs.Team2 = cmbTeam2.SelectedItem.ToString();
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
@@ -255,6 +347,111 @@ namespace NBA_2K12_Correct_Team_Stats
                 MainWindow.bs.PF2 = Convert.ToUInt16(txtPF2.Text);
 
                 MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
+
+                #region Player Box Scores Check
+
+                string Team1 = cmbTeam1.SelectedItem.ToString();
+                string Team2 = cmbTeam2.SelectedItem.ToString();
+
+                foreach (PlayerBoxScore pbs in pbsAwayList)
+                    pbs.Team = Team1;
+
+                foreach (PlayerBoxScore pbs in pbsHomeList)
+                    pbs.Team = Team2;
+
+                int starters = 0;
+                List<ObservableCollection<PlayerBoxScore>> pbsLists = new List<ObservableCollection<PlayerBoxScore>>(2);
+                pbsLists.Add(pbsAwayList);
+                pbsLists.Add(pbsHomeList);
+                Dictionary<int, string> allPlayers = new Dictionary<int, string>();
+                foreach (var kvp in PlayersListAway) allPlayers.Add(kvp.Key, kvp.Value);
+                foreach (var kvp in PlayersListHome) allPlayers.Add(kvp.Key, kvp.Value);
+                foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
+                {
+                    foreach (PlayerBoxScore pbs in pbsList)
+                    {
+                        //pbs.PlayerID = 
+                        if (pbs.PlayerID == -1) continue;
+
+                        if (pbs.isOut)
+                        {
+                            pbs.ResetStats();
+                            continue;
+                        }
+
+                        if (pbs.isStarter)
+                        {
+                            starters++;
+                            if (starters > 5)
+                            {
+                                string s = "There can't be more than 5 starters in each team.";
+                                s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                                MessageBox.Show(s);
+                                throw (new Exception());
+                            }
+                        }
+
+                        if (pbs.FGM > pbs.FGA)
+                        {
+                            string s = "The FGM stat can't be higher than the FGA stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        } 
+                        
+                        if (pbs.TPM > pbs.TPA)
+                        {
+                            string s = "The 3PM stat can't be higher than the 3PA stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        if (pbs.FGM < pbs.TPM)
+                        {
+                            string s = "The 3PM stat can't be higher than the FGM stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        if (pbs.FGA < pbs.TPA)
+                        {
+                            string s = "The TPA stat can't be higher than the FGA stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        if (pbs.FTM > pbs.FTA)
+                        {
+                            string s = "The FTM stat can't be higher than the FTA stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        if (pbs.OREB > pbs.REB)
+                        {
+                            string s = "The OREB stat can't be higher than the REB stat.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        if (pbs.isStarter && pbs.MINS == 0)
+                        {
+                            string s = "A player can't be a starter but not have any minutes played.";
+                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            MessageBox.Show(s);
+                            throw (new Exception());
+                        }
+
+                        pbs.DREB = (UInt16)(pbs.REB - pbs.OREB);
+                    }
+                }
+                MainWindow.pbsLists = pbsLists;
+                #endregion
                 MainWindow.bs.done = true;
             }
             catch
@@ -268,72 +465,89 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             checkIfSameTeams();
             tabTeam1.Header = cmbTeam1.SelectedItem;
+            UpdateDataGrid(1);
         }
 
         private void checkIfSameTeams()
         {
+            string Team1, Team2;
             try
             {
-                if (cmbTeam1.SelectedItem.ToString() == cmbTeam2.SelectedItem.ToString())
-                {
-                    cmbTeam1.Background = Brushes.Red;
-                    cmbTeam2.Background = Brushes.Red;
-                    return;
-                }
-                else
-                {
-                    cmbTeam1.Background = defaultBackground;
-                    cmbTeam2.Background = defaultBackground;
-                }
+                Team1 = cmbTeam1.SelectedItem.ToString();
+                Team2 = cmbTeam2.SelectedItem.ToString();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
 
-                if (MainWindow.pt.teams[0] != "Invalid")
+            if (Team1 == Team2)
+            {
+                cmbTeam1.Background = Brushes.Red;
+                cmbTeam2.Background = Brushes.Red;
+                return;
+            }
+            else
+            {
+                cmbTeam1.Background = defaultBackground;
+                cmbTeam2.Background = defaultBackground;
+            }
+
+            if (MainWindow.pt != null && MainWindow.pt.teams[0] != "Invalid")
+            {
+                if (MainWindow.West.Contains(Team1))
                 {
-                    string Team1 = cmbTeam1.SelectedItem.ToString();
-                    string Team2 = cmbTeam2.SelectedItem.ToString();
-                    if (MainWindow.West.Contains(Team1))
+                    if (!MainWindow.West.Contains(Team2))
                     {
-                        if (!MainWindow.West.Contains(Team2))
-                        {
-                            cmbTeam1.Background = Brushes.Red;
-                            cmbTeam2.Background = Brushes.Red;
-                            return;
-                        }
-                        else
-                        {
-                            cmbTeam1.Background = defaultBackground;
-                            cmbTeam2.Background = defaultBackground;
-                        }
+                        cmbTeam1.Background = Brushes.Red;
+                        cmbTeam2.Background = Brushes.Red;
+                        return;
                     }
                     else
                     {
-                        if (MainWindow.West.Contains(Team2))
-                        {
-                            cmbTeam1.Background = Brushes.Red;
-                            cmbTeam2.Background = Brushes.Red;
-                            return;
-                        }
-                        else
-                        {
-                            cmbTeam1.Background = defaultBackground;
-                            cmbTeam2.Background = defaultBackground;
-                        }
+                        cmbTeam1.Background = defaultBackground;
+                        cmbTeam2.Background = defaultBackground;
+                    }
+                }
+                else
+                {
+                    if (MainWindow.West.Contains(Team2))
+                    {
+                        cmbTeam1.Background = Brushes.Red;
+                        cmbTeam2.Background = Brushes.Red;
+                        return;
+                    }
+                    else
+                    {
+                        cmbTeam1.Background = defaultBackground;
+                        cmbTeam2.Background = defaultBackground;
                     }
                 }
             }
-            catch
-            {
-            }
+            
         }
 
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
             tabTeam2.Header = cmbTeam2.SelectedItem;
+            UpdateDataGrid(2);
         }
 
         private void txtFGM1_TextChanged(object sender, TextChangedEventArgs e)
         {
             calculateScore1();
+        }
+
+        private void calculateScore1()
+        {
+            calculateScore1(null, null);
+        }
+
+        private void calculateScore2()
+        {
+            calculateScore2(null, null);
         }
 
         private void calculateScore1(object sender, TextChangedEventArgs e)
@@ -504,19 +718,37 @@ namespace NBA_2K12_Correct_Team_Stats
             txtPF2.Text = bs.PF2.ToString();
 
             dtpGameDate.SelectedDate = bs.gamedate;
-            txtSeasonNum.Text = bs.SeasonNum.ToString();
+            cmbSeasonNum.SelectedItem = bs.SeasonNum.ToString();
             chkIsPlayoff.IsChecked = bs.isPlayoff;
 
             calculateScore1();
             calculateScore2();
+
+            foreach (PlayerBoxScore pbs in MainWindow.bshist[i].pbsList)
+            {
+                if (pbs.Team == bs.Team1)
+                {
+                    pbsAwayList.Add(pbs);
+                }
+                else
+                {
+                    pbsHomeList.Add(pbs);
+                }
+            }
         }
 
-        private void calculateScore1()
+        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-        }
+            if (cmbSeasonNum.SelectedIndex == -1) return;
 
-        private void calculateScore2()
-        {
+            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            MainWindow.curSeason = curSeason;
+            playersT = "Players";
+
+            if (curSeason != maxSeason)
+            {
+                playersT += "S" + curSeason;
+            }
         }
     }
 }

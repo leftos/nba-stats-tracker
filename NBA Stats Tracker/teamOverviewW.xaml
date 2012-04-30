@@ -23,7 +23,7 @@
       <TabItem Header="Player Stats" Name="tabPlayerStats">
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
-                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats" VerticalAlignment="Stretch">
+                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats" VerticalAlignment="Stretch" MouseDoubleClick="dgvPlayerStats_MouseDoubleClick">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
               <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -57,11 +57,12 @@
               <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
               <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
               <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
-              <DataGridTextColumn Binding="{Binding BLK}" Header="TO" />
-              <DataGridTextColumn Binding="{Binding TOS}" Header="BLK" />
+              <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+              <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
               <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
               <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
-            </DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
+                        </DataGrid.Columns>
           </DataGrid>
         </Grid>
       </TabItem>

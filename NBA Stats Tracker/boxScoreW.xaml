@@ -128,7 +128,7 @@
           <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2"
                    VerticalAlignment="Top" Width="36" TabIndex="29" GotFocus="_bsAnyTextbox_GotFocus" />
           <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="351,252,0,0" Name="button1"
-                  VerticalAlignment="Top" Width="75" Click="button1_Click" TabIndex="30" />
+                  VerticalAlignment="Top" Width="75" Click="btnOK_Click" TabIndex="30" />
           <Button Content="Export to CSV" Height="23" HorizontalAlignment="Left" Margin="433,252,0,0"
                   Name="btnCSVOK" TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCSVOK_Click" />
           <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="518,252,0,0" Name="button2"
@@ -139,9 +139,7 @@
                       VerticalAlignment="Top" Width="115" />
           <Label Content="Season" Height="28" HorizontalAlignment="Left" Margin="372,13,0,0" Name="label30"
                  VerticalAlignment="Top" />
-          <TextBox Height="23" HorizontalAlignment="Right" Margin="0,15,146,0" Name="txtSeasonNum" Text="1"
-                   VerticalAlignment="Top" Width="29" />
-          <CheckBox Content="Playoffs" Height="16" HorizontalAlignment="Right" Margin="0,46,3,0"
+                    <CheckBox Content="Playoffs" Height="16" HorizontalAlignment="Right" Margin="0,46,3,0"
                     Name="chkIsPlayoff" VerticalAlignment="Top" Width="115" />
           <Label Content="@" HorizontalAlignment="Left" Margin="7,145,0,0" Name="label31"
                  VerticalAlignment="Top" />
@@ -151,39 +149,66 @@
                      VerticalAlignment="Top" Width="339" />
           <TextBlock HorizontalAlignment="Left" Margin="253,233,0,0" Name="txbT2Avg" Text=""
                      VerticalAlignment="Top" Width="339" />
-        </Grid>
+                    <ComboBox Height="23" HorizontalAlignment="Left" Margin="422,13,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+                </Grid>
       </TabItem>
       <TabItem Header="Away Team" Name="tabTeam1">
         <Grid>
-          <DataGrid AutoGenerateColumns="False" Height="316" HorizontalAlignment="Left" Margin="6,6,0,0"
-                    Name="dataGrid1" VerticalAlignment="Top" Width="586">
+          <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                    Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="Player" />
-              <DataGridTextColumn Header="MINS" />
-              <DataGridTextColumn Header="PTS" />
-              <DataGridTextColumn Header="REB" />
-              <DataGridTextColumn Header="AST" />
-              <DataGridTextColumn Header="STL" />
-              <DataGridTextColumn Header="BLK" />
-              <DataGridTextColumn Header="TO" />
-              <DataGridTextColumn Header="FGM" />
-              <DataGridTextColumn Header="FGA" />
-              <DataGridTextColumn Header="3PM" />
-              <DataGridTextColumn Header="3PA" />
-              <DataGridTextColumn Header="FTM" />
-              <DataGridTextColumn Header="FTA" />
-              <DataGridTextColumn Header="OFF" />
-              <DataGridTextColumn Header="PF" />
+                <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}" 
+                                        SelectedValuePath="Key" DisplayMemberPath="Value" x:Name="colPlayerAway" />
+                <!--<DataGridComboBoxColumn Header="Player" SelectedItemBinding="{Binding FullName}" x:Name="playerColumn"/>-->
+                <DataGridCheckBoxColumn Header="Starter" Binding="{Binding isStarter}" />
+                            <DataGridCheckBoxColumn Header="Injured" Binding="{Binding playedInjured}" />
+                            <DataGridCheckBoxColumn Header="Out" Binding="{Binding isOut}" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
             </DataGrid.Columns>
           </DataGrid>
-          <TextBlock Height="62" HorizontalAlignment="Stretch" Margin="6,150,0,0" Name="txbNoPlayers1"
-                     Text="No players available for this team!" VerticalAlignment="Top" TextAlignment="Center" FontSize="20"
-                     FontWeight="Bold" />
         </Grid>
       </TabItem>
       <TabItem Header="Home Team" Name="tabTeam2">
-        <Grid />
-      </TabItem>
+        <Grid>
+                    <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome" VerticalAlignment="Stretch">
+                        <DataGrid.Columns>
+                            <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player" SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
+                            <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />
+                            <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
+                            <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="Out" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                            <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                            <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                            <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                            <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                            <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                            <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                            <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                            <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                            <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                            <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                            <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                            <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                            <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                            <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
     </TabControl>
   </Grid>
 </Window>

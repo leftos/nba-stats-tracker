@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Net;
@@ -1368,11 +1369,115 @@ namespace NBA_2K12_Correct_Team_Stats
 
             return games;
         }
+
+        public void addBoxScore(PlayerBoxScore pbs)
+        {
+            if (ID != pbs.PlayerID) throw new Exception("Tried to update PlayerStats " + ID + " with PlayerBoxScore " + pbs.PlayerID);
+
+            if (pbs.isStarter) stats[pGS]++;
+            if (pbs.MINS > 0)
+            {
+                stats[pGP]++;
+                stats[pMINS] += pbs.MINS;
+            }
+            stats[pPTS] += pbs.PTS;
+            stats[pFGM] += pbs.FGM;
+            stats[pFGA] += pbs.FGA;
+            stats[pTPM] += pbs.TPM;
+            stats[pTPA] += pbs.TPA;
+            stats[pFTM] += pbs.FTM;
+            stats[pFTA] += pbs.FTA;
+            stats[pOREB] += pbs.OREB;
+            stats[pDREB] += pbs.DREB;
+            stats[pSTL] += pbs.STL;
+            stats[pTO] += pbs.TOS;
+            stats[pBLK] += pbs.BLK;
+            stats[pAST] += pbs.AST;
+            stats[pFOUL] += pbs.FOUL;
+
+            calcAvg();
+        }
     }
 
     public class PlayerBoxScore
     {
-        
+        //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
+        public int PlayerID { get; set; }
+        public string Team { get; set; }
+        public bool isStarter { get; set; }
+        public bool playedInjured { get; set; }
+        public bool isOut { get; set; }
+        public UInt16 MINS { get; set; }
+        public UInt16 PTS { get; set; }
+        public UInt16 FGM { get; set; }
+        public UInt16 FGA { get; set; }
+        public UInt16 TPM { get; set; }
+        public UInt16 TPA { get; set; }
+        public UInt16 FTM { get; set; }
+        public UInt16 FTA { get; set; }
+        public UInt16 REB { get; set; }
+        public UInt16 OREB { get; set; }
+        public UInt16 DREB { get; set; }
+        public UInt16 STL { get; set; }
+        public UInt16 TOS { get; set; }
+        public UInt16 BLK { get; set; }
+        public UInt16 AST { get; set; }
+        public UInt16 FOUL { get; set; }
+
+        public PlayerBoxScore()
+        {
+            PlayerID = -1;
+            Team = "";
+            isStarter = false;
+            playedInjured = false;
+            isOut = false;
+            ResetStats();
+        }
+
+        public PlayerBoxScore(DataRow r)
+        {
+            PlayerID = StatsTracker.getInt(r, "PlayerID");
+            Team = r["Team"].ToString();
+            isStarter = StatsTracker.getBoolean(r, "isStarter");
+            playedInjured = StatsTracker.getBoolean(r, "playedInjured");
+            isOut = StatsTracker.getBoolean(r, "isOut");
+            MINS = Convert.ToUInt16(r["MINS"].ToString());
+            PTS = Convert.ToUInt16(r["PTS"].ToString());
+            REB = Convert.ToUInt16(r["REB"].ToString());
+            AST = Convert.ToUInt16(r["AST"].ToString());
+            STL = Convert.ToUInt16(r["STL"].ToString());
+            BLK = Convert.ToUInt16(r["BLK"].ToString());
+            TOS = Convert.ToUInt16(r["TOS"].ToString());
+            FGM = Convert.ToUInt16(r["FGM"].ToString());
+            FGA = Convert.ToUInt16(r["FGA"].ToString());
+            TPM = Convert.ToUInt16(r["TPM"].ToString());
+            TPA = Convert.ToUInt16(r["TPA"].ToString());
+            FTM = Convert.ToUInt16(r["FTM"].ToString());
+            FTA = Convert.ToUInt16(r["FTA"].ToString());
+            OREB = Convert.ToUInt16(r["OREB"].ToString());
+            FOUL = Convert.ToUInt16(r["FOUL"].ToString());
+            DREB = (UInt16)(REB - OREB);
+        }
+
+        public void ResetStats()
+        {
+            MINS = 0;
+            PTS = 0;
+            FGM = 0;
+            FGA = 0;
+            TPM = 0;
+            TPA = 0;
+            FTM = 0;
+            FTA = 0;
+            REB = 0;
+            OREB = 0;
+            DREB = 0;
+            STL = 0;
+            TOS = 0;
+            BLK = 0;
+            AST = 0;
+            FOUL = 0;
+        }
     }
 
     public class PlayerRankings
@@ -1394,23 +1499,22 @@ namespace NBA_2K12_Correct_Team_Stats
                          pFTeff = 14,
                          pRPG = 15;
 
-        private int[][] rankings;
-        public Dictionary<int, int[]> list = new Dictionary<int, int[]>(); 
+        private Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
+        public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
+        private int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
 
-        public PlayerRankings(List<PlayerStats> pst)
+        public PlayerRankings(Dictionary<int, PlayerStats> pst)
         {
-            rankings = new int[pst.Count][];
-            int avgcount = pst[0].averages.Length;
-            for (int i = 0; i < pst.Count; i++)
+            foreach (var kvp in pst)
             {
-                rankings[i] = new int[avgcount];
+                rankings.Add(kvp.Key, new int[avgcount]);
             }
             for (int j = 0; j < avgcount; j++)
             {
                 var averages = new Dictionary<int, float>();
-                for (int i = 0; i < pst.Count; i++)
+                foreach (var kvp in pst)
                 {
-                    averages.Add(i, pst[i].averages[j]);
+                    averages.Add(kvp.Key, kvp.Value.averages[j]);
                 }
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
@@ -1425,9 +1529,12 @@ namespace NBA_2K12_Correct_Team_Stats
                 }
             }
 
+            /*
             list = new Dictionary<int, int[]>();
             for (int i = 0; i<pst.Count; i++)
                 list.Add(pst[i].ID, rankings[i]);
+            */
+            list = rankings;
         }
     }
 
@@ -1686,6 +1793,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public BoxScore bs;
         public DateTime date;
         public bool mustUpdate;
+        public List<PlayerBoxScore> pbsList; 
 
         public BoxScoreEntry(BoxScore bs)
         {
@@ -1693,10 +1801,11 @@ namespace NBA_2K12_Correct_Team_Stats
             date = DateTime.Now;
         }
 
-        public BoxScoreEntry(BoxScore bs, DateTime date)
+        public BoxScoreEntry(BoxScore bs, DateTime date, List<PlayerBoxScore> pbsList)
         {
             this.bs = bs;
             this.date = date;
+            this.pbsList = pbsList;
         }
     }
 

@@ -62,11 +62,11 @@ namespace NBA_2K12_Correct_Team_Stats
         private DataTable dt_bs_res;
         private DataView dv_hth;
         private ObservableCollection<PlayerStatsRow> psr;
-        private List<PlayerStats> pst;
+        private Dictionary<int, PlayerStats> pst;
         private string showSeason;
         private TeamStats[] tst;
 
-        public teamOverviewW(TeamStats[] tst, List<PlayerStats> pst)
+        public teamOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -1053,11 +1053,12 @@ namespace NBA_2K12_Correct_Team_Stats
 
             tst[id].calcAvg();
 
-            var playersToUpdate = new List<PlayerStats>();
+            var playersToUpdate = new Dictionary<int, PlayerStats>();
 
             foreach (var cur in psr)
             {
-                playersToUpdate.Add(new PlayerStats(cur));
+                PlayerStats ps = new PlayerStats(cur);
+                playersToUpdate.Add(ps.ID, ps);
             }
 
             MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, playersToUpdate,
@@ -1811,6 +1812,20 @@ namespace NBA_2K12_Correct_Team_Stats
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             cmbTeam_SelectionChanged(null, null);
+        }
+
+        private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgvPlayerStats.SelectedCells.Count > 0)
+            {
+                PlayerStatsRow row = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
+                int playerID = row.ID;
+
+                playerOverviewW pow = new playerOverviewW(curTeam, playerID);
+                pow.ShowDialog();
+
+                UpdatePlayerStats();
+            }
         }
     }
 }

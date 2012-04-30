@@ -1,6 +1,6 @@
 ﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.askTeamW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="NBA Stats Tracker" Height="211" Width="202">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="NBA Stats Tracker" Height="211" Width="202" WindowStartupLocation="CenterScreen">
   <Grid>
     <Label Content="Select a mode" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1"
            VerticalAlignment="Top" />

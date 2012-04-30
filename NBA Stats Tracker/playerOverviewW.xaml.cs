@@ -28,11 +28,16 @@ namespace NBA_2K12_Correct_Team_Stats
         private int curSeason = MainWindow.curSeason;
         private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
         private string playersT = "Players";
-        private List<PlayerStats> playersActive; 
-        private List<PlayerStats> playersSamePosition;
-        private List<PlayerStats> playersSameTeam;
+        private Dictionary<int, PlayerStats> playersActive;
+        private Dictionary<int, PlayerStats> playersSamePosition;
+        private Dictionary<int, PlayerStats> playersSameTeam;
         private List<string> Teams;
+        private PlayerRankings rankingsActive;
+        private PlayerRankings rankingsTeam;
+        private PlayerRankings rankingsPosition;
+        private int SelectedPlayerID = -1;
         public static string askedTeam;
+        private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder; 
 
         public const int pGP = 0,
                          pGS = 1,
@@ -88,9 +93,21 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        public playerOverviewW(SortedDictionary<string, int> teamOrder)
+        public playerOverviewW()
         {
             InitializeComponent();
+
+            prepareWindow();
+        }
+
+        public playerOverviewW(string team, int playerID) : this()
+        {
+            cmbTeam.SelectedItem = team;
+            cmbPlayer.SelectedValue = playerID.ToString();
+        }
+
+        private void prepareWindow()
+        {
             DataContext = this;
 
             PopulateSeasonCombo();
@@ -135,14 +152,17 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void GetActivePlayers()
         {
-            playersActive = new List<PlayerStats>();
+            playersActive = new Dictionary<int, PlayerStats>();
 
             string q = "select * from " + playersT + " where isActive LIKE 'True'";
             DataTable res = db.GetDataTable(q);
             foreach (DataRow r in res.Rows)
             {
-                playersActive.Add(new PlayerStats(r));
+                PlayerStats ps = new PlayerStats(r);
+                playersActive.Add(ps.ID, ps);
             }
+
+            rankingsActive = new PlayerRankings(playersActive);
         }
 
         private void PopulateSeasonCombo()
@@ -178,15 +198,17 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             var res = db.GetDataTable(q);
 
-            playersSameTeam = new List<PlayerStats>();
+            playersSameTeam = new Dictionary<int, PlayerStats>();
 
             foreach (DataRow r in res.Rows)
             {
                 PlayersList.Add(new KeyValuePair<int, string>(StatsTracker.getInt(r, "ID"),
                                 StatsTracker.getString(r, "FirstName") + " " + StatsTracker.getString(r, "LastName") + 
                                 " (" + StatsTracker.getString(r, "Position1") + ")"));
-                playersSameTeam.Add(new PlayerStats((r)));
+                PlayerStats ps = new PlayerStats(r);
+                playersSameTeam.Add(ps.ID, ps);
             }
+            rankingsTeam = new PlayerRankings(playersSameTeam);
 
             cmbPlayer.ItemsSource = PlayersList;
         }
@@ -207,7 +229,12 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             if (cmbPlayer.SelectedIndex == -1) return;
 
-            string q = "select * from " + playersT + " where ID = " + SelectedPlayer;
+            SelectedPlayerID =
+                ((System.Collections.Generic.KeyValuePair<int, string>)
+                 (((System.Windows.Controls.Primitives.Selector) (cmbPlayer)).SelectedItem)).Key;
+
+            string q = "select * from " + playersT + " where ID = " + SelectedPlayerID.ToString();
+            
             var res = db.GetDataTable(q);
 
             if (res.Rows.Count == 0) // Player not found in this year's database
@@ -223,12 +250,14 @@ namespace NBA_2K12_Correct_Team_Stats
             q = "select * from " + playersT + " where Position1 LIKE '" + psr.Position1 + "' AND isActive LIKE 'True'";
             res = db.GetDataTable(q);
 
-            playersSamePosition = new List<PlayerStats>();
+            playersSamePosition = new Dictionary<int, PlayerStats>();
 
             foreach (DataRow r in res.Rows)
             {
-                playersSamePosition.Add(new PlayerStats(r));
+                PlayerStats ps = new PlayerStats(r);
+                playersSamePosition.Add(ps.ID, ps);
             }
+            rankingsPosition = new PlayerRankings(playersSamePosition);
 
             cmbPosition1.SelectedItem = psr.Position1;
             cmbPosition2.SelectedItem = psr.Position2;
@@ -287,77 +316,71 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (psr.isActive)
             {
-                PlayerRankings playerRankings = new PlayerRankings(playersActive);
-
-                int id = Convert.ToInt32(SelectedPlayer);
+                int id = Convert.ToInt32(SelectedPlayerID);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Rankings";
-                dr["MINS"] = String.Format("{0}", playerRankings.list[id][pMPG]);
-                dr["PTS"] = String.Format("{0}", playerRankings.list[id][pPPG]);
-                dr["FG"] = String.Format("{0}", playerRankings.list[id][pFGp]);
-                dr["FGeff"] = String.Format("{0}", playerRankings.list[id][pFGeff]);
-                dr["3PT"] = String.Format("{0}", playerRankings.list[id][pTPp]);
-                dr["3Peff"] = String.Format("{0}", playerRankings.list[id][pTPeff]);
-                dr["FT"] = String.Format("{0}", playerRankings.list[id][pFTp]);
-                dr["FTeff"] = String.Format("{0}", playerRankings.list[id][pFTeff]);
-                dr["REB"] = String.Format("{0}", playerRankings.list[id][pRPG]);
-                dr["OREB"] = String.Format("{0}", playerRankings.list[id][pORPG]);
-                dr["DREB"] = String.Format("{0}", playerRankings.list[id][pDRPG]);
-                dr["AST"] = String.Format("{0}", playerRankings.list[id][pAPG]);
-                dr["TO"] = String.Format("{0}", playerRankings.list[id][pTPG]);
-                dr["STL"] = String.Format("{0}", playerRankings.list[id][pSPG]);
-                dr["BLK"] = String.Format("{0}", playerRankings.list[id][pBPG]);
-                dr["FOUL"] = String.Format("{0}", playerRankings.list[id][pFPG]);
+                dr["MINS"] = String.Format("{0}", rankingsActive.list[id][pMPG]);
+                dr["PTS"] = String.Format("{0}", rankingsActive.list[id][pPPG]);
+                dr["FG"] = String.Format("{0}", rankingsActive.list[id][pFGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsActive.list[id][pFGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsActive.list[id][pTPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsActive.list[id][pTPeff]);
+                dr["FT"] = String.Format("{0}", rankingsActive.list[id][pFTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsActive.list[id][pFTeff]);
+                dr["REB"] = String.Format("{0}", rankingsActive.list[id][pRPG]);
+                dr["OREB"] = String.Format("{0}", rankingsActive.list[id][pORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsActive.list[id][pDRPG]);
+                dr["AST"] = String.Format("{0}", rankingsActive.list[id][pAPG]);
+                dr["TO"] = String.Format("{0}", rankingsActive.list[id][pTPG]);
+                dr["STL"] = String.Format("{0}", rankingsActive.list[id][pSPG]);
+                dr["BLK"] = String.Format("{0}", rankingsActive.list[id][pBPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsActive.list[id][pFPG]);
 
                 dt_ov.Rows.Add(dr);
-
-                playerRankings = new PlayerRankings(playersSameTeam);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "In-team Rankings";
-                dr["MINS"] = String.Format("{0}", playerRankings.list[id][pMPG]);
-                dr["PTS"] = String.Format("{0}", playerRankings.list[id][pPPG]);
-                dr["FG"] = String.Format("{0}", playerRankings.list[id][pFGp]);
-                dr["FGeff"] = String.Format("{0}", playerRankings.list[id][pFGeff]);
-                dr["3PT"] = String.Format("{0}", playerRankings.list[id][pTPp]);
-                dr["3Peff"] = String.Format("{0}", playerRankings.list[id][pTPeff]);
-                dr["FT"] = String.Format("{0}", playerRankings.list[id][pFTp]);
-                dr["FTeff"] = String.Format("{0}", playerRankings.list[id][pFTeff]);
-                dr["REB"] = String.Format("{0}", playerRankings.list[id][pRPG]);
-                dr["OREB"] = String.Format("{0}", playerRankings.list[id][pORPG]);
-                dr["DREB"] = String.Format("{0}", playerRankings.list[id][pDRPG]);
-                dr["AST"] = String.Format("{0}", playerRankings.list[id][pAPG]);
-                dr["TO"] = String.Format("{0}", playerRankings.list[id][pTPG]);
-                dr["STL"] = String.Format("{0}", playerRankings.list[id][pSPG]);
-                dr["BLK"] = String.Format("{0}", playerRankings.list[id][pBPG]);
-                dr["FOUL"] = String.Format("{0}", playerRankings.list[id][pFPG]);
+                dr["MINS"] = String.Format("{0}", rankingsTeam.list[id][pMPG]);
+                dr["PTS"] = String.Format("{0}", rankingsTeam.list[id][pPPG]);
+                dr["FG"] = String.Format("{0}", rankingsTeam.list[id][pFGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsTeam.list[id][pFGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsTeam.list[id][pTPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsTeam.list[id][pTPeff]);
+                dr["FT"] = String.Format("{0}", rankingsTeam.list[id][pFTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsTeam.list[id][pFTeff]);
+                dr["REB"] = String.Format("{0}", rankingsTeam.list[id][pRPG]);
+                dr["OREB"] = String.Format("{0}", rankingsTeam.list[id][pORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsTeam.list[id][pDRPG]);
+                dr["AST"] = String.Format("{0}", rankingsTeam.list[id][pAPG]);
+                dr["TO"] = String.Format("{0}", rankingsTeam.list[id][pTPG]);
+                dr["STL"] = String.Format("{0}", rankingsTeam.list[id][pSPG]);
+                dr["BLK"] = String.Format("{0}", rankingsTeam.list[id][pBPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsTeam.list[id][pFPG]);
 
                 dt_ov.Rows.Add(dr);
-
-                playerRankings = new PlayerRankings(playersSamePosition);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Position Rankings";
-                dr["MINS"] = String.Format("{0}", playerRankings.list[id][pMPG]);
-                dr["PTS"] = String.Format("{0}", playerRankings.list[id][pPPG]);
-                dr["FG"] = String.Format("{0}", playerRankings.list[id][pFGp]);
-                dr["FGeff"] = String.Format("{0}", playerRankings.list[id][pFGeff]);
-                dr["3PT"] = String.Format("{0}", playerRankings.list[id][pTPp]);
-                dr["3Peff"] = String.Format("{0}", playerRankings.list[id][pTPeff]);
-                dr["FT"] = String.Format("{0}", playerRankings.list[id][pFTp]);
-                dr["FTeff"] = String.Format("{0}", playerRankings.list[id][pFTeff]);
-                dr["REB"] = String.Format("{0}", playerRankings.list[id][pRPG]);
-                dr["OREB"] = String.Format("{0}", playerRankings.list[id][pORPG]);
-                dr["DREB"] = String.Format("{0}", playerRankings.list[id][pDRPG]);
-                dr["AST"] = String.Format("{0}", playerRankings.list[id][pAPG]);
-                dr["TO"] = String.Format("{0}", playerRankings.list[id][pTPG]);
-                dr["STL"] = String.Format("{0}", playerRankings.list[id][pSPG]);
-                dr["BLK"] = String.Format("{0}", playerRankings.list[id][pBPG]);
-                dr["FOUL"] = String.Format("{0}", playerRankings.list[id][pFPG]);
+                dr["MINS"] = String.Format("{0}", rankingsPosition.list[id][pMPG]);
+                dr["PTS"] = String.Format("{0}", rankingsPosition.list[id][pPPG]);
+                dr["FG"] = String.Format("{0}", rankingsPosition.list[id][pFGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsPosition.list[id][pFGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsPosition.list[id][pTPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsPosition.list[id][pTPeff]);
+                dr["FT"] = String.Format("{0}", rankingsPosition.list[id][pFTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsPosition.list[id][pFTeff]);
+                dr["REB"] = String.Format("{0}", rankingsPosition.list[id][pRPG]);
+                dr["OREB"] = String.Format("{0}", rankingsPosition.list[id][pORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsPosition.list[id][pDRPG]);
+                dr["AST"] = String.Format("{0}", rankingsPosition.list[id][pAPG]);
+                dr["TO"] = String.Format("{0}", rankingsPosition.list[id][pTPG]);
+                dr["STL"] = String.Format("{0}", rankingsPosition.list[id][pSPG]);
+                dr["BLK"] = String.Format("{0}", rankingsPosition.list[id][pBPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsPosition.list[id][pFPG]);
 
                 dt_ov.Rows.Add(dr);
             }
@@ -449,7 +472,8 @@ namespace NBA_2K12_Correct_Team_Stats
 
             var ps = CreatePlayerStatsFromCurrent();
 
-            List<PlayerStats> pslist = new List<PlayerStats>() {ps};
+            Dictionary<int, PlayerStats> pslist = new Dictionary<int, PlayerStats>();
+            pslist.Add(ps.ID, ps);
 
             MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
 
@@ -499,5 +523,31 @@ namespace NBA_2K12_Correct_Team_Stats
                 dt_ov.Rows[0]);
             return ps;
         }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbTeam.SelectedIndex == cmbTeam.Items.Count - 1) cmbTeam.SelectedIndex = 0;
+            else cmbTeam.SelectedIndex++;
+        }
+
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbTeam.SelectedIndex == 0) cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
+            else cmbTeam.SelectedIndex--;
+        }
+
+        private void btnNextPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbPlayer.SelectedIndex == cmbPlayer.Items.Count - 1) cmbPlayer.SelectedIndex = 0;
+            else cmbPlayer.SelectedIndex++;
+        }
+
+        private void btnPrevPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbPlayer.SelectedIndex == 0) cmbPlayer.SelectedIndex = cmbPlayer.Items.Count - 1;
+            else cmbPlayer.SelectedIndex--;
+        }
+
+
     }
 }
