@@ -17,13 +17,13 @@
       <TabItem Header="Split Stats" Name="tabSplitStats">
         <Grid>
           <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
-                    ItemsSource="{Binding Path=.}" Name="dgvSplit" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" />
+                    ItemsSource="{Binding Path=.}" Name="dgvSplit" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1" />
         </Grid>
       </TabItem>
       <TabItem Header="Player Stats" Name="tabPlayerStats">
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
-                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats" VerticalAlignment="Stretch" MouseDoubleClick="dgvPlayerStats_MouseDoubleClick">
+                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats" VerticalAlignment="Stretch" MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
               <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -80,7 +80,7 @@
       <TabItem Header="Head-To-Head" Name="tabHTH">
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="True" CanUserSortColumns="False" ItemsSource="{Binding Path=.}"
-                    Name="dgvHTHStats" Height="113" VerticalAlignment="Top" Margin="-1,35,1,0" />
+                    Name="dgvHTHStats" Height="113" VerticalAlignment="Top" Margin="-1,35,1,0" FrozenColumnCount="1" AlternatingRowBackground="#FFE5E5E5" />
           <ComboBox Height="23" HorizontalAlignment="Center" Margin="261,6,259,0" Name="cmbOppTeam"
                     VerticalAlignment="Top" Width="153" SelectionChanged="cmbOppTeam_SelectionChanged" />
           <Button Content="&lt;" Height="23" HorizontalAlignment="Center" Margin="231,6,418,0"
@@ -99,7 +99,7 @@
       <TabItem Header="Yearly Report" Name="tabYearly">
         <Grid>
           <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
-                    ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" />
+                    ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1" />
         </Grid>
       </TabItem>
     </TabControl>

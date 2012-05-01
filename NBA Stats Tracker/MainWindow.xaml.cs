@@ -254,7 +254,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
         }
 
-        private void btnSelect_Click(object sender, RoutedEventArgs e)
+        private void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Title = "Please select the Career file you're playing...";
@@ -367,7 +367,7 @@ namespace NBA_2K12_Correct_Team_Stats
             }
             */
 
-            updateStatus("NBA 2K12 Save loaded successfully!");
+            updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
             //cmbTeam1.SelectedItem = "Pistons";
         }
 
@@ -1764,7 +1764,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     foreach (PlayerBoxScore pbs in list)
                     {
                         if (pbs.PlayerID == -1) continue;
-                        pst[pbs.PlayerID].addBoxScore(pbs);
+                        pst[pbs.PlayerID].AddBoxScore(pbs);
                     }
                 }
 
@@ -2083,7 +2083,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
         {
-            btnSelect_Click(sender, e);
+            btnImport2K12_Click(sender, e);
         }
 
         private void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
@@ -2566,23 +2566,14 @@ namespace NBA_2K12_Correct_Team_Stats
         private void btnTeamOverview_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB)) return;
-            /*
-            if (!isCustom)
-            {
-                MessageBox.Show("Save the data into a Team Stats file before using the tool's features.");
-                return;
-            }
-            */
             if (isTSTEmpty())
             {
                 MessageBox.Show("You need to create a team or import stats before using the Analysis features.");
                 return;
             }
 
-            dispatcherTimer.Stop();
             var tow = new teamOverviewW(tst, pst);
             tow.ShowDialog();
-            dispatcherTimer.Start();
         }
 
         private void btnOpenCustom_Click(object sender, RoutedEventArgs e)
@@ -2602,6 +2593,7 @@ namespace NBA_2K12_Correct_Team_Stats
         {
             status.FontWeight = FontWeights.Normal;
             status.Content = "Ready";
+            dispatcherTimer.Stop();
         }
 
         private void updateStatus(string newStatus)
@@ -2609,7 +2601,7 @@ namespace NBA_2K12_Correct_Team_Stats
             dispatcherTimer.Stop();
             status.FontWeight = FontWeights.Bold;
             status.Content = newStatus;
-            //dispatcherTimer.Start();
+            dispatcherTimer.Start();
         }
 
         private void btnSaveTeamStats_Click(object sender, RoutedEventArgs e)
@@ -2787,7 +2779,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         }
                         ps.Value.isAllStar = false;
                         ps.Value.isNBAChampion = false;
-                        ps.Value.calcAvg();
+                        ps.Value.CalcAvg();
                     }
 
                     saveSeasonToDatabase(currentDB, tst, pst, curSeason, curSeason);
@@ -2820,6 +2812,13 @@ namespace NBA_2K12_Correct_Team_Stats
 
         private void btnPlayerOverview_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrEmpty(currentDB)) return;
+            if (isTSTEmpty())
+            {
+                MessageBox.Show("You need to create a team or import stats before using the Analysis features.");
+                return;
+            }
+
             playerOverviewW pow = new playerOverviewW();
             pow.ShowDialog();
         }

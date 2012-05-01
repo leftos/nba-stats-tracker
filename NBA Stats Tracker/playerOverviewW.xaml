@@ -15,11 +15,65 @@
                     <CheckBox Content="Active" IsChecked="{Binding isActive}" Height="16" HorizontalAlignment="Right" Margin="0,44,6,0" Name="chkIsActive" VerticalAlignment="Top" />
                     <CheckBox Content="All-Star" IsChecked="{Binding isAllStar}" Height="16" HorizontalAlignment="Left" Margin="73,44,0,0" Name="chkIsAllStar" VerticalAlignment="Top" />
                     <CheckBox Content="Champion" IsChecked="{Binding isNBAChampion}" Height="16" HorizontalAlignment="Left" Margin="143,44,0,0" Name="chkIsNBAChampion" VerticalAlignment="Top" />
-                    <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding Path=.}" Margin="0,66,0,0" Name="dgvOverviewStats" FrozenColumnCount="1" />
+                    <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding Path=.}" Margin="0,66,0,0" Name="dgvOverviewStats" FrozenColumnCount="1" AlternatingRowBackground="#FFE5E5E5" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="495,8,0,0" Name="cmbPosition1" VerticalAlignment="Top" Width="40" />
                     <Label Content="Position" HorizontalAlignment="Left" Margin="439,8,0,0" Name="label5" VerticalAlignment="Top" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="619,8,0,0" Name="cmbPosition2" VerticalAlignment="Top" Width="40" />
                     <Label Content="2nd Position" HorizontalAlignment="Left" Margin="544,8,0,0" Name="label6" VerticalAlignment="Top" />
+                </Grid>
+            </TabItem>
+            <TabItem Name="tabSplitStats" Header="Split Stats">
+                <Grid>
+                    <DataGrid AutoGenerateColumns="False" FrozenColumnCount="2" HorizontalAlignment="Stretch" Margin="0" Name="dgvSplitStats" VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="#FFE5E5E5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
+                            <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
+                            <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
+                            <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                            <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
+                            <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FGp" />
+                            <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
+                            <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="TPp" />
+                            <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="TPeff" />
+                            <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FTp" />
+                            <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
+                            <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
+                            <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
+                            <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
+                            <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
+                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="TPG" />
+                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
+                            <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="tabBoxScores" Header="Box Scores">
+                <Grid>
+                    <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FrozenColumnCount="2" HorizontalAlignment="Stretch" Margin="0" Name="dgvBoxScores" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Date}" Header="Date" />
+                            <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                            <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                            <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                            <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                            <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                            <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                            <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                            <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                            <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                            <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                            <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
+                            <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                            <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                            <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                            <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                            <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                            <DataGridTextColumn Binding="{Binding GameID}" Header="GameID" IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -46,12 +100,12 @@
         <GroupBox Header="Timeframe" HorizontalAlignment="Right" Margin="0,0,8,12" Name="groupBox2" Width="328" Height="175" VerticalAlignment="Bottom">
             <Grid Margin="0,0,0,0">
                 <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" />
-                <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" />
-                <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0" Name="rbStatsBetween" VerticalAlignment="Top" />
-                <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" VerticalAlignment="Top" Width="115" />
-                <DatePicker Height="25" HorizontalAlignment="Left" Margin="173,79,0,0" Name="dtpEnd" VerticalAlignment="Top" Width="115" />
+                <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
+                <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0" Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
+                <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpStart_SelectedDateChanged" />
+                <DatePicker Height="25" HorizontalAlignment="Left" Margin="173,79,0,0" Name="dtpEnd" VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpEnd_SelectedDateChanged" />
                 <Label Content="and" HorizontalAlignment="Left" Margin="139,81,0,0" Name="label2" VerticalAlignment="Top" />
-                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1" Text="* Availability of stats between dates depends on whether there are box-scores saved for this team." TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
+                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1" Text="* Availability of stats between dates depends on whether there are box-scores saved for this player." TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,31,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
             </Grid>
         </GroupBox>

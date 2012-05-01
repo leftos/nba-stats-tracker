@@ -197,7 +197,7 @@ namespace NBA_2K12_Correct_Team_Stats
             pl_rankings = StatsTracker.calculateRankings(tst, playoffs: true);
 
             dtpEnd.SelectedDate = DateTime.Today;
-            dtpStart.SelectedDate = DateTime.Today.AddMonths(-1);
+            dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
 
             PopulateSeasonCombo();
 
@@ -360,7 +360,7 @@ namespace NBA_2K12_Correct_Team_Stats
                         tsopp.winloss[1] = ts.winloss[0];
                         tsopp.winloss[0] = ts.winloss[1];
                     }
-                    AddTeamStatsFromSQLDataTable(res, ref ts, ref tsopp);
+                    AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                 }
             }
 
@@ -681,23 +681,23 @@ namespace NBA_2K12_Correct_Team_Stats
             DataRow dr;
 
             // Prepare Queries
-            string qr_home = String.Format("select * from GameResults where (T2Name LIKE '{0}');", curTeam);
-            string qr_away = String.Format("select * from GameResults where (T1Name LIKE '{0}');", curTeam);
+            string qr_home = String.Format("select * from GameResults where (T2Name LIKE '{0}')", curTeam);
+            string qr_away = String.Format("select * from GameResults where (T1Name LIKE '{0}')", curTeam);
             string qr_wins = String.Format("select * from GameResults where "
                                            + "((T1Name LIKE '{0}' AND T1PTS > T2PTS) "
-                                           + "OR (T2Name LIKE '{0}' AND T2PTS > T1PTS));",
+                                           + "OR (T2Name LIKE '{0}' AND T2PTS > T1PTS))",
                                            curTeam);
             string qr_losses = String.Format("select * from GameResults where "
                                              + "((T1Name LIKE '{0}' AND T1PTS < T2PTS) "
-                                             + "OR (T2Name LIKE '{0}' AND T2PTS < T1PTS));",
+                                             + "OR (T2Name LIKE '{0}' AND T2PTS < T1PTS))",
                                              curTeam);
             string qr_season = String.Format("select * from GameResults where "
                                              + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                                             + "AND IsPlayoff LIKE 'False';",
+                                             + "AND IsPlayoff LIKE 'False'",
                                              curTeam);
             string qr_playoffs = String.Format("select * from GameResults where "
                                                + "(T1Name LIKE '{0}' OR T2Name LIKE '{0}') "
-                                               + "AND IsPlayoff LIKE 'True';",
+                                               + "AND IsPlayoff LIKE 'True'",
                                                curTeam);
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
@@ -716,6 +716,16 @@ namespace NBA_2K12_Correct_Team_Stats
                                                                     dtpStart.SelectedDate.GetValueOrDefault(),
                                                                     dtpEnd.SelectedDate.GetValueOrDefault());
             }
+            else
+            {
+                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem.ToString();
+                qr_home += s;
+                qr_away += s;
+                qr_wins += s;
+                qr_losses += s;
+                qr_season += s;
+                qr_playoffs += s;
+            }
 
             DataTable res2;
 
@@ -730,7 +740,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_home);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Home");
             dt_ss.Rows.Add(dr);
@@ -740,7 +750,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_away);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Away");
             dt_ss.Rows.Add(dr);
@@ -754,7 +764,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_wins);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Wins");
             dt_ss.Rows.Add(dr);
@@ -764,7 +774,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_losses);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Losses");
             dt_ss.Rows.Add(dr);
@@ -778,7 +788,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_season);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Season");
             dt_ss.Rows.Add(dr);
@@ -788,7 +798,7 @@ namespace NBA_2K12_Correct_Team_Stats
             tsopp = new TeamStats("Opponents");
 
             res2 = db.GetDataTable(qr_playoffs);
-            AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+            AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Playoffs");
             dt_ss.Rows.Add(dr);
@@ -844,7 +854,7 @@ namespace NBA_2K12_Correct_Team_Stats
                     tsopp = new TeamStats("Opponents");
 
                     res2 = db.GetDataTable(q);
-                    AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
                     dr = dt_ss.NewRow();
                     DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
                     CreateDataRowFromTeamStats(ts, ref dr,
@@ -1121,7 +1131,7 @@ namespace NBA_2K12_Correct_Team_Stats
              */
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
-                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1);
+                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
             cmbTeam_SelectionChanged(sender, null);
         }
@@ -1140,7 +1150,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
-                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1);
+                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
             cmbTeam_SelectionChanged(sender, null);
         }
@@ -1335,7 +1345,7 @@ namespace NBA_2K12_Correct_Team_Stats
                                       showSeason);
 
                     DataTable res2 = db.GetDataTable(q);
-                    AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, false);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp, false);
 
                     q = String.Format("select * from GameResults " +
                                       "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
@@ -1346,7 +1356,7 @@ namespace NBA_2K12_Correct_Team_Stats
                                       showSeason);
 
                     res2 = db.GetDataTable(q);
-                    AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp, true);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp, true);
                 }
             }
             else
@@ -1370,11 +1380,11 @@ namespace NBA_2K12_Correct_Team_Stats
                                       SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
                                       SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
                     DataTable res2 = db.GetDataTable(q);
-                    AddTeamStatsFromSQLDataTable(res2, ref ts, ref tsopp);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
                 }
                 else
                 {
-                    AddTeamStatsFromSQLDataTable(res, ref ts, ref tsopp);
+                    AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                 }
             }
 
@@ -1534,7 +1544,7 @@ namespace NBA_2K12_Correct_Team_Stats
             cmbOppTeam.SelectedIndex = 1;
         }
 
-        public static void AddTeamStatsFromSQLDataTable(DataTable res, ref TeamStats ts, ref TeamStats tsopp,
+        public static void AddToTeamStatsFromSQLBoxScore(DataTable res, ref TeamStats ts, ref TeamStats tsopp,
                                                         bool playoffs = false)
         {
             foreach (DataRow r in res.Rows)

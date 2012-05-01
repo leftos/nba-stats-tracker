@@ -142,7 +142,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         ts = new TeamStats(kvp.Key);
                         tsopp = new TeamStats();
-                        teamOverviewW.AddTeamStatsFromSQLDataTable(res, ref ts, ref tsopp);
+                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                         teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key);
 
                         dt_ts.Rows.Add(r);
@@ -195,7 +195,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
                         ts = new TeamStats(kvp.Key);
                         tsopp = new TeamStats();
-                        teamOverviewW.AddTeamStatsFromSQLDataTable(res, ref ts, ref tsopp, true);
+                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp, true);
                         teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key, true);
 
                         dt_ts.Rows.Add(r);

@@ -24,6 +24,7 @@ namespace NBA_2K12_Correct_Team_Stats
                 cmbTeams1.Items.Add("Mode 3");
                 cmbTeams1.Items.Add("Mode 4");
                 cmbTeams1.Items.Add("Mode 5");
+                cmbTeams1.Items.Add("Mode 6");
                 cmbTeams2.Visibility = Visibility.Hidden;
             }
             else

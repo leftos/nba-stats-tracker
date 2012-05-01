@@ -138,6 +138,42 @@ namespace NBA_2K12_Correct_Team_Stats
                                     };
                     break;
 
+                case "Mode 6":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 8},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 12},
+                                        {"Celtics", 13},
+                                        {"Clippers", 6},
+                                        {"Grizzlies", 5},
+                                        {"Hawks", 16},
+                                        {"Heat", 3},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 14},
+                                        {"Knicks", 4},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 10},
+                                        {"Pistons", 11},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 9},
+                                        {"Suns", 2},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 7},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
                 case "Mode 2":
                     TeamOrder = new SortedDictionary<string, int>
                                     {
@@ -1263,7 +1299,7 @@ namespace NBA_2K12_Correct_Team_Stats
             stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
             stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
 
-            calcAvg();
+            CalcAvg();
         }
 
         public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF, string TeamS,
@@ -1309,7 +1345,7 @@ namespace NBA_2K12_Correct_Team_Stats
             stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
             stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
 
-            calcAvg();
+            CalcAvg();
         }
 
         public PlayerStats(PlayerStatsRow playerStatsRow)
@@ -1346,7 +1382,7 @@ namespace NBA_2K12_Correct_Team_Stats
             isNBAChampion = playerStatsRow.isNBAChampion;
         }
 
-        public int calcAvg()
+        public int CalcAvg()
         {
             int games = stats[pGP];
             if (stats[pGP] == 0) games = -1;
@@ -1370,7 +1406,7 @@ namespace NBA_2K12_Correct_Team_Stats
             return games;
         }
 
-        public void addBoxScore(PlayerBoxScore pbs)
+        public void AddBoxScore(PlayerBoxScore pbs)
         {
             if (ID != pbs.PlayerID) throw new Exception("Tried to update PlayerStats " + ID + " with PlayerBoxScore " + pbs.PlayerID);
 
@@ -1395,7 +1431,17 @@ namespace NBA_2K12_Correct_Team_Stats
             stats[pAST] += pbs.AST;
             stats[pFOUL] += pbs.FOUL;
 
-            calcAvg();
+            CalcAvg();
+        }
+
+        public void ResetStats()
+        {
+            for (int i = 0; i < stats.Length; i++)
+            {
+                stats[i] = 0;
+            }
+
+            CalcAvg();
         }
     }
 
@@ -1424,6 +1470,10 @@ namespace NBA_2K12_Correct_Team_Stats
         public UInt16 AST { get; set; }
         public UInt16 FOUL { get; set; }
 
+        public string Result { get; set; }
+        public string Date { get; set; }
+        public int GameID { get; set; }
+
         public PlayerBoxScore()
         {
             PlayerID = -1;
@@ -1437,6 +1487,7 @@ namespace NBA_2K12_Correct_Team_Stats
         public PlayerBoxScore(DataRow r)
         {
             PlayerID = StatsTracker.getInt(r, "PlayerID");
+            GameID = StatsTracker.getInt(r, "GameID");
             Team = r["Team"].ToString();
             isStarter = StatsTracker.getBoolean(r, "isStarter");
             playedInjured = StatsTracker.getBoolean(r, "playedInjured");
@@ -1457,6 +1508,37 @@ namespace NBA_2K12_Correct_Team_Stats
             OREB = Convert.ToUInt16(r["OREB"].ToString());
             FOUL = Convert.ToUInt16(r["FOUL"].ToString());
             DREB = (UInt16)(REB - OREB);
+
+            // Let's try to get the result and date of the game
+            // Only works for INNER JOIN'ed rows
+            try
+            {
+                int T1PTS = StatsTracker.getInt(r, "T1PTS");
+                int T2PTS = StatsTracker.getInt(r, "T2PTS");
+
+                string Team1 = StatsTracker.getString(r, "T1Name");
+
+                if (Team == Team1)
+                {
+                    if (T1PTS > T2PTS)
+                        Result = "W " + T1PTS.ToString() + "-" + T2PTS.ToString();
+                    else
+                        Result = "L " + T1PTS.ToString() + "-" + T2PTS.ToString();
+                }
+                else
+                {
+                    if (T2PTS > T1PTS)
+                        Result = "W " + T2PTS.ToString() + "-" + T1PTS.ToString();
+                    else
+                        Result = "L " + T2PTS.ToString() + "-" + T1PTS.ToString();
+                }
+
+                Date = StatsTracker.getString(r, "Date").Split(' ')[0];
+            }
+            catch (Exception)
+            {
+                
+            }
         }
 
         public void ResetStats()
@@ -1950,6 +2032,11 @@ namespace NBA_2K12_Correct_Team_Stats
             isNBAChampion = ps.isNBAChampion;
         }
 
+        public PlayerStatsRow(PlayerStats ps, string type) : this(ps)
+        {
+            Type = type;
+        }
+
         public string LastName { get; set; }
         public string FirstName { get; set; }
 
@@ -1999,6 +2086,8 @@ namespace NBA_2K12_Correct_Team_Stats
         public bool isAllStar { get; set; }
         public bool isInjured { get; set; }
         public bool isNBAChampion { get; set; }
+
+        public string Type { get; set; }
 
         // Not to be shown in DataGrid
     }

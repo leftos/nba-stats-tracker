@@ -152,13 +152,13 @@
           <TextBlock HorizontalAlignment="Left" Margin="253,233,0,0" Name="txbT2Avg" Text=""
                      VerticalAlignment="Top" Width="339" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="422,13,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
-                    <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="267,252,0,0" Name="button3" TabIndex="30" VerticalAlignment="Top" Width="75" />
+                    <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="267,252,0,0" Name="btnOK" TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnOK_Click" />
                 </Grid>
       </TabItem>
       <TabItem Header="Away Team" Name="tabTeam1">
         <Grid>
           <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
-                    Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True">
+                    Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1">
             <DataGrid.Columns>
                 <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}" 
                                         SelectedValuePath="Key" DisplayMemberPath="Value" x:Name="colPlayerAway" />
@@ -187,7 +187,7 @@
       </TabItem>
       <TabItem Header="Home Team" Name="tabTeam2">
         <Grid>
-                    <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome" VerticalAlignment="Stretch">
+                    <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome" VerticalAlignment="Stretch" FrozenColumnCount="1">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player" SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                             <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />

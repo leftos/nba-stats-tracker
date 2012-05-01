@@ -179,8 +179,8 @@
     </GroupBox>
     <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
       <Grid>
-        <Button Height="46" HorizontalAlignment="Left" Margin="9,8,0,0" Name="btnSelect"
-                VerticalAlignment="Top" Width="158" Click="btnSelect_Click" TabIndex="2">
+        <Button Height="46" HorizontalAlignment="Left" Margin="9,8,0,0" Name="btnImport2K12"
+                VerticalAlignment="Top" Width="158" Click="btnImport2K12_Click" TabIndex="2">
           <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
             Import from
             <LineBreak />
@@ -190,7 +190,7 @@
         <Button Height="46" HorizontalAlignment="Left" Margin="9,58,0,0" Name="btnInject"
                 VerticalAlignment="Top" Width="158" Click="btnInject_Click" TabIndex="28">
           <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
-            Save To
+            Export to
             <LineBreak />
             2K12 Save
           </TextBlock>
@@ -202,7 +202,7 @@
           <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
             Download
             <LineBreak />
-            NBA Stats
+            NBA Team Stats
           </TextBlock>
         </Button>
       </Grid>
