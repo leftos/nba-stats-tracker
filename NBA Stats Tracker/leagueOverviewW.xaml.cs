@@ -15,6 +15,13 @@ namespace NBA_Stats_Tracker
         private readonly DataTable dt_ts;
         private Dictionary<int, PlayerStats> pst;
         private TeamStats[] tst;
+        private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private int curSeason = MainWindow.curSeason;
+        private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private string q;
+        private DataTable res;
+        private TeamStats ts;
+        private TeamStats tsopp;
 
         public leagueOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
         {
@@ -99,7 +106,6 @@ namespace NBA_Stats_Tracker
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var db = new SQLiteDatabase(MainWindow.currentDB);
             string q;
             DataTable res;
 
@@ -108,147 +114,194 @@ namespace NBA_Stats_Tracker
 
             if (tbcLeagueOverview.SelectedItem == tabTeamStats)
             {
-                dt_ts.Clear();
-
-                if (rbStatsAllTime.IsChecked.GetValueOrDefault())
-                {
-                    tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
-                                                    ref MainWindow.pt, ref MainWindow.bshist,
-                                                    _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
-
-                    foreach (TeamStats cur in tst)
-                    {
-                        DataRow r = dt_ts.NewRow();
-
-                        teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, cur.name);
-
-                        dt_ts.Rows.Add(r);
-                    }
-                }
-                else
-                {
-                    foreach (var kvp in MainWindow.TeamOrder)
-                    {
-                        q =
-                            String.Format(
-                                "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
-                                kvp.Key);
-                        q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
-
-                        res = db.GetDataTable(q);
-
-                        DataRow r = dt_ts.NewRow();
-
-                        ts = new TeamStats(kvp.Key);
-                        tsopp = new TeamStats();
-                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
-                        teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key);
-
-                        dt_ts.Rows.Add(r);
-                    }
-                }
-
-                // DataTable's ready, set DataView and fill DataGrid
-                var dv_ts = new DataView(dt_ts);
-                dv_ts.AllowNew = false;
-                dv_ts.AllowEdit = false;
-                dv_ts.Sort = "Weff DESC";
-
-                dgvTeamStats.DataContext = dv_ts;
+                PrepareTeamStats();
             }
             else if (tbcLeagueOverview.SelectedItem == tabPlayoffStats)
             {
-                dt_ts.Clear();
-
-                if (rbStatsAllTime.IsChecked.GetValueOrDefault())
-                {
-                    tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
-                                                    ref MainWindow.pt, ref MainWindow.bshist,
-                                                    _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
-
-                    foreach (TeamStats cur in tst)
-                    {
-                        if (cur.getPlayoffGames() == 0) continue;
-
-                        DataRow r = dt_ts.NewRow();
-
-                        teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, cur.name, true);
-
-                        dt_ts.Rows.Add(r);
-                    }
-                }
-                else
-                {
-                    foreach (var kvp in MainWindow.TeamOrder)
-                    {
-                        q =
-                            String.Format(
-                                "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
-                                kvp.Key);
-                        q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
-
-                        res = db.GetDataTable(q);
-
-                        DataRow r = dt_ts.NewRow();
-
-                        ts = new TeamStats(kvp.Key);
-                        tsopp = new TeamStats();
-                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp, true);
-                        teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key, true);
-
-                        dt_ts.Rows.Add(r);
-                    }
-                }
-
-                // DataTable's ready, set DataView and fill DataGrid
-                var dv_ts = new DataView(dt_ts);
-                dv_ts.AllowNew = false;
-                dv_ts.AllowEdit = false;
-                dv_ts.Sort = "Weff DESC";
-
-                dgvPlayoffStats.DataContext = dv_ts;
+                PreparePlayoffStats();
+            }
+            else if (tbcLeagueOverview.SelectedItem == tabPlayerStats)
+            {
+                PreparePlayerStats();
             }
             else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
             {
-                dt_bs.Clear();
+                PrepareBoxScores();
+            }
+        }
 
-                q = "select * from GameResults";
+        private void PreparePlayerStats()
+        {
+            string q;
+            DataTable res;
 
-                if (rbStatsAllTime.IsChecked.GetValueOrDefault())
-                {
-                    q += " where SeasonNum = " + cmbSeasonNum.SelectedItem;
-                }
-                else
-                {
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault(), true);
-                }
+            string playersT = "Players";
+            if (curSeason != maxSeason) playersT += "S" + curSeason;
+            List<PlayerStatsRow> psrList = new List<PlayerStatsRow>();
 
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                q = "select * from " + playersT;
                 res = db.GetDataTable(q);
 
-                foreach (DataRow dr in res.Rows)
+                foreach (DataRow r in res.Rows)
                 {
-                    DataRow r = dt_bs.NewRow();
+                    PlayerStats ps = new PlayerStats(r);
+                    PlayerStatsRow psr = new PlayerStatsRow(ps);
 
-                    r["Date"] = dr["Date"].ToString().Split(' ')[0];
-                    r["Away"] = dr["T1Name"].ToString();
-                    r["AS"] = Convert.ToInt32(dr["T1PTS"].ToString());
-                    r["Home"] = dr["T2Name"].ToString();
-                    r["HS"] = Convert.ToInt32(dr["T2PTS"].ToString());
-                    r["GameID"] = dr["GameID"].ToString();
-
-                    dt_bs.Rows.Add(r);
+                    psrList.Add(psr);
                 }
-
-                var dv_bs = new DataView(dt_bs);
-                dv_bs.AllowNew = false;
-                dv_bs.AllowEdit = false;
-                dv_bs.Sort = "Date DESC";
-
-                dgvBoxScores.DataContext = dv_bs;
             }
+
+            dgvPlayerStats.ItemsSource = psrList;
+        }
+
+        private void PrepareBoxScores()
+        {
+            DataTable res;
+            string q;
+            dt_bs.Clear();
+
+            q = "select * from GameResults";
+
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                q += " where SeasonNum = " + cmbSeasonNum.SelectedItem;
+            }
+            else
+            {
+                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                          dtpEnd.SelectedDate.GetValueOrDefault(), true);
+            }
+
+            res = db.GetDataTable(q);
+
+            foreach (DataRow dr in res.Rows)
+            {
+                DataRow r = dt_bs.NewRow();
+
+                r["Date"] = dr["Date"].ToString().Split(' ')[0];
+                r["Away"] = dr["T1Name"].ToString();
+                r["AS"] = Convert.ToInt32(dr["T1PTS"].ToString());
+                r["Home"] = dr["T2Name"].ToString();
+                r["HS"] = Convert.ToInt32(dr["T2PTS"].ToString());
+                r["GameID"] = dr["GameID"].ToString();
+
+                dt_bs.Rows.Add(r);
+            }
+
+            var dv_bs = new DataView(dt_bs);
+            dv_bs.AllowNew = false;
+            dv_bs.AllowEdit = false;
+            dv_bs.Sort = "Date DESC";
+
+            dgvBoxScores.DataContext = dv_bs;
+        }
+
+        private void PreparePlayoffStats()
+        {
+            dt_ts.Clear();
+
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                                              ref MainWindow.pt, ref MainWindow.bshist,
+                                              _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+
+                foreach (TeamStats cur in tst)
+                {
+                    if (cur.getPlayoffGames() == 0) continue;
+
+                    DataRow r = dt_ts.NewRow();
+
+                    teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, cur.name, true);
+
+                    dt_ts.Rows.Add(r);
+                }
+            }
+            else
+            {
+                foreach (var kvp in MainWindow.TeamOrder)
+                {
+                    q =
+                        String.Format(
+                            "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
+                            kvp.Key);
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+
+                    res = db.GetDataTable(q);
+
+                    DataRow r = dt_ts.NewRow();
+
+                    ts = new TeamStats(kvp.Key);
+                    tsopp = new TeamStats();
+                    teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp, true);
+                    teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key, true);
+
+                    dt_ts.Rows.Add(r);
+                }
+            }
+
+            // DataTable's ready, set DataView and fill DataGrid
+            var dv_ts = new DataView(dt_ts);
+            dv_ts.AllowNew = false;
+            dv_ts.AllowEdit = false;
+            dv_ts.Sort = "Weff DESC";
+
+            dgvPlayoffStats.DataContext = dv_ts;
+        }
+
+        private void PrepareTeamStats()
+        {
+            dt_ts.Clear();
+
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                                              ref MainWindow.pt, ref MainWindow.bshist,
+                                              _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+
+                foreach (TeamStats cur in tst)
+                {
+                    DataRow r = dt_ts.NewRow();
+
+                    teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, cur.name);
+
+                    dt_ts.Rows.Add(r);
+                }
+            }
+            else
+            {
+                foreach (var kvp in MainWindow.TeamOrder)
+                {
+                    q =
+                        String.Format(
+                            "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
+                            kvp.Key);
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+
+                    res = db.GetDataTable(q);
+
+                    DataRow r = dt_ts.NewRow();
+
+                    ts = new TeamStats(kvp.Key);
+                    tsopp = new TeamStats();
+                    teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
+                    teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key);
+
+                    dt_ts.Rows.Add(r);
+                }
+            }
+
+            // DataTable's ready, set DataView and fill DataGrid
+            var dv_ts = new DataView(dt_ts);
+            dv_ts.AllowNew = false;
+            dv_ts.AllowEdit = false;
+            dv_ts.Sort = "Weff DESC";
+
+            dgvTeamStats.DataContext = dv_ts;
         }
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
@@ -286,7 +339,9 @@ namespace NBA_Stats_Tracker
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            tbcLeagueOverview_SelectionChanged(null, null);
+            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+                tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void dgvBoxScores_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -312,6 +367,41 @@ namespace NBA_Stats_Tracker
                     }
                     i++;
                 }
+            }
+        }
+
+        private void dgvTeamStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgvTeamStats.SelectedCells.Count > 0)
+            {
+                var row = (DataRowView) dgvTeamStats.SelectedItems[0];
+                string team = row["Name"].ToString();
+
+                teamOverviewW tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                tow.ShowDialog();
+            }
+        }
+
+        private void dgvPlayoffStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgvPlayoffStats.SelectedCells.Count > 0)
+            {
+                var row = (DataRowView)dgvPlayoffStats.SelectedItems[0];
+                string team = row["Name"].ToString();
+
+                teamOverviewW tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                tow.ShowDialog();
+            }
+        }
+
+        private void tabPlayerStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgvPlayerStats.SelectedCells.Count > 0)
+            {
+                PlayerStatsRow psr = (PlayerStatsRow) dgvPlayerStats.SelectedItem[0];
+
+                playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
+                pow.ShowDialog();
             }
         }
     }

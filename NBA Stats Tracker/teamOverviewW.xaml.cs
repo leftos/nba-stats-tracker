@@ -205,6 +205,11 @@ namespace NBA_Stats_Tracker
             cmbTeam.SelectedIndex = 0;
         }
 
+        public teamOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst, string team) : this(tst, pst)
+        {
+            cmbTeam.SelectedItem = team;
+        }
+
         private void PopulateSeasonCombo()
         {
             for (int i = MainWindow.getMaxSeason(MainWindow.currentDB); i > 0; i--)
