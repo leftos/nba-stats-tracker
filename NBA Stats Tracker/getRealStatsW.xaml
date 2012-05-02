@@ -1,4 +1,4 @@
-﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.getRealStatsW"
+﻿<Window x:Class="NBA_Stats_Tracker.getRealStatsW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Getting Real NBA Stats..." Height="143" Width="485"
         ResizeMode="NoResize" Closing="Window_Closing">

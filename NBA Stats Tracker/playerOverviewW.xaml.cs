@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     /// <summary>
     /// Interaction logic for playerOverviewW.xaml

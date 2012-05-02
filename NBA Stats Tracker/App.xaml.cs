@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -19,7 +19,7 @@ namespace NBA_2K12_Correct_Team_Stats
             // Be sure to include details about any inner exceptions
             try
             {
-                var f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+                var f = new StreamWriter(NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
                 f.Write(e.Exception.ToString());
                 f.WriteLine();
@@ -36,7 +36,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             MessageBox.Show(
                 "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+                NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
             // Prevent default unhandled exception processing
             e.Handled = true;
@@ -51,7 +51,7 @@ namespace NBA_2K12_Correct_Team_Stats
             try
             {
                 //StreamWriter f = new StreamWriter(NBA_2K12_Keep_My_Mod.MainWindow.SaveRootPath + @"\errorlog.txt");
-                var f = new StreamWriter(NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
+                var f = new StreamWriter(NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog.txt");
 
                 f.WriteLine("Additional: " + additional);
                 f.WriteLine();
@@ -71,7 +71,7 @@ namespace NBA_2K12_Correct_Team_Stats
 
             MessageBox.Show(
                 "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                NBA_2K12_Correct_Team_Stats.MainWindow.AppDocsPath + @"\errorlog.txt");
+                NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog.txt");
 
             Environment.Exit(-1);
         }

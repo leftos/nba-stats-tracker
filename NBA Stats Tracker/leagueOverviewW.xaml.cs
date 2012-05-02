@@ -4,7 +4,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     /// <summary>
     /// Interaction logic for leagueOverviewW.xaml

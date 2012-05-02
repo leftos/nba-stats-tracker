@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     /// <summary>
     /// Interaction logic for Window1.xaml

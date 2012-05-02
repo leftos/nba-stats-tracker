@@ -1,4 +1,4 @@
-﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.copyableW"
+﻿<Window x:Class="NBA_Stats_Tracker.copyableW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="copyableW" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" MinHeight="120" mc:Ignorable="d"

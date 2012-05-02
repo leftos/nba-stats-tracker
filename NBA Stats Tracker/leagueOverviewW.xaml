@@ -1,4 +1,4 @@
-﻿<Window x:Class="NBA_2K12_Correct_Team_Stats.leagueOverviewW"
+﻿<Window x:Class="NBA_Stats_Tracker.leagueOverviewW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="League Overview" Height="402" Width="758" WindowStartupLocation="CenterScreen">
   <Grid>

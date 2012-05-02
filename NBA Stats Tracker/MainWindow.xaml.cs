@@ -19,7 +19,7 @@ using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

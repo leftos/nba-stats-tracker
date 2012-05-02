@@ -11,7 +11,7 @@ using System.Windows;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 
-namespace NBA_2K12_Correct_Team_Stats
+namespace NBA_Stats_Tracker
 {
     internal class StatsTracker
     {

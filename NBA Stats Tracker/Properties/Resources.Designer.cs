@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NBA_2K12_Correct_Team_Stats.Properties
+namespace NBA_Stats_Tracker.Properties
 {
 
 
