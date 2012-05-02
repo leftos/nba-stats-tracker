@@ -27,7 +27,7 @@
             </TabItem>
             <TabItem Name="tabSplitStats" Header="Split Stats">
                 <Grid>
-                    <DataGrid AutoGenerateColumns="False" FrozenColumnCount="2" HorizontalAlignment="Stretch" Margin="0" Name="dgvSplitStats" VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="#FFE5E5E5">
+                    <DataGrid AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch" Margin="0" Name="dgvSplitStats" VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="#FFE5E5E5">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
@@ -89,7 +89,7 @@
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,6,0,0" Name="cmbOppTeam" VerticalAlignment="Top" Width="153" SelectionChanged="cmbOppTeam_SelectionChanged" />
                     <Button Content="&lt;" Height="23" HorizontalAlignment="Left" Margin="15,6,0,0" Name="button1" VerticalAlignment="Top" Width="24" />
                     <Button Content="&gt;" Height="23" HorizontalAlignment="Left" Margin="203,6,0,0" Name="button2" VerticalAlignment="Top" Width="24" />
-                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="2" Margin="0,37,0,0" Name="dgvHTH" VerticalAlignment="Top" Height="63" IsReadOnly="True">
+                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" Margin="0,37,0,0" Name="dgvHTH" VerticalAlignment="Top" Height="63" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
@@ -137,6 +137,50 @@
                             <DataGridTextColumn Binding="{Binding OppTeam}" Header="Opponent" />
                             <DataGridTextColumn Binding="{Binding OppTeamPTS}" Header="Points" />
                             <DataGridTextColumn Binding="{Binding GameID}" Header="ID" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Yearly Report" Name="tabYearly">
+                <Grid>
+                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvYearly" VerticalAlignment="Stretch">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
+                            <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
+                            <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
+                            <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                            <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
+                            <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FGp" />
+                            <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
+                            <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="TPp" />
+                            <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="TPeff" />
+                            <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FTp" />
+                            <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
+                            <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
+                            <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
+                            <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
+                            <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
+                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="TPG" />
+                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
+                            <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                            <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                            <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                            <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                            <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                            <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                            <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                            <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                            <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                            <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                            <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
+                            <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                            <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                            <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                            <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                            <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

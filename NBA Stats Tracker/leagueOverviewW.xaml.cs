@@ -112,7 +112,7 @@ namespace NBA_Stats_Tracker
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                    tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                     ref MainWindow.pt, ref MainWindow.bshist,
                                                     _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -163,7 +163,7 @@ namespace NBA_Stats_Tracker
 
                 if (rbStatsAllTime.IsChecked.GetValueOrDefault())
                 {
-                    tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                    tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                     ref MainWindow.pt, ref MainWindow.bshist,
                                                     _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 

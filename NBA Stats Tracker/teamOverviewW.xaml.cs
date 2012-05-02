@@ -238,7 +238,7 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.GetStatsFromDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
                                                 ref MainWindow.pt, ref MainWindow.bshist,
                                                 _curSeason: Convert.ToInt32(showSeason));
 
@@ -978,17 +978,15 @@ namespace NBA_Stats_Tracker
             {
                 if (j != curSeason)
                 {
-                    tst = MainWindow.GetStatsFromDatabase(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
-                                                    ref MainWindow.bshist, _curSeason: j);
+                    ts = MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
-                    CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3, "Season " + j.ToString(),
-                                               false);
+                    CreateDataRowFromTeamStats(ts, ref dr3, "Season " + j.ToString());
+
                     dt_yea.Rows.Add(dr3);
-                    if (tst[MainWindow.TeamOrder[curTeam]].pl_winloss[0] +
-                        tst[MainWindow.TeamOrder[curTeam]].pl_winloss[1] > 0)
+                    if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
                     {
-                        CreateDataRowFromTeamStats(tst[MainWindow.TeamOrder[curTeam]], ref dr3_pl,
+                        CreateDataRowFromTeamStats(ts, ref dr3_pl,
                                                    "Playoffs " + j.ToString(), true);
                         dt_yea.Rows.Add(dr3_pl);
                     }
@@ -999,10 +997,6 @@ namespace NBA_Stats_Tracker
                     if (playedInPlayoffs) dt_yea.Rows.Add(drcur_pl);
                 }
             }
-
-            tst = MainWindow.GetStatsFromDatabase(currentDB, ref pst, ref MainWindow.TeamOrder, ref MainWindow.pt,
-                                            ref MainWindow.bshist, _curSeason: curSeason);
-            ts = tst[MainWindow.TeamOrder[curTeam]];
 
             var dv_yea = new DataView(dt_yea);
             dv_yea.AllowNew = false;

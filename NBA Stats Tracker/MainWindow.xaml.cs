@@ -517,11 +517,11 @@ namespace NBA_Stats_Tracker
             {
                 if (i != oldSeason)
                 {
-                    tst = GetStatsFromDatabase(oldDB, ref pst, ref TeamOrder, ref pt, ref bshist, true, i);
+                    tst = LoadDatabase(oldDB, ref pst, ref TeamOrder, ref pt, ref bshist, true, i);
                     saveSeasonToDatabase(file, tst, pst, curSeason, maxSeason);
                 }
             }
-            tst = GetStatsFromDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason);
+            tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason);
 
             mwInstance.updateStatus("All seasons saved successfully.");
         }
@@ -910,7 +910,7 @@ namespace NBA_Stats_Tracker
 
             if (ofd.FileName == "") return;
 
-            tst = GetStatsFromDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
+            tst = LoadDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref TeamOrder, ref pt, ref bshist);
 
             cmbTeam1.SelectedIndex = -1;
@@ -1167,7 +1167,182 @@ namespace NBA_Stats_Tracker
             return maxseason;
         }
 
-        public static TeamStats[] GetStatsFromDatabase(string file, ref Dictionary<int, PlayerStats> pst,
+        public static TeamStats GetTeamStatsFromDatabase(string file, string team, int season)
+        {
+            db = new SQLiteDatabase(file);
+
+            DataTable res;
+
+            String q;
+            int maxSeason = getMaxSeason(file);
+
+            if (season == 0) season = maxSeason;
+
+            if (maxSeason == season)
+            {
+                q = "select * from Teams where Name LIKE '" + team + "'";
+            }
+            else
+            {
+                q = "select * from TeamsS" + season.ToString() + " where Name LIKE '" + team + "'";
+            }
+
+            res = db.GetDataTable(q);
+
+            var ts = new TeamStats();
+
+            foreach (DataRow r in res.Rows)
+            {
+                ts = new TeamStats();
+                ts.name = r["Name"].ToString();
+                ts.offset = Convert.ToInt32(r["OFFSET"].ToString());
+                ts.winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                ts.winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                ts.stats[PF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.stats[PA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.stats[STL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.stats[AST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            }
+
+            if (maxSeason == season)
+            {
+                q = "select * from PlayoffTeams;";
+            }
+            else
+            {
+                q = "select * from PlayoffTeamsS" + season.ToString() + ";";
+            }
+            res = db.GetDataTable(q);
+
+            foreach (DataRow r in res.Rows)
+            {
+                ts.pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
+                ts.pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                ts.pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                ts.pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+
+                ts.calcAvg();
+            }
+
+            return ts;
+        }
+
+        public static TeamStats[] GetAllTeamStatsFromDatabase(string file, int season)
+        {
+            db = new SQLiteDatabase(file);
+
+            DataTable res;
+
+            String q;
+            int maxSeason = getMaxSeason(file);
+
+            if (season == 0) season = maxSeason;
+
+            if (maxSeason == season)
+            {
+                q = "select * from Teams;";
+            }
+            else
+            {
+                q = "select * from TeamsS" + season.ToString() + ";";
+            }
+
+            res = db.GetDataTable(q);
+
+            var _tst = new TeamStats[res.Rows.Count];
+            int i = 0;
+
+            foreach (DataRow r in res.Rows)
+            {
+                _tst[i] = new TeamStats();
+                _tst[i].name = r["Name"].ToString();
+                _tst[i].offset = Convert.ToInt32(r["OFFSET"].ToString());
+                _tst[i].winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                _tst[i].winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                _tst[i].stats[PF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].stats[PA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].stats[STL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].stats[AST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                i++;
+            }
+
+            if (maxSeason == season)
+            {
+                q = "select * from PlayoffTeams;";
+            }
+            else
+            {
+                q = "select * from PlayoffTeamsS" + season.ToString() + ";";
+            }
+            res = db.GetDataTable(q);
+
+            i = 0;
+
+            foreach (DataRow r in res.Rows)
+            {
+                _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
+                _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                _tst[i].pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+
+                _tst[i].calcAvg();
+                i++;
+            }
+
+            return _tst;
+        }
+
+        public static TeamStats[] LoadDatabase(string file, ref Dictionary<int, PlayerStats> pst,
                                                  ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
                                                  ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
                                                  int _curSeason = 0)
@@ -1413,7 +1588,7 @@ namespace NBA_Stats_Tracker
                 pt = (PlayoffTree)bf.Deserialize(stream);
                 stream.Close();
                 */
-                temptst = GetStatsFromDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
+                temptst = LoadDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
 
                 bs = new BoxScore();
                 var bsW = new boxScoreW();
@@ -1592,7 +1767,7 @@ namespace NBA_Stats_Tracker
                 id1 = TeamOrder[bs.Team1];
                 id2 = TeamOrder[bs.Team2];
 
-                tst = GetStatsFromDatabase(currentDB, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
+                tst = LoadDatabase(currentDB, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
 
                 List<PlayerBoxScore> list = new List<PlayerBoxScore>();
                 foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
@@ -2251,7 +2426,7 @@ namespace NBA_Stats_Tracker
                                 MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            tst = GetStatsFromDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
+                            tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
 
                             cmbTeam1.SelectedIndex = -1;
                             cmbTeam1.SelectedIndex = 0;
@@ -2279,7 +2454,7 @@ namespace NBA_Stats_Tracker
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
                 txtFile.Text = file;
-                tst = GetStatsFromDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
+                tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
             }
         }
 
@@ -2382,7 +2557,7 @@ namespace NBA_Stats_Tracker
 
                 if (ofd1.FileName == "") return;
 
-                tst = GetStatsFromDatabase(ofd1.FileName, ref pst, ref TeamOrder, ref pt, ref bshist, true);
+                tst = LoadDatabase(ofd1.FileName, ref pst, ref TeamOrder, ref pt, ref bshist, true);
                 cmbTeam1.SelectedIndex = 0;
             }
 
@@ -2402,7 +2577,7 @@ namespace NBA_Stats_Tracker
             var oldTeamOrder = new SortedDictionary<string, int>();
             var oldPT = new PlayoffTree();
             IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
-            TeamStats[] oldTST = GetStatsFromDatabase(ofd.FileName, ref pst, ref oldTeamOrder, ref oldPT, ref oldbshist, false);
+            TeamStats[] oldTST = LoadDatabase(ofd.FileName, ref pst, ref oldTeamOrder, ref oldPT, ref oldbshist, false);
 
             var curR = new Rankings(tst);
             var oldR = new Rankings(oldTST);

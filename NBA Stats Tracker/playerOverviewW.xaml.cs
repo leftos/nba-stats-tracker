@@ -265,9 +265,32 @@ namespace NBA_Stats_Tracker
 
             UpdateSplitStats();
 
+            UpdateYearlyReport();
+
             if (tbcPlayerOverview.SelectedItem == tabHTH)
             {
                 cmbOppPlayer_SelectionChanged(null, null);
+            }
+        }
+
+        private void UpdateYearlyReport()
+        {
+            for (int i = 1; i <= maxSeason; i++)
+            {
+                string pT = "Players";
+                if (i != maxSeason) pT += "S" + i;
+
+                string q = "select * from " + pT + " where ID = " + SelectedPlayerID;
+                DataTable res = db.GetDataTable(q);
+
+                List<PlayerStatsRow> psrList = new List<PlayerStatsRow>();
+                if (res.Rows.Count == 1)
+                {
+                    PlayerStatsRow psr = new PlayerStatsRow(new PlayerStats(res.Rows[0]), "Season " + i);
+                    psrList.Add(psr);
+                }
+
+                dgvYearly.ItemsSource = psrList;
             }
         }
 
