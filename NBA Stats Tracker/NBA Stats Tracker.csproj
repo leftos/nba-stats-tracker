@@ -8,8 +8,8 @@
     <ProjectGuid>{FF743E0C-5018-4BE6-AE6F-2703F1CEE2D3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NBA_2K12_Correct_Team_Stats</RootNamespace>
-    <AssemblyName>NBA 2K12 Correct Team Stats</AssemblyName>
+    <RootNamespace>NBA_Stats_Tracker</RootNamespace>
+    <AssemblyName>NBA Stats Tracker</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>

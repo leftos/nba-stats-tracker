@@ -526,7 +526,8 @@ namespace NBA_Stats_Tracker
             mwInstance.updateStatus("All seasons saved successfully.");
         }
 
-        public static void saveSeasonToDatabase(string file, TeamStats[] tstToSave, Dictionary<int, PlayerStats> pstToSave,
+        public static void saveSeasonToDatabase(string file, TeamStats[] tstToSave,
+                                                Dictionary<int, PlayerStats> pstToSave,
                                                 int season, int maxSeason)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
@@ -627,7 +628,7 @@ namespace NBA_Stats_Tracker
 
                 q = "select GameID from GameResults;";
                 res = db.GetDataTable(q);
-                List<int> idList = new List<int>();
+                var idList = new List<int>();
                 foreach (DataRow r in res.Rows)
                 {
                     idList.Add(Convert.ToInt32(r[0].ToString()));
@@ -685,13 +686,14 @@ namespace NBA_Stats_Tracker
 
                             int lastid =
                                 Convert.ToInt32(
-                                    db.GetDataTable("select GameID from GameResults where HASH LIKE '" + md5 + "'").Rows[0][
-                                        "GameID"].ToString());
+                                    db.GetDataTable("select GameID from GameResults where HASH LIKE '" + md5 + "'").Rows
+                                        [0][
+                                            "GameID"].ToString());
                             bse.bs.id = lastid;
                         }
                     }
                     db.Delete("PlayerResults", "GameID = " + bse.bs.id.ToString());
-                    foreach (var pbs in bse.pbsList)
+                    foreach (PlayerBoxScore pbs in bse.pbsList)
                     {
                         var dict2 = new Dictionary<string, string>();
                         dict2.Add("GameID", bse.bs.id.ToString());
@@ -730,9 +732,10 @@ namespace NBA_Stats_Tracker
             }
         }
 
-        public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason)
+        public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season,
+                                                 int maxSeason)
         {
-            SQLiteDatabase _db = new SQLiteDatabase(file);
+            var _db = new SQLiteDatabase(file);
 
             string playersT = "Players";
 
@@ -1343,9 +1346,9 @@ namespace NBA_Stats_Tracker
         }
 
         public static TeamStats[] LoadDatabase(string file, ref Dictionary<int, PlayerStats> pst,
-                                                 ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
-                                                 ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
-                                                 int _curSeason = 0)
+                                               ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
+                                               ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
+                                               int _curSeason = 0)
         {
             db = new SQLiteDatabase(file);
 
@@ -1527,7 +1530,7 @@ namespace NBA_Stats_Tracker
 
         public static Dictionary<int, PlayerStats> GetPlayersFromDatabase(string file, int curSeason, int maxSeason)
         {
-            Dictionary<int, PlayerStats> _pst = new Dictionary<int, PlayerStats>();
+            var _pst = new Dictionary<int, PlayerStats>();
             string q;
             DataTable res;
 
@@ -1540,7 +1543,7 @@ namespace NBA_Stats_Tracker
                 q = "select * from PlayersS" + curSeason.ToString() + ";";
             }
 
-            SQLiteDatabase _db = new SQLiteDatabase(file);
+            var _db = new SQLiteDatabase(file);
             res = _db.GetDataTable(q);
 
             foreach (DataRow r in res.Rows)
@@ -1769,8 +1772,8 @@ namespace NBA_Stats_Tracker
 
                 tst = LoadDatabase(currentDB, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
 
-                List<PlayerBoxScore> list = new List<PlayerBoxScore>();
-                foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
+                var list = new List<PlayerBoxScore>();
+                foreach (var pbsList in pbsLists)
                 {
                     foreach (PlayerBoxScore pbs in pbsList)
                     {
@@ -2735,8 +2738,8 @@ namespace NBA_Stats_Tracker
             {
                 if (bs.done)
                 {
-                    List<PlayerBoxScore> list = new List<PlayerBoxScore>();
-                    foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
+                    var list = new List<PlayerBoxScore>();
+                    foreach (var pbsList in pbsLists)
                     {
                         foreach (PlayerBoxScore pbs in pbsList)
                         {
@@ -2749,7 +2752,7 @@ namespace NBA_Stats_Tracker
                     bshist[bs.bshistid].mustUpdate = true;
 
                     MessageBox.Show(
-                                    "It is recommended to save the database for changes to take effect.");
+                        "It is recommended to save the database for changes to take effect.");
                 }
             }
         }
@@ -3010,7 +3013,7 @@ namespace NBA_Stats_Tracker
                 return;
             }
 
-            playerOverviewW pow = new playerOverviewW();
+            var pow = new playerOverviewW();
             pow.ShowDialog();
         }
     }

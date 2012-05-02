@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace NBA_Stats_Tracker
 {
@@ -11,18 +12,18 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class leagueOverviewW : Window
     {
+        private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
         private readonly DataTable dt_ts;
-        private Dictionary<int, PlayerStats> pst;
-        private TeamStats[] tst;
-        private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
         private int curSeason = MainWindow.curSeason;
-        private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private List<PlayerStatsRow> psrList;
+        private Dictionary<int, PlayerStats> pst;
         private string q;
         private DataTable res;
         private TeamStats ts;
         private TeamStats tsopp;
-        private List<PlayerStatsRow> psrList; 
+        private TeamStats[] tst;
 
         public leagueOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
         {
@@ -74,14 +75,14 @@ namespace NBA_Stats_Tracker
             PopulateSeasonCombo();
 
             dtpEnd.SelectedDate = DateTime.Today;
-            dtpStart.SelectedDate = DateTime.Today.AddMonths(-1);
+            dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
-                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1);
+                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
@@ -90,7 +91,7 @@ namespace NBA_Stats_Tracker
         {
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
-                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1);
+                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
             tbcLeagueOverview_SelectionChanged(null, null);
         }
@@ -128,9 +129,9 @@ namespace NBA_Stats_Tracker
 
         private void PrepareLeagueLeaders()
         {
-            List<PlayerStatsRow> leadersList = new List<PlayerStatsRow>();
+            var leadersList = new List<PlayerStatsRow>();
 
-            foreach (var psr in psrList)
+            foreach (PlayerStatsRow psr in psrList)
             {
                 leadersList.Add(ConvertToLeagueLeader(psr));
             }
@@ -154,8 +155,8 @@ namespace NBA_Stats_Tracker
 
                 foreach (DataRow r in res.Rows)
                 {
-                    PlayerStats ps = new PlayerStats(r);
-                    PlayerStatsRow psr = new PlayerStatsRow(ps);
+                    var ps = new PlayerStats(r);
+                    var psr = new PlayerStatsRow(ps);
 
                     psrList.Add(psr);
                 }
@@ -166,13 +167,13 @@ namespace NBA_Stats_Tracker
                     "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
                 q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                           dtpEnd.SelectedDate.GetValueOrDefault());
-                var res = db.GetDataTable(q);
+                DataTable res = db.GetDataTable(q);
 
-                Dictionary<int, PlayerStats> pstBetween = new Dictionary<int, PlayerStats>();
+                var pstBetween = new Dictionary<int, PlayerStats>();
 
                 foreach (DataRow r in res.Rows)
                 {
-                    PlayerBoxScore pbs = new PlayerBoxScore(r);
+                    var pbs = new PlayerBoxScore(r);
                     if (pstBetween.ContainsKey(pbs.PlayerID))
                     {
                         pstBetween[pbs.PlayerID].AddBoxScore(pbs);
@@ -182,9 +183,9 @@ namespace NBA_Stats_Tracker
                         string q2 = "select * from Players where ID = " + pbs.PlayerID;
                         DataTable res2 = db.GetDataTable(q2);
 
-                        Player p = new Player(res2.Rows[0]);
+                        var p = new Player(res2.Rows[0]);
 
-                        PlayerStats ps = new PlayerStats(p);
+                        var ps = new PlayerStats(p);
                         ps.AddBoxScore(pbs);
                         pstBetween.Add(pbs.PlayerID, ps);
                     }
@@ -192,7 +193,7 @@ namespace NBA_Stats_Tracker
 
                 foreach (var kvp in pstBetween)
                 {
-                    PlayerStatsRow psr = new PlayerStatsRow(kvp.Value);
+                    var psr = new PlayerStatsRow(kvp.Value);
                     psrList.Add(psr);
                 }
             }
@@ -391,11 +392,11 @@ namespace NBA_Stats_Tracker
                 tbcLeagueOverview_SelectionChanged(null, null);
         }
 
-        private void dgvBoxScores_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
-                var row = (DataRowView)dgvBoxScores.SelectedItems[0];
+                var row = (DataRowView) dgvBoxScores.SelectedItems[0];
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
 
                 int i = 0;
@@ -417,26 +418,26 @@ namespace NBA_Stats_Tracker
             }
         }
 
-        private void dgvTeamStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvTeamStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvTeamStats.SelectedCells.Count > 0)
             {
                 var row = (DataRowView) dgvTeamStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                teamOverviewW tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                var tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
                 tow.ShowDialog();
             }
         }
 
-        private void dgvPlayoffStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvPlayoffStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvPlayoffStats.SelectedCells.Count > 0)
             {
-                var row = (DataRowView)dgvPlayoffStats.SelectedItems[0];
+                var row = (DataRowView) dgvPlayoffStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                teamOverviewW tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                var tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
                 tow.ShowDialog();
             }
         }
@@ -447,19 +448,19 @@ namespace NBA_Stats_Tracker
             TeamStats ts = MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, team, curSeason);
             int gamesTeam = ts.getGames();
             int gamesPlayer = psr.GP;
-            PlayerStatsRow newpsr = new PlayerStatsRow(new PlayerStats(psr));
+            var newpsr = new PlayerStatsRow(new PlayerStats(psr));
 
             // Below functions found using Eureqa II
-            int gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
-            int fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
-            int ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
-            int tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
-            int ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
-            int rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
-            int astRequired = (int) Math.Ceiling(4.87*gamesTeam);
-            int stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
-            int blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
-            int minRequired = (int) Math.Ceiling(24.39*gamesTeam);
+            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
+            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
+            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
+            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
+            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
+            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
+            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
+            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
+            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
+            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
 
             if (psr.FGM < fgmRequired) newpsr.FGp = -1;
             if (psr.TPM < tpmRequired) newpsr.TPp = -1;
@@ -481,24 +482,24 @@ namespace NBA_Stats_Tracker
             }
         }
 
-        private void dgvPlayerStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvPlayerStats.SelectedCells.Count > 0)
             {
-                PlayerStatsRow psr = (PlayerStatsRow)dgvPlayerStats.SelectedItems[0];
+                var psr = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
 
-                playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
+                var pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();
             }
         }
 
-        private void dgvLeaders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvLeaders_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvLeaders.SelectedCells.Count > 0)
             {
-                PlayerStatsRow psr = (PlayerStatsRow)dgvLeaders.SelectedItems[0];
+                var psr = (PlayerStatsRow) dgvLeaders.SelectedItems[0];
 
-                playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
+                var pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();
             }
         }

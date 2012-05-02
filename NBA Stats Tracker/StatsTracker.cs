@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Net;
@@ -1302,8 +1301,9 @@ namespace NBA_Stats_Tracker
             CalcAvg();
         }
 
-        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF, string TeamS,
-            bool isActive, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow)
+        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF,
+                           string TeamS,
+                           bool isActive, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow)
         {
             this.ID = ID;
             this.LastName = LastName;
@@ -1410,7 +1410,8 @@ namespace NBA_Stats_Tracker
 
         public void AddBoxScore(PlayerBoxScore pbs)
         {
-            if (ID != pbs.PlayerID) throw new Exception("Tried to update PlayerStats " + ID + " with PlayerBoxScore " + pbs.PlayerID);
+            if (ID != pbs.PlayerID)
+                throw new Exception("Tried to update PlayerStats " + ID + " with PlayerBoxScore " + pbs.PlayerID);
 
             if (pbs.isStarter) stats[pGS]++;
             if (pbs.MINS > 0)
@@ -1436,6 +1437,16 @@ namespace NBA_Stats_Tracker
             CalcAvg();
         }
 
+        public void AddPlayerStats(PlayerStats ps)
+        {
+            for (int i = 0; i < stats.Length; i++)
+            {
+                stats[i] += ps.stats[i];
+            }
+
+            CalcAvg();
+        }
+
         public void ResetStats()
         {
             for (int i = 0; i < stats.Length; i++)
@@ -1450,35 +1461,6 @@ namespace NBA_Stats_Tracker
     public class PlayerBoxScore
     {
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
-        public int PlayerID { get; set; }
-        public string Team { get; set; }
-        public int TeamPTS { get; set; }
-        public string OppTeam { get; set; }
-        public int OppTeamPTS { get; set; }
-        public bool isStarter { get; set; }
-        public bool playedInjured { get; set; }
-        public bool isOut { get; set; }
-        public UInt16 MINS { get; set; }
-        public UInt16 PTS { get; set; }
-        public UInt16 FGM { get; set; }
-        public UInt16 FGA { get; set; }
-        public UInt16 TPM { get; set; }
-        public UInt16 TPA { get; set; }
-        public UInt16 FTM { get; set; }
-        public UInt16 FTA { get; set; }
-        public UInt16 REB { get; set; }
-        public UInt16 OREB { get; set; }
-        public UInt16 DREB { get; set; }
-        public UInt16 STL { get; set; }
-        public UInt16 TOS { get; set; }
-        public UInt16 BLK { get; set; }
-        public UInt16 AST { get; set; }
-        public UInt16 FOUL { get; set; }
-
-        public string Result { get; set; }
-        public string Date { get; set; }
-        public int GameID { get; set; }
-
         public PlayerBoxScore()
         {
             PlayerID = -1;
@@ -1512,7 +1494,10 @@ namespace NBA_Stats_Tracker
             FTA = Convert.ToUInt16(r["FTA"].ToString());
             OREB = Convert.ToUInt16(r["OREB"].ToString());
             FOUL = Convert.ToUInt16(r["FOUL"].ToString());
-            DREB = (UInt16)(REB - OREB);
+            DREB = (UInt16) (REB - OREB);
+            FGp = (float) FGM/FGA;
+            TPp = (float) TPM/TPA;
+            FTp = (float) FTM/FTA;
 
             // Let's try to get the result and date of the game
             // Only works for INNER JOIN'ed rows
@@ -1551,9 +1536,40 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception)
             {
-                
             }
         }
+
+        public int PlayerID { get; set; }
+        public string Team { get; set; }
+        public int TeamPTS { get; set; }
+        public string OppTeam { get; set; }
+        public int OppTeamPTS { get; set; }
+        public bool isStarter { get; set; }
+        public bool playedInjured { get; set; }
+        public bool isOut { get; set; }
+        public UInt16 MINS { get; set; }
+        public UInt16 PTS { get; set; }
+        public UInt16 FGM { get; set; }
+        public UInt16 FGA { get; set; }
+        public float FGp { get; set; }
+        public UInt16 TPM { get; set; }
+        public UInt16 TPA { get; set; }
+        public float TPp { get; set; }
+        public UInt16 FTM { get; set; }
+        public UInt16 FTA { get; set; }
+        public float FTp { get; set; }
+        public UInt16 REB { get; set; }
+        public UInt16 OREB { get; set; }
+        public UInt16 DREB { get; set; }
+        public UInt16 STL { get; set; }
+        public UInt16 TOS { get; set; }
+        public UInt16 BLK { get; set; }
+        public UInt16 AST { get; set; }
+        public UInt16 FOUL { get; set; }
+
+        public string Result { get; set; }
+        public string Date { get; set; }
+        public int GameID { get; set; }
 
         public void ResetStats()
         {
@@ -1573,6 +1589,9 @@ namespace NBA_Stats_Tracker
             BLK = 0;
             AST = 0;
             FOUL = 0;
+            FGp = 0;
+            FTp = 0;
+            TPp = 0;
         }
     }
 
@@ -1595,9 +1614,10 @@ namespace NBA_Stats_Tracker
                          pFTeff = 14,
                          pRPG = 15;
 
-        private Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
+        private readonly int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
+
+        private readonly Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
-        private int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
 
         public PlayerRankings(Dictionary<int, PlayerStats> pst)
         {
@@ -1788,6 +1808,60 @@ namespace NBA_Stats_Tracker
             int pl_games = pl_winloss[0] + pl_winloss[1];
             return pl_games;
         }
+
+        public void AddTeamStats(TeamStats ts, string mode)
+        {
+            switch (mode)
+            {
+                case "Season":
+                    {
+                        winloss[0] += ts.winloss[0];
+                        winloss[1] += ts.winloss[1];
+
+                        for (int i = 0; i < stats.Length; i++)
+                        {
+                            stats[i] += ts.stats[i];
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+                case "Playoffs":
+                    {
+                        pl_winloss[0] += ts.pl_winloss[0];
+                        pl_winloss[1] += ts.pl_winloss[1];
+
+                        for (int i = 0; i < pl_stats.Length; i++)
+                        {
+                            pl_stats[i] += ts.pl_stats[i];
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+                case "All":
+                    {
+                        winloss[0] += ts.winloss[0];
+                        winloss[1] += ts.winloss[1];
+
+                        for (int i = 0; i < stats.Length; i++)
+                        {
+                            stats[i] += ts.stats[i];
+                        }
+
+                        winloss[0] += ts.pl_winloss[0];
+                        winloss[1] += ts.pl_winloss[1];
+
+                        for (int i = 0; i < pl_stats.Length; i++)
+                        {
+                            stats[i] += ts.pl_stats[i];
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+            }
+        }
     }
 
     public class Rankings
@@ -1889,7 +1963,7 @@ namespace NBA_Stats_Tracker
         public BoxScore bs;
         public DateTime date;
         public bool mustUpdate;
-        public List<PlayerBoxScore> pbsList; 
+        public List<PlayerBoxScore> pbsList;
 
         public BoxScoreEntry(BoxScore bs)
         {

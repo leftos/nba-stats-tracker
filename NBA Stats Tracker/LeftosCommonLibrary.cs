@@ -59,7 +59,7 @@ namespace LeftosCommonLibrary
 
             //Instantiate MD5CryptoServiceProvider, get bytes for original password and compute hash (encoded password)
             md5 = new MD5CryptoServiceProvider();
-            originalBytes = ASCIIEncoding.Default.GetBytes(s);
+            originalBytes = Encoding.Default.GetBytes(s);
             encodedBytes = md5.ComputeHash(originalBytes);
 
             //Convert encoded bytes back to a 'readable' string

@@ -10,9 +10,6 @@ namespace NBA_Stats_Tracker
     public partial class addW : Window
     {
         private readonly Dictionary<int, PlayerStats> pst;
-        private ObservableCollection<Player> Players { get; set; }
-        private ObservableCollection<string> Teams { get; set; }
-        private ObservableCollection<string> Positions { get; set; }
 
         public addW(ref Dictionary<int, PlayerStats> pst)
         {
@@ -27,14 +24,19 @@ namespace NBA_Stats_Tracker
             }
 
             Positions = new ObservableCollection<string> {"PG", "SG", "SF", "PF", "C"};
+            var Positions2 = new ObservableCollection<string> {" ", "PG", "SG", "SF", "PF", "C"};
 
             Players = new ObservableCollection<Player>();
 
             teamColumn.ItemsSource = Teams;
             posColumn.ItemsSource = Positions;
-            pos2Column.ItemsSource = Positions;
+            pos2Column.ItemsSource = Positions2;
             dgvAddPlayers.ItemsSource = Players;
         }
+
+        private ObservableCollection<Player> Players { get; set; }
+        private ObservableCollection<string> Teams { get; set; }
+        private ObservableCollection<string> Positions { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {

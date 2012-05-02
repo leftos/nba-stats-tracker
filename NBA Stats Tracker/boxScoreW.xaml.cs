@@ -27,12 +27,29 @@ namespace NBA_Stats_Tracker
 
         public static Mode curmode = Mode.Update;
 
-        private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
-        private string playersT;
         public static BoxScore curBoxScore;
-        private Brush defaultBackground;
+        private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
         private int curSeason;
-        private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private Brush defaultBackground;
+        private string playersT;
+
+        public boxScoreW(Mode _curmode = Mode.Update)
+        {
+            InitializeComponent();
+
+            prepareWindow(_curmode);
+        }
+
+        public boxScoreW(Mode _curmode, int id)
+        {
+            InitializeComponent();
+
+            prepareWindow(_curmode);
+
+            cbHistory.SelectedIndex = id;
+        }
+
         private ObservableCollection<PlayerBoxScore> pbsAwayList { get; set; }
         private ObservableCollection<PlayerBoxScore> pbsHomeList { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
@@ -76,7 +93,7 @@ namespace NBA_Stats_Tracker
 
                 foreach (DataRow r in res.Rows)
                 {
-                    PlayerStats ps = new PlayerStats(r);
+                    var ps = new PlayerStats(r);
                     PlayersListAway.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
                 }
 
@@ -90,29 +107,13 @@ namespace NBA_Stats_Tracker
 
                 foreach (DataRow r in res.Rows)
                 {
-                    PlayerStats ps = new PlayerStats(r);
+                    var ps = new PlayerStats(r);
                     PlayersListHome.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
                 }
 
                 colPlayerHome.ItemsSource = PlayersListHome;
                 dgvPlayersHome.ItemsSource = pbsHomeList;
             }
-        }
-
-        public boxScoreW(Mode _curmode = Mode.Update)
-        {
-            InitializeComponent();
-
-            prepareWindow(_curmode);
-        }
-
-        public boxScoreW(Mode _curmode, int id)
-        {
-            InitializeComponent();
-
-            prepareWindow(_curmode);
-
-            cbHistory.SelectedIndex = id;
         }
 
         private void prepareWindow(Mode _curmode)
@@ -362,13 +363,13 @@ namespace NBA_Stats_Tracker
                     pbs.Team = Team2;
 
                 int starters = 0;
-                List<ObservableCollection<PlayerBoxScore>> pbsLists = new List<ObservableCollection<PlayerBoxScore>>(2);
+                var pbsLists = new List<ObservableCollection<PlayerBoxScore>>(2);
                 pbsLists.Add(pbsAwayList);
                 pbsLists.Add(pbsHomeList);
-                Dictionary<int, string> allPlayers = new Dictionary<int, string>();
+                var allPlayers = new Dictionary<int, string>();
                 foreach (var kvp in PlayersListAway) allPlayers.Add(kvp.Key, kvp.Value);
                 foreach (var kvp in PlayersListHome) allPlayers.Add(kvp.Key, kvp.Value);
-                foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
+                foreach (var pbsList in pbsLists)
                 {
                     foreach (PlayerBoxScore pbs in pbsList)
                     {
@@ -399,8 +400,8 @@ namespace NBA_Stats_Tracker
                             s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
-                        } 
-                        
+                        }
+
                         if (pbs.TPM > pbs.TPA)
                         {
                             string s = "The 3PM stat can't be higher than the 3PA stat.";
@@ -449,11 +450,13 @@ namespace NBA_Stats_Tracker
                             throw (new Exception());
                         }
 
-                        pbs.DREB = (UInt16)(pbs.REB - pbs.OREB);
+                        pbs.DREB = (UInt16) (pbs.REB - pbs.OREB);
                     }
                 }
                 MainWindow.pbsLists = pbsLists;
+
                 #endregion
+
                 MainWindow.bs.done = true;
             }
             catch
@@ -482,7 +485,7 @@ namespace NBA_Stats_Tracker
             {
                 return;
             }
-            
+
 
             if (Team1 == Team2)
             {
@@ -527,7 +530,6 @@ namespace NBA_Stats_Tracker
                     }
                 }
             }
-            
         }
 
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -755,9 +757,20 @@ namespace NBA_Stats_Tracker
 
         private void btnCalculateTeams_Click(object sender, RoutedEventArgs e)
         {
-            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0,
-                TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
-            
+            int REB = 0,
+                AST = 0,
+                STL = 0,
+                TOS = 0,
+                BLK = 0,
+                FGM = 0,
+                FGA = 0,
+                TPM = 0,
+                TPA = 0,
+                FTM = 0,
+                FTA = 0,
+                OREB = 0,
+                FOUL = 0;
+
             foreach (PlayerBoxScore pbs in pbsAwayList)
             {
                 REB += pbs.REB;
@@ -791,8 +804,19 @@ namespace NBA_Stats_Tracker
 
             calculateScore1();
 
-            REB = 0; AST = 0; STL = 0; TOS = 0; BLK = 0; FGM = 0; FGA = 0;
-            TPM = 0; TPA = 0; FTM = 0; FTA = 0; OREB = 0; FOUL = 0;
+            REB = 0;
+            AST = 0;
+            STL = 0;
+            TOS = 0;
+            BLK = 0;
+            FGM = 0;
+            FGA = 0;
+            TPM = 0;
+            TPA = 0;
+            FTM = 0;
+            FTA = 0;
+            OREB = 0;
+            FOUL = 0;
 
             foreach (PlayerBoxScore pbs in pbsHomeList)
             {

@@ -8,8 +8,8 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class askTeamW : Window
     {
-        private bool _versus = false;
-        private bool _oneTeam = false;
+        private readonly bool _oneTeam;
+        private readonly bool _versus;
 
         public askTeamW(bool versus, int index = 0)
         {

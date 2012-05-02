@@ -68,9 +68,9 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA 2K12 Correct Team Stats.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\76ers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Bobcats.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Bucks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
@@ -108,13 +108,13 @@ Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.pdb"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"
+Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"
 Name: "{group}\{cm:UninstallProgram,NBA Stats Tracker}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\NBA Stats Tracker"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"; Tasks: desktopicon
-Name: "{group}\Get Real NBA Stats"; Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA 2K12 Correct Team Stats.exe"; Parameters: "-realnbaonly"; Comment: "Starts the tool only to download the Real NBA Stats, saves them, and exits."
+Name: "{commondesktop}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"; Tasks: desktopicon
+Name: "{group}\Get Real NBA Stats"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"; Parameters: "-realnbaonly"; Comment: "Starts the tool only to download the Real NBA Stats, saves them, and exits."
 
 [Run]
-Filename: "{app}\NBA 2K12 Correct Team Stats.exe"; WorkingDir: "{app}"; Flags: nowait postinstall runascurrentuser skipifsilent; Description: "{cm:LaunchProgram,NBA Stats Tracker}"
+Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; Flags: nowait postinstall runascurrentuser skipifsilent; Description: "{cm:LaunchProgram,NBA Stats Tracker}"
 
 #include "scripts\products.iss"
 

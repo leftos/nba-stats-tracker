@@ -244,8 +244,8 @@ namespace NBA_Stats_Tracker
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
-                                                ref MainWindow.pt, ref MainWindow.bshist,
-                                                _curSeason: Convert.ToInt32(showSeason));
+                                              ref MainWindow.pt, ref MainWindow.bshist,
+                                              _curSeason: Convert.ToInt32(showSeason));
 
                 ts = tst[i];
 
@@ -312,7 +312,8 @@ namespace NBA_Stats_Tracker
                                + curTeam + "')) AND ((Date >= '" +
                                SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
                                + "') AND (Date <= '" +
-                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" + " ORDER BY Date DESC";
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" +
+                               " ORDER BY Date DESC";
                     res = db.GetDataTable(q);
                     dt_bs_res = res;
 
@@ -723,7 +724,7 @@ namespace NBA_Stats_Tracker
             }
             else
             {
-                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem.ToString();
+                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem;
                 qr_home += s;
                 qr_away += s;
                 qr_wins += s;
@@ -967,6 +968,12 @@ namespace NBA_Stats_Tracker
             int maxSeason = MainWindow.getMaxSeason(currentDB);
 
             TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
+            var tsAllSeasons = new TeamStats("All Seasons");
+            var tsAllPlayoffs = new TeamStats("All Playoffs");
+            var tsAll = new TeamStats("All Games");
+            tsAllSeasons.AddTeamStats(ts, "Season");
+            tsAllPlayoffs.AddTeamStats(ts, "Playoffs");
+            tsAll.AddTeamStats(ts, "All");
 
             DataRow drcur = dt_yea.NewRow();
             DataRow drcur_pl = dt_yea.NewRow();
@@ -995,6 +1002,10 @@ namespace NBA_Stats_Tracker
                                                    "Playoffs " + j.ToString(), true);
                         dt_yea.Rows.Add(dr3_pl);
                     }
+
+                    tsAllSeasons.AddTeamStats(ts, "Season");
+                    tsAllPlayoffs.AddTeamStats(ts, "Playoffs");
+                    tsAll.AddTeamStats(ts, "All");
                 }
                 else
                 {
@@ -1002,6 +1013,21 @@ namespace NBA_Stats_Tracker
                     if (playedInPlayoffs) dt_yea.Rows.Add(drcur_pl);
                 }
             }
+
+            dt_yea.Rows.Add(dt_yea.NewRow());
+
+            drcur = dt_yea.NewRow();
+            CreateDataRowFromTeamStats(tsAllSeasons, ref drcur, "All Seasons");
+            dt_yea.Rows.Add(drcur);
+            drcur = dt_yea.NewRow();
+            CreateDataRowFromTeamStats(tsAllPlayoffs, ref drcur, "All Playoffs");
+            dt_yea.Rows.Add(drcur);
+
+            dt_yea.Rows.Add(dt_yea.NewRow());
+
+            drcur = dt_yea.NewRow();
+            CreateDataRowFromTeamStats(tsAll, ref drcur, "All Games");
+            dt_yea.Rows.Add(drcur);
 
             var dv_yea = new DataView(dt_yea);
             dv_yea.AllowNew = false;
@@ -1064,9 +1090,9 @@ namespace NBA_Stats_Tracker
 
             var playersToUpdate = new Dictionary<int, PlayerStats>();
 
-            foreach (var cur in psr)
+            foreach (PlayerStatsRow cur in psr)
             {
-                PlayerStats ps = new PlayerStats(cur);
+                var ps = new PlayerStats(cur);
                 playersToUpdate.Add(ps.ID, ps);
             }
 
@@ -1534,7 +1560,7 @@ namespace NBA_Stats_Tracker
         }
 
         public static void AddToTeamStatsFromSQLBoxScore(DataTable res, ref TeamStats ts, ref TeamStats tsopp,
-                                                        bool playoffs = false)
+                                                         bool playoffs = false)
         {
             foreach (DataRow r in res.Rows)
             {
@@ -1772,10 +1798,10 @@ namespace NBA_Stats_Tracker
         {
             if (dgvPlayerStats.SelectedCells.Count > 0)
             {
-                PlayerStatsRow row = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
+                var row = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
                 int playerID = row.ID;
 
-                playerOverviewW pow = new playerOverviewW(curTeam, playerID);
+                var pow = new playerOverviewW(curTeam, playerID);
                 pow.ShowDialog();
 
                 UpdatePlayerStats();
@@ -1796,15 +1822,15 @@ namespace NBA_Stats_Tracker
                     return;
                 }
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
-            
+
                 int i = 0;
-            
+
                 foreach (BoxScoreEntry bse in MainWindow.bshist)
                 {
                     if (bse.bs.id == gameid)
                     {
                         MainWindow.bs = new BoxScore();
-            
+
                         var bsw = new boxScoreW(boxScoreW.Mode.View, i);
                         bsw.ShowDialog();
 
