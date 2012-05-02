@@ -545,6 +545,9 @@ namespace NBA_Stats_Tracker
             string qr_playoffs = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
                                            + "(PlayerResults.GameID = GameResults.GameID) "
                                            + "WHERE PlayerID = {0} AND IsPlayoff LIKE 'True'", psr.ID);
+            string qr_teams = String.Format("select Team from PlayerResults INNER JOIN GameResults ON " +
+                                            "(PlayerResults.GameID = GameResults.GameID) " +
+                                            " WHERE PlayerID = {0}", psr.ID);
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
@@ -561,6 +564,9 @@ namespace NBA_Stats_Tracker
                 qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs,
                                                                     dtpStart.SelectedDate.GetValueOrDefault(),
                                                                     dtpEnd.SelectedDate.GetValueOrDefault());
+                qr_teams = SQLiteDatabase.AddDateRangeToSQLQuery(qr_teams,
+                                                                    dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                    dtpEnd.SelectedDate.GetValueOrDefault());
             }
             else
             {
@@ -571,7 +577,10 @@ namespace NBA_Stats_Tracker
                 qr_losses += s;
                 qr_season += s;
                 qr_playoffs += s;
+                qr_teams += s;
             }
+
+            qr_teams += " GROUP BY Team";
 
             DataTable res;
 
@@ -609,7 +618,7 @@ namespace NBA_Stats_Tracker
             splitPSRs.Add(new PlayerStatsRow(ps, "Wins"));
 
             //Losses
-            res = db.GetDataTable(qr_away);
+            res = db.GetDataTable(qr_losses);
             ps.ResetStats();
 
             foreach (DataRow r in res.Rows)
@@ -637,6 +646,44 @@ namespace NBA_Stats_Tracker
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
             splitPSRs.Add(new PlayerStatsRow(ps, "Playoffs"));
+
+            #region Each Team Played In Stats
+
+            res = db.GetDataTable(qr_teams);
+            
+            if (res.Rows.Count > 1)
+            {
+                List<string> teams = new List<string>(res.Rows.Count);
+                foreach (DataRow r in res.Rows)
+                    teams.Add(r["Team"].ToString());
+
+                foreach (string team in teams)
+                {
+                    string q = String.Format("select * from PlayerResults INNER JOIN GameResults" +
+                                             " ON (PlayerResults.GameID = GameResults.GameID)" +
+                                             " WHERE PlayerID = {0} AND Team = '{1}'",
+                                             psr.ID, team);
+                    if (rbStatsBetween.IsChecked.GetValueOrDefault())
+                    {
+                        q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                        dtpEnd.SelectedDate.GetValueOrDefault());}
+                    else
+                    {
+                        string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem.ToString();
+                        q += s;
+                    }
+                    res = db.GetDataTable(q);
+
+                    ps.ResetStats();
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        ps.AddBoxScore(new PlayerBoxScore(r));
+                    }
+                    splitPSRs.Add(new PlayerStatsRow(ps, team));
+                }
+            }
+            #endregion
 
             #region Monthly Split Stats
             if (rbStatsBetween.IsChecked.GetValueOrDefault())

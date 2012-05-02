@@ -2,14 +2,8 @@
 	by Lefteris "Leftos" Aslanoglou
 
 
-Note regarding the new NBA Stats Tracker (v0.9 and later)
-	The instructions in this Readme file currently apply to v0.8 and earlier.
-	The features are the same and more, but their new locations may not be
-	apparent by reading this file. Visit the tool's thread in NLSC if you
-	need to ask any questions regarding the new tool's format. The URL is
-	at the bottom of this Readme file.
-
 Quick notes
+
 	This tool was made to offer a temporary workaround to the Association/
 	Season/My Player/Create A Legend team stats bug. Any game you entered and
 	played would have the team stats of the teams that played in it all wrong

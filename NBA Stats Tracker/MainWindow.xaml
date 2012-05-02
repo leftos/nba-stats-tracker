@@ -92,7 +92,7 @@
       <MenuItem Header="_History">
         <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
       </MenuItem>
-      <MenuItem Header="_Compare To">
+      <MenuItem Header="_Compare To" Visibility="Collapsed">
         <MenuItem Header="_Another team in the same file" Name="mnuCompareSameFile" Click="btnCompare_Click" />
         <MenuItem Header="The _same team in another file" Name="mnuCompareOtherFile"
                   Click="btnCompareOtherFile_Click" />

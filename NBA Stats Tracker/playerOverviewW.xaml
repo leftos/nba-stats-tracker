@@ -57,6 +57,8 @@
                     <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FrozenColumnCount="2" HorizontalAlignment="Stretch" Margin="0" Name="dgvBoxScores" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" MouseDoubleClick="dgvBoxScores_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Date}" Header="Date" />
+                            <DataGridTextColumn Binding="{Binding Team}" Header="Team" />
+                            <DataGridTextColumn Binding="{Binding OppTeam}" Header="Opponent" />
                             <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
                             <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
                             <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
