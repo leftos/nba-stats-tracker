@@ -106,12 +106,6 @@ namespace NBA_Stats_Tracker
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string q;
-            DataTable res;
-
-            TeamStats ts;
-            TeamStats tsopp;
-
             if (tbcLeagueOverview.SelectedItem == tabTeamStats)
             {
                 PrepareTeamStats();
@@ -132,9 +126,6 @@ namespace NBA_Stats_Tracker
 
         private void PreparePlayerStats()
         {
-            string q;
-            DataTable res;
-
             string playersT = "Players";
             if (curSeason != maxSeason) playersT += "S" + curSeason;
             List<PlayerStatsRow> psrList = new List<PlayerStatsRow>();
@@ -398,7 +389,7 @@ namespace NBA_Stats_Tracker
         {
             if (dgvPlayerStats.SelectedCells.Count > 0)
             {
-                PlayerStatsRow psr = (PlayerStatsRow) dgvPlayerStats.SelectedItem[0];
+                PlayerStatsRow psr = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
 
                 playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();
