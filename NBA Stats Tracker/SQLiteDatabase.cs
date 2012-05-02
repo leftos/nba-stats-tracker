@@ -240,13 +240,13 @@ internal class SQLiteDatabase
 
         if (!addWhere)
         {
-            query = String.Concat(query, String.Format(" AND (Date >= '{0}' AND Date <= '{1}');",
+            query = String.Concat(query, String.Format(" AND (Date >= '{0}' AND Date <= '{1}')",
                                                        ConvertDateTimeToSQLite(dStart),
                                                        ConvertDateTimeToSQLite(dEnd)));
         }
         else
         {
-            query = String.Concat(query, String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}');",
+            query = String.Concat(query, String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}')",
                                                        ConvertDateTimeToSQLite(dStart),
                                                        ConvertDateTimeToSQLite(dEnd)));
         }

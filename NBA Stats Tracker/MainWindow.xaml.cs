@@ -2551,14 +2551,30 @@ namespace NBA_Stats_Tracker
             var bsw = new boxScoreW(boxScoreW.Mode.View);
             bsw.ShowDialog();
 
+            UpdateBoxScore();
+        }
+
+        public static void UpdateBoxScore()
+        {
             if (bs.bshistid != -1)
             {
                 if (bs.done)
                 {
+                    List<PlayerBoxScore> list = new List<PlayerBoxScore>();
+                    foreach (ObservableCollection<PlayerBoxScore> pbsList in pbsLists)
+                    {
+                        foreach (PlayerBoxScore pbs in pbsList)
+                        {
+                            list.Add(pbs);
+                        }
+                    }
+
                     bshist[bs.bshistid].bs = bs;
+                    bshist[bs.bshistid].pbsList = list;
                     bshist[bs.bshistid].mustUpdate = true;
 
-                    updateStatus("One or more Box Scores have been updated. Save the Team Stats file before continuing.");
+                    MessageBox.Show(
+                                    "It is recommended to save the database for changes to take effect.");
                 }
             }
         }

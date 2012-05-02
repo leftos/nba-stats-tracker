@@ -1450,6 +1450,9 @@ namespace NBA_Stats_Tracker
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
         public int PlayerID { get; set; }
         public string Team { get; set; }
+        public int TeamPTS { get; set; }
+        public string OppTeam { get; set; }
+        public int OppTeamPTS { get; set; }
         public bool isStarter { get; set; }
         public bool playedInjured { get; set; }
         public bool isOut { get; set; }
@@ -1517,6 +1520,7 @@ namespace NBA_Stats_Tracker
                 int T2PTS = StatsTracker.getInt(r, "T2PTS");
 
                 string Team1 = StatsTracker.getString(r, "T1Name");
+                string Team2 = StatsTracker.getString(r, "T2Name");
 
                 if (Team == Team1)
                 {
@@ -1524,6 +1528,10 @@ namespace NBA_Stats_Tracker
                         Result = "W " + T1PTS.ToString() + "-" + T2PTS.ToString();
                     else
                         Result = "L " + T1PTS.ToString() + "-" + T2PTS.ToString();
+
+                    TeamPTS = T1PTS;
+                    OppTeam = Team2;
+                    OppTeamPTS = T2PTS;
                 }
                 else
                 {
@@ -1531,6 +1539,10 @@ namespace NBA_Stats_Tracker
                         Result = "W " + T2PTS.ToString() + "-" + T1PTS.ToString();
                     else
                         Result = "L " + T2PTS.ToString() + "-" + T1PTS.ToString();
+
+                    TeamPTS = T2PTS;
+                    OppTeam = Team1;
+                    OppTeamPTS = T1PTS;
                 }
 
                 Date = StatsTracker.getString(r, "Date").Split(' ')[0];
@@ -1933,6 +1945,16 @@ namespace NBA_Stats_Tracker
             this.FirstName = FirstName;
             Position = Position1;
             this.Position2 = Position2;
+        }
+
+        public Player(DataRow dataRow)
+        {
+            ID = StatsTracker.getInt(dataRow, "ID");
+            Team = StatsTracker.getString(dataRow, "TeamFin");
+            LastName = StatsTracker.getString(dataRow, "LastName");
+            FirstName = StatsTracker.getString(dataRow, "FirstName");
+            Position = StatsTracker.getString(dataRow, "Position1");
+            Position2 = StatsTracker.getString(dataRow, "Position2");
         }
 
         public int ID { get; set; }

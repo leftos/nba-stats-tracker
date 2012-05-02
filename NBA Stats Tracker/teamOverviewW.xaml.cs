@@ -246,7 +246,7 @@ namespace NBA_Stats_Tracker
 
                 DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                           + curTeam + "')) AND SeasonNum = " + showSeason + ";";
+                           + curTeam + "')) AND SeasonNum = " + showSeason + " ORDER BY Date DESC";
                 res = db.GetDataTable(q);
                 dt_bs_res = res;
 
@@ -307,7 +307,7 @@ namespace NBA_Stats_Tracker
                                + curTeam + "')) AND ((Date >= '" +
                                SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
                                + "') AND (Date <= '" +
-                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'));";
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" + " ORDER BY Date DESC";
                     res = db.GetDataTable(q);
                     dt_bs_res = res;
 
@@ -1226,18 +1226,7 @@ namespace NBA_Stats_Tracker
                         var bsw = new boxScoreW(boxScoreW.Mode.View, i);
                         bsw.ShowDialog();
 
-                        if (MainWindow.bs.bshistid != -1)
-                        {
-                            if (MainWindow.bs.done)
-                            {
-                                MainWindow.bshist[MainWindow.bs.bshistid].bs = MainWindow.bs;
-                                MainWindow.bshist[MainWindow.bs.bshistid].mustUpdate = true;
-
-                                MessageBox.Show(
-                                    "It is recommended to save and reload the Team Stats file for changes to take effect.");
-                                //MainWindow.updateStatus("One or more Box Scores have been updated. Save the Team Stats file before continuing.");
-                            }
-                        }
+                        MainWindow.UpdateBoxScore();
                         break;
                     }
                     i++;
@@ -1303,7 +1292,7 @@ namespace NBA_Stats_Tracker
                 string q = String.Format("select * from GameResults " +
                                          "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
                                          "OR " +
-                                         "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2};",
+                                         "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2}",
                                          cmbTeam.SelectedItem,
                                          cmbOppTeam.SelectedItem,
                                          showSeason);
@@ -1472,6 +1461,7 @@ namespace NBA_Stats_Tracker
             var dv_hth_bs = new DataView(dt_hth_bs);
             dv_hth_bs.AllowNew = false;
             dv_hth_bs.AllowEdit = false;
+            dv_hth_bs.Sort = "Date DESC";
 
             dgvHTHBoxScores.DataContext = dv_hth_bs;
         }
@@ -1753,51 +1743,6 @@ namespace NBA_Stats_Tracker
             cmbOppTeam_SelectionChanged(sender, null);
         }
 
-        private void dgvHTHBoxScores_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (dgvHTHBoxScores.SelectedCells.Count > 0)
-            {
-                DataRowView row;
-                try
-                {
-                    row = (DataRowView) dgvHTHBoxScores.SelectedItems[0];
-                }
-                catch
-                {
-                    return;
-                }
-                int gameid = Convert.ToInt32(row["GameID"].ToString());
-
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
-                {
-                    if (bse.bs.id == gameid)
-                    {
-                        MainWindow.bs = new BoxScore();
-
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        if (MainWindow.bs.bshistid != -1)
-                        {
-                            if (MainWindow.bs.done)
-                            {
-                                MainWindow.bshist[MainWindow.bs.bshistid].bs = MainWindow.bs;
-                                MainWindow.bshist[MainWindow.bs.bshistid].mustUpdate = true;
-
-                                MessageBox.Show(
-                                    "It is recommended to save and reload the Team Stats file for changes to take effect.");
-                                //MainWindow.updateStatus("One or more Box Scores have been updated. Save the Team Stats file before continuing.");
-                            }
-                        }
-                        break;
-                    }
-                    i++;
-                }
-            }
-        }
-
         private void tbcTeamOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             /*
@@ -1835,6 +1780,40 @@ namespace NBA_Stats_Tracker
                 pow.ShowDialog();
 
                 UpdatePlayerStats();
+            }
+        }
+
+        private void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgvHTHBoxScores.SelectedCells.Count > 0)
+            {
+                DataRowView row;
+                try
+                {
+                    row = (DataRowView) dgvHTHBoxScores.SelectedItems[0];
+                }
+                catch
+                {
+                    return;
+                }
+                int gameid = Convert.ToInt32(row["GameID"].ToString());
+            
+                int i = 0;
+            
+                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                {
+                    if (bse.bs.id == gameid)
+                    {
+                        MainWindow.bs = new BoxScore();
+            
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        bsw.ShowDialog();
+
+                        MainWindow.UpdateBoxScore();
+                        break;
+                    }
+                    i++;
+                }
             }
         }
     }

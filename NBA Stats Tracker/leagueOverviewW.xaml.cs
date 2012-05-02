@@ -245,6 +245,7 @@ namespace NBA_Stats_Tracker
                 var dv_bs = new DataView(dt_bs);
                 dv_bs.AllowNew = false;
                 dv_bs.AllowEdit = false;
+                dv_bs.Sort = "Date DESC";
 
                 dgvBoxScores.DataContext = dv_bs;
             }
@@ -286,6 +287,32 @@ namespace NBA_Stats_Tracker
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             tbcLeagueOverview_SelectionChanged(null, null);
+        }
+
+        private void dgvBoxScores_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgvBoxScores.SelectedCells.Count > 0)
+            {
+                var row = (DataRowView)dgvBoxScores.SelectedItems[0];
+                int gameid = Convert.ToInt32(row["GameID"].ToString());
+
+                int i = 0;
+
+                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                {
+                    if (bse.bs.id == gameid)
+                    {
+                        MainWindow.bs = new BoxScore();
+
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        bsw.ShowDialog();
+
+                        MainWindow.UpdateBoxScore();
+                        break;
+                    }
+                    i++;
+                }
+            }
         }
     }
 }

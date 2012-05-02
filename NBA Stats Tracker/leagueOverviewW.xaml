@@ -22,7 +22,7 @@
         <Grid VerticalAlignment="Stretch">
           <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True"
                     HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}" Margin="6,6,6,0" Name="dgvBoxScores"
-                    VerticalAlignment="Stretch" />
+                    VerticalAlignment="Stretch" MouseDoubleClick="dgvBoxScores_MouseDoubleClick" />
         </Grid>
       </TabItem>
     </TabControl>

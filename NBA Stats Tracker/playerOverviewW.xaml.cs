@@ -22,9 +22,19 @@ namespace NBA_Stats_Tracker
     public partial class playerOverviewW : Window
     {
         private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
-        private ObservableCollection<KeyValuePair<int, string>> _playersList = new ObservableCollection<KeyValuePair<int, string>>();
+
+        private ObservableCollection<KeyValuePair<int, string>> _playersList =
+            new ObservableCollection<KeyValuePair<int, string>>();
+
+        private ObservableCollection<KeyValuePair<int, string>> oppPlayersList =
+            new ObservableCollection<KeyValuePair<int, string>>();
+ 
         private ObservableCollection<PlayerBoxScore> curPBS;
-        private ObservableCollection<PlayerStatsRow> splitPSRs; 
+        private List<PlayerBoxScore> hthOwnPBS;
+        private List<PlayerBoxScore> hthOppPBS;
+        private List<PlayerBoxScore> hthAllPBS; 
+        private ObservableCollection<PlayerStatsRow> splitPSRs;
+        private PlayerStats psBetween;
         private PlayerStatsRow psr;
         private DataTable dt_ov;
         private int curSeason = MainWindow.curSeason;
@@ -127,6 +137,7 @@ namespace NBA_Stats_Tracker
             Teams.Add("- Inactive -");
 
             cmbTeam.ItemsSource = Teams;
+            cmbOppTeam.ItemsSource = Teams;
 
             dt_ov = new DataTable();
             dt_ov.Columns.Add("Type");
@@ -253,6 +264,11 @@ namespace NBA_Stats_Tracker
             UpdateOverviewAndBoxScores();
 
             UpdateSplitStats();
+
+            if (tbcPlayerOverview.SelectedItem == tabHTH)
+            {
+                cmbOppPlayer_SelectionChanged(null, null);
+            }
         }
 
         private void UpdateOverviewAndBoxScores()
@@ -279,7 +295,8 @@ namespace NBA_Stats_Tracker
 
                 q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
                     + "where PlayerID = " + SelectedPlayerID.ToString() +
-                    " AND SeasonNum = " + curSeason;
+                    " AND SeasonNum = " + curSeason
+                    + " ORDER BY Date DESC";
                 res = db.GetDataTable(q);
 
                 curPBS = new ObservableCollection<PlayerBoxScore>();
@@ -295,9 +312,10 @@ namespace NBA_Stats_Tracker
                 + "where PlayerID = " + SelectedPlayerID.ToString();
                 q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                           dtpEnd.SelectedDate.GetValueOrDefault());
+                q += " ORDER BY Date DESC";
                 var res = db.GetDataTable(q);
 
-                PlayerStats ps =
+                psBetween =
                     new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1,
                                                psr.Position2));
 
@@ -310,10 +328,10 @@ namespace NBA_Stats_Tracker
                     PlayerBoxScore pbs = new PlayerBoxScore(r);
                     curPBS.Add(pbs);
 
-                    ps.AddBoxScore(pbs);
+                    psBetween.AddBoxScore(pbs);
                 }
 
-                psr = new PlayerStatsRow(ps);
+                psr = new PlayerStatsRow(psBetween);
             }
 
             cmbPosition1.SelectedItem = psr.Position1;
@@ -633,6 +651,7 @@ namespace NBA_Stats_Tracker
                                                  psr.ID);
 
                         qrm.Add(s);
+                        dCur = dCur.AddMonths(1);
                     }
                 }
 
@@ -875,5 +894,343 @@ namespace NBA_Stats_Tracker
                          Wp = 16,
                          Weff = 17,
                          PD = 18;
+
+        private void cmbOppTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbOppTeam.SelectedIndex == -1) return;
+
+            dgvHTH.ItemsSource = null;
+            cmbOppPlayer.ItemsSource = null;
+
+            oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
+            string q;
+            if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
+            {
+                q = "select * from " + playersT + " where TeamFin LIKE '" + cmbOppTeam.SelectedItem + "' AND isActive LIKE 'True'";
+            }
+            else
+            {
+                q = "select * from " + playersT + " where isActive LIKE 'False'";
+            }
+            var res = db.GetDataTable(q);
+
+            foreach (DataRow r in res.Rows)
+            {
+                oppPlayersList.Add(new KeyValuePair<int, string>(StatsTracker.getInt(r, "ID"),
+                                StatsTracker.getString(r, "FirstName") + " " + StatsTracker.getString(r, "LastName") +
+                                " (" + StatsTracker.getString(r, "Position1") + ")"));
+            }
+
+            cmbOppPlayer.ItemsSource = oppPlayersList;
+        }
+
+        private void cmbOppPlayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (cmbTeam.SelectedIndex == -1
+                    || cmbOppTeam.SelectedIndex == -1
+                    || cmbPlayer.SelectedIndex == -1
+                    || cmbOppPlayer.SelectedIndex == -1)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                return;
+            }
+
+            dgvHTH.ItemsSource = null;
+
+            SelectedOppPlayerID =((KeyValuePair<int, string>) (cmbOppPlayer.SelectedItem)).Key;
+
+            ObservableCollection<PlayerStatsRow> psrList = new ObservableCollection<PlayerStatsRow>();
+            
+            hthAllPBS = new List<PlayerBoxScore>();
+
+            string q;
+            DataTable res;
+
+            if (SelectedPlayerID == SelectedOppPlayerID) return;
+
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
+                {
+                    /*
+                    q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedPlayerID;
+                    res = db.GetDataTable(q);
+
+                    PlayerStats ps = new PlayerStats(res.Rows[0]);
+                    PlayerStatsRow ownPSR = new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName);
+                    */
+                    psr.Type = psr.FirstName + " " + psr.LastName;
+                    psrList.Add(psr);
+
+                    hthOwnPBS = new List<PlayerBoxScore>(curPBS);
+
+                    q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedOppPlayerID;
+                    res = db.GetDataTable(q);
+
+                    PlayerStats ps = new PlayerStats(res.Rows[0]);
+                    PlayerStatsRow oppPSR = new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName);
+
+                    oppPSR.Type = oppPSR.FirstName + " " + oppPSR.LastName;
+                    psrList.Add(oppPSR);
+
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
+                    + "where PlayerID = " + SelectedOppPlayerID +
+                    " AND SeasonNum = " + curSeason;
+                    res = db.GetDataTable(q);
+
+                    hthOppPBS = new List<PlayerBoxScore>();
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        hthOppPBS.Add(pbs);
+                    }
+                    List<int> gameIDs = new List<int>();
+                    foreach (PlayerBoxScore bs in hthOwnPBS)
+                    {
+                        hthAllPBS.Add(bs);
+                        gameIDs.Add(bs.GameID);
+                    }
+                    foreach (PlayerBoxScore bs in hthOppPBS)
+                    {
+                        if (!gameIDs.Contains(bs.GameID))
+                        {
+                            hthAllPBS.Add(bs);
+                        }
+                    }
+                }
+                else
+                {
+                    q =
+                        String.Format(
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
+                            "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " +
+                            "AND PlayerResults.GameID IN " +
+                            "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} " +
+                            "AND SeasonNum = {2}) ORDER BY Date DESC",
+                            SelectedPlayerID, SelectedOppPlayerID, curSeason);
+                    res = db.GetDataTable(q);
+
+                    Player p = new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2);
+                    PlayerStats ps = new PlayerStats(p);
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        ps.AddBoxScore(pbs);
+                        hthAllPBS.Add(pbs);
+                    }
+
+                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
+
+
+                    // Opponent
+                    q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedOppPlayerID;
+                    res = db.GetDataTable(q);
+
+                    p = new Player(res.Rows[0]);
+
+                    q =
+                        String.Format(
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
+                            "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " +
+                            "AND PlayerResults.GameID IN " +
+                            "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} " +
+                            "AND SeasonNum = {2}) ORDER BY Date DESC",
+                            SelectedOppPlayerID, SelectedPlayerID, curSeason);
+                    res = db.GetDataTable(q);
+
+                    ps = new PlayerStats(p);
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        ps.AddBoxScore(pbs);
+                    }
+
+                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
+                }
+            }
+            else
+            {
+                if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
+                {
+                    psrList.Add(new PlayerStatsRow(psBetween, psBetween.FirstName + " " + psBetween.LastName));
+
+                    List<int> gameIDs = new List<int>();
+                    foreach (PlayerBoxScore cur in curPBS)
+                    {
+                        hthAllPBS.Add(cur);
+                        gameIDs.Add(cur.GameID);
+                    }
+
+                    q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedOppPlayerID;
+                    res = db.GetDataTable(q);
+
+                    Player p = new Player(res.Rows[0]);
+
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
+                        + "where PlayerID = " + SelectedOppPlayerID.ToString();
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    res = db.GetDataTable(q);
+
+                    PlayerStats psOppBetween = new PlayerStats(p);
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        psOppBetween.AddBoxScore(pbs);
+
+                        if (!gameIDs.Contains(pbs.GameID))
+                        {
+                            hthAllPBS.Add(pbs);
+                        }
+                    }
+
+                    psrList.Add(new PlayerStatsRow(psOppBetween, psOppBetween.FirstName + " " + psOppBetween.LastName));
+                }
+                else
+                {
+                    q =
+                        String.Format(
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
+                            "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " +
+                            "AND PlayerResults.GameID IN " +
+                            "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} ",
+                            SelectedPlayerID, SelectedOppPlayerID);
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q,
+                                                              dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q += ") ORDER BY Date DESC";
+                    res = db.GetDataTable(q);
+
+                    Player p = new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2);
+                    PlayerStats ps = new PlayerStats(p);
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        ps.AddBoxScore(pbs);
+                        hthAllPBS.Add(pbs);
+                    }
+
+                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
+
+
+                    // Opponent
+                    q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedOppPlayerID;
+                    res = db.GetDataTable(q);
+
+                    p = new Player(res.Rows[0]);
+
+                    q =
+                        String.Format(
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
+                            "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " +
+                            "AND PlayerResults.GameID IN " +
+                            "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} ",
+                            SelectedOppPlayerID, SelectedPlayerID);
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q,
+                                                              dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q += ") ORDER BY Date DESC";
+                    res = db.GetDataTable(q);
+
+                    ps = new PlayerStats(p);
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        PlayerBoxScore pbs = new PlayerBoxScore(r);
+                        ps.AddBoxScore(pbs);
+                    }
+
+                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
+                }
+            }
+
+            hthAllPBS.Sort(delegate(PlayerBoxScore pbs1, PlayerBoxScore pbs2) { return pbs1.Date.CompareTo(pbs2.Date); });
+            hthAllPBS.Reverse();
+
+            dgvHTH.ItemsSource = psrList;
+            dgvHTHBoxScores.ItemsSource = hthAllPBS;
+            //dgvHTHBoxScores.ItemsSource = new ObservableCollection<PlayerBoxScore>(hthAllPBS);
+        }
+
+        private int SelectedOppPlayerID { get; set; }
+
+        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgvBoxScores.SelectedCells.Count > 0)
+            {
+                PlayerBoxScore row = (PlayerBoxScore) dgvBoxScores.SelectedItems[0];
+                int gameID = row.GameID;
+
+                int i = 0;
+
+                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                {
+                    if (bse.bs.id == gameID)
+                    {
+                        MainWindow.bs = new BoxScore();
+
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        bsw.ShowDialog();
+
+                        MainWindow.UpdateBoxScore();
+                        break;
+                    }
+                    i++;
+                }
+            }
+        }
+
+        private void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgvHTHBoxScores.SelectedCells.Count > 0)
+            {
+                PlayerBoxScore row = (PlayerBoxScore)dgvHTHBoxScores.SelectedItems[0];
+                int gameID = row.GameID;
+
+                int i = 0;
+
+                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                {
+                    if (bse.bs.id == gameID)
+                    {
+                        MainWindow.bs = new BoxScore();
+
+                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
+                        bsw.ShowDialog();
+
+                        MainWindow.UpdateBoxScore();
+                        break;
+                    }
+                    i++;
+                }
+            }
+        }
+
+        private void rbHTHStatsAnyone_Checked(object sender, RoutedEventArgs e)
+        {
+            cmbOppPlayer_SelectionChanged(null, null);
+        }
+
+        private void rbHTHStatsEachOther_Checked(object sender, RoutedEventArgs e)
+        {
+            cmbOppPlayer_SelectionChanged(null, null);
+        }
     }
 }

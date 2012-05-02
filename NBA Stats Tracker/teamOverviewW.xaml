@@ -88,8 +88,7 @@
           <Button Content="&gt;" Height="23" HorizontalAlignment="Center" Margin="419,6,230,0"
                   Name="btnNextOpp" VerticalAlignment="Top" Width="24" Click="btnNextOpp_Click" />
           <DataGrid AutoGenerateColumns="True" CanUserSortColumns="False" ItemsSource="{Binding Path=.}"
-                    Margin="0,157,0,0" Name="dgvHTHBoxScores" VerticalAlignment="Stretch"
-                    SelectionChanged="dgvHTHBoxScores_SelectionChanged" AlternatingRowBackground="#FFE5E5E5" />
+                    Margin="0,157,0,0" Name="dgvHTHBoxScores" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5" MouseDoubleClick="dgvHTHBoxScores_MouseDoubleClick" />
           <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Left" Margin="531,11,0,0"
                        Name="rbHTHStatsAnyone" VerticalAlignment="Top" IsChecked="True" Checked="rbHTHStatsAnyone_Checked" />
           <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Left" Margin="598,11,0,0"
