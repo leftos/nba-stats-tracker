@@ -22,6 +22,7 @@ namespace NBA_Stats_Tracker
         private DataTable res;
         private TeamStats ts;
         private TeamStats tsopp;
+        private List<PlayerStatsRow> psrList; 
 
         public leagueOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
         {
@@ -114,9 +115,10 @@ namespace NBA_Stats_Tracker
             {
                 PreparePlayoffStats();
             }
-            else if (tbcLeagueOverview.SelectedItem == tabPlayerStats)
+            else if ((tbcLeagueOverview.SelectedItem == tabLeaders) || (tbcLeagueOverview.SelectedItem == tabPlayerStats))
             {
                 PreparePlayerStats();
+                PrepareLeagueLeaders();
             }
             else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
             {
@@ -124,11 +126,26 @@ namespace NBA_Stats_Tracker
             }
         }
 
+        private void PrepareLeagueLeaders()
+        {
+            List<PlayerStatsRow> leadersList = new List<PlayerStatsRow>();
+
+            foreach (var psr in psrList)
+            {
+                leadersList.Add(ConvertToLeagueLeader(psr));
+            }
+
+            leadersList.Sort(delegate(PlayerStatsRow psr1, PlayerStatsRow psr2) { return psr1.PPG.CompareTo(psr2.PPG); });
+            leadersList.Reverse();
+
+            dgvLeaders.ItemsSource = leadersList;
+        }
+
         private void PreparePlayerStats()
         {
             string playersT = "Players";
             if (curSeason != maxSeason) playersT += "S" + curSeason;
-            List<PlayerStatsRow> psrList = new List<PlayerStatsRow>();
+            psrList = new List<PlayerStatsRow>();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -143,6 +160,45 @@ namespace NBA_Stats_Tracker
                     psrList.Add(psr);
                 }
             }
+            else
+            {
+                string q =
+                    "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
+                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                          dtpEnd.SelectedDate.GetValueOrDefault());
+                var res = db.GetDataTable(q);
+
+                Dictionary<int, PlayerStats> pstBetween = new Dictionary<int, PlayerStats>();
+
+                foreach (DataRow r in res.Rows)
+                {
+                    PlayerBoxScore pbs = new PlayerBoxScore(r);
+                    if (pstBetween.ContainsKey(pbs.PlayerID))
+                    {
+                        pstBetween[pbs.PlayerID].AddBoxScore(pbs);
+                    }
+                    else
+                    {
+                        string q2 = "select * from Players where ID = " + pbs.PlayerID;
+                        DataTable res2 = db.GetDataTable(q2);
+
+                        Player p = new Player(res2.Rows[0]);
+
+                        PlayerStats ps = new PlayerStats(p);
+                        ps.AddBoxScore(pbs);
+                        pstBetween.Add(pbs.PlayerID, ps);
+                    }
+                }
+
+                foreach (var kvp in pstBetween)
+                {
+                    PlayerStatsRow psr = new PlayerStatsRow(kvp.Value);
+                    psrList.Add(psr);
+                }
+            }
+
+            psrList.Sort(delegate(PlayerStatsRow psr1, PlayerStatsRow psr2) { return psr1.PPG.CompareTo(psr2.PPG); });
+            psrList.Reverse();
 
             dgvPlayerStats.ItemsSource = psrList;
         }
@@ -238,7 +294,7 @@ namespace NBA_Stats_Tracker
             var dv_ts = new DataView(dt_ts);
             dv_ts.AllowNew = false;
             dv_ts.AllowEdit = false;
-            dv_ts.Sort = "Weff DESC";
+            dv_ts.Sort = "Name ASC";
 
             dgvPlayoffStats.DataContext = dv_ts;
         }
@@ -385,11 +441,62 @@ namespace NBA_Stats_Tracker
             }
         }
 
-        private void tabPlayerStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr)
+        {
+            string team = psr.TeamF;
+            TeamStats ts = MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, team, curSeason);
+            int gamesTeam = ts.getGames();
+            int gamesPlayer = psr.GP;
+            PlayerStatsRow newpsr = new PlayerStatsRow(new PlayerStats(psr));
+
+            // Below functions found using Eureqa II
+            int gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
+            int fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
+            int ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
+            int tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
+            int ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
+            int rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
+            int astRequired = (int) Math.Ceiling(4.87*gamesTeam);
+            int stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
+            int blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
+            int minRequired = (int) Math.Ceiling(24.39*gamesTeam);
+
+            if (psr.FGM < fgmRequired) newpsr.FGp = -1;
+            if (psr.TPM < tpmRequired) newpsr.TPp = -1;
+            if (psr.FTM < ftmRequired) newpsr.FTp = -1;
+
+            if (gamesPlayer >= gamesRequired)
+            {
+                return newpsr;
+            }
+            else
+            {
+                if (psr.PTS < ptsRequired) newpsr.PPG = -1;
+                if (psr.REB < rebRequired) newpsr.RPG = -1;
+                if (psr.AST < astRequired) newpsr.APG = -1;
+                if (psr.STL < stlRequired) newpsr.SPG = -1;
+                if (psr.BLK < blkRequired) newpsr.BPG = -1;
+                if (psr.MINS < minRequired) newpsr.MPG = -1;
+                return newpsr;
+            }
+        }
+
+        private void dgvPlayerStats_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (dgvPlayerStats.SelectedCells.Count > 0)
             {
-                PlayerStatsRow psr = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
+                PlayerStatsRow psr = (PlayerStatsRow)dgvPlayerStats.SelectedItems[0];
+
+                playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
+                pow.ShowDialog();
+            }
+        }
+
+        private void dgvLeaders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgvLeaders.SelectedCells.Count > 0)
+            {
+                PlayerStatsRow psr = (PlayerStatsRow)dgvLeaders.SelectedItems[0];
 
                 playerOverviewW pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();

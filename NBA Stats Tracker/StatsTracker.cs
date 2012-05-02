@@ -1380,6 +1380,8 @@ namespace NBA_Stats_Tracker
             isAllStar = playerStatsRow.isAllStar;
             isInjured = playerStatsRow.isInjured;
             isNBAChampion = playerStatsRow.isNBAChampion;
+
+            CalcAvg();
         }
 
         public int CalcAvg()
