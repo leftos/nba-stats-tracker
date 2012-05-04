@@ -26,41 +26,9 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class MainWindow : Window
     {
-        public const int M = 0,
-                         PF = 1,
-                         PA = 2,
-                         FGM = 4,
-                         FGA = 5,
-                         TPM = 6,
-                         TPA = 7,
-                         FTM = 8,
-                         FTA = 9,
-                         OREB = 10,
-                         DREB = 11,
-                         STL = 12,
-                         TO = 13,
-                         BLK = 14,
-                         AST = 15,
-                         FOUL = 16;
+        public const int tMINS = 0, tPF = 1, tPA = 2, tFGM = 4, tFGA = 5, tTPM = 6, tTPA = 7, tFTM = 8, tFTA = 9, tOREB = 10, tDREB = 11, tSTL = 12, tTO = 13, tBLK = 14, tAST = 15, tFOUL = 16;
 
-        public const int PPG = 0,
-                         PAPG = 1,
-                         FGp = 2,
-                         FGeff = 3,
-                         TPp = 4,
-                         TPeff = 5,
-                         FTp = 6,
-                         FTeff = 7,
-                         RPG = 8,
-                         ORPG = 9,
-                         DRPG = 10,
-                         SPG = 11,
-                         BPG = 12,
-                         TPG = 13,
-                         APG = 14,
-                         FPG = 15,
-                         Wp = 16,
-                         Weff = 17;
+        public const int tPPG = 0, tPAPG = 1, tFGp = 2, tFGeff = 3, tTPp = 4, tTPeff = 5, tFTp = 6, tFTeff = 7, tRPG = 8, tORPG = 9, tDRPG = 10, tSPG = 11, tBPG = 12, tTPG = 13, tAPG = 14, tFPG = 15, tWp = 16, tWeff = 17, tPD = 18;
 
         public const int pGP = 0,
                          pGS = 1,
@@ -108,6 +76,7 @@ namespace NBA_Stats_Tracker
         public static MainWindow mwInstance;
 
         public static TeamStats[] tst = new TeamStats[1];
+        public static TeamStats[] tstopp = new TeamStats[1];
         public static TeamStats[] realtst = new TeamStats[30];
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         public static BoxScore bs;
@@ -118,7 +87,7 @@ namespace NBA_Stats_Tracker
         public static string currentDB = "";
         public static string addInfo;
         public static int curSeason = 1;
-        public static List<ObservableCollection<PlayerBoxScore>> pbsLists;
+        public static List<BindingList<PlayerBoxScore>> pbsLists;
 
         public static SortedDictionary<string, int> TeamOrder;
 
@@ -174,6 +143,7 @@ namespace NBA_Stats_Tracker
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
 
             tst[0] = new TeamStats("$$NewDB");
+            tstopp[0] = new TeamStats("$$NewDB");
 
             for (int i = 0; i < 30; i++)
             {
@@ -391,21 +361,21 @@ namespace NBA_Stats_Tracker
                 int id = TeamOrder[team];
                 txtW1.Text = tst[id].winloss[0].ToString();
                 txtL1.Text = tst[id].winloss[1].ToString();
-                txtPF1.Text = tst[id].stats[PF].ToString();
-                txtPA1.Text = tst[id].stats[PA].ToString();
-                txtFGM1.Text = tst[id].stats[FGM].ToString();
-                txtFGA1.Text = tst[id].stats[FGA].ToString();
-                txt3PM1.Text = tst[id].stats[TPM].ToString();
-                txt3PA1.Text = tst[id].stats[TPA].ToString();
-                txtFTM1.Text = tst[id].stats[FTM].ToString();
-                txtFTA1.Text = tst[id].stats[FTA].ToString();
-                txtOREB1.Text = tst[id].stats[OREB].ToString();
-                txtDREB1.Text = tst[id].stats[DREB].ToString();
-                txtSTL1.Text = tst[id].stats[STL].ToString();
-                txtTO1.Text = tst[id].stats[TO].ToString();
-                txtBLK1.Text = tst[id].stats[BLK].ToString();
-                txtAST1.Text = tst[id].stats[AST].ToString();
-                txtFOUL1.Text = tst[id].stats[FOUL].ToString();
+                txtPF1.Text = tst[id].stats[tPF].ToString();
+                txtPA1.Text = tst[id].stats[tPA].ToString();
+                txtFGM1.Text = tst[id].stats[tFGM].ToString();
+                txtFGA1.Text = tst[id].stats[tFGA].ToString();
+                txt3PM1.Text = tst[id].stats[tTPM].ToString();
+                txt3PA1.Text = tst[id].stats[tTPA].ToString();
+                txtFTM1.Text = tst[id].stats[tFTM].ToString();
+                txtFTA1.Text = tst[id].stats[tFTA].ToString();
+                txtOREB1.Text = tst[id].stats[tOREB].ToString();
+                txtDREB1.Text = tst[id].stats[tDREB].ToString();
+                txtSTL1.Text = tst[id].stats[tSTL].ToString();
+                txtTO1.Text = tst[id].stats[tTO].ToString();
+                txtBLK1.Text = tst[id].stats[tBLK].ToString();
+                txtAST1.Text = tst[id].stats[tAST].ToString();
+                txtFOUL1.Text = tst[id].stats[tFOUL].ToString();
             }
             catch
             {
@@ -564,42 +534,44 @@ namespace NBA_Stats_Tracker
                     dict.Add("Name", ts.name);
                     dict.Add("WIN", ts.winloss[0].ToString());
                     dict.Add("LOSS", ts.winloss[1].ToString());
-                    dict.Add("PF", ts.stats[PF].ToString());
-                    dict.Add("PA", ts.stats[PA].ToString());
-                    dict.Add("FGM", ts.stats[FGM].ToString());
-                    dict.Add("FGA", ts.stats[FGA].ToString());
-                    dict.Add("TPM", ts.stats[TPM].ToString());
-                    dict.Add("TPA", ts.stats[TPA].ToString());
-                    dict.Add("FTM", ts.stats[FTM].ToString());
-                    dict.Add("FTA", ts.stats[FTA].ToString());
-                    dict.Add("OREB", ts.stats[OREB].ToString());
-                    dict.Add("DREB", ts.stats[DREB].ToString());
-                    dict.Add("STL", ts.stats[STL].ToString());
-                    dict.Add("TOS", ts.stats[TO].ToString());
-                    dict.Add("BLK", ts.stats[BLK].ToString());
-                    dict.Add("AST", ts.stats[AST].ToString());
-                    dict.Add("FOUL", ts.stats[FOUL].ToString());
+                    dict.Add("MINS", ts.stats[tMINS].ToString());
+                    dict.Add("PF", ts.stats[tPF].ToString());
+                    dict.Add("PA", ts.stats[tPA].ToString());
+                    dict.Add("FGM", ts.stats[tFGM].ToString());
+                    dict.Add("FGA", ts.stats[tFGA].ToString());
+                    dict.Add("TPM", ts.stats[tTPM].ToString());
+                    dict.Add("TPA", ts.stats[tTPA].ToString());
+                    dict.Add("FTM", ts.stats[tFTM].ToString());
+                    dict.Add("FTA", ts.stats[tFTA].ToString());
+                    dict.Add("OREB", ts.stats[tOREB].ToString());
+                    dict.Add("DREB", ts.stats[tDREB].ToString());
+                    dict.Add("STL", ts.stats[tSTL].ToString());
+                    dict.Add("TOS", ts.stats[tTO].ToString());
+                    dict.Add("BLK", ts.stats[tBLK].ToString());
+                    dict.Add("AST", ts.stats[tAST].ToString());
+                    dict.Add("FOUL", ts.stats[tFOUL].ToString());
                     dict.Add("OFFSET", ts.offset.ToString());
 
                     var pl_dict = new Dictionary<string, string>();
                     pl_dict.Add("Name", ts.name);
                     pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
                     pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
-                    pl_dict.Add("PF", ts.pl_stats[PF].ToString());
-                    pl_dict.Add("PA", ts.pl_stats[PA].ToString());
-                    pl_dict.Add("FGM", ts.pl_stats[FGM].ToString());
-                    pl_dict.Add("FGA", ts.pl_stats[FGA].ToString());
-                    pl_dict.Add("TPM", ts.pl_stats[TPM].ToString());
-                    pl_dict.Add("TPA", ts.pl_stats[TPA].ToString());
-                    pl_dict.Add("FTM", ts.pl_stats[FTM].ToString());
-                    pl_dict.Add("FTA", ts.pl_stats[FTA].ToString());
-                    pl_dict.Add("OREB", ts.pl_stats[OREB].ToString());
-                    pl_dict.Add("DREB", ts.pl_stats[DREB].ToString());
-                    pl_dict.Add("STL", ts.pl_stats[STL].ToString());
-                    pl_dict.Add("TOS", ts.pl_stats[TO].ToString());
-                    pl_dict.Add("BLK", ts.pl_stats[BLK].ToString());
-                    pl_dict.Add("AST", ts.pl_stats[AST].ToString());
-                    pl_dict.Add("FOUL", ts.pl_stats[FOUL].ToString());
+                    pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
+                    pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
+                    pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
+                    pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
+                    pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
+                    pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
+                    pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
+                    pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
+                    pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
+                    pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
+                    pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
+                    pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
+                    pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
+                    pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
+                    pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
+                    pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
                     pl_dict.Add("OFFSET", ts.pl_offset.ToString());
 
                     foreach (DataRow r in res.Rows)
@@ -660,6 +632,7 @@ namespace NBA_Stats_Tracker
                         dict2.Add("T1FTA", bse.bs.FTA1.ToString());
                         dict2.Add("T1OREB", bse.bs.OFF1.ToString());
                         dict2.Add("T1FOUL", bse.bs.PF1.ToString());
+                        dict2.Add("T1MINS", bse.bs.MINS1.ToString());
                         dict2.Add("T2PTS", bse.bs.PTS2.ToString());
                         dict2.Add("T2REB", bse.bs.REB2.ToString());
                         dict2.Add("T2AST", bse.bs.AST2.ToString());
@@ -674,6 +647,7 @@ namespace NBA_Stats_Tracker
                         dict2.Add("T2FTA", bse.bs.FTA2.ToString());
                         dict2.Add("T2OREB", bse.bs.OFF2.ToString());
                         dict2.Add("T2FOUL", bse.bs.PF2.ToString());
+                        dict2.Add("T2MINS", bse.bs.MINS2.ToString());
                         dict2.Add("HASH", md5);
 
                         if (idList.Contains(bse.bs.id))
@@ -809,7 +783,7 @@ namespace NBA_Stats_Tracker
                     qr = "DROP TABLE IF EXISTS \"GameResults\"";
                     sqldb.ExecuteNonQuery(qr);
                     qr =
-                        "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" TEXT NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL, \"HASH\" TEXT )";
+                        "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" TEXT NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL,\"T1MINS\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL,\"T2MINS\" INTEGER NOT NULL, \"HASH\" TEXT )";
                     sqldb.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"PlayerResults\"";
                     sqldb.ExecuteNonQuery(qr);
@@ -823,23 +797,42 @@ namespace NBA_Stats_Tracker
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
+                string oppT = "Opponents";
+                string pl_oppT = "PlayoffOpponents";
                 string playersT = "Players";
                 if (curSeason != maxSeason)
                 {
-                    teamsT += "S" + curSeason.ToString();
-                    pl_teamsT += "S" + curSeason.ToString();
-                    playersT += "S" + curSeason.ToString();
+                    string s = "S" + curSeason.ToString();
+                    teamsT += s;
+                    pl_teamsT += s;
+                    oppT += s;
+                    pl_oppT += s;
+                    playersT += s;
                 }
                 qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
+
                 qr = "DROP TABLE IF EXISTS \"" + teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
+
+                qr = "DROP TABLE IF EXISTS \"" + pl_oppT + "\"";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"" + pl_oppT +
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                sqldb.ExecuteNonQuery(qr);
+
+                qr = "DROP TABLE IF EXISTS \"" + oppT + "\"";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"" + oppT +
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                sqldb.ExecuteNonQuery(qr);
+
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + playersT +
@@ -1201,21 +1194,21 @@ namespace NBA_Stats_Tracker
                 ts.offset = Convert.ToInt32(r["OFFSET"].ToString());
                 ts.winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 ts.winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                ts.stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                ts.stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                ts.stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                ts.stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                ts.stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                ts.stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                ts.stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                ts.stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                ts.stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                ts.stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                ts.stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                ts.stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                ts.stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                ts.stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                ts.stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
             }
 
             if (maxSeason == season)
@@ -1233,21 +1226,21 @@ namespace NBA_Stats_Tracker
                 ts.pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
                 ts.pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 ts.pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                ts.pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                ts.pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                ts.pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                ts.pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                ts.pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                ts.pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                ts.pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                ts.pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                ts.pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                ts.pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                ts.pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                ts.pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                ts.pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                ts.pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                ts.pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
                 ts.calcAvg();
             }
@@ -1287,21 +1280,21 @@ namespace NBA_Stats_Tracker
                 _tst[i].offset = Convert.ToInt32(r["OFFSET"].ToString());
                 _tst[i].winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 _tst[i].winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                _tst[i].stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
                 i++;
             }
 
@@ -1322,21 +1315,21 @@ namespace NBA_Stats_Tracker
                 _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
                 _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                _tst[i].pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
                 _tst[i].calcAvg();
                 i++;
@@ -1381,21 +1374,22 @@ namespace NBA_Stats_Tracker
                 _tst[i].offset = Convert.ToInt32(r["OFFSET"].ToString());
                 _tst[i].winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 _tst[i].winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                _tst[i].stats[tMINS] = Convert.ToUInt16(r["MINS"].ToString());
+                _tst[i].stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
                 _TeamOrder.Add(_tst[i].name, i);
                 i++;
@@ -1418,21 +1412,22 @@ namespace NBA_Stats_Tracker
                 _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
                 _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].pl_stats[PF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].pl_stats[PA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].pl_stats[FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].pl_stats[FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].pl_stats[TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].pl_stats[TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].pl_stats[FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].pl_stats[FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].pl_stats[OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].pl_stats[DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].pl_stats[STL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].pl_stats[TO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].pl_stats[BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].pl_stats[AST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].pl_stats[FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                _tst[i].pl_stats[tMINS] = Convert.ToUInt16(r["MINS"].ToString());
+                _tst[i].pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                _tst[i].pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                _tst[i].pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                _tst[i].pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                _tst[i].pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                _tst[i].pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                _tst[i].pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                _tst[i].pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                _tst[i].pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                _tst[i].pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                _tst[i].pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                _tst[i].pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                _tst[i].pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                _tst[i].pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                _tst[i].pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
                 _tst[i].calcAvg();
                 i++;
@@ -1468,6 +1463,7 @@ namespace NBA_Stats_Tracker
                 bs.FTA1 = Convert.ToUInt16(r["T1FTA"].ToString());
                 bs.OFF1 = Convert.ToUInt16(r["T1OREB"].ToString());
                 bs.PF1 = Convert.ToUInt16(r["T1FOUL"].ToString());
+                bs.MINS1 = Convert.ToUInt16(r["T1MINS"].ToString());
 
                 bs.PTS2 = Convert.ToUInt16(r["T2PTS"].ToString());
                 bs.REB2 = Convert.ToUInt16(r["T2REB"].ToString());
@@ -1483,6 +1479,7 @@ namespace NBA_Stats_Tracker
                 bs.FTA2 = Convert.ToUInt16(r["T2FTA"].ToString());
                 bs.OFF2 = Convert.ToUInt16(r["T2OREB"].ToString());
                 bs.PF2 = Convert.ToUInt16(r["T2FOUL"].ToString());
+                bs.MINS2 = Convert.ToUInt16(r["T2MINS"].ToString());
 
                 var bse = new BoxScoreEntry(bs);
                 bse.date = bs.gamedate;
@@ -1632,67 +1629,67 @@ namespace NBA_Stats_Tracker
                     temptst[id2].winloss[0]++;
                 }
                 // Add minutes played
-                temptst[id1].stats[M] += 48;
-                temptst[id2].stats[M] += 48;
+                temptst[id1].stats[tMINS] += 48;
+                temptst[id2].stats[tMINS] += 48;
 
                 // Add Points For
-                temptst[id1].stats[PF] += bs.PTS1;
-                temptst[id2].stats[PF] += bs.PTS2;
+                temptst[id1].stats[tPF] += bs.PTS1;
+                temptst[id2].stats[tPF] += bs.PTS2;
 
                 // Add Points Against
-                temptst[id1].stats[PA] += bs.PTS2;
-                temptst[id2].stats[PA] += bs.PTS1;
+                temptst[id1].stats[tPA] += bs.PTS2;
+                temptst[id2].stats[tPA] += bs.PTS1;
 
                 //
-                temptst[id1].stats[FGM] += bs.FGM1;
-                temptst[id2].stats[FGM] += bs.FGM2;
+                temptst[id1].stats[tFGM] += bs.FGM1;
+                temptst[id2].stats[tFGM] += bs.FGM2;
 
-                temptst[id1].stats[FGA] += bs.FGA1;
-                temptst[id2].stats[FGA] += bs.FGA2;
-
-                //
-                temptst[id1].stats[TPM] += bs.TPM1;
-                temptst[id2].stats[TPM] += bs.TPM2;
+                temptst[id1].stats[tFGA] += bs.FGA1;
+                temptst[id2].stats[tFGA] += bs.FGA2;
 
                 //
-                temptst[id1].stats[TPA] += bs.TPA1;
-                temptst[id2].stats[TPA] += bs.TPA2;
+                temptst[id1].stats[tTPM] += bs.TPM1;
+                temptst[id2].stats[tTPM] += bs.TPM2;
 
                 //
-                temptst[id1].stats[FTM] += bs.FTM1;
-                temptst[id2].stats[FTM] += bs.FTM2;
+                temptst[id1].stats[tTPA] += bs.TPA1;
+                temptst[id2].stats[tTPA] += bs.TPA2;
 
                 //
-                temptst[id1].stats[FTA] += bs.FTA1;
-                temptst[id2].stats[FTA] += bs.FTA2;
+                temptst[id1].stats[tFTM] += bs.FTM1;
+                temptst[id2].stats[tFTM] += bs.FTM2;
 
                 //
-                temptst[id1].stats[OREB] += bs.OFF1;
-                temptst[id2].stats[OREB] += bs.OFF2;
+                temptst[id1].stats[tFTA] += bs.FTA1;
+                temptst[id2].stats[tFTA] += bs.FTA2;
 
                 //
-                temptst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                temptst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+                temptst[id1].stats[tOREB] += bs.OFF1;
+                temptst[id2].stats[tOREB] += bs.OFF2;
 
                 //
-                temptst[id1].stats[STL] += bs.STL1;
-                temptst[id2].stats[STL] += bs.STL2;
+                temptst[id1].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                temptst[id2].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
 
                 //
-                temptst[id1].stats[TO] += bs.TO1;
-                temptst[id2].stats[TO] += bs.TO2;
+                temptst[id1].stats[tSTL] += bs.STL1;
+                temptst[id2].stats[tSTL] += bs.STL2;
 
                 //
-                temptst[id1].stats[BLK] += bs.BLK1;
-                temptst[id2].stats[BLK] += bs.BLK2;
+                temptst[id1].stats[tTO] += bs.TO1;
+                temptst[id2].stats[tTO] += bs.TO2;
 
                 //
-                temptst[id1].stats[AST] += bs.AST1;
-                temptst[id2].stats[AST] += bs.AST2;
+                temptst[id1].stats[tBLK] += bs.BLK1;
+                temptst[id2].stats[tBLK] += bs.BLK2;
 
                 //
-                temptst[id1].stats[FOUL] += bs.PF1;
-                temptst[id2].stats[FOUL] += bs.PF2;
+                temptst[id1].stats[tAST] += bs.AST1;
+                temptst[id2].stats[tAST] += bs.AST2;
+
+                //
+                temptst[id1].stats[tFOUL] += bs.PF1;
+                temptst[id2].stats[tFOUL] += bs.PF2;
 
                 ofd = new OpenFileDialog();
                 ofd.Title = "Please select the Career file you want to update...";
@@ -1797,67 +1794,67 @@ namespace NBA_Stats_Tracker
                             tst[id2].winloss[0]++;
                         }
                         // Add minutes played
-                        tst[id1].stats[M] += 48;
-                        tst[id2].stats[M] += 48;
+                        tst[id1].stats[tMINS] += 48;
+                        tst[id2].stats[tMINS] += 48;
 
                         // Add Points For
-                        tst[id1].stats[PF] += bs.PTS1;
-                        tst[id2].stats[PF] += bs.PTS2;
+                        tst[id1].stats[tPF] += bs.PTS1;
+                        tst[id2].stats[tPF] += bs.PTS2;
 
                         // Add Points Against
-                        tst[id1].stats[PA] += bs.PTS2;
-                        tst[id2].stats[PA] += bs.PTS1;
+                        tst[id1].stats[tPA] += bs.PTS2;
+                        tst[id2].stats[tPA] += bs.PTS1;
 
                         //
-                        tst[id1].stats[FGM] += bs.FGM1;
-                        tst[id2].stats[FGM] += bs.FGM2;
+                        tst[id1].stats[tFGM] += bs.FGM1;
+                        tst[id2].stats[tFGM] += bs.FGM2;
 
-                        tst[id1].stats[FGA] += bs.FGA1;
-                        tst[id2].stats[FGA] += bs.FGA2;
-
-                        //
-                        tst[id1].stats[TPM] += bs.TPM1;
-                        tst[id2].stats[TPM] += bs.TPM2;
+                        tst[id1].stats[tFGA] += bs.FGA1;
+                        tst[id2].stats[tFGA] += bs.FGA2;
 
                         //
-                        tst[id1].stats[TPA] += bs.TPA1;
-                        tst[id2].stats[TPA] += bs.TPA2;
+                        tst[id1].stats[tTPM] += bs.TPM1;
+                        tst[id2].stats[tTPM] += bs.TPM2;
 
                         //
-                        tst[id1].stats[FTM] += bs.FTM1;
-                        tst[id2].stats[FTM] += bs.FTM2;
+                        tst[id1].stats[tTPA] += bs.TPA1;
+                        tst[id2].stats[tTPA] += bs.TPA2;
 
                         //
-                        tst[id1].stats[FTA] += bs.FTA1;
-                        tst[id2].stats[FTA] += bs.FTA2;
+                        tst[id1].stats[tFTM] += bs.FTM1;
+                        tst[id2].stats[tFTM] += bs.FTM2;
 
                         //
-                        tst[id1].stats[OREB] += bs.OFF1;
-                        tst[id2].stats[OREB] += bs.OFF2;
+                        tst[id1].stats[tFTA] += bs.FTA1;
+                        tst[id2].stats[tFTA] += bs.FTA2;
 
                         //
-                        tst[id1].stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                        tst[id2].stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+                        tst[id1].stats[tOREB] += bs.OFF1;
+                        tst[id2].stats[tOREB] += bs.OFF2;
 
                         //
-                        tst[id1].stats[STL] += bs.STL1;
-                        tst[id2].stats[STL] += bs.STL2;
+                        tst[id1].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                        tst[id2].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
 
                         //
-                        tst[id1].stats[TO] += bs.TO1;
-                        tst[id2].stats[TO] += bs.TO2;
+                        tst[id1].stats[tSTL] += bs.STL1;
+                        tst[id2].stats[tSTL] += bs.STL2;
 
                         //
-                        tst[id1].stats[BLK] += bs.BLK1;
-                        tst[id2].stats[BLK] += bs.BLK2;
+                        tst[id1].stats[tTO] += bs.TO1;
+                        tst[id2].stats[tTO] += bs.TO2;
 
                         //
-                        tst[id1].stats[AST] += bs.AST1;
-                        tst[id2].stats[AST] += bs.AST2;
+                        tst[id1].stats[tBLK] += bs.BLK1;
+                        tst[id2].stats[tBLK] += bs.BLK2;
 
                         //
-                        tst[id1].stats[FOUL] += bs.PF1;
-                        tst[id2].stats[FOUL] += bs.PF2;
+                        tst[id1].stats[tAST] += bs.AST1;
+                        tst[id2].stats[tAST] += bs.AST2;
+
+                        //
+                        tst[id1].stats[tFOUL] += bs.PF1;
+                        tst[id2].stats[tFOUL] += bs.PF2;
                     }
                     else
                     {
@@ -1873,67 +1870,67 @@ namespace NBA_Stats_Tracker
                             tst[id2].pl_winloss[0]++;
                         }
                         // Add minutes played
-                        tst[id1].pl_stats[M] += 48;
-                        tst[id2].pl_stats[M] += 48;
+                        tst[id1].pl_stats[tMINS] += 48;
+                        tst[id2].pl_stats[tMINS] += 48;
 
                         // Add Points For
-                        tst[id1].pl_stats[PF] += bs.PTS1;
-                        tst[id2].pl_stats[PF] += bs.PTS2;
+                        tst[id1].pl_stats[tPF] += bs.PTS1;
+                        tst[id2].pl_stats[tPF] += bs.PTS2;
 
                         // Add Points Against
-                        tst[id1].pl_stats[PA] += bs.PTS2;
-                        tst[id2].pl_stats[PA] += bs.PTS1;
+                        tst[id1].pl_stats[tPA] += bs.PTS2;
+                        tst[id2].pl_stats[tPA] += bs.PTS1;
 
                         //
-                        tst[id1].pl_stats[FGM] += bs.FGM1;
-                        tst[id2].pl_stats[FGM] += bs.FGM2;
+                        tst[id1].pl_stats[tFGM] += bs.FGM1;
+                        tst[id2].pl_stats[tFGM] += bs.FGM2;
 
-                        tst[id1].pl_stats[FGA] += bs.FGA1;
-                        tst[id2].pl_stats[FGA] += bs.FGA2;
-
-                        //
-                        tst[id1].pl_stats[TPM] += bs.TPM1;
-                        tst[id2].pl_stats[TPM] += bs.TPM2;
+                        tst[id1].pl_stats[tFGA] += bs.FGA1;
+                        tst[id2].pl_stats[tFGA] += bs.FGA2;
 
                         //
-                        tst[id1].pl_stats[TPA] += bs.TPA1;
-                        tst[id2].pl_stats[TPA] += bs.TPA2;
+                        tst[id1].pl_stats[tTPM] += bs.TPM1;
+                        tst[id2].pl_stats[tTPM] += bs.TPM2;
 
                         //
-                        tst[id1].pl_stats[FTM] += bs.FTM1;
-                        tst[id2].pl_stats[FTM] += bs.FTM2;
+                        tst[id1].pl_stats[tTPA] += bs.TPA1;
+                        tst[id2].pl_stats[tTPA] += bs.TPA2;
 
                         //
-                        tst[id1].pl_stats[FTA] += bs.FTA1;
-                        tst[id2].pl_stats[FTA] += bs.FTA2;
+                        tst[id1].pl_stats[tFTM] += bs.FTM1;
+                        tst[id2].pl_stats[tFTM] += bs.FTM2;
 
                         //
-                        tst[id1].pl_stats[OREB] += bs.OFF1;
-                        tst[id2].pl_stats[OREB] += bs.OFF2;
+                        tst[id1].pl_stats[tFTA] += bs.FTA1;
+                        tst[id2].pl_stats[tFTA] += bs.FTA2;
 
                         //
-                        tst[id1].pl_stats[DREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                        tst[id2].pl_stats[DREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+                        tst[id1].pl_stats[tOREB] += bs.OFF1;
+                        tst[id2].pl_stats[tOREB] += bs.OFF2;
 
                         //
-                        tst[id1].pl_stats[STL] += bs.STL1;
-                        tst[id2].pl_stats[STL] += bs.STL2;
+                        tst[id1].pl_stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                        tst[id2].pl_stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
 
                         //
-                        tst[id1].pl_stats[TO] += bs.TO1;
-                        tst[id2].pl_stats[TO] += bs.TO2;
+                        tst[id1].pl_stats[tSTL] += bs.STL1;
+                        tst[id2].pl_stats[tSTL] += bs.STL2;
 
                         //
-                        tst[id1].pl_stats[BLK] += bs.BLK1;
-                        tst[id2].pl_stats[BLK] += bs.BLK2;
+                        tst[id1].pl_stats[tTO] += bs.TO1;
+                        tst[id2].pl_stats[tTO] += bs.TO2;
 
                         //
-                        tst[id1].pl_stats[AST] += bs.AST1;
-                        tst[id2].pl_stats[AST] += bs.AST2;
+                        tst[id1].pl_stats[tBLK] += bs.BLK1;
+                        tst[id2].pl_stats[tBLK] += bs.BLK2;
 
                         //
-                        tst[id1].pl_stats[FOUL] += bs.PF1;
-                        tst[id2].pl_stats[FOUL] += bs.PF2;
+                        tst[id1].pl_stats[tAST] += bs.AST1;
+                        tst[id2].pl_stats[tAST] += bs.AST2;
+
+                        //
+                        tst[id1].pl_stats[tFOUL] += bs.PF1;
+                        tst[id2].pl_stats[tFOUL] += bs.PF2;
                     }
 
                     tst[id1].calcAvg();
@@ -2120,8 +2117,8 @@ namespace NBA_Stats_Tracker
             string header1 = "GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL";
             /*
             string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
-                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[FGM], tst[id].stats[FGA], tst[id].stats[TPM], tst[id].stats[TPA],
-                tst[id].stats[FTM], tst[id].stats[FTA], tst[
+                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[tFGM], tst[id].stats[tFGA], tst[id].stats[tTPM], tst[id].stats[tTPA],
+                tst[id].stats[tFTM], tst[id].stats[tFTA], tst[
              */
             string data1 = String.Format("{0},{1},{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
             for (int j = 1; j <= 16; j++)
@@ -2135,8 +2132,8 @@ namespace NBA_Stats_Tracker
             NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
 
             string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
-            string data2 = String.Format("{0:F3}", tst[id].averages[Wp]) + "," +
-                           String.Format("{0:F1}", tst[id].averages[Weff]);
+            string data2 = String.Format("{0:F3}", tst[id].averages[tWp]) + "," +
+                           String.Format("{0:F1}", tst[id].averages[tWeff]);
             for (int j = 0; j <= 15; j++)
             {
                 switch (j)
@@ -2154,7 +2151,7 @@ namespace NBA_Stats_Tracker
 
             int[][] rankings = StatsTracker.calculateRankings(tst);
 
-            string data3 = String.Format("{0:F3}", rankings[id][Wp]) + "," + String.Format("{0:F1}", rankings[id][Weff]);
+            string data3 = String.Format("{0:F3}", rankings[id][tWp]) + "," + String.Format("{0:F1}", rankings[id][tWeff]);
             for (int j = 0; j <= 15; j++)
             {
                 switch (j)
@@ -2201,8 +2198,8 @@ namespace NBA_Stats_Tracker
             string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
             /*
             string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
-                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[FGM], tst[id].stats[FGA], tst[id].stats[TPM], tst[id].stats[TPA],
-                tst[id].stats[FTM], tst[id].stats[FTA], tst[
+                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[tFGM], tst[id].stats[tFGA], tst[id].stats[tTPM], tst[id].stats[tTPA],
+                tst[id].stats[tFTM], tst[id].stats[tFTA], tst[
              */
             string data1 = "";
             for (int id = 0; id < 30; id++)
@@ -2227,8 +2224,8 @@ namespace NBA_Stats_Tracker
                     }
                 }
                 data1 += ",";
-                data1 += String.Format("{0:F3}", tst[id].averages[Wp]) + "," +
-                         String.Format("{0:F1}", tst[id].averages[Weff]);
+                data1 += String.Format("{0:F3}", tst[id].averages[tWp]) + "," +
+                         String.Format("{0:F1}", tst[id].averages[tWeff]);
                 for (int j = 0; j <= 15; j++)
                 {
                     switch (j)
@@ -2269,21 +2266,21 @@ namespace NBA_Stats_Tracker
             int id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
             tst[id].winloss[0] = Convert.ToByte(txtW1.Text);
             tst[id].winloss[1] = Convert.ToByte(txtL1.Text);
-            tst[id].stats[PF] = Convert.ToUInt16(txtPF1.Text);
-            tst[id].stats[PA] = Convert.ToUInt16(txtPA1.Text);
-            tst[id].stats[FGM] = Convert.ToUInt16(txtFGM1.Text);
-            tst[id].stats[FGA] = Convert.ToUInt16(txtFGA1.Text);
-            tst[id].stats[TPM] = Convert.ToUInt16(txt3PM1.Text);
-            tst[id].stats[TPA] = Convert.ToUInt16(txt3PA1.Text);
-            tst[id].stats[FTM] = Convert.ToUInt16(txtFTM1.Text);
-            tst[id].stats[FTA] = Convert.ToUInt16(txtFTA1.Text);
-            tst[id].stats[OREB] = Convert.ToUInt16(txtOREB1.Text);
-            tst[id].stats[DREB] = Convert.ToUInt16(txtDREB1.Text);
-            tst[id].stats[STL] = Convert.ToUInt16(txtSTL1.Text);
-            tst[id].stats[TO] = Convert.ToUInt16(txtTO1.Text);
-            tst[id].stats[BLK] = Convert.ToUInt16(txtBLK1.Text);
-            tst[id].stats[AST] = Convert.ToUInt16(txtAST1.Text);
-            tst[id].stats[FOUL] = Convert.ToUInt16(txtFOUL1.Text);
+            tst[id].stats[tPF] = Convert.ToUInt16(txtPF1.Text);
+            tst[id].stats[tPA] = Convert.ToUInt16(txtPA1.Text);
+            tst[id].stats[tFGM] = Convert.ToUInt16(txtFGM1.Text);
+            tst[id].stats[tFGA] = Convert.ToUInt16(txtFGA1.Text);
+            tst[id].stats[tTPM] = Convert.ToUInt16(txt3PM1.Text);
+            tst[id].stats[tTPA] = Convert.ToUInt16(txt3PA1.Text);
+            tst[id].stats[tFTM] = Convert.ToUInt16(txtFTM1.Text);
+            tst[id].stats[tFTA] = Convert.ToUInt16(txtFTA1.Text);
+            tst[id].stats[tOREB] = Convert.ToUInt16(txtOREB1.Text);
+            tst[id].stats[tDREB] = Convert.ToUInt16(txtDREB1.Text);
+            tst[id].stats[tSTL] = Convert.ToUInt16(txtSTL1.Text);
+            tst[id].stats[tTO] = Convert.ToUInt16(txtTO1.Text);
+            tst[id].stats[tBLK] = Convert.ToUInt16(txtBLK1.Text);
+            tst[id].stats[tAST] = Convert.ToUInt16(txtAST1.Text);
+            tst[id].stats[tFOUL] = Convert.ToUInt16(txtFOUL1.Text);
 
             tst[id].calcAvg();
         }
@@ -2620,37 +2617,37 @@ namespace NBA_Stats_Tracker
             str +=
                 String.Format(
                     "Taking this improvement apart, their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
-                    oldTST[maxi].averages[FGp], tst[maxi].averages[FGp], oldTST[maxi].averages[TPp],
-                    tst[maxi].averages[TPp], tst[maxi].averages[FTp], oldTST[maxi].averages[FTp]);
+                    oldTST[maxi].averages[tFGp], tst[maxi].averages[tFGp], oldTST[maxi].averages[tTPp],
+                    tst[maxi].averages[tTPp], tst[maxi].averages[tFTp], oldTST[maxi].averages[tFTp]);
 
-            if (curR.rankings[maxi][FGeff] <= 5)
+            if (curR.rankings[maxi][tFGeff] <= 5)
             {
                 str += " ";
-                if (oldR.rankings[maxi][FGeff] > 20)
+                if (oldR.rankings[maxi][tFGeff] > 20)
                     str +=
                         "Huge leap in Field Goal efficiency. Back then they were on of the worst teams on the offensive end, now in the Top 5.";
-                else if (oldR.rankings[maxi][FGeff] > 10)
+                else if (oldR.rankings[maxi][tFGeff] > 10)
                     str +=
                         "An average offensive team turned great. From the middle of the pack, they are now in Top 5 in Field Goal efficiency.";
-                else if (oldR.rankings[maxi][FGeff] > 5)
+                else if (oldR.rankings[maxi][tFGeff] > 5)
                     str +=
                         "They were already hot, and they're just getting better. Moving on up from Top 10 in FGeff, to Top 5.";
                 else
                     str +=
                         "They just know how to stay hot at the offensive end. Still in the Top 5 of the most efficient teams from the floor.";
             }
-            if (curR.rankings[maxi][FTeff] <= 5)
+            if (curR.rankings[maxi][tFTeff] <= 5)
                 str +=
                     " They're not afraid of contact, and they know how to make the most from the line. Top 5 in Free Throw efficiency.";
-            if (diffavg[maxi][APG] > 0)
+            if (diffavg[maxi][tAPG] > 0)
                 str +=
                     String.Format(
                         " They are getting better at finding the open man with a timely pass. {0:F1} improvement in assists per game.",
-                        diffavg[maxi][APG]);
-            if (diffavg[maxi][RPG] > 0) str += String.Format(" Their additional rebounds have helped as well.");
-            if (diffavg[maxi][TPG] < 0)
+                        diffavg[maxi][tAPG]);
+            if (diffavg[maxi][tRPG] > 0) str += String.Format(" Their additional rebounds have helped as well.");
+            if (diffavg[maxi][tTPG] < 0)
                 str += String.Format(" Also taking better care of the ball, making {0:F1} less turnovers per game.",
-                                     -diffavg[maxi][TPG]);
+                                     -diffavg[maxi][tTPG]);
 
             ///////////////////////////
             str += "$";
@@ -2677,13 +2674,13 @@ namespace NBA_Stats_Tracker
             str +=
                 String.Format(
                     "So why has this happened? Their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
-                    oldTST[mini].averages[FGp], tst[mini].averages[FGp], oldTST[mini].averages[TPp],
-                    tst[mini].averages[TPp], tst[mini].averages[FTp], oldTST[mini].averages[FTp]);
-            if (diffavg[mini][TPG] > 0)
+                    oldTST[mini].averages[tFGp], tst[mini].averages[tFGp], oldTST[mini].averages[tTPp],
+                    tst[mini].averages[tTPp], tst[mini].averages[tFTp], oldTST[mini].averages[tFTp]);
+            if (diffavg[mini][tTPG] > 0)
                 str +=
                     String.Format(
                         " You can't score as many points when you commit turnovers; they've seen them increase by {0:F1} per game.",
-                        diffavg[mini][TPG]);
+                        diffavg[mini][tTPG]);
 
             var tw = new trendsW(str, team1, team2);
             tw.ShowDialog();
@@ -2862,15 +2859,18 @@ namespace NBA_Stats_Tracker
 
         private bool isTSTEmpty()
         {
+            string teamsT = "Teams";
+            if (curSeason != getMaxSeason(currentDB)) teamsT += "S" + curSeason;
+            string q = "select Name from " + teamsT;
+            DataTable res = db.GetDataTable(q);
+
             try
             {
-                if (tst[0].name == "$$NewDB") return true;
+                if (res.Rows[0]["Name"].ToString() == "$$NewDB") return true;
                 else return false;
             }
             catch
             {
-                tst = new TeamStats[1];
-                tst[0] = new TeamStats("$$NewDB");
                 return true;
             }
         }

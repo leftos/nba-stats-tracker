@@ -255,7 +255,7 @@ Text="Remember to save the stats before you switch to another team or season, or
         <Button Content="Scouting Report" Height="23" HorizontalAlignment="Center" Margin="0,7,0,0"
                 Name="btnScoutingReport" VerticalAlignment="Top" Width="249" Click="btnScoutingReport_Click" />
         <TextBlock Height="31" HorizontalAlignment="Left" Margin="5,119,0,0" Name="textBlock2"
-                   Text="* Always remember to save each player's stats before switching teams or else your changes could be lost."
+                   Text="* Always remember to save each player's stats before switching players or else your changes could be lost."
                    TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
       </Grid>
     </GroupBox>

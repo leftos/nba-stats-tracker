@@ -6,11 +6,18 @@
                 SelectionChanged="tbcLeagueOverview_SelectionChanged">
       <TabItem Header="Team Stats" Name="tabTeamStats">
         <Grid VerticalAlignment="Stretch">
-          <DataGrid LoadingRow="dg_LoadingRow" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1"
+                    <DataGrid LoadingRow="dg_LoadingRow" AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1"
                     AutoGenerateColumns="True" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}" Margin="6,6,6,0"
                     Name="dgvTeamStats" VerticalAlignment="Stretch" RowHeaderWidth="25" MouseDoubleClick="dgvTeamStats_MouseDoubleClick"
-                    IsReadOnly="True" />
-        </Grid>
+                    IsReadOnly="True" >
+                        <!--
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Copy" Click="ContextMenuCopy_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+                    </DataGrid>
+                </Grid>
       </TabItem>
       <TabItem Header="Playoff Stats" Name="tabPlayoffStats">
         <Grid VerticalAlignment="Stretch">

@@ -3,8 +3,7 @@
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" MinWidth="698">
   <Grid>
-    <TabControl Margin="0,41,0,193" Name="tbcTeamOverview" Padding="0"
-                SelectionChanged="tbcTeamOverview_SelectionChanged">
+    <TabControl Margin="0,41,0,193" Name="tbcTeamOverview" Padding="0">
       <TabItem Header="Overview" Name="tabOverview">
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvTeamStats"

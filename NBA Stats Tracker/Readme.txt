@@ -90,11 +90,12 @@ Additional Features
 
 		You can also view a Scouting Report of any team, in natural language, commenting on their pros and cons based on their stat rankings in the league, preparing you for a game against them. 
 
-	Export to CSV
-		The tool allows you to export the following into CSV files, for use in spreadsheet, database or table-editing software (such as Excel), to make your life easier if you want to post them to the web. 
-			- Individual team's stats, averages and rankings
-			- League-wide stats and averages
-			- Box scores
+	Export Tables
+		All the tables in the tool (Team/Player/League Overview & Box Scores) support copying to the clipboard; when you do, the table's column names (headers) are included as well.
+
+		Box Scores in particular, have a special Copy button in their window, which copies both Player (if any) & Team Stats to the clipboard.
+
+		The resulting text is in Tab-Separated Values format, supported by Excel and many other spreadsheet editors for pasting into.
 
 	Real NBA Stats
 		This feature allows you to automatically grab the real league's Team Stats and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
@@ -124,7 +125,7 @@ Credits to
 	
 	
 Version History
-	v0.10 - Current
+	v0.10.1 - Current
 		- Change: The program now uses SQLite 3 databases instead of the custom binary format
 		- Change: Massive UI overhaul, more details below
 		- Added: Team Overview screen; all statistics can be limited to a specific timeframe if the required box scores are available
@@ -150,7 +151,9 @@ Version History
 		- Added: Box Scores now require a Season number as well as the date the game took place; you can also differentiate between regular season and playoff games for the split stats
 		- Added: Double-clicking on a team, player or box-score in any table in the tool takes you to the respective screen for further analysis and edits
 		- Added: Tool now keeps track of stats over multiple seasons; Team Stats, Playoff Stats, Player Stats and Box Scores are all preserved between seasons, and you can switch to any season's stats easily
-		   
+		- Added: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
+		- Added: Minutes Played have been added as a stat kept for Teams
+
 	v0.8 - Mar 21
 		- Added keeping history of Box Score updates
 		- Changed Team Stats file structure to allow for further expansion and changes; this means that Saved Team Stats from versions previous to this one aren't compatible

@@ -76,6 +76,12 @@ namespace NBA_Stats_Tracker
 
             dtpEnd.SelectedDate = DateTime.Today;
             dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
+
+            dgvTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvPlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvLeaders.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -108,23 +114,35 @@ namespace NBA_Stats_Tracker
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tbcLeagueOverview.SelectedItem == tabTeamStats)
+            try
             {
-                PrepareTeamStats();
+                if (e.OriginalSource is TabControl)
+                {
+                    if (tbcLeagueOverview.SelectedItem == tabTeamStats)
+                    {
+                        PrepareTeamStats();
+                    }
+                    else if (tbcLeagueOverview.SelectedItem == tabPlayoffStats)
+                    {
+                        PreparePlayoffStats();
+                    }
+                    else if ((tbcLeagueOverview.SelectedItem == tabLeaders) ||
+                             (tbcLeagueOverview.SelectedItem == tabPlayerStats))
+                    {
+                        PreparePlayerStats();
+                        PrepareLeagueLeaders();
+                    }
+                    else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
+                    {
+                        PrepareBoxScores();
+                    }
+                }
             }
-            else if (tbcLeagueOverview.SelectedItem == tabPlayoffStats)
+            catch (Exception)
             {
-                PreparePlayoffStats();
+                return;
             }
-            else if ((tbcLeagueOverview.SelectedItem == tabLeaders) || (tbcLeagueOverview.SelectedItem == tabPlayerStats))
-            {
-                PreparePlayerStats();
-                PrepareLeagueLeaders();
-            }
-            else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
-            {
-                PrepareBoxScores();
-            }
+            
         }
 
         private void PrepareLeagueLeaders()
@@ -502,6 +520,13 @@ namespace NBA_Stats_Tracker
                 var pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();
             }
+        }
+
+        private void ContextMenuCopy_Click(object sender, RoutedEventArgs e)
+        {
+            dgvTeamStats.SelectAllCells();
+            ApplicationCommands.Copy.Execute(null, dgvTeamStats);
+            dgvTeamStats.UnselectAllCells();
         }
     }
 }

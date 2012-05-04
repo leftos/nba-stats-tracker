@@ -8,24 +8,7 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class versusW : Window
     {
-        public const int PPG = 0,
-                         PAPG = 1,
-                         FGp = 2,
-                         FGeff = 3,
-                         TPp = 4,
-                         TPeff = 5,
-                         FTp = 6,
-                         FTeff = 7,
-                         RPG = 8,
-                         ORPG = 9,
-                         DRPG = 10,
-                         SPG = 11,
-                         BPG = 12,
-                         TPG = 13,
-                         APG = 14,
-                         FPG = 15,
-                         Wp = 16,
-                         Weff = 17;
+        public const int tPPG = 0, tPAPG = 1, tFGp = 2, tFGeff = 3, tTPp = 4, tTPeff = 5, tFTp = 6, tFTeff = 7, tRPG = 8, tORPG = 9, tDRPG = 10, tSPG = 11, tBPG = 12, tTPG = 13, tAPG = 14, tFPG = 15, tWp = 16, tWeff = 17, tPD = 18;
 
         public static string _team1 = "";
         public static string _team2 = "";
@@ -56,128 +39,128 @@ namespace NBA_Stats_Tracker
         private void prepareWindow(TeamStats ts1, TeamStats ts2)
         {
             lblTeam1.Content = _team1;
-            lbl3Peff1.Content = String.Format("{0:F2}", ts1.averages[TPeff]);
-            lbl3Pp1.Content = String.Format("{0:F3}", ts1.averages[TPp]);
-            lblAPG1.Content = String.Format("{0:F1}", ts1.averages[APG]);
-            lblBPG1.Content = String.Format("{0:F1}", ts1.averages[BPG]);
-            lblFGeff1.Content = String.Format("{0:F2}", ts1.averages[FGeff]);
-            lblFGp1.Content = String.Format("{0:F3}", ts1.averages[FGp]);
-            lblFTeff1.Content = String.Format("{0:F2}", ts1.averages[FTeff]);
-            lblFTp1.Content = String.Format("{0:F3}", ts1.averages[FTp]);
-            lblORPG1.Content = String.Format("{0:F1}", ts1.averages[ORPG]);
-            lblPAPG1.Content = String.Format("{0:F1}", ts1.averages[PAPG]);
-            lblPPG1.Content = String.Format("{0:F1}", ts1.averages[PPG]);
+            lbl3Peff1.Content = String.Format("{0:F2}", ts1.averages[tTPeff]);
+            lbl3Pp1.Content = String.Format("{0:F3}", ts1.averages[tTPp]);
+            lblAPG1.Content = String.Format("{0:F1}", ts1.averages[tAPG]);
+            lblBPG1.Content = String.Format("{0:F1}", ts1.averages[tBPG]);
+            lblFGeff1.Content = String.Format("{0:F2}", ts1.averages[tFGeff]);
+            lblFGp1.Content = String.Format("{0:F3}", ts1.averages[tFGp]);
+            lblFTeff1.Content = String.Format("{0:F2}", ts1.averages[tFTeff]);
+            lblFTp1.Content = String.Format("{0:F3}", ts1.averages[tFTp]);
+            lblORPG1.Content = String.Format("{0:F1}", ts1.averages[tORPG]);
+            lblPAPG1.Content = String.Format("{0:F1}", ts1.averages[tPAPG]);
+            lblPPG1.Content = String.Format("{0:F1}", ts1.averages[tPPG]);
             lblRecord1.Content = ts1.winloss[0].ToString() + "-" + ts1.winloss[1].ToString();
-            lblRPG1.Content = String.Format("{0:F1}", ts1.averages[RPG]);
-            lblSPG1.Content = String.Format("{0:F1}", ts1.averages[SPG]);
-            lblTPG1.Content = String.Format("{0:F1}", ts1.averages[TPG]);
-            lblWeff1.Content = String.Format("{0:F2}", ts1.averages[Weff]);
-            lblWp1.Content = String.Format("{0:F3}", ts1.averages[Wp]);
-            lblFPG1.Content = String.Format("{0:F1}", ts1.averages[FPG]);
+            lblRPG1.Content = String.Format("{0:F1}", ts1.averages[tRPG]);
+            lblSPG1.Content = String.Format("{0:F1}", ts1.averages[tSPG]);
+            lblTPG1.Content = String.Format("{0:F1}", ts1.averages[tTPG]);
+            lblWeff1.Content = String.Format("{0:F2}", ts1.averages[tWeff]);
+            lblWp1.Content = String.Format("{0:F3}", ts1.averages[tWp]);
+            lblFPG1.Content = String.Format("{0:F1}", ts1.averages[tFPG]);
 
             lblTeam2.Content = _team2;
-            lbl3Peff2.Content = String.Format("{0:F2}", ts2.averages[TPeff]);
-            lbl3Pp2.Content = String.Format("{0:F3}", ts2.averages[TPp]);
-            lblAPG2.Content = String.Format("{0:F1}", ts2.averages[APG]);
-            lblBPG2.Content = String.Format("{0:F1}", ts2.averages[BPG]);
-            lblFGeff2.Content = String.Format("{0:F2}", ts2.averages[FGeff]);
-            lblFGp2.Content = String.Format("{0:F3}", ts2.averages[FGp]);
-            lblFTeff2.Content = String.Format("{0:F2}", ts2.averages[FTeff]);
-            lblFTp2.Content = String.Format("{0:F3}", ts2.averages[FTp]);
-            lblORPG2.Content = String.Format("{0:F1}", ts2.averages[ORPG]);
-            lblPAPG2.Content = String.Format("{0:F1}", ts2.averages[PAPG]);
-            lblPPG2.Content = String.Format("{0:F1}", ts2.averages[PPG]);
+            lbl3Peff2.Content = String.Format("{0:F2}", ts2.averages[tTPeff]);
+            lbl3Pp2.Content = String.Format("{0:F3}", ts2.averages[tTPp]);
+            lblAPG2.Content = String.Format("{0:F1}", ts2.averages[tAPG]);
+            lblBPG2.Content = String.Format("{0:F1}", ts2.averages[tBPG]);
+            lblFGeff2.Content = String.Format("{0:F2}", ts2.averages[tFGeff]);
+            lblFGp2.Content = String.Format("{0:F3}", ts2.averages[tFGp]);
+            lblFTeff2.Content = String.Format("{0:F2}", ts2.averages[tFTeff]);
+            lblFTp2.Content = String.Format("{0:F3}", ts2.averages[tFTp]);
+            lblORPG2.Content = String.Format("{0:F1}", ts2.averages[tORPG]);
+            lblPAPG2.Content = String.Format("{0:F1}", ts2.averages[tPAPG]);
+            lblPPG2.Content = String.Format("{0:F1}", ts2.averages[tPPG]);
             lblRecord2.Content = ts2.winloss[0].ToString() + "-" + ts2.winloss[1].ToString();
-            lblRPG2.Content = String.Format("{0:F1}", ts2.averages[RPG]);
-            lblSPG2.Content = String.Format("{0:F1}", ts2.averages[SPG]);
-            lblTPG2.Content = String.Format("{0:F1}", ts2.averages[TPG]);
-            lblWeff2.Content = String.Format("{0:F2}", ts2.averages[Weff]);
-            lblWp2.Content = String.Format("{0:F3}", ts2.averages[Wp]);
-            lblFPG2.Content = String.Format("{0:F1}", ts2.averages[FPG]);
+            lblRPG2.Content = String.Format("{0:F1}", ts2.averages[tRPG]);
+            lblSPG2.Content = String.Format("{0:F1}", ts2.averages[tSPG]);
+            lblTPG2.Content = String.Format("{0:F1}", ts2.averages[tTPG]);
+            lblWeff2.Content = String.Format("{0:F2}", ts2.averages[tWeff]);
+            lblWp2.Content = String.Format("{0:F3}", ts2.averages[tWp]);
+            lblFPG2.Content = String.Format("{0:F1}", ts2.averages[tFPG]);
 
-            if (ts1.averages[TPeff] > ts2.averages[TPeff])
+            if (ts1.averages[tTPeff] > ts2.averages[tTPeff])
                 lbl3Peff1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[TPeff] < ts2.averages[TPeff])
+            else if (ts1.averages[tTPeff] < ts2.averages[tTPeff])
                 lbl3Peff2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[TPp] > ts2.averages[TPp])
+            if (ts1.averages[tTPp] > ts2.averages[tTPp])
                 lbl3Pp1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[TPp] < ts2.averages[TPp])
+            else if (ts1.averages[tTPp] < ts2.averages[tTPp])
                 lbl3Pp2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[APG] > ts2.averages[APG])
+            if (ts1.averages[tAPG] > ts2.averages[tAPG])
                 lblAPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[APG] < ts2.averages[APG])
+            else if (ts1.averages[tAPG] < ts2.averages[tAPG])
                 lblAPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[BPG] > ts2.averages[BPG])
+            if (ts1.averages[tBPG] > ts2.averages[tBPG])
                 lblBPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[BPG] < ts2.averages[BPG])
+            else if (ts1.averages[tBPG] < ts2.averages[tBPG])
                 lblBPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[FGeff] > ts2.averages[FGeff])
+            if (ts1.averages[tFGeff] > ts2.averages[tFGeff])
                 lblFGeff1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[FGeff] < ts2.averages[FGeff])
+            else if (ts1.averages[tFGeff] < ts2.averages[tFGeff])
                 lblFGeff2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[FGp] > ts2.averages[FGp])
+            if (ts1.averages[tFGp] > ts2.averages[tFGp])
                 lblFGp1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[FGp] < ts2.averages[FGp])
+            else if (ts1.averages[tFGp] < ts2.averages[tFGp])
                 lblFGp2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[FPG] < ts2.averages[FPG])
+            if (ts1.averages[tFPG] < ts2.averages[tFPG])
                 lblFPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[FPG] > ts2.averages[FPG])
+            else if (ts1.averages[tFPG] > ts2.averages[tFPG])
                 lblFPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[FTeff] > ts2.averages[FTeff])
+            if (ts1.averages[tFTeff] > ts2.averages[tFTeff])
                 lblFTeff1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[FTeff] < ts2.averages[FTeff])
+            else if (ts1.averages[tFTeff] < ts2.averages[tFTeff])
                 lblFTeff2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[FTp] > ts2.averages[FTp])
+            if (ts1.averages[tFTp] > ts2.averages[tFTp])
                 lblFTp1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[FTp] < ts2.averages[FTp])
+            else if (ts1.averages[tFTp] < ts2.averages[tFTp])
                 lblFTp2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[ORPG] > ts2.averages[ORPG])
+            if (ts1.averages[tORPG] > ts2.averages[tORPG])
                 lblORPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[ORPG] < ts2.averages[ORPG])
+            else if (ts1.averages[tORPG] < ts2.averages[tORPG])
                 lblORPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[PAPG] < ts2.averages[PAPG])
+            if (ts1.averages[tPAPG] < ts2.averages[tPAPG])
                 lblPAPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[PAPG] > ts2.averages[PAPG])
+            else if (ts1.averages[tPAPG] > ts2.averages[tPAPG])
                 lblPAPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[PPG] > ts2.averages[PPG])
+            if (ts1.averages[tPPG] > ts2.averages[tPPG])
                 lblPPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[PPG] < ts2.averages[PPG])
+            else if (ts1.averages[tPPG] < ts2.averages[tPPG])
                 lblPPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[RPG] > ts2.averages[RPG])
+            if (ts1.averages[tRPG] > ts2.averages[tRPG])
                 lblRPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[RPG] < ts2.averages[RPG])
+            else if (ts1.averages[tRPG] < ts2.averages[tRPG])
                 lblRPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[SPG] > ts2.averages[SPG])
+            if (ts1.averages[tSPG] > ts2.averages[tSPG])
                 lblSPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[SPG] < ts2.averages[SPG])
+            else if (ts1.averages[tSPG] < ts2.averages[tSPG])
                 lblSPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[TPG] < ts2.averages[TPG])
+            if (ts1.averages[tTPG] < ts2.averages[tTPG])
                 lblTPG1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[TPG] > ts2.averages[TPG])
+            else if (ts1.averages[tTPG] > ts2.averages[tTPG])
                 lblTPG2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[Wp] > ts2.averages[Wp])
+            if (ts1.averages[tWp] > ts2.averages[tWp])
                 lblWp1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[Wp] < ts2.averages[Wp])
+            else if (ts1.averages[tWp] < ts2.averages[tWp])
                 lblWp2.FontWeight = FontWeights.Bold;
 
-            if (ts1.averages[Weff] > ts2.averages[Weff])
+            if (ts1.averages[tWeff] > ts2.averages[tWeff])
                 lblWeff1.FontWeight = FontWeights.Bold;
-            else if (ts1.averages[Weff] < ts2.averages[Weff])
+            else if (ts1.averages[tWeff] < ts2.averages[tWeff])
                 lblWeff2.FontWeight = FontWeights.Bold;
         }
     }

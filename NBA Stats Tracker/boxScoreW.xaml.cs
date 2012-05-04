@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 
@@ -33,6 +35,7 @@ namespace NBA_Stats_Tracker
         private int curSeason;
         private Brush defaultBackground;
         private string playersT;
+        private bool loading;
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -50,11 +53,10 @@ namespace NBA_Stats_Tracker
             cbHistory.SelectedIndex = id;
         }
 
-        private ObservableCollection<PlayerBoxScore> pbsAwayList { get; set; }
-        private ObservableCollection<PlayerBoxScore> pbsHomeList { get; set; }
+        private BindingList<PlayerBoxScore> pbsAwayList { get; set; }
+        private BindingList<PlayerBoxScore> pbsHomeList { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
-        private string SelectedPlayer { get; set; }
 
         private void UpdateDataGrid(int team)
         {
@@ -89,12 +91,21 @@ namespace NBA_Stats_Tracker
             if (team == 1)
             {
                 PlayersListAway = new ObservableCollection<KeyValuePair<int, string>>();
-                pbsAwayList = new ObservableCollection<PlayerBoxScore>();
+                if (!loading) pbsAwayList = new BindingList<PlayerBoxScore>();
 
                 foreach (DataRow r in res.Rows)
                 {
                     var ps = new PlayerStats(r);
                     PlayersListAway.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                }
+
+                foreach (var cur in pbsAwayList)
+                {
+                    var player = new KeyValuePair<int, string>(cur.PlayerID, MainWindow.pst[cur.PlayerID].FirstName + " " + MainWindow.pst[cur.PlayerID].LastName);
+                    if (!PlayersListAway.Contains(player))
+                    {
+                        PlayersListAway.Add(player);
+                    }
                 }
 
                 colPlayerAway.ItemsSource = PlayersListAway;
@@ -103,12 +114,21 @@ namespace NBA_Stats_Tracker
             else
             {
                 PlayersListHome = new ObservableCollection<KeyValuePair<int, string>>();
-                pbsHomeList = new ObservableCollection<PlayerBoxScore>();
+                if (!loading) pbsHomeList = new BindingList<PlayerBoxScore>();
 
                 foreach (DataRow r in res.Rows)
                 {
                     var ps = new PlayerStats(r);
                     PlayersListHome.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                }
+
+                foreach (var cur in pbsHomeList)
+                {
+                    var player = new KeyValuePair<int, string>(cur.PlayerID, MainWindow.pst[cur.PlayerID].FirstName + " " + MainWindow.pst[cur.PlayerID].LastName);
+                    if (!PlayersListHome.Contains(player))
+                    {
+                        PlayersListHome.Add(player);
+                    }
                 }
 
                 colPlayerHome.ItemsSource = PlayersListHome;
@@ -151,6 +171,9 @@ namespace NBA_Stats_Tracker
             */
             defaultBackground = cmbTeam1.Background;
 
+            dgvPlayersAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvPlayersHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+
             cmbTeam1.SelectedIndex = -1;
             cmbTeam2.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
@@ -166,6 +189,8 @@ namespace NBA_Stats_Tracker
             }
 
             curmode = _curmode;
+
+            MainWindow.bs.done = false;
 
             calculateScore1();
             calculateScore2();
@@ -251,6 +276,14 @@ namespace NBA_Stats_Tracker
                 MainWindow.bs.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
                 MainWindow.bs.Team1 = cmbTeam1.SelectedItem.ToString();
                 MainWindow.bs.Team2 = cmbTeam2.SelectedItem.ToString();
+                MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
+
+                if (MainWindow.bs.MINS1 <= 0)
+                {
+                    MessageBox.Show("You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
+                    throw (new Exception());
+                }
+                
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
                 MainWindow.bs.REB1 = Convert.ToUInt16(txtREB1.Text);
                 MainWindow.bs.AST1 = Convert.ToUInt16(txtAST1.Text);
@@ -363,7 +396,7 @@ namespace NBA_Stats_Tracker
                     pbs.Team = Team2;
 
                 int starters = 0;
-                var pbsLists = new List<ObservableCollection<PlayerBoxScore>>(2);
+                var pbsLists = new List<BindingList<PlayerBoxScore>>(2);
                 pbsLists.Add(pbsAwayList);
                 pbsLists.Add(pbsHomeList);
                 var allPlayers = new Dictionary<int, string>();
@@ -628,14 +661,17 @@ namespace NBA_Stats_Tracker
             tryParseBS();
             if (MainWindow.bs.done)
             {
-                string header1 = "Team,PTS,REB,OREB,DREB,"
-                                 + "AST,STL,BLK,TO,FGM,"
-                                 + "FGA,FG%,3PM,3PA,3P%,"
-                                 + "FTM,FTA,FT%,PF";
+                /*
+                string header1 = 
+                    //"Team,PTS,REB,AST,STL,BLK,TO,FGM,FGA,FG%,3PM,3PA,3P%,FTM,FTA,FT%,OREB,FOUL";
+                    "Team\tPTS\tREB\tAST\tSTL\tBLK\tTO\tFGM\tFGA\tFG%\t3PM\t3PA\t3P%\tFTM\tFTA\tFT%\tOREB\tFOUL";
+                */
 
                 string data1 =
                     String.Format(
-                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                        //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
+                        //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OFF1,
                         MainWindow.bs.REB1 - MainWindow.bs.OFF1,
                         MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1,
@@ -647,7 +683,9 @@ namespace NBA_Stats_Tracker
 
                 string data2 =
                     String.Format(
-                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{18}",
+                        //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
+                        //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OFF2,
                         MainWindow.bs.REB2 - MainWindow.bs.OFF2,
                         MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2,
@@ -657,6 +695,7 @@ namespace NBA_Stats_Tracker
                         MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2,
                         MainWindow.bs.PF2);
 
+                /*
                 var sfd = new SaveFileDialog();
                 sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
                 sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -669,6 +708,19 @@ namespace NBA_Stats_Tracker
                 sw.WriteLine(data1);
                 sw.WriteLine(data2);
                 sw.Close();
+                */
+                dgvPlayersAway.SelectAllCells();
+                ApplicationCommands.Copy.Execute(null, dgvPlayersAway);
+                dgvPlayersAway.UnselectAllCells();
+                string result1 = (string) Clipboard.GetData(DataFormats.Text);
+                dgvPlayersHome.SelectAllCells();
+                ApplicationCommands.Copy.Execute(null, dgvPlayersHome);
+                dgvPlayersHome.UnselectAllCells();
+                string result2 = (string)Clipboard.GetData(DataFormats.Text);
+
+                //string result = header1 + "\n" + result1 + "\n" + data1 + "\n" + data2;
+                string result = result1 + data1 + "\n\n\n" + result2 + data2;
+                Clipboard.SetText(result);
             }
         }
 
@@ -690,7 +742,6 @@ namespace NBA_Stats_Tracker
             BoxScore bs = MainWindow.bshist[i].bs;
             curBoxScore = MainWindow.bshist[i].bs;
             curBoxScore.bshistid = i;
-            cmbTeam1.SelectedItem = bs.Team1;
             txtPTS1.Text = bs.PTS1.ToString();
             txtREB1.Text = bs.REB1.ToString();
             txtAST1.Text = bs.AST1.ToString();
@@ -705,7 +756,6 @@ namespace NBA_Stats_Tracker
             txtFTA1.Text = bs.FTA1.ToString();
             txtOFF1.Text = bs.OFF1.ToString();
             txtPF1.Text = bs.PF1.ToString();
-            cmbTeam2.SelectedItem = bs.Team2;
             txtPTS2.Text = bs.PTS2.ToString();
             txtREB2.Text = bs.REB2.ToString();
             txtAST2.Text = bs.AST2.ToString();
@@ -728,6 +778,9 @@ namespace NBA_Stats_Tracker
             calculateScore1();
             calculateScore2();
 
+            pbsAwayList = new BindingList<PlayerBoxScore>();
+            pbsHomeList = new BindingList<PlayerBoxScore>();
+            loading = true;
             foreach (PlayerBoxScore pbs in MainWindow.bshist[i].pbsList)
             {
                 if (pbs.Team == bs.Team1)
@@ -739,6 +792,10 @@ namespace NBA_Stats_Tracker
                     pbsHomeList.Add(pbs);
                 }
             }
+
+            cmbTeam1.SelectedItem = bs.Team1;
+            cmbTeam2.SelectedItem = bs.Team2;
+            loading = false;
         }
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -850,6 +907,61 @@ namespace NBA_Stats_Tracker
             txtPF2.Text = FOUL.ToString();
 
             calculateScore2();
+        }
+
+        private void colPlayerAway_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
+        {
+            try
+            {
+                foreach (var p in PlayersListAway)
+                {
+                    if (Convert.ToInt32(e.Content) == p.Key)
+                    {
+                        e.Content = p.Value;
+                        break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private void colPlayerHome_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
+        {
+            try
+            {
+                foreach (var p in PlayersListHome)
+                {
+                    if (Convert.ToInt32(e.Content) == p.Key)
+                    {
+                        e.Content = p.Value;
+                        break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private void PercentageColumn_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
+        {
+            try
+            {
+                e.Content = String.Format("{0:F3}", e.Content);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private void txtMINS1_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtMINS2.Text = txtMINS1.Text;
         }
     }
 }

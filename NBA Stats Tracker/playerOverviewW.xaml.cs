@@ -49,25 +49,7 @@ namespace NBA_Stats_Tracker
                          pFTeff = 14,
                          pRPG = 15;
 
-        public const int PPG = 0,
-                         PAPG = 1,
-                         FGp = 2,
-                         FGeff = 3,
-                         TPp = 4,
-                         TPeff = 5,
-                         FTp = 6,
-                         FTeff = 7,
-                         RPG = 8,
-                         ORPG = 9,
-                         DRPG = 10,
-                         SPG = 11,
-                         BPG = 12,
-                         TPG = 13,
-                         APG = 14,
-                         FPG = 15,
-                         Wp = 16,
-                         Weff = 17,
-                         PD = 18;
+        public const int tPPG = 0, tPAPG = 1, tFGp = 2, tFGeff = 3, tTPp = 4, tTPeff = 5, tFTp = 6, tFTeff = 7, tRPG = 8, tORPG = 9, tDRPG = 10, tSPG = 11, tBPG = 12, tTPG = 13, tAPG = 14, tFPG = 15, tWp = 16, tWeff = 17, tPD = 18;
 
         public static string askedTeam;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
@@ -180,6 +162,13 @@ namespace NBA_Stats_Tracker
 
             dtpStart.SelectedDate = DateTime.Now.AddMonths(-1).AddDays(1);
             dtpEnd.SelectedDate = DateTime.Now;
+
+            dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvHTH.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvHTHBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvOverviewStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvSplitStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvYearly.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
             GetActivePlayers();
         }
@@ -457,7 +446,7 @@ namespace NBA_Stats_Tracker
                     dr["REB"] = String.Format("{0}", rankingsActive.list[id][pRPG]);
                     dr["OREB"] = String.Format("{0}", rankingsActive.list[id][pORPG]);
                     dr["DREB"] = String.Format("{0}", rankingsActive.list[id][pDRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsActive.list[id][pAPG]);
+                    dr["AST"] = String.Format("{0}", rankingsActive.list[id][tPAPG]);
                     dr["TO"] = String.Format("{0}", rankingsActive.list[id][pTPG]);
                     dr["STL"] = String.Format("{0}", rankingsActive.list[id][pSPG]);
                     dr["BLK"] = String.Format("{0}", rankingsActive.list[id][pBPG]);
@@ -479,7 +468,7 @@ namespace NBA_Stats_Tracker
                     dr["REB"] = String.Format("{0}", rankingsTeam.list[id][pRPG]);
                     dr["OREB"] = String.Format("{0}", rankingsTeam.list[id][pORPG]);
                     dr["DREB"] = String.Format("{0}", rankingsTeam.list[id][pDRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsTeam.list[id][pAPG]);
+                    dr["AST"] = String.Format("{0}", rankingsTeam.list[id][tPAPG]);
                     dr["TO"] = String.Format("{0}", rankingsTeam.list[id][pTPG]);
                     dr["STL"] = String.Format("{0}", rankingsTeam.list[id][pSPG]);
                     dr["BLK"] = String.Format("{0}", rankingsTeam.list[id][pBPG]);
@@ -501,7 +490,7 @@ namespace NBA_Stats_Tracker
                     dr["REB"] = String.Format("{0}", rankingsPosition.list[id][pRPG]);
                     dr["OREB"] = String.Format("{0}", rankingsPosition.list[id][pORPG]);
                     dr["DREB"] = String.Format("{0}", rankingsPosition.list[id][pDRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsPosition.list[id][pAPG]);
+                    dr["AST"] = String.Format("{0}", rankingsPosition.list[id][tPAPG]);
                     dr["TO"] = String.Format("{0}", rankingsPosition.list[id][pTPG]);
                     dr["STL"] = String.Format("{0}", rankingsPosition.list[id][pSPG]);
                     dr["BLK"] = String.Format("{0}", rankingsPosition.list[id][pBPG]);
@@ -515,21 +504,21 @@ namespace NBA_Stats_Tracker
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Team Avg";
-                dr["PTS"] = String.Format("{0:F1}", ts.averages[PPG]);
-                dr["FG"] = String.Format("{0:F3}", ts.averages[FGp]);
-                dr["FGeff"] = String.Format("{0:F2}", ts.averages[FGeff]);
-                dr["3PT"] = String.Format("{0:F3}", ts.averages[TPp]);
-                dr["3Peff"] = String.Format("{0:F2}", ts.averages[TPeff]);
-                dr["FT"] = String.Format("{0:F3}", ts.averages[FTp]);
-                dr["FTeff"] = String.Format("{0:F2}", ts.averages[FTeff]);
-                dr["REB"] = String.Format("{0:F1}", ts.averages[RPG]);
-                dr["OREB"] = String.Format("{0:F1}", ts.averages[ORPG]);
-                dr["DREB"] = String.Format("{0:F1}", ts.averages[DRPG]);
-                dr["AST"] = String.Format("{0:F1}", ts.averages[APG]);
-                dr["TO"] = String.Format("{0:F1}", ts.averages[TPG]);
-                dr["STL"] = String.Format("{0:F1}", ts.averages[SPG]);
-                dr["BLK"] = String.Format("{0:F1}", ts.averages[BPG]);
-                dr["FOUL"] = String.Format("{0:F1}", ts.averages[FPG]);
+                dr["PTS"] = String.Format("{0:F1}", ts.averages[tPPG]);
+                dr["FG"] = String.Format("{0:F3}", ts.averages[tFGp]);
+                dr["FGeff"] = String.Format("{0:F2}", ts.averages[tFGeff]);
+                dr["3PT"] = String.Format("{0:F3}", ts.averages[tTPp]);
+                dr["3Peff"] = String.Format("{0:F2}", ts.averages[tTPeff]);
+                dr["FT"] = String.Format("{0:F3}", ts.averages[tFTp]);
+                dr["FTeff"] = String.Format("{0:F2}", ts.averages[tFTeff]);
+                dr["REB"] = String.Format("{0:F1}", ts.averages[tRPG]);
+                dr["OREB"] = String.Format("{0:F1}", ts.averages[tORPG]);
+                dr["DREB"] = String.Format("{0:F1}", ts.averages[tDRPG]);
+                dr["AST"] = String.Format("{0:F1}", ts.averages[tAPG]);
+                dr["TO"] = String.Format("{0:F1}", ts.averages[tTPG]);
+                dr["STL"] = String.Format("{0:F1}", ts.averages[tSPG]);
+                dr["BLK"] = String.Format("{0:F1}", ts.averages[tBPG]);
+                dr["FOUL"] = String.Format("{0:F1}", ts.averages[tFPG]);
 
                 dt_ov.Rows.Add(dr);
             }
@@ -730,7 +719,7 @@ namespace NBA_Stats_Tracker
 
                 while (true)
                 {
-                    if (dCur.AddMonths(1) > dEnd)
+                    if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(dEnd.Year, dEnd.Month, 1))
                     {
                         string s = String.Format("select * from PlayerResults " +
                                                  "INNER JOIN GameResults " +
