@@ -103,7 +103,9 @@
       </MenuItem>
       <MenuItem Header="_Miscellanous">
         <MenuItem Header="_Start New Season" Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
-      </MenuItem>
+                <Separator />
+                <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click"/>
+            </MenuItem>
       <MenuItem Header="_Help">
         <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
         <Separator />

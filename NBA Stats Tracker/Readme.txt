@@ -125,7 +125,15 @@ Credits to
 	
 	
 Version History
-	v0.10.1 - Current
+	v0.10.2 - Current
+		- Added: Minutes Played have been added as a stat kept for Teams
+
+	v0.10.1.2 - May 4
+		- Added: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
+		- Improvement: The Box Score window's Copy feature now copies both teams' player and team stats into the Clipboard in a TSV table with headers
+		- Fix: Fixed various minor issues
+
+	v0.10 - May 3
 		- Change: The program now uses SQLite 3 databases instead of the custom binary format
 		- Change: Massive UI overhaul, more details below
 		- Added: Team Overview screen; all statistics can be limited to a specific timeframe if the required box scores are available
@@ -151,8 +159,6 @@ Version History
 		- Added: Box Scores now require a Season number as well as the date the game took place; you can also differentiate between regular season and playoff games for the split stats
 		- Added: Double-clicking on a team, player or box-score in any table in the tool takes you to the respective screen for further analysis and edits
 		- Added: Tool now keeps track of stats over multiple seasons; Team Stats, Playoff Stats, Player Stats and Box Scores are all preserved between seasons, and you can switch to any season's stats easily
-		- Added: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
-		- Added: Minutes Played have been added as a stat kept for Teams
 
 	v0.8 - Mar 21
 		- Added keeping history of Box Score updates

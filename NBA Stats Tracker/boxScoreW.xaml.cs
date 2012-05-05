@@ -36,6 +36,7 @@ namespace NBA_Stats_Tracker
         private Brush defaultBackground;
         private string playersT;
         private bool loading;
+        private bool minsUpdating = false;
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -756,6 +757,7 @@ namespace NBA_Stats_Tracker
             txtFTA1.Text = bs.FTA1.ToString();
             txtOFF1.Text = bs.OFF1.ToString();
             txtPF1.Text = bs.PF1.ToString();
+            txtMINS1.Text = bs.MINS1.ToString();
             txtPTS2.Text = bs.PTS2.ToString();
             txtREB2.Text = bs.REB2.ToString();
             txtAST2.Text = bs.AST2.ToString();
@@ -961,7 +963,22 @@ namespace NBA_Stats_Tracker
 
         private void txtMINS1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            txtMINS2.Text = txtMINS1.Text;
+            if (!minsUpdating)
+            {
+                minsUpdating = true;
+                txtMINS2.Text = txtMINS1.Text;
+                minsUpdating = false;
+            }
+        }
+
+        private void txtMINS2_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!minsUpdating)
+            {
+                minsUpdating = true;
+                txtMINS1.Text = txtMINS2.Text;
+                minsUpdating = false;
+            }
         }
     }
 }

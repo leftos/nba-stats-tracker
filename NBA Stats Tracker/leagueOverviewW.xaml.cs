@@ -24,8 +24,9 @@ namespace NBA_Stats_Tracker
         private TeamStats ts;
         private TeamStats tsopp;
         private TeamStats[] tst;
+        private TeamStats[] tstopp;
 
-        public leagueOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
+        public leagueOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -70,6 +71,7 @@ namespace NBA_Stats_Tracker
             #endregion
 
             this.tst = tst;
+            this.tstopp = tstopp;
             this.pst = pst;
 
             PopulateSeasonCombo();
@@ -270,7 +272,7 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                               ref MainWindow.pt, ref MainWindow.bshist,
                                               _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -324,7 +326,7 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
+                MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                               ref MainWindow.pt, ref MainWindow.bshist,
                                               _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -443,7 +445,7 @@ namespace NBA_Stats_Tracker
                 var row = (DataRowView) dgvTeamStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                var tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                var tow = new teamOverviewW(MainWindow.tst, MainWindow.tstopp, MainWindow.pst, team);
                 tow.ShowDialog();
             }
         }
@@ -455,7 +457,7 @@ namespace NBA_Stats_Tracker
                 var row = (DataRowView) dgvPlayoffStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                var tow = new teamOverviewW(MainWindow.tst, MainWindow.pst, team);
+                var tow = new teamOverviewW(MainWindow.tst, MainWindow.tstopp, MainWindow.pst, team);
                 tow.ShowDialog();
             }
         }
@@ -463,7 +465,7 @@ namespace NBA_Stats_Tracker
         private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr)
         {
             string team = psr.TeamF;
-            TeamStats ts = MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, team, curSeason);
+            MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, team, curSeason, ref ts, ref tsopp);
             int gamesTeam = ts.getGames();
             int gamesPlayer = psr.GP;
             var newpsr = new PlayerStatsRow(new PlayerStats(psr));

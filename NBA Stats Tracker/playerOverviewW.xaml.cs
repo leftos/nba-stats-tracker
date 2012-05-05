@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace NBA_Stats_Tracker
@@ -615,7 +616,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Home"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Home", "Location"));
 
             //Away
             res = db.GetDataTable(qr_away);
@@ -625,7 +626,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Away"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Away", "Location"));
 
             //Wins
             res = db.GetDataTable(qr_wins);
@@ -635,7 +636,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Wins"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Wins", "Result"));
 
             //Losses
             res = db.GetDataTable(qr_losses);
@@ -645,7 +646,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Losses"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Losses", "Result"));
 
             //Season
             res = db.GetDataTable(qr_season);
@@ -655,7 +656,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Season"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Season", "Part of Season"));
 
             //Playoffs
             res = db.GetDataTable(qr_playoffs);
@@ -665,7 +666,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Playoffs"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Playoffs", "Part of Season"));
 
             #region Each Team Played In Stats
 
@@ -701,7 +702,7 @@ namespace NBA_Stats_Tracker
                     {
                         ps.AddBoxScore(new PlayerBoxScore(r));
                     }
-                    splitPSRs.Add(new PlayerStatsRow(ps, team));
+                    splitPSRs.Add(new PlayerStatsRow(ps, team, "Team Played For"));
                 }
             }
 
@@ -760,14 +761,16 @@ namespace NBA_Stats_Tracker
                     }
 
                     DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
-                    splitPSRs.Add(new PlayerStatsRow(ps, label.Year.ToString() + " " + String.Format("{0:MMMM}", label)));
+                    splitPSRs.Add(new PlayerStatsRow(ps, label.Year.ToString() + " " + String.Format("{0:MMMM}", label), "Month"));
                     i++;
                 }
             }
 
             #endregion
 
-            dgvSplitStats.ItemsSource = splitPSRs;
+            ListCollectionView splitPSRsCollection = new ListCollectionView(splitPSRs);
+            splitPSRsCollection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            dgvSplitStats.ItemsSource = splitPSRsCollection;
         }
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)

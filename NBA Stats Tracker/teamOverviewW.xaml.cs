@@ -32,8 +32,9 @@ namespace NBA_Stats_Tracker
         private Dictionary<int, PlayerStats> pst;
         private string showSeason;
         private TeamStats[] tst;
+        private TeamStats[] tstopp;
 
-        public teamOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst)
+        public teamOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -153,6 +154,7 @@ namespace NBA_Stats_Tracker
             #endregion
 
             this.tst = tst;
+            this.tstopp = tstopp;
             this.pst = pst;
 
             foreach (var kvp in MainWindow.TeamOrder)
@@ -181,7 +183,7 @@ namespace NBA_Stats_Tracker
             cmbTeam.SelectedIndex = 0;
         }
 
-        public teamOverviewW(TeamStats[] tst, Dictionary<int, PlayerStats> pst, string team) : this(tst, pst)
+        public teamOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst, string team) : this(tst, tstopp, pst)
         {
             cmbTeam.SelectedItem = team;
         }
@@ -212,6 +214,7 @@ namespace NBA_Stats_Tracker
         {
             var ts = new TeamStats(curTeam);
             var tsopp = new TeamStats("Opponents");
+            int curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
 
             int i = MainWindow.TeamOrder[curTeam];
 
@@ -219,11 +222,7 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                tst = MainWindow.LoadDatabase(MainWindow.currentDB, ref pst, ref MainWindow.TeamOrder,
-                                              ref MainWindow.pt, ref MainWindow.bshist,
-                                              _curSeason: Convert.ToInt32(showSeason));
-
-                ts = tst[i];
+                MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, curSeason, ref ts, ref tsopp);
 
                 DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
@@ -428,6 +427,58 @@ namespace NBA_Stats_Tracker
                 dr2["FOUL"] = cmbTeam.Items.Count + 1 - rankings[i][tFOUL];
 
                 dt_ov.Rows.Add(dr2);
+
+                dr = dt_ov.NewRow();
+
+                dr["Type"] = "Opp Stats";
+                dr["Games"] = tsopp.getGames();
+                dr["Wins (W%)"] = tsopp.winloss[0].ToString();
+                dr["Losses (Weff)"] = tsopp.winloss[1].ToString();
+                dr["PF"] = tsopp.stats[tPF].ToString();
+                dr["PA"] = tsopp.stats[tPA].ToString();
+                dr["PD"] = " ";
+                dr["FG"] = tsopp.stats[tFGM].ToString() + "-" + tsopp.stats[tFGA].ToString();
+                dr["3PT"] = tsopp.stats[tTPM].ToString() + "-" + tsopp.stats[tTPA].ToString();
+                dr["FT"] = tsopp.stats[tFTM].ToString() + "-" + tsopp.stats[tFTA].ToString();
+                dr["REB"] = (tsopp.stats[tDREB] + tsopp.stats[tOREB]).ToString();
+                dr["OREB"] = tsopp.stats[tOREB].ToString();
+                dr["DREB"] = tsopp.stats[tDREB].ToString();
+                dr["AST"] = tsopp.stats[tAST].ToString();
+                dr["TO"] = tsopp.stats[tTO].ToString();
+                dr["STL"] = tsopp.stats[tSTL].ToString();
+                dr["BLK"] = tsopp.stats[tBLK].ToString();
+                dr["FOUL"] = tsopp.stats[tFOUL].ToString();
+                dr["MINS"] = tsopp.stats[tMINS].ToString();
+
+                dt_ov.Rows.Add(dr);
+
+                dr = dt_ov.NewRow();
+
+                tsopp.calcAvg(); // Just to be sure...
+
+                dr["Type"] = "Opp Avg";
+                //dr["Games"] = tsopp.getGames();
+                dr["Wins (W%)"] = String.Format("{0:F3}", tsopp.averages[tWp]);
+                dr["Losses (Weff)"] = String.Format("{0:F2}", tsopp.averages[tWeff]);
+                dr["PF"] = String.Format("{0:F1}", tsopp.averages[tPPG]);
+                dr["PA"] = String.Format("{0:F1}", tsopp.averages[tPAPG]);
+                dr["PD"] = String.Format("{0:F1}", tsopp.averages[tPD]);
+                dr["FG"] = String.Format("{0:F3}", tsopp.averages[tFGp]);
+                dr["FGeff"] = String.Format("{0:F2}", tsopp.averages[tFGeff]);
+                dr["3PT"] = String.Format("{0:F3}", tsopp.averages[tTPp]);
+                dr["3Peff"] = String.Format("{0:F2}", tsopp.averages[tTPeff]);
+                dr["FT"] = String.Format("{0:F3}", tsopp.averages[tFTp]);
+                dr["FTeff"] = String.Format("{0:F2}", tsopp.averages[tFTeff]);
+                dr["REB"] = String.Format("{0:F1}", tsopp.averages[tRPG]);
+                dr["OREB"] = String.Format("{0:F1}", tsopp.averages[tORPG]);
+                dr["DREB"] = String.Format("{0:F1}", tsopp.averages[tDRPG]);
+                dr["AST"] = String.Format("{0:F1}", tsopp.averages[tAPG]);
+                dr["TO"] = String.Format("{0:F1}", tsopp.averages[tTPG]);
+                dr["STL"] = String.Format("{0:F1}", tsopp.averages[tSPG]);
+                dr["BLK"] = String.Format("{0:F1}", tsopp.averages[tBPG]);
+                dr["FOUL"] = String.Format("{0:F1}", tsopp.averages[tFPG]);
+
+                dt_ov.Rows.Add(dr);
             }
             else
             {
@@ -573,6 +624,56 @@ namespace NBA_Stats_Tracker
                     dr2["FOUL"] = count + 1 - pl_rankings[i][tFOUL];
 
                     dt_ov.Rows.Add(dr2);
+
+                    dr = dt_ov.NewRow();
+
+                    dr["Type"] = "Opp Pl Stats";
+                    dr["Games"] = tsopp.getPlayoffGames();
+                    dr["Wins (W%)"] = tsopp.winloss[0].ToString();
+                    dr["Losses (Weff)"] = tsopp.winloss[1].ToString();
+                    dr["PF"] = tsopp.pl_stats[tPF].ToString();
+                    dr["PA"] = tsopp.pl_stats[tPA].ToString();
+                    dr["PD"] = " ";
+                    dr["FG"] = tsopp.pl_stats[tFGM].ToString() + "-" + tsopp.pl_stats[tFGA].ToString();
+                    dr["3PT"] = tsopp.pl_stats[tTPM].ToString() + "-" + tsopp.pl_stats[tTPA].ToString();
+                    dr["FT"] = tsopp.pl_stats[tFTM].ToString() + "-" + tsopp.pl_stats[tFTA].ToString();
+                    dr["REB"] = (tsopp.pl_stats[tDREB] + tsopp.pl_stats[tOREB]).ToString();
+                    dr["OREB"] = tsopp.pl_stats[tOREB].ToString();
+                    dr["DREB"] = tsopp.pl_stats[tDREB].ToString();
+                    dr["AST"] = tsopp.pl_stats[tAST].ToString();
+                    dr["TO"] = tsopp.pl_stats[tTO].ToString();
+                    dr["STL"] = tsopp.pl_stats[tSTL].ToString();
+                    dr["BLK"] = tsopp.pl_stats[tBLK].ToString();
+                    dr["FOUL"] = tsopp.pl_stats[tFOUL].ToString();
+                    dr["MINS"] = tsopp.pl_stats[tMINS].ToString();
+
+                    dt_ov.Rows.Add(dr);
+
+                    dr = dt_ov.NewRow();
+
+                    dr["Type"] = "Opp Pl Avg";
+                    //dr["Games"] = tsopp.getGames();
+                    dr["Wins (W%)"] = String.Format("{0:F3}", tsopp.pl_averages[tWp]);
+                    dr["Losses (Weff)"] = String.Format("{0:F2}", tsopp.pl_averages[tWeff]);
+                    dr["PF"] = String.Format("{0:F1}", tsopp.pl_averages[tPPG]);
+                    dr["PA"] = String.Format("{0:F1}", tsopp.pl_averages[tPAPG]);
+                    dr["PD"] = String.Format("{0:F1}", tsopp.pl_averages[tPD]);
+                    dr["FG"] = String.Format("{0:F3}", tsopp.pl_averages[tFGp]);
+                    dr["FGeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFGeff]);
+                    dr["3PT"] = String.Format("{0:F3}", tsopp.pl_averages[tTPp]);
+                    dr["3Peff"] = String.Format("{0:F2}", tsopp.pl_averages[tTPeff]);
+                    dr["FT"] = String.Format("{0:F3}", tsopp.pl_averages[tFTp]);
+                    dr["FTeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFTeff]);
+                    dr["REB"] = String.Format("{0:F1}", tsopp.pl_averages[tRPG]);
+                    dr["OREB"] = String.Format("{0:F1}", tsopp.pl_averages[tORPG]);
+                    dr["DREB"] = String.Format("{0:F1}", tsopp.pl_averages[tDRPG]);
+                    dr["AST"] = String.Format("{0:F1}", tsopp.pl_averages[tAPG]);
+                    dr["TO"] = String.Format("{0:F1}", tsopp.pl_averages[tTPG]);
+                    dr["STL"] = String.Format("{0:F1}", tsopp.pl_averages[tSPG]);
+                    dr["BLK"] = String.Format("{0:F1}", tsopp.pl_averages[tBPG]);
+                    dr["FOUL"] = String.Format("{0:F1}", tsopp.pl_averages[tFPG]);
+
+                    dt_ov.Rows.Add(dr);
                 }
                 else
                 {
@@ -946,6 +1047,7 @@ namespace NBA_Stats_Tracker
             int maxSeason = MainWindow.getMaxSeason(currentDB);
 
             TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
+            TeamStats tsopp = tstopp[MainWindow.TeamOrder[curTeam]];
             var tsAllSeasons = new TeamStats("All Seasons");
             var tsAllPlayoffs = new TeamStats("All Playoffs");
             var tsAll = new TeamStats("All Games");
@@ -968,7 +1070,7 @@ namespace NBA_Stats_Tracker
             {
                 if (j != curSeason)
                 {
-                    ts = MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j);
+                    MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, ref ts, ref tsopp);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
                     CreateDataRowFromTeamStats(ts, ref dr3, "Season " + j.ToString());
@@ -1075,7 +1177,7 @@ namespace NBA_Stats_Tracker
                 playersToUpdate.Add(ps.ID, ps);
             }
 
-            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, playersToUpdate,
+            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
                                             Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()),
                                             MainWindow.getMaxSeason(MainWindow.currentDB));
 
@@ -1759,6 +1861,9 @@ namespace NBA_Stats_Tracker
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            int curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+                                          ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             cmbTeam_SelectionChanged(null, null);
         }
 

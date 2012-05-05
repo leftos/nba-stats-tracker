@@ -242,10 +242,14 @@ namespace NBA_Stats_Tracker
             //prepareWindow(isCustom);
             TeamOrder = StatsTracker.setTeamOrder("Mode 0");
 
-            TeamStats[] temp = StatsTracker.GetStats(ofd.FileName, ref TeamOrder, ref pt);
+            TeamStats[] temp = new TeamStats[1];
+            TeamStats[] tempopp = new TeamStats[1];
+
+            StatsTracker.GetStatsFrom2K12Save(ofd.FileName, ref temp, ref tempopp, ref TeamOrder, ref pt);
             if (temp.Length > 1)
             {
                 tst = temp;
+                tstopp = tempopp;
                 populateTeamsComboBox(TeamOrder, pt);
             }
 
@@ -385,7 +389,7 @@ namespace NBA_Stats_Tracker
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog();
-            sfd.Filter = "Team Stats Table (*.tst)|*.tst";
+            sfd.Filter = "NST Database (*.tst)|*.tst";
             sfd.InitialDirectory = AppDocsPath;
             sfd.ShowDialog();
 
@@ -397,83 +401,6 @@ namespace NBA_Stats_Tracker
             saveAllSeasons(file);
         }
 
-        private static void OBSOLETE_saveTeamStatsFile(string file)
-        {
-            try
-            {
-                var stream = new BinaryWriter(File.Open(file, FileMode.Create));
-
-                stream.Write("NST_STATS_FILE_START");
-
-                // Team Stats
-                stream.Write("TEAMSTATS_START");
-                stream.Write(tst.GetLength(0));
-                for (int i = 0; i < tst.GetLength(0); i++)
-                {
-                    stream.Write("TEAM_START");
-                    stream.Write("NAME");
-                    if (tst[i].name == null)
-                    {
-                        stream.Write("__NOTEAM");
-                        continue;
-                    }
-                    else
-                    {
-                        stream.Write(tst[i].name);
-                    }
-                    stream.Write("OFFSET");
-                    stream.Write(tst[i].offset);
-                    stream.Write("WINLOSS");
-                    stream.Write(tst[i].winloss);
-                    stream.Write("STATS_START");
-                    stream.Write(tst[i].stats.Length);
-                    for (int j = 0; j < tst[i].stats.Length; j++)
-                    {
-                        stream.Write(tst[i].stats[j]);
-                    }
-                    stream.Write("STATS_END");
-                    stream.Write("TEAM_END");
-                }
-                stream.Write("TEAMSTATS_END");
-
-                // Playoff Tree
-                if (pt != null)
-                {
-                    stream.Write("PLAYOFFTREE_START");
-                    stream.Write(pt.teams.GetLength(0));
-                    for (int i = 0; i < pt.teams.GetLength(0); i++)
-                    {
-                        stream.Write(pt.teams[i]);
-                    }
-                    stream.Write("PLAYOFFTREE_END");
-                }
-                else
-                {
-                    pt = new PlayoffTree();
-                    stream.Write("PLAYOFFTREE_START");
-                    stream.Write(pt.teams.GetLength(0));
-                    for (int i = 0; i < pt.teams.GetLength(0); i++)
-                    {
-                        stream.Write("Invalid");
-                    }
-                    stream.Write("PLAYOFFTREE_END");
-                    pt = null;
-                }
-
-                // Box Score History
-                writeBoxScoreHistory(stream);
-
-                // End
-                stream.Write("NST_STATS_FILE_END");
-
-                stream.Close();
-            }
-            catch (Exception ex)
-            {
-                App.errorReport(ex, "Trying to save team stats");
-            }
-        }
-
         private static void saveAllSeasons(string file)
         {
             string oldDB = currentDB;
@@ -481,22 +408,22 @@ namespace NBA_Stats_Tracker
 
             int maxSeason = getMaxSeason(oldDB);
 
-            saveSeasonToDatabase(file, tst, pst, curSeason, maxSeason);
+            saveSeasonToDatabase(file, tst, tstopp, pst, curSeason, maxSeason);
 
             for (int i = 1; i <= maxSeason; i++)
             {
                 if (i != oldSeason)
                 {
-                    tst = LoadDatabase(oldDB, ref pst, ref TeamOrder, ref pt, ref bshist, true, i);
-                    saveSeasonToDatabase(file, tst, pst, curSeason, maxSeason);
+                    LoadDatabase(oldDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true, i);
+                    saveSeasonToDatabase(file, tst, tstopp, pst, curSeason, maxSeason);
                 }
             }
-            tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason);
+            LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason);
 
             mwInstance.updateStatus("All seasons saved successfully.");
         }
 
-        public static void saveSeasonToDatabase(string file, TeamStats[] tstToSave,
+        public static void saveSeasonToDatabase(string file, TeamStats[] tstToSave, TeamStats[] tstoppToSave,
                                                 Dictionary<int, PlayerStats> pstToSave,
                                                 int season, int maxSeason)
         {
@@ -516,11 +443,15 @@ namespace NBA_Stats_Tracker
 
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
+                string oppT = "Opponents";
+                string pl_oppT = "PlayoffOpponents";
 
                 if (season != maxSeason)
                 {
-                    teamsT += "S" + season.ToString();
-                    pl_teamsT += "S" + season.ToString();
+                    teamsT += "S" + season;
+                    pl_teamsT += "S" + season;
+                    oppT += "S" + season;
+                    pl_oppT += "S" + season;
                 }
 
                 String q = "select Name from " + teamsT + ";";
@@ -578,8 +509,8 @@ namespace NBA_Stats_Tracker
                     {
                         if (r[0].ToString().Equals(ts.name))
                         {
-                            bool success = db.Update(teamsT, dict, "Name LIKE \'" + ts.name + "\'");
-                            bool success2 = db.Update(pl_teamsT, pl_dict, "Name LIKE \'" + ts.name + "\'");
+                            db.Update(teamsT, dict, "Name LIKE \'" + ts.name + "\'");
+                            db.Update(pl_teamsT, pl_dict, "Name LIKE \'" + ts.name + "\'");
                             found = true;
                             break;
                         }
@@ -589,6 +520,72 @@ namespace NBA_Stats_Tracker
                     {
                         bool success = db.Insert(teamsT, dict);
                         bool success2 = db.Insert(pl_teamsT, pl_dict);
+                    }
+                }
+
+                foreach (TeamStats ts in tstoppToSave)
+                {
+                    bool found = false;
+
+                    var dict = new Dictionary<string, string>();
+                    dict.Add("Name", ts.name);
+                    dict.Add("WIN", ts.winloss[0].ToString());
+                    dict.Add("LOSS", ts.winloss[1].ToString());
+                    dict.Add("MINS", ts.stats[tMINS].ToString());
+                    dict.Add("PF", ts.stats[tPF].ToString());
+                    dict.Add("PA", ts.stats[tPA].ToString());
+                    dict.Add("FGM", ts.stats[tFGM].ToString());
+                    dict.Add("FGA", ts.stats[tFGA].ToString());
+                    dict.Add("TPM", ts.stats[tTPM].ToString());
+                    dict.Add("TPA", ts.stats[tTPA].ToString());
+                    dict.Add("FTM", ts.stats[tFTM].ToString());
+                    dict.Add("FTA", ts.stats[tFTA].ToString());
+                    dict.Add("OREB", ts.stats[tOREB].ToString());
+                    dict.Add("DREB", ts.stats[tDREB].ToString());
+                    dict.Add("STL", ts.stats[tSTL].ToString());
+                    dict.Add("TOS", ts.stats[tTO].ToString());
+                    dict.Add("BLK", ts.stats[tBLK].ToString());
+                    dict.Add("AST", ts.stats[tAST].ToString());
+                    dict.Add("FOUL", ts.stats[tFOUL].ToString());
+                    dict.Add("OFFSET", ts.offset.ToString());
+
+                    var pl_dict = new Dictionary<string, string>();
+                    pl_dict.Add("Name", ts.name);
+                    pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
+                    pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
+                    pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
+                    pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
+                    pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
+                    pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
+                    pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
+                    pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
+                    pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
+                    pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
+                    pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
+                    pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
+                    pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
+                    pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
+                    pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
+                    pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
+                    pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
+                    pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
+                    pl_dict.Add("OFFSET", ts.pl_offset.ToString());
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        if (r[0].ToString().Equals(ts.name))
+                        {
+                            db.Update(oppT, dict, "Name LIKE \'" + ts.name + "\'");
+                            db.Update(pl_oppT, pl_dict, "Name LIKE \'" + ts.name + "\'");
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        bool success = db.Insert(oppT, dict);
+                        bool success2 = db.Insert(pl_oppT, pl_dict);
                     }
                 }
 
@@ -899,14 +896,14 @@ namespace NBA_Stats_Tracker
             bshist = new List<BoxScoreEntry>();
 
             var ofd = new OpenFileDialog();
-            ofd.Filter = "Team Stats Table (*.tst)|*.tst";
+            ofd.Filter = "NST Database (*.tst)|*.tst";
             ofd.InitialDirectory = AppDocsPath;
             ofd.Title = "Please select the TST file that you want to edit...";
             ofd.ShowDialog();
 
             if (ofd.FileName == "") return;
 
-            tst = LoadDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
+            LoadDatabase(ofd.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref TeamOrder, ref pt, ref bshist);
 
             cmbTeam1.SelectedIndex = -1;
@@ -1135,13 +1132,13 @@ namespace NBA_Stats_Tracker
 
         public static int getMaxSeason(string file)
         {
-            db = new SQLiteDatabase(file);
+            SQLiteDatabase _db = new SQLiteDatabase(file);
 
             DataTable res;
 
             String q;
             q = "select Name from sqlite_master";
-            res = db.GetDataTable(q);
+            res = _db.GetDataTable(q);
 
             int maxseason = 0;
 
@@ -1163,9 +1160,9 @@ namespace NBA_Stats_Tracker
             return maxseason;
         }
 
-        public static TeamStats GetTeamStatsFromDatabase(string file, string team, int season)
+        public static void GetTeamStatsFromDatabase(string file, string team, int season, ref TeamStats ts, ref TeamStats tsopp)
         {
-            db = new SQLiteDatabase(file);
+            SQLiteDatabase _db = new SQLiteDatabase(file);
 
             DataTable res;
 
@@ -1183,9 +1180,9 @@ namespace NBA_Stats_Tracker
                 q = "select * from TeamsS" + season.ToString() + " where Name LIKE '" + team + "'";
             }
 
-            res = db.GetDataTable(q);
+            res = _db.GetDataTable(q);
 
-            var ts = new TeamStats();
+            ts = new TeamStats();
 
             foreach (DataRow r in res.Rows)
             {
@@ -1219,7 +1216,7 @@ namespace NBA_Stats_Tracker
             {
                 q = "select * from PlayoffTeamsS" + season.ToString() + ";";
             }
-            res = db.GetDataTable(q);
+            res = _db.GetDataTable(q);
 
             foreach (DataRow r in res.Rows)
             {
@@ -1245,12 +1242,81 @@ namespace NBA_Stats_Tracker
                 ts.calcAvg();
             }
 
-            return ts;
+            if (maxSeason == season)
+            {
+                q = "select * from Opponents where Name LIKE '" + team + "'";
+            }
+            else
+            {
+                q = "select * from OpponentsS" + season.ToString() + " where Name LIKE '" + team + "'";
+            }
+
+            res = _db.GetDataTable(q);
+
+            tsopp = new TeamStats();
+
+            foreach (DataRow r in res.Rows)
+            {
+                tsopp = new TeamStats();
+                tsopp.name = r["Name"].ToString();
+                tsopp.offset = Convert.ToInt32(r["OFFSET"].ToString());
+                tsopp.winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                tsopp.winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                tsopp.stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                tsopp.stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                tsopp.stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                tsopp.stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                tsopp.stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                tsopp.stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                tsopp.stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                tsopp.stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                tsopp.stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                tsopp.stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                tsopp.stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                tsopp.stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                tsopp.stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                tsopp.stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                tsopp.stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            }
+
+            if (maxSeason == season)
+            {
+                q = "select * from PlayoffOpponents;";
+            }
+            else
+            {
+                q = "select * from PlayoffOpponentsS" + season.ToString() + ";";
+            }
+            res = _db.GetDataTable(q);
+
+            foreach (DataRow r in res.Rows)
+            {
+                tsopp.pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
+                tsopp.pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
+                tsopp.pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
+                tsopp.pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
+                tsopp.pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
+                tsopp.pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
+                tsopp.pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
+                tsopp.pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
+                tsopp.pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
+                tsopp.pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
+                tsopp.pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
+                tsopp.pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
+                tsopp.pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
+                tsopp.pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
+                tsopp.pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
+                tsopp.pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
+                tsopp.pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
+                tsopp.pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+
+                tsopp.calcAvg();
+            }
         }
 
-        public static TeamStats[] GetAllTeamStatsFromDatabase(string file, int season)
+        public static void GetAllTeamStatsFromDatabase(string file, int season, ref TeamStats[] tst, ref TeamStats[] tstopp, ref SortedDictionary<string,int> TeamOrder)
         {
-            db = new SQLiteDatabase(file);
+            SQLiteDatabase _db = new SQLiteDatabase(file);
 
             DataTable res;
 
@@ -1261,89 +1327,37 @@ namespace NBA_Stats_Tracker
 
             if (maxSeason == season)
             {
-                q = "select * from Teams;";
+                q = "select Name from Teams;";
             }
             else
             {
-                q = "select * from TeamsS" + season.ToString() + ";";
+                q = "select Name from TeamsS" + season.ToString() + ";";
             }
 
-            res = db.GetDataTable(q);
+            res = _db.GetDataTable(q);
 
             var _tst = new TeamStats[res.Rows.Count];
+            var _tstopp = new TeamStats[res.Rows.Count];
+            TeamOrder = new SortedDictionary<string, int>();
             int i = 0;
 
             foreach (DataRow r in res.Rows)
             {
-                _tst[i] = new TeamStats();
-                _tst[i].name = r["Name"].ToString();
-                _tst[i].offset = Convert.ToInt32(r["OFFSET"].ToString());
-                _tst[i].winloss[0] = Convert.ToByte(r["WIN"].ToString());
-                _tst[i].winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                string name = r["Name"].ToString();
+                _tst[i] = new TeamStats(name);
+                _tstopp[i] = new TeamStats(name);
+                GetTeamStatsFromDatabase(file, name, curSeason, ref _tst[i], ref _tstopp[i]);
+                TeamOrder.Add(name, i);
                 i++;
             }
-
-            if (maxSeason == season)
-            {
-                q = "select * from PlayoffTeams;";
-            }
-            else
-            {
-                q = "select * from PlayoffTeamsS" + season.ToString() + ";";
-            }
-            res = db.GetDataTable(q);
-
-            i = 0;
-
-            foreach (DataRow r in res.Rows)
-            {
-                _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
-                _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
-                _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
-
-                _tst[i].calcAvg();
-                i++;
-            }
-
-            return _tst;
         }
 
-        public static TeamStats[] LoadDatabase(string file, ref Dictionary<int, PlayerStats> pst,
+        public static void LoadDatabase(string file, ref TeamStats[] _tst, ref TeamStats[] _tstopp, ref Dictionary<int, PlayerStats> pst,
                                                ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
                                                ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
                                                int _curSeason = 0)
         {
-            db = new SQLiteDatabase(file);
+            SQLiteDatabase _db = new SQLiteDatabase(file);
 
             DataTable res;
 
@@ -1354,92 +1368,62 @@ namespace NBA_Stats_Tracker
 
             if (maxSeason == _curSeason)
             {
-                q = "select * from Teams;";
+                q = "select Name from Teams;";
             }
             else
             {
-                q = "select * from TeamsS" + _curSeason.ToString() + ";";
+                q = "select Name from TeamsS" + _curSeason.ToString() + ";";
             }
 
-            res = db.GetDataTable(q);
+            res = _db.GetDataTable(q);
 
-            var _tst = new TeamStats[res.Rows.Count];
+            _tst = new TeamStats[res.Rows.Count];
+            _tstopp = new TeamStats[res.Rows.Count];
             _TeamOrder = new SortedDictionary<string, int>();
-            int i = 0;
 
-            foreach (DataRow r in res.Rows)
-            {
-                _tst[i] = new TeamStats();
-                _tst[i].name = r["Name"].ToString();
-                _tst[i].offset = Convert.ToInt32(r["OFFSET"].ToString());
-                _tst[i].winloss[0] = Convert.ToByte(r["WIN"].ToString());
-                _tst[i].winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].stats[tMINS] = Convert.ToUInt16(r["MINS"].ToString());
-                _tst[i].stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
-
-                _TeamOrder.Add(_tst[i].name, i);
-                i++;
-            }
-
-            if (maxSeason == _curSeason)
-            {
-                q = "select * from PlayoffTeams;";
-            }
-            else
-            {
-                q = "select * from PlayoffTeamsS" + _curSeason.ToString() + ";";
-            }
-            res = db.GetDataTable(q);
-
-            i = 0;
-
-            foreach (DataRow r in res.Rows)
-            {
-                _tst[i].pl_offset = Convert.ToInt32(r["OFFSET"].ToString());
-                _tst[i].pl_winloss[0] = Convert.ToByte(r["WIN"].ToString());
-                _tst[i].pl_winloss[1] = Convert.ToByte(r["LOSS"].ToString());
-                _tst[i].pl_stats[tMINS] = Convert.ToUInt16(r["MINS"].ToString());
-                _tst[i].pl_stats[tPF] = Convert.ToUInt16(r["PF"].ToString());
-                _tst[i].pl_stats[tPA] = Convert.ToUInt16(r["PA"].ToString());
-                _tst[i].pl_stats[tFGM] = Convert.ToUInt16(r["FGM"].ToString());
-                _tst[i].pl_stats[tFGA] = Convert.ToUInt16(r["FGA"].ToString());
-                _tst[i].pl_stats[tTPM] = Convert.ToUInt16(r["TPM"].ToString());
-                _tst[i].pl_stats[tTPA] = Convert.ToUInt16(r["TPA"].ToString());
-                _tst[i].pl_stats[tFTM] = Convert.ToUInt16(r["FTM"].ToString());
-                _tst[i].pl_stats[tFTA] = Convert.ToUInt16(r["FTA"].ToString());
-                _tst[i].pl_stats[tOREB] = Convert.ToUInt16(r["OREB"].ToString());
-                _tst[i].pl_stats[tDREB] = Convert.ToUInt16(r["DREB"].ToString());
-                _tst[i].pl_stats[tSTL] = Convert.ToUInt16(r["STL"].ToString());
-                _tst[i].pl_stats[tTO] = Convert.ToUInt16(r["TOS"].ToString());
-                _tst[i].pl_stats[tBLK] = Convert.ToUInt16(r["BLK"].ToString());
-                _tst[i].pl_stats[tAST] = Convert.ToUInt16(r["AST"].ToString());
-                _tst[i].pl_stats[tFOUL] = Convert.ToUInt16(r["FOUL"].ToString());
-
-                _tst[i].calcAvg();
-                i++;
-            }
+            GetAllTeamStatsFromDatabase(file, _curSeason, ref _tst, ref _tstopp, ref _TeamOrder);
 
             pst = GetPlayersFromDatabase(file, _curSeason, maxSeason);
 
-            q = "select * from GameResults ORDER BY Date DESC;";
-            DataTable res2 = db.GetDataTable(q);
+            _bshist = GetBoxScoresFromDatabase(file);
 
-            _bshist = new List<BoxScoreEntry>(res.Rows.Count);
-            i = 0;
+            /*
+            try
+            {
+                q = "select CurSeason from Misc limit 1;";
+                res = _db.GetDataTable(q);
+                curSeason = Convert.ToInt32(res.Rows[0]["CurSeason"].ToString());
+            }
+            catch
+            {
+                curSeason = 1;
+            }
+            */
+            curSeason = _curSeason;
+            mwInstance.txbCurSeason.Text = "Current Season: " + _curSeason.ToString() + "/" + maxSeason.ToString();
+
+            /*
+            if (updateCombo)
+            {
+                mwInstance.cmbTeam1.Items.Clear();
+                foreach (KeyValuePair<string, int> kvp in _TeamOrder)
+                {
+                    mwInstance.cmbTeam1.Items.Add(kvp.Key);
+                }
+            }
+            */
+        }
+
+        public static IList<BoxScoreEntry> GetBoxScoresFromDatabase(string file)
+        {
+            SQLiteDatabase _db = new SQLiteDatabase(file);
+
+            IList<BoxScoreEntry> _bshist;
+            string q;
+            q = "select * from GameResults ORDER BY Date DESC;";
+            DataTable res2 = _db.GetDataTable(q);
+
+            _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
             foreach (DataRow r in res2.Rows)
             {
                 var bs = new BoxScore();
@@ -1485,7 +1469,7 @@ namespace NBA_Stats_Tracker
                 bse.date = bs.gamedate;
 
                 string q2 = "select * from PlayerResults WHERE GameID = " + bs.id.ToString();
-                DataTable res3 = db.GetDataTable(q2);
+                DataTable res3 = _db.GetDataTable(q2);
                 bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
 
                 foreach (DataRow r3 in res3.Rows)
@@ -1495,34 +1479,7 @@ namespace NBA_Stats_Tracker
 
                 _bshist.Add(bse);
             }
-
-            /*
-            try
-            {
-                q = "select CurSeason from Misc limit 1;";
-                res = db.GetDataTable(q);
-                curSeason = Convert.ToInt32(res.Rows[0]["CurSeason"].ToString());
-            }
-            catch
-            {
-                curSeason = 1;
-            }
-            */
-            curSeason = _curSeason;
-            mwInstance.txbCurSeason.Text = "Current Season: " + _curSeason.ToString() + "/" + maxSeason.ToString();
-
-            /*
-            if (updateCombo)
-            {
-                mwInstance.cmbTeam1.Items.Clear();
-                foreach (KeyValuePair<string, int> kvp in _TeamOrder)
-                {
-                    mwInstance.cmbTeam1.Items.Add(kvp.Key);
-                }
-            }
-            */
-
-            return _tst;
+            return _bshist;
         }
 
         public static Dictionary<int, PlayerStats> GetPlayersFromDatabase(string file, int curSeason, int maxSeason)
@@ -1561,406 +1518,366 @@ namespace NBA_Stats_Tracker
                 return;
             }
 
-            if (!isCustom)
+            bs = new BoxScore();
+            var bsW = new boxScoreW();
+            bsW.ShowDialog();
+
+            if (bs.done == false) return;
+
+            int id1 = -1;
+            int id2 = -1;
+
+            id1 = TeamOrder[bs.Team1];
+            id2 = TeamOrder[bs.Team2];
+
+            LoadDatabase(currentDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
+
+            var list = new List<PlayerBoxScore>();
+            foreach (var pbsList in pbsLists)
             {
-                var temptst = new TeamStats[30];
-                bshist = new List<BoxScoreEntry>();
-                bool havePT = false;
-
-                var ofd = new OpenFileDialog();
-                ofd.Filter = "Team Stats Table (*.tst)|*.tst";
-                ofd.InitialDirectory = AppDocsPath;
-                ofd.Title = "Please select the TST file that you saved before the game...";
-                ofd.ShowDialog();
-
-                if (ofd.FileName == "") return;
-
-                /*
-                FileStream stream = File.Open(ofd.FileName, FileMode.Open);
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
-
-                for (int i = 0; i < 30; i++)
+                foreach (PlayerBoxScore pbs in pbsList)
                 {
-                    temptst[i] = new TeamStats();
-                    temptst[i] = (TeamStats)bf.Deserialize(stream);
+                    list.Add(pbs);
                 }
-                pt = (PlayoffTree)bf.Deserialize(stream);
-                stream.Close();
-                */
-                temptst = LoadDatabase(ofd.FileName, ref pst, ref TeamOrder, ref pt, ref bshist);
-
-                bs = new BoxScore();
-                var bsW = new boxScoreW();
-                bsW.ShowDialog();
-
-                if (bs.done == false) return;
-
-                int id1 = -1;
-                int id2 = -1;
-
-                if ((pt == null) || (pt.teams[0] == "Invalid"))
-                {
-                    id1 = TeamOrder[bs.Team1];
-                    id2 = TeamOrder[bs.Team2];
-                    havePT = false;
-                }
-                else
-                {
-                    for (int i = 0; i < 16; i++)
-                    {
-                        if (pt.teams[i] == bs.Team1)
-                            id1 = TeamOrder[pt.teams[i]];
-                        else if (pt.teams[i] == bs.Team2)
-                            id2 = TeamOrder[pt.teams[i]];
-                    }
-                    havePT = true;
-                }
-
-                // Add win & loss
-                if (bs.PTS1 > bs.PTS2)
-                {
-                    temptst[id1].winloss[0]++;
-                    temptst[id2].winloss[1]++;
-                }
-                else
-                {
-                    temptst[id1].winloss[1]++;
-                    temptst[id2].winloss[0]++;
-                }
-                // Add minutes played
-                temptst[id1].stats[tMINS] += 48;
-                temptst[id2].stats[tMINS] += 48;
-
-                // Add Points For
-                temptst[id1].stats[tPF] += bs.PTS1;
-                temptst[id2].stats[tPF] += bs.PTS2;
-
-                // Add Points Against
-                temptst[id1].stats[tPA] += bs.PTS2;
-                temptst[id2].stats[tPA] += bs.PTS1;
-
-                //
-                temptst[id1].stats[tFGM] += bs.FGM1;
-                temptst[id2].stats[tFGM] += bs.FGM2;
-
-                temptst[id1].stats[tFGA] += bs.FGA1;
-                temptst[id2].stats[tFGA] += bs.FGA2;
-
-                //
-                temptst[id1].stats[tTPM] += bs.TPM1;
-                temptst[id2].stats[tTPM] += bs.TPM2;
-
-                //
-                temptst[id1].stats[tTPA] += bs.TPA1;
-                temptst[id2].stats[tTPA] += bs.TPA2;
-
-                //
-                temptst[id1].stats[tFTM] += bs.FTM1;
-                temptst[id2].stats[tFTM] += bs.FTM2;
-
-                //
-                temptst[id1].stats[tFTA] += bs.FTA1;
-                temptst[id2].stats[tFTA] += bs.FTA2;
-
-                //
-                temptst[id1].stats[tOREB] += bs.OFF1;
-                temptst[id2].stats[tOREB] += bs.OFF2;
-
-                //
-                temptst[id1].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                temptst[id2].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
-
-                //
-                temptst[id1].stats[tSTL] += bs.STL1;
-                temptst[id2].stats[tSTL] += bs.STL2;
-
-                //
-                temptst[id1].stats[tTO] += bs.TO1;
-                temptst[id2].stats[tTO] += bs.TO2;
-
-                //
-                temptst[id1].stats[tBLK] += bs.BLK1;
-                temptst[id2].stats[tBLK] += bs.BLK2;
-
-                //
-                temptst[id1].stats[tAST] += bs.AST1;
-                temptst[id2].stats[tAST] += bs.AST2;
-
-                //
-                temptst[id1].stats[tFOUL] += bs.PF1;
-                temptst[id2].stats[tFOUL] += bs.PF2;
-
-                ofd = new OpenFileDialog();
-                ofd.Title = "Please select the Career file you want to update...";
-                ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                             +
-                             "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                             "Create A Legend files (*.SMG)|*.SMG";
-                if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
-                ofd.ShowDialog();
-
-                if (ofd.FileName == "") return;
-                string fn = ofd.FileName;
-                TeamStats[] temp = StatsTracker.GetStats(fn, ref TeamOrder, ref pt, havePT);
-                if (temp.Length == 1)
-                {
-                    MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
-                    return;
-                }
-
-                // Check if Win/Loss remain the same
-                if ((temp[id1].winloss.SequenceEqual(temptst[id1].winloss) == false) ||
-                    (temp[id2].winloss.SequenceEqual(temptst[id2].winloss) == false))
-                {
-                    MessageBoxResult r =
-                        MessageBox.Show(
-                            "Your updates to the saved team stats don't seem to be compatible with the save you've selected.\n" +
-                            "Making these updates would mean that the Wins/Losses stats would be different than what NBA 2K12 has saved inside the file.\n\n" +
-                            "Probable causes:\n\t1. You didn't save your Association and then the team stats in the tool right before the game started.\n" +
-                            "\t2. You didn't save your Association right after the game ended.\n\n" +
-                            "Make sure you're using the saved Team Stats from right before the game, and an Association save from right after the game ended.\n\n" +
-                            "You can continue, but this may cause stat corruption.\nAre you sure you want to continue?",
-                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
-                            MessageBoxResult.No);
-                    if (r == MessageBoxResult.No) return;
-                }
-
-                tst = temp;
-                tst[id1].winloss = temptst[id1].winloss;
-                tst[id2].winloss = temptst[id2].winloss;
-                tst[id1].stats = temptst[id1].stats;
-                tst[id2].stats = temptst[id2].stats;
-                tst[id1].calcAvg();
-                tst[id2].calcAvg();
-
-                StatsTracker.updateSavegame(fn, tst, TeamOrder, pt);
-
-                cmbTeam1.SelectedIndex = -1;
-                //cmbTeam1.SelectedIndex = 0;
-                cmbTeam1.SelectedItem = bs.Team1;
-                txtFile.Text = ofd.FileName;
-
-                var bse = new BoxScoreEntry(bs);
-                bshist.Add(bse);
-
-                MessageBox.Show("Team Stats updated in " + Tools.getSafeFilename(fn) + " succesfully!");
-                var bw =
-                    new BinaryWriter(File.Open(AppDocsPath + Tools.getSafeFilename(ofd.FileName) + ".bsh",
-                                               FileMode.Append));
-                bw.Write("NST_BSH_FILE_START");
-                writeBoxScoreHistory(bw);
-                bw.Write("NST_BSH_FILE_END");
-                bw.Close();
             }
-            else
+
+            if (!bs.doNotUpdate)
             {
-                bs = new BoxScore();
-                var bsW = new boxScoreW();
-                bsW.ShowDialog();
-
-                if (bs.done == false) return;
-
-                int id1 = -1;
-                int id2 = -1;
-
-                id1 = TeamOrder[bs.Team1];
-                id2 = TeamOrder[bs.Team2];
-
-                tst = LoadDatabase(currentDB, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
-
-                var list = new List<PlayerBoxScore>();
-                foreach (var pbsList in pbsLists)
+                if (!bs.isPlayoff)
                 {
-                    foreach (PlayerBoxScore pbs in pbsList)
+                    // Add win & loss
+                    if (bs.PTS1 > bs.PTS2)
                     {
-                        list.Add(pbs);
-                    }
-                }
-
-                if (!bs.doNotUpdate)
-                {
-                    if (!bs.isPlayoff)
-                    {
-                        // Add win & loss
-                        if (bs.PTS1 > bs.PTS2)
-                        {
-                            tst[id1].winloss[0]++;
-                            tst[id2].winloss[1]++;
-                        }
-                        else
-                        {
-                            tst[id1].winloss[1]++;
-                            tst[id2].winloss[0]++;
-                        }
-                        // Add minutes played
-                        tst[id1].stats[tMINS] += 48;
-                        tst[id2].stats[tMINS] += 48;
-
-                        // Add Points For
-                        tst[id1].stats[tPF] += bs.PTS1;
-                        tst[id2].stats[tPF] += bs.PTS2;
-
-                        // Add Points Against
-                        tst[id1].stats[tPA] += bs.PTS2;
-                        tst[id2].stats[tPA] += bs.PTS1;
-
-                        //
-                        tst[id1].stats[tFGM] += bs.FGM1;
-                        tst[id2].stats[tFGM] += bs.FGM2;
-
-                        tst[id1].stats[tFGA] += bs.FGA1;
-                        tst[id2].stats[tFGA] += bs.FGA2;
-
-                        //
-                        tst[id1].stats[tTPM] += bs.TPM1;
-                        tst[id2].stats[tTPM] += bs.TPM2;
-
-                        //
-                        tst[id1].stats[tTPA] += bs.TPA1;
-                        tst[id2].stats[tTPA] += bs.TPA2;
-
-                        //
-                        tst[id1].stats[tFTM] += bs.FTM1;
-                        tst[id2].stats[tFTM] += bs.FTM2;
-
-                        //
-                        tst[id1].stats[tFTA] += bs.FTA1;
-                        tst[id2].stats[tFTA] += bs.FTA2;
-
-                        //
-                        tst[id1].stats[tOREB] += bs.OFF1;
-                        tst[id2].stats[tOREB] += bs.OFF2;
-
-                        //
-                        tst[id1].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                        tst[id2].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
-
-                        //
-                        tst[id1].stats[tSTL] += bs.STL1;
-                        tst[id2].stats[tSTL] += bs.STL2;
-
-                        //
-                        tst[id1].stats[tTO] += bs.TO1;
-                        tst[id2].stats[tTO] += bs.TO2;
-
-                        //
-                        tst[id1].stats[tBLK] += bs.BLK1;
-                        tst[id2].stats[tBLK] += bs.BLK2;
-
-                        //
-                        tst[id1].stats[tAST] += bs.AST1;
-                        tst[id2].stats[tAST] += bs.AST2;
-
-                        //
-                        tst[id1].stats[tFOUL] += bs.PF1;
-                        tst[id2].stats[tFOUL] += bs.PF2;
+                        tst[id1].winloss[0]++;
+                        tst[id2].winloss[1]++;
                     }
                     else
                     {
-                        // Add win & loss
-                        if (bs.PTS1 > bs.PTS2)
-                        {
-                            tst[id1].pl_winloss[0]++;
-                            tst[id2].pl_winloss[1]++;
-                        }
-                        else
-                        {
-                            tst[id1].pl_winloss[1]++;
-                            tst[id2].pl_winloss[0]++;
-                        }
-                        // Add minutes played
-                        tst[id1].pl_stats[tMINS] += 48;
-                        tst[id2].pl_stats[tMINS] += 48;
-
-                        // Add Points For
-                        tst[id1].pl_stats[tPF] += bs.PTS1;
-                        tst[id2].pl_stats[tPF] += bs.PTS2;
-
-                        // Add Points Against
-                        tst[id1].pl_stats[tPA] += bs.PTS2;
-                        tst[id2].pl_stats[tPA] += bs.PTS1;
-
-                        //
-                        tst[id1].pl_stats[tFGM] += bs.FGM1;
-                        tst[id2].pl_stats[tFGM] += bs.FGM2;
-
-                        tst[id1].pl_stats[tFGA] += bs.FGA1;
-                        tst[id2].pl_stats[tFGA] += bs.FGA2;
-
-                        //
-                        tst[id1].pl_stats[tTPM] += bs.TPM1;
-                        tst[id2].pl_stats[tTPM] += bs.TPM2;
-
-                        //
-                        tst[id1].pl_stats[tTPA] += bs.TPA1;
-                        tst[id2].pl_stats[tTPA] += bs.TPA2;
-
-                        //
-                        tst[id1].pl_stats[tFTM] += bs.FTM1;
-                        tst[id2].pl_stats[tFTM] += bs.FTM2;
-
-                        //
-                        tst[id1].pl_stats[tFTA] += bs.FTA1;
-                        tst[id2].pl_stats[tFTA] += bs.FTA2;
-
-                        //
-                        tst[id1].pl_stats[tOREB] += bs.OFF1;
-                        tst[id2].pl_stats[tOREB] += bs.OFF2;
-
-                        //
-                        tst[id1].pl_stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
-                        tst[id2].pl_stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
-
-                        //
-                        tst[id1].pl_stats[tSTL] += bs.STL1;
-                        tst[id2].pl_stats[tSTL] += bs.STL2;
-
-                        //
-                        tst[id1].pl_stats[tTO] += bs.TO1;
-                        tst[id2].pl_stats[tTO] += bs.TO2;
-
-                        //
-                        tst[id1].pl_stats[tBLK] += bs.BLK1;
-                        tst[id2].pl_stats[tBLK] += bs.BLK2;
-
-                        //
-                        tst[id1].pl_stats[tAST] += bs.AST1;
-                        tst[id2].pl_stats[tAST] += bs.AST2;
-
-                        //
-                        tst[id1].pl_stats[tFOUL] += bs.PF1;
-                        tst[id2].pl_stats[tFOUL] += bs.PF2;
+                        tst[id1].winloss[1]++;
+                        tst[id2].winloss[0]++;
                     }
+                    // Add minutes played
+                    tst[id1].stats[tMINS] += bs.MINS1;
+                    tst[id2].stats[tMINS] += bs.MINS2;
 
-                    tst[id1].calcAvg();
-                    tst[id2].calcAvg();
+                    // Add Points For
+                    tst[id1].stats[tPF] += bs.PTS1;
+                    tst[id2].stats[tPF] += bs.PTS2;
 
-                    foreach (PlayerBoxScore pbs in list)
+                    // Add Points Against
+                    tst[id1].stats[tPA] += bs.PTS2;
+                    tst[id2].stats[tPA] += bs.PTS1;
+
+                    //
+                    tst[id1].stats[tFGM] += bs.FGM1;
+                    tst[id2].stats[tFGM] += bs.FGM2;
+
+                    tst[id1].stats[tFGA] += bs.FGA1;
+                    tst[id2].stats[tFGA] += bs.FGA2;
+
+                    //
+                    tst[id1].stats[tTPM] += bs.TPM1;
+                    tst[id2].stats[tTPM] += bs.TPM2;
+
+                    //
+                    tst[id1].stats[tTPA] += bs.TPA1;
+                    tst[id2].stats[tTPA] += bs.TPA2;
+
+                    //
+                    tst[id1].stats[tFTM] += bs.FTM1;
+                    tst[id2].stats[tFTM] += bs.FTM2;
+
+                    //
+                    tst[id1].stats[tFTA] += bs.FTA1;
+                    tst[id2].stats[tFTA] += bs.FTA2;
+
+                    //
+                    tst[id1].stats[tOREB] += bs.OFF1;
+                    tst[id2].stats[tOREB] += bs.OFF2;
+
+                    //
+                    tst[id1].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                    tst[id2].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                    //
+                    tst[id1].stats[tSTL] += bs.STL1;
+                    tst[id2].stats[tSTL] += bs.STL2;
+
+                    //
+                    tst[id1].stats[tTO] += bs.TO1;
+                    tst[id2].stats[tTO] += bs.TO2;
+
+                    //
+                    tst[id1].stats[tBLK] += bs.BLK1;
+                    tst[id2].stats[tBLK] += bs.BLK2;
+
+                    //
+                    tst[id1].stats[tAST] += bs.AST1;
+                    tst[id2].stats[tAST] += bs.AST2;
+
+                    //
+                    tst[id1].stats[tFOUL] += bs.PF1;
+                    tst[id2].stats[tFOUL] += bs.PF2;
+
+
+                    // Opponents Team Stats
+                    // Add win & loss
+                    if (bs.PTS1 > bs.PTS2)
                     {
-                        if (pbs.PlayerID == -1) continue;
-                        pst[pbs.PlayerID].AddBoxScore(pbs);
+                        tstopp[id2].winloss[0]++;
+                        tstopp[id1].winloss[1]++;
                     }
-                }
+                    else
+                    {
+                        tstopp[id2].winloss[1]++;
+                        tstopp[id1].winloss[0]++;
+                    }
+                    // Add minutes played
+                    tstopp[id2].stats[tMINS] += bs.MINS1;
+                    tstopp[id1].stats[tMINS] += bs.MINS2;
 
-                cmbTeam1.SelectedIndex = -1;
-                cmbTeam1.SelectedItem = bs.Team1;
+                    // Add Points For
+                    tstopp[id2].stats[tPF] += bs.PTS1;
+                    tstopp[id1].stats[tPF] += bs.PTS2;
 
-                if (bs.bshistid == -1)
-                {
-                    var bse = new BoxScoreEntry(bs, bs.gamedate, list);
-                    bshist.Add(bse);
+                    // Add Points Against
+                    tstopp[id2].stats[tPA] += bs.PTS2;
+                    tstopp[id1].stats[tPA] += bs.PTS1;
+
+                    //
+                    tstopp[id2].stats[tFGM] += bs.FGM1;
+                    tstopp[id1].stats[tFGM] += bs.FGM2;
+
+                    tstopp[id2].stats[tFGA] += bs.FGA1;
+                    tstopp[id1].stats[tFGA] += bs.FGA2;
+
+                    //
+                    tstopp[id2].stats[tTPM] += bs.TPM1;
+                    tstopp[id1].stats[tTPM] += bs.TPM2;
+
+                    //
+                    tstopp[id2].stats[tTPA] += bs.TPA1;
+                    tstopp[id1].stats[tTPA] += bs.TPA2;
+
+                    //
+                    tstopp[id2].stats[tFTM] += bs.FTM1;
+                    tstopp[id1].stats[tFTM] += bs.FTM2;
+
+                    //
+                    tstopp[id2].stats[tFTA] += bs.FTA1;
+                    tstopp[id1].stats[tFTA] += bs.FTA2;
+
+                    //
+                    tstopp[id2].stats[tOREB] += bs.OFF1;
+                    tstopp[id1].stats[tOREB] += bs.OFF2;
+
+                    //
+                    tstopp[id2].stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                    tstopp[id1].stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                    //
+                    tstopp[id2].stats[tSTL] += bs.STL1;
+                    tstopp[id1].stats[tSTL] += bs.STL2;
+
+                    //
+                    tstopp[id2].stats[tTO] += bs.TO1;
+                    tstopp[id1].stats[tTO] += bs.TO2;
+
+                    //
+                    tstopp[id2].stats[tBLK] += bs.BLK1;
+                    tstopp[id1].stats[tBLK] += bs.BLK2;
+
+                    //
+                    tstopp[id2].stats[tAST] += bs.AST1;
+                    tstopp[id1].stats[tAST] += bs.AST2;
+
+                    //
+                    tstopp[id2].stats[tFOUL] += bs.PF1;
+                    tstopp[id1].stats[tFOUL] += bs.PF2;
                 }
                 else
                 {
-                    bshist[bs.bshistid].bs = bs;
+                    // Add win & loss
+                    if (bs.PTS1 > bs.PTS2)
+                    {
+                        tst[id1].pl_winloss[0]++;
+                        tst[id2].pl_winloss[1]++;
+                    }
+                    else
+                    {
+                        tst[id1].pl_winloss[1]++;
+                        tst[id2].pl_winloss[0]++;
+                    }
+                    // Add minutes played
+                    tst[id1].pl_stats[tMINS] += bs.MINS1;
+                    tst[id2].pl_stats[tMINS] += bs.MINS2;
+
+                    // Add Points For
+                    tst[id1].pl_stats[tPF] += bs.PTS1;
+                    tst[id2].pl_stats[tPF] += bs.PTS2;
+
+                    // Add Points Against
+                    tst[id1].pl_stats[tPA] += bs.PTS2;
+                    tst[id2].pl_stats[tPA] += bs.PTS1;
+
+                    //
+                    tst[id1].pl_stats[tFGM] += bs.FGM1;
+                    tst[id2].pl_stats[tFGM] += bs.FGM2;
+
+                    tst[id1].pl_stats[tFGA] += bs.FGA1;
+                    tst[id2].pl_stats[tFGA] += bs.FGA2;
+
+                    //
+                    tst[id1].pl_stats[tTPM] += bs.TPM1;
+                    tst[id2].pl_stats[tTPM] += bs.TPM2;
+
+                    //
+                    tst[id1].pl_stats[tTPA] += bs.TPA1;
+                    tst[id2].pl_stats[tTPA] += bs.TPA2;
+
+                    //
+                    tst[id1].pl_stats[tFTM] += bs.FTM1;
+                    tst[id2].pl_stats[tFTM] += bs.FTM2;
+
+                    //
+                    tst[id1].pl_stats[tFTA] += bs.FTA1;
+                    tst[id2].pl_stats[tFTA] += bs.FTA2;
+
+                    //
+                    tst[id1].pl_stats[tOREB] += bs.OFF1;
+                    tst[id2].pl_stats[tOREB] += bs.OFF2;
+
+                    //
+                    tst[id1].pl_stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                    tst[id2].pl_stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                    //
+                    tst[id1].pl_stats[tSTL] += bs.STL1;
+                    tst[id2].pl_stats[tSTL] += bs.STL2;
+
+                    //
+                    tst[id1].pl_stats[tTO] += bs.TO1;
+                    tst[id2].pl_stats[tTO] += bs.TO2;
+
+                    //
+                    tst[id1].pl_stats[tBLK] += bs.BLK1;
+                    tst[id2].pl_stats[tBLK] += bs.BLK2;
+
+                    //
+                    tst[id1].pl_stats[tAST] += bs.AST1;
+                    tst[id2].pl_stats[tAST] += bs.AST2;
+
+                    //
+                    tst[id1].pl_stats[tFOUL] += bs.PF1;
+                    tst[id2].pl_stats[tFOUL] += bs.PF2;
+
+
+                    // Opponents Team Stats
+                    // Add win & loss
+                    if (bs.PTS1 > bs.PTS2)
+                    {
+                        tstopp[id2].pl_winloss[0]++;
+                        tstopp[id1].pl_winloss[1]++;
+                    }
+                    else
+                    {
+                        tstopp[id2].pl_winloss[1]++;
+                        tstopp[id1].pl_winloss[0]++;
+                    }
+                    // Add minutes played
+                    tstopp[id2].pl_stats[tMINS] += bs.MINS1;
+                    tstopp[id1].pl_stats[tMINS] += bs.MINS2;
+
+                    // Add Points For
+                    tstopp[id2].pl_stats[tPF] += bs.PTS1;
+                    tstopp[id1].pl_stats[tPF] += bs.PTS2;
+
+                    // Add Points Against
+                    tstopp[id2].pl_stats[tPA] += bs.PTS2;
+                    tstopp[id1].pl_stats[tPA] += bs.PTS1;
+
+                    //
+                    tstopp[id2].pl_stats[tFGM] += bs.FGM1;
+                    tstopp[id1].pl_stats[tFGM] += bs.FGM2;
+
+                    tstopp[id2].pl_stats[tFGA] += bs.FGA1;
+                    tstopp[id1].pl_stats[tFGA] += bs.FGA2;
+
+                    //
+                    tstopp[id2].pl_stats[tTPM] += bs.TPM1;
+                    tstopp[id1].pl_stats[tTPM] += bs.TPM2;
+
+                    //
+                    tstopp[id2].pl_stats[tTPA] += bs.TPA1;
+                    tstopp[id1].pl_stats[tTPA] += bs.TPA2;
+
+                    //
+                    tstopp[id2].pl_stats[tFTM] += bs.FTM1;
+                    tstopp[id1].pl_stats[tFTM] += bs.FTM2;
+
+                    //
+                    tstopp[id2].pl_stats[tFTA] += bs.FTA1;
+                    tstopp[id1].pl_stats[tFTA] += bs.FTA2;
+
+                    //
+                    tstopp[id2].pl_stats[tOREB] += bs.OFF1;
+                    tstopp[id1].pl_stats[tOREB] += bs.OFF2;
+
+                    //
+                    tstopp[id2].pl_stats[tDREB] += Convert.ToUInt16(bs.REB1 - bs.OFF1);
+                    tstopp[id1].pl_stats[tDREB] += Convert.ToUInt16(bs.REB2 - bs.OFF2);
+
+                    //
+                    tstopp[id2].pl_stats[tSTL] += bs.STL1;
+                    tstopp[id1].pl_stats[tSTL] += bs.STL2;
+
+                    //
+                    tstopp[id2].pl_stats[tTO] += bs.TO1;
+                    tstopp[id1].pl_stats[tTO] += bs.TO2;
+
+                    //
+                    tstopp[id2].pl_stats[tBLK] += bs.BLK1;
+                    tstopp[id1].pl_stats[tBLK] += bs.BLK2;
+
+                    //
+                    tstopp[id2].pl_stats[tAST] += bs.AST1;
+                    tstopp[id1].pl_stats[tAST] += bs.AST2;
+
+                    //
+                    tstopp[id2].pl_stats[tFOUL] += bs.PF1;
+                    tstopp[id1].pl_stats[tFOUL] += bs.PF2;
                 }
 
-                saveSeasonToDatabase(currentDB, tst, pst, curSeason, getMaxSeason(currentDB));
+                tst[id1].calcAvg();
+                tst[id2].calcAvg();
+                tstopp[id1].calcAvg();
+                tstopp[id2].calcAvg();
 
-                updateStatus(
-                    "One or more Box Scores have been added/updated. Database saved.");
+                foreach (PlayerBoxScore pbs in list)
+                {
+                    if (pbs.PlayerID == -1) continue;
+                    pst[pbs.PlayerID].AddBoxScore(pbs);
+                }
             }
+
+            cmbTeam1.SelectedIndex = -1;
+            cmbTeam1.SelectedItem = bs.Team1;
+
+            if (bs.bshistid == -1)
+            {
+                var bse = new BoxScoreEntry(bs, bs.gamedate, list);
+                bshist.Add(bse);
+            }
+            else
+            {
+                bshist[bs.bshistid].bs = bs;
+            }
+
+            saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, getMaxSeason(currentDB));
+
+            updateStatus(
+                "One or more Box Scores have been added/updated. Database saved.");
+            
         }
 
         private void populateTeamsComboBox(SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
@@ -2306,7 +2223,10 @@ namespace NBA_Stats_Tracker
 
             StatsTracker.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
 
-            TeamStats[] temp = StatsTracker.GetStats(fn, ref TeamOrder, ref pt);
+            TeamStats[] temp = new TeamStats[1];
+            TeamStats[] tempopp = new TeamStats[1];
+
+            StatsTracker.GetStatsFrom2K12Save(fn, ref tst, ref tstopp, ref TeamOrder, ref pt);
             if (temp.Length == 1)
             {
                 MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
@@ -2426,7 +2346,7 @@ namespace NBA_Stats_Tracker
                                 MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
+                            LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
 
                             cmbTeam1.SelectedIndex = -1;
                             cmbTeam1.SelectedIndex = 0;
@@ -2450,11 +2370,11 @@ namespace NBA_Stats_Tracker
                 }
 
                 tst = realtst;
-                saveSeasonToDatabase(file, tst, pst, curSeason, curSeason);
+                saveSeasonToDatabase(file, tst, tstopp, pst, curSeason, curSeason);
                 cmbTeam1.SelectedIndex = -1;
                 cmbTeam1.SelectedIndex = 0;
                 txtFile.Text = file;
-                tst = LoadDatabase(file, ref pst, ref TeamOrder, ref pt, ref bshist);
+                LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
             }
         }
 
@@ -2543,6 +2463,7 @@ namespace NBA_Stats_Tracker
         {
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
             currentDB = txtFile.Text;
+            db = new SQLiteDatabase(currentDB);
         }
 
         private void btnTrends_Click(object sender, RoutedEventArgs e)
@@ -2557,7 +2478,7 @@ namespace NBA_Stats_Tracker
 
                 if (ofd1.FileName == "") return;
 
-                tst = LoadDatabase(ofd1.FileName, ref pst, ref TeamOrder, ref pt, ref bshist, true);
+                LoadDatabase(ofd1.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true);
                 cmbTeam1.SelectedIndex = 0;
             }
 
@@ -2716,8 +2637,7 @@ namespace NBA_Stats_Tracker
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            var tow = new teamOverviewW(tst, pst);
-            tow.ShowDialog();
+            
         }
 
         private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
@@ -2763,7 +2683,7 @@ namespace NBA_Stats_Tracker
                 return;
             }
 
-            var tow = new teamOverviewW(tst, pst);
+            var tow = new teamOverviewW(tst, tstopp, pst);
             tow.ShowDialog();
         }
 
@@ -2803,7 +2723,7 @@ namespace NBA_Stats_Tracker
             }
             else
             {
-                saveSeasonToDatabase(currentDB, tst, pst, curSeason, getMaxSeason(currentDB));
+                saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, getMaxSeason(currentDB));
                 txtFile.Text = currentDB;
             }
         }
@@ -2833,7 +2753,7 @@ namespace NBA_Stats_Tracker
         private void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog();
-            sfd.Filter = "Team Stats Table (*.tst)|*.tst";
+            sfd.Filter = "NST Database (*.tst)|*.tst";
             sfd.InitialDirectory = AppDocsPath;
             sfd.ShowDialog();
 
@@ -2859,6 +2779,8 @@ namespace NBA_Stats_Tracker
 
         private bool isTSTEmpty()
         {
+            db = new SQLiteDatabase(currentDB);
+
             string teamsT = "Teams";
             if (curSeason != getMaxSeason(currentDB)) teamsT += "S" + curSeason;
             string q = "select Name from " + teamsT;
@@ -2899,10 +2821,12 @@ namespace NBA_Stats_Tracker
                     if (isTSTEmpty()) oldlen--;
 
                     Array.Resize(ref tst, oldlen + newTeams.Count);
+                    Array.Resize(ref tstopp, oldlen + newTeams.Count);
 
                     for (int i = 0; i < newTeams.Count; i++)
                     {
                         tst[oldlen + i] = new TeamStats(newTeams[i]);
+                        tstopp[oldlen + i] = new TeamStats(newTeams[i]);
                         TeamOrder.Add(newTeams[i], oldlen + i);
                     }
                     updateStatus("Teams were added, you should save the database now");
@@ -2943,6 +2867,12 @@ namespace NBA_Stats_Tracker
                     q = "alter table PlayoffTeams rename to PlayoffTeamsS" + curSeason;
                     code = db.ExecuteNonQuery(q);
 
+                    q = "alter table Opponents rename to OpponentsS" + curSeason;
+                    code = db.ExecuteNonQuery(q);
+
+                    q = "alter table PlayoffOpponents rename to PlayoffOpponentsS" + curSeason;
+                    code = db.ExecuteNonQuery(q);
+
                     q = "alter table Players rename to PlayersS" + curSeason;
                     code = db.ExecuteNonQuery(q);
 
@@ -2976,7 +2906,7 @@ namespace NBA_Stats_Tracker
                         ps.Value.CalcAvg();
                     }
 
-                    saveSeasonToDatabase(currentDB, tst, pst, curSeason, curSeason);
+                    saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
                     updateStatus("New season started. Database saved.");
                 }
             }
@@ -3015,6 +2945,52 @@ namespace NBA_Stats_Tracker
 
             var pow = new playerOverviewW();
             pow.ShowDialog();
+        }
+
+        private void mnuMiscImportBoxScores_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "NST Database (*.tst)|*.tst";
+            ofd.InitialDirectory = AppDocsPath;
+            ofd.Title = "Please select the TST file that you want to import from...";
+            ofd.ShowDialog();
+
+            if (ofd.FileName == "") return;
+
+            string file = ofd.FileName;
+            
+            var newBShist = GetBoxScoresFromDatabase(file);
+
+            foreach (BoxScoreEntry newbse in newBShist)
+            {
+                foreach (BoxScoreEntry bse in bshist)
+                {
+                    if (bse.bs.id == newbse.bs.id)
+                    {
+                        newbse.bs.id = GetFreeBseId();
+                        break;
+                    }
+                }
+                bshist.Add(newbse);
+            }
+        }
+
+        private int GetFreeBseId()
+        {
+            List<int> bseIDs = new List<int>();
+            foreach (BoxScoreEntry bse in bshist)
+            {
+                bseIDs.Add(bse.bs.id);
+            }
+
+            bseIDs.Sort();
+
+            int i = 0;
+            while (true)
+            {
+                if (!bseIDs.Contains(i)) return i;
+                i++;
+            }
         }
     }
 }

@@ -130,7 +130,7 @@
                     <Label Content="MINS" HorizontalAlignment="Left" Margin="600,66,0,0" Name="label32" VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="600,95,0,0" Name="txtMINS1" TabIndex="14" VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged" />
                     <Label Content="MINS" HorizontalAlignment="Left" Margin="600,175,0,0" Name="label33" VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="600,204,0,0" Name="txtMINS2" TabIndex="29" VerticalAlignment="Top" Width="36" IsReadOnly="True" />
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="600,204,0,0" Name="txtMINS2" TabIndex="29" VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged" />
                 </Grid>
             </TabItem>
             <TabItem Header="Away Team" Name="tabTeam1">
