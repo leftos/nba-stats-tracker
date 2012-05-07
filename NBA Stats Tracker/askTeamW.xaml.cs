@@ -62,7 +62,7 @@ namespace NBA_Stats_Tracker
             {
                 if (!_versus)
                 {
-                    StatsTracker.mode = cmbTeams1.SelectedItem.ToString();
+                    NSTHelper.mode = cmbTeams1.SelectedItem.ToString();
                 }
                 else
                 {

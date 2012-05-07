@@ -13,7 +13,7 @@
       <TabItem Header="Players" Name="tabPlayers">
         <Grid Name="grid1">
           <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="0" Name="dgvAddPlayers"
-                    VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True">
+                    VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True" >
             <DataGrid.Columns>
               <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
               <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
@@ -22,7 +22,7 @@
               <DataGridComboBoxColumn x:Name="pos2Column" Header="2nd Position"
                                       SelectedItemBinding="{Binding Position2}" />
             </DataGrid.Columns>
-          </DataGrid>
+                    </DataGrid>
         </Grid>
       </TabItem>
     </TabControl>

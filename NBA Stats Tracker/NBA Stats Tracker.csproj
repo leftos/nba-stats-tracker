@@ -41,6 +41,9 @@
     <ApplicationIcon>NBA 2K12.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>.\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
@@ -92,6 +95,9 @@
     <Compile Include="StatsTracker.cs" />
     <Compile Include="teamOverviewW.xaml.cs">
       <DependentUpon>teamOverviewW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="testW.xaml.cs">
+      <DependentUpon>testW.xaml</DependentUpon>
     </Compile>
     <Compile Include="trendsW.xaml.cs">
       <DependentUpon>trendsW.xaml</DependentUpon>
@@ -148,6 +154,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="teamOverviewW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="testW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

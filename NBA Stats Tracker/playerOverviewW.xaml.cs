@@ -232,10 +232,10 @@ namespace NBA_Stats_Tracker
 
             foreach (DataRow r in res.Rows)
             {
-                PlayersList.Add(new KeyValuePair<int, string>(StatsTracker.getInt(r, "ID"),
-                                                              StatsTracker.getString(r, "FirstName") + " " +
-                                                              StatsTracker.getString(r, "LastName") +
-                                                              " (" + StatsTracker.getString(r, "Position1") + ")"));
+                PlayersList.Add(new KeyValuePair<int, string>(NSTHelper.getInt(r, "ID"),
+                                                              NSTHelper.getString(r, "FirstName") + " " +
+                                                              NSTHelper.getString(r, "LastName") +
+                                                              " (" + NSTHelper.getString(r, "Position1") + ")"));
                 var ps = new PlayerStats(r);
                 playersSameTeam.Add(ps.ID, ps);
             }
@@ -310,8 +310,11 @@ namespace NBA_Stats_Tracker
                 }
             }
 
-            psrList.Add(new PlayerStatsRow(psCareer, "Career"));
-            dgvYearly.ItemsSource = psrList;
+            psrList.Add(new PlayerStatsRow(psCareer, "Career", "Career"));
+
+            ListCollectionView psrListCollection = new ListCollectionView(psrList);
+            psrListCollection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            dgvYearly.ItemsSource = psrListCollection;
         }
 
         private void UpdateOverviewAndBoxScores()
@@ -616,7 +619,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Home", "Location"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Home"));
 
             //Away
             res = db.GetDataTable(qr_away);
@@ -626,7 +629,7 @@ namespace NBA_Stats_Tracker
             {
                 ps.AddBoxScore(new PlayerBoxScore(r));
             }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Away", "Location"));
+            splitPSRs.Add(new PlayerStatsRow(ps, "Away"));
 
             //Wins
             res = db.GetDataTable(qr_wins);
@@ -793,7 +796,7 @@ namespace NBA_Stats_Tracker
                     playersT += "S" + curSeason;
                 }
 
-                MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, curSeason, maxSeason);
+                MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, curSeason, maxSeason);
 
                 GetActivePlayers();
 
@@ -808,7 +811,7 @@ namespace NBA_Stats_Tracker
                     bool nowActive;
                     if (res.Rows.Count > 0)
                     {
-                        nowActive = StatsTracker.getBoolean(res.Rows[0], "isActive");
+                        nowActive = NSTHelper.getBoolean(res.Rows[0], "isActive");
                         if (nowActive)
                         {
                             newTeam = res.Rows[0]["TeamFin"].ToString();
@@ -866,7 +869,7 @@ namespace NBA_Stats_Tracker
 
             MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
 
-            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, curSeason, maxSeason);
+            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, curSeason, maxSeason);
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
@@ -993,10 +996,10 @@ namespace NBA_Stats_Tracker
 
             foreach (DataRow r in res.Rows)
             {
-                oppPlayersList.Add(new KeyValuePair<int, string>(StatsTracker.getInt(r, "ID"),
-                                                                 StatsTracker.getString(r, "FirstName") + " " +
-                                                                 StatsTracker.getString(r, "LastName") +
-                                                                 " (" + StatsTracker.getString(r, "Position1") + ")"));
+                oppPlayersList.Add(new KeyValuePair<int, string>(NSTHelper.getInt(r, "ID"),
+                                                                 NSTHelper.getString(r, "FirstName") + " " +
+                                                                 NSTHelper.getString(r, "LastName") +
+                                                                 " (" + NSTHelper.getString(r, "Position1") + ")"));
             }
 
             cmbOppPlayer.ItemsSource = oppPlayersList;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ namespace NBA_Stats_Tracker
         private TeamStats tsopp;
         private TeamStats[] tst;
         private TeamStats[] tstopp;
+        private bool reload = false;
 
         public leagueOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
         {
@@ -92,6 +94,7 @@ namespace NBA_Stats_Tracker
             {
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
+            reload = true;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -101,6 +104,7 @@ namespace NBA_Stats_Tracker
             {
                 dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
+            reload = true;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -118,7 +122,7 @@ namespace NBA_Stats_Tracker
         {
             try
             {
-                if (e.OriginalSource is TabControl)
+                if (reload || e.OriginalSource is TabControl)
                 {
                     if (tbcLeagueOverview.SelectedItem == tabTeamStats)
                     {
@@ -129,15 +133,29 @@ namespace NBA_Stats_Tracker
                         PreparePlayoffStats();
                     }
                     else if ((tbcLeagueOverview.SelectedItem == tabLeaders) ||
-                             (tbcLeagueOverview.SelectedItem == tabPlayerStats))
+                             (tbcLeagueOverview.SelectedItem == tabPlayerStats) ||
+                             (tbcLeagueOverview.SelectedItem == tabMetricStats))
                     {
-                        PreparePlayerStats();
-                        PrepareLeagueLeaders();
+                        TabItem oldTab;
+                        try
+                        {
+                            oldTab = e.RemovedItems[0] as TabItem;
+                        }
+                        catch (Exception)
+                        {
+                            oldTab = null;
+                        }
+                        if (reload || !(oldTab == tabLeaders || oldTab == tabPlayerStats || oldTab == tabMetricStats))
+                        {
+                            PreparePlayerAndMetricStats();
+                            PrepareLeagueLeaders();
+                        }
                     }
                     else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
                     {
                         PrepareBoxScores();
                     }
+                    reload = false;
                 }
             }
             catch (Exception)
@@ -162,32 +180,54 @@ namespace NBA_Stats_Tracker
             dgvLeaders.ItemsSource = leadersList;
         }
 
-        private void PreparePlayerStats()
+        private void PreparePlayerAndMetricStats()
         {
-            string playersT = "Players";
-            if (curSeason != maxSeason) playersT += "S" + curSeason;
             psrList = new List<PlayerStatsRow>();
+            var pmsrList = new List<PlayerMetricStatsRow>();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                q = "select * from " + playersT;
-                res = db.GetDataTable(q);
-
-                foreach (DataRow r in res.Rows)
+                foreach (var kvp in pst)
                 {
-                    var ps = new PlayerStats(r);
-                    var psr = new PlayerStatsRow(ps);
-
+                    PlayerStatsRow psr = new PlayerStatsRow(kvp.Value);
                     psrList.Add(psr);
+                    PlayerMetricStatsRow pmsr = new PlayerMetricStatsRow(kvp.Value);
+                    pmsrList.Add(pmsr);
                 }
             }
             else
             {
-                string q =
-                    "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
+                string q;
+                TeamStats[] partialTST = new TeamStats[MainWindow.TeamOrder.Count];
+                TeamStats[] partialOppTST = new TeamStats[MainWindow.TeamOrder.Count];
+                // Prepare Teams
+                foreach (var kvp in MainWindow.TeamOrder)
+                {
+                    string curTeam = kvp.Key;
+                    int teamID = MainWindow.TeamOrder[curTeam];
+
+                    q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
+                               + curTeam + "')) AND ((Date >= '" +
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
+                               + "') AND (Date <= '" +
+                               SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" +
+                               " ORDER BY Date DESC";
+                    res = db.GetDataTable(q);
+
+                    partialTST[teamID] = new TeamStats(curTeam);
+                    partialOppTST[teamID] = new TeamStats(curTeam);
+                    foreach (DataRow r in res.Rows)
+                    {
+                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(r, ref partialTST[teamID],
+                                                                    ref partialOppTST[teamID]);
+                    }
+                }
+
+                // Prepare Players
+                q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
                 q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                           dtpEnd.SelectedDate.GetValueOrDefault());
-                DataTable res = db.GetDataTable(q);
+                res = db.GetDataTable(q);
 
                 var pstBetween = new Dictionary<int, PlayerStats>();
 
@@ -211,17 +251,26 @@ namespace NBA_Stats_Tracker
                     }
                 }
 
+                NSTHelper.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST);
+
                 foreach (var kvp in pstBetween)
                 {
                     var psr = new PlayerStatsRow(kvp.Value);
                     psrList.Add(psr);
+                    var pmsr = new PlayerMetricStatsRow(kvp.Value);
+                    pmsrList.Add(pmsr);
                 }
             }
 
             psrList.Sort(delegate(PlayerStatsRow psr1, PlayerStatsRow psr2) { return psr1.PPG.CompareTo(psr2.PPG); });
             psrList.Reverse();
 
+            pmsrList.Sort(delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2)
+                              { return pmsr1.PER.CompareTo(pmsr2.PER); });
+            pmsrList.Reverse();
+
             dgvPlayerStats.ItemsSource = psrList;
+            dgvMetricStats.ItemsSource = pmsrList;
         }
 
         private void PrepareBoxScores()
@@ -304,7 +353,7 @@ namespace NBA_Stats_Tracker
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
-                    teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp, true);
+                    teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                     teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key, true);
 
                     dt_ts.Rows.Add(r);
@@ -383,6 +432,7 @@ namespace NBA_Stats_Tracker
             catch
             {
             }
+            reload = true;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -397,6 +447,7 @@ namespace NBA_Stats_Tracker
             catch
             {
             }
+            reload = true;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -408,8 +459,13 @@ namespace NBA_Stats_Tracker
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
+            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+                                          ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            {
+                reload = true;
                 tbcLeagueOverview_SelectionChanged(null, null);
+            }
         }
 
         private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -445,7 +501,7 @@ namespace NBA_Stats_Tracker
                 var row = (DataRowView) dgvTeamStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                var tow = new teamOverviewW(MainWindow.tst, MainWindow.tstopp, MainWindow.pst, team);
+                var tow = new teamOverviewW(team);
                 tow.ShowDialog();
             }
         }
@@ -457,7 +513,7 @@ namespace NBA_Stats_Tracker
                 var row = (DataRowView) dgvPlayoffStats.SelectedItems[0];
                 string team = row["Name"].ToString();
 
-                var tow = new teamOverviewW(MainWindow.tst, MainWindow.tstopp, MainWindow.pst, team);
+                var tow = new teamOverviewW(team);
                 tow.ShowDialog();
             }
         }
@@ -482,9 +538,9 @@ namespace NBA_Stats_Tracker
             var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
             var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
 
-            if (psr.FGM < fgmRequired) newpsr.FGp = -1;
-            if (psr.TPM < tpmRequired) newpsr.TPp = -1;
-            if (psr.FTM < ftmRequired) newpsr.FTp = -1;
+            if (psr.FGM < fgmRequired) newpsr.FGp = float.NaN;
+            if (psr.TPM < tpmRequired) newpsr.TPp = float.NaN;
+            if (psr.FTM < ftmRequired) newpsr.FTp = float.NaN;
 
             if (gamesPlayer >= gamesRequired)
             {
@@ -492,12 +548,12 @@ namespace NBA_Stats_Tracker
             }
             else
             {
-                if (psr.PTS < ptsRequired) newpsr.PPG = -1;
-                if (psr.REB < rebRequired) newpsr.RPG = -1;
-                if (psr.AST < astRequired) newpsr.APG = -1;
-                if (psr.STL < stlRequired) newpsr.SPG = -1;
-                if (psr.BLK < blkRequired) newpsr.BPG = -1;
-                if (psr.MINS < minRequired) newpsr.MPG = -1;
+                if (psr.PTS < ptsRequired) newpsr.PPG = float.NaN;
+                if (psr.REB < rebRequired) newpsr.RPG = float.NaN;
+                if (psr.AST < astRequired) newpsr.APG = float.NaN;
+                if (psr.STL < stlRequired) newpsr.SPG = float.NaN;
+                if (psr.BLK < blkRequired) newpsr.BPG = float.NaN;
+                if (psr.MINS < minRequired) newpsr.MPG = float.NaN;
                 return newpsr;
             }
         }

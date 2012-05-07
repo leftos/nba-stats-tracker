@@ -120,7 +120,7 @@
             Name="btnCompareToReal" VerticalAlignment="Top" Width="136" Click="btnCompareToReal_Click" />
     <Button Content="Compare With Other File" Height="23" HorizontalAlignment="Left" Margin="722,87,0,0"
             Name="btnCompareOtherFile" VerticalAlignment="Top" Width="136" Click="btnCompareOtherFile_Click" />
-    <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="1087,45,0,0" Name="btnTest"
+    <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnTest"
             VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
     <Button Content="Open Database" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0" Name="btnOpenCustom"
             TabIndex="2" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />

@@ -22,6 +22,7 @@ namespace NBA_Stats_Tracker
                 "- albidnis, for his idea to export to CSV\n" +
                 "- jrlocke, for being the first donator, and a generous one\n" +
                 "- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues and Real NBA Stats features\n" +
+                "- AreaOfEffect, for his help with debugging\n" +
                 "- Everyone at the NLSC community, for their continued support";
         }
 

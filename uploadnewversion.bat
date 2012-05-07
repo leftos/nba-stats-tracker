@@ -1,0 +1,1 @@
+"D:\Program Files\WinSCP\winscp.com" /command "option batch abort" "option confirm off" "open aslanoglou@diogenisHTML" "put ""C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\nstversion.txt"" /home/aslanoglou/public_html/" "exit"

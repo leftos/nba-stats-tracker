@@ -1,0 +1,21 @@
+EFF -
+GmSc -
+EFG% -
+TS% -
+AST% -
+STL% -
+TO% -
+USG%
+PTSR
+REBR
+ASTR
+BLKR
+STLR
+TOR
+
+PER -
+BLK% -
+DRB% -
+ORB% -
+REB% -
+PPR

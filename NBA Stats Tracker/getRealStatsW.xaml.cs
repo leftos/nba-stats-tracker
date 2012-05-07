@@ -38,12 +38,12 @@ namespace NBA_Stats_Tracker
             worker1.DoWork += delegate
                                   {
                                       int i = 0;
-                                      SortedDictionary<string, int> realTeams = StatsTracker.setTeamOrder("Mode 0");
+                                      SortedDictionary<string, int> realTeams = NSTHelper.setTeamOrder("Mode 0");
                                       IEnumerable<KeyValuePair<string, int>> subset = realTeams.Take(10);
                                       foreach (var kvp in subset)
                                       {
                                           if (worker1.CancellationPending) return;
-                                          _tst[realTeams[kvp.Key]] = StatsTracker.getRealStats(kvp.Key);
+                                          _tst[realTeams[kvp.Key]] = NSTHelper.getRealStats(kvp.Key);
                                           if (_tst[realTeams[kvp.Key]].name == "Error")
                                           {
                                               MessageBox.Show("An error occured.");
@@ -71,12 +71,12 @@ namespace NBA_Stats_Tracker
             worker2.DoWork += delegate
                                   {
                                       int i = 0;
-                                      SortedDictionary<string, int> realTeams = StatsTracker.setTeamOrder("Mode 0");
+                                      SortedDictionary<string, int> realTeams = NSTHelper.setTeamOrder("Mode 0");
                                       IEnumerable<KeyValuePair<string, int>> subset = realTeams.Skip(10).Take(10);
                                       foreach (var kvp in subset)
                                       {
                                           if (worker2.CancellationPending) return;
-                                          _tst[realTeams[kvp.Key]] = StatsTracker.getRealStats(kvp.Key);
+                                          _tst[realTeams[kvp.Key]] = NSTHelper.getRealStats(kvp.Key);
                                           if (_tst[realTeams[kvp.Key]].name == "Error")
                                           {
                                               MessageBox.Show("An error occured.");
@@ -104,12 +104,12 @@ namespace NBA_Stats_Tracker
             worker3.DoWork += delegate
                                   {
                                       int i = 0;
-                                      SortedDictionary<string, int> realTeams = StatsTracker.setTeamOrder("Mode 0");
+                                      SortedDictionary<string, int> realTeams = NSTHelper.setTeamOrder("Mode 0");
                                       IEnumerable<KeyValuePair<string, int>> subset = realTeams.Skip(20);
                                       foreach (var kvp in subset)
                                       {
                                           if (worker3.CancellationPending) return;
-                                          _tst[realTeams[kvp.Key]] = StatsTracker.getRealStats(kvp.Key);
+                                          _tst[realTeams[kvp.Key]] = NSTHelper.getRealStats(kvp.Key);
                                           if (_tst[realTeams[kvp.Key]].name == "Error")
                                           {
                                               MessageBox.Show("An error occured.");

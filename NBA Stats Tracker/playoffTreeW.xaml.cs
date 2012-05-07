@@ -19,7 +19,7 @@ namespace NBA_Stats_Tracker
         {
             InitializeComponent();
 
-            myPT = StatsTracker.tempPT;
+            myPT = NSTHelper.tempPT;
 
             foreach (var kvp in MainWindow.TeamOrder)
             {
@@ -206,7 +206,7 @@ namespace NBA_Stats_Tracker
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            StatsTracker.tempPT = myPT;
+            NSTHelper.tempPT = myPT;
         }
     }
 }

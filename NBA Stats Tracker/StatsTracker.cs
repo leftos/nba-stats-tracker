@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using System.Windows.Documents;
+using HtmlAgilityPack;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 
 namespace NBA_Stats_Tracker
 {
-    internal class StatsTracker
+    internal class NSTHelper
     {
         public const int tMINS = 0, tPF = 1, tPA = 2, tFGM = 4, tFGA = 5, tTPM = 6, tTPA = 7, tFTM = 8, tFTA = 9, tOREB = 10, tDREB = 11, tSTL = 12, tTO = 13, tBLK = 14, tAST = 15, tFOUL = 16;
 
@@ -31,39 +34,44 @@ namespace NBA_Stats_Tracker
 
         public static PlayoffTree tempPT;
 
-        public static void CalculateAllPER(PlayerStats[] pst, TeamStats[] teamStats, TeamStats[] oppStats)
+        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> pst, TeamStats[] teamStats, TeamStats[] oppStats)
         {
-            int pCount = pst.Length;
             int tCount = teamStats.Length;
 
             TeamStats ls = new TeamStats();
-            TeamStats[] tst = new TeamStats[teamStats.Length];
-            TeamStats[] tstopp = new TeamStats[oppStats.Length];
+            TeamStats lsopp = new TeamStats();
+            TeamStats[] tst = new TeamStats[tCount];
+            TeamStats[] tstopp = new TeamStats[tCount];
             for (int i = 0; i < tCount; i++)
             {
                 ls.AddTeamStats(teamStats[i], "All");
+                tst[i] = new TeamStats();
                 tst[i].AddTeamStats(teamStats[i], "All");
+                lsopp.AddTeamStats(oppStats[i], "All");
+                tstopp[i] = new TeamStats();
                 tstopp[i].AddTeamStats(oppStats[i], "All");
+                tst[i].CalcMetrics(tstopp[i]);
             }
+            ls.CalcMetrics(lsopp);
 
             double lg_aPER = 0;
             double totalMins = 0;
 
-            for (int i = 0; i < pCount; i++)
+            foreach (var kvp in pst)
             {
-                int teamid = MainWindow.TeamOrder[pst[i].TeamF];
+                int teamid = MainWindow.TeamOrder[pst[kvp.Key].TeamF];
                 TeamStats ts = tst[teamid];
                 TeamStats tsopp = tstopp[teamid];
 
-                pst[i].CalcMetrics(ts, tsopp, ls);
-                lg_aPER += pst[i].metrics["aPER"]*pst[i].stats[pMINS];
-                totalMins += pst[i].stats[pMINS];
+                pst[kvp.Key].CalcMetrics(ts, tsopp, ls);
+                lg_aPER += pst[kvp.Key].metrics["aPER"]*pst[kvp.Key].stats[pMINS];
+                totalMins += pst[kvp.Key].stats[pMINS];
             }
             lg_aPER /= totalMins;
 
-            for (int i = 0; i < pCount; i++)
+            foreach (var kvp in pst)
             {
-                pst[i].CalcPER(lg_aPER);
+                pst[kvp.Key].CalcPER(lg_aPER);
             }
         }
 
@@ -533,11 +541,13 @@ namespace NBA_Stats_Tracker
             tst = _teamStats;
             
             //TODO: Implement loading opponents stats from 2K12 save here
+            /*
             tstopp = new TeamStats[tst.Length];
             for (int i = 0; i < tst.Length; i++)
             {
                 tstopp[i] = new TeamStats(tst[i].name);
             }
+            */
         }
 
         public static void prepareOffsets(string fn, TeamStats[] _teamStats, ref SortedDictionary<string, int> TeamOrder,
@@ -593,7 +603,7 @@ namespace NBA_Stats_Tracker
             string ptFile = "";
             string safefn = Tools.getSafeFilename(fn);
             string SettingsFile = AppDocsPath + safefn + ".cfg";
-            string team = "";
+            string mode = "";
 
             if (File.Exists(SettingsFile))
             {
@@ -608,9 +618,9 @@ namespace NBA_Stats_Tracker
                         {
                             gamesInSeason = Convert.ToInt32(parts[1]);
                             ptFile = parts[2];
-                            team = parts[3];
+                            mode = parts[3];
 
-                            TeamOrder = setTeamOrder(team);
+                            TeamOrder = setTeamOrder(mode);
                         }
                         catch
                         {
@@ -629,7 +639,7 @@ namespace NBA_Stats_Tracker
 
                 TeamOrder = setTeamOrder(mode);
 
-                saveSettingsForFile(fn, gamesInSeason, "", team, SettingsFile);
+                saveSettingsForFile(fn, gamesInSeason, "", mode, SettingsFile);
             }
 
             var br = new BinaryReader(File.OpenRead(fn));
@@ -702,7 +712,7 @@ namespace NBA_Stats_Tracker
                 }
             }
 
-            saveSettingsForFile(fn, gamesInSeason, ptFile, team, SettingsFile);
+            saveSettingsForFile(fn, gamesInSeason, ptFile, mode, SettingsFile);
 
             if (done) return 1;
             else return 0;
@@ -715,11 +725,11 @@ namespace NBA_Stats_Tracker
             return mode;
         }
 
-        public static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string team,
+        public static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode,
                                                string SettingsFile)
         {
             var sw2 = new StreamWriter(SettingsFile, false);
-            sw2.WriteLine("{0}\t{1}\t{2}\t{3}", fn, gamesInSeason, ptFile, team);
+            sw2.WriteLine("{0}\t{1}\t{2}\t{3}", fn, gamesInSeason, ptFile, mode);
             sw2.Close();
         }
 
@@ -1218,6 +1228,283 @@ namespace NBA_Stats_Tracker
         }
     }
 
+    public static class RealStats
+    {
+        public const int tMINS = 0, tPF = 1, tPA = 2, tFGM = 4, tFGA = 5, tTPM = 6, tTPA = 7, tFTM = 8, tFTA = 9, tOREB = 10, tDREB = 11, tSTL = 12, tTO = 13, tBLK = 14, tAST = 15, tFOUL = 16;
+
+        public static DataSet GetBoxScore(string url)
+        {
+            var dataset = new DataSet();
+
+            var htmlweb = new HtmlWeb();
+            var doc = htmlweb.Load(url);
+
+            var tables = doc.DocumentNode.SelectNodes("//table");
+            foreach (var cur in tables)
+            {
+                try
+                {
+                    if (!cur.Attributes["id"].Value.EndsWith("_basic")) continue;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                var table = new DataTable(cur.Attributes["id"].Value);
+
+                var thead = cur.SelectSingleNode("thead");
+                var theadrows = thead.SelectNodes("tr");
+                var header = theadrows[1].SelectNodes("th");
+
+                var headers = theadrows[1]
+                    .Elements("th")
+                    .Select(th => th.InnerText.Trim());
+                foreach (var colheader in headers)
+                {
+                    table.Columns.Add(colheader);
+                }
+
+                var tbody = cur.SelectSingleNode("tbody");
+                var tbodyrows = tbody.SelectNodes("tr");
+                var rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                          .Select(td => td.InnerText.Trim())
+                                                          .ToArray());
+                foreach (var row in rows)
+                {
+                    table.Rows.Add(row);
+                }
+
+                dataset.Tables.Add(table);
+            }
+            return dataset;
+        }
+
+        public static DataSet GetSeasonTeamStats(string url, out string[] recordparts)
+        {
+            var dataset = new DataSet();
+
+            var htmlweb = new HtmlWeb();
+            var doc = htmlweb.Load(url);
+
+            var infobox = doc.DocumentNode.SelectSingleNode("//div[@id='info_box']");
+            var infoboxps = infobox.SelectNodes("p");
+            var infoboxp = infoboxps[2];
+            var infoboxpstrong = infoboxp.NextSibling;
+            var record = infoboxpstrong.InnerText;
+            recordparts = record.Split('-');
+
+            var tables = doc.DocumentNode.SelectNodes("//table");
+            foreach (var cur in tables)
+            {
+                try
+                {
+                    if (cur.Attributes["id"].Value != "team") continue;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                var table = new DataTable(cur.Attributes["id"].Value);
+
+                var thead = cur.SelectSingleNode("thead");
+                var theadrows = thead.SelectNodes("tr");
+
+                var headers = theadrows[0]
+                    .Elements("th")
+                    .Select(th => th.InnerText.Trim());
+                foreach (var colheader in headers)
+                {
+                    table.Columns.Add(colheader);
+                }
+
+                var tbody = cur.SelectSingleNode("tbody");
+                var tbodyrows = tbody.SelectNodes("tr");
+                var rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                          .Select(td => td.InnerText.Trim())
+                                                          .ToArray());
+                foreach (var row in rows)
+                {
+                    table.Rows.Add(row);
+                }
+
+                dataset.Tables.Add(table);
+            }
+            return dataset;
+        }
+
+        public static DataSet GetPlayerStats(string url)
+        {
+            var dataset = new DataSet();
+
+            var htmlweb = new HtmlWeb();
+            var doc = htmlweb.Load(url);
+
+            var tables = doc.DocumentNode.SelectNodes("//table");
+            foreach (var cur in tables)
+            {
+                try
+                {
+                    if (!(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs")) continue;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                var table = new DataTable(cur.Attributes["id"].Value);
+
+                var thead = cur.SelectSingleNode("thead");
+                var theadrows = thead.SelectNodes("tr");
+
+                var headers = theadrows[0]
+                    .Elements("th")
+                    .Select(th => th.InnerText.Trim());
+                foreach (var colheader in headers)
+                {
+                    table.Columns.Add(colheader);
+                }
+
+                var tbody = cur.SelectSingleNode("tbody");
+                var tbodyrows = tbody.SelectNodes("tr");
+                var rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                          .Select(td => td.InnerText.Trim())
+                                                          .ToArray());
+                foreach (var row in rows)
+                {
+                    table.Rows.Add(row);
+                }
+
+                dataset.Tables.Add(table);
+            }
+            return dataset;
+        }
+
+        public static DataSet GetPlayoffTeamStats(string url)
+        {
+            var dataset = new DataSet();
+
+            var htmlweb = new HtmlWeb();
+            var doc = htmlweb.Load(url);
+
+            var tables = doc.DocumentNode.SelectNodes("//table");
+            foreach (var cur in tables)
+            {
+                try
+                {
+                    if (!(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent")) continue;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                var table = new DataTable(cur.Attributes["id"].Value);
+
+                var thead = cur.SelectSingleNode("thead");
+                var theadrows = thead.SelectNodes("tr");
+
+                var headers = theadrows[0]
+                    .Elements("th")
+                    .Select(th => th.InnerText.Trim());
+                foreach (var colheader in headers)
+                {
+                    table.Columns.Add(colheader);
+                }
+
+                var tbody = cur.SelectSingleNode("tbody");
+                var tbodyrows = tbody.SelectNodes("tr");
+                var rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                          .Select(td => td.InnerText.Trim())
+                                                          .ToArray());
+                foreach (var row in rows)
+                {
+                    table.Rows.Add(row);
+                }
+
+                dataset.Tables.Add(table);
+            }
+            return dataset;
+        }
+
+        private static void TeamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
+        {
+            ts = new TeamStats(name);
+            tsopp = new TeamStats(name);
+
+            tsopp.winloss[1] = ts.winloss[0] = Convert.ToByte(recordparts[0]);
+            tsopp.winloss[0] = ts.winloss[1] = Convert.ToByte(recordparts[1]);
+
+            DataRow tr = dt.Rows[0];
+            DataRow toppr = dt.Rows[2];
+
+            ts.stats[tMINS] = (ushort)(NSTHelper.getUShort(tr, "MP") / 5);
+            ts.stats[tFGM] = NSTHelper.getUShort(tr, "FG");
+            ts.stats[tFGA] = NSTHelper.getUShort(tr, "FGA");
+            ts.stats[tTPM] = NSTHelper.getUShort(tr, "3P");
+            ts.stats[tTPA] = NSTHelper.getUShort(tr, "3PA");
+            ts.stats[tFTM] = NSTHelper.getUShort(tr, "FT");
+            ts.stats[tFTA] = NSTHelper.getUShort(tr, "FTA");
+            ts.stats[tOREB] = NSTHelper.getUShort(tr, "ORB");
+            ts.stats[tDREB] = NSTHelper.getUShort(tr, "DRB");
+            ts.stats[tAST] = NSTHelper.getUShort(tr, "AST");
+            ts.stats[tSTL] = NSTHelper.getUShort(tr, "STL");
+            ts.stats[tBLK] = NSTHelper.getUShort(tr, "BLK");
+            ts.stats[tTO] = NSTHelper.getUShort(tr, "TOV");
+            ts.stats[tFOUL] = NSTHelper.getUShort(tr, "PF");
+            ts.stats[tPF] = NSTHelper.getUShort(tr, "PTS");
+            ts.stats[tPA] = NSTHelper.getUShort(toppr, "PTS");
+
+            ts.calcAvg();
+
+            tsopp.stats[tMINS] = (ushort)(NSTHelper.getUShort(toppr, "MP") / 5);
+            tsopp.stats[tFGM] = NSTHelper.getUShort(toppr, "FG");
+            tsopp.stats[tFGA] = NSTHelper.getUShort(toppr, "FGA");
+            tsopp.stats[tTPM] = NSTHelper.getUShort(toppr, "3P");
+            tsopp.stats[tTPA] = NSTHelper.getUShort(toppr, "3PA");
+            tsopp.stats[tFTM] = NSTHelper.getUShort(toppr, "FT");
+            tsopp.stats[tFTA] = NSTHelper.getUShort(toppr, "FTA");
+            tsopp.stats[tOREB] = NSTHelper.getUShort(toppr, "ORB");
+            tsopp.stats[tDREB] = NSTHelper.getUShort(toppr, "DRB");
+            tsopp.stats[tAST] = NSTHelper.getUShort(toppr, "AST");
+            tsopp.stats[tSTL] = NSTHelper.getUShort(toppr, "STL");
+            tsopp.stats[tBLK] = NSTHelper.getUShort(toppr, "BLK");
+            tsopp.stats[tTO] = NSTHelper.getUShort(toppr, "TOV");
+            tsopp.stats[tFOUL] = NSTHelper.getUShort(toppr, "PF");
+            tsopp.stats[tPF] = NSTHelper.getUShort(toppr, "PTS");
+            tsopp.stats[tPA] = NSTHelper.getUShort(tr, "PTS");
+
+            tsopp.calcAvg();
+        }
+
+        private struct TeamInfo
+        {
+            public string name;
+            public DataSet dataSet;
+            public string[] recordParts;
+        }
+
+        public static void ImportRealStats(out TeamStats[] tst, out TeamStats[] tstopp, out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> TeamOrder)
+        {
+            List<TeamInfo> teams = new List<TeamInfo>();
+            string[] recordparts;
+            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/BOS/2012.html", out recordparts);
+            teams.Add(new TeamInfo { dataSet = ds, name = "Celtics", recordParts = recordparts });
+
+            ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/ATL/2012.html", out recordparts);
+            teams.Add(new TeamInfo {dataSet = ds, name = "Hawks", recordParts = recordparts});
+
+            tst = new TeamStats[2];
+            tstopp = new TeamStats[tst.Length];
+            TeamOrder = new SortedDictionary<string, int>();
+            pst = new Dictionary<int, PlayerStats>();
+            int i = 0;
+            foreach (var kvp in teams)
+            {
+                TeamStatsFromDataTable(kvp.dataSet.Tables[0], kvp.name, recordparts, out tst[i], out tstopp[i]);
+                TeamOrder.Add(kvp.name, i);
+                i++;
+            }
+        }
+    }
+
     // Unlike TeamStats which was designed before REditor implemented such stats,
     // PlayerStats were made according to REditor's standards, to make life 
     // easier when importing/exporting from REditor's CSV
@@ -1274,35 +1561,35 @@ namespace NBA_Stats_Tracker
 
         public PlayerStats(DataRow dataRow)
         {
-            ID = StatsTracker.getInt(dataRow, "ID");
-            LastName = StatsTracker.getString(dataRow, "LastName");
-            FirstName = StatsTracker.getString(dataRow, "FirstName");
-            Position1 = StatsTracker.getString(dataRow, "Position1");
-            Position2 = StatsTracker.getString(dataRow, "Position2");
-            TeamF = StatsTracker.getString(dataRow, "TeamFin");
-            TeamS = StatsTracker.getString(dataRow, "TeamSta");
-            isActive = StatsTracker.getBoolean(dataRow, "isActive");
-            isInjured = StatsTracker.getBoolean(dataRow, "isInjured");
-            isAllStar = StatsTracker.getBoolean(dataRow, "isAllStar");
-            isNBAChampion = StatsTracker.getBoolean(dataRow, "isNBAChampion");
+            ID = NSTHelper.getInt(dataRow, "ID");
+            LastName = NSTHelper.getString(dataRow, "LastName");
+            FirstName = NSTHelper.getString(dataRow, "FirstName");
+            Position1 = NSTHelper.getString(dataRow, "Position1");
+            Position2 = NSTHelper.getString(dataRow, "Position2");
+            TeamF = NSTHelper.getString(dataRow, "TeamFin");
+            TeamS = NSTHelper.getString(dataRow, "TeamSta");
+            isActive = NSTHelper.getBoolean(dataRow, "isActive");
+            isInjured = NSTHelper.getBoolean(dataRow, "isInjured");
+            isAllStar = NSTHelper.getBoolean(dataRow, "isAllStar");
+            isNBAChampion = NSTHelper.getBoolean(dataRow, "isNBAChampion");
 
-            stats[pGP] = StatsTracker.getUShort(dataRow, "GP");
-            stats[pGS] = StatsTracker.getUShort(dataRow, "GS");
-            stats[pMINS] = StatsTracker.getUShort(dataRow, "MINS");
-            stats[pPTS] = StatsTracker.getUShort(dataRow, "PTS");
-            stats[pFGM] = StatsTracker.getUShort(dataRow, "FGM");
-            stats[pFGA] = StatsTracker.getUShort(dataRow, "FGA");
-            stats[pTPM] = StatsTracker.getUShort(dataRow, "TPM");
-            stats[pTPA] = StatsTracker.getUShort(dataRow, "TPA");
-            stats[pFTM] = StatsTracker.getUShort(dataRow, "FTM");
-            stats[pFTA] = StatsTracker.getUShort(dataRow, "FTA");
-            stats[pOREB] = StatsTracker.getUShort(dataRow, "OREB");
-            stats[pDREB] = StatsTracker.getUShort(dataRow, "DREB");
-            stats[pSTL] = StatsTracker.getUShort(dataRow, "STL");
-            stats[pTO] = StatsTracker.getUShort(dataRow, "TOS");
-            stats[pBLK] = StatsTracker.getUShort(dataRow, "BLK");
-            stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
-            stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
+            stats[pGP] = NSTHelper.getUShort(dataRow, "GP");
+            stats[pGS] = NSTHelper.getUShort(dataRow, "GS");
+            stats[pMINS] = NSTHelper.getUShort(dataRow, "MINS");
+            stats[pPTS] = NSTHelper.getUShort(dataRow, "PTS");
+            stats[pFGM] = NSTHelper.getUShort(dataRow, "FGM");
+            stats[pFGA] = NSTHelper.getUShort(dataRow, "FGA");
+            stats[pTPM] = NSTHelper.getUShort(dataRow, "TPM");
+            stats[pTPA] = NSTHelper.getUShort(dataRow, "TPA");
+            stats[pFTM] = NSTHelper.getUShort(dataRow, "FTM");
+            stats[pFTA] = NSTHelper.getUShort(dataRow, "FTA");
+            stats[pOREB] = NSTHelper.getUShort(dataRow, "OREB");
+            stats[pDREB] = NSTHelper.getUShort(dataRow, "DREB");
+            stats[pSTL] = NSTHelper.getUShort(dataRow, "STL");
+            stats[pTO] = NSTHelper.getUShort(dataRow, "TOS");
+            stats[pBLK] = NSTHelper.getUShort(dataRow, "BLK");
+            stats[pAST] = NSTHelper.getUShort(dataRow, "AST");
+            stats[pFOUL] = NSTHelper.getUShort(dataRow, "FOUL");
 
             CalcAvg();
         }
@@ -1323,33 +1610,33 @@ namespace NBA_Stats_Tracker
             this.isInjured = isInjured;
             this.isNBAChampion = isNBAChampion;
 
-            stats[pGP] = StatsTracker.getUShort(dataRow, "GP");
-            stats[pGS] = StatsTracker.getUShort(dataRow, "GS");
-            stats[pMINS] = StatsTracker.getUShort(dataRow, "MINS");
-            stats[pPTS] = StatsTracker.getUShort(dataRow, "PTS");
+            stats[pGP] = NSTHelper.getUShort(dataRow, "GP");
+            stats[pGS] = NSTHelper.getUShort(dataRow, "GS");
+            stats[pMINS] = NSTHelper.getUShort(dataRow, "MINS");
+            stats[pPTS] = NSTHelper.getUShort(dataRow, "PTS");
 
-            string[] parts = StatsTracker.getString(dataRow, "FG").Split('-');
+            string[] parts = NSTHelper.getString(dataRow, "FG").Split('-');
 
             stats[pFGM] = Convert.ToUInt16(parts[0]);
             stats[pFGA] = Convert.ToUInt16(parts[1]);
 
-            parts = StatsTracker.getString(dataRow, "3PT").Split('-');
+            parts = NSTHelper.getString(dataRow, "3PT").Split('-');
 
             stats[pTPM] = Convert.ToUInt16(parts[0]);
             stats[pTPA] = Convert.ToUInt16(parts[1]);
 
-            parts = StatsTracker.getString(dataRow, "FT").Split('-');
+            parts = NSTHelper.getString(dataRow, "FT").Split('-');
 
             stats[pFTM] = Convert.ToUInt16(parts[0]);
             stats[pFTA] = Convert.ToUInt16(parts[1]);
 
-            stats[pOREB] = StatsTracker.getUShort(dataRow, "OREB");
-            stats[pDREB] = StatsTracker.getUShort(dataRow, "DREB");
-            stats[pSTL] = StatsTracker.getUShort(dataRow, "STL");
-            stats[pTO] = StatsTracker.getUShort(dataRow, "TO");
-            stats[pBLK] = StatsTracker.getUShort(dataRow, "BLK");
-            stats[pAST] = StatsTracker.getUShort(dataRow, "AST");
-            stats[pFOUL] = StatsTracker.getUShort(dataRow, "FOUL");
+            stats[pOREB] = NSTHelper.getUShort(dataRow, "OREB");
+            stats[pDREB] = NSTHelper.getUShort(dataRow, "DREB");
+            stats[pSTL] = NSTHelper.getUShort(dataRow, "STL");
+            stats[pTO] = NSTHelper.getUShort(dataRow, "TO");
+            stats[pBLK] = NSTHelper.getUShort(dataRow, "BLK");
+            stats[pAST] = NSTHelper.getUShort(dataRow, "AST");
+            stats[pFOUL] = NSTHelper.getUShort(dataRow, "FOUL");
 
             CalcAvg();
         }
@@ -1450,7 +1737,7 @@ namespace NBA_Stats_Tracker
             
             #region Metrics that do not require Opponent Stats
 
-            double ASTp = 100*pstats[pAST]/(((pstats[pMINS]/(tstats[tMINS]/5))*tstats[tFGM]) - pstats[pFGM]);
+            double ASTp = 100*pstats[pAST]/(((pstats[pMINS]/(tstats[tMINS]))*tstats[tFGM]) - pstats[pFGM]);
             metrics.Add("AST%", ASTp);
 
             double EFGp = (pstats[pFGM] + 0.5 * pstats[pTPM]) / pstats[pFGA];
@@ -1461,7 +1748,7 @@ namespace NBA_Stats_Tracker
                            0.4 * pstats[pFOUL] - pstats[pTO];
             metrics.Add("GmSc", GmSc);
 
-            double STLp = 100 * (pstats[pSTL] * (tstats[tMINS] / 5)) / (pstats[pMINS] * tsopp.metrics["Poss"]);
+            double STLp = 100 * (pstats[pSTL] * (tstats[tMINS])) / (pstats[pMINS] * tsopp.metrics["Poss"]);
             metrics.Add("STL%", STLp);
 
             double TOp = 100 * pstats[pTO] / (pstats[pFGA] + 0.44 * pstats[pFTA] + pstats[pTO]);
@@ -1472,7 +1759,7 @@ namespace NBA_Stats_Tracker
 
             double USGp = 100 *
                           ((pstats[pFGA] + 0.44 * pstats[pFTA] + pstats[pTO]) *
-                           (tstats[tMINS] / 5)) / (pstats[pMINS] * (tstats[tFGA] + 0.44 * tstats[tFTA] + tstats[tTO]));
+                           (tstats[tMINS])) / (pstats[pMINS] * (tstats[tFGA] + 0.44 * tstats[tFTA] + tstats[tTO]));
             metrics.Add("USG%", USGp);
 
             // Rates, stat per 49 minutes played
@@ -1493,8 +1780,10 @@ namespace NBA_Stats_Tracker
 
             double TOR = (pstats[pTO] / pstats[pMINS]) * 48;
             metrics.Add("TOR", TOR);
-            //
 
+            double FTR = (pstats[pFTM]/pstats[pFGA]);
+            metrics.Add("FTR", FTR);
+            //
             // PER preparations
             double lREB = lstats[tOREB] + lstats[tDREB];
             double factor = (2 / 3) - (0.5 * (lstats[tAST] / lstats[tFGM])) / (2 * (lstats[tFGM] / lstats[tFTM]));
@@ -1515,33 +1804,62 @@ namespace NBA_Stats_Tracker
                            + VOP * pstats[pSTL]
                            + VOP * lDRBp * pstats[pBLK]
                            - pstats[pFOUL] * ((lstats[tFTM] / lstats[tFOUL]) - 0.44 * (lstats[tFTA] / lstats[tFOUL]) * VOP));
-            metrics.Add("EFF", uPER);
-
-            double paceAdj = ls.metrics["Pace"] / ts.metrics["Pace"];
-            double estPaceAdj = 2 * ls.averages[tPPG] / (ts.averages[tPPG] + tsopp.averages[tPPG]);
-
-            double aPER = estPaceAdj * uPER;
-            metrics.Add("aPER", aPER);
+            metrics.Add("EFF", uPER * 100);
 
             #endregion
 
-
             #region Metrics that require Opponents stats
 
-            double BLKp = 100*(pstats[pBLK]*(tstats[tMINS]/5))/(pstats[pMINS]*(toppstats[tFGA] - toppstats[tTPA]));
-            metrics.Add("BLK%", BLKp);
+            if (ts.getGames() == tsopp.getGames())
+            {
+                double BLKp = 100 * (pstats[pBLK] * (tstats[tMINS])) / (pstats[pMINS] * (toppstats[tFGA] - toppstats[tTPA]));
 
-            double DRBp = 100*(pstats[pDREB]*(tstats[tMINS]/5))/(pstats[pMINS]*(tstats[tDREB] + toppstats[tOREB]));
-            metrics.Add("DREB%", DRBp);
+                double DRBp = 100 * (pstats[pDREB] * (tstats[tMINS])) / (pstats[pMINS] * (tstats[tDREB] + toppstats[tOREB]));
 
-            double ORBp = 100*(pstats[pOREB]*(tstats[tMINS]/5))/(pstats[pMINS]*(tstats[tOREB] + toppstats[tDREB]));
-            metrics.Add("OREB%", ORBp);
+                double ORBp = 100 * (pstats[pOREB] * (tstats[tMINS])) / (pstats[pMINS] * (tstats[tOREB] + toppstats[tDREB]));
 
-            double toppREB = toppstats[tOREB] + toppstats[tDREB];
-            
-            double REBp = 100*(pREB*(tstats[tMINS]/5))/(pstats[pMINS]*(tREB + toppREB));
-            metrics.Add("REB%", REBp);
+                double toppREB = toppstats[tOREB] + toppstats[tDREB];
 
+                double REBp = 100 * (pREB * (tstats[tMINS])) / (pstats[pMINS] * (tREB + toppREB));
+
+                #region Metrics that require league stats
+
+                double aPER;
+                double PPR;
+
+                if (ls.name != "$$Empty")
+                {
+                    double paceAdj = ls.metrics["Pace"] / ts.metrics["Pace"];
+                    double estPaceAdj = 2 * ls.averages[tPPG] / (ts.averages[tPPG] + tsopp.averages[tPPG]);
+
+                    aPER = estPaceAdj * uPER;
+
+                    PPR = 100 * estPaceAdj * (((pstats[pAST] * 2 / 3) - pstats[pTO]) / pstats[pMINS]);
+                }
+                else
+                {
+                    aPER = double.NaN;
+                    PPR = double.NaN;
+                }
+
+                #endregion
+
+                metrics.Add("aPER", aPER);
+                metrics.Add("BLK%", BLKp);
+                metrics.Add("DREB%", DRBp);
+                metrics.Add("OREB%", ORBp);
+                metrics.Add("REB%", REBp);
+                metrics.Add("PPR", PPR);
+            }
+            else
+            {
+                metrics.Add("aPER", double.NaN);
+                metrics.Add("BLK%", double.NaN);
+                metrics.Add("DREB%", double.NaN);
+                metrics.Add("OREB%", double.NaN);
+                metrics.Add("REB%", double.NaN);
+                metrics.Add("PPR", double.NaN);
+            }
             #endregion
         }
 
@@ -1616,12 +1934,12 @@ namespace NBA_Stats_Tracker
 
         public PlayerBoxScore(DataRow r)
         {
-            PlayerID = StatsTracker.getInt(r, "PlayerID");
-            GameID = StatsTracker.getInt(r, "GameID");
+            PlayerID = NSTHelper.getInt(r, "PlayerID");
+            GameID = NSTHelper.getInt(r, "GameID");
             Team = r["Team"].ToString();
-            isStarter = StatsTracker.getBoolean(r, "isStarter");
-            playedInjured = StatsTracker.getBoolean(r, "playedInjured");
-            isOut = StatsTracker.getBoolean(r, "isOut");
+            isStarter = NSTHelper.getBoolean(r, "isStarter");
+            playedInjured = NSTHelper.getBoolean(r, "playedInjured");
+            isOut = NSTHelper.getBoolean(r, "isOut");
             MINS = Convert.ToUInt16(r["MINS"].ToString());
             PTS = Convert.ToUInt16(r["PTS"].ToString());
             REB = Convert.ToUInt16(r["REB"].ToString());
@@ -1646,11 +1964,11 @@ namespace NBA_Stats_Tracker
             // Only works for INNER JOIN'ed rows
             try
             {
-                int T1PTS = StatsTracker.getInt(r, "T1PTS");
-                int T2PTS = StatsTracker.getInt(r, "T2PTS");
+                int T1PTS = NSTHelper.getInt(r, "T1PTS");
+                int T2PTS = NSTHelper.getInt(r, "T2PTS");
 
-                string Team1 = StatsTracker.getString(r, "T1Name");
-                string Team2 = StatsTracker.getString(r, "T2Name");
+                string Team1 = NSTHelper.getString(r, "T1Name");
+                string Team2 = NSTHelper.getString(r, "T2Name");
 
                 if (Team == Team1)
                 {
@@ -1675,7 +1993,7 @@ namespace NBA_Stats_Tracker
                     OppTeamPTS = T1PTS;
                 }
 
-                Date = StatsTracker.getString(r, "Date").Split(' ')[0];
+                Date = NSTHelper.getString(r, "Date").Split(' ')[0];
             }
             catch (Exception)
             {
@@ -1783,6 +2101,164 @@ namespace NBA_Stats_Tracker
         private void CalculatePoints()
         {
             PTS = (ushort)((_FGM - _TPM) * 2 + _TPM * 3 + _FTM); //(fgm - tpm)*2 + tpm*3 + ftm
+        }
+
+        public string GetBestStats(int count, string position)
+        {
+            double fgn = 0, tpn = 0, ftn = 0, orebn, rebn, astn, stln, blkn, ptsn, ftrn = 0;
+            Dictionary<string, double> statsn = new Dictionary<string, double>();
+
+            double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
+
+            if (position.EndsWith("G"))
+            {
+                fgfactor = 0.4871;
+                tpfactor = 0.39302;
+                ftfactor = 0.86278;
+                orebfactor = 1.242;
+                rebfactor = 4.153;
+                astfactor = 6.324;
+                stlfactor = 1.619;
+                blkfactor = 0.424;
+                ptsfactor = 17.16;
+                ftrfactor = 0.271417;
+            }
+            else if (position.EndsWith("F"))
+            {
+                fgfactor = 0.52792;
+                tpfactor = 0.38034;
+                ftfactor = 0.82656;
+                orebfactor = 2.671;
+                rebfactor = 8.145;
+                astfactor = 3.037;
+                stlfactor = 1.209;
+                blkfactor = 1.24;
+                ptsfactor = 17.731;
+                ftrfactor = 0.307167;
+            }
+            else
+            {
+                fgfactor = 0.52862;
+                tpfactor = 0.23014;
+                ftfactor = 0.75321;
+                orebfactor = 2.328;
+                rebfactor = 7.431;
+                astfactor = 1.688;
+                stlfactor = 0.68;
+                blkfactor = 1.536;
+                ptsfactor = 11.616;
+                ftrfactor = 0.302868;
+            }
+
+            if (FGM > 4)
+            {
+                fgn = FGp/fgfactor;
+            }
+            statsn.Add("fgn", fgn);
+
+            if (TPM > 2)
+            {
+                tpn = TPp/tpfactor;
+            }
+            statsn.Add("tpn", tpn);
+
+            if (FTM > 4)
+            {
+                ftn = FTp/ftfactor;
+            }
+            statsn.Add("ftn", ftn);
+
+            orebn = OREB/orebfactor;
+            statsn.Add("orebn", orebn);
+
+            /*
+            drebn = (REB-OREB)/6.348;
+            statsn.Add("drebn", drebn);
+            */
+
+            rebn = REB/rebfactor;
+            statsn.Add("rebn", rebn);
+
+            astn = AST/astfactor;
+            statsn.Add("astn", astn);
+
+            stln = STL/stlfactor;
+            statsn.Add("stln", stln);
+
+            blkn = BLK/blkfactor;
+            statsn.Add("blkn", blkn);
+
+            ptsn = PTS/ptsfactor;
+            statsn.Add("ptsn", ptsn);
+
+            if (FTM > 3)
+            {
+                ftrn = (FTM/FGA)/ftrfactor;
+            }
+            statsn.Add("ftrn", ftrn);
+
+            var items = from k in statsn.Keys
+                        orderby statsn[k] descending
+                        select k;
+
+            string s = "";
+            int i = 0;
+            foreach (var item in items)
+            {
+                if (i == count) break;
+
+                switch (item)
+                {
+                    case "fgn":
+                        s += String.Format("FG: {0}-{1} ({2:F3})\n", FGM, FGA, FGp);
+                        break;
+
+                    case "tpn":
+                        s += String.Format("3P: {0}-{1} ({2:F3})\n", TPM, TPA, TPp);
+                        break;
+
+                    case "ftn":
+                        s += String.Format("FT: {0}-{1} ({2:F3})\n", FTM, FTA, FTp);
+                        break;
+
+                    case "orebn":
+                        s += String.Format("OREB: {0}\n", OREB);
+                        break;
+
+                    /*
+                    case "drebn":
+                        s += String.Format("DREB: {0}\n", REB - OREB);
+                        break;
+                    */
+
+                    case "rebn":
+                        s += String.Format("REB: {0}\n", REB);
+                        break;
+
+                    case "astn":
+                        s += String.Format("AST: {0}\n", AST);
+                        break;
+
+                    case "stln":
+                        s += String.Format("STL: {0}\n", STL);
+                        break;
+
+                    case "blkn":
+                        s += String.Format("BLK: {0}\n", BLK);
+                        break;
+
+                    case "ptsn":
+                        s += String.Format("PTS: {0}\n", PTS);
+                        break;
+
+                    case "ftrn":
+                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, FTM/FGA);
+                        break;
+                }
+
+                i++;
+            }
+            return s;
         }
 
         public void ResetStats()
@@ -2003,17 +2479,26 @@ namespace NBA_Stats_Tracker
                 toppstats[i] = stats[i];
             }
 
-            double Poss = 0.5 *
-                          ((tstats[tFGA] + 0.4 * tstats[tFTA] -
-                            1.07 * (tstats[tOREB] / (tstats[tOREB] + toppstats[tDREB])) *
-                            (tstats[tFGA] - tstats[tFGM]) + tstats[tTO]) +
-                           (toppstats[tFGA] + 0.4 * toppstats[tFTA] -
-                            1.07 * (toppstats[tOREB] / (toppstats[tOREB] + tstats[tDREB])) *
-                            (toppstats[tFGA] - toppstats[tFGM]) + toppstats[tTO]));
+            var Poss = GetPossMetric(tstats, toppstats);
             metrics.Add("Poss", Poss);
 
-            double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(stats[tMINS]/5)));
+            Poss = GetPossMetric(toppstats, tstats);
+            tsopp.metrics.Add("Poss", Poss);
+
+            double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(stats[tMINS])));
             metrics.Add("Pace", Pace);
+        }
+
+        private static double GetPossMetric( double[] tstats, double[] toppstats)
+        {
+            double Poss = 0.5*
+                          ((tstats[tFGA] + 0.4*tstats[tFTA] -
+                            1.07*(tstats[tOREB]/(tstats[tOREB] + toppstats[tDREB]))*
+                            (tstats[tFGA] - tstats[tFGM]) + tstats[tTO]) +
+                           (toppstats[tFGA] + 0.4*toppstats[tFTA] -
+                            1.07*(toppstats[tOREB]/(toppstats[tOREB] + tstats[tDREB]))*
+                            (toppstats[tFGA] - toppstats[tFGM]) + toppstats[tTO]));
+            return Poss;
         }
 
         internal int getGames()
@@ -2228,12 +2713,12 @@ namespace NBA_Stats_Tracker
 
         public Player(DataRow dataRow)
         {
-            ID = StatsTracker.getInt(dataRow, "ID");
-            Team = StatsTracker.getString(dataRow, "TeamFin");
-            LastName = StatsTracker.getString(dataRow, "LastName");
-            FirstName = StatsTracker.getString(dataRow, "FirstName");
-            Position = StatsTracker.getString(dataRow, "Position1");
-            Position2 = StatsTracker.getString(dataRow, "Position2");
+            ID = NSTHelper.getInt(dataRow, "ID");
+            Team = NSTHelper.getString(dataRow, "TeamFin");
+            LastName = NSTHelper.getString(dataRow, "LastName");
+            FirstName = NSTHelper.getString(dataRow, "FirstName");
+            Position = NSTHelper.getString(dataRow, "Position1");
+            Position2 = NSTHelper.getString(dataRow, "Position2");
         }
 
         public int ID { get; set; }
@@ -2418,6 +2903,18 @@ namespace NBA_Stats_Tracker
         public double BLKR { get; set; }
         public double STLR { get; set; }
         public double TOR { get; set; }
+        public double FTR { get; set; }
+
+        #region Metrics that require opponents' stats
+
+        public double PER { get; set; }
+        public double BLKp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double REBp { get; set; }
+        public double PPR { get; set; }
+
+        #endregion
 
         public PlayerMetricStatsRow(PlayerStats ps)
         {
@@ -2430,18 +2927,34 @@ namespace NBA_Stats_Tracker
 
             EFF = ps.metrics["EFF"];
             GmSc = ps.metrics["GmSc"];
-            EFGp = ps.metrics["EFGp"];
-            TSp = ps.metrics["TSp"];
-            ASTp = ps.metrics["ASTp"];
-            STLp = ps.metrics["STLp"];
-            TOp = ps.metrics["TOp"];
-            USGp = ps.metrics["USGp"];
+            EFGp = ps.metrics["EFG%"];
+            TSp = ps.metrics["TS%"];
+            ASTp = ps.metrics["AST%"];
+            STLp = ps.metrics["STL%"];
+            TOp = ps.metrics["TO%"];
+            USGp = ps.metrics["USG%"];
             PTSR = ps.metrics["PTSR"];
             REBR = ps.metrics["REBR"];
             ASTR = ps.metrics["ASTR"];
             BLKR = ps.metrics["BLKR"];
             STLR = ps.metrics["STLR"];
             TOR = ps.metrics["TOR"];
+            FTR = ps.metrics["FTR"];
+
+            try
+            {
+                PER = ps.metrics["PER"];
+            }
+            catch (Exception)
+            {
+                PER = double.NaN;
+            }
+
+            BLKp = ps.metrics["BLK%"];
+            DREBp = ps.metrics["DREB%"];
+            OREBp = ps.metrics["OREB%"];
+            REBp = ps.metrics["REB%"];
+            PPR = ps.metrics["PPR"];
         }   
     }
 }

@@ -1,6 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Threading;
+using LeftosCommonLibrary;
 
 namespace NBA_Stats_Tracker
 {
@@ -9,7 +15,7 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class addW : Window
     {
-        private readonly Dictionary<int, PlayerStats> pst;
+        private Dictionary<int, PlayerStats> pst;
 
         public addW(ref Dictionary<int, PlayerStats> pst)
         {
@@ -23,8 +29,8 @@ namespace NBA_Stats_Tracker
                 Teams.Add(kvp.Key);
             }
 
-            Positions = new ObservableCollection<string> {"PG", "SG", "SF", "PF", "C"};
-            var Positions2 = new ObservableCollection<string> {" ", "PG", "SG", "SF", "PF", "C"};
+            Positions = new ObservableCollection<string> { "PG", "SG", "SF", "PF", "C" };
+            var Positions2 = new ObservableCollection<string> { " ", "PG", "SG", "SF", "PF", "C" };
 
             Players = new ObservableCollection<Player>();
 
@@ -32,6 +38,10 @@ namespace NBA_Stats_Tracker
             posColumn.ItemsSource = Positions;
             pos2Column.ItemsSource = Positions2;
             dgvAddPlayers.ItemsSource = Players;
+
+            dgvAddPlayers.RowEditEnding += EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvAddPlayers.PreviewKeyDown += EventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvAddPlayers.PreviewKeyUp += EventHandlers.Any_PreviewKeyUp_CheckTab;
         }
 
         private ObservableCollection<Player> Players { get; set; }
@@ -40,6 +50,8 @@ namespace NBA_Stats_Tracker
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
+            Dictionary<int, PlayerStats> newpst = new Dictionary<int, PlayerStats>(pst);
+
             if (tbcAdd.SelectedItem == tabTeams)
             {
                 MainWindow.addInfo = txtTeams.Text;
@@ -49,10 +61,16 @@ namespace NBA_Stats_Tracker
                 int i = MainWindow.GetMaxPlayerID(MainWindow.currentDB);
                 foreach (Player p in Players)
                 {
+                    if (String.IsNullOrWhiteSpace(p.LastName) || String.IsNullOrWhiteSpace(p.Team) || String.IsNullOrWhiteSpace(p.Position))
+                    {
+                        MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
+                        return;
+                    }
                     if (p.Position2 == "") p.Position2 = " ";
                     p.ID = ++i;
-                    pst.Add(p.ID, new PlayerStats(p));
+                    newpst.Add(p.ID, new PlayerStats(p));
                 }
+                pst = newpst;
                 MainWindow.addInfo = "$$NST Players Added";
             }
 
@@ -64,5 +82,7 @@ namespace NBA_Stats_Tracker
             MainWindow.addInfo = "";
             Close();
         }
+
+
     }
 }

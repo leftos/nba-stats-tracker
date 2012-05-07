@@ -4,7 +4,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GroupItem}">
-                        <StackPanel Background="White">
+                        <StackPanel Background="Black">
                             <TextBlock Text="" />
                             <ItemsPresenter />
                         </StackPanel>
@@ -35,7 +35,7 @@
             </TabItem>
             <TabItem Header="Split Stats" Name="tabSplitStats">
                 <Grid>
-                    <DataGrid Margin="0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvSplitStats" VerticalAlignment="Stretch">
+                    <DataGrid Margin="0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvSplitStats" VerticalAlignment="Stretch" IsReadOnly="True">
                         <DataGrid.GroupStyle>
                             <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                 <GroupStyle.Panel>
@@ -61,8 +61,8 @@
                             <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
                             <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
                             <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
-                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="TPG" />
-                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
                             <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
                             <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                         </DataGrid.Columns>
@@ -128,8 +128,8 @@
                             <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
                             <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
                             <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
-                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="TPG" />
-                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
                             <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
                             <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                             <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
@@ -165,7 +165,16 @@
             </TabItem>
             <TabItem Header="Yearly Report" Name="tabYearly">
                 <Grid>
-                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvYearly" VerticalAlignment="Stretch">
+                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvYearly" VerticalAlignment="Stretch" IsReadOnly="True">
+                        <DataGrid.GroupStyle>
+                            <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <DataGridRowsPresenter />
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
+                            </GroupStyle>
+                        </DataGrid.GroupStyle>
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
@@ -182,8 +191,8 @@
                             <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
                             <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
                             <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
-                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="TPG" />
-                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
+                            <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
                             <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
                             <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                             <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />

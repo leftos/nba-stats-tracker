@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using LeftosCommonLibrary;
 using Microsoft.Win32;
 
 namespace NBA_Stats_Tracker
@@ -36,7 +37,10 @@ namespace NBA_Stats_Tracker
         private Brush defaultBackground;
         private string playersT;
         private bool loading;
-        private bool minsUpdating = false;
+        private bool minsUpdating;
+        private TeamStats[] tst = new TeamStats[MainWindow.tst.Length];
+        private TeamStats[] tstopp = new TeamStats[MainWindow.tst.Length];
+        private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -45,12 +49,8 @@ namespace NBA_Stats_Tracker
             prepareWindow(_curmode);
         }
 
-        public boxScoreW(Mode _curmode, int id)
+        public boxScoreW(Mode _curmode, int id) : this(_curmode)
         {
-            InitializeComponent();
-
-            prepareWindow(_curmode);
-
             cbHistory.SelectedIndex = id;
         }
 
@@ -58,6 +58,8 @@ namespace NBA_Stats_Tracker
         private BindingList<PlayerBoxScore> pbsHomeList { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
+        private List<PlayerMetricStatsRow> pmsrListAway { get; set; }
+        private List<PlayerMetricStatsRow> pmsrListHome { get; set; } 
 
         private void UpdateDataGrid(int team)
         {
@@ -172,8 +174,41 @@ namespace NBA_Stats_Tracker
             */
             defaultBackground = cmbTeam1.Background;
 
+            pbsAwayList = new BindingList<PlayerBoxScore>();
+            pbsHomeList = new BindingList<PlayerBoxScore>();
+
+            pbsAwayList.AllowNew = true;
+            pbsAwayList.AllowEdit = true;
+            pbsAwayList.AllowRemove = true;
+            pbsAwayList.RaiseListChangedEvents = true;
+
+            pbsHomeList.AllowNew = true;
+            pbsHomeList.AllowEdit = true;
+            pbsHomeList.AllowRemove = true;
+            pbsHomeList.RaiseListChangedEvents = true;
+
+            dgvPlayersAway.ItemsSource = pbsAwayList;
+            dgvPlayersHome.ItemsSource = pbsHomeList;
+
+            dgvPlayersAway.RowEditEnding += EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersAway.PreviewKeyDown += EventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersAway.PreviewKeyUp += EventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvPlayersHome.RowEditEnding += EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersHome.PreviewKeyDown += EventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersHome.PreviewKeyUp += EventHandlers.Any_PreviewKeyUp_CheckTab;
+
             dgvPlayersAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayersHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvMetricAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvMetricHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+
+            dgvMetricAwayEFFColumn.Visibility = Visibility.Collapsed;
+            dgvMetricAwayPERColumn.Visibility = Visibility.Collapsed;
+            dgvMetricAwayPPRColumn.Visibility = Visibility.Collapsed;
+
+            dgvMetricHomeEFFColumn.Visibility = Visibility.Collapsed;
+            dgvMetricHomePERColumn.Visibility = Visibility.Collapsed;
+            dgvMetricHomePPRColumn.Visibility = Visibility.Collapsed;
 
             cmbTeam1.SelectedIndex = -1;
             cmbTeam2.SelectedIndex = -1;
@@ -227,14 +262,23 @@ namespace NBA_Stats_Tracker
             {
                 if (MainWindow.isCustom)
                 {
-                    MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?",
-                                                         "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
-                                                         MessageBoxImage.Question);
-                    if (r == MessageBoxResult.Cancel) return;
-                    else if (r == MessageBoxResult.Yes)
+                    if (cbHistory.SelectedIndex != -1)
                     {
-                        tryParseBS();
-                        if (MainWindow.bs.done == false) return;
+                        MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?",
+                                                             "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
+                                                             MessageBoxImage.Question);
+                        if (r == MessageBoxResult.Cancel) return;
+                        else if (r == MessageBoxResult.Yes)
+                        {
+                            tryParseBS();
+                            if (MainWindow.bs.done == false) return;
+
+                            MessageBox.Show("It is recommended to save the database for changes to take effect.");
+                        }
+                        else
+                        {
+                            MainWindow.bs.done = false;
+                        }
                     }
                     else
                     {
@@ -253,11 +297,13 @@ namespace NBA_Stats_Tracker
                 return;
             }
             if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
+            {
+                //MessageBox.Show("The Box Score is incomplete. Make sure you input all stats.");
                 return;
+            }
             if (cmbSeasonNum.SelectedIndex == -1)
             {
-                MessageBox.Show(
-                    "You have to enter the Season number (e.g. '1' for the first season of your Association, or '2010', etc.)");
+                MessageBox.Show("You have to choose a season.");
                 return;
             }
             try
@@ -495,9 +541,9 @@ namespace NBA_Stats_Tracker
             }
             catch
             {
+                MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
                 MainWindow.bs.done = false;
             }
-            return;
         }
 
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -600,7 +646,7 @@ namespace NBA_Stats_Tracker
                 int fga = Convert.ToInt32(txtFGA1.Text);
                 int tpa = Convert.ToInt32(txt3PA1.Text);
                 int fta = Convert.ToInt32(txtFTA1.Text);
-                txbT1Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%{2:F3}", (float) fgm/fga, (float) tpm/tpa,
+                txbT1Avg.Text = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm/fga, (float) tpm/tpa,
                                               (float) ftm/fta);
             }
             catch
@@ -782,6 +828,19 @@ namespace NBA_Stats_Tracker
 
             pbsAwayList = new BindingList<PlayerBoxScore>();
             pbsHomeList = new BindingList<PlayerBoxScore>();
+
+            pbsAwayList.AllowNew = true;
+            pbsAwayList.AllowEdit = true;
+            pbsAwayList.AllowRemove = true;
+            pbsAwayList.RaiseListChangedEvents = true;
+
+            pbsHomeList.AllowNew = true;
+            pbsHomeList.AllowEdit = true;
+            pbsHomeList.AllowRemove = true;
+            pbsHomeList.RaiseListChangedEvents = true;
+
+            dgvPlayersAway.ItemsSource = pbsAwayList;
+            dgvPlayersHome.ItemsSource = pbsHomeList;
             loading = true;
             foreach (PlayerBoxScore pbs in MainWindow.bshist[i].pbsList)
             {
@@ -806,6 +865,11 @@ namespace NBA_Stats_Tracker
 
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             MainWindow.curSeason = curSeason;
+
+            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+                                    ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
+                                    doNotLoadBoxScores: true);
+
             playersT = "Players";
 
             if (curSeason != maxSeason)
@@ -978,6 +1042,247 @@ namespace NBA_Stats_Tracker
                 minsUpdating = true;
                 txtMINS1.Text = txtMINS2.Text;
                 minsUpdating = false;
+            }
+        }
+
+        private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.OriginalSource is TabControl)
+            {
+                if (tabControl1.SelectedItem == tabAwayMetric)
+                {
+                    UpdateMetric(1);
+                }
+                else if (tabControl1.SelectedItem == tabHomeMetric)
+                {
+                    UpdateMetric(2);
+                }
+                else if (tabControl1.SelectedItem == tabBest)
+                {
+                    UpdateMetric(1);
+                    UpdateMetric(2);
+                    UpdateBest();
+                }
+            }
+        }
+
+        private void UpdateBest()
+        {
+            try
+            {
+                if (pmsrListAway.Count == 0 && pmsrListHome.Count == 0) return;
+
+                pmsrListAway.Sort(delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2)
+                { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+                pmsrListAway.Reverse();
+
+                pmsrListHome.Sort(delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2)
+                { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+                pmsrListHome.Reverse();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            string TeamBest;
+            int awayid, homeid;
+            PlayerBoxScore pbsBest = new PlayerBoxScore();
+            PlayerBoxScore pbsAway1 = new PlayerBoxScore(),
+                           pbsAway2 = new PlayerBoxScore(),
+                           pbsAway3 = new PlayerBoxScore(),
+                           pbsHome1 = new PlayerBoxScore(),
+                           pbsHome2 = new PlayerBoxScore(),
+                           pbsHome3 = new PlayerBoxScore();
+
+            txbMVP.Text = "";
+            txbMVPStats.Text = "";
+            txbAway1.Text = "";
+            txbAway2.Text = "";
+            txbAway3.Text = "";
+            txbHome1.Text = "";
+            txbHome2.Text = "";
+            txbHome3.Text = "";
+
+            bool skipaway = pmsrListAway.Count == 0;
+
+            if (!skipaway || pmsrListAway[0].GmSc > pmsrListHome[0].GmSc)
+            {
+                int bestID = pmsrListAway[0].ID;
+                foreach (var pbs in pbsAwayList)
+                {
+                    if (pbs.PlayerID == bestID)
+                    {
+                        pbsBest = pbs;
+                    }
+                }
+                TeamBest = cmbTeam1.SelectedItem.ToString();
+                awayid = 1;
+                homeid = 0;
+            }
+            else
+            {
+                int bestID = pmsrListHome[0].ID;
+                foreach (var pbs in pbsHomeList)
+                {
+                    if (pbs.PlayerID == bestID)
+                    {
+                        pbsBest = pbs;
+                    }
+                }
+                TeamBest = cmbTeam1.SelectedItem.ToString();
+                awayid = 0;
+                homeid = 1;
+            }
+
+            PlayerStats ps = pst[pbsBest.PlayerID];
+            string text = pbsBest.GetBestStats(5, ps.Position1);
+            txbMVP.Text = ps.FirstName + " " + ps.LastName;
+            txbMVPStats.Text = TeamBest + "\n\n" + text;
+
+            if (pmsrListAway.Count > awayid)
+            {
+                int id2 = pmsrListAway[awayid++].ID;
+                foreach (var pbs in pbsAwayList)
+                {
+                    if (pbs.PlayerID == id2)
+                    {
+                        pbsAway1 = pbs;
+                    }
+                }
+
+                ps = pst[pbsAway1.PlayerID];
+                text = pbsAway1.GetBestStats(5, ps.Position1);
+                txbAway1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+
+            if (pmsrListAway.Count > awayid)
+            {
+                int id3 = pmsrListAway[awayid++].ID;
+                foreach (var pbs in pbsAwayList)
+                {
+                    if (pbs.PlayerID == id3)
+                    {
+                        pbsAway2 = pbs;
+                    }
+                }
+
+                ps = pst[pbsAway2.PlayerID];
+                text = pbsAway2.GetBestStats(5, ps.Position1);
+                txbAway2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+
+            if (pmsrListAway.Count > awayid)
+            {
+                int id3 = pmsrListAway[awayid++].ID;
+                foreach (var pbs in pbsAwayList)
+                {
+                    if (pbs.PlayerID == id3)
+                    {
+                        pbsAway3 = pbs;
+                    }
+                }
+
+                ps = pst[pbsAway3.PlayerID];
+                text = pbsAway3.GetBestStats(5, ps.Position1);
+                txbAway3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+
+            if (pmsrListHome.Count > homeid)
+            {
+                int id2 = pmsrListHome[homeid++].ID;
+                foreach (var pbs in pbsHomeList)
+                {
+                    if (pbs.PlayerID == id2)
+                    {
+                        pbsHome1 = pbs;
+                    }
+                }
+
+                ps = pst[pbsHome1.PlayerID];
+                text = pbsHome1.GetBestStats(5, ps.Position1);
+                txbHome1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+
+            if (pmsrListHome.Count > homeid)
+            {
+                int id3 = pmsrListHome[homeid++].ID;
+                foreach (var pbs in pbsHomeList)
+                {
+                    if (pbs.PlayerID == id3)
+                    {
+                        pbsHome2 = pbs;
+                    }
+                }
+
+                ps = pst[pbsHome2.PlayerID];
+                text = pbsHome2.GetBestStats(5, ps.Position1);
+                txbHome2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+
+            if (pmsrListHome.Count > homeid)
+            {
+                int id3 = pmsrListHome[homeid++].ID;
+                foreach (var pbs in pbsHomeList)
+                {
+                    if (pbs.PlayerID == id3)
+                    {
+                        pbsHome3 = pbs;
+                    }
+                }
+
+                ps = pst[pbsHome3.PlayerID];
+                text = pbsHome3.GetBestStats(5, ps.Position1);
+                txbHome3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+            }
+        }
+
+        private void UpdateMetric(int team)
+        {
+            PlayerStats ps;
+            TeamStats ts = new TeamStats(cmbTeam1.SelectedItem.ToString());
+            TeamStats tsopp = new TeamStats(cmbTeam2.SelectedItem.ToString());
+
+            tryParseBS();
+            if (!MainWindow.bs.done) return;
+
+            BoxScore bs = MainWindow.bs;
+
+            if (team == 1) MainWindow.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            else MainWindow.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+
+            ts.CalcMetrics(tsopp);
+
+            List<PlayerMetricStatsRow> pmsrList = new List<PlayerMetricStatsRow>();
+            BindingList<PlayerBoxScore> pbsList;
+
+            if (team == 1) pbsList = pbsAwayList;
+            else pbsList = pbsHomeList;
+
+            foreach (PlayerBoxScore pbs in pbsList)
+            {
+                if (pbs.PlayerID == -1) continue;
+
+                ps = pst[pbs.PlayerID];
+                ps.ResetStats();
+                ps.AddBoxScore(pbs);
+                ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
+                pmsrList.Add(new PlayerMetricStatsRow(ps));
+            }
+
+            pmsrList.Sort(delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2)
+                              { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+            pmsrList.Reverse();
+
+            if (team == 1)
+            {
+                pmsrListAway = new List<PlayerMetricStatsRow>(pmsrList);
+                dgvMetricAway.ItemsSource = pmsrListAway;
+            }
+            else
+            {
+                pmsrListHome = new List<PlayerMetricStatsRow>(pmsrList);
+                dgvMetricHome.ItemsSource = pmsrListHome;
             }
         }
     }

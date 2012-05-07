@@ -27,6 +27,8 @@ Features in a glance
 			Analysis on how the team is doing when playing at home and away, through wins and losses, during the seasons and the playoffs, as well as a monthly breakdown.
 		Player Stats
 			A list of each team's players with their averages and total stats. You can quickly edit the player stats from this tab.
+		Metric Stats
+			Advanced player statistics that take into account multiple factors of the player, team and league performance.
 		Box Scores
 			A list of each team's games, with easy access to the Box Score window, which allows you to view the full team and player stats, as well as edit them.
 		Head-To-Head
@@ -53,6 +55,8 @@ Features in a glance
 			The league's leading players in each average, taking into account the NBA's rule for league leaders eligibility.
 		Player Stats
 			All the players, all stats and averages, no restrictions applied.
+		Metric Stats
+			Advanced player statistics that take into account multiple factors of the player, team and league performance.
 		Box Scores
 			Every box score saved in the specific timeframe.
 			
@@ -121,44 +125,68 @@ Credits to
 	- albidnis, for his idea to export to CSV
 	- jrlocke, for being the first donator, and a generous one
 	- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues & Real NBA Stats features
+	- AreaOfEffect, for his help with debugging
 	- Everyone at the NLSC community, for their continued support
 	
 	
 Version History
-	v0.10.2 - Current
-		- Added: Minutes Played have been added as a stat kept for Teams
+	v0.10.4.2 - Current
+		- Improvement: Best Peformers calculations now take player position into account; should be able to pick the most significant stats better
+		- Fix: Players with apostrophes in their name (such as O'Neal) caused SQlite errors and weren't being added to the database
+		- Fix: Tool wouldn't make any checks in the Add Players window, meaning you could add players with no names, no position, no team.
+		- Fix: When in a table that automatically inserts a new row after the current one, pressing Tab while in the last column of the last row would make the table lose focus; it now correctly moves to the first column of the newly inserted row
+		- Removal: Removed Defensive Rebounds from the Best Performers screen as a possibly significant stat; Offensive and Total Rebounds remain
+		- Change: Best Performers tab in Box Scores window now shows Player of the Game plus 3 best players from each team
+		- Fix: Fixed bug (probably since v0.10.3) that broke the Export to 2K12 Save feature
+
+	v0.10.4.1 - May 7
+		- Addition: Best Performers tab Addition to Box Score window, showing you the key stats from the key players of the game
+		- Addition: FTR (Free Throw Rate) metric Addition to Metric Stats
+		- Addition: New edition of NBA Stats Tracker gets its own release channel, with update notifications
+
+	v0.10.3 - May 6
+		- Fix: Tool wouldn't save the 2K12 Compatibility Mode correctly, leading to mixed Team Stats in many occasions
+		- Addition: Metric Stats have been implemented; there's a table for them in Team Overview, League Overview & Box Scores
+		- Addition: Each team now has "Opponents" stats as well, which can either be directly edited or accumulated via box score updating
+		- Addition: You can now import Box Scores from other database files
+		- Improvement: Various performance improvements
+		- Fix: Nearly all BPG and TPG columns were reversed; that is, BPG were in the TPG column, and TPG in the BPG one
+		- Fix: Various other minor bug fixes
+
+	v0.10.2 - May 5
+		- Addition: Minutes Played have been Addition as a stat kept for Teams
 
 	v0.10.1.2 - May 4
-		- Added: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
+		- Addition: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
 		- Improvement: The Box Score window's Copy feature now copies both teams' player and team stats into the Clipboard in a TSV table with headers
 		- Fix: Fixed various minor issues
 
 	v0.10 - May 3
 		- Change: The program now uses SQLite 3 databases instead of the custom binary format
 		- Change: Massive UI overhaul, more details below
-		- Added: Team Overview screen; all statistics can be limited to a specific timeframe if the required box scores are available
+		- Addition: Team Overview screen; all statistics can be limited to a specific timeframe if the required box scores are available
 			* Overview: View and edit your team's stats; limit them to a timeframe and see your opponents' stats against you during that time
 			* Split Stats: See how a team's performing when winning or losing, at home or away, during the regular season or the playoffs, as well as its monthly progress
 			* Player Stats: See an overview of the stats of all the team's players
 			* Box Scores: View any team's box scores in an easy to search table
 			* Head-To-Head: Compare your team to any other team; compare stats against the league, as well as each other
 			* Yearly Report: Compare the team's averages over multiple seasons
-		- Added: Player Overview screen
+		- Addition: Player Overview screen
 			* Overview: View and edit a player's stats and other info
 			* Split Stats: Player performance on wins and losses, home and away, season and playoffs, monthly progress, as well as on each team they played (before/after trade)
 			* Box Scores: View all box scores that this player is in
 			* Head-To-Head: Compare any two players in their games against the league, as well as against each other
 			* Yearly Report: Compare any player's averages over multiple seasons
-		- Added: League Overview screen
+		- Addition: League Overview screen
 			* Team Stats: Similar to the 2K Team Stats table, a full overview of the league team averages in a sortable table
 			* Playoff Stats: As above, but limited to teams in the playoffs
 			* League Leaders: See the leading players in the league and their averages (uses NBA rules on whether a player is eligible for inclusion)
 			* Player Stats: All players, all stats, no rules
 			* Box Scores: An overview of all box scores saved around the league
-		- Added: Box Scores can now be edited after the initial creation
-		- Added: Box Scores now require a Season number as well as the date the game took place; you can also differentiate between regular season and playoff games for the split stats
-		- Added: Double-clicking on a team, player or box-score in any table in the tool takes you to the respective screen for further analysis and edits
-		- Added: Tool now keeps track of stats over multiple seasons; Team Stats, Playoff Stats, Player Stats and Box Scores are all preserved between seasons, and you can switch to any season's stats easily
+		- Addition: Box Scores can now be edited after the initial creation
+		- Addition: Box Scores now require a Season number as well as the date the game took place; you can also differentiate between regular season and playoff games for the split stats
+		- Addition: Double-clicking on a team, player or box-score in any table in the tool takes you to the respective screen for further analysis and edits
+		- Addition: Tool now keeps track of stats over multiple seasons; Team Stats, Playoff Stats, Player Stats and Box Scores are all preserved between seasons, and you can switch to any season's stats easily
 
 	v0.8 - Mar 21
 		- Added keeping history of Box Score updates

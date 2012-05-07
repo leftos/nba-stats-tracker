@@ -118,7 +118,7 @@ internal class SQLiteDatabase
         {
             foreach (var val in data)
             {
-                vals += String.Format(" {0} = '{1}',", val.Key, val.Value);
+                vals += String.Format(" {0} = \"{1}\",", val.Key, val.Value);
             }
             vals = vals.Substring(0, vals.Length - 1);
         }
@@ -171,7 +171,7 @@ internal class SQLiteDatabase
         foreach (var val in data)
         {
             columns += String.Format(" {0},", val.Key);
-            values += String.Format(" '{0}',", val.Value);
+            values += String.Format(" \"{0}\",", val.Value);
         }
         columns = columns.Substring(0, columns.Length - 1);
         values = values.Substring(0, values.Length - 1);

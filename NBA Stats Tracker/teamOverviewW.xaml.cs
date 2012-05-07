@@ -28,13 +28,16 @@ namespace NBA_Stats_Tracker
         private string curTeam;
         private DataTable dt_bs_res;
         private DataView dv_hth;
-        private ObservableCollection<PlayerStatsRow> psr;
+        private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
-        private string showSeason;
         private TeamStats[] tst;
         private TeamStats[] tstopp;
+        private int curSeason = MainWindow.curSeason;
+        private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private TeamStats curts;
+        private TeamStats curtsopp;
 
-        public teamOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
+        public teamOverviewW()
         {
             InitializeComponent();
 
@@ -153,9 +156,9 @@ namespace NBA_Stats_Tracker
 
             #endregion
 
-            this.tst = tst;
-            this.tstopp = tstopp;
-            this.pst = pst;
+            tst = MainWindow.tst;
+            pst = MainWindow.pst;
+            tstopp = MainWindow.tstopp;
 
             foreach (var kvp in MainWindow.TeamOrder)
             {
@@ -163,8 +166,8 @@ namespace NBA_Stats_Tracker
                 cmbOppTeam.Items.Add(kvp.Key);
             }
 
-            rankings = StatsTracker.calculateRankings(tst);
-            pl_rankings = StatsTracker.calculateRankings(tst, playoffs: true);
+            rankings = NSTHelper.calculateRankings(tst);
+            pl_rankings = NSTHelper.calculateRankings(tst, playoffs: true);
 
             dtpEnd.SelectedDate = DateTime.Today;
             dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
@@ -183,7 +186,7 @@ namespace NBA_Stats_Tracker
             cmbTeam.SelectedIndex = 0;
         }
 
-        public teamOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst, string team) : this(tst, tstopp, pst)
+        public teamOverviewW(string team) : this()
         {
             cmbTeam.SelectedItem = team;
         }
@@ -212,9 +215,8 @@ namespace NBA_Stats_Tracker
 
         private void UpdateOverviewAndBoxScores()
         {
-            var ts = new TeamStats(curTeam);
-            var tsopp = new TeamStats("Opponents");
-            int curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            curts = new TeamStats(curTeam);
+            curtsopp = new TeamStats("Opponents");
 
             int i = MainWindow.TeamOrder[curTeam];
 
@@ -222,11 +224,12 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, curSeason, ref ts, ref tsopp);
+                curts = tst[i];
+                curtsopp = tstopp[i];
 
                 DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                           + curTeam + "')) AND SeasonNum = " + showSeason + " ORDER BY Date DESC";
+                           + curTeam + "')) AND SeasonNum = " + curSeason + " ORDER BY Date DESC";
                 res = db.GetDataTable(q);
                 dt_bs_res = res;
 
@@ -338,10 +341,11 @@ namespace NBA_Stats_Tracker
 
                             dt_bs.Rows.Add(bsr);
                         }
-                        tsopp.winloss[1] = ts.winloss[0];
-                        tsopp.winloss[0] = ts.winloss[1];
+                        curtsopp.winloss[1] = curts.winloss[0];
+                        curtsopp.winloss[0] = curts.winloss[1];
                     }
-                    AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
+                    AddToTeamStatsFromSQLBoxScore(res, ref curts, ref curtsopp);
+                    curts.CalcMetrics(curtsopp);
                 }
             }
 
@@ -350,52 +354,52 @@ namespace NBA_Stats_Tracker
             DataRow dr = dt_ov.NewRow();
 
             dr["Type"] = "Stats";
-            dr["Games"] = ts.getGames();
-            dr["Wins (W%)"] = ts.winloss[0].ToString();
-            dr["Losses (Weff)"] = ts.winloss[1].ToString();
-            dr["PF"] = ts.stats[tPF].ToString();
-            dr["PA"] = ts.stats[tPA].ToString();
+            dr["Games"] = curts.getGames();
+            dr["Wins (W%)"] = curts.winloss[0].ToString();
+            dr["Losses (Weff)"] = curts.winloss[1].ToString();
+            dr["PF"] = curts.stats[tPF].ToString();
+            dr["PA"] = curts.stats[tPA].ToString();
             dr["PD"] = " ";
-            dr["FG"] = ts.stats[tFGM].ToString() + "-" + ts.stats[tFGA].ToString();
-            dr["3PT"] = ts.stats[tTPM].ToString() + "-" + ts.stats[tTPA].ToString();
-            dr["FT"] = ts.stats[tFTM].ToString() + "-" + ts.stats[tFTA].ToString();
-            dr["REB"] = (ts.stats[tDREB] + ts.stats[tOREB]).ToString();
-            dr["OREB"] = ts.stats[tOREB].ToString();
-            dr["DREB"] = ts.stats[tDREB].ToString();
-            dr["AST"] = ts.stats[tAST].ToString();
-            dr["TO"] = ts.stats[tTO].ToString();
-            dr["STL"] = ts.stats[tSTL].ToString();
-            dr["BLK"] = ts.stats[tBLK].ToString();
-            dr["FOUL"] = ts.stats[tFOUL].ToString();
-            dr["MINS"] = ts.stats[tMINS].ToString();
+            dr["FG"] = curts.stats[tFGM].ToString() + "-" + curts.stats[tFGA].ToString();
+            dr["3PT"] = curts.stats[tTPM].ToString() + "-" + curts.stats[tTPA].ToString();
+            dr["FT"] = curts.stats[tFTM].ToString() + "-" + curts.stats[tFTA].ToString();
+            dr["REB"] = (curts.stats[tDREB] + curts.stats[tOREB]).ToString();
+            dr["OREB"] = curts.stats[tOREB].ToString();
+            dr["DREB"] = curts.stats[tDREB].ToString();
+            dr["AST"] = curts.stats[tAST].ToString();
+            dr["TO"] = curts.stats[tTO].ToString();
+            dr["STL"] = curts.stats[tSTL].ToString();
+            dr["BLK"] = curts.stats[tBLK].ToString();
+            dr["FOUL"] = curts.stats[tFOUL].ToString();
+            dr["MINS"] = curts.stats[tMINS].ToString();
 
             dt_ov.Rows.Add(dr);
 
             dr = dt_ov.NewRow();
 
-            ts.calcAvg(); // Just to be sure...
+            curts.calcAvg(); // Just to be sure...
 
             dr["Type"] = "Averages";
-            //dr["Games"] = ts.getGames();
-            dr["Wins (W%)"] = String.Format("{0:F3}", ts.averages[tWp]);
-            dr["Losses (Weff)"] = String.Format("{0:F2}", ts.averages[tWeff]);
-            dr["PF"] = String.Format("{0:F1}", ts.averages[tPPG]);
-            dr["PA"] = String.Format("{0:F1}", ts.averages[tPAPG]);
-            dr["PD"] = String.Format("{0:F1}", ts.averages[tPD]);
-            dr["FG"] = String.Format("{0:F3}", ts.averages[tFGp]);
-            dr["FGeff"] = String.Format("{0:F2}", ts.averages[tFGeff]);
-            dr["3PT"] = String.Format("{0:F3}", ts.averages[tTPp]);
-            dr["3Peff"] = String.Format("{0:F2}", ts.averages[tTPeff]);
-            dr["FT"] = String.Format("{0:F3}", ts.averages[tFTp]);
-            dr["FTeff"] = String.Format("{0:F2}", ts.averages[tFTeff]);
-            dr["REB"] = String.Format("{0:F1}", ts.averages[tRPG]);
-            dr["OREB"] = String.Format("{0:F1}", ts.averages[tORPG]);
-            dr["DREB"] = String.Format("{0:F1}", ts.averages[tDRPG]);
-            dr["AST"] = String.Format("{0:F1}", ts.averages[tAPG]);
-            dr["TO"] = String.Format("{0:F1}", ts.averages[tTPG]);
-            dr["STL"] = String.Format("{0:F1}", ts.averages[tSPG]);
-            dr["BLK"] = String.Format("{0:F1}", ts.averages[tBPG]);
-            dr["FOUL"] = String.Format("{0:F1}", ts.averages[tFPG]);
+            //dr["Games"] = curts.getGames();
+            dr["Wins (W%)"] = String.Format("{0:F3}", curts.averages[tWp]);
+            dr["Losses (Weff)"] = String.Format("{0:F2}", curts.averages[tWeff]);
+            dr["PF"] = String.Format("{0:F1}", curts.averages[tPPG]);
+            dr["PA"] = String.Format("{0:F1}", curts.averages[tPAPG]);
+            dr["PD"] = String.Format("{0:F1}", curts.averages[tPD]);
+            dr["FG"] = String.Format("{0:F3}", curts.averages[tFGp]);
+            dr["FGeff"] = String.Format("{0:F2}", curts.averages[tFGeff]);
+            dr["3PT"] = String.Format("{0:F3}", curts.averages[tTPp]);
+            dr["3Peff"] = String.Format("{0:F2}", curts.averages[tTPeff]);
+            dr["FT"] = String.Format("{0:F3}", curts.averages[tFTp]);
+            dr["FTeff"] = String.Format("{0:F2}", curts.averages[tFTeff]);
+            dr["REB"] = String.Format("{0:F1}", curts.averages[tRPG]);
+            dr["OREB"] = String.Format("{0:F1}", curts.averages[tORPG]);
+            dr["DREB"] = String.Format("{0:F1}", curts.averages[tDRPG]);
+            dr["AST"] = String.Format("{0:F1}", curts.averages[tAPG]);
+            dr["TO"] = String.Format("{0:F1}", curts.averages[tTPG]);
+            dr["STL"] = String.Format("{0:F1}", curts.averages[tSPG]);
+            dr["BLK"] = String.Format("{0:F1}", curts.averages[tBPG]);
+            dr["FOUL"] = String.Format("{0:F1}", curts.averages[tFPG]);
 
             dt_ov.Rows.Add(dr);
 
@@ -431,52 +435,52 @@ namespace NBA_Stats_Tracker
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Opp Stats";
-                dr["Games"] = tsopp.getGames();
-                dr["Wins (W%)"] = tsopp.winloss[0].ToString();
-                dr["Losses (Weff)"] = tsopp.winloss[1].ToString();
-                dr["PF"] = tsopp.stats[tPF].ToString();
-                dr["PA"] = tsopp.stats[tPA].ToString();
+                dr["Games"] = curtsopp.getGames();
+                dr["Wins (W%)"] = curtsopp.winloss[0].ToString();
+                dr["Losses (Weff)"] = curtsopp.winloss[1].ToString();
+                dr["PF"] = curtsopp.stats[tPF].ToString();
+                dr["PA"] = curtsopp.stats[tPA].ToString();
                 dr["PD"] = " ";
-                dr["FG"] = tsopp.stats[tFGM].ToString() + "-" + tsopp.stats[tFGA].ToString();
-                dr["3PT"] = tsopp.stats[tTPM].ToString() + "-" + tsopp.stats[tTPA].ToString();
-                dr["FT"] = tsopp.stats[tFTM].ToString() + "-" + tsopp.stats[tFTA].ToString();
-                dr["REB"] = (tsopp.stats[tDREB] + tsopp.stats[tOREB]).ToString();
-                dr["OREB"] = tsopp.stats[tOREB].ToString();
-                dr["DREB"] = tsopp.stats[tDREB].ToString();
-                dr["AST"] = tsopp.stats[tAST].ToString();
-                dr["TO"] = tsopp.stats[tTO].ToString();
-                dr["STL"] = tsopp.stats[tSTL].ToString();
-                dr["BLK"] = tsopp.stats[tBLK].ToString();
-                dr["FOUL"] = tsopp.stats[tFOUL].ToString();
-                dr["MINS"] = tsopp.stats[tMINS].ToString();
+                dr["FG"] = curtsopp.stats[tFGM].ToString() + "-" + curtsopp.stats[tFGA].ToString();
+                dr["3PT"] = curtsopp.stats[tTPM].ToString() + "-" + curtsopp.stats[tTPA].ToString();
+                dr["FT"] = curtsopp.stats[tFTM].ToString() + "-" + curtsopp.stats[tFTA].ToString();
+                dr["REB"] = (curtsopp.stats[tDREB] + curtsopp.stats[tOREB]).ToString();
+                dr["OREB"] = curtsopp.stats[tOREB].ToString();
+                dr["DREB"] = curtsopp.stats[tDREB].ToString();
+                dr["AST"] = curtsopp.stats[tAST].ToString();
+                dr["TO"] = curtsopp.stats[tTO].ToString();
+                dr["STL"] = curtsopp.stats[tSTL].ToString();
+                dr["BLK"] = curtsopp.stats[tBLK].ToString();
+                dr["FOUL"] = curtsopp.stats[tFOUL].ToString();
+                dr["MINS"] = curtsopp.stats[tMINS].ToString();
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
-                tsopp.calcAvg(); // Just to be sure...
+                curtsopp.calcAvg(); // Just to be sure...
 
                 dr["Type"] = "Opp Avg";
-                //dr["Games"] = tsopp.getGames();
-                dr["Wins (W%)"] = String.Format("{0:F3}", tsopp.averages[tWp]);
-                dr["Losses (Weff)"] = String.Format("{0:F2}", tsopp.averages[tWeff]);
-                dr["PF"] = String.Format("{0:F1}", tsopp.averages[tPPG]);
-                dr["PA"] = String.Format("{0:F1}", tsopp.averages[tPAPG]);
-                dr["PD"] = String.Format("{0:F1}", tsopp.averages[tPD]);
-                dr["FG"] = String.Format("{0:F3}", tsopp.averages[tFGp]);
-                dr["FGeff"] = String.Format("{0:F2}", tsopp.averages[tFGeff]);
-                dr["3PT"] = String.Format("{0:F3}", tsopp.averages[tTPp]);
-                dr["3Peff"] = String.Format("{0:F2}", tsopp.averages[tTPeff]);
-                dr["FT"] = String.Format("{0:F3}", tsopp.averages[tFTp]);
-                dr["FTeff"] = String.Format("{0:F2}", tsopp.averages[tFTeff]);
-                dr["REB"] = String.Format("{0:F1}", tsopp.averages[tRPG]);
-                dr["OREB"] = String.Format("{0:F1}", tsopp.averages[tORPG]);
-                dr["DREB"] = String.Format("{0:F1}", tsopp.averages[tDRPG]);
-                dr["AST"] = String.Format("{0:F1}", tsopp.averages[tAPG]);
-                dr["TO"] = String.Format("{0:F1}", tsopp.averages[tTPG]);
-                dr["STL"] = String.Format("{0:F1}", tsopp.averages[tSPG]);
-                dr["BLK"] = String.Format("{0:F1}", tsopp.averages[tBPG]);
-                dr["FOUL"] = String.Format("{0:F1}", tsopp.averages[tFPG]);
+                //dr["Games"] = curtsopp.getGames();
+                dr["Wins (W%)"] = String.Format("{0:F3}", curtsopp.averages[tWp]);
+                dr["Losses (Weff)"] = String.Format("{0:F2}", curtsopp.averages[tWeff]);
+                dr["PF"] = String.Format("{0:F1}", curtsopp.averages[tPPG]);
+                dr["PA"] = String.Format("{0:F1}", curtsopp.averages[tPAPG]);
+                dr["PD"] = String.Format("{0:F1}", curtsopp.averages[tPD]);
+                dr["FG"] = String.Format("{0:F3}", curtsopp.averages[tFGp]);
+                dr["FGeff"] = String.Format("{0:F2}", curtsopp.averages[tFGeff]);
+                dr["3PT"] = String.Format("{0:F3}", curtsopp.averages[tTPp]);
+                dr["3Peff"] = String.Format("{0:F2}", curtsopp.averages[tTPeff]);
+                dr["FT"] = String.Format("{0:F3}", curtsopp.averages[tFTp]);
+                dr["FTeff"] = String.Format("{0:F2}", curtsopp.averages[tFTeff]);
+                dr["REB"] = String.Format("{0:F1}", curtsopp.averages[tRPG]);
+                dr["OREB"] = String.Format("{0:F1}", curtsopp.averages[tORPG]);
+                dr["DREB"] = String.Format("{0:F1}", curtsopp.averages[tDRPG]);
+                dr["AST"] = String.Format("{0:F1}", curtsopp.averages[tAPG]);
+                dr["TO"] = String.Format("{0:F1}", curtsopp.averages[tTPG]);
+                dr["STL"] = String.Format("{0:F1}", curtsopp.averages[tSPG]);
+                dr["BLK"] = String.Format("{0:F1}", curtsopp.averages[tBPG]);
+                dr["FOUL"] = String.Format("{0:F1}", curtsopp.averages[tFPG]);
 
                 dt_ov.Rows.Add(dr);
             }
@@ -485,54 +489,55 @@ namespace NBA_Stats_Tracker
                 DataRow dr2 = dt_ov.NewRow();
 
                 dr2["Type"] = "Opp Stats";
-                dr2["Games"] = tsopp.getGames();
-                dr2["Wins (W%)"] = tsopp.winloss[0].ToString();
-                dr2["Losses (Weff)"] = tsopp.winloss[1].ToString();
-                dr2["PF"] = tsopp.stats[tPF].ToString();
-                dr2["PA"] = tsopp.stats[tPA].ToString();
+                dr2["Games"] = curtsopp.getGames();
+                dr2["Wins (W%)"] = curtsopp.winloss[0].ToString();
+                dr2["Losses (Weff)"] = curtsopp.winloss[1].ToString();
+                dr2["PF"] = curtsopp.stats[tPF].ToString();
+                dr2["PA"] = curtsopp.stats[tPA].ToString();
                 dr2["PD"] = " ";
-                dr2["FG"] = tsopp.stats[tFGM].ToString() + "-" + tsopp.stats[tFGA].ToString();
-                dr2["3PT"] = tsopp.stats[tTPM].ToString() + "-" + tsopp.stats[tTPA].ToString();
-                dr2["FT"] = tsopp.stats[tFTM].ToString() + "-" + tsopp.stats[tFTA].ToString();
-                dr2["REB"] = (tsopp.stats[tDREB] + tsopp.stats[tOREB]).ToString();
-                dr2["OREB"] = tsopp.stats[tOREB].ToString();
-                dr2["DREB"] = tsopp.stats[tDREB].ToString();
-                dr2["AST"] = tsopp.stats[tAST].ToString();
-                dr2["TO"] = tsopp.stats[tTO].ToString();
-                dr2["STL"] = tsopp.stats[tSTL].ToString();
-                dr2["BLK"] = tsopp.stats[tBLK].ToString();
-                dr2["FOUL"] = tsopp.stats[tFOUL].ToString();
+                dr2["FG"] = curtsopp.stats[tFGM].ToString() + "-" + curtsopp.stats[tFGA].ToString();
+                dr2["3PT"] = curtsopp.stats[tTPM].ToString() + "-" + curtsopp.stats[tTPA].ToString();
+                dr2["FT"] = curtsopp.stats[tFTM].ToString() + "-" + curtsopp.stats[tFTA].ToString();
+                dr2["REB"] = (curtsopp.stats[tDREB] + curtsopp.stats[tOREB]).ToString();
+                dr2["OREB"] = curtsopp.stats[tOREB].ToString();
+                dr2["DREB"] = curtsopp.stats[tDREB].ToString();
+                dr2["AST"] = curtsopp.stats[tAST].ToString();
+                dr2["TO"] = curtsopp.stats[tTO].ToString();
+                dr2["STL"] = curtsopp.stats[tSTL].ToString();
+                dr2["BLK"] = curtsopp.stats[tBLK].ToString();
+                dr2["FOUL"] = curtsopp.stats[tFOUL].ToString();
+                dr2["MINS"] = curtsopp.stats[tMINS].ToString();
 
                 dt_ov.Rows.Add(dr2);
 
                 dr2 = dt_ov.NewRow();
 
-                tsopp.calcAvg(); // Just to be sure...
+                curtsopp.calcAvg(); // Just to be sure...
 
                 dr2["Type"] = "Opp Avg";
-                dr2["Wins (W%)"] = String.Format("{0:F3}", tsopp.averages[tWp]);
-                dr2["Losses (Weff)"] = String.Format("{0:F2}", tsopp.averages[tWeff]);
-                dr2["PF"] = String.Format("{0:F1}", tsopp.averages[tPPG]);
-                dr2["PA"] = String.Format("{0:F1}", tsopp.averages[tPAPG]);
-                dr2["PD"] = String.Format("{0:F1}", tsopp.averages[tPD]);
-                dr2["FG"] = String.Format("{0:F3}", tsopp.averages[tFGp]);
-                dr2["FGeff"] = String.Format("{0:F2}", tsopp.averages[tFGeff]);
-                dr2["3PT"] = String.Format("{0:F3}", tsopp.averages[tTPp]);
-                dr2["3Peff"] = String.Format("{0:F2}", tsopp.averages[tTPeff]);
-                dr2["FT"] = String.Format("{0:F3}", tsopp.averages[tFTp]);
-                dr2["FTeff"] = String.Format("{0:F2}", tsopp.averages[tFTeff]);
-                dr2["REB"] = String.Format("{0:F1}", tsopp.averages[tRPG]);
-                dr2["OREB"] = String.Format("{0:F1}", tsopp.averages[tORPG]);
-                dr2["DREB"] = String.Format("{0:F1}", tsopp.averages[tDRPG]);
-                dr2["AST"] = String.Format("{0:F1}", tsopp.averages[tAST]);
-                dr2["TO"] = String.Format("{0:F1}", tsopp.averages[tTO]);
-                dr2["STL"] = String.Format("{0:F1}", tsopp.averages[tSTL]);
-                dr2["BLK"] = String.Format("{0:F1}", tsopp.averages[tBLK]);
-                dr2["FOUL"] = String.Format("{0:F1}", tsopp.averages[tFOUL]);
+                dr2["Wins (W%)"] = String.Format("{0:F3}", curtsopp.averages[tWp]);
+                dr2["Losses (Weff)"] = String.Format("{0:F2}", curtsopp.averages[tWeff]);
+                dr2["PF"] = String.Format("{0:F1}", curtsopp.averages[tPPG]);
+                dr2["PA"] = String.Format("{0:F1}", curtsopp.averages[tPAPG]);
+                dr2["PD"] = String.Format("{0:F1}", curtsopp.averages[tPD]);
+                dr2["FG"] = String.Format("{0:F3}", curtsopp.averages[tFGp]);
+                dr2["FGeff"] = String.Format("{0:F2}", curtsopp.averages[tFGeff]);
+                dr2["3PT"] = String.Format("{0:F3}", curtsopp.averages[tTPp]);
+                dr2["3Peff"] = String.Format("{0:F2}", curtsopp.averages[tTPeff]);
+                dr2["FT"] = String.Format("{0:F3}", curtsopp.averages[tFTp]);
+                dr2["FTeff"] = String.Format("{0:F2}", curtsopp.averages[tFTeff]);
+                dr2["REB"] = String.Format("{0:F1}", curtsopp.averages[tRPG]);
+                dr2["OREB"] = String.Format("{0:F1}", curtsopp.averages[tORPG]);
+                dr2["DREB"] = String.Format("{0:F1}", curtsopp.averages[tDRPG]);
+                dr2["AST"] = String.Format("{0:F1}", curtsopp.averages[tAST]);
+                dr2["TO"] = String.Format("{0:F1}", curtsopp.averages[tTO]);
+                dr2["STL"] = String.Format("{0:F1}", curtsopp.averages[tSTL]);
+                dr2["BLK"] = String.Format("{0:F1}", curtsopp.averages[tBLK]);
+                dr2["FOUL"] = String.Format("{0:F1}", curtsopp.averages[tFOUL]);
 
                 dt_ov.Rows.Add(dr2);
 
-                tsopp.calcAvg();
+                curtsopp.calcAvg();
             }
 
             #endregion
@@ -544,49 +549,49 @@ namespace NBA_Stats_Tracker
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Playoffs";
-                dr["Games"] = ts.getPlayoffGames();
-                dr["Wins (W%)"] = ts.pl_winloss[0].ToString();
-                dr["Losses (Weff)"] = ts.pl_winloss[1].ToString();
-                dr["PF"] = ts.pl_stats[tPF].ToString();
-                dr["PA"] = ts.pl_stats[tPA].ToString();
+                dr["Games"] = curts.getPlayoffGames();
+                dr["Wins (W%)"] = curts.pl_winloss[0].ToString();
+                dr["Losses (Weff)"] = curts.pl_winloss[1].ToString();
+                dr["PF"] = curts.pl_stats[tPF].ToString();
+                dr["PA"] = curts.pl_stats[tPA].ToString();
                 dr["PD"] = " ";
-                dr["FG"] = ts.pl_stats[tFGM].ToString() + "-" + ts.pl_stats[tFGA].ToString();
-                dr["3PT"] = ts.pl_stats[tTPM].ToString() + "-" + ts.pl_stats[tTPA].ToString();
-                dr["FT"] = ts.pl_stats[tFTM].ToString() + "-" + ts.pl_stats[tFTA].ToString();
-                dr["REB"] = (ts.pl_stats[tDREB] + ts.pl_stats[tOREB]).ToString();
-                dr["OREB"] = ts.pl_stats[tOREB].ToString();
-                dr["DREB"] = ts.pl_stats[tDREB].ToString();
-                dr["AST"] = ts.pl_stats[tAST].ToString();
-                dr["TO"] = ts.pl_stats[tTO].ToString();
-                dr["STL"] = ts.pl_stats[tSTL].ToString();
-                dr["BLK"] = ts.pl_stats[tBLK].ToString();
-                dr["FOUL"] = ts.pl_stats[tFOUL].ToString();
-                dr["MINS"] = ts.pl_stats[tMINS].ToString();
+                dr["FG"] = curts.pl_stats[tFGM].ToString() + "-" + curts.pl_stats[tFGA].ToString();
+                dr["3PT"] = curts.pl_stats[tTPM].ToString() + "-" + curts.pl_stats[tTPA].ToString();
+                dr["FT"] = curts.pl_stats[tFTM].ToString() + "-" + curts.pl_stats[tFTA].ToString();
+                dr["REB"] = (curts.pl_stats[tDREB] + curts.pl_stats[tOREB]).ToString();
+                dr["OREB"] = curts.pl_stats[tOREB].ToString();
+                dr["DREB"] = curts.pl_stats[tDREB].ToString();
+                dr["AST"] = curts.pl_stats[tAST].ToString();
+                dr["TO"] = curts.pl_stats[tTO].ToString();
+                dr["STL"] = curts.pl_stats[tSTL].ToString();
+                dr["BLK"] = curts.pl_stats[tBLK].ToString();
+                dr["FOUL"] = curts.pl_stats[tFOUL].ToString();
+                dr["MINS"] = curts.pl_stats[tMINS].ToString();
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Pl Avg";
-                dr["Wins (W%)"] = String.Format("{0:F3}", ts.pl_averages[tWp]);
-                dr["Losses (Weff)"] = String.Format("{0:F2}", ts.pl_averages[tWeff]);
-                dr["PF"] = String.Format("{0:F1}", ts.pl_averages[tPPG]);
-                dr["PA"] = String.Format("{0:F1}", ts.pl_averages[tPAPG]);
-                dr["PD"] = String.Format("{0:F1}", ts.pl_averages[tPD]);
-                dr["FG"] = String.Format("{0:F3}", ts.pl_averages[tFGp]);
-                dr["FGeff"] = String.Format("{0:F2}", ts.pl_averages[tFGeff]);
-                dr["3PT"] = String.Format("{0:F3}", ts.pl_averages[tTPp]);
-                dr["3Peff"] = String.Format("{0:F2}", ts.pl_averages[tTPeff]);
-                dr["FT"] = String.Format("{0:F3}", ts.pl_averages[tFTp]);
-                dr["FTeff"] = String.Format("{0:F2}", ts.pl_averages[tFTeff]);
-                dr["REB"] = String.Format("{0:F1}", ts.pl_averages[tRPG]);
-                dr["OREB"] = String.Format("{0:F1}", ts.pl_averages[tORPG]);
-                dr["DREB"] = String.Format("{0:F1}", ts.pl_averages[tDRPG]);
-                dr["AST"] = String.Format("{0:F1}", ts.pl_averages[tAPG]);
-                dr["TO"] = String.Format("{0:F1}", ts.pl_averages[tTPG]);
-                dr["STL"] = String.Format("{0:F1}", ts.pl_averages[tSPG]);
-                dr["BLK"] = String.Format("{0:F1}", ts.pl_averages[tBPG]);
-                dr["FOUL"] = String.Format("{0:F1}", ts.pl_averages[tFPG]);
+                dr["Wins (W%)"] = String.Format("{0:F3}", curts.pl_averages[tWp]);
+                dr["Losses (Weff)"] = String.Format("{0:F2}", curts.pl_averages[tWeff]);
+                dr["PF"] = String.Format("{0:F1}", curts.pl_averages[tPPG]);
+                dr["PA"] = String.Format("{0:F1}", curts.pl_averages[tPAPG]);
+                dr["PD"] = String.Format("{0:F1}", curts.pl_averages[tPD]);
+                dr["FG"] = String.Format("{0:F3}", curts.pl_averages[tFGp]);
+                dr["FGeff"] = String.Format("{0:F2}", curts.pl_averages[tFGeff]);
+                dr["3PT"] = String.Format("{0:F3}", curts.pl_averages[tTPp]);
+                dr["3Peff"] = String.Format("{0:F2}", curts.pl_averages[tTPeff]);
+                dr["FT"] = String.Format("{0:F3}", curts.pl_averages[tFTp]);
+                dr["FTeff"] = String.Format("{0:F2}", curts.pl_averages[tFTeff]);
+                dr["REB"] = String.Format("{0:F1}", curts.pl_averages[tRPG]);
+                dr["OREB"] = String.Format("{0:F1}", curts.pl_averages[tORPG]);
+                dr["DREB"] = String.Format("{0:F1}", curts.pl_averages[tDRPG]);
+                dr["AST"] = String.Format("{0:F1}", curts.pl_averages[tAPG]);
+                dr["TO"] = String.Format("{0:F1}", curts.pl_averages[tTPG]);
+                dr["STL"] = String.Format("{0:F1}", curts.pl_averages[tSPG]);
+                dr["BLK"] = String.Format("{0:F1}", curts.pl_averages[tBPG]);
+                dr["FOUL"] = String.Format("{0:F1}", curts.pl_averages[tFPG]);
 
                 dt_ov.Rows.Add(dr);
 
@@ -628,50 +633,50 @@ namespace NBA_Stats_Tracker
                     dr = dt_ov.NewRow();
 
                     dr["Type"] = "Opp Pl Stats";
-                    dr["Games"] = tsopp.getPlayoffGames();
-                    dr["Wins (W%)"] = tsopp.winloss[0].ToString();
-                    dr["Losses (Weff)"] = tsopp.winloss[1].ToString();
-                    dr["PF"] = tsopp.pl_stats[tPF].ToString();
-                    dr["PA"] = tsopp.pl_stats[tPA].ToString();
+                    dr["Games"] = curtsopp.getPlayoffGames();
+                    dr["Wins (W%)"] = curtsopp.winloss[0].ToString();
+                    dr["Losses (Weff)"] = curtsopp.winloss[1].ToString();
+                    dr["PF"] = curtsopp.pl_stats[tPF].ToString();
+                    dr["PA"] = curtsopp.pl_stats[tPA].ToString();
                     dr["PD"] = " ";
-                    dr["FG"] = tsopp.pl_stats[tFGM].ToString() + "-" + tsopp.pl_stats[tFGA].ToString();
-                    dr["3PT"] = tsopp.pl_stats[tTPM].ToString() + "-" + tsopp.pl_stats[tTPA].ToString();
-                    dr["FT"] = tsopp.pl_stats[tFTM].ToString() + "-" + tsopp.pl_stats[tFTA].ToString();
-                    dr["REB"] = (tsopp.pl_stats[tDREB] + tsopp.pl_stats[tOREB]).ToString();
-                    dr["OREB"] = tsopp.pl_stats[tOREB].ToString();
-                    dr["DREB"] = tsopp.pl_stats[tDREB].ToString();
-                    dr["AST"] = tsopp.pl_stats[tAST].ToString();
-                    dr["TO"] = tsopp.pl_stats[tTO].ToString();
-                    dr["STL"] = tsopp.pl_stats[tSTL].ToString();
-                    dr["BLK"] = tsopp.pl_stats[tBLK].ToString();
-                    dr["FOUL"] = tsopp.pl_stats[tFOUL].ToString();
-                    dr["MINS"] = tsopp.pl_stats[tMINS].ToString();
+                    dr["FG"] = curtsopp.pl_stats[tFGM].ToString() + "-" + curtsopp.pl_stats[tFGA].ToString();
+                    dr["3PT"] = curtsopp.pl_stats[tTPM].ToString() + "-" + curtsopp.pl_stats[tTPA].ToString();
+                    dr["FT"] = curtsopp.pl_stats[tFTM].ToString() + "-" + curtsopp.pl_stats[tFTA].ToString();
+                    dr["REB"] = (curtsopp.pl_stats[tDREB] + curtsopp.pl_stats[tOREB]).ToString();
+                    dr["OREB"] = curtsopp.pl_stats[tOREB].ToString();
+                    dr["DREB"] = curtsopp.pl_stats[tDREB].ToString();
+                    dr["AST"] = curtsopp.pl_stats[tAST].ToString();
+                    dr["TO"] = curtsopp.pl_stats[tTO].ToString();
+                    dr["STL"] = curtsopp.pl_stats[tSTL].ToString();
+                    dr["BLK"] = curtsopp.pl_stats[tBLK].ToString();
+                    dr["FOUL"] = curtsopp.pl_stats[tFOUL].ToString();
+                    dr["MINS"] = curtsopp.pl_stats[tMINS].ToString();
 
                     dt_ov.Rows.Add(dr);
 
                     dr = dt_ov.NewRow();
 
                     dr["Type"] = "Opp Pl Avg";
-                    //dr["Games"] = tsopp.getGames();
-                    dr["Wins (W%)"] = String.Format("{0:F3}", tsopp.pl_averages[tWp]);
-                    dr["Losses (Weff)"] = String.Format("{0:F2}", tsopp.pl_averages[tWeff]);
-                    dr["PF"] = String.Format("{0:F1}", tsopp.pl_averages[tPPG]);
-                    dr["PA"] = String.Format("{0:F1}", tsopp.pl_averages[tPAPG]);
-                    dr["PD"] = String.Format("{0:F1}", tsopp.pl_averages[tPD]);
-                    dr["FG"] = String.Format("{0:F3}", tsopp.pl_averages[tFGp]);
-                    dr["FGeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFGeff]);
-                    dr["3PT"] = String.Format("{0:F3}", tsopp.pl_averages[tTPp]);
-                    dr["3Peff"] = String.Format("{0:F2}", tsopp.pl_averages[tTPeff]);
-                    dr["FT"] = String.Format("{0:F3}", tsopp.pl_averages[tFTp]);
-                    dr["FTeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFTeff]);
-                    dr["REB"] = String.Format("{0:F1}", tsopp.pl_averages[tRPG]);
-                    dr["OREB"] = String.Format("{0:F1}", tsopp.pl_averages[tORPG]);
-                    dr["DREB"] = String.Format("{0:F1}", tsopp.pl_averages[tDRPG]);
-                    dr["AST"] = String.Format("{0:F1}", tsopp.pl_averages[tAPG]);
-                    dr["TO"] = String.Format("{0:F1}", tsopp.pl_averages[tTPG]);
-                    dr["STL"] = String.Format("{0:F1}", tsopp.pl_averages[tSPG]);
-                    dr["BLK"] = String.Format("{0:F1}", tsopp.pl_averages[tBPG]);
-                    dr["FOUL"] = String.Format("{0:F1}", tsopp.pl_averages[tFPG]);
+                    //dr["Games"] = curtsopp.getGames();
+                    dr["Wins (W%)"] = String.Format("{0:F3}", curtsopp.pl_averages[tWp]);
+                    dr["Losses (Weff)"] = String.Format("{0:F2}", curtsopp.pl_averages[tWeff]);
+                    dr["PF"] = String.Format("{0:F1}", curtsopp.pl_averages[tPPG]);
+                    dr["PA"] = String.Format("{0:F1}", curtsopp.pl_averages[tPAPG]);
+                    dr["PD"] = String.Format("{0:F1}", curtsopp.pl_averages[tPD]);
+                    dr["FG"] = String.Format("{0:F3}", curtsopp.pl_averages[tFGp]);
+                    dr["FGeff"] = String.Format("{0:F2}", curtsopp.pl_averages[tFGeff]);
+                    dr["3PT"] = String.Format("{0:F3}", curtsopp.pl_averages[tTPp]);
+                    dr["3Peff"] = String.Format("{0:F2}", curtsopp.pl_averages[tTPeff]);
+                    dr["FT"] = String.Format("{0:F3}", curtsopp.pl_averages[tFTp]);
+                    dr["FTeff"] = String.Format("{0:F2}", curtsopp.pl_averages[tFTeff]);
+                    dr["REB"] = String.Format("{0:F1}", curtsopp.pl_averages[tRPG]);
+                    dr["OREB"] = String.Format("{0:F1}", curtsopp.pl_averages[tORPG]);
+                    dr["DREB"] = String.Format("{0:F1}", curtsopp.pl_averages[tDRPG]);
+                    dr["AST"] = String.Format("{0:F1}", curtsopp.pl_averages[tAPG]);
+                    dr["TO"] = String.Format("{0:F1}", curtsopp.pl_averages[tTPG]);
+                    dr["STL"] = String.Format("{0:F1}", curtsopp.pl_averages[tSPG]);
+                    dr["BLK"] = String.Format("{0:F1}", curtsopp.pl_averages[tBPG]);
+                    dr["FOUL"] = String.Format("{0:F1}", curtsopp.pl_averages[tFPG]);
 
                     dt_ov.Rows.Add(dr);
                 }
@@ -680,54 +685,54 @@ namespace NBA_Stats_Tracker
                     DataRow dr2 = dt_ov.NewRow();
 
                     dr2["Type"] = "Opp Pl Stats";
-                    dr2["Games"] = tsopp.getPlayoffGames();
-                    dr2["Wins (W%)"] = tsopp.pl_winloss[0].ToString();
-                    dr2["Losses (Weff)"] = tsopp.pl_winloss[1].ToString();
-                    dr2["PF"] = tsopp.pl_stats[tPF].ToString();
-                    dr2["PA"] = tsopp.pl_stats[tPA].ToString();
+                    dr2["Games"] = curtsopp.getPlayoffGames();
+                    dr2["Wins (W%)"] = curtsopp.pl_winloss[0].ToString();
+                    dr2["Losses (Weff)"] = curtsopp.pl_winloss[1].ToString();
+                    dr2["PF"] = curtsopp.pl_stats[tPF].ToString();
+                    dr2["PA"] = curtsopp.pl_stats[tPA].ToString();
                     dr2["PD"] = " ";
-                    dr2["FG"] = tsopp.pl_stats[tFGM].ToString() + "-" + tsopp.pl_stats[tFGA].ToString();
-                    dr2["3PT"] = tsopp.pl_stats[tTPM].ToString() + "-" + tsopp.pl_stats[tTPA].ToString();
-                    dr2["FT"] = tsopp.pl_stats[tFTM].ToString() + "-" + tsopp.pl_stats[tFTA].ToString();
-                    dr2["REB"] = (tsopp.pl_stats[tDREB] + tsopp.pl_stats[tOREB]).ToString();
-                    dr2["OREB"] = tsopp.pl_stats[tOREB].ToString();
-                    dr2["DREB"] = tsopp.pl_stats[tDREB].ToString();
-                    dr2["AST"] = tsopp.pl_stats[tAST].ToString();
-                    dr2["TO"] = tsopp.pl_stats[tTO].ToString();
-                    dr2["STL"] = tsopp.pl_stats[tSTL].ToString();
-                    dr2["BLK"] = tsopp.pl_stats[tBLK].ToString();
-                    dr2["FOUL"] = tsopp.pl_stats[tFOUL].ToString();
+                    dr2["FG"] = curtsopp.pl_stats[tFGM].ToString() + "-" + curtsopp.pl_stats[tFGA].ToString();
+                    dr2["3PT"] = curtsopp.pl_stats[tTPM].ToString() + "-" + curtsopp.pl_stats[tTPA].ToString();
+                    dr2["FT"] = curtsopp.pl_stats[tFTM].ToString() + "-" + curtsopp.pl_stats[tFTA].ToString();
+                    dr2["REB"] = (curtsopp.pl_stats[tDREB] + curtsopp.pl_stats[tOREB]).ToString();
+                    dr2["OREB"] = curtsopp.pl_stats[tOREB].ToString();
+                    dr2["DREB"] = curtsopp.pl_stats[tDREB].ToString();
+                    dr2["AST"] = curtsopp.pl_stats[tAST].ToString();
+                    dr2["TO"] = curtsopp.pl_stats[tTO].ToString();
+                    dr2["STL"] = curtsopp.pl_stats[tSTL].ToString();
+                    dr2["BLK"] = curtsopp.pl_stats[tBLK].ToString();
+                    dr2["FOUL"] = curtsopp.pl_stats[tFOUL].ToString();
 
                     dt_ov.Rows.Add(dr2);
 
                     dr2 = dt_ov.NewRow();
 
-                    tsopp.calcAvg(); // Just to be sure...
+                    curtsopp.calcAvg(); // Just to be sure...
 
                     dr2["Type"] = "Opp Pl Avg";
-                    dr2["Wins (W%)"] = String.Format("{0:F3}", tsopp.pl_averages[tWp]);
-                    dr2["Losses (Weff)"] = String.Format("{0:F2}", tsopp.pl_averages[tWeff]);
-                    dr2["PF"] = String.Format("{0:F1}", tsopp.pl_averages[tPPG]);
-                    dr2["PA"] = String.Format("{0:F1}", tsopp.pl_averages[tPAPG]);
-                    dr2["PD"] = String.Format("{0:F1}", tsopp.pl_averages[tPD]);
-                    dr2["FG"] = String.Format("{0:F3}", tsopp.pl_averages[tFGp]);
-                    dr2["FGeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFGeff]);
-                    dr2["3PT"] = String.Format("{0:F3}", tsopp.pl_averages[tTPp]);
-                    dr2["3Peff"] = String.Format("{0:F2}", tsopp.pl_averages[tTPeff]);
-                    dr2["FT"] = String.Format("{0:F3}", tsopp.pl_averages[tFTp]);
-                    dr2["FTeff"] = String.Format("{0:F2}", tsopp.pl_averages[tFTeff]);
-                    dr2["REB"] = String.Format("{0:F1}", tsopp.pl_averages[tRPG]);
-                    dr2["OREB"] = String.Format("{0:F1}", tsopp.pl_averages[tORPG]);
-                    dr2["DREB"] = String.Format("{0:F1}", tsopp.pl_averages[tDRPG]);
-                    dr2["AST"] = String.Format("{0:F1}", tsopp.pl_averages[tAST]);
-                    dr2["TO"] = String.Format("{0:F1}", tsopp.pl_averages[tTO]);
-                    dr2["STL"] = String.Format("{0:F1}", tsopp.pl_averages[tSTL]);
-                    dr2["BLK"] = String.Format("{0:F1}", tsopp.pl_averages[tBLK]);
-                    dr2["FOUL"] = String.Format("{0:F1}", tsopp.pl_averages[tFOUL]);
+                    dr2["Wins (W%)"] = String.Format("{0:F3}", curtsopp.pl_averages[tWp]);
+                    dr2["Losses (Weff)"] = String.Format("{0:F2}", curtsopp.pl_averages[tWeff]);
+                    dr2["PF"] = String.Format("{0:F1}", curtsopp.pl_averages[tPPG]);
+                    dr2["PA"] = String.Format("{0:F1}", curtsopp.pl_averages[tPAPG]);
+                    dr2["PD"] = String.Format("{0:F1}", curtsopp.pl_averages[tPD]);
+                    dr2["FG"] = String.Format("{0:F3}", curtsopp.pl_averages[tFGp]);
+                    dr2["FGeff"] = String.Format("{0:F2}", curtsopp.pl_averages[tFGeff]);
+                    dr2["3PT"] = String.Format("{0:F3}", curtsopp.pl_averages[tTPp]);
+                    dr2["3Peff"] = String.Format("{0:F2}", curtsopp.pl_averages[tTPeff]);
+                    dr2["FT"] = String.Format("{0:F3}", curtsopp.pl_averages[tFTp]);
+                    dr2["FTeff"] = String.Format("{0:F2}", curtsopp.pl_averages[tFTeff]);
+                    dr2["REB"] = String.Format("{0:F1}", curtsopp.pl_averages[tRPG]);
+                    dr2["OREB"] = String.Format("{0:F1}", curtsopp.pl_averages[tORPG]);
+                    dr2["DREB"] = String.Format("{0:F1}", curtsopp.pl_averages[tDRPG]);
+                    dr2["AST"] = String.Format("{0:F1}", curtsopp.pl_averages[tAST]);
+                    dr2["TO"] = String.Format("{0:F1}", curtsopp.pl_averages[tTO]);
+                    dr2["STL"] = String.Format("{0:F1}", curtsopp.pl_averages[tSTL]);
+                    dr2["BLK"] = String.Format("{0:F1}", curtsopp.pl_averages[tBLK]);
+                    dr2["FOUL"] = String.Format("{0:F1}", curtsopp.pl_averages[tFOUL]);
 
                     dt_ov.Rows.Add(dr2);
 
-                    tsopp.calcAvg();
+                    curtsopp.calcAvg();
                 }
             }
 
@@ -989,9 +994,6 @@ namespace NBA_Stats_Tracker
             dt_ss.Clear();
             dt_yea.Clear();
 
-            int i = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
-            showSeason = cmbSeasonNum.SelectedItem.ToString();
-
             curTeam = cmbTeam.SelectedItem.ToString();
             var ts = new TeamStats(curTeam);
             var tsopp = new TeamStats("Opponents");
@@ -1007,14 +1009,11 @@ namespace NBA_Stats_Tracker
 
             UpdateYearlyStats();
 
-            UpdatePlayerStats();
+            UpdatePlayerAndMetricStats();
         }
 
-        private void UpdatePlayerStats()
+        private void UpdatePlayerAndMetricStats()
         {
-            int curSeason = MainWindow.curSeason;
-            int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
-
             string playersT = "Players";
             if (curSeason != maxSeason) playersT += "S" + curSeason;
 
@@ -1023,14 +1022,58 @@ namespace NBA_Stats_Tracker
             q = "select * from " + playersT + " where TeamFin LIKE '" + curTeam + "'";
             res = db.GetDataTable(q);
 
-            psr = new ObservableCollection<PlayerStatsRow>();
+            psrList = new ObservableCollection<PlayerStatsRow>();
+            ObservableCollection<PlayerMetricStatsRow> pmsrList = new ObservableCollection<PlayerMetricStatsRow>();
 
-            foreach (DataRow r in res.Rows)
+            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                psr.Add(new PlayerStatsRow(new PlayerStats(r)));
+                foreach (DataRow r in res.Rows)
+                {
+                    PlayerStats ps = pst[Convert.ToInt32(r["ID"].ToString())];
+                    psrList.Add(new PlayerStatsRow(ps));
+                    pmsrList.Add(new PlayerMetricStatsRow(ps));
+                }
+
+                dgvMetricStatsPERColumn.Visibility = Visibility.Visible;
+                dgvMetricStatsEFFColumn.Visibility = Visibility.Visible;
+                dgvMetricStatsPPRColumn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                foreach (DataRow r in res.Rows)
+                {
+                    var psBetween = new PlayerStats(new Player(r));
+
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
+                               + "where PlayerID = " + r["ID"];
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q += " ORDER BY Date DESC";
+                    DataTable res2 = db.GetDataTable(q);
+
+                    foreach (DataRow r2 in res2.Rows)
+                    {
+                        var pbs = new PlayerBoxScore(r2);
+                        psBetween.AddBoxScore(pbs);
+                    }
+                    TeamStats curTSAll = new TeamStats(curTeam);
+                    curTSAll.AddTeamStats(curts, "All");
+                    TeamStats curTSOppAll = new TeamStats(curTeam);
+                    curTSOppAll.AddTeamStats(curtsopp, "All");
+                    curTSAll.CalcMetrics(curTSOppAll);
+                    psBetween.CalcMetrics(curTSAll, curTSOppAll, new TeamStats("$$Empty"));
+
+                    psrList.Add(new PlayerStatsRow(psBetween));
+                    pmsrList.Add(new PlayerMetricStatsRow(psBetween));
+
+                    dgvMetricStatsPERColumn.Visibility = Visibility.Collapsed;
+                    dgvMetricStatsEFFColumn.Visibility = Visibility.Collapsed;
+                    dgvMetricStatsPPRColumn.Visibility = Visibility.Collapsed;
+                }
             }
 
-            dgvPlayerStats.ItemsSource = psr;
+            dgvPlayerStats.ItemsSource = psrList;
+            dgvMetricStats.ItemsSource = pmsrList;
         }
 
         private void UpdateHeadToHead()
@@ -1120,7 +1163,7 @@ namespace NBA_Stats_Tracker
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
         {
-            string msg = StatsTracker.averagesAndRankings(cmbTeam.SelectedItem.ToString(), tst, MainWindow.TeamOrder);
+            string msg = NSTHelper.averagesAndRankings(cmbTeam.SelectedItem.ToString(), tst, MainWindow.TeamOrder);
             if (msg != "")
             {
                 var cw = new copyableW(msg, cmbTeam.SelectedItem.ToString(), TextAlignment.Center);
@@ -1167,19 +1210,106 @@ namespace NBA_Stats_Tracker
             tst[id].stats[tFOUL] = Convert.ToUInt16(myCell(0, 20));
             tst[id].stats[tMINS] = Convert.ToUInt16(myCell(0, 21));
 
+            tst[id].pl_winloss[0] = Convert.ToByte(myCell(5, 2));
+            tst[id].pl_winloss[1] = Convert.ToByte(myCell(5, 3));
+            tst[id].pl_stats[tPF] = Convert.ToUInt16(myCell(5, 4));
+            tst[id].pl_stats[tPA] = Convert.ToUInt16(myCell(5, 5));
+
+            parts = myCell(5, 7).Split('-');
+            tst[id].pl_stats[tFGM] = Convert.ToUInt16(parts[0]);
+            tst[id].pl_stats[tFGA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(5, 9).Split('-');
+            tst[id].pl_stats[tTPM] = Convert.ToUInt16(parts[0]);
+            tst[id].pl_stats[tTPA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(5, 11).Split('-');
+            tst[id].pl_stats[tFTM] = Convert.ToUInt16(parts[0]);
+            tst[id].pl_stats[tFTA] = Convert.ToUInt16(parts[1]);
+
+            tst[id].pl_stats[tOREB] = Convert.ToUInt16(myCell(5, 14));
+            tst[id].pl_stats[tDREB] = Convert.ToUInt16(myCell(5, 15));
+
+            tst[id].pl_stats[tAST] = Convert.ToUInt16(myCell(5, 16));
+            tst[id].pl_stats[tTO] = Convert.ToUInt16(myCell(5, 17));
+            tst[id].pl_stats[tSTL] = Convert.ToUInt16(myCell(5, 18));
+            tst[id].pl_stats[tBLK] = Convert.ToUInt16(myCell(5, 19));
+            tst[id].pl_stats[tFOUL] = Convert.ToUInt16(myCell(5, 20));
+            tst[id].pl_stats[tMINS] = Convert.ToUInt16(myCell(5, 21));
+
             tst[id].calcAvg();
+
+
+            // Opponents
+            tstopp[id].winloss[0] = Convert.ToByte(myCell(3, 2));
+            tstopp[id].winloss[1] = Convert.ToByte(myCell(3, 3));
+            tstopp[id].stats[tPF] = Convert.ToUInt16(myCell(3, 4));
+            tstopp[id].stats[tPA] = Convert.ToUInt16(myCell(3, 5));
+
+            parts = myCell(3, 7).Split('-');
+            tstopp[id].stats[tFGM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].stats[tFGA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(3, 9).Split('-');
+            tstopp[id].stats[tTPM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].stats[tTPA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(3, 11).Split('-');
+            tstopp[id].stats[tFTM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].stats[tFTA] = Convert.ToUInt16(parts[1]);
+
+            tstopp[id].stats[tOREB] = Convert.ToUInt16(myCell(3, 14));
+            tstopp[id].stats[tDREB] = Convert.ToUInt16(myCell(3, 15));
+
+            tstopp[id].stats[tAST] = Convert.ToUInt16(myCell(3, 16));
+            tstopp[id].stats[tTO] = Convert.ToUInt16(myCell(3, 17));
+            tstopp[id].stats[tSTL] = Convert.ToUInt16(myCell(3, 18));
+            tstopp[id].stats[tBLK] = Convert.ToUInt16(myCell(3, 19));
+            tstopp[id].stats[tFOUL] = Convert.ToUInt16(myCell(3, 20));
+            tstopp[id].stats[tMINS] = Convert.ToUInt16(myCell(3, 21));
+
+            tstopp[id].pl_winloss[0] = Convert.ToByte(myCell(5, 2));
+            tstopp[id].pl_winloss[1] = Convert.ToByte(myCell(5, 3));
+            tstopp[id].pl_stats[tPF] = Convert.ToUInt16(myCell(5, 4));
+            tstopp[id].pl_stats[tPA] = Convert.ToUInt16(myCell(5, 5));
+
+            parts = myCell(5, 7).Split('-');
+            tstopp[id].pl_stats[tFGM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].pl_stats[tFGA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(5, 9).Split('-');
+            tstopp[id].pl_stats[tTPM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].pl_stats[tTPA] = Convert.ToUInt16(parts[1]);
+
+            parts = myCell(5, 11).Split('-');
+            tstopp[id].pl_stats[tFTM] = Convert.ToUInt16(parts[0]);
+            tstopp[id].pl_stats[tFTA] = Convert.ToUInt16(parts[1]);
+
+            tstopp[id].pl_stats[tOREB] = Convert.ToUInt16(myCell(5, 14));
+            tstopp[id].pl_stats[tDREB] = Convert.ToUInt16(myCell(5, 15));
+
+            tstopp[id].pl_stats[tAST] = Convert.ToUInt16(myCell(5, 16));
+            tstopp[id].pl_stats[tTO] = Convert.ToUInt16(myCell(5, 17));
+            tstopp[id].pl_stats[tSTL] = Convert.ToUInt16(myCell(5, 18));
+            tstopp[id].pl_stats[tBLK] = Convert.ToUInt16(myCell(5, 19));
+            tstopp[id].pl_stats[tFOUL] = Convert.ToUInt16(myCell(5, 20));
+            tstopp[id].pl_stats[tMINS] = Convert.ToUInt16(myCell(5, 21));
+
+            tstopp[id].calcAvg();
 
             var playersToUpdate = new Dictionary<int, PlayerStats>();
 
-            foreach (PlayerStatsRow cur in psr)
+            foreach (PlayerStatsRow cur in psrList)
             {
                 var ps = new PlayerStats(cur);
                 playersToUpdate.Add(ps.ID, ps);
             }
 
             MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
-                                            Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()),
-                                            MainWindow.getMaxSeason(MainWindow.currentDB));
+                                            curSeason, maxSeason);
+            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+                                    ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
+                                    doNotLoadBoxScores: true);
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -1208,10 +1338,10 @@ namespace NBA_Stats_Tracker
                 return;
             }
 
-            int[][] rating = StatsTracker.calculateRankings(tst);
+            int[][] rating = NSTHelper.calculateRankings(tst);
             if (rating.Length != 1)
             {
-                string msg = StatsTracker.scoutReport(rating, id, cmbTeam.SelectedItem.ToString());
+                string msg = NSTHelper.scoutReport(rating, id, cmbTeam.SelectedItem.ToString());
                 var cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
@@ -1401,7 +1531,7 @@ namespace NBA_Stats_Tracker
                                          "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND SeasonNum = {2}",
                                          cmbTeam.SelectedItem,
                                          cmbOppTeam.SelectedItem,
-                                         showSeason);
+                                         curSeason);
 
                 res = db.GetDataTable(q);
 
@@ -1437,10 +1567,10 @@ namespace NBA_Stats_Tracker
                                       "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}'))) AND IsPlayoff LIKE 'False' AND SeasonNum = {2});",
                                       cmbTeam.SelectedItem,
                                       cmbOppTeam.SelectedItem,
-                                      showSeason);
+                                      curSeason);
 
                     DataTable res2 = db.GetDataTable(q);
-                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp, false);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
 
                     q = String.Format("select * from GameResults " +
                                       "where (((T1Name LIKE '{0}') AND (T2Name LIKE '{1}')) " +
@@ -1448,10 +1578,10 @@ namespace NBA_Stats_Tracker
                                       "((T1Name LIKE '{1}') AND (T2Name LIKE '{0}')) AND IsPlayoff LIKE 'True' AND SeasonNum = {2});",
                                       cmbTeam.SelectedItem,
                                       cmbOppTeam.SelectedItem,
-                                      showSeason);
+                                      curSeason);
 
                     res2 = db.GetDataTable(q);
-                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp, true);
+                    AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
                 }
             }
             else
@@ -1640,203 +1770,212 @@ namespace NBA_Stats_Tracker
             cmbOppTeam.SelectedIndex = 1;
         }
 
-        public static void AddToTeamStatsFromSQLBoxScore(DataTable res, ref TeamStats ts, ref TeamStats tsopp,
-                                                         bool playoffs = false)
+        public static void AddToTeamStatsFromSQLBoxScore(DataTable res, ref TeamStats ts, ref TeamStats tsopp)
         {
             foreach (DataRow r in res.Rows)
             {
-                if (!playoffs)
+                AddToTeamStatsFromSQLBoxScore(r, ref ts, ref tsopp);
+            }
+        }
+
+        public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
+        {
+            bool playoffs = NSTHelper.getBoolean(r, "isPlayoff");
+            if (!playoffs)
+            {
+                int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
+                int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
+                if (r["T1Name"].ToString().Equals(ts.name))
                 {
-                    int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
-                    int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
-                    if (r["T1Name"].ToString().Equals(ts.name))
-                    {
-                        if (t1pts > t2pts) ts.winloss[0]++;
-                        else ts.winloss[1]++;
-                        tsopp.stats[tPA] = ts.stats[tPF] += Convert.ToUInt16(r["T1PTS"].ToString());
-                        tsopp.stats[tPF] = ts.stats[tTPA] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    if (t1pts > t2pts) ts.winloss[0]++;
+                    else ts.winloss[1]++;
+                    tsopp.stats[tMINS] = ts.stats[tMINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.stats[tPA] = ts.stats[tPF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.stats[tPF] = ts.stats[tPA] += Convert.ToUInt16(r["T2PTS"].ToString());
 
-                        ts.stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                        ts.stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                        ts.stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                        ts.stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                        ts.stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                        ts.stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    ts.stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                        UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
-                        UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        ts.stats[tDREB] += (ushort) (T1reb - T1oreb);
-                        ts.stats[tOREB] += T1oreb;
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    ts.stats[tDREB] += (ushort) (T1reb - T1oreb);
+                    ts.stats[tOREB] += T1oreb;
 
-                        ts.stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
-                        ts.stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        ts.stats[tBLK] += StatsTracker.getUShort(r, "T1BLK");
-                        ts.stats[tAST] += StatsTracker.getUShort(r, "T1AST");
-                        ts.stats[tFOUL] += StatsTracker.getUShort(r, "T1FOUL");
+                    ts.stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.stats[tBLK] += NSTHelper.getUShort(r, "T1BLK");
+                    ts.stats[tAST] += NSTHelper.getUShort(r, "T1AST");
+                    ts.stats[tFOUL] += NSTHelper.getUShort(r, "T1FOUL");
 
-                        tsopp.stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                        tsopp.stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                        tsopp.stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                        tsopp.stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                        tsopp.stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                        tsopp.stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    tsopp.stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                        UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
-                        UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        tsopp.stats[tDREB] += (ushort) (T2reb - T2oreb);
-                        tsopp.stats[tOREB] += T2oreb;
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    tsopp.stats[tDREB] += (ushort) (T2reb - T2oreb);
+                    tsopp.stats[tOREB] += T2oreb;
 
-                        tsopp.stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
-                        tsopp.stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        tsopp.stats[tBLK] += StatsTracker.getUShort(r, "T2BLK");
-                        tsopp.stats[tAST] += StatsTracker.getUShort(r, "T2AST");
-                        tsopp.stats[tFOUL] += StatsTracker.getUShort(r, "T2FOUL");
-                    }
-                    else
-                    {
-                        if (t2pts > t1pts) ts.winloss[0]++;
-                        else ts.winloss[1]++;
-                        tsopp.stats[tPA] = ts.stats[tPF] += Convert.ToUInt16(r["T2PTS"].ToString());
-                        tsopp.stats[tPF] = ts.stats[tPA] += Convert.ToUInt16(r["T1PTS"].ToString());
-
-                        ts.stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                        ts.stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                        ts.stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                        ts.stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                        ts.stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                        ts.stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
-
-                        UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
-                        UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        ts.stats[tDREB] += (ushort) (T2reb - T2oreb);
-                        ts.stats[tOREB] += T2oreb;
-
-                        ts.stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
-                        ts.stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        ts.stats[tBLK] += StatsTracker.getUShort(r, "T2BLK");
-                        ts.stats[tAST] += StatsTracker.getUShort(r, "T2AST");
-                        ts.stats[tFOUL] += StatsTracker.getUShort(r, "T2FOUL");
-
-                        tsopp.stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                        tsopp.stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                        tsopp.stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                        tsopp.stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                        tsopp.stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                        tsopp.stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
-
-                        UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
-                        UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        tsopp.stats[tDREB] += (ushort) (T1reb - T1oreb);
-                        tsopp.stats[tOREB] += T1oreb;
-
-                        tsopp.stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
-                        tsopp.stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        tsopp.stats[tBLK] += StatsTracker.getUShort(r, "T1BLK");
-                        tsopp.stats[tAST] += StatsTracker.getUShort(r, "T1AST");
-                        tsopp.stats[tFOUL] += StatsTracker.getUShort(r, "T1FOUL");
-                    }
-
-                    tsopp.winloss[1] = ts.winloss[0];
-                    tsopp.winloss[0] = ts.winloss[1];
+                    tsopp.stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.stats[tBLK] += NSTHelper.getUShort(r, "T2BLK");
+                    tsopp.stats[tAST] += NSTHelper.getUShort(r, "T2AST");
+                    tsopp.stats[tFOUL] += NSTHelper.getUShort(r, "T2FOUL");
                 }
                 else
                 {
-                    int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
-                    int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
-                    if (r["T1Name"].ToString().Equals(ts.name))
-                    {
-                        if (t1pts > t2pts) ts.pl_winloss[0]++;
-                        else ts.pl_winloss[1]++;
-                        tsopp.pl_stats[tPA] = ts.pl_stats[tPF] += Convert.ToUInt16(r["T1PTS"].ToString());
-                        tsopp.pl_stats[tPF] = ts.pl_stats[tPA] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    if (t2pts > t1pts) ts.winloss[0]++;
+                    else ts.winloss[1]++;
+                    tsopp.stats[tMINS] = ts.stats[tMINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.stats[tPA] = ts.stats[tPF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.stats[tPF] = ts.stats[tPA] += Convert.ToUInt16(r["T1PTS"].ToString());
 
-                        ts.pl_stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                        ts.pl_stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                        ts.pl_stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                        ts.pl_stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                        ts.pl_stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                        ts.pl_stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    ts.stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                        UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
-                        UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        ts.pl_stats[tDREB] += (ushort) (T1reb - T1oreb);
-                        ts.pl_stats[tOREB] += T1oreb;
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    ts.stats[tDREB] += (ushort) (T2reb - T2oreb);
+                    ts.stats[tOREB] += T2oreb;
 
-                        ts.pl_stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
-                        ts.pl_stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        ts.pl_stats[tBLK] += StatsTracker.getUShort(r, "T1BLK");
-                        ts.pl_stats[tAST] += StatsTracker.getUShort(r, "T1AST");
-                        ts.pl_stats[tFOUL] += StatsTracker.getUShort(r, "T1FOUL");
+                    ts.stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.stats[tBLK] += NSTHelper.getUShort(r, "T2BLK");
+                    ts.stats[tAST] += NSTHelper.getUShort(r, "T2AST");
+                    ts.stats[tFOUL] += NSTHelper.getUShort(r, "T2FOUL");
 
-                        tsopp.pl_stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                        tsopp.pl_stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                        tsopp.pl_stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                        tsopp.pl_stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                        tsopp.pl_stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                        tsopp.pl_stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    tsopp.stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                        UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
-                        UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        tsopp.pl_stats[tDREB] += (ushort) (T2reb - T2oreb);
-                        tsopp.pl_stats[tOREB] += T2oreb;
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    tsopp.stats[tDREB] += (ushort) (T1reb - T1oreb);
+                    tsopp.stats[tOREB] += T1oreb;
 
-                        tsopp.pl_stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
-                        tsopp.pl_stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        tsopp.pl_stats[tBLK] += StatsTracker.getUShort(r, "T2BLK");
-                        tsopp.pl_stats[tAST] += StatsTracker.getUShort(r, "T2AST");
-                        tsopp.pl_stats[tFOUL] += StatsTracker.getUShort(r, "T2FOUL");
-                    }
-                    else
-                    {
-                        if (t2pts > t1pts) ts.pl_winloss[0]++;
-                        else ts.pl_winloss[1]++;
-                        tsopp.pl_stats[tPA] = ts.pl_stats[tPF] += Convert.ToUInt16(r["T2PTS"].ToString());
-                        tsopp.pl_stats[tPF] = ts.pl_stats[tPA] += Convert.ToUInt16(r["T1PTS"].ToString());
-
-                        ts.pl_stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                        ts.pl_stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                        ts.pl_stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                        ts.pl_stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                        ts.pl_stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                        ts.pl_stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
-
-                        UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
-                        UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                        ts.pl_stats[tDREB] += (ushort) (T2reb - T2oreb);
-                        ts.pl_stats[tOREB] += T2oreb;
-
-                        ts.pl_stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
-                        ts.pl_stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                        ts.pl_stats[tBLK] += StatsTracker.getUShort(r, "T2BLK");
-                        ts.pl_stats[tAST] += StatsTracker.getUShort(r, "T2AST");
-                        ts.pl_stats[tFOUL] += StatsTracker.getUShort(r, "T2FOUL");
-
-                        tsopp.pl_stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                        tsopp.pl_stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                        tsopp.pl_stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                        tsopp.pl_stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                        tsopp.pl_stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                        tsopp.pl_stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
-
-                        UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
-                        UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                        tsopp.pl_stats[tDREB] += (ushort) (T1reb - T1oreb);
-                        tsopp.pl_stats[tOREB] += T1oreb;
-
-                        tsopp.pl_stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
-                        tsopp.pl_stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                        tsopp.pl_stats[tBLK] += StatsTracker.getUShort(r, "T1BLK");
-                        tsopp.pl_stats[tAST] += StatsTracker.getUShort(r, "T1AST");
-                        tsopp.pl_stats[tFOUL] += StatsTracker.getUShort(r, "T1FOUL");
-                    }
-
-                    tsopp.pl_winloss[1] = ts.pl_winloss[0];
-                    tsopp.pl_winloss[0] = ts.pl_winloss[1];
+                    tsopp.stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.stats[tBLK] += NSTHelper.getUShort(r, "T1BLK");
+                    tsopp.stats[tAST] += NSTHelper.getUShort(r, "T1AST");
+                    tsopp.stats[tFOUL] += NSTHelper.getUShort(r, "T1FOUL");
                 }
 
-                ts.calcAvg();
-                tsopp.calcAvg();
+                tsopp.winloss[1] = ts.winloss[0];
+                tsopp.winloss[0] = ts.winloss[1];
             }
+            else
+            {
+                int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
+                int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
+                if (r["T1Name"].ToString().Equals(ts.name))
+                {
+                    if (t1pts > t2pts) ts.pl_winloss[0]++;
+                    else ts.pl_winloss[1]++;
+                    tsopp.pl_stats[tMINS] = ts.pl_stats[tMINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.pl_stats[tPA] = ts.pl_stats[tPF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.pl_stats[tPF] = ts.pl_stats[tPA] += Convert.ToUInt16(r["T2PTS"].ToString());
+
+                    ts.pl_stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.pl_stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.pl_stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.pl_stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.pl_stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.pl_stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    ts.pl_stats[tDREB] += (ushort) (T1reb - T1oreb);
+                    ts.pl_stats[tOREB] += T1oreb;
+
+                    ts.pl_stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.pl_stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.pl_stats[tBLK] += NSTHelper.getUShort(r, "T1BLK");
+                    ts.pl_stats[tAST] += NSTHelper.getUShort(r, "T1AST");
+                    ts.pl_stats[tFOUL] += NSTHelper.getUShort(r, "T1FOUL");
+
+                    tsopp.pl_stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.pl_stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.pl_stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.pl_stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.pl_stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.pl_stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    tsopp.pl_stats[tDREB] += (ushort) (T2reb - T2oreb);
+                    tsopp.pl_stats[tOREB] += T2oreb;
+
+                    tsopp.pl_stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.pl_stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.pl_stats[tBLK] += NSTHelper.getUShort(r, "T2BLK");
+                    tsopp.pl_stats[tAST] += NSTHelper.getUShort(r, "T2AST");
+                    tsopp.pl_stats[tFOUL] += NSTHelper.getUShort(r, "T2FOUL");
+                }
+                else
+                {
+                    if (t2pts > t1pts) ts.pl_winloss[0]++;
+                    else ts.pl_winloss[1]++;
+                    tsopp.pl_stats[tMINS] = ts.pl_stats[tMINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.pl_stats[tPA] = ts.pl_stats[tPF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.pl_stats[tPF] = ts.pl_stats[tPA] += Convert.ToUInt16(r["T1PTS"].ToString());
+
+                    ts.pl_stats[tFGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.pl_stats[tFGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.pl_stats[tTPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.pl_stats[tTPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.pl_stats[tFTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.pl_stats[tFTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    ts.pl_stats[tDREB] += (ushort) (T2reb - T2oreb);
+                    ts.pl_stats[tOREB] += T2oreb;
+
+                    ts.pl_stats[tSTL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.pl_stats[tTO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.pl_stats[tBLK] += NSTHelper.getUShort(r, "T2BLK");
+                    ts.pl_stats[tAST] += NSTHelper.getUShort(r, "T2AST");
+                    ts.pl_stats[tFOUL] += NSTHelper.getUShort(r, "T2FOUL");
+
+                    tsopp.pl_stats[tFGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.pl_stats[tFGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.pl_stats[tTPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.pl_stats[tTPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.pl_stats[tFTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.pl_stats[tFTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    tsopp.pl_stats[tDREB] += (ushort) (T1reb - T1oreb);
+                    tsopp.pl_stats[tOREB] += T1oreb;
+
+                    tsopp.pl_stats[tSTL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.pl_stats[tTO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.pl_stats[tBLK] += NSTHelper.getUShort(r, "T1BLK");
+                    tsopp.pl_stats[tAST] += NSTHelper.getUShort(r, "T1AST");
+                    tsopp.pl_stats[tFOUL] += NSTHelper.getUShort(r, "T1FOUL");
+                }
+
+                tsopp.pl_winloss[1] = ts.pl_winloss[0];
+                tsopp.pl_winloss[0] = ts.pl_winloss[1];
+            }
+
+            ts.calcAvg();
+            tsopp.calcAvg();
         }
 
         private void rbHTHStatsAnyone_Checked(object sender, RoutedEventArgs e)
@@ -1861,7 +2000,7 @@ namespace NBA_Stats_Tracker
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                           ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             cmbTeam_SelectionChanged(null, null);
@@ -1877,7 +2016,7 @@ namespace NBA_Stats_Tracker
                 var pow = new playerOverviewW(curTeam, playerID);
                 pow.ShowDialog();
 
-                UpdatePlayerStats();
+                UpdatePlayerAndMetricStats();
             }
         }
 
@@ -1913,6 +2052,13 @@ namespace NBA_Stats_Tracker
                     i++;
                 }
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MainWindow.tst = tst;
+            MainWindow.tstopp = tstopp;
+            MainWindow.pst = pst;
         }
     }
 }
