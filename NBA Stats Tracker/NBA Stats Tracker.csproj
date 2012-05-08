@@ -78,6 +78,12 @@
     <Compile Include="copyableW.xaml.cs">
       <DependentUpon>copyableW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="enableTeamsW.xaml.cs">
+      <DependentUpon>enableTeamsW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="inputBoxW.xaml.cs">
+      <DependentUpon>inputBoxW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="leagueOverviewW.xaml.cs">
       <DependentUpon>leagueOverviewW.xaml</DependentUpon>
     </Compile>
@@ -115,6 +121,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="copyableW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="enableTeamsW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="inputBoxW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

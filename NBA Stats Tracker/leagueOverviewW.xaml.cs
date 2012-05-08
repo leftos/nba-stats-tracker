@@ -326,7 +326,7 @@ namespace NBA_Stats_Tracker
                     }
                 }
 
-                NSTHelper.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST, true);
+                NSTHelper.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST, MainWindow.TeamOrder, true);
 
                 foreach (var kvp in pstBetween)
                 {
@@ -396,7 +396,7 @@ namespace NBA_Stats_Tracker
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                MainWindow.LoadDatabase(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+                MainWindow.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
                                               ref MainWindow.pt, ref MainWindow.bshist,
                                               _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -533,7 +533,7 @@ namespace NBA_Stats_Tracker
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
-            MainWindow.LoadDatabase(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+            MainWindow.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
                                           ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -663,7 +663,7 @@ namespace NBA_Stats_Tracker
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            NSTHelper.CalculateAllMetrics(ref _pst, _tst, _tstopp, true);
+            NSTHelper.CalculateAllMetrics(ref _pst, _tst, _tstopp, MainWindow.TeamOrder, true);
             lastShownPlayerSeason = 0;
             lastShownLeadersSeason = 0;
             lastShownTeamSeason = 0;

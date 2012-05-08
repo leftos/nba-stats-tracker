@@ -106,6 +106,8 @@ namespace NBA_Stats_Tracker
         public static string AppPath = Environment.CurrentDirectory + "\\";
         public static bool isCustom;
 
+        public static string input = "";
+
         public static MainWindow mwInstance;
 
         private BackgroundWorker worker1 = new BackgroundWorker();
@@ -460,12 +462,12 @@ namespace NBA_Stats_Tracker
             {
                 if (i != oldSeason)
                 {
-                    LoadDatabase(oldDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: i,
+                    LoadSeason(oldDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, _curSeason: i,
                                  doNotLoadBoxScores: true);
                     saveSeasonToDatabase(file, tst, tstopp, pst, curSeason, maxSeason, doNotSaveBoxScores: true);
                 }
             }
-            LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason,
+            LoadSeason(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true, oldSeason,
                          doNotLoadBoxScores: true);
 
             mwInstance.updateStatus("All seasons saved successfully.");
@@ -489,170 +491,8 @@ namespace NBA_Stats_Tracker
             if (!FileExists) prepareNewDB(db, season, maxSeason);
             DataTable res;
 
-            string teamsT = "Teams";
-            string pl_teamsT = "PlayoffTeams";
-            string oppT = "Opponents";
-            string pl_oppT = "PlayoffOpponents";
-
-            if (season != maxSeason)
-            {
-                teamsT += "S" + season;
-                pl_teamsT += "S" + season;
-                oppT += "S" + season;
-                pl_oppT += "S" + season;
-            }
-
-            db.ClearTable(teamsT);
-            db.ClearTable(pl_teamsT);
-            db.ClearTable(oppT);
-            db.ClearTable(pl_oppT);
-
-            String q = "select Name from " + teamsT + ";";
-
-            try
-            {
-                res = db.GetDataTable(q);
-            }
-            catch
-            {
-                prepareNewDB(db, season, maxSeason);
-                res = db.GetDataTable(q);
-            }
-            foreach (TeamStats ts in tstToSave)
-            {
-                bool found = false;
-
-                var dict = new Dictionary<string, string>();
-                dict.Add("Name", ts.name);
-                dict.Add("ID", TeamOrder[ts.name].ToString());
-                dict.Add("WIN", ts.winloss[0].ToString());
-                dict.Add("LOSS", ts.winloss[1].ToString());
-                dict.Add("MINS", ts.stats[tMINS].ToString());
-                dict.Add("PF", ts.stats[tPF].ToString());
-                dict.Add("PA", ts.stats[tPA].ToString());
-                dict.Add("FGM", ts.stats[tFGM].ToString());
-                dict.Add("FGA", ts.stats[tFGA].ToString());
-                dict.Add("TPM", ts.stats[tTPM].ToString());
-                dict.Add("TPA", ts.stats[tTPA].ToString());
-                dict.Add("FTM", ts.stats[tFTM].ToString());
-                dict.Add("FTA", ts.stats[tFTA].ToString());
-                dict.Add("OREB", ts.stats[tOREB].ToString());
-                dict.Add("DREB", ts.stats[tDREB].ToString());
-                dict.Add("STL", ts.stats[tSTL].ToString());
-                dict.Add("TOS", ts.stats[tTO].ToString());
-                dict.Add("BLK", ts.stats[tBLK].ToString());
-                dict.Add("AST", ts.stats[tAST].ToString());
-                dict.Add("FOUL", ts.stats[tFOUL].ToString());
-                dict.Add("OFFSET", ts.offset.ToString());
-
-                var pl_dict = new Dictionary<string, string>();
-                pl_dict.Add("Name", ts.name);
-                pl_dict.Add("ID", TeamOrder[ts.name].ToString());
-                pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
-                pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
-                pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
-                pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
-                pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
-                pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
-                pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
-                pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
-                pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
-                pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
-                pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
-                pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
-                pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
-                pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
-                pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
-                pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
-                pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
-                pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
-                pl_dict.Add("OFFSET", ts.pl_offset.ToString());
-
-                foreach (DataRow r in res.Rows)
-                {
-                    if (r[0].ToString().Equals(ts.name))
-                    {
-                        db.Update(teamsT, dict, "Name LIKE \'" + ts.name + "\'");
-                        db.Update(pl_teamsT, pl_dict, "Name LIKE \'" + ts.name + "\'");
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    db.Insert(teamsT, dict);
-                    db.Insert(pl_teamsT, pl_dict);
-                }
-            }
-
-            foreach (TeamStats ts in tstoppToSave)
-            {
-                bool found = false;
-
-                var dict = new Dictionary<string, string>();
-                dict.Add("Name", ts.name);
-                dict.Add("ID", TeamOrder[ts.name].ToString());
-                dict.Add("WIN", ts.winloss[0].ToString());
-                dict.Add("LOSS", ts.winloss[1].ToString());
-                dict.Add("MINS", ts.stats[tMINS].ToString());
-                dict.Add("PF", ts.stats[tPF].ToString());
-                dict.Add("PA", ts.stats[tPA].ToString());
-                dict.Add("FGM", ts.stats[tFGM].ToString());
-                dict.Add("FGA", ts.stats[tFGA].ToString());
-                dict.Add("TPM", ts.stats[tTPM].ToString());
-                dict.Add("TPA", ts.stats[tTPA].ToString());
-                dict.Add("FTM", ts.stats[tFTM].ToString());
-                dict.Add("FTA", ts.stats[tFTA].ToString());
-                dict.Add("OREB", ts.stats[tOREB].ToString());
-                dict.Add("DREB", ts.stats[tDREB].ToString());
-                dict.Add("STL", ts.stats[tSTL].ToString());
-                dict.Add("TOS", ts.stats[tTO].ToString());
-                dict.Add("BLK", ts.stats[tBLK].ToString());
-                dict.Add("AST", ts.stats[tAST].ToString());
-                dict.Add("FOUL", ts.stats[tFOUL].ToString());
-                dict.Add("OFFSET", ts.offset.ToString());
-
-                var pl_dict = new Dictionary<string, string>();
-                pl_dict.Add("Name", ts.name);
-                pl_dict.Add("ID", TeamOrder[ts.name].ToString());
-                pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
-                pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
-                pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
-                pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
-                pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
-                pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
-                pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
-                pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
-                pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
-                pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
-                pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
-                pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
-                pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
-                pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
-                pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
-                pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
-                pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
-                pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
-                pl_dict.Add("OFFSET", ts.pl_offset.ToString());
-
-                foreach (DataRow r in res.Rows)
-                {
-                    if (r[0].ToString().Equals(ts.name))
-                    {
-                        db.Update(oppT, dict, "Name LIKE \'" + ts.name + "\'");
-                        db.Update(pl_oppT, pl_dict, "Name LIKE \'" + ts.name + "\'");
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    db.Insert(oppT, dict);
-                    db.Insert(pl_oppT, pl_dict);
-                }
-            }
+            string q;
+            SaveTeamsToDatabase(file, tstToSave, tstoppToSave, season, maxSeason);
 
             #region Save Player Stats
 
@@ -777,6 +617,184 @@ namespace NBA_Stats_Tracker
             //}
         }
 
+        public static void SaveTeamsToDatabase(string file, TeamStats[] tstToSave, TeamStats[] tstoppToSave, int season, int maxSeason)
+        {
+            SQLiteDatabase _db = new SQLiteDatabase(file);
+            DataTable res;
+            string teamsT = "Teams";
+            string pl_teamsT = "PlayoffTeams";
+            string oppT = "Opponents";
+            string pl_oppT = "PlayoffOpponents";
+
+            if (season != maxSeason)
+            {
+                teamsT += "S" + season;
+                pl_teamsT += "S" + season;
+                oppT += "S" + season;
+                pl_oppT += "S" + season;
+            }
+
+            _db.ClearTable(teamsT);
+            _db.ClearTable(pl_teamsT);
+            _db.ClearTable(oppT);
+            _db.ClearTable(pl_oppT);
+
+            String q = "select Name from " + teamsT + ";";
+
+            try
+            {
+                res = _db.GetDataTable(q);
+            }
+            catch
+            {
+                prepareNewDB(_db, season, maxSeason);
+                res = _db.GetDataTable(q);
+            }
+            foreach (TeamStats ts in tstToSave)
+            {
+                bool found = false;
+
+                var dict = new Dictionary<string, string>();
+                dict.Add("Name", ts.name);
+                dict.Add("DisplayName", ts.displayName);
+                dict.Add("isHidden", ts.isHidden.ToString());
+                dict.Add("ID", TeamOrder[ts.name].ToString());
+                dict.Add("WIN", ts.winloss[0].ToString());
+                dict.Add("LOSS", ts.winloss[1].ToString());
+                dict.Add("MINS", ts.stats[tMINS].ToString());
+                dict.Add("PF", ts.stats[tPF].ToString());
+                dict.Add("PA", ts.stats[tPA].ToString());
+                dict.Add("FGM", ts.stats[tFGM].ToString());
+                dict.Add("FGA", ts.stats[tFGA].ToString());
+                dict.Add("TPM", ts.stats[tTPM].ToString());
+                dict.Add("TPA", ts.stats[tTPA].ToString());
+                dict.Add("FTM", ts.stats[tFTM].ToString());
+                dict.Add("FTA", ts.stats[tFTA].ToString());
+                dict.Add("OREB", ts.stats[tOREB].ToString());
+                dict.Add("DREB", ts.stats[tDREB].ToString());
+                dict.Add("STL", ts.stats[tSTL].ToString());
+                dict.Add("TOS", ts.stats[tTO].ToString());
+                dict.Add("BLK", ts.stats[tBLK].ToString());
+                dict.Add("AST", ts.stats[tAST].ToString());
+                dict.Add("FOUL", ts.stats[tFOUL].ToString());
+                dict.Add("OFFSET", ts.offset.ToString());
+
+                var pl_dict = new Dictionary<string, string>();
+                pl_dict.Add("Name", ts.name);
+                pl_dict.Add("DisplayName", ts.displayName);
+                pl_dict.Add("isHidden", ts.isHidden.ToString());
+                pl_dict.Add("ID", TeamOrder[ts.name].ToString());
+                pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
+                pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
+                pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
+                pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
+                pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
+                pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
+                pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
+                pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
+                pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
+                pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
+                pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
+                pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
+                pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
+                pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
+                pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
+                pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
+                pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
+                pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
+                pl_dict.Add("OFFSET", ts.pl_offset.ToString());
+
+                foreach (DataRow r in res.Rows)
+                {
+                    if (r[0].ToString().Equals(ts.name))
+                    {
+                        _db.Update(teamsT, dict, "Name LIKE \'" + ts.name + "\'");
+                        _db.Update(pl_teamsT, pl_dict, "Name LIKE \'" + ts.name + "\'");
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    _db.Insert(teamsT, dict);
+                    _db.Insert(pl_teamsT, pl_dict);
+                }
+            }
+
+            foreach (TeamStats ts in tstoppToSave)
+            {
+                bool found = false;
+
+                var dict = new Dictionary<string, string>();
+                dict.Add("Name", ts.name);
+                dict.Add("ID", TeamOrder[ts.name].ToString());
+                dict.Add("DisplayName", ts.displayName);
+                dict.Add("isHidden", ts.isHidden.ToString());
+                dict.Add("WIN", ts.winloss[0].ToString());
+                dict.Add("LOSS", ts.winloss[1].ToString());
+                dict.Add("MINS", ts.stats[tMINS].ToString());
+                dict.Add("PF", ts.stats[tPF].ToString());
+                dict.Add("PA", ts.stats[tPA].ToString());
+                dict.Add("FGM", ts.stats[tFGM].ToString());
+                dict.Add("FGA", ts.stats[tFGA].ToString());
+                dict.Add("TPM", ts.stats[tTPM].ToString());
+                dict.Add("TPA", ts.stats[tTPA].ToString());
+                dict.Add("FTM", ts.stats[tFTM].ToString());
+                dict.Add("FTA", ts.stats[tFTA].ToString());
+                dict.Add("OREB", ts.stats[tOREB].ToString());
+                dict.Add("DREB", ts.stats[tDREB].ToString());
+                dict.Add("STL", ts.stats[tSTL].ToString());
+                dict.Add("TOS", ts.stats[tTO].ToString());
+                dict.Add("BLK", ts.stats[tBLK].ToString());
+                dict.Add("AST", ts.stats[tAST].ToString());
+                dict.Add("FOUL", ts.stats[tFOUL].ToString());
+                dict.Add("OFFSET", ts.offset.ToString());
+
+                var pl_dict = new Dictionary<string, string>();
+                pl_dict.Add("Name", ts.name);
+                pl_dict.Add("DisplayName", ts.displayName);
+                pl_dict.Add("isHidden", ts.isHidden.ToString());
+                pl_dict.Add("ID", TeamOrder[ts.name].ToString());
+                pl_dict.Add("WIN", ts.pl_winloss[0].ToString());
+                pl_dict.Add("LOSS", ts.pl_winloss[1].ToString());
+                pl_dict.Add("MINS", ts.pl_stats[tMINS].ToString());
+                pl_dict.Add("PF", ts.pl_stats[tPF].ToString());
+                pl_dict.Add("PA", ts.pl_stats[tPA].ToString());
+                pl_dict.Add("FGM", ts.pl_stats[tFGM].ToString());
+                pl_dict.Add("FGA", ts.pl_stats[tFGA].ToString());
+                pl_dict.Add("TPM", ts.pl_stats[tTPM].ToString());
+                pl_dict.Add("TPA", ts.pl_stats[tTPA].ToString());
+                pl_dict.Add("FTM", ts.pl_stats[tFTM].ToString());
+                pl_dict.Add("FTA", ts.pl_stats[tFTA].ToString());
+                pl_dict.Add("OREB", ts.pl_stats[tOREB].ToString());
+                pl_dict.Add("DREB", ts.pl_stats[tDREB].ToString());
+                pl_dict.Add("STL", ts.pl_stats[tSTL].ToString());
+                pl_dict.Add("TOS", ts.pl_stats[tTO].ToString());
+                pl_dict.Add("BLK", ts.pl_stats[tBLK].ToString());
+                pl_dict.Add("AST", ts.pl_stats[tAST].ToString());
+                pl_dict.Add("FOUL", ts.pl_stats[tFOUL].ToString());
+                pl_dict.Add("OFFSET", ts.pl_offset.ToString());
+
+                foreach (DataRow r in res.Rows)
+                {
+                    if (r[0].ToString().Equals(ts.name))
+                    {
+                        _db.Update(oppT, dict, "Name LIKE \'" + ts.name + "\'");
+                        _db.Update(pl_oppT, pl_dict, "Name LIKE \'" + ts.name + "\'");
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    _db.Insert(oppT, dict);
+                    _db.Insert(pl_oppT, pl_dict);
+                }
+            }
+        }
+
         public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season,
                                                  int maxSeason)
         {
@@ -883,25 +901,25 @@ namespace NBA_Stats_Tracker
                 qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + pl_oppT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_oppT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + oppT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + oppT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
@@ -977,7 +995,7 @@ namespace NBA_Stats_Tracker
 
             if (ofd.FileName == "") return;
 
-            LoadDatabase(ofd.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
+            LoadSeason(ofd.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref TeamOrder, ref pt, ref bshist);
 
             cmbTeam1.SelectedIndex = -1;
@@ -1059,6 +1077,20 @@ namespace NBA_Stats_Tracker
             {
                 ts = new TeamStats();
                 ts.name = r["Name"].ToString();
+
+                // For compatibility reasons, if properties added after v0.10.5.1 don't exist,
+                // we create them without error.
+                try
+                {
+                    ts.displayName = r["DisplayName"].ToString();
+                    ts.isHidden = NSTHelper.getBoolean(r, "isHidden");
+                }
+                catch (Exception)
+                {
+                    ts.displayName = tsopp.name;
+                    ts.isHidden = false;
+                }
+
                 ts.offset = Convert.ToInt32(r["OFFSET"].ToString());
                 ts.winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 ts.winloss[1] = Convert.ToByte(r["LOSS"].ToString());
@@ -1132,6 +1164,20 @@ namespace NBA_Stats_Tracker
             {
                 tsopp = new TeamStats();
                 tsopp.name = r["Name"].ToString();
+
+                // For compatibility reasons, if properties added after v0.10.5.1 don't exist,
+                // we create them without error.
+                try
+                {
+                    tsopp.displayName = r["DisplayName"].ToString();
+                    tsopp.isHidden = NSTHelper.getBoolean(r, "isHidden");
+                }
+                catch (Exception)
+                {
+                    tsopp.displayName = tsopp.name;
+                    tsopp.isHidden = false;
+                }
+
                 tsopp.offset = Convert.ToInt32(r["OFFSET"].ToString());
                 tsopp.winloss[0] = Convert.ToByte(r["WIN"].ToString());
                 tsopp.winloss[1] = Convert.ToByte(r["LOSS"].ToString());
@@ -1223,13 +1269,13 @@ namespace NBA_Stats_Tracker
                 string name = r["Name"].ToString();
                 _tst[i] = new TeamStats(name);
                 _tstopp[i] = new TeamStats(name);
-                GetTeamStatsFromDatabase(file, name, curSeason, ref _tst[i], ref _tstopp[i]);
+                GetTeamStatsFromDatabase(file, name, season, ref _tst[i], ref _tstopp[i]);
                 TeamOrder.Add(name, i);
                 i++;
             }
         }
 
-        public static void LoadDatabase(string file, ref TeamStats[] _tst, ref TeamStats[] _tstopp,
+        public static void LoadSeason(string file, ref TeamStats[] _tst, ref TeamStats[] _tstopp,
                                         ref Dictionary<int, PlayerStats> pst,
                                         ref SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
                                         ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
@@ -1261,7 +1307,7 @@ namespace NBA_Stats_Tracker
 
             GetAllTeamStatsFromDatabase(file, _curSeason, ref _tst, ref _tstopp, ref _TeamOrder);
 
-            pst = GetPlayersFromDatabase(file, _tst, _tstopp, _curSeason, maxSeason);
+            pst = GetPlayersFromDatabase(file, _tst, _tstopp, _TeamOrder, _curSeason, maxSeason);
 
             if (!doNotLoadBoxScores) _bshist = GetBoxScoresFromDatabase(file);
 
@@ -1277,8 +1323,7 @@ namespace NBA_Stats_Tracker
                 curSeason = 1;
             }
             */
-            curSeason = _curSeason;
-            mwInstance.txbCurSeason.Text = "Current Season: " + _curSeason.ToString() + "/" + maxSeason.ToString();
+            ChangeSeason(_curSeason, maxSeason);
 
             /*
             if (updateCombo)
@@ -1290,6 +1335,12 @@ namespace NBA_Stats_Tracker
                 }
             }
             */
+        }
+
+        public static void ChangeSeason(int _curSeason, int maxSeason)
+        {
+            curSeason = _curSeason;
+            mwInstance.txbCurSeason.Text = "Current Season: " + _curSeason.ToString() + "/" + maxSeason.ToString();
         }
 
         public static IList<BoxScoreEntry> GetBoxScoresFromDatabase(string file)
@@ -1361,7 +1412,7 @@ namespace NBA_Stats_Tracker
         }
 
         public static Dictionary<int, PlayerStats> GetPlayersFromDatabase(string file, TeamStats[] _tst,
-                                                                          TeamStats[] _tstopp, int curSeason,
+                                                                          TeamStats[] _tstopp, SortedDictionary<string,int> _TeamOrder, int curSeason,
                                                                           int maxSeason)
         {
             var _pst = new Dictionary<int, PlayerStats>();
@@ -1387,7 +1438,7 @@ namespace NBA_Stats_Tracker
                 _pst.Add(ps.ID, ps);
             }
 
-            NSTHelper.CalculateAllMetrics(ref _pst, _tst, _tstopp);
+            NSTHelper.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
 
             return _pst;
         }
@@ -1412,7 +1463,7 @@ namespace NBA_Stats_Tracker
             id1 = TeamOrder[bs.Team1];
             id2 = TeamOrder[bs.Team2];
 
-            LoadDatabase(currentDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist,
+            LoadSeason(currentDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist,
                          _curSeason: bs.SeasonNum);
 
             var list = new List<PlayerBoxScore>();
@@ -2253,7 +2304,7 @@ namespace NBA_Stats_Tracker
                                 MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
+                            LoadSeason(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
 
                             cmbTeam1.SelectedIndex = -1;
                             cmbTeam1.SelectedIndex = 0;
@@ -2368,7 +2419,7 @@ namespace NBA_Stats_Tracker
                                                       cmbTeam1.SelectedIndex = -1;
                                                       cmbTeam1.SelectedIndex = 0;
                                                       txtFile.Text = file;
-                                                      LoadDatabase(file, ref tst, ref tstopp, ref pst, ref TeamOrder,
+                                                      LoadSeason(file, ref tst, ref tstopp, ref pst, ref TeamOrder,
                                                                    ref pt, ref bshist, _curSeason: curSeason);
 
                                                       txbWait.Visibility = Visibility.Hidden;
@@ -2495,7 +2546,7 @@ namespace NBA_Stats_Tracker
 
                 if (ofd1.FileName == "") return;
 
-                LoadDatabase(ofd1.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true);
+                LoadSeason(ofd1.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true);
                 cmbTeam1.SelectedIndex = 0;
             }
 
@@ -2517,7 +2568,7 @@ namespace NBA_Stats_Tracker
             IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
             TeamStats[] oldTST = new TeamStats[1];
             TeamStats[] oldTSTopp = new TeamStats[1];
-            LoadDatabase(ofd.FileName, ref oldTST, ref oldTSTopp, ref pst, ref oldTeamOrder, ref oldPT, ref oldbshist,
+            LoadSeason(ofd.FileName, ref oldTST, ref oldTSTopp, ref pst, ref oldTeamOrder, ref oldPT, ref oldbshist,
                          false);
 
             var curR = new Rankings(tst);
@@ -2845,7 +2896,7 @@ namespace NBA_Stats_Tracker
                     }
 
                     int oldlen = tst.GetLength(0);
-                    if (isTSTEmpty()) oldlen--;
+                    if (isTSTEmpty()) oldlen = 0;
 
                     Array.Resize(ref tst, oldlen + newTeams.Count);
                     Array.Resize(ref tstopp, oldlen + newTeams.Count);
@@ -2910,6 +2961,20 @@ namespace NBA_Stats_Tracker
 
                     txbCurSeason.Text = "Current Season: " + curSeason.ToString() + "/" + curSeason.ToString();
                     foreach (TeamStats ts in tst)
+                    {
+                        for (int i = 0; i < ts.stats.Length; i++)
+                        {
+                            ts.stats[i] = 0;
+                            ts.pl_stats[i] = 0;
+                        }
+                        ts.winloss[0] = 0;
+                        ts.winloss[1] = 0;
+                        ts.pl_winloss[0] = 0;
+                        ts.pl_winloss[1] = 0;
+                        ts.calcAvg();
+                    }
+
+                    foreach (TeamStats ts in tstopp)
                     {
                         for (int i = 0; i < ts.stats.Length; i++)
                         {
@@ -3062,6 +3127,27 @@ namespace NBA_Stats_Tracker
                 if (!bseIDs.Contains(i)) return i;
                 i++;
             }
+        }
+
+        private void mnuMiscEnableTeams_Click(object sender, RoutedEventArgs e)
+        {
+            addInfo = "";
+            enableTeamsW etw = new enableTeamsW(currentDB, curSeason, getMaxSeason(currentDB));
+            etw.ShowDialog();
+
+            if (addInfo == "$$TEAMSENABLED")
+            {
+                GetAllTeamStatsFromDatabase(currentDB, curSeason, ref tst, ref tstopp, ref TeamOrder);
+                updateStatus("Teams were enabled/disabled. Database saved.");
+            }
+        }
+
+        /// <summary>
+        /// Saves teams to the current database using current MainWindow.tst and MainWindow.tstopp
+        /// </summary>
+        public static void SaveTeamsToDatabase()
+        {
+            SaveTeamsToDatabase(currentDB, tst, tstopp, curSeason, getMaxSeason(currentDB));
         }
     }
 }

@@ -93,8 +93,38 @@ namespace NBA_Stats_Tracker
 
         public playerOverviewW(string team, int playerID) : this()
         {
-            cmbTeam.SelectedItem = team;
+            cmbTeam.SelectedItem = GetDisplayNameFromTeam(team);
             cmbPlayer.SelectedValue = playerID.ToString();
+        }
+
+        private string GetCurTeamFromDisplayName(string p)
+        {
+            for (int i = 0; i < MainWindow.tst.Length; i++)
+            {
+                if (MainWindow.tst[i].displayName == p)
+                {
+                    if (MainWindow.tst[i].isHidden) 
+                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
+
+                    return MainWindow.tst[i].name;
+                }
+            }
+            throw new Exception("Team not found: " + p);
+        }
+
+        private string GetDisplayNameFromTeam(string p)
+        {
+            for (int i = 0; i < MainWindow.tst.Length; i++)
+            {
+                if (MainWindow.tst[i].name == p)
+                {
+                    if (MainWindow.tst[i].isHidden) 
+                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
+
+                    return MainWindow.tst[i].displayName;
+                }
+            }
+            throw new Exception("Team not found: " + p);
         }
 
         public ObservableCollection<KeyValuePair<int, string>> PlayersList
@@ -119,6 +149,22 @@ namespace NBA_Stats_Tracker
 
         private int SelectedOppPlayerID { get; set; }
 
+        private void PopulateTeamsCombo()
+        {
+            Teams = new List<string>();
+            foreach (var kvp in teamOrder)
+            {
+                if (!MainWindow.tst[kvp.Value].isHidden) Teams.Add(MainWindow.tst[kvp.Value].displayName);
+            }
+
+            Teams.Sort();
+
+            Teams.Add("- Inactive -");
+
+            cmbTeam.ItemsSource = Teams;
+            cmbOppTeam.ItemsSource = Teams;
+        }
+
         private void prepareWindow()
         {
             DataContext = this;
@@ -130,15 +176,7 @@ namespace NBA_Stats_Tracker
             cmbPosition1.ItemsSource = Positions;
             cmbPosition2.ItemsSource = Positions2;
 
-            Teams = new List<string>();
-            foreach (var kvp in teamOrder)
-            {
-                Teams.Add(kvp.Key);
-            }
-            Teams.Add("- Inactive -");
-
-            cmbTeam.ItemsSource = Teams;
-            cmbOppTeam.ItemsSource = Teams;
+            PopulateTeamsCombo();
 
             dt_ov = new DataTable();
             dt_ov.Columns.Add("Type");
@@ -219,7 +257,7 @@ namespace NBA_Stats_Tracker
             string q;
             if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE '" + cmbTeam.SelectedItem +
+                q = "select * from " + playersT + " where TeamFin LIKE '" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) +
                     "' AND isActive LIKE 'True'";
             }
             else
@@ -796,13 +834,18 @@ namespace NBA_Stats_Tracker
                     playersT += "S" + curSeason;
                 }
 
-                MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, curSeason, maxSeason);
+                MainWindow.ChangeSeason(curSeason, maxSeason);
 
+                MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder, curSeason, maxSeason);
                 GetActivePlayers();
 
                 if (cmbPlayer.SelectedIndex != -1)
                 {
                     PlayerStats ps = CreatePlayerStatsFromCurrent();
+                    MainWindow.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
+                                                                            ref MainWindow.tst, ref MainWindow.tstopp,
+                                                                            ref MainWindow.TeamOrder);
+                    PopulateTeamsCombo();
 
                     string q = "select * from " + playersT + " where ID = " + ps.ID;
                     DataTable res = db.GetDataTable(q);
@@ -825,7 +868,16 @@ namespace NBA_Stats_Tracker
                         {
                             if (newTeam != "")
                             {
-                                cmbTeam.SelectedItem = newTeam;
+                                try
+                                {
+                                    cmbTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                }
+                                catch (Exception)
+                                {
+                                    cmbTeam.SelectedIndex = -1;
+                                    cmbPlayer.SelectedIndex = -1;
+                                    return;
+                                }
                             }
                         }
                         else
@@ -840,6 +892,13 @@ namespace NBA_Stats_Tracker
                         cmbTeam.SelectedIndex = -1;
                         cmbPlayer.SelectedIndex = -1;
                     }
+                }
+                else
+                {
+                    MainWindow.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
+                                                                            ref MainWindow.tst, ref MainWindow.tstopp,
+                                                                            ref MainWindow.TeamOrder);
+                    PopulateTeamsCombo();
                 }
             }
         }
@@ -869,13 +928,13 @@ namespace NBA_Stats_Tracker
 
             MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
 
-            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, curSeason, maxSeason);
+            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder, curSeason, maxSeason);
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
             if (ps.isActive)
             {
-                cmbTeam.SelectedItem = ps.TeamF;
+                cmbTeam.SelectedItem = GetDisplayNameFromTeam(ps.TeamF);
             }
             else
             {
@@ -897,7 +956,7 @@ namespace NBA_Stats_Tracker
             }
             else
             {
-                TeamF = cmbTeam.SelectedItem.ToString();
+                TeamF = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
                 if (TeamF == "- Inactive -")
                 {
                     askedTeam = "";

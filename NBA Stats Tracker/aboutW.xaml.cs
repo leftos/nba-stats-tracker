@@ -16,14 +16,11 @@ namespace NBA_Stats_Tracker
             lblVersion.Content = "version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             txbThanks.Text =
-                "- JaoSming, for his roster editing tutorial\n" +
-                "- Onisak, for his help with debugging\n" +
-                "- Vl@d Zola Jr, for helping make NBA Stats Tracker what it is and will be\n" +
-                "- albidnis, for his idea to export to CSV\n" +
-                "- jrlocke, for being the first donator, and a generous one\n" +
-                "- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues and Real NBA Stats features\n" +
-                "- AreaOfEffect, for his help with debugging\n" +
-                "- Everyone at the NLSC community, for their continued support";
+                "I want to thank everyone that took the time to give me suggestions, feedback, and bug reports.\n" +
+                "I also want to thank my family and friends for their support, as well as my professor Mr. " +
+                "Tsakalidis for letting NBA Stats Tracker be the thesis for my Computer Engineering degree.\n" +
+                "Special thanks goes to the NLSC community and specific members which I've named in the Readme.\n" +
+                "\nThanks for all your support, enjoy!";
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -34,6 +31,11 @@ namespace NBA_Stats_Tracker
         private void btnDonate_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("http://students.ceid.upatras.gr/~aslanoglou/donate.html");
+        }
+
+        private void btnWebsite_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://forums.nba-live.com/viewtopic.php?f=143&t=84110");
         }
     }
 }

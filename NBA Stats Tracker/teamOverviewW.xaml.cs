@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,6 +37,7 @@ namespace NBA_Stats_Tracker
         private int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
         private TeamStats curts;
         private TeamStats curtsopp;
+        private static string teamsT, pl_teamsT, oppT, pl_oppT;
 
         public teamOverviewW()
         {
@@ -160,11 +162,7 @@ namespace NBA_Stats_Tracker
             pst = MainWindow.pst;
             tstopp = MainWindow.tstopp;
 
-            foreach (var kvp in MainWindow.TeamOrder)
-            {
-                cmbTeam.Items.Add(kvp.Key);
-                cmbOppTeam.Items.Add(kvp.Key);
-            }
+            PopulateTeamsCombo();
 
             rankings = NSTHelper.calculateRankings(tst);
             pl_rankings = NSTHelper.calculateRankings(tst, playoffs: true);
@@ -184,6 +182,23 @@ namespace NBA_Stats_Tracker
 
             cmbTeam.SelectedIndex = -1;
             cmbTeam.SelectedIndex = 0;
+        }
+
+        private void PopulateTeamsCombo()
+        {
+            List<string> teams = new List<string>();
+            foreach (var kvp in MainWindow.TeamOrder)
+            {
+                if (!tst[kvp.Value].isHidden)
+                {
+                    teams.Add(tst[kvp.Value].displayName);
+                }
+            }
+
+            teams.Sort();
+
+            cmbTeam.ItemsSource = teams;
+            cmbOppTeam.ItemsSource = teams;
         }
 
         public teamOverviewW(string team) : this()
@@ -970,6 +985,14 @@ namespace NBA_Stats_Tracker
         {
             try
             {
+                dgvBoxScores.DataContext = null;
+                dgvTeamStats.DataContext = null;
+                dgvHTHStats.DataContext = null;
+                dgvHTHBoxScores.DataContext = null;
+                dgvSplit.DataContext = null;
+                dgvPlayerStats.ItemsSource = null;
+                dgvMetricStats.ItemsSource = null;
+
                 if (cmbTeam.SelectedIndex == -1) return;
                 if (cmbSeasonNum.SelectedIndex == -1) return;
             }
@@ -982,19 +1005,13 @@ namespace NBA_Stats_Tracker
 
             //DataRow dr;
 
-            dgvBoxScores.DataContext = null;
-            dgvTeamStats.DataContext = null;
-            dgvHTHStats.DataContext = null;
-            dgvHTHBoxScores.DataContext = null;
-            dgvSplit.DataContext = null;
-
             dt_bs.Clear();
             dt_ov.Clear();
             dt_hth.Clear();
             dt_ss.Clear();
             dt_yea.Clear();
 
-            curTeam = cmbTeam.SelectedItem.ToString();
+            curTeam = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
             var ts = new TeamStats(curTeam);
             var tsopp = new TeamStats("Opponents");
 
@@ -1010,6 +1027,30 @@ namespace NBA_Stats_Tracker
             UpdateYearlyStats();
 
             UpdatePlayerAndMetricStats();
+        }
+
+        private string GetCurTeamFromDisplayName(string p)
+        {
+            for (int i = 0; i < tst.Length; i++)
+            {
+                if (tst[i].displayName == p)
+                {
+                    return tst[i].name;
+                }
+            }
+            return "$$TEAMNOTFOUND: " + p;
+        }
+
+        private string GetDisplayNameFromTeam(string p)
+        {
+            for (int i = 0; i < tst.Length; i++)
+            {
+                if (tst[i].name == p)
+                {
+                    return tst[i].displayName;
+                }
+            }
+            return "$$TEAMNOTFOUND: " + p;
         }
 
         private void UpdatePlayerAndMetricStats()
@@ -1163,11 +1204,18 @@ namespace NBA_Stats_Tracker
 
         private void btnShowAvg_Click(object sender, RoutedEventArgs e)
         {
-            string msg = NSTHelper.averagesAndRankings(cmbTeam.SelectedItem.ToString(), tst, MainWindow.TeamOrder);
-            if (msg != "")
+            try
             {
-                var cw = new copyableW(msg, cmbTeam.SelectedItem.ToString(), TextAlignment.Center);
-                cw.ShowDialog();
+                string msg = NSTHelper.averagesAndRankings(GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()), tst, MainWindow.TeamOrder);
+                if (msg != "")
+                {
+                    var cw = new copyableW(msg, GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()), TextAlignment.Center);
+                    cw.ShowDialog();
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No team selected.");
             }
         }
 
@@ -1181,8 +1229,15 @@ namespace NBA_Stats_Tracker
                     MessageBoxImage.Information);
                 return;
             }
-
-            int id = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
+            int id = -1;
+            try
+            {
+                id = MainWindow.TeamOrder[GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString())];
+            }
+            catch (Exception)
+            {
+                return;
+            } 
             tst[id].winloss[0] = Convert.ToByte(myCell(0, 2));
             tst[id].winloss[1] = Convert.ToByte(myCell(0, 3));
             tst[id].stats[tPF] = Convert.ToUInt16(myCell(0, 4));
@@ -1307,7 +1362,7 @@ namespace NBA_Stats_Tracker
 
             MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
                                             curSeason, maxSeason);
-            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                     ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                     doNotLoadBoxScores: true);
 
@@ -1331,7 +1386,7 @@ namespace NBA_Stats_Tracker
             int id = -1;
             try
             {
-                id = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
+                id = MainWindow.TeamOrder[GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString())];
             }
             catch
             {
@@ -1341,7 +1396,7 @@ namespace NBA_Stats_Tracker
             int[][] rating = NSTHelper.calculateRankings(tst);
             if (rating.Length != 1)
             {
-                string msg = NSTHelper.scoutReport(rating, id, cmbTeam.SelectedItem.ToString());
+                string msg = NSTHelper.scoutReport(rating, id, GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
                 var cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
@@ -1501,11 +1556,11 @@ namespace NBA_Stats_Tracker
                 return;
             }
 
-            int iown = MainWindow.TeamOrder[cmbTeam.SelectedItem.ToString()];
-            int iopp = MainWindow.TeamOrder[cmbOppTeam.SelectedItem.ToString()];
+            string curTeam = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
+            string curOpp = GetCurTeamFromDisplayName(cmbOppTeam.SelectedItem.ToString());
 
-            string curTeam = cmbTeam.SelectedItem.ToString();
-            string curOpp = cmbOppTeam.SelectedItem.ToString();
+            int iown = MainWindow.TeamOrder[curTeam];
+            int iopp = MainWindow.TeamOrder[curOpp];
 
             var dt_hth_bs = new DataTable();
             dt_hth_bs.Columns.Add("Date");
@@ -2001,9 +2056,33 @@ namespace NBA_Stats_Tracker
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
-            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+
+            teamsT = "Teams";
+            pl_teamsT = "PlayoffTeams";
+            oppT = "Opponents";
+            pl_oppT = "PlayoffOpponents";
+            if (curSeason != maxSeason)
+            {
+                string s = "S" + curSeason;
+                teamsT += s;
+                pl_teamsT += s;
+                oppT += s;
+                pl_oppT += s;
+            }
+
+            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                           ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
-            cmbTeam_SelectionChanged(null, null);
+            PopulateTeamsCombo();
+            try
+            {
+                cmbTeam.SelectedItem = GetDisplayNameFromTeam(curTeam);
+            }
+            catch
+            {
+                cmbTeam.SelectedIndex = -1;
+            }
+
+            //MainWindow.ChangeSeason(curSeason, Convert.ToInt32(cmbSeasonNum.Items[cmbSeasonNum.Items.Count-1].ToString()));
         }
 
         private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -2059,6 +2138,39 @@ namespace NBA_Stats_Tracker
             MainWindow.tst = tst;
             MainWindow.tstopp = tstopp;
             MainWindow.pst = pst;
+        }
+
+        private void btnChangeName_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                inputBoxW ibw = new inputBoxW("Please enter the new name for the team",
+                                              tst[MainWindow.TeamOrder[curTeam]].displayName);
+                ibw.ShowDialog();
+            }
+            catch
+            {
+                return;
+            }
+
+            string newname = MainWindow.input;
+            Dictionary<string,string> dict = new Dictionary<string, string>();
+            dict.Add("DisplayName", newname);
+            db.Update(teamsT, dict, "Name LIKE '" + curTeam + "'");
+            db.Update(pl_teamsT, dict, "Name LIKE '" + curTeam + "'");
+            db.Update(oppT, dict, "Name LIKE '" + curTeam + "'");
+            db.Update(pl_oppT, dict, "Name LIKE '" + curTeam + "'");
+
+            int teamid = MainWindow.TeamOrder[curTeam];
+            tst[teamid].displayName = newname;
+            tstopp[teamid].displayName = newname;
+
+            MainWindow.tst = tst;
+            MainWindow.tstopp = tstopp;
+
+            PopulateTeamsCombo();
+
+            cmbTeam.SelectedItem = newname;
         }
     }
 }

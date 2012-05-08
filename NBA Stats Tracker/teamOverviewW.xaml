@@ -357,7 +357,7 @@
         <Button Content="Alternate Averages &amp; Rankings Window" Height="23" HorizontalAlignment="Center"
                 Margin="0,6,0,0" Name="btnShowAvg" VerticalAlignment="Top" Width="249" Click="btnShowAvg_Click" Grid.ColumnSpan="2" />
         <Button Content="Save This Team's Season Stats &amp; Re-Calculate*" Height="23" HorizontalAlignment="Center"
-                Margin="0,64,0,0" Name="btnSaveCustomTeam" TabIndex="22" VerticalAlignment="Top" Width="249"
+                Margin="0,93,0,0" Name="btnSaveCustomTeam" TabIndex="22" VerticalAlignment="Top" Width="249"
                 Click="btnSaveCustomTeam_Click" Grid.ColumnSpan="2">
           <Button.ToolTip>
             <StackPanel>
@@ -369,10 +369,11 @@ Text="Remember to save the stats before you switch to another team or season, or
         </Button>
         <Button Content="Scouting Report" Height="23" HorizontalAlignment="Center" Margin="0,35,0,0"
                 Name="btnScoutingReport" VerticalAlignment="Top" Width="249" Click="btnScoutingReport_Click" Grid.ColumnSpan="2" />
-        <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock2"
+        <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,121,0,0" Name="textBlock2"
                    Text="* Always remember to save each team's stats before switching teams or else your changes could be lost."
                    TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
-      </Grid>
+                <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="33,64,33,0" Name="btnChangeName" VerticalAlignment="Top" Width="249" Click="btnChangeName_Click" />
+            </Grid>
     </GroupBox>
     <GroupBox HorizontalAlignment="Right" Margin="0,0,6,12" Name="groupBox2" Width="328" Header="Timeframe"
               Height="175" VerticalAlignment="Bottom">

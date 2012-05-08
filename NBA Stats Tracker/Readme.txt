@@ -126,10 +126,17 @@ Credits to
 	- jrlocke, for being the first donator, and a generous one
 	- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues & Real NBA Stats features
 	- AreaOfEffect, for his help with debugging
+	- Tinifu Tuitama, for his donation
+	- koberulz, for his extensive suggestions and help with debugging
 	- Everyone at the NLSC community, for their continued support
 	
 	
 Version History
+	v0.10.6
+		- Added: Teams can be enabled and disabled per season (Main Window > Miscellaneous > Enable/Disable Teams For This Season); this can be used to relegate a team for a season and then have them back in another season with their other years' stats intact
+		- Added: Tool is now able to handle teams that are in one season but not another; either weren't created in it or are disabled
+		- Added: Teams can be renamed (Team Overview > Change Team Name)
+
 	v0.10.5.1
 		- Fix: Fixed a recent bug that broke the Add Players function
 		- Improvement: Database is saved immediately after adding players

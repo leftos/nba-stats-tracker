@@ -866,7 +866,7 @@ namespace NBA_Stats_Tracker
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             MainWindow.curSeason = curSeason;
 
-            MainWindow.LoadDatabase(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                     ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                     doNotLoadBoxScores: true);
 

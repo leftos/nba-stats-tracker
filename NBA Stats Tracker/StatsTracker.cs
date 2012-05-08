@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker
 
         public static PlayoffTree tempPT;
 
-        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, TeamStats[] teamStats, TeamStats[] oppStats, bool leagueOv = false)
+        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, TeamStats[] teamStats, TeamStats[] oppStats, SortedDictionary<string,int> TeamOrder,  bool leagueOv = false)
         {
             int tCount = teamStats.Length;
 
@@ -59,7 +59,7 @@ namespace NBA_Stats_Tracker
 
             foreach (var playerid in playerStats.Keys.ToList())
             {
-                int teamid = MainWindow.TeamOrder[playerStats[playerid].TeamF];
+                int teamid = TeamOrder[playerStats[playerid].TeamF];
                 TeamStats ts = tst[teamid];
                 TeamStats tsopp = tstopp[teamid];
 
@@ -2601,6 +2601,9 @@ namespace NBA_Stats_Tracker
         public UInt16[] pl_stats = new UInt16[18];
         public byte[] pl_winloss = new byte[2];
 
+        public string displayName;
+        public bool isHidden;
+
         /// <summary>
         /// Stats for each team.
         /// 0: M, 1: PF, 2: PA, 3: 0x0000, 4: FGM, 5: FGA, 6: 3PM, 7: 3PA, 8: FTM, 9: FTA,
@@ -2618,10 +2621,10 @@ namespace NBA_Stats_Tracker
             prepareEmpty();
         }
 
-        public TeamStats(string name)
+        public TeamStats(string name) : this()
         {
             this.name = name;
-            prepareEmpty();
+            displayName = name;
         }
 
         private void prepareEmpty()
@@ -2640,6 +2643,7 @@ namespace NBA_Stats_Tracker
                 averages[i] = 0;
                 pl_averages[i] = 0;
             }
+            isHidden = false;
         }
 
         public void calcAvg()
