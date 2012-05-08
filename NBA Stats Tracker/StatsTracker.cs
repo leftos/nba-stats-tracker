@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker
 
         public static PlayoffTree tempPT;
 
-        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> pst, TeamStats[] teamStats, TeamStats[] oppStats)
+        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, TeamStats[] teamStats, TeamStats[] oppStats, bool leagueOv = false)
         {
             int tCount = teamStats.Length;
 
@@ -57,21 +57,24 @@ namespace NBA_Stats_Tracker
             double lg_aPER = 0;
             double totalMins = 0;
 
-            foreach (var kvp in pst)
+            foreach (var playerid in playerStats.Keys.ToList())
             {
-                int teamid = MainWindow.TeamOrder[pst[kvp.Key].TeamF];
+                int teamid = MainWindow.TeamOrder[playerStats[playerid].TeamF];
                 TeamStats ts = tst[teamid];
                 TeamStats tsopp = tstopp[teamid];
 
-                pst[kvp.Key].CalcMetrics(ts, tsopp, ls);
-                lg_aPER += pst[kvp.Key].metrics["aPER"]*pst[kvp.Key].stats[pMINS];
-                totalMins += pst[kvp.Key].stats[pMINS];
+                playerStats[playerid].CalcMetrics(ts, tsopp, ls, leagueOv);
+                if (!(Double.IsNaN(playerStats[playerid].metrics["aPER"])))
+                {
+                    lg_aPER += playerStats[playerid].metrics["aPER"]*playerStats[playerid].stats[pMINS];
+                    totalMins += playerStats[playerid].stats[pMINS];
+                }
             }
             lg_aPER /= totalMins;
 
-            foreach (var kvp in pst)
+            foreach (var playerid in playerStats.Keys.ToList())
             {
-                pst[kvp.Key].CalcPER(lg_aPER);
+                playerStats[playerid].CalcPER(lg_aPER);
             }
         }
 
@@ -1230,9 +1233,10 @@ namespace NBA_Stats_Tracker
 
     public static class RealStats
     {
-        public const int tMINS = 0, tPF = 1, tPA = 2, tFGM = 4, tFGA = 5, tTPM = 6, tTPA = 7, tFTM = 8, tFTA = 9, tOREB = 10, tDREB = 11, tSTL = 12, tTO = 13, tBLK = 14, tAST = 15, tFOUL = 16;
+        private const int tMINS = 0, tPF = 1, tPA = 2, tFGM = 4, tFGA = 5, tTPM = 6, tTPA = 7, tFTM = 8, tFTA = 9, tOREB = 10, tDREB = 11, tSTL = 12, tTO = 13, tBLK = 14, tAST = 15, tFOUL = 16;
+        private const int pGP = 0, pGS = 1, pMINS = 2, pPTS = 3, pDREB = 4, pOREB = 5, pAST = 6, pSTL = 7, pBLK = 8, pTO = 9, pFOUL = 10, pFGM = 11, pFGA = 12, pTPM = 13, pTPA = 14, pFTM = 15, pFTA = 16; 
 
-        public static DataSet GetBoxScore(string url)
+        private static DataSet GetBoxScore(string url)
         {
             var dataset = new DataSet();
 
@@ -1279,7 +1283,7 @@ namespace NBA_Stats_Tracker
             return dataset;
         }
 
-        public static DataSet GetSeasonTeamStats(string url, out string[] recordparts)
+        private static DataSet GetSeasonTeamStats(string url, out string[] recordparts)
         {
             var dataset = new DataSet();
 
@@ -1332,7 +1336,7 @@ namespace NBA_Stats_Tracker
             return dataset;
         }
 
-        public static DataSet GetPlayerStats(string url)
+        private static DataSet GetPlayerStats(string url)
         {
             var dataset = new DataSet();
 
@@ -1344,7 +1348,7 @@ namespace NBA_Stats_Tracker
             {
                 try
                 {
-                    if (!(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs")) continue;
+                    if (!(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs" || cur.Attributes["id"].Value == "roster")) continue;
                 }
                 catch (Exception)
                 {
@@ -1355,12 +1359,23 @@ namespace NBA_Stats_Tracker
                 var thead = cur.SelectSingleNode("thead");
                 var theadrows = thead.SelectNodes("tr");
 
-                var headers = theadrows[0]
+                HtmlNode theadrow;
+                if (cur.Attributes["id"].Value == "playoffs") theadrow = theadrows[1];
+                else theadrow = theadrows[0];
+
+                var headers = theadrow
                     .Elements("th")
                     .Select(th => th.InnerText.Trim());
                 foreach (var colheader in headers)
                 {
-                    table.Columns.Add(colheader);
+                    try
+                    {
+                        table.Columns.Add(colheader);
+                    }
+                    catch (Exception)
+                    {
+                        table.Columns.Add(colheader + "2");
+                    }
                 }
 
                 var tbody = cur.SelectSingleNode("tbody");
@@ -1378,19 +1393,19 @@ namespace NBA_Stats_Tracker
             return dataset;
         }
 
-        public static DataSet GetPlayoffTeamStats(string url)
+        private static DataSet GetPlayoffTeamStats(string url)
         {
             var dataset = new DataSet();
 
             var htmlweb = new HtmlWeb();
             var doc = htmlweb.Load(url);
-
+            
             var tables = doc.DocumentNode.SelectNodes("//table");
             foreach (var cur in tables)
             {
                 try
                 {
-                    if (!(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent")) continue;
+                    if (!(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" || cur.Attributes["id"].Value == "misc")) continue;
                 }
                 catch (Exception)
                 {
@@ -1400,13 +1415,24 @@ namespace NBA_Stats_Tracker
 
                 var thead = cur.SelectSingleNode("thead");
                 var theadrows = thead.SelectNodes("tr");
+                HtmlNode theadrow;
 
-                var headers = theadrows[0]
+                if (cur.Attributes["id"].Value == "misc") theadrow = theadrows[1];
+                else theadrow = theadrows[0];
+
+                var headers = theadrow
                     .Elements("th")
                     .Select(th => th.InnerText.Trim());
                 foreach (var colheader in headers)
                 {
-                    table.Columns.Add(colheader);
+                    try
+                    {
+                        table.Columns.Add(colheader);
+                    }
+                    catch (Exception)
+                    {
+                        table.Columns.Add(colheader + "2");
+                    }
                 }
 
                 var tbody = cur.SelectSingleNode("tbody");
@@ -1474,34 +1500,223 @@ namespace NBA_Stats_Tracker
             tsopp.calcAvg();
         }
 
-        private struct TeamInfo
+        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref TeamStats[] tst, ref TeamStats[] tstopp)
         {
-            public string name;
-            public DataSet dataSet;
-            public string[] recordParts;
+            DataTable dt = ds.Tables["team"];
+            DataTable dtopp = ds.Tables["opponent"];
+            DataTable dtmisc = ds.Tables["misc"];
+
+            for (int i = 0; i < tst.Length; i++)
+            {
+                DataRow tr = dt.Rows[0];
+                DataRow toppr = dtopp.Rows[0];
+                DataRow tmiscr = dtmisc.Rows[0];
+
+                bool found = false;
+
+                for (int j = 0; j < dt.Rows.Count; j++)
+                {
+                    if (dt.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    {
+                        tr = dt.Rows[j];
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) continue;
+
+                for (int j = 0; j < dtopp.Rows.Count; j++)
+                {
+                    if (dtopp.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    {
+                        toppr = dtopp.Rows[j];
+                        break;
+                    }
+                }
+
+                for (int j = 0; j < dtmisc.Rows.Count; j++)
+                {
+                    if (dtmisc.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    {
+                        tmiscr = dtmisc.Rows[j];
+                        break;
+                    }
+                }
+
+                tst[i].pl_winloss[0] = (byte) NSTHelper.getUShort(tmiscr, "W");
+                tst[i].pl_winloss[1] = (byte) NSTHelper.getUShort(tmiscr, "L");
+                tst[i].pl_stats[tMINS] = (ushort) (NSTHelper.getUShort(tr, "MP")/5);
+                tst[i].pl_stats[tFGM] = NSTHelper.getUShort(tr, "FG");
+                tst[i].pl_stats[tFGA] = NSTHelper.getUShort(tr, "FGA");
+                tst[i].pl_stats[tTPM] = NSTHelper.getUShort(tr, "3P");
+                tst[i].pl_stats[tTPA] = NSTHelper.getUShort(tr, "3PA");
+                tst[i].pl_stats[tFTM] = NSTHelper.getUShort(tr, "FT");
+                tst[i].pl_stats[tFTA] = NSTHelper.getUShort(tr, "FTA");
+                tst[i].pl_stats[tOREB] = NSTHelper.getUShort(tr, "ORB");
+                tst[i].pl_stats[tDREB] = NSTHelper.getUShort(tr, "DRB");
+                tst[i].pl_stats[tAST] = NSTHelper.getUShort(tr, "AST");
+                tst[i].pl_stats[tSTL] = NSTHelper.getUShort(tr, "STL");
+                tst[i].pl_stats[tBLK] = NSTHelper.getUShort(tr, "BLK");
+                tst[i].pl_stats[tTO] = NSTHelper.getUShort(tr, "TOV");
+                tst[i].pl_stats[tFOUL] = NSTHelper.getUShort(tr, "PF");
+                tst[i].pl_stats[tPF] = NSTHelper.getUShort(tr, "PTS");
+                tst[i].pl_stats[tPA] = NSTHelper.getUShort(toppr, "PTS");
+
+                tstopp[i].pl_winloss[0] = (byte)NSTHelper.getUShort(tmiscr, "L");
+                tstopp[i].pl_winloss[1] = (byte)NSTHelper.getUShort(tmiscr, "W");
+                tstopp[i].pl_stats[tMINS] = (ushort)(NSTHelper.getUShort(toppr, "MP") / 5);
+                tstopp[i].pl_stats[tFGM] = NSTHelper.getUShort(toppr, "FG");
+                tstopp[i].pl_stats[tFGA] = NSTHelper.getUShort(toppr, "FGA");
+                tstopp[i].pl_stats[tTPM] = NSTHelper.getUShort(toppr, "3P");
+                tstopp[i].pl_stats[tTPA] = NSTHelper.getUShort(toppr, "3PA");
+                tstopp[i].pl_stats[tFTM] = NSTHelper.getUShort(toppr, "FT");
+                tstopp[i].pl_stats[tFTA] = NSTHelper.getUShort(toppr, "FTA");
+                tstopp[i].pl_stats[tOREB] = NSTHelper.getUShort(toppr, "ORB");
+                tstopp[i].pl_stats[tDREB] = NSTHelper.getUShort(toppr, "DRB");
+                tstopp[i].pl_stats[tAST] = NSTHelper.getUShort(toppr, "AST");
+                tstopp[i].pl_stats[tSTL] = NSTHelper.getUShort(toppr, "STL");
+                tstopp[i].pl_stats[tBLK] = NSTHelper.getUShort(toppr, "BLK");
+                tstopp[i].pl_stats[tTO] = NSTHelper.getUShort(toppr, "TOV");
+                tstopp[i].pl_stats[tFOUL] = NSTHelper.getUShort(toppr, "PF");
+                tstopp[i].pl_stats[tPF] = NSTHelper.getUShort(toppr, "PTS");
+                tstopp[i].pl_stats[tPA] = NSTHelper.getUShort(tr, "PTS");
+            }
         }
 
-        public static void ImportRealStats(out TeamStats[] tst, out TeamStats[] tstopp, out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> TeamOrder)
+        private static void PlayerStatsFromDataSet(DataSet ds, string team, out Dictionary<int, PlayerStats> pst)
         {
-            List<TeamInfo> teams = new List<TeamInfo>();
-            string[] recordparts;
-            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/BOS/2012.html", out recordparts);
-            teams.Add(new TeamInfo { dataSet = ds, name = "Celtics", recordParts = recordparts });
+            var pstnames = new Dictionary<string, PlayerStats>();
 
-            ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/ATL/2012.html", out recordparts);
-            teams.Add(new TeamInfo {dataSet = ds, name = "Hawks", recordParts = recordparts});
+            DataTable dt;
+            dt = ds.Tables["roster"];
 
-            tst = new TeamStats[2];
-            tstopp = new TeamStats[tst.Length];
-            TeamOrder = new SortedDictionary<string, int>();
-            pst = new Dictionary<int, PlayerStats>();
-            int i = 0;
-            foreach (var kvp in teams)
+            foreach (DataRow r in dt.Rows)
             {
-                TeamStatsFromDataTable(kvp.dataSet.Tables[0], kvp.name, recordparts, out tst[i], out tstopp[i]);
-                TeamOrder.Add(kvp.name, i);
-                i++;
+                string Position1, Position2;
+                switch (r["Pos"].ToString())
+                {
+                    case "C":
+                        Position1 = "C";
+                        Position2 = " ";
+                        break;
+
+                    case "G":
+                        Position1 = "PG";
+                        Position2 = "SG";
+                        break;
+
+                    case "F":
+                        Position1 = "SF";
+                        Position2 = "PF";
+                        break;
+
+                    case "G-F":
+                        Position1 = "SG";
+                        Position2 = "SF";
+                        break;
+
+                    case "F-G":
+                        Position1 = "SF";
+                        Position2 = "SG";
+                        break;
+
+                    case "F-C":
+                        Position1 = "PF";
+                        Position2 = "C";
+                        break;
+
+                    case "C-F":
+                        Position1 = "C";
+                        Position2 = "PF";
+                        break;
+
+                    default:
+                        throw(new Exception("Don't recognize the position " + r["Pos"].ToString()));
+                }
+                PlayerStats ps = new PlayerStats(new Player(pstnames.Count, team, r["Player"].ToString().Split(' ')[1],
+                                                            r["Player"].ToString().Split(' ')[0], Position1, Position2));
+
+                pstnames.Add(r["Player"].ToString(), ps);
             }
+
+            dt = ds.Tables["totals"];
+
+            foreach (DataRow r in dt.Rows)
+            {
+                string name = r["Player"].ToString();
+                pstnames[name].stats[pGP] = NSTHelper.getUShort(r, "G");
+                pstnames[name].stats[pGS] = NSTHelper.getUShort(r, "GS");
+                pstnames[name].stats[pMINS] = NSTHelper.getUShort(r, "MP");
+                pstnames[name].stats[pFGM] = NSTHelper.getUShort(r, "FG");
+                pstnames[name].stats[pFGA] = NSTHelper.getUShort(r, "FGA");
+                pstnames[name].stats[pTPM] = NSTHelper.getUShort(r, "3P");
+                pstnames[name].stats[pTPA] = NSTHelper.getUShort(r, "3PA");
+                pstnames[name].stats[pFTM] = NSTHelper.getUShort(r, "FT");
+                pstnames[name].stats[pFTA] = NSTHelper.getUShort(r, "FTA");
+                pstnames[name].stats[pOREB] = NSTHelper.getUShort(r, "ORB");
+                pstnames[name].stats[pDREB] = NSTHelper.getUShort(r, "DRB");
+                pstnames[name].stats[pAST] = NSTHelper.getUShort(r, "AST");
+                pstnames[name].stats[pSTL] = NSTHelper.getUShort(r, "STL");
+                pstnames[name].stats[pBLK] = NSTHelper.getUShort(r, "BLK");
+                pstnames[name].stats[pTO] = NSTHelper.getUShort(r, "TOV");
+                pstnames[name].stats[pFOUL] = NSTHelper.getUShort(r, "PF");
+                pstnames[name].stats[pPTS] = NSTHelper.getUShort(r, "PTS");
+            }
+
+            dt = ds.Tables["playoffs"];
+
+            try
+            {
+                foreach (DataRow r in dt.Rows)
+                {
+                    string name = r["Player"].ToString();
+                    pstnames[name].stats[pGP] += NSTHelper.getUShort(r, "G");
+                    //pstnames[name].stats[pGS] += NSTHelper.getUShort(r, "GS");
+                    pstnames[name].stats[pMINS] += NSTHelper.getUShort(r, "MP");
+                    pstnames[name].stats[pFGM] += NSTHelper.getUShort(r, "FG");
+                    pstnames[name].stats[pFGA] += NSTHelper.getUShort(r, "FGA");
+                    pstnames[name].stats[pTPM] += NSTHelper.getUShort(r, "3P");
+                    pstnames[name].stats[pTPA] += NSTHelper.getUShort(r, "3PA");
+                    pstnames[name].stats[pFTM] += NSTHelper.getUShort(r, "FT");
+                    pstnames[name].stats[pFTA] += NSTHelper.getUShort(r, "FTA");
+                    pstnames[name].stats[pOREB] += NSTHelper.getUShort(r, "ORB");
+                    pstnames[name].stats[pDREB] += (ushort)(NSTHelper.getUShort(r, "TRB") - NSTHelper.getUShort(r, "ORB"));
+                    pstnames[name].stats[pAST] += NSTHelper.getUShort(r, "AST");
+                    pstnames[name].stats[pSTL] += NSTHelper.getUShort(r, "STL");
+                    pstnames[name].stats[pBLK] += NSTHelper.getUShort(r, "BLK");
+                    pstnames[name].stats[pTO] += NSTHelper.getUShort(r, "TOV");
+                    pstnames[name].stats[pFOUL] += NSTHelper.getUShort(r, "PF");
+                    pstnames[name].stats[pPTS] += NSTHelper.getUShort(r, "PTS");
+
+                    pstnames[name].CalcAvg();
+                }
+            }
+            catch (Exception)
+            { }
+
+            pst = new Dictionary<int, PlayerStats>();
+            foreach (var kvp in pstnames)
+            {
+                kvp.Value.ID = pst.Count;
+                pst.Add(pst.Count, kvp.Value);
+            }
+        }
+
+        public static void ImportRealStats(KeyValuePair<string, string> teamAbbr, out TeamStats ts, out TeamStats tsopp, out Dictionary<int, PlayerStats> pst)
+        {
+            string[] recordparts;
+            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2012.html", out recordparts);
+            TeamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
+
+            ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2012.html");
+            PlayerStatsFromDataSet(ds, teamAbbr.Key, out pst);
+        }
+
+        public static void AddPlayoffTeamStats(ref TeamStats[] tst, ref TeamStats[] tstopp)
+        {
+            DataSet ds = GetPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2012.html");
+            PlayoffTeamStatsFromDataSet(ds, ref tst, ref tstopp);
         }
     }
 
@@ -1703,7 +1918,7 @@ namespace NBA_Stats_Tracker
         /// </summary>
         /// <param name="ts">The player's team's stats</param>
         /// <param name="ls">The total league stats</param>
-        public void CalcMetrics(TeamStats ts, TeamStats tsopp, TeamStats ls)
+        public void CalcMetrics(TeamStats ts, TeamStats tsopp, TeamStats ls, bool leagueOv = false)
         {
             double[] pstats = new double[stats.Length];
             for (int i = 0; i < stats.Length; i++)
@@ -1746,7 +1961,7 @@ namespace NBA_Stats_Tracker
             double GmSc = pstats[pPTS] + 0.4 * pstats[pFGM] - 0.7 * pstats[pFGA] - 0.4 * (pstats[pFTA] - pstats[pFTM]) +
                            0.7 * pstats[pOREB] + 0.3 * pstats[pDREB] + pstats[pSTL] + 0.7 * pstats[pAST] + 0.7 * pstats[pBLK] -
                            0.4 * pstats[pFOUL] - pstats[pTO];
-            metrics.Add("GmSc", GmSc);
+            metrics.Add("GmSc", GmSc/pstats[pGP]);
 
             double STLp = 100 * (pstats[pSTL] * (tstats[tMINS])) / (pstats[pMINS] * tsopp.metrics["Poss"]);
             metrics.Add("STL%", STLp);
@@ -1861,6 +2076,16 @@ namespace NBA_Stats_Tracker
                 metrics.Add("PPR", double.NaN);
             }
             #endregion
+
+            var gamesRequired = (int)Math.Ceiling(0.8522 * ts.getGames());
+            if (leagueOv)
+            {
+                if (stats[pGP] < gamesRequired)
+                {
+                    foreach (var name in metrics.Keys.ToList())
+                        metrics[name] = double.NaN;
+                }
+            }
         }
 
         public void CalcPER(double lg_aPER)

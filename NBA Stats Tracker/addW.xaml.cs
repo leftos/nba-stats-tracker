@@ -70,7 +70,7 @@ namespace NBA_Stats_Tracker
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));
                 }
-                pst = newpst;
+                MainWindow.pst = newpst;
                 MainWindow.addInfo = "$$NST Players Added";
             }
 

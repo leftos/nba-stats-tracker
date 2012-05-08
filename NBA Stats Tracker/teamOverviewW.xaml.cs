@@ -634,8 +634,8 @@ namespace NBA_Stats_Tracker
 
                     dr["Type"] = "Opp Pl Stats";
                     dr["Games"] = curtsopp.getPlayoffGames();
-                    dr["Wins (W%)"] = curtsopp.winloss[0].ToString();
-                    dr["Losses (Weff)"] = curtsopp.winloss[1].ToString();
+                    dr["Wins (W%)"] = curtsopp.pl_winloss[0].ToString();
+                    dr["Losses (Weff)"] = curtsopp.pl_winloss[1].ToString();
                     dr["PF"] = curtsopp.pl_stats[tPF].ToString();
                     dr["PA"] = curtsopp.pl_stats[tPA].ToString();
                     dr["PD"] = " ";

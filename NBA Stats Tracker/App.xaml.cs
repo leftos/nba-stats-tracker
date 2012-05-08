@@ -12,6 +12,7 @@ namespace NBA_Stats_Tracker
     public partial class App : Application
     {
         public static bool realNBAonly;
+        public static int openWindows = 1;
 
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {

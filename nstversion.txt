@@ -1,10 +1,4 @@
-0.10.4.2
+0.10.5.1
 http://www.mediafire.com/?w3zcr3mw6c3tnwm
-- Improvement: Best Peformers calculations now take player position into account; should be able to pick the most significant stats better
-- Fix: Players with apostrophes in their name (such as O'Neal) caused SQlite errors and weren't being added to the database
-- Fix: Tool wouldn't make any checks in the Add Players window, meaning you could add players with no names, no position, no team.
-- Fix: When in a table that automatically inserts a new row after the current one, pressing Tab while in the last column of the last row would
- make the table lose focus; it now correctly moves to the first column of the newly inserted row
-- Removal: Removed Defensive Rebounds from the Best Performers screen as a possibly significant stat; Offensive and Total Rebounds remain
-- Change: Best Performers tab in Box Scores window now shows Player of the Game plus 3 best players from each team
-- Fix: Fixed bug (probably since v0.10.3) that broke the Export to 2K12 Save feature
+- Fix: Fixed a recent bug that broke the Add Players function
+- Improvement: Database is saved immediately after adding players

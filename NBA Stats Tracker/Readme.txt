@@ -130,7 +130,16 @@ Credits to
 	
 	
 Version History
-	v0.10.4.2 - Current
+	v0.10.5.1
+		- Fix: Fixed a recent bug that broke the Add Players function
+		- Improvement: Database is saved immediately after adding players
+
+	v0.10.5 - May 8
+		- Improvement: Download NBA Stats now downloads both team and player stats (season & playoffs)
+		- Fix: Fixed a recent bug which caused Team Overview to show incorrect playoff stats for all teams
+		- Improvement: A lot of performance improvements to the League Overview window
+
+	v0.10.4.2 - May 7
 		- Improvement: Best Peformers calculations now take player position into account; should be able to pick the most significant stats better
 		- Fix: Players with apostrophes in their name (such as O'Neal) caused SQlite errors and weren't being added to the database
 		- Fix: Tool wouldn't make any checks in the Add Players window, meaning you could add players with no names, no position, no team.

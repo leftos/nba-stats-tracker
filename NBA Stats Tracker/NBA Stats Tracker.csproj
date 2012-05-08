@@ -78,9 +78,6 @@
     <Compile Include="copyableW.xaml.cs">
       <DependentUpon>copyableW.xaml</DependentUpon>
     </Compile>
-    <Compile Include="getRealStatsW.xaml.cs">
-      <DependentUpon>getRealStatsW.xaml</DependentUpon>
-    </Compile>
     <Compile Include="leagueOverviewW.xaml.cs">
       <DependentUpon>leagueOverviewW.xaml</DependentUpon>
     </Compile>
@@ -118,10 +115,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="copyableW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="getRealStatsW.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
