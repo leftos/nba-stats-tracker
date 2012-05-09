@@ -189,6 +189,49 @@ internal class SQLiteDatabase
     }
 
     /// <summary>
+    ///     Allows the programmer to easily insert multiple lines into the DB
+    /// </summary>
+    /// <param name="tableName">The table into which we insert the data.</param>
+    /// <param name="data">A list of dictionaries containing the column names and data for the insert. All dictionaries must have the same order of inserted pairs.</param>
+    /// <returns>A boolean true or false to signify success or failure.</returns>
+    public bool InsertMany(String tableName, List<Dictionary<String, String>> data)
+    {
+        if (data.Count > 500) throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
+
+        string sql = "";
+        Boolean returnCode = true;
+
+        sql = "insert into " + tableName + " SELECT";
+
+        foreach (var val in data[0])
+        {
+            sql += String.Format(" \"{0}\" AS {1},", val.Value, val.Key);
+        }
+        sql = sql.Remove(sql.Length - 1);
+        data.RemoveAt(0);
+        foreach (var dict in data)
+        {
+            sql += " UNION SELECT";
+            foreach (var val in dict)
+            {
+                sql += String.Format(" \"{0}\",", val.Value);
+            }
+            sql = sql.Remove(sql.Length - 1);
+        }
+
+        try
+        {
+            ExecuteNonQuery(sql);
+        }
+        catch (Exception fail)
+        {
+            MessageBox.Show(fail.Message + "\n\nQuery: " + sql);
+            returnCode = false;
+        }
+        return returnCode;
+    }
+
+    /// <summary>
     ///     Allows the programmer to easily delete all data from the DB.
     /// </summary>
     /// <returns>A boolean true or false to signify success or failure.</returns>

@@ -2956,6 +2956,7 @@ namespace NBA_Stats_Tracker
         public string FirstName { get; set; }
         public string Position { get; set; }
         public string Position2 { get; set; }
+        public bool AddToAll { get; set; }
     }
 
     public class PlayerStatsRow

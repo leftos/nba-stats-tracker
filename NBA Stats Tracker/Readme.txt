@@ -132,12 +132,18 @@ Credits to
 	
 	
 Version History
-	v0.10.6
+	v0.10.6.1
+		- Fix: File > Save Database As wouldn't work when the destination file was the same as the currently open
+		- Improvement: Big performance increase in saving operations; save, save as and start new season should now be much faster
+		- Fix: League Overview displayed Team Stats in the Playoff Stats tab in some cases
+		- Fix: When adding players to separate seasons, they could end up having the same IDs and sharing stats between seasons; now each player added, no matter the season, gets their own unique ID
+
+	v0.10.6 - May 9
 		- Added: Teams can be enabled and disabled per season (Main Window > Miscellaneous > Enable/Disable Teams For This Season); this can be used to relegate a team for a season and then have them back in another season with their other years' stats intact
 		- Added: Tool is now able to handle teams that are in one season but not another; either weren't created in it or are disabled
 		- Added: Teams can be renamed (Team Overview > Change Team Name)
 
-	v0.10.5.1
+	v0.10.5.1 - May 8
 		- Fix: Fixed a recent bug that broke the Add Players function
 		- Improvement: Database is saved immediately after adding players
 

@@ -1105,8 +1105,9 @@ namespace NBA_Stats_Tracker
             txbHome3.Text = "";
 
             bool skipaway = pmsrListAway.Count == 0;
+            bool skiphome = pmsrListHome.Count == 0;
 
-            if (!skipaway || pmsrListAway[0].GmSc > pmsrListHome[0].GmSc)
+            if (skiphome || (!skipaway && pmsrListAway[0].GmSc > pmsrListHome[0].GmSc))
             {
                 int bestID = pmsrListAway[0].ID;
                 foreach (var pbs in pbsAwayList)

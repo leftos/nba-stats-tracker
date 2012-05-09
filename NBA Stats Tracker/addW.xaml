@@ -21,7 +21,7 @@
               <DataGridComboBoxColumn x:Name="posColumn" Header="Position" SelectedItemBinding="{Binding Position}" />
               <DataGridComboBoxColumn x:Name="pos2Column" Header="2nd Position"
                                       SelectedItemBinding="{Binding Position2}" />
-            </DataGrid.Columns>
+                        </DataGrid.Columns>
                     </DataGrid>
         </Grid>
       </TabItem>

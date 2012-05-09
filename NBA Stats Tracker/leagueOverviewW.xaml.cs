@@ -30,10 +30,11 @@ namespace NBA_Stats_Tracker
         private bool reload = false;
         private static int lastShownPlayerSeason = 0;
         private static int lastShownLeadersSeason = 0;
-        private static int lastShownTeamSeason;
-        private static int lastShownPlayoffSeason;
-        private static int lastShownBoxSeason;
+        private static int lastShownTeamSeason = 0;
+        private static int lastShownPlayoffSeason = 0;
+        private static int lastShownBoxSeason = 0;
         private static string message;
+        private DataTable dt_pts;
 
         public leagueOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
         {
@@ -66,6 +67,32 @@ namespace NBA_Stats_Tracker
             dt_ts.Columns.Add("STL", typeof (float));
             dt_ts.Columns.Add("BLK", typeof (float));
             dt_ts.Columns.Add("FOUL", typeof (float));
+
+            dt_pts = new DataTable();
+
+            dt_pts.Columns.Add("Name");
+            dt_pts.Columns.Add("Games", typeof(int));
+            dt_pts.Columns.Add("Wins", typeof(int));
+            dt_pts.Columns.Add("Losses", typeof(int));
+            dt_pts.Columns.Add("W%", typeof(float));
+            dt_pts.Columns.Add("Weff", typeof(float));
+            dt_pts.Columns.Add("PF", typeof(float));
+            dt_pts.Columns.Add("PA", typeof(float));
+            dt_pts.Columns.Add("PD", typeof(float));
+            dt_pts.Columns.Add("FG", typeof(float));
+            dt_pts.Columns.Add("FGeff", typeof(float));
+            dt_pts.Columns.Add("3PT", typeof(float));
+            dt_pts.Columns.Add("3Peff", typeof(float));
+            dt_pts.Columns.Add("FT", typeof(float));
+            dt_pts.Columns.Add("FTeff", typeof(float));
+            dt_pts.Columns.Add("REB", typeof(float));
+            dt_pts.Columns.Add("OREB", typeof(float));
+            dt_pts.Columns.Add("DREB", typeof(float));
+            dt_pts.Columns.Add("AST", typeof(float));
+            dt_pts.Columns.Add("TO", typeof(float));
+            dt_pts.Columns.Add("STL", typeof(float));
+            dt_pts.Columns.Add("BLK", typeof(float));
+            dt_pts.Columns.Add("FOUL", typeof(float));
 
 
             dt_bs = new DataTable();
@@ -392,7 +419,7 @@ namespace NBA_Stats_Tracker
 
         private void PreparePlayoffStats()
         {
-            dt_ts.Clear();
+            dt_pts.Clear();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -404,11 +431,11 @@ namespace NBA_Stats_Tracker
                 {
                     if (cur.getPlayoffGames() == 0) continue;
 
-                    DataRow r = dt_ts.NewRow();
+                    DataRow r = dt_pts.NewRow();
 
                     teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, cur.name, true);
 
-                    dt_ts.Rows.Add(r);
+                    dt_pts.Rows.Add(r);
                 }
             }
             else
@@ -424,24 +451,24 @@ namespace NBA_Stats_Tracker
 
                     res = db.GetDataTable(q);
 
-                    DataRow r = dt_ts.NewRow();
+                    DataRow r = dt_pts.NewRow();
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
                     teamOverviewW.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                     teamOverviewW.CreateDataRowFromTeamStats(ts, ref r, kvp.Key, true);
 
-                    dt_ts.Rows.Add(r);
+                    dt_pts.Rows.Add(r);
                 }
             }
 
             // DataTable's ready, set DataView and fill DataGrid
-            var dv_ts = new DataView(dt_ts);
-            dv_ts.AllowNew = false;
-            dv_ts.AllowEdit = false;
-            dv_ts.Sort = "Name ASC";
+            var dv_pts = new DataView(dt_pts);
+            dv_pts.AllowNew = false;
+            dv_pts.AllowEdit = false;
+            dv_pts.Sort = "Name ASC";
 
-            dgvPlayoffStats.DataContext = dv_ts;
+            dgvPlayoffStats.DataContext = dv_pts;
         }
 
         private void PrepareTeamStats()
@@ -666,7 +693,7 @@ namespace NBA_Stats_Tracker
             NSTHelper.CalculateAllMetrics(ref _pst, _tst, _tstopp, MainWindow.TeamOrder, true);
             lastShownPlayerSeason = 0;
             lastShownLeadersSeason = 0;
-            lastShownTeamSeason = 0;
+            lastShownTeamSeason = curSeason;
             lastShownPlayoffSeason = 0;
             lastShownBoxSeason = 0;
             message = txbStatus.Text;
