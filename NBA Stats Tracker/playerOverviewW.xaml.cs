@@ -171,7 +171,7 @@ namespace NBA_Stats_Tracker
 
             PopulateSeasonCombo();
 
-            var Positions = new List<string> {"PG", "SG", "SF", "PF", "C"};
+            var Positions = new List<string> {" ", "PG", "SG", "SF", "PF", "C"};
             var Positions2 = new List<string> {" ", "PG", "SG", "SF", "PF", "C"};
             cmbPosition1.ItemsSource = Positions;
             cmbPosition2.ItemsSource = Positions2;

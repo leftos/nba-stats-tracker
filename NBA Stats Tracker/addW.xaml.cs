@@ -29,7 +29,7 @@ namespace NBA_Stats_Tracker
                 Teams.Add(kvp.Key);
             }
 
-            Positions = new ObservableCollection<string> { "PG", "SG", "SF", "PF", "C" };
+            Positions = new ObservableCollection<string> {" ", "PG", "SG", "SF", "PF", "C" };
             var Positions2 = new ObservableCollection<string> { " ", "PG", "SG", "SF", "PF", "C" };
 
             Players = new ObservableCollection<Player>();
@@ -61,11 +61,12 @@ namespace NBA_Stats_Tracker
                 int i = MainWindow.GetMaxPlayerID(MainWindow.currentDB);
                 foreach (Player p in Players)
                 {
-                    if (String.IsNullOrWhiteSpace(p.LastName) || String.IsNullOrWhiteSpace(p.Team) || String.IsNullOrWhiteSpace(p.Position))
+                    if (String.IsNullOrWhiteSpace(p.LastName) || String.IsNullOrWhiteSpace(p.Team))
                     {
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;
                     }
+                    if (p.Position == "") p.Position = " ";
                     if (p.Position2 == "") p.Position2 = " ";
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));

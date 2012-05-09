@@ -2361,7 +2361,7 @@ namespace NBA_Stats_Tracker
                 ptsfactor = 17.731;
                 ftrfactor = 0.307167;
             }
-            else
+            else if (position.EndsWith("C"))
             {
                 fgfactor = 0.52862;
                 tpfactor = 0.23014;
@@ -2373,6 +2373,19 @@ namespace NBA_Stats_Tracker
                 blkfactor = 1.536;
                 ptsfactor = 11.616;
                 ftrfactor = 0.302868;
+            }
+            else
+            {
+                fgfactor = 0.51454;
+                tpfactor = 0.3345;
+                ftfactor = 0.81418;
+                orebfactor = 2.0803;
+                rebfactor = 6.5763;
+                astfactor = 3.683;
+                stlfactor = 1.1693;
+                blkfactor = 1.0667;
+                ptsfactor = 15.5023;
+                ftrfactor = 0.385722;
             }
 
             if (FGM > 4)
