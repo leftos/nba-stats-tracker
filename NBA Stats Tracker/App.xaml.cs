@@ -1,8 +1,26 @@
-﻿using System;
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2012
+// 
+// Implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+
+#endregion
 
 namespace NBA_Stats_Tracker
 {
@@ -20,7 +38,7 @@ namespace NBA_Stats_Tracker
             // Be sure to include details about any inner exceptions
             try
             {
-                var f = new StreamWriter(NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+                var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
                 f.Write(e.Exception.ToString());
                 f.WriteLine();
@@ -37,7 +55,7 @@ namespace NBA_Stats_Tracker
 
             MessageBox.Show(
                 "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+                NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
             // Prevent default unhandled exception processing
             e.Handled = true;
@@ -52,7 +70,7 @@ namespace NBA_Stats_Tracker
             try
             {
                 //StreamWriter f = new StreamWriter(NBA_2K12_Keep_My_Mod.MainWindow.SaveRootPath + @"\errorlog.txt");
-                var f = new StreamWriter(NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog.txt");
+                var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
 
                 f.WriteLine("Additional: " + additional);
                 f.WriteLine();
@@ -72,7 +90,7 @@ namespace NBA_Stats_Tracker
 
             MessageBox.Show(
                 "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                NBA_Stats_Tracker.MainWindow.AppDocsPath + @"\errorlog.txt");
+                NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
 
             Environment.Exit(-1);
         }

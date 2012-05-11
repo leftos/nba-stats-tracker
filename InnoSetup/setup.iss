@@ -1,34 +1,3 @@
-;#define use_iis
-;#define use_kb835732
-
-;#define use_msi20
-;#define use_msi31
-;#define use_msi45
-
-;#define use_ie6
-
-;#define use_dotnetfx11
-;#define use_dotnetfx11lp
-
-;#define use_dotnetfx20
-;#define use_dotnetfx20lp
-
-;#define use_dotnetfx35
-;#define use_dotnetfx35lp
-
-;#define use_dotnetfx40client
-;#define use_wic
-
-;#define use_vc2010
-
-;#define use_mdac28
-;#define use_jet4sp8
-
-;#define use_sqlcompact35sp2
-
-;#define use_sql2005express
-;#define use_sql2008express
-
 #define MyAppSetupName 'NBA Stats Tracker'
 #define MyAppVersion ''
 #define MyAppVerInfo ''
@@ -68,47 +37,51 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\76ers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Bobcats.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Bucks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Bulls.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Cavaliers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Celtics.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Clippers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\down.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Grizzlies.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Hawks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Heat.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Hornets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Jazz.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Kings.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Knicks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Lakers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Magic.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Mavericks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Nets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Nuggets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Pacers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Pistons.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Raptors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Rockets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Spurs.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Suns.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Thunder.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Timberwolves.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Trail Blazers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\up.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Warriors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\Images\Wizards.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLite.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLite.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\76ers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Bobcats.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Bucks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Bulls.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Cavaliers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Celtics.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Clippers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\down.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Grizzlies.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Hawks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Heat.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Hornets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Jazz.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Kings.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Knicks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Lakers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Magic.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Mavericks.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Nets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Nuggets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Pacers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Pistons.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Raptors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Rockets.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Spurs.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Suns.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Thunder.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Timberwolves.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Trail Blazers.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\up.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Warriors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Wizards.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"

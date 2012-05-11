@@ -132,6 +132,12 @@ Credits to
 	
 	
 Version History
+	v0.10.6.3
+		- Improvement: Database is saved immediately after adding teams
+		- Improvement: Player Stats, Metric Stats and League Leaders in League Overview now feature row headers that have the ranking of each row
+		- Fix: Many fixes around the League Overview and Box Score windows regarding teams being renamed and/or disabled
+		- Removal: Since switching between different box scores inside the Box Score window caused too many problems, the functionality is removed; it has been more than replaced by the Box Scores tabs in Team, Player & League Overview; double-click on any box score in each list to view it in full detail
+
 	v0.10.6.2
 		- Improvement: Players are allowed to have no position set; that allows you to keep stats for leagues and years for which no such info is available
 

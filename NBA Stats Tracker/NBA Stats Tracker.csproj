@@ -40,15 +40,15 @@
   <PropertyGroup>
     <ApplicationIcon>NBA 2K12.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>NBA_Stats_Tracker.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack">
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>D:\Program Files\System.Data.SQLite\2010\bin\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -59,122 +59,123 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Data\NST.Data.BoxScores.cs" />
+    <Compile Include="Data\NST.Data.Players.cs" />
+    <Compile Include="Data\NST.Data.Teams.cs" />
+    <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
+    <Compile Include="Interop\NST.Interop.InteropBR.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Windows\aboutW.xaml.cs">
+      <DependentUpon>aboutW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\addW.xaml.cs">
+      <DependentUpon>addW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\askTeamW.xaml.cs">
+      <DependentUpon>askTeamW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\boxScoreW.xaml.cs">
+      <DependentUpon>boxScoreW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\copyableW.xaml.cs">
+      <DependentUpon>copyableW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\enableTeamsW.xaml.cs">
+      <DependentUpon>enableTeamsW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\inputBoxW.xaml.cs">
+      <DependentUpon>inputBoxW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\leagueOverviewW.xaml.cs">
+      <DependentUpon>leagueOverviewW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\playerOverviewW.xaml.cs">
+      <DependentUpon>playerOverviewW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\playoffTreeW.xaml.cs">
+      <DependentUpon>playoffTreeW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\teamOverviewW.xaml.cs">
+      <DependentUpon>teamOverviewW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\testW.xaml.cs">
+      <DependentUpon>testW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\trendsW.xaml.cs">
+      <DependentUpon>trendsW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\versusW.xaml.cs">
+      <DependentUpon>versusW.xaml</DependentUpon>
+    </Compile>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="aboutW.xaml.cs">
-      <DependentUpon>aboutW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="addW.xaml.cs">
-      <DependentUpon>addW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="askTeamW.xaml.cs">
-      <DependentUpon>askTeamW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="boxScoreW.xaml.cs">
-      <DependentUpon>boxScoreW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="copyableW.xaml.cs">
-      <DependentUpon>copyableW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="enableTeamsW.xaml.cs">
-      <DependentUpon>enableTeamsW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="inputBoxW.xaml.cs">
-      <DependentUpon>inputBoxW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="leagueOverviewW.xaml.cs">
-      <DependentUpon>leagueOverviewW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LeftosCommonLibrary.cs" />
-    <Compile Include="playerOverviewW.xaml.cs">
-      <DependentUpon>playerOverviewW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="playoffTreeW.xaml.cs">
-      <DependentUpon>playoffTreeW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SQLiteDatabase.cs" />
-    <Compile Include="StatsTracker.cs" />
-    <Compile Include="teamOverviewW.xaml.cs">
-      <DependentUpon>teamOverviewW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="testW.xaml.cs">
-      <DependentUpon>testW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="trendsW.xaml.cs">
-      <DependentUpon>trendsW.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="versusW.xaml.cs">
-      <DependentUpon>versusW.xaml</DependentUpon>
-    </Compile>
-    <Page Include="aboutW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="addW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="askTeamW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="copyableW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="enableTeamsW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="inputBoxW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="leagueOverviewW.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\aboutW.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="boxScoreW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\addW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="playerOverviewW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\askTeamW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="playoffTreeW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\boxScoreW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="teamOverviewW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\copyableW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="testW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\enableTeamsW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="trendsW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\inputBoxW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="versusW.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\leagueOverviewW.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\playerOverviewW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\playoffTreeW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\teamOverviewW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\testW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\trendsW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\versusW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -305,10 +306,18 @@
     <Content Include="Readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeftosCommonLibrary\LeftosCommonLibrary.csproj">
+      <Project>{256B004F-E641-4F18-AEAC-FC2BF437C9B5}</Project>
+      <Name>LeftosCommonLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLiteDatabase\SQLiteDatabase.csproj">
+      <Project>{75333A6E-A4FA-491D-A4BA-D4FE6F38F226}</Project>
+      <Name>SQLiteDatabase</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
