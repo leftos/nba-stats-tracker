@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
@@ -37,8 +38,8 @@ namespace NBA_Stats_Tracker.Windows
     {
         public static string askedTeam;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
-        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
-        private readonly SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
+        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
         private int SelectedPlayerID = -1;
         private List<string> Teams;
 
@@ -254,10 +255,10 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (DataRow r in res.Rows)
             {
-                PlayersList.Add(new KeyValuePair<int, string>(Helper.getInt(r, "ID"),
-                                                              Helper.getString(r, "FirstName") + " " +
-                                                              Helper.getString(r, "LastName") +
-                                                              " (" + Helper.getString(r, "Position1") + ")"));
+                PlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
+                                                              Tools.getString(r, "FirstName") + " " +
+                                                              Tools.getString(r, "LastName") +
+                                                              " (" + Tools.getString(r, "Position1") + ")"));
                 var ps = new PlayerStats(r);
                 playersSameTeam.Add(ps.ID, ps);
             }
@@ -819,17 +820,21 @@ namespace NBA_Stats_Tracker.Windows
                     playersT += "S" + curSeason;
                 }
 
-                MainWindow.ChangeSeason(curSeason, maxSeason);
-
-                MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst,
-                                                                   MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
-                                                                   maxSeason);
-                GetActivePlayers();
-
                 if (cmbPlayer.SelectedIndex != -1)
                 {
                     PlayerStats ps = CreatePlayerStatsFromCurrent();
-                    MainWindow.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
+
+                    MainWindow.ChangeSeason(curSeason, maxSeason);
+
+                    MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst,
+                                                                       MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
+                                                                       maxSeason);
+
+                    teamOrder = MainWindow.TeamOrder;
+
+                    GetActivePlayers();
+
+                    SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
                                                            ref MainWindow.tst, ref MainWindow.tstopp,
                                                            ref MainWindow.TeamOrder);
                     PopulateTeamsCombo();
@@ -841,7 +846,7 @@ namespace NBA_Stats_Tracker.Windows
                     bool nowActive;
                     if (res.Rows.Count > 0)
                     {
-                        nowActive = Helper.getBoolean(res.Rows[0], "isActive");
+                        nowActive = Tools.getBoolean(res.Rows[0], "isActive");
                         if (nowActive)
                         {
                             newTeam = res.Rows[0]["TeamFin"].ToString();
@@ -882,7 +887,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    MainWindow.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
+                    SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
                                                            ref MainWindow.tst, ref MainWindow.tstopp,
                                                            ref MainWindow.TeamOrder);
                     PopulateTeamsCombo();
@@ -913,9 +918,9 @@ namespace NBA_Stats_Tracker.Windows
             var pslist = new Dictionary<int, PlayerStats>();
             pslist.Add(ps.ID, ps);
 
-            MainWindow.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
+            SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
 
-            MainWindow.pst = MainWindow.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp,
+            MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp,
                                                                MainWindow.TeamOrder, curSeason, maxSeason);
 
             GetActivePlayers();
@@ -1043,10 +1048,10 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (DataRow r in res.Rows)
             {
-                oppPlayersList.Add(new KeyValuePair<int, string>(Helper.getInt(r, "ID"),
-                                                                 Helper.getString(r, "FirstName") + " " +
-                                                                 Helper.getString(r, "LastName") +
-                                                                 " (" + Helper.getString(r, "Position1") + ")"));
+                oppPlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
+                                                                 Tools.getString(r, "FirstName") + " " +
+                                                                 Tools.getString(r, "LastName") +
+                                                                 " (" + Tools.getString(r, "Position1") + ")"));
             }
 
             cmbOppPlayer.ItemsSource = oppPlayersList;
@@ -1304,21 +1309,15 @@ namespace NBA_Stats_Tracker.Windows
                 var row = (PlayerBoxScore) dgvBoxScores.SelectedItems[0];
                 int gameID = row.GameID;
 
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                var bsw = new boxScoreW(boxScoreW.Mode.View, gameID);
+                try
                 {
-                    if (bse.bs.id == gameID)
-                    {
-                        MainWindow.bs = new BoxScore();
+                    bsw.ShowDialog();
 
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        MainWindow.UpdateBoxScore();
-                        break;
-                    }
-                    i++;
+                    MainWindow.UpdateBoxScore();
+                }
+                catch
+                {
                 }
             }
         }
@@ -1330,21 +1329,15 @@ namespace NBA_Stats_Tracker.Windows
                 var row = (PlayerBoxScore) dgvHTHBoxScores.SelectedItems[0];
                 int gameID = row.GameID;
 
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                var bsw = new boxScoreW(boxScoreW.Mode.View, gameID);
+                try
                 {
-                    if (bse.bs.id == gameID)
-                    {
-                        MainWindow.bs = new BoxScore();
+                    bsw.ShowDialog();
 
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        MainWindow.UpdateBoxScore();
-                        break;
-                    }
-                    i++;
+                    MainWindow.UpdateBoxScore();
+                }
+                catch
+                {
                 }
             }
         }

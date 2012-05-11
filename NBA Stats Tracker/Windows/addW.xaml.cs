@@ -73,7 +73,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else if (tbcAdd.SelectedItem == tabPlayers)
             {
-                int i = MainWindow.GetMaxPlayerID(MainWindow.currentDB);
+                int i = SQLiteIO.GetMaxPlayerID(MainWindow.currentDB);
                 foreach (Player p in Players)
                 {
                     if (String.IsNullOrWhiteSpace(p.LastName) || String.IsNullOrWhiteSpace(p.Team))
@@ -81,8 +81,8 @@ namespace NBA_Stats_Tracker.Windows
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;
                     }
-                    if (p.Position == "") p.Position = " ";
-                    if (p.Position2 == "") p.Position2 = " ";
+                    if (p.Position == null || p.Position == "") p.Position = " ";
+                    if (p.Position2 == null || p.Position2 == "") p.Position2 = " ";
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));
                 }

@@ -132,6 +132,14 @@ Credits to
 	
 	
 Version History
+	v0.10.6.4
+		- Addition: Current Season can now be changed from the Main Window as well
+		- Addition: Box Scores can now be deleted (Miscellaneous > Delete Box Scores...)
+		- Fix: Fixed bug that in some cases didn't allow users to view box scores of teams disabled in some seasons but enabled in others
+		- Fix: The tool would crash whenever you tried to view a box score that included a team that's disabled for that season; now it shows a message informing you of the fact
+		- Improvement: When disabling teams, you're warned if you're about to disable a team that has box scores for that season
+		- Fix: Various minor fixes around the program
+
 	v0.10.6.3
 		- Improvement: Database is saved immediately after adding teams
 		- Improvement: Player Stats, Metric Stats and League Leaders in League Overview now feature row headers that have the ranking of each row

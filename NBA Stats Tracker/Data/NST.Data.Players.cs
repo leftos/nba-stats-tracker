@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using LeftosCommonLibrary;
 
 #endregion
 
@@ -110,35 +111,37 @@ namespace NBA_Stats_Tracker.Data
 
         public PlayerStats(DataRow dataRow)
         {
-            ID = Helper.getInt(dataRow, "ID");
-            LastName = Helper.getString(dataRow, "LastName");
-            FirstName = Helper.getString(dataRow, "FirstName");
-            Position1 = Helper.getString(dataRow, "Position1");
-            Position2 = Helper.getString(dataRow, "Position2");
-            TeamF = Helper.getString(dataRow, "TeamFin");
-            TeamS = Helper.getString(dataRow, "TeamSta");
-            isActive = Helper.getBoolean(dataRow, "isActive");
-            isInjured = Helper.getBoolean(dataRow, "isInjured");
-            isAllStar = Helper.getBoolean(dataRow, "isAllStar");
-            isNBAChampion = Helper.getBoolean(dataRow, "isNBAChampion");
+            ID = Tools.getInt(dataRow, "ID");
+            LastName = Tools.getString(dataRow, "LastName");
+            FirstName = Tools.getString(dataRow, "FirstName");
+            Position1 = Tools.getString(dataRow, "Position1");
+            if (String.IsNullOrEmpty(Position1)) Position1 = " ";
+            Position2 = Tools.getString(dataRow, "Position2");
+            if (String.IsNullOrEmpty(Position2)) Position2 = " ";
+            TeamF = Tools.getString(dataRow, "TeamFin");
+            TeamS = Tools.getString(dataRow, "TeamSta");
+            isActive = Tools.getBoolean(dataRow, "isActive");
+            isInjured = Tools.getBoolean(dataRow, "isInjured");
+            isAllStar = Tools.getBoolean(dataRow, "isAllStar");
+            isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
 
-            stats[p.GP] = Helper.getUInt16(dataRow, "GP");
-            stats[p.GS] = Helper.getUInt16(dataRow, "GS");
-            stats[p.MINS] = Helper.getUInt16(dataRow, "MINS");
-            stats[p.PTS] = Helper.getUInt16(dataRow, "PTS");
-            stats[p.FGM] = Helper.getUInt16(dataRow, "FGM");
-            stats[p.FGA] = Helper.getUInt16(dataRow, "FGA");
-            stats[p.TPA] = Helper.getUInt16(dataRow, "TPM");
-            stats[p.TPA] = Helper.getUInt16(dataRow, "TPA");
-            stats[p.FTM] = Helper.getUInt16(dataRow, "FTM");
-            stats[p.FTA] = Helper.getUInt16(dataRow, "FTA");
-            stats[p.OREB] = Helper.getUInt16(dataRow, "OREB");
-            stats[p.DREB] = Helper.getUInt16(dataRow, "DREB");
-            stats[p.STL] = Helper.getUInt16(dataRow, "STL");
-            stats[p.TO] = Helper.getUInt16(dataRow, "TOS");
-            stats[p.BLK] = Helper.getUInt16(dataRow, "BLK");
-            stats[p.AST] = Helper.getUInt16(dataRow, "AST");
-            stats[p.FOUL] = Helper.getUInt16(dataRow, "FOUL");
+            stats[p.GP] = Tools.getUInt16(dataRow, "GP");
+            stats[p.GS] = Tools.getUInt16(dataRow, "GS");
+            stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
+            stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
+            stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
+            stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
+            stats[p.TPA] = Tools.getUInt16(dataRow, "TPM");
+            stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
+            stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
+            stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
+            stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
+            stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
+            stats[p.STL] = Tools.getUInt16(dataRow, "STL");
+            stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+            stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
+            stats[p.AST] = Tools.getUInt16(dataRow, "AST");
+            stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
 
             CalcAvg();
         }
@@ -159,33 +162,33 @@ namespace NBA_Stats_Tracker.Data
             this.isInjured = isInjured;
             this.isNBAChampion = isNBAChampion;
 
-            stats[p.GP] = Helper.getUInt16(dataRow, "GP");
-            stats[p.GS] = Helper.getUInt16(dataRow, "GS");
-            stats[p.MINS] = Helper.getUInt16(dataRow, "MINS");
-            stats[p.PTS] = Helper.getUInt16(dataRow, "PTS");
+            stats[p.GP] = Tools.getUInt16(dataRow, "GP");
+            stats[p.GS] = Tools.getUInt16(dataRow, "GS");
+            stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
+            stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
 
-            string[] parts = Helper.getString(dataRow, "FG").Split('-');
+            string[] parts = Tools.getString(dataRow, "FG").Split('-');
 
             stats[p.FGM] = Convert.ToUInt16(parts[0]);
             stats[p.FGA] = Convert.ToUInt16(parts[1]);
 
-            parts = Helper.getString(dataRow, "3PT").Split('-');
+            parts = Tools.getString(dataRow, "3PT").Split('-');
 
             stats[p.TPA] = Convert.ToUInt16(parts[0]);
             stats[p.TPA] = Convert.ToUInt16(parts[1]);
 
-            parts = Helper.getString(dataRow, "FT").Split('-');
+            parts = Tools.getString(dataRow, "FT").Split('-');
 
             stats[p.FTM] = Convert.ToUInt16(parts[0]);
             stats[p.FTA] = Convert.ToUInt16(parts[1]);
 
-            stats[p.OREB] = Helper.getUInt16(dataRow, "OREB");
-            stats[p.DREB] = Helper.getUInt16(dataRow, "DREB");
-            stats[p.STL] = Helper.getUInt16(dataRow, "STL");
-            stats[p.TO] = Helper.getUInt16(dataRow, "TO");
-            stats[p.BLK] = Helper.getUInt16(dataRow, "BLK");
-            stats[p.AST] = Helper.getUInt16(dataRow, "AST");
-            stats[p.FOUL] = Helper.getUInt16(dataRow, "FOUL");
+            stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
+            stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
+            stats[p.STL] = Tools.getUInt16(dataRow, "STL");
+            stats[p.TO] = Tools.getUInt16(dataRow, "TO");
+            stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
+            stats[p.AST] = Tools.getUInt16(dataRow, "AST");
+            stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
 
             CalcAvg();
         }
@@ -549,12 +552,12 @@ namespace NBA_Stats_Tracker.Data
 
         public PlayerBoxScore(DataRow r)
         {
-            PlayerID = Helper.getInt(r, "PlayerID");
-            GameID = Helper.getInt(r, "GameID");
+            PlayerID = Tools.getInt(r, "PlayerID");
+            GameID = Tools.getInt(r, "GameID");
             Team = r["Team"].ToString();
-            isStarter = Helper.getBoolean(r, "isStarter");
-            playedInjured = Helper.getBoolean(r, "playedInjured");
-            isOut = Helper.getBoolean(r, "isOut");
+            isStarter = Tools.getBoolean(r, "isStarter");
+            playedInjured = Tools.getBoolean(r, "playedInjured");
+            isOut = Tools.getBoolean(r, "isOut");
             MINS = Convert.ToUInt16(r["MINS"].ToString());
             PTS = Convert.ToUInt16(r["PTS"].ToString());
             REB = Convert.ToUInt16(r["REB"].ToString());
@@ -579,11 +582,11 @@ namespace NBA_Stats_Tracker.Data
             // Only works for INNER JOIN'ed rows
             try
             {
-                int T1PTS = Helper.getInt(r, "T1PTS");
-                int T2PTS = Helper.getInt(r, "T2PTS");
+                int T1PTS = Tools.getInt(r, "T1PTS");
+                int T2PTS = Tools.getInt(r, "T2PTS");
 
-                string Team1 = Helper.getString(r, "T1Name");
-                string Team2 = Helper.getString(r, "T2Name");
+                string Team1 = Tools.getString(r, "T1Name");
+                string Team2 = Tools.getString(r, "T2Name");
 
                 if (Team == Team1)
                 {
@@ -608,7 +611,7 @@ namespace NBA_Stats_Tracker.Data
                     OppTeamPTS = T1PTS;
                 }
 
-                Date = Helper.getString(r, "Date").Split(' ')[0];
+                Date = Tools.getString(r, "Date").Split(' ')[0];
             }
             catch (Exception)
             {
@@ -1022,12 +1025,12 @@ namespace NBA_Stats_Tracker.Data
 
         public Player(DataRow dataRow)
         {
-            ID = Helper.getInt(dataRow, "ID");
-            Team = Helper.getString(dataRow, "TeamFin");
-            LastName = Helper.getString(dataRow, "LastName");
-            FirstName = Helper.getString(dataRow, "FirstName");
-            Position = Helper.getString(dataRow, "Position1");
-            Position2 = Helper.getString(dataRow, "Position2");
+            ID = Tools.getInt(dataRow, "ID");
+            Team = Tools.getString(dataRow, "TeamFin");
+            LastName = Tools.getString(dataRow, "LastName");
+            FirstName = Tools.getString(dataRow, "FirstName");
+            Position = Tools.getString(dataRow, "Position1");
+            Position2 = Tools.getString(dataRow, "Position2");
         }
 
         public int ID { get; set; }

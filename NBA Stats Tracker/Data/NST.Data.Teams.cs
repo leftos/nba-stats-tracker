@@ -16,6 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using LeftosCommonLibrary;
+using SQLite_Database;
 
 #endregion
 
@@ -573,6 +576,19 @@ namespace NBA_Stats_Tracker.Data
                        + "one you expected.";
 
             return msg;
+        }
+
+        public static bool IsTeamHiddenInSeason(string file, string name, int season)
+        {
+            SQLiteDatabase db = new SQLiteDatabase(file);
+            int maxSeason = SQLiteIO.getMaxSeason(file);
+            string teamsT = "Teams";
+            if (season != maxSeason) teamsT += "S" + season;
+
+            string q = "select isHidden from " + teamsT + " where Name LIKE '" + name + "'";
+            bool isHidden = Tools.getBoolean(db.GetDataTable(q).Rows[0], "isHidden");
+
+            return isHidden;
         }
     }
 

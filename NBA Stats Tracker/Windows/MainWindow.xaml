@@ -112,7 +112,8 @@
                     Click="mnuMiscEnableTeams_Click" />
           <Separator />
           <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
-        </MenuItem>
+                    <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
+                </MenuItem>
         <MenuItem Header="_Help">
           <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
           <Separator />
@@ -211,9 +212,10 @@
           </Button>
         </Grid>
       </GroupBox>
-      <TextBlock Height="23" HorizontalAlignment="Left" Margin="431,63,0,0" Name="txbCurSeason" Text=""
-                 VerticalAlignment="Top" TextAlignment="Right" Width="148" />
-    </Grid>
+      <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"
+                 VerticalAlignment="Top" TextAlignment="Right" Width="148" Padding="0" />
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="538,58,0,0" Name="cmbSeasonNum" VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+        </Grid>
     <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom">
       <StatusBarItem Name="status" Content="Ready" />
     </StatusBar>

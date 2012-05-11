@@ -1,7 +1,7 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.enableTeamsW"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Enable/Disable Teams" Height="438" Width="643"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
   <Grid>
     <Label Content="Current Season: " HorizontalAlignment="Left" Margin="12,12,0,0" Name="lblCurSeason"
            VerticalAlignment="Top" />

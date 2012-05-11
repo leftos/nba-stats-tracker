@@ -22,6 +22,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
@@ -42,7 +43,7 @@ namespace NBA_Stats_Tracker.Windows
         private readonly DataTable dt_ov;
         private readonly DataTable dt_ss;
         private readonly DataTable dt_yea;
-        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private readonly int[][] pl_rankings;
         private readonly int[][] rankings;
         private int curSeason = MainWindow.curSeason;
@@ -225,7 +226,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            for (int i = MainWindow.getMaxSeason(MainWindow.currentDB); i > 0; i--)
+            for (int i = SQLiteIO.getMaxSeason(MainWindow.currentDB); i > 0; i--)
             {
                 cmbSeasonNum.Items.Add(i.ToString());
             }
@@ -273,7 +274,7 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         DataRow bsr = dt_bs.NewRow();
                         bsr["Date"] = r["Date"].ToString().Split(' ')[0];
-                        bsr["Opponent"] = r["T2Name"].ToString();
+                        bsr["Opponent"] = GetDisplayNameFromTeam(r["T2Name"].ToString());
                         bsr["Home-Away"] = "Away";
 
                         if (t1pts > t2pts)
@@ -294,7 +295,7 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         DataRow bsr = dt_bs.NewRow();
                         bsr["Date"] = r["Date"].ToString().Split(' ')[0];
-                        bsr["Opponent"] = r["T1Name"].ToString();
+                        bsr["Opponent"] = GetDisplayNameFromTeam(r["T1Name"].ToString());
                         bsr["Home-Away"] = "Home";
 
                         if (t2pts > t1pts)
@@ -1145,7 +1146,7 @@ namespace NBA_Stats_Tracker.Windows
 
             string currentDB = MainWindow.currentDB;
             int curSeason = MainWindow.curSeason;
-            int maxSeason = MainWindow.getMaxSeason(currentDB);
+            int maxSeason = SQLiteIO.getMaxSeason(currentDB);
 
             TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
             TeamStats tsopp = tstopp[MainWindow.TeamOrder[curTeam]];
@@ -1171,7 +1172,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (j != curSeason)
                 {
-                    MainWindow.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, ref ts, ref tsopp);
+                    SQLiteIO.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, ref ts, ref tsopp);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
                     CreateDataRowFromTeamStats(ts, ref dr3, "Season " + j.ToString());
@@ -1380,9 +1381,9 @@ namespace NBA_Stats_Tracker.Windows
                 playersToUpdate.Add(ps.ID, ps);
             }
 
-            MainWindow.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
+            SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
                                             curSeason, maxSeason);
-            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                   doNotLoadBoxScores: true);
 
@@ -1527,21 +1528,15 @@ namespace NBA_Stats_Tracker.Windows
                 var row = (DataRowView) dgvBoxScores.SelectedItems[0];
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
 
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                var bsw = new boxScoreW(boxScoreW.Mode.View, gameid);
+                try
                 {
-                    if (bse.bs.id == gameid)
-                    {
-                        MainWindow.bs = new BoxScore();
+                    bsw.ShowDialog();
 
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        MainWindow.UpdateBoxScore();
-                        break;
-                    }
-                    i++;
+                    MainWindow.UpdateBoxScore();
+                }
+                catch
+                {
                 }
             }
         }
@@ -1856,7 +1851,7 @@ namespace NBA_Stats_Tracker.Windows
 
         public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
         {
-            bool playoffs = Helper.getBoolean(r, "isPlayoff");
+            bool playoffs = Tools.getBoolean(r, "isPlayoff");
             if (!playoffs)
             {
                 int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
@@ -1883,9 +1878,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     ts.stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.stats[t.BLK] += Helper.getUInt16(r, "T1BLK");
-                    ts.stats[t.AST] += Helper.getUInt16(r, "T1AST");
-                    ts.stats[t.FOUL] += Helper.getUInt16(r, "T1FOUL");
+                    ts.stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    ts.stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    ts.stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
 
                     tsopp.stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                     tsopp.stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1901,9 +1896,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     tsopp.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     tsopp.stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.stats[t.BLK] += Helper.getUInt16(r, "T2BLK");
-                    tsopp.stats[t.AST] += Helper.getUInt16(r, "T2AST");
-                    tsopp.stats[t.FOUL] += Helper.getUInt16(r, "T2FOUL");
+                    tsopp.stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    tsopp.stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    tsopp.stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -1927,9 +1922,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     ts.stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.stats[t.BLK] += Helper.getUInt16(r, "T2BLK");
-                    ts.stats[t.AST] += Helper.getUInt16(r, "T2AST");
-                    ts.stats[t.FOUL] += Helper.getUInt16(r, "T2FOUL");
+                    ts.stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    ts.stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    ts.stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
 
                     tsopp.stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                     tsopp.stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -1945,9 +1940,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     tsopp.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     tsopp.stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.stats[t.BLK] += Helper.getUInt16(r, "T1BLK");
-                    tsopp.stats[t.AST] += Helper.getUInt16(r, "T1AST");
-                    tsopp.stats[t.FOUL] += Helper.getUInt16(r, "T1FOUL");
+                    tsopp.stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    tsopp.stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    tsopp.stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
                 }
 
                 tsopp.winloss[1] = ts.winloss[0];
@@ -1979,9 +1974,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     ts.pl_stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.pl_stats[t.BLK] += Helper.getUInt16(r, "T1BLK");
-                    ts.pl_stats[t.AST] += Helper.getUInt16(r, "T1AST");
-                    ts.pl_stats[t.FOUL] += Helper.getUInt16(r, "T1FOUL");
+                    ts.pl_stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    ts.pl_stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    ts.pl_stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
 
                     tsopp.pl_stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                     tsopp.pl_stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1997,9 +1992,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     tsopp.pl_stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.pl_stats[t.BLK] += Helper.getUInt16(r, "T2BLK");
-                    tsopp.pl_stats[t.AST] += Helper.getUInt16(r, "T2AST");
-                    tsopp.pl_stats[t.FOUL] += Helper.getUInt16(r, "T2FOUL");
+                    tsopp.pl_stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    tsopp.pl_stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    tsopp.pl_stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -2023,9 +2018,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     ts.pl_stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.pl_stats[t.BLK] += Helper.getUInt16(r, "T2BLK");
-                    ts.pl_stats[t.AST] += Helper.getUInt16(r, "T2AST");
-                    ts.pl_stats[t.FOUL] += Helper.getUInt16(r, "T2FOUL");
+                    ts.pl_stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    ts.pl_stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    ts.pl_stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
 
                     tsopp.pl_stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                     tsopp.pl_stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -2041,9 +2036,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     tsopp.pl_stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.pl_stats[t.BLK] += Helper.getUInt16(r, "T1BLK");
-                    tsopp.pl_stats[t.AST] += Helper.getUInt16(r, "T1AST");
-                    tsopp.pl_stats[t.FOUL] += Helper.getUInt16(r, "T1FOUL");
+                    tsopp.pl_stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    tsopp.pl_stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    tsopp.pl_stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
                 }
 
                 tsopp.pl_winloss[1] = ts.pl_winloss[0];
@@ -2091,11 +2086,12 @@ namespace NBA_Stats_Tracker.Windows
                 pl_oppT += s;
             }
 
-            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             PopulateTeamsCombo();
             try
             {
+                cmbTeam.SelectedIndex = -1;
                 cmbTeam.SelectedItem = GetDisplayNameFromTeam(curTeam);
             }
             catch

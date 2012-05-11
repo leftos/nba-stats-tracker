@@ -41,7 +41,8 @@ namespace NBA_Stats_Tracker.Windows
         public enum Mode
         {
             Update,
-            View
+            View,
+            ViewAndIgnore
         };
 
         #endregion
@@ -50,7 +51,7 @@ namespace NBA_Stats_Tracker.Windows
 
         public static BoxScore curBoxScore;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
-        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private List<string> Teams;
         private int curSeason;
         private Brush defaultBackground;
@@ -68,11 +69,110 @@ namespace NBA_Stats_Tracker.Windows
             cbHistory.Visibility = Visibility.Hidden;
 
             prepareWindow(_curmode);
+
+            MainWindow.bs = new BoxScore();
         }
 
         public boxScoreW(Mode _curmode, int id) : this(_curmode)
         {
-            cbHistory.SelectedIndex = id;
+            LoadBoxScore(id);
+        }
+
+        private void LoadBoxScore(int id)
+        {
+            int bshistid = -1;
+
+            for (int i = 0; i < MainWindow.bshist.Count; i++)
+            {
+                if (MainWindow.bshist[i].bs.id == id)
+                    bshistid = i;
+            }
+
+            BoxScore bs = MainWindow.bshist[bshistid].bs;
+            curBoxScore = MainWindow.bshist[bshistid].bs;
+            curBoxScore.bshistid = bshistid;
+            txtPTS1.Text = bs.PTS1.ToString();
+            txtREB1.Text = bs.REB1.ToString();
+            txtAST1.Text = bs.AST1.ToString();
+            txtSTL1.Text = bs.STL1.ToString();
+            txtBLK1.Text = bs.BLK1.ToString();
+            txtTO1.Text = bs.TO1.ToString();
+            txtFGM1.Text = bs.FGM1.ToString();
+            txtFGA1.Text = bs.FGA1.ToString();
+            txt3PM1.Text = bs.TPM1.ToString();
+            txt3PA1.Text = bs.TPA1.ToString();
+            txtFTM1.Text = bs.FTM1.ToString();
+            txtFTA1.Text = bs.FTA1.ToString();
+            txtOFF1.Text = bs.OREB1.ToString();
+            txtPF1.Text = bs.FOUL1.ToString();
+            txtMINS1.Text = bs.MINS1.ToString();
+            txtPTS2.Text = bs.PTS2.ToString();
+            txtREB2.Text = bs.REB2.ToString();
+            txtAST2.Text = bs.AST2.ToString();
+            txtSTL2.Text = bs.STL2.ToString();
+            txtBLK2.Text = bs.BLK2.ToString();
+            txtTO2.Text = bs.TO2.ToString();
+            txtFGM2.Text = bs.FGM2.ToString();
+            txtFGA2.Text = bs.FGA2.ToString();
+            txt3PM2.Text = bs.TPM2.ToString();
+            txt3PA2.Text = bs.TPA2.ToString();
+            txtFTM2.Text = bs.FTM2.ToString();
+            txtFTA2.Text = bs.FTA2.ToString();
+            txtOFF2.Text = bs.OREB2.ToString();
+            txtPF2.Text = bs.FOUL2.ToString();
+
+            dtpGameDate.SelectedDate = bs.gamedate;
+            curSeason = bs.SeasonNum;
+            SortedDictionary<string, int> TeamOrder = new SortedDictionary<string, int>();
+            SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, ref tst, ref tstopp,
+                                                 ref TeamOrder);
+            chkIsPlayoff.IsChecked = bs.isPlayoff;
+
+            calculateScore1();
+            calculateScore2();
+
+            pbsAwayList = new BindingList<PlayerBoxScore>();
+            pbsHomeList = new BindingList<PlayerBoxScore>();
+
+            pbsAwayList.AllowNew = true;
+            pbsAwayList.AllowEdit = true;
+            pbsAwayList.AllowRemove = true;
+            pbsAwayList.RaiseListChangedEvents = true;
+
+            pbsHomeList.AllowNew = true;
+            pbsHomeList.AllowEdit = true;
+            pbsHomeList.AllowRemove = true;
+            pbsHomeList.RaiseListChangedEvents = true;
+
+            dgvPlayersAway.ItemsSource = pbsAwayList;
+            dgvPlayersHome.ItemsSource = pbsHomeList;
+            loading = true;
+            foreach (PlayerBoxScore pbs in MainWindow.bshist[bshistid].pbsList)
+            {
+                if (pbs.Team == bs.Team1)
+                {
+                    pbsAwayList.Add(pbs);
+                }
+                else
+                {
+                    pbsHomeList.Add(pbs);
+                }
+            }
+
+            try
+            {
+                cmbTeam1.SelectedItem = GetDisplayNameFromTeam(bs.Team1);
+                cmbTeam2.SelectedItem = GetDisplayNameFromTeam(bs.Team2);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "One of the teams requested is disabled for this season. This box score is not available.\n" +
+                    "To be able to see this box score, enable the teams included in it.");
+                Close();
+            }
+            PopulateSeasonCombo();
+            loading = false;
         }
 
         private BindingList<PlayerBoxScore> pbsAwayList { get; set; }
@@ -86,12 +186,12 @@ namespace NBA_Stats_Tracker.Windows
         {
             for (int i = 0; i < MainWindow.tst.Length; i++)
             {
-                if (MainWindow.tst[i].displayName == p)
+                if (tst[i].displayName == p)
                 {
-                    if (MainWindow.tst[i].isHidden)
+                    if (tst[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
 
-                    return MainWindow.tst[i].name;
+                    return tst[i].name;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -99,14 +199,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            for (int i = 0; i < tst.Length; i++)
             {
-                if (MainWindow.tst[i].name == p)
+                if (tst[i].name == p)
                 {
-                    if (MainWindow.tst[i].isHidden)
+                    if (tst[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
 
-                    return MainWindow.tst[i].displayName;
+                    return tst[i].displayName;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -258,17 +358,28 @@ namespace NBA_Stats_Tracker.Windows
             calculateScore1();
             calculateScore2();
 
-            if (curmode == Mode.View)
+            if (curmode == Mode.View || curmode == Mode.ViewAndIgnore)
             {
-                label1.Content = "Select a box score to view";
+                label1.Content = "";
                 chkDoNotUpdate.Visibility = Visibility.Hidden;
                 txbDoNotUpdate.Visibility = Visibility.Hidden;
                 Title = "View & Edit Box Score";
+            }
+
+            if (curmode == Mode.ViewAndIgnore)
+            {
+                label1.Content = "Any changes made to the box score will be ignored.";
+                label1.FontWeight = FontWeights.Bold;
+                btnOK.Visibility = Visibility.Hidden;
+                btnCalculateTeams.Visibility = Visibility.Hidden;
+                btnCancel.Content = "Close";
+                Title = "View Box Score";
             }
         }
 
         private void PopulateBoxScoreCombo()
         {
+            /*
             cbHistory.Items.Clear();
             foreach (BoxScoreEntry cur in MainWindow.bshist)
             {
@@ -277,6 +388,7 @@ namespace NBA_Stats_Tracker.Windows
                 cbHistory.Items.Add(cur.date.ToShortDateString() + " - " + cur.bs.Team1 + " @ " + cur.bs.Team2);
                 //}
             }
+            */
         }
 
         private void PopulateTeamsCombo()
@@ -295,9 +407,22 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
+            cmbSeasonNum.Items.Clear();
+
             for (int i = maxSeason; i > 0; i--)
             {
-                cmbSeasonNum.Items.Add(i.ToString());
+                bool addIt = true;
+                if (cmbTeam1.SelectedItem != null)
+                {
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB, GetCurTeamFromDisplayName(cmbTeam1.SelectedItem.ToString()), i))
+                        addIt = false;
+                }
+                if (cmbTeam2.SelectedItem != null)
+                {
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB, GetCurTeamFromDisplayName(cmbTeam2.SelectedItem.ToString()), i))
+                        addIt = false;
+                }
+                if (addIt) cmbSeasonNum.Items.Add(i.ToString());
             }
 
             cmbSeasonNum.SelectedIndex = -1;
@@ -420,8 +545,8 @@ namespace NBA_Stats_Tracker.Windows
                     throw (new Exception());
                 }
 
-                MainWindow.bs.OFF1 = Convert.ToUInt16(txtOFF1.Text);
-                if (MainWindow.bs.OFF1 > MainWindow.bs.REB1)
+                MainWindow.bs.OREB1 = Convert.ToUInt16(txtOFF1.Text);
+                if (MainWindow.bs.OREB1 > MainWindow.bs.REB1)
                 {
                     MessageBox.Show("The OFF stat can't be higher than the REB stat.");
                     throw (new Exception());
@@ -432,7 +557,7 @@ namespace NBA_Stats_Tracker.Windows
                     throw (new Exception());
                 }
 
-                MainWindow.bs.PF1 = Convert.ToUInt16(txtPF1.Text);
+                MainWindow.bs.FOUL1 = Convert.ToUInt16(txtPF1.Text);
                 MainWindow.bs.PTS2 = Convert.ToUInt16(txtPTS2.Text);
                 MainWindow.bs.REB2 = Convert.ToUInt16(txtREB2.Text);
                 MainWindow.bs.AST2 = Convert.ToUInt16(txtAST2.Text);
@@ -473,15 +598,15 @@ namespace NBA_Stats_Tracker.Windows
                     throw (new Exception());
                 }
 
-                MainWindow.bs.OFF2 = Convert.ToUInt16(txtOFF2.Text);
+                MainWindow.bs.OREB2 = Convert.ToUInt16(txtOFF2.Text);
 
-                if (MainWindow.bs.OFF2 > MainWindow.bs.REB2)
+                if (MainWindow.bs.OREB2 > MainWindow.bs.REB2)
                 {
                     MessageBox.Show("The OFF stat can't be higher than the REB stat.");
                     throw (new Exception());
                 }
 
-                MainWindow.bs.PF2 = Convert.ToUInt16(txtPF2.Text);
+                MainWindow.bs.FOUL2 = Convert.ToUInt16(txtPF2.Text);
 
                 MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
 
@@ -773,28 +898,28 @@ namespace NBA_Stats_Tracker.Windows
                         //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
                         //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OFF1,
-                        MainWindow.bs.REB1 - MainWindow.bs.OFF1,
+                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1,
+                        MainWindow.bs.REB1 - MainWindow.bs.OREB1,
                         MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1,
                         MainWindow.bs.FGM1,
                         MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1, MainWindow.bs.TPM1,
                         MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1,
                         MainWindow.bs.FTM1, MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1,
-                        MainWindow.bs.PF1);
+                        MainWindow.bs.FOUL1);
 
                 string data2 =
                     String.Format(
                         //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
                         //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OFF2,
-                        MainWindow.bs.REB2 - MainWindow.bs.OFF2,
+                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2,
+                        MainWindow.bs.REB2 - MainWindow.bs.OREB2,
                         MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2,
                         MainWindow.bs.FGM2,
                         MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2, MainWindow.bs.TPM2,
                         MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2,
                         MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2,
-                        MainWindow.bs.PF2);
+                        MainWindow.bs.FOUL2);
 
                 /*
                 var sfd = new SaveFileDialog();
@@ -840,77 +965,7 @@ namespace NBA_Stats_Tracker.Windows
         private void cbHistory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int i = cbHistory.SelectedIndex;
-            BoxScore bs = MainWindow.bshist[i].bs;
-            curBoxScore = MainWindow.bshist[i].bs;
-            curBoxScore.bshistid = i;
-            txtPTS1.Text = bs.PTS1.ToString();
-            txtREB1.Text = bs.REB1.ToString();
-            txtAST1.Text = bs.AST1.ToString();
-            txtSTL1.Text = bs.STL1.ToString();
-            txtBLK1.Text = bs.BLK1.ToString();
-            txtTO1.Text = bs.TO1.ToString();
-            txtFGM1.Text = bs.FGM1.ToString();
-            txtFGA1.Text = bs.FGA1.ToString();
-            txt3PM1.Text = bs.TPM1.ToString();
-            txt3PA1.Text = bs.TPA1.ToString();
-            txtFTM1.Text = bs.FTM1.ToString();
-            txtFTA1.Text = bs.FTA1.ToString();
-            txtOFF1.Text = bs.OFF1.ToString();
-            txtPF1.Text = bs.PF1.ToString();
-            txtMINS1.Text = bs.MINS1.ToString();
-            txtPTS2.Text = bs.PTS2.ToString();
-            txtREB2.Text = bs.REB2.ToString();
-            txtAST2.Text = bs.AST2.ToString();
-            txtSTL2.Text = bs.STL2.ToString();
-            txtBLK2.Text = bs.BLK2.ToString();
-            txtTO2.Text = bs.TO2.ToString();
-            txtFGM2.Text = bs.FGM2.ToString();
-            txtFGA2.Text = bs.FGA2.ToString();
-            txt3PM2.Text = bs.TPM2.ToString();
-            txt3PA2.Text = bs.TPA2.ToString();
-            txtFTM2.Text = bs.FTM2.ToString();
-            txtFTA2.Text = bs.FTA2.ToString();
-            txtOFF2.Text = bs.OFF2.ToString();
-            txtPF2.Text = bs.PF2.ToString();
-
-            dtpGameDate.SelectedDate = bs.gamedate;
-            cmbSeasonNum.SelectedItem = bs.SeasonNum.ToString();
-            chkIsPlayoff.IsChecked = bs.isPlayoff;
-
-            calculateScore1();
-            calculateScore2();
-
-            pbsAwayList = new BindingList<PlayerBoxScore>();
-            pbsHomeList = new BindingList<PlayerBoxScore>();
-
-            pbsAwayList.AllowNew = true;
-            pbsAwayList.AllowEdit = true;
-            pbsAwayList.AllowRemove = true;
-            pbsAwayList.RaiseListChangedEvents = true;
-
-            pbsHomeList.AllowNew = true;
-            pbsHomeList.AllowEdit = true;
-            pbsHomeList.AllowRemove = true;
-            pbsHomeList.RaiseListChangedEvents = true;
-
-            dgvPlayersAway.ItemsSource = pbsAwayList;
-            dgvPlayersHome.ItemsSource = pbsHomeList;
-            loading = true;
-            foreach (PlayerBoxScore pbs in MainWindow.bshist[i].pbsList)
-            {
-                if (pbs.Team == bs.Team1)
-                {
-                    pbsAwayList.Add(pbs);
-                }
-                else
-                {
-                    pbsHomeList.Add(pbs);
-                }
-            }
-
-            cmbTeam1.SelectedItem = GetDisplayNameFromTeam(bs.Team1);
-            cmbTeam2.SelectedItem = GetDisplayNameFromTeam(bs.Team2);
-            loading = false;
+            
         }
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -920,7 +975,7 @@ namespace NBA_Stats_Tracker.Windows
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             //MainWindow.ChangeSeason(curSeason, MainWindow.getMaxSeason(MainWindow.currentDB));
 
-            MainWindow.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                   doNotLoadBoxScores: true);
 
@@ -1210,7 +1265,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway1.PlayerID];
-                text = pbsAway1.GetBestStats(5, ps.Position1);
+                text = pbsAway1.GetBestStats(4, ps.Position1);
                 txbAway1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
 
@@ -1226,7 +1281,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway2.PlayerID];
-                text = pbsAway2.GetBestStats(5, ps.Position1);
+                text = pbsAway2.GetBestStats(4, ps.Position1);
                 txbAway2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
 
@@ -1242,7 +1297,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway3.PlayerID];
-                text = pbsAway3.GetBestStats(5, ps.Position1);
+                text = pbsAway3.GetBestStats(4, ps.Position1);
                 txbAway3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
 
@@ -1258,7 +1313,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome1.PlayerID];
-                text = pbsHome1.GetBestStats(5, ps.Position1);
+                text = pbsHome1.GetBestStats(4, ps.Position1);
                 txbHome1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
 
@@ -1274,7 +1329,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome2.PlayerID];
-                text = pbsHome2.GetBestStats(5, ps.Position1);
+                text = pbsHome2.GetBestStats(4, ps.Position1);
                 txbHome2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
 
@@ -1290,7 +1345,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome3.PlayerID];
-                text = pbsHome3.GetBestStats(5, ps.Position1);
+                text = pbsHome3.GetBestStats(4, ps.Position1);
                 txbHome3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
             }
         }

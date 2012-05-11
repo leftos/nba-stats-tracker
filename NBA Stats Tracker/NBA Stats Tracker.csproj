@@ -63,6 +63,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\NST.Data.BoxScores.cs" />
+    <Compile Include="Data\NST.Data.SQLiteIO.cs" />
     <Compile Include="Data\NST.Data.Players.cs" />
     <Compile Include="Data\NST.Data.Teams.cs" />
     <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
@@ -76,6 +77,9 @@
     </Compile>
     <Compile Include="Windows\askTeamW.xaml.cs">
       <DependentUpon>askTeamW.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\BoxScoreListW.xaml.cs">
+      <DependentUpon>BoxScoreListW.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\boxScoreW.xaml.cs">
       <DependentUpon>boxScoreW.xaml</DependentUpon>
@@ -126,6 +130,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\askTeamW.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\BoxScoreListW.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

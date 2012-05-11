@@ -90,5 +90,27 @@ namespace LeftosCommonLibrary
         {
             return (dataGrid.Items[row] as DataRowView).Row.ItemArray[col] as DataGridCell;
         }
+
+        public static UInt16 getUInt16(DataRow r, string ColumnName)
+        {
+            return Convert.ToUInt16(r[ColumnName].ToString());
+        }
+
+        public static int getInt(DataRow r, string ColumnName)
+        {
+            return Convert.ToInt32(r[ColumnName].ToString());
+        }
+
+        public static Boolean getBoolean(DataRow r, string ColumnName)
+        {
+            string s = r[ColumnName].ToString();
+            s = s.ToLower();
+            return Convert.ToBoolean(s);
+        }
+
+        public static string getString(DataRow r, string ColumnName)
+        {
+            return r[ColumnName].ToString();
+        }
     }
 }

@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows;
+using LeftosCommonLibrary;
 using SQLite_Database;
 
 #endregion
@@ -62,15 +63,39 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (DataRow r in res.Rows)
             {
-                if (!Helper.getBoolean(r, "isHidden"))
+                if (!Tools.getBoolean(r, "isHidden"))
                 {
-                    lstEnabled.Items.Add(Helper.getString(r, "DisplayName"));
+                    lstEnabled.Items.Add(Tools.getString(r, "DisplayName"));
                 }
                 else
                 {
-                    lstDisabled.Items.Add(Helper.getString(r, "DisplayName"));
+                    lstDisabled.Items.Add(Tools.getString(r, "DisplayName"));
                 }
             }
+        }
+
+        private string GetCurTeamFromDisplayName(string p)
+        {
+            for (int i = 0; i < MainWindow.tst.Length; i++)
+            {
+                if (MainWindow.tst[i].displayName == p)
+                {
+                    return MainWindow.tst[i].name;
+                }
+            }
+            return "$$TEAMNOTFOUND: " + p;
+        }
+
+        private string GetDisplayNameFromTeam(string p)
+        {
+            for (int i = 0; i < MainWindow.tst.Length; i++)
+            {
+                if (MainWindow.tst[i].name == p)
+                {
+                    return MainWindow.tst[i].displayName;
+                }
+            }
+            return "$$TEAMNOTFOUND: " + p;
         }
 
         private void btnEnable_Click(object sender, RoutedEventArgs e)
@@ -126,6 +151,20 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (string name in lstDisabled.Items)
             {
+                string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (T1Name LIKE '" + GetCurTeamFromDisplayName(name) +
+                           "' OR T2Name LIKE '" + GetCurTeamFromDisplayName(name) + "')";
+                DataTable res = db.GetDataTable(q);
+
+                if (res.Rows.Count > 0)
+                {
+                    MessageBoxResult r =
+                        MessageBox.Show(
+                            name + " has box scores this season. Are you sure you want to disable this team?",
+                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (r == MessageBoxResult.No) continue;
+                }
+
                 var dict = new Dictionary<string, string>();
                 dict.Add("isHidden", "True");
                 db.Update(teamsT, dict, "DisplayName LIKE '" + name + "'");

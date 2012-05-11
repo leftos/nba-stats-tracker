@@ -46,7 +46,7 @@ namespace NBA_Stats_Tracker.Windows
         private readonly DataTable dt_bs;
         private readonly DataTable dt_pts;
         private readonly DataTable dt_ts;
-        private readonly int maxSeason = MainWindow.getMaxSeason(MainWindow.currentDB);
+        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private int curSeason = MainWindow.curSeason;
         private List<PlayerStatsRow> psrList;
         private string q;
@@ -193,7 +193,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            for (int i = MainWindow.getMaxSeason(MainWindow.currentDB); i > 0; i--)
+            for (int i = SQLiteIO.getMaxSeason(MainWindow.currentDB); i > 0; i--)
             {
                 cmbSeasonNum.Items.Add(i.ToString());
             }
@@ -483,7 +483,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                MainWindow.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+                SQLiteIO.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
                                       ref MainWindow.pt, ref MainWindow.bshist,
                                       _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -538,7 +538,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                MainWindow.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, ref _tst, ref _tstopp,
+                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, ref _tst, ref _tstopp,
                                                        ref MainWindow.TeamOrder);
 
                 foreach (TeamStats cur in _tst)
@@ -623,7 +623,7 @@ namespace NBA_Stats_Tracker.Windows
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
-            MainWindow.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -639,21 +639,15 @@ namespace NBA_Stats_Tracker.Windows
                 var row = (DataRowView) dgvBoxScores.SelectedItems[0];
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
 
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                var bsw = new boxScoreW(boxScoreW.Mode.View, gameid);
+                try
                 {
-                    if (bse.bs.id == gameid)
-                    {
-                        MainWindow.bs = new BoxScore();
+                    bsw.ShowDialog();
 
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        MainWindow.UpdateBoxScore();
-                        break;
-                    }
-                    i++;
+                    MainWindow.UpdateBoxScore();
+                }
+                catch
+                {
                 }
             }
         }
