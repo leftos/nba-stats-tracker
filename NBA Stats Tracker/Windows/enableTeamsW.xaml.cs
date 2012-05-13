@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
 #endregion
@@ -27,7 +28,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for enableTeamsW.xaml
     /// </summary>
-    public partial class enableTeamsW : Window
+    public partial class enableTeamsW
     {
         private readonly int _curSeason;
         private readonly string _currentDB;
@@ -43,16 +44,18 @@ namespace NBA_Stats_Tracker.Windows
             lblCurSeason.Content = "Current Season: " + _curSeason + "/" + _maxSeason;
 
             string teamsT = "Teams";
-            string pl_teamsT = "PlayoffTeams";
-            string oppT = "Opponents";
-            string pl_oppT = "PlayoffOpponents";
+            //string pl_teamsT = "PlayoffTeams";
+            //string oppT = "Opponents";
+            //string pl_oppT = "PlayoffOpponents";
             if (_curSeason != _maxSeason)
             {
                 string s = "S" + _curSeason;
                 teamsT += s;
+                /*
                 pl_teamsT += s;
                 oppT += s;
                 pl_oppT += s;
+                 */
             }
 
 
@@ -76,11 +79,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            foreach (TeamStats t in MainWindow.tst)
             {
-                if (MainWindow.tst[i].displayName == p)
+                if (t.displayName == p)
                 {
-                    return MainWindow.tst[i].name;
+                    return t.name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -88,11 +91,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            foreach (TeamStats t in MainWindow.tst)
             {
-                if (MainWindow.tst[i].name == p)
+                if (t.name == p)
                 {
-                    return MainWindow.tst[i].displayName;
+                    return t.displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -141,8 +144,7 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (string name in lstEnabled.Items)
             {
-                var dict = new Dictionary<string, string>();
-                dict.Add("isHidden", "False");
+                var dict = new Dictionary<string, string> {{"isHidden", "False"}};
                 db.Update(teamsT, dict, "DisplayName LIKE '" + name + "'");
                 db.Update(pl_teamsT, dict, "DisplayName LIKE '" + name + "'");
                 db.Update(oppT, dict, "DisplayName LIKE '" + name + "'");
@@ -165,8 +167,7 @@ namespace NBA_Stats_Tracker.Windows
                     if (r == MessageBoxResult.No) continue;
                 }
 
-                var dict = new Dictionary<string, string>();
-                dict.Add("isHidden", "True");
+                var dict = new Dictionary<string, string> {{"isHidden", "True"}};
                 db.Update(teamsT, dict, "DisplayName LIKE '" + name + "'");
                 db.Update(pl_teamsT, dict, "DisplayName LIKE '" + name + "'");
                 db.Update(oppT, dict, "DisplayName LIKE '" + name + "'");

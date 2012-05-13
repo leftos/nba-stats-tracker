@@ -131,7 +131,7 @@ namespace NBA_Stats_Tracker.Data
             stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
             stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
             stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
-            stats[p.TPA] = Tools.getUInt16(dataRow, "TPM");
+            stats[p.TPM] = Tools.getUInt16(dataRow, "TPM");
             stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
             stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
             stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
@@ -174,7 +174,7 @@ namespace NBA_Stats_Tracker.Data
 
             parts = Tools.getString(dataRow, "3PT").Split('-');
 
-            stats[p.TPA] = Convert.ToUInt16(parts[0]);
+            stats[p.TPM] = Convert.ToUInt16(parts[0]);
             stats[p.TPA] = Convert.ToUInt16(parts[1]);
 
             parts = Tools.getString(dataRow, "FT").Split('-');
@@ -204,7 +204,7 @@ namespace NBA_Stats_Tracker.Data
             stats[p.PTS] = playerStatsRow.PTS;
             stats[p.FGM] = playerStatsRow.FGM;
             stats[p.FGA] = playerStatsRow.FGA;
-            stats[p.TPA] = playerStatsRow.TPM;
+            stats[p.TPM] = playerStatsRow.TPM;
             stats[p.TPA] = playerStatsRow.TPA;
             stats[p.FTM] = playerStatsRow.FTM;
             stats[p.FTA] = playerStatsRow.FTA;
@@ -236,8 +236,8 @@ namespace NBA_Stats_Tracker.Data
             averages[p.PPG] = (float) stats[p.PTS]/games;
             averages[p.FGp] = (float) stats[p.FGM]/stats[p.FGA];
             averages[p.FGeff] = averages[p.FGp]*((float) stats[p.FGM]/games);
-            averages[p.TPp] = (float) stats[p.TPA]/stats[p.TPA];
-            averages[p.TPeff] = averages[p.TPp]*((float) stats[p.TPA]/games);
+            averages[p.TPp] = (float) stats[p.TPM]/stats[p.TPA];
+            averages[p.TPeff] = averages[p.TPp]*((float) stats[p.TPM]/games);
             averages[p.FTp] = (float) stats[p.FTM]/stats[p.FTA];
             averages[p.FTeff] = averages[p.FTp]*((float) stats[p.FTM]/games);
             averages[p.RPG] = (float) (stats[p.OREB] + stats[p.DREB])/games;
@@ -254,7 +254,9 @@ namespace NBA_Stats_Tracker.Data
         /// Calculates the Metric Stats for this Player
         /// </summary>
         /// <param name="ts">The player's team's stats</param>
+        /// <param name="tsopp">The player's team's opponents' stats</param>
         /// <param name="ls">The total league stats</param>
+        /// <param name="leagueOv">Whether CalcMetrics is being called from the League Overview screen</param>
         public void CalcMetrics(TeamStats ts, TeamStats tsopp, TeamStats ls, bool leagueOv = false)
         {
             var pstats = new double[stats.Length];
@@ -291,7 +293,7 @@ namespace NBA_Stats_Tracker.Data
             double ASTp = 100*pstats[p.AST]/(((pstats[p.MINS]/(tstats[t.MINS]))*tstats[t.FGM]) - pstats[p.FGM]);
             metrics.Add("AST%", ASTp);
 
-            double EFGp = (pstats[p.FGM] + 0.5*pstats[p.TPA])/pstats[p.FGA];
+            double EFGp = (pstats[p.FGM] + 0.5*pstats[p.TPM])/pstats[p.FGA];
             metrics.Add("EFG%", EFGp);
 
             double GmSc = pstats[p.PTS] + 0.4*pstats[p.FGM] - 0.7*pstats[p.FGA] - 0.4*(pstats[p.FTA] - pstats[p.FTM]) +
@@ -343,7 +345,7 @@ namespace NBA_Stats_Tracker.Data
             double lDRBp = lstats[t.DREB]/lREB;
 
             double uPER = (1/pstats[p.MINS])*
-                          (pstats[p.TPA]
+                          (pstats[p.TPM]
                            + (2/3)*pstats[p.AST]
                            + (2 - factor*(tstats[t.AST]/tstats[t.FGM]))*pstats[p.FGM]
                            +
@@ -385,7 +387,7 @@ namespace NBA_Stats_Tracker.Data
 
                 if (ls.name != "$$Empty")
                 {
-                    double paceAdj = ls.metrics["Pace"]/ts.metrics["Pace"];
+                    //double paceAdj = ls.metrics["Pace"]/ts.metrics["Pace"];
                     double estPaceAdj = 2*ls.averages[t.PPG]/(ts.averages[t.PPG] + tsopp.averages[t.PPG]);
 
                     aPER = estPaceAdj*uPER;
@@ -432,7 +434,14 @@ namespace NBA_Stats_Tracker.Data
 
         public void CalcPER(double lg_aPER)
         {
-            metrics.Add("PER", metrics["aPER"]*(15/lg_aPER));
+            try
+            {
+                metrics.Add("PER", metrics["aPER"] * (15 / lg_aPER));
+            }
+            catch (Exception)
+            {
+                metrics.Add("PER", double.NaN);
+            }
         }
 
         public void AddBoxScore(PlayerBoxScore pbs)
@@ -449,7 +458,7 @@ namespace NBA_Stats_Tracker.Data
             stats[p.PTS] += pbs.PTS;
             stats[p.FGM] += pbs.FGM;
             stats[p.FGA] += pbs.FGA;
-            stats[p.TPA] += pbs.TPM;
+            stats[p.TPM] += pbs.TPM;
             stats[p.TPA] += pbs.TPA;
             stats[p.FTM] += pbs.FTM;
             stats[p.FTA] += pbs.FTA;
@@ -511,6 +520,8 @@ namespace NBA_Stats_Tracker.Data
 
             foreach (int playerid in playerStats.Keys.ToList())
             {
+                if (String.IsNullOrEmpty(playerStats[playerid].TeamF)) continue;
+
                 int teamid = TeamOrder[playerStats[playerid].TeamF];
                 TeamStats ts = tst[teamid];
                 TeamStats tsopp = tstopp[teamid];
@@ -526,6 +537,8 @@ namespace NBA_Stats_Tracker.Data
 
             foreach (int playerid in playerStats.Keys.ToList())
             {
+                if (String.IsNullOrEmpty(playerStats[playerid].TeamF)) continue;
+
                 playerStats[playerid].CalcPER(lg_aPER);
             }
         }
@@ -738,7 +751,7 @@ namespace NBA_Stats_Tracker.Data
 
         public string GetBestStats(int count, string position)
         {
-            double fgn = 0, tpn = 0, ftn = 0, orebn, rebn, astn, stln, blkn, ptsn, ftrn = 0;
+            double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
             var statsn = new Dictionary<string, double>();
 
             double fgfactor,
@@ -823,7 +836,7 @@ namespace NBA_Stats_Tracker.Data
             }
             statsn.Add("ftn", ftn);
 
-            orebn = OREB/orebfactor;
+            double orebn = OREB/orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -831,24 +844,24 @@ namespace NBA_Stats_Tracker.Data
             statsn.Add("drebn", drebn);
             */
 
-            rebn = REB/rebfactor;
+            double rebn = REB/rebfactor;
             statsn.Add("rebn", rebn);
 
-            astn = AST/astfactor;
+            double astn = AST/astfactor;
             statsn.Add("astn", astn);
 
-            stln = STL/stlfactor;
+            double stln = STL/stlfactor;
             statsn.Add("stln", stln);
 
-            blkn = BLK/blkfactor;
+            double blkn = BLK/blkfactor;
             statsn.Add("blkn", blkn);
 
-            ptsn = PTS/ptsfactor;
+            double ptsn = PTS/ptsfactor;
             statsn.Add("ptsn", ptsn);
 
             if (FTM > 3)
             {
-                ftrn = (FTM/FGA)/ftrfactor;
+                ftrn = ((double)FTM/FGA)/ftrfactor;
             }
             statsn.Add("ftrn", ftrn);
 
@@ -980,11 +993,7 @@ namespace NBA_Stats_Tracker.Data
             }
             for (int j = 0; j < avgcount; j++)
             {
-                var averages = new Dictionary<int, float>();
-                foreach (KeyValuePair<int, PlayerStats> kvp in pst)
-                {
-                    averages.Add(kvp.Key, kvp.Value.averages[j]);
-                }
+                var averages = pst.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
@@ -1055,7 +1064,7 @@ namespace NBA_Stats_Tracker.Data
             PTS = ps.stats[p.PTS];
             FGM = ps.stats[p.FGM];
             FGA = ps.stats[p.FGA];
-            TPM = ps.stats[p.TPA];
+            TPM = ps.stats[p.TPM];
             TPA = ps.stats[p.TPA];
             FTM = ps.stats[p.FTM];
             FTA = ps.stats[p.FTA];

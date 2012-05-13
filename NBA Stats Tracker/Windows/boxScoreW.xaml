@@ -103,7 +103,7 @@
           <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="561,257,0,0" Name="btnCancel"
                   TabIndex="30" VerticalAlignment="Top" Width="75" Click="button2_Click" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="7,288,0,0" Name="cbHistory" VerticalAlignment="Top"
-                    Width="629" SelectionChanged="cbHistory_SelectionChanged" />
+                    Width="629" />
           <DatePicker Height="25" HorizontalAlignment="Right" Margin="0,8,4,0" Name="dtpGameDate"
                       VerticalAlignment="Top" Width="115" />
           <Label Content="Season" Height="28" HorizontalAlignment="Right" Margin="0,7,179,0" Name="label30"

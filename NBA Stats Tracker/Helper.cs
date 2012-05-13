@@ -16,11 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Net;
 using System.Windows;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Windows;
 
@@ -33,17 +29,16 @@ namespace NBA_Stats_Tracker
         public static string AppDocsPath = MainWindow.AppDocsPath;
         public static string SavesPath = MainWindow.SavesPath;
         public static string AppTempPath = MainWindow.AppTempPath;
-        public static string mode = "Mode 0";
+        public static string mode = "";
 
         public static PlayoffTree tempPT;
 
-        public static SortedDictionary<string, int> setTeamOrder(string mode)
+        public static SortedDictionary<string, int> setTeamOrder(string modeToSet)
         {
             SortedDictionary<string, int> TeamOrder;
 
-            switch (mode)
+            switch (modeToSet)
             {
-                case "Mode 0":
                 default:
                     TeamOrder = new SortedDictionary<string, int>
                                     {
@@ -306,7 +301,7 @@ namespace NBA_Stats_Tracker
                 }
                 else
                 {
-                    MessageBox.Show("Conflict for " + mode + " TeamOrder on ID " + kvp.Value);
+                    MessageBox.Show("Conflict for " + modeToSet + " TeamOrder on ID " + kvp.Value);
                     Environment.Exit(-1);
                 }
             }

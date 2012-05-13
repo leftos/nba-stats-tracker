@@ -14,6 +14,7 @@
 
 #region Using Directives
 
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -34,10 +35,12 @@ namespace LeftosCommonLibrary
             {
                 var dataGrid = sender as DataGrid;
 
+                Debug.Assert(dataGrid != null, "dataGrid != null");
                 if (e.Row.Item == dataGrid.Items[dataGrid.Items.Count - 2])
                 {
                     Window parentWindow = Window.GetWindow(dataGrid);
-                    parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback((param) =>
+                    Debug.Assert(parentWindow != null, "parentWindow != null");
+                    parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
                                                                                             {
                                                                                                 dataGrid.Focus();
                                                                                                 dataGrid.SelectedIndex =

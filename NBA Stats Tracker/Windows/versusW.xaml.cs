@@ -25,7 +25,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for versusW.xaml
     /// </summary>
-    public partial class versusW : Window
+    public partial class versusW
     {
         public static string _team1 = "";
         public static string _team2 = "";

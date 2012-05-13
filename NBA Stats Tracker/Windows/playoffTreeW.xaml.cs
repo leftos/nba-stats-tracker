@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -28,7 +29,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class playoffTreeW : Window
+    public partial class playoffTreeW
     {
         private readonly Brush defaultBackground;
         private readonly PlayoffTree myPT;
@@ -157,6 +158,7 @@ namespace NBA_Stats_Tracker.Windows
                     string cur = "cmbTeam" + (16 - i).ToString();
                     object item = ptGrid.FindName(cur);
                     var cmb = (ComboBox) item;
+                    Debug.Assert(cmb != null, "cmb != null");
                     myPT.teams[i] = cmb.SelectedItem.ToString();
                 }
                 myPT.done = true;

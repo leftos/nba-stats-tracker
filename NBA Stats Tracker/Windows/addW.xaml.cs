@@ -28,7 +28,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for addW.xaml
     /// </summary>
-    public partial class addW : Window
+    public partial class addW
     {
         private readonly Dictionary<int, PlayerStats> pst;
 
@@ -81,8 +81,8 @@ namespace NBA_Stats_Tracker.Windows
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;
                     }
-                    if (p.Position == null || p.Position == "") p.Position = " ";
-                    if (p.Position2 == null || p.Position2 == "") p.Position2 = " ";
+                    if (string.IsNullOrEmpty(p.Position)) p.Position = " ";
+                    if (string.IsNullOrEmpty(p.Position2)) p.Position2 = " ";
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));
                 }

@@ -31,7 +31,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for leagueOverviewW.xaml
     /// </summary>
-    public partial class leagueOverviewW : Window
+    public partial class leagueOverviewW
     {
         private static Dictionary<int, PlayerStats> _pst;
         private static TeamStats[] _tst, partialTST;
@@ -46,7 +46,9 @@ namespace NBA_Stats_Tracker.Windows
         private readonly DataTable dt_bs;
         private readonly DataTable dt_pts;
         private readonly DataTable dt_ts;
+/*
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+*/
         private int curSeason = MainWindow.curSeason;
         private List<PlayerStatsRow> psrList;
         private string q;
@@ -143,14 +145,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            for (int i = 0; i < _tst.Length; i++)
+            foreach (TeamStats t in _tst)
             {
-                if (_tst[i].displayName == p)
+                if (t.displayName == p)
                 {
-                    if (_tst[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + _tst[i].name);
+                    if (t.isHidden)
+                        throw new Exception("Requested team that is hidden: " + t.name);
 
-                    return _tst[i].name;
+                    return t.name;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -158,14 +160,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < _tst.Length; i++)
+            foreach (TeamStats t in _tst)
             {
-                if (_tst[i].name == p)
+                if (t.name == p)
                 {
-                    if (_tst[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + _tst[i].name);
+                    if (t.isHidden)
+                        throw new Exception("Requested team that is hidden: " + t.name);
 
-                    return _tst[i].displayName;
+                    return t.displayName;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -274,7 +276,6 @@ namespace NBA_Stats_Tracker.Windows
             }
             catch (Exception)
             {
-                return;
             }
         }
 
@@ -286,8 +287,7 @@ namespace NBA_Stats_Tracker.Windows
 
             tbcLeagueOverview.Visibility = Visibility.Hidden;
 
-            var worker1 = new BackgroundWorker();
-            worker1.WorkerReportsProgress = true;
+            var worker1 = new BackgroundWorker {WorkerReportsProgress = true};
 
             worker1.DoWork += delegate
                                   {
@@ -319,7 +319,7 @@ namespace NBA_Stats_Tracker.Windows
             worker1.RunWorkerCompleted += delegate
                                               {
                                                   leadersList.Sort(
-                                                      delegate(PlayerStatsRow psr1, PlayerStatsRow psr2) { return psr1.PPG.CompareTo(psr2.PPG); });
+                                                      (psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
                                                   leadersList.Reverse();
 
                                                   dgvLeaders.ItemsSource = leadersList;
@@ -342,14 +342,13 @@ namespace NBA_Stats_Tracker.Windows
                     var psr = new PlayerStatsRow(kvp.Value);
                     psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
                     psrList.Add(psr);
-                    var pmsr = new PlayerMetricStatsRow(kvp.Value);
-                    pmsr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                    var pmsr = new PlayerMetricStatsRow(kvp.Value)
+                                   {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
                     pmsrList.Add(pmsr);
                 }
             }
             else
             {
-                string q;
                 partialTST = new TeamStats[MainWindow.TeamOrder.Count];
                 partialOppTST = new TeamStats[MainWindow.TeamOrder.Count];
                 // Prepare Teams
@@ -410,17 +409,17 @@ namespace NBA_Stats_Tracker.Windows
                     var psr = new PlayerStatsRow(kvp.Value);
                     psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
                     psrList.Add(psr);
-                    var pmsr = new PlayerMetricStatsRow(kvp.Value);
-                    pmsr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                    var pmsr = new PlayerMetricStatsRow(kvp.Value)
+                                   {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
                     pmsrList.Add(pmsr);
                 }
             }
 
-            psrList.Sort(delegate(PlayerStatsRow psr1, PlayerStatsRow psr2) { return psr1.PPG.CompareTo(psr2.PPG); });
+            psrList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
             psrList.Reverse();
 
             pmsrList.Sort(
-                delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.PER.CompareTo(pmsr2.PER); });
+                (pmsr1, pmsr2) => pmsr1.PER.CompareTo(pmsr2.PER));
             pmsrList.Reverse();
 
             dgvPlayerStats.ItemsSource = psrList;
@@ -429,8 +428,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PrepareBoxScores()
         {
-            DataTable res;
-            string q;
             dt_bs.Clear();
 
             q = "select * from GameResults";
@@ -469,10 +466,7 @@ namespace NBA_Stats_Tracker.Windows
                 dt_bs.Rows.Add(r);
             }
 
-            var dv_bs = new DataView(dt_bs);
-            dv_bs.AllowNew = false;
-            dv_bs.AllowEdit = false;
-            dv_bs.Sort = "Date DESC";
+            var dv_bs = new DataView(dt_bs) {AllowNew = false, AllowEdit = false, Sort = "Date DESC"};
 
             dgvBoxScores.DataContext = dv_bs;
         }
@@ -483,7 +477,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                SQLiteIO.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+                SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
                                       ref MainWindow.pt, ref MainWindow.bshist,
                                       _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
@@ -524,10 +518,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             // DataTable's ready, set DataView and fill DataGrid
-            var dv_pts = new DataView(dt_pts);
-            dv_pts.AllowNew = false;
-            dv_pts.AllowEdit = false;
-            dv_pts.Sort = "Name ASC";
+            var dv_pts = new DataView(dt_pts) {AllowNew = false, AllowEdit = false, Sort = "Name ASC"};
 
             dgvPlayoffStats.DataContext = dv_pts;
         }
@@ -538,8 +529,8 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, ref _tst, ref _tstopp,
-                                                       ref MainWindow.TeamOrder);
+                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp,
+                                                       out MainWindow.TeamOrder);
 
                 foreach (TeamStats cur in _tst)
                 {
@@ -577,10 +568,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             // DataTable's ready, set DataView and fill DataGrid
-            var dv_ts = new DataView(dt_ts);
-            dv_ts.AllowNew = false;
-            dv_ts.AllowEdit = false;
-            dv_ts.Sort = "Weff DESC";
+            var dv_ts = new DataView(dt_ts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};
 
             dgvTeamStats.DataContext = dv_ts;
         }
@@ -623,7 +611,7 @@ namespace NBA_Stats_Tracker.Windows
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
-            SQLiteIO.LoadSeason(MainWindow.currentDB, ref _tst, ref _tstopp, ref _pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -704,16 +692,14 @@ namespace NBA_Stats_Tracker.Windows
             {
                 return newpsr;
             }
-            else
-            {
-                if (psr.PTS < ptsRequired) newpsr.PPG = float.NaN;
-                if (psr.REB < rebRequired) newpsr.RPG = float.NaN;
-                if (psr.AST < astRequired) newpsr.APG = float.NaN;
-                if (psr.STL < stlRequired) newpsr.SPG = float.NaN;
-                if (psr.BLK < blkRequired) newpsr.BPG = float.NaN;
-                if (psr.MINS < minRequired) newpsr.MPG = float.NaN;
-                return newpsr;
-            }
+
+            if (psr.PTS < ptsRequired) newpsr.PPG = float.NaN;
+            if (psr.REB < rebRequired) newpsr.RPG = float.NaN;
+            if (psr.AST < astRequired) newpsr.APG = float.NaN;
+            if (psr.STL < stlRequired) newpsr.SPG = float.NaN;
+            if (psr.BLK < blkRequired) newpsr.BPG = float.NaN;
+            if (psr.MINS < minRequired) newpsr.MPG = float.NaN;
+            return newpsr;
         }
 
         private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -736,13 +722,6 @@ namespace NBA_Stats_Tracker.Windows
                 var pow = new playerOverviewW(psr.TeamF, psr.ID);
                 pow.ShowDialog();
             }
-        }
-
-        private void ContextMenuCopy_Click(object sender, RoutedEventArgs e)
-        {
-            dgvTeamStats.SelectAllCells();
-            ApplicationCommands.Copy.Execute(null, dgvTeamStats);
-            dgvTeamStats.UnselectAllCells();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using LeftosCommonLibrary;
 using SQLite_Database;
 
@@ -319,7 +318,7 @@ namespace NBA_Stats_Tracker.Data
         public static string TeamAveragesAndRankings(string teamName, TeamStats[] tst,
                                                      SortedDictionary<string, int> TeamOrder)
         {
-            int id = -1;
+            int id;
             try
             {
                 id = TeamOrder[teamName];
@@ -354,8 +353,7 @@ namespace NBA_Stats_Tracker.Data
             //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
             //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
             //TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
-            string msg;
-            msg = String.Format("{0}, the {1}", teamName, rating[teamID][17]);
+            string msg = String.Format("{0}, the {1}", teamName, rating[teamID][17]);
             switch (rating[teamID][17])
             {
                 case 1:
@@ -580,7 +578,7 @@ namespace NBA_Stats_Tracker.Data
 
         public static bool IsTeamHiddenInSeason(string file, string name, int season)
         {
-            SQLiteDatabase db = new SQLiteDatabase(file);
+            var db = new SQLiteDatabase(file);
             int maxSeason = SQLiteIO.getMaxSeason(file);
             string teamsT = "Teams";
             if (season != maxSeason) teamsT += "S" + season;

@@ -25,7 +25,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for aboutW.xaml
     /// </summary>
-    public partial class aboutW : Window
+    public partial class aboutW
     {
         public aboutW()
         {

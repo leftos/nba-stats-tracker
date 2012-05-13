@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -33,17 +34,17 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for teamOverviewW.xaml
     /// </summary>
-    public partial class teamOverviewW : Window
+    public partial class teamOverviewW
     {
         private static string teamsT, pl_teamsT, oppT, pl_oppT;
 
-        private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
         private readonly DataTable dt_hth;
         private readonly DataTable dt_ov;
         private readonly DataTable dt_ss;
         private readonly DataTable dt_yea;
-        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private readonly int[][] pl_rankings;
         private readonly int[][] rankings;
         private int curSeason = MainWindow.curSeason;
@@ -194,6 +195,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvHTHStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTHBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvSplit.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvYearly.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -209,14 +211,9 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateTeamsCombo()
         {
-            var teams = new List<string>();
-            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
-            {
-                if (!tst[kvp.Value].isHidden)
-                {
-                    teams.Add(tst[kvp.Value].displayName);
-                }
-            }
+            var teams =
+                (from kvp in MainWindow.TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).
+                    ToList();
 
             teams.Sort();
 
@@ -260,10 +257,9 @@ namespace NBA_Stats_Tracker.Windows
                 curts = tst[i];
                 curtsopp = tstopp[i];
 
-                DataTable res;
                 String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
                            + curTeam + "')) AND SeasonNum = " + curSeason + " ORDER BY Date DESC";
-                res = db.GetDataTable(q);
+                DataTable res = db.GetDataTable(q);
                 dt_bs_res = res;
 
                 foreach (DataRow r in res.Rows)
@@ -318,14 +314,13 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if ((dtpStart.SelectedDate.HasValue) && (dtpEnd.SelectedDate.HasValue))
                 {
-                    DataTable res;
                     String q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
                                + curTeam + "')) AND ((Date >= '" +
                                SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
                                + "') AND (Date <= '" +
                                SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" +
                                " ORDER BY Date DESC";
-                    res = db.GetDataTable(q);
+                    DataTable res = db.GetDataTable(q);
                     dt_bs_res = res;
 
                     foreach (DataRow r in res.Rows)
@@ -457,11 +452,11 @@ namespace NBA_Stats_Tracker.Windows
                 dr2["REB"] = rankings[i][t.RPG];
                 dr2["OREB"] = rankings[i][t.ORPG];
                 dr2["DREB"] = rankings[i][t.DRPG];
-                dr2["AST"] = rankings[i][t.AST];
-                dr2["TO"] = cmbTeam.Items.Count + 1 - rankings[i][t.TO];
-                dr2["STL"] = rankings[i][t.STL];
-                dr2["BLK"] = rankings[i][t.BLK];
-                dr2["FOUL"] = cmbTeam.Items.Count + 1 - rankings[i][t.FOUL];
+                dr2["AST"] = rankings[i][t.APG];
+                dr2["TO"] = cmbTeam.Items.Count + 1 - rankings[i][t.TPG];
+                dr2["STL"] = rankings[i][t.SPG];
+                dr2["BLK"] = rankings[i][t.BPG];
+                dr2["FOUL"] = cmbTeam.Items.Count + 1 - rankings[i][t.FPG];
 
                 dt_ov.Rows.Add(dr2);
 
@@ -562,11 +557,11 @@ namespace NBA_Stats_Tracker.Windows
                 dr2["REB"] = String.Format("{0:F1}", curtsopp.averages[t.RPG]);
                 dr2["OREB"] = String.Format("{0:F1}", curtsopp.averages[t.ORPG]);
                 dr2["DREB"] = String.Format("{0:F1}", curtsopp.averages[t.DRPG]);
-                dr2["AST"] = String.Format("{0:F1}", curtsopp.averages[t.AST]);
-                dr2["TO"] = String.Format("{0:F1}", curtsopp.averages[t.TO]);
-                dr2["STL"] = String.Format("{0:F1}", curtsopp.averages[t.STL]);
-                dr2["BLK"] = String.Format("{0:F1}", curtsopp.averages[t.BLK]);
-                dr2["FOUL"] = String.Format("{0:F1}", curtsopp.averages[t.FOUL]);
+                dr2["AST"] = String.Format("{0:F1}", curtsopp.averages[t.APG]);
+                dr2["TO"] = String.Format("{0:F1}", curtsopp.averages[t.TPG]);
+                dr2["STL"] = String.Format("{0:F1}", curtsopp.averages[t.SPG]);
+                dr2["BLK"] = String.Format("{0:F1}", curtsopp.averages[t.BPG]);
+                dr2["FOUL"] = String.Format("{0:F1}", curtsopp.averages[t.FPG]);
 
                 dt_ov.Rows.Add(dr2);
 
@@ -634,11 +629,7 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     DataRow dr2 = dt_ov.NewRow();
 
-                    int count = 0;
-                    foreach (TeamStats z in tst)
-                    {
-                        if (z.getPlayoffGames() > 0) count++;
-                    }
+                    int count = tst.Count(z => z.getPlayoffGames() > 0);
 
                     dr2["Type"] = "Pl Rank";
                     dr2["Wins (W%)"] = pl_rankings[i][t.Wp];
@@ -655,11 +646,11 @@ namespace NBA_Stats_Tracker.Windows
                     dr2["REB"] = pl_rankings[i][t.RPG];
                     dr2["OREB"] = pl_rankings[i][t.ORPG];
                     dr2["DREB"] = pl_rankings[i][t.DRPG];
-                    dr2["AST"] = pl_rankings[i][t.AST];
-                    dr2["TO"] = count + 1 - pl_rankings[i][t.TO];
-                    dr2["STL"] = pl_rankings[i][t.STL];
-                    dr2["BLK"] = pl_rankings[i][t.BLK];
-                    dr2["FOUL"] = count + 1 - pl_rankings[i][t.FOUL];
+                    dr2["AST"] = pl_rankings[i][t.APG];
+                    dr2["TO"] = count + 1 - pl_rankings[i][t.TPG];
+                    dr2["STL"] = pl_rankings[i][t.SPG];
+                    dr2["BLK"] = pl_rankings[i][t.BPG];
+                    dr2["FOUL"] = count + 1 - pl_rankings[i][t.FPG];
 
                     dt_ov.Rows.Add(dr2);
 
@@ -757,11 +748,11 @@ namespace NBA_Stats_Tracker.Windows
                     dr2["REB"] = String.Format("{0:F1}", curtsopp.pl_averages[t.RPG]);
                     dr2["OREB"] = String.Format("{0:F1}", curtsopp.pl_averages[t.ORPG]);
                     dr2["DREB"] = String.Format("{0:F1}", curtsopp.pl_averages[t.DRPG]);
-                    dr2["AST"] = String.Format("{0:F1}", curtsopp.pl_averages[t.AST]);
-                    dr2["TO"] = String.Format("{0:F1}", curtsopp.pl_averages[t.TO]);
-                    dr2["STL"] = String.Format("{0:F1}", curtsopp.pl_averages[t.STL]);
-                    dr2["BLK"] = String.Format("{0:F1}", curtsopp.pl_averages[t.BLK]);
-                    dr2["FOUL"] = String.Format("{0:F1}", curtsopp.pl_averages[t.FOUL]);
+                    dr2["AST"] = String.Format("{0:F1}", curtsopp.pl_averages[t.APG]);
+                    dr2["TO"] = String.Format("{0:F1}", curtsopp.pl_averages[t.TPG]);
+                    dr2["STL"] = String.Format("{0:F1}", curtsopp.pl_averages[t.SPG]);
+                    dr2["BLK"] = String.Format("{0:F1}", curtsopp.pl_averages[t.BPG]);
+                    dr2["FOUL"] = String.Format("{0:F1}", curtsopp.pl_averages[t.FPG]);
 
                     dt_ov.Rows.Add(dr2);
 
@@ -771,21 +762,13 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
-            var dv_ov = new DataView(dt_ov);
-            dv_ov.AllowNew = false;
+            var dv_ov = new DataView(dt_ov) {AllowNew = false};
 
             dgvTeamStats.DataContext = dv_ov;
 
             DataView dv_bs;
 
-            if (rbBSSimple.IsChecked.GetValueOrDefault())
-            {
-                dv_bs = new DataView(dt_bs);
-            }
-            else
-            {
-                dv_bs = new DataView(dt_bs_res);
-            }
+            dv_bs = rbBSSimple.IsChecked.GetValueOrDefault() ? new DataView(dt_bs) : new DataView(dt_bs_res);
             dv_bs.AllowEdit = false;
             dv_bs.AllowNew = false;
 
@@ -796,13 +779,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateSplitStats()
         {
-            #region Prepare Split Stats
-
-            var ts = new TeamStats(curTeam);
-            var tsopp = new TeamStats("Opponents");
-
-            DataRow dr;
-
             // Prepare Queries
             string qr_home = String.Format("select * from GameResults where (T2Name LIKE '{0}')", curTeam);
             string qr_away = String.Format("select * from GameResults where (T1Name LIKE '{0}')", curTeam);
@@ -850,8 +826,6 @@ namespace NBA_Stats_Tracker.Windows
                 qr_playoffs += s;
             }
 
-            DataTable res2;
-
             /*
             dr = dt_ss.NewRow();
             dr["Type"] = " ";
@@ -859,12 +833,12 @@ namespace NBA_Stats_Tracker.Windows
             */
 
             // Clear Team Stats
-            ts = new TeamStats(curTeam);
-            tsopp = new TeamStats("Opponents");
+            TeamStats ts = new TeamStats(curTeam);
+            TeamStats tsopp = new TeamStats("Opponents");
 
-            res2 = db.GetDataTable(qr_home);
+            DataTable res2 = db.GetDataTable(qr_home);
             AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
-            dr = dt_ss.NewRow();
+            DataRow dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(ts, ref dr, "Home");
             dt_ss.Rows.Add(dr);
 
@@ -990,13 +964,10 @@ namespace NBA_Stats_Tracker.Windows
             #endregion
 
             // DataTable is done, create DataView and load into DataGrid
-            var dv_ss = new DataView(dt_ss);
-            dv_ss.AllowEdit = false;
-            dv_ss.AllowNew = false;
+            var dv_ss = new DataView(dt_ss) {AllowEdit = false, AllowNew = false};
 
             dgvSplit.DataContext = dv_ss;
 
-            #endregion
         }
 
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1019,7 +990,7 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            var dt_bs_res = new DataTable();
+            dt_bs_res = new DataTable();
 
             //DataRow dr;
 
@@ -1031,7 +1002,6 @@ namespace NBA_Stats_Tracker.Windows
 
             curTeam = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
             var ts = new TeamStats(curTeam);
-            var tsopp = new TeamStats("Opponents");
 
             UpdateOverviewAndBoxScores();
 
@@ -1049,11 +1019,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            for (int i = 0; i < tst.Length; i++)
+            foreach (TeamStats t in tst)
             {
-                if (tst[i].displayName == p)
+                if (t.displayName == p)
                 {
-                    return tst[i].name;
+                    return t.name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -1061,11 +1031,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < tst.Length; i++)
+            foreach (TeamStats t in tst)
             {
-                if (tst[i].name == p)
+                if (t.name == p)
                 {
-                    return tst[i].displayName;
+                    return t.displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -1076,10 +1046,8 @@ namespace NBA_Stats_Tracker.Windows
             string playersT = "Players";
             if (curSeason != maxSeason) playersT += "S" + curSeason;
 
-            string q;
-            DataTable res;
-            q = "select * from " + playersT + " where TeamFin LIKE '" + curTeam + "'";
-            res = db.GetDataTable(q);
+            string q = "select * from " + playersT + " where TeamFin LIKE '" + curTeam + "'";
+            DataTable res = db.GetDataTable(q);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
             var pmsrList = new ObservableCollection<PlayerMetricStatsRow>();
@@ -1145,8 +1113,8 @@ namespace NBA_Stats_Tracker.Windows
             #region Prepare Yearly Stats
 
             string currentDB = MainWindow.currentDB;
-            int curSeason = MainWindow.curSeason;
-            int maxSeason = SQLiteIO.getMaxSeason(currentDB);
+            curSeason = MainWindow.curSeason;
+            maxSeason = SQLiteIO.getMaxSeason(currentDB);
 
             TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
             TeamStats tsopp = tstopp[MainWindow.TeamOrder[curTeam]];
@@ -1172,7 +1140,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (j != curSeason)
                 {
-                    SQLiteIO.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, ref ts, ref tsopp);
+                    SQLiteIO.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, out ts, out tsopp);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
                     CreateDataRowFromTeamStats(ts, ref dr3, "Season " + j.ToString());
@@ -1211,9 +1179,7 @@ namespace NBA_Stats_Tracker.Windows
             CreateDataRowFromTeamStats(tsAll, ref drcur, "All Games");
             dt_yea.Rows.Add(drcur);
 
-            var dv_yea = new DataView(dt_yea);
-            dv_yea.AllowNew = false;
-            dv_yea.AllowEdit = false;
+            var dv_yea = new DataView(dt_yea) {AllowNew = false, AllowEdit = false};
 
             dgvYearly.DataContext = dv_yea;
 
@@ -1373,17 +1339,11 @@ namespace NBA_Stats_Tracker.Windows
 
             tstopp[id].calcAvg();
 
-            var playersToUpdate = new Dictionary<int, PlayerStats>();
-
-            foreach (PlayerStatsRow cur in psrList)
-            {
-                var ps = new PlayerStats(cur);
-                playersToUpdate.Add(ps.ID, ps);
-            }
+            var playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
                                             curSeason, maxSeason);
-            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                   doNotLoadBoxScores: true);
 
@@ -1399,12 +1359,16 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCellValue(DataGrid dataGrid, int row, int col)
         {
-            return (dataGrid.Items[row] as DataRowView).Row.ItemArray[col].ToString();
+            var dataRowView = dataGrid.Items[row] as DataRowView;
+            if (dataRowView != null)
+                return dataRowView.Row.ItemArray[col].ToString();
+
+            return null;
         }
 
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
         {
-            int id = -1;
+            int id;
             try
             {
                 id = MainWindow.TeamOrder[GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString())];
@@ -1422,13 +1386,6 @@ namespace NBA_Stats_Tracker.Windows
                 var cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
-        }
-
-        private void btnReloadStats_Click(object sender, RoutedEventArgs e)
-        {
-            int temp = cmbTeam.SelectedIndex;
-            cmbTeam.SelectedIndex = -1;
-            cmbTeam.SelectedIndex = temp;
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -1532,8 +1489,6 @@ namespace NBA_Stats_Tracker.Windows
                 try
                 {
                     bsw.ShowDialog();
-
-                    MainWindow.UpdateBoxScore();
                 }
                 catch
                 {
@@ -1572,7 +1527,7 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            string curTeam = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
+            curTeam = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
             string curOpp = GetCurTeamFromDisplayName(cmbOppTeam.SelectedItem.ToString());
 
             int iown = MainWindow.TeamOrder[curTeam];
@@ -1588,9 +1543,9 @@ namespace NBA_Stats_Tracker.Windows
             var ts = new TeamStats(curTeam);
             var tsopp = new TeamStats(curOpp);
 
-            var db = new SQLiteDatabase(MainWindow.currentDB);
+            db = new SQLiteDatabase(MainWindow.currentDB);
 
-            var res = new DataTable();
+            DataTable res;
 
             if (dt_hth.Rows.Count > 1) dt_hth.Rows.RemoveAt(dt_hth.Rows.Count - 1);
 
@@ -1675,7 +1630,7 @@ namespace NBA_Stats_Tracker.Windows
                                       cmbOppTeam.SelectedItem,
                                       SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()),
                                       SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()));
-                    DataTable res2 = db.GetDataTable(q);
+                    DataTable res2 = db.GetDataTable(q2);
                     AddToTeamStatsFromSQLBoxScore(res2, ref ts, ref tsopp);
                 }
                 else
@@ -1759,16 +1714,11 @@ namespace NBA_Stats_Tracker.Windows
                 dt_hth.Rows.Add(dr);
             }
 
-            dv_hth = new DataView(dt_hth);
-            dv_hth.AllowNew = false;
-            dv_hth.AllowEdit = false;
+            dv_hth = new DataView(dt_hth) {AllowNew = false, AllowEdit = false};
 
             dgvHTHStats.DataContext = dv_hth;
 
-            var dv_hth_bs = new DataView(dt_hth_bs);
-            dv_hth_bs.AllowNew = false;
-            dv_hth_bs.AllowEdit = false;
-            dv_hth_bs.Sort = "Date DESC";
+            var dv_hth_bs = new DataView(dt_hth_bs) {AllowNew = false, AllowEdit = false, Sort = "Date DESC"};
 
             dgvHTHBoxScores.DataContext = dv_hth_bs;
         }
@@ -2086,7 +2036,7 @@ namespace NBA_Stats_Tracker.Windows
                 pl_oppT += s;
             }
 
-            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             PopulateTeamsCombo();
             try
@@ -2120,32 +2070,16 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (dgvHTHBoxScores.SelectedCells.Count > 0)
             {
-                DataRowView row;
+                var row = (DataRowView)dgvHTHBoxScores.SelectedItems[0];
+                int gameid = Convert.ToInt32(row["GameID"].ToString());
+
+                var bsw = new boxScoreW(boxScoreW.Mode.View, gameid);
                 try
                 {
-                    row = (DataRowView) dgvHTHBoxScores.SelectedItems[0];
+                    bsw.ShowDialog();
                 }
                 catch
                 {
-                    return;
-                }
-                int gameid = Convert.ToInt32(row["GameID"].ToString());
-
-                int i = 0;
-
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
-                {
-                    if (bse.bs.id == gameid)
-                    {
-                        MainWindow.bs = new BoxScore();
-
-                        var bsw = new boxScoreW(boxScoreW.Mode.View, i);
-                        bsw.ShowDialog();
-
-                        MainWindow.UpdateBoxScore();
-                        break;
-                    }
-                    i++;
                 }
             }
         }
@@ -2171,8 +2105,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             string newname = MainWindow.input;
-            var dict = new Dictionary<string, string>();
-            dict.Add("DisplayName", newname);
+            var dict = new Dictionary<string, string> {{"DisplayName", newname}};
             db.Update(teamsT, dict, "Name LIKE '" + curTeam + "'");
             db.Update(pl_teamsT, dict, "Name LIKE '" + curTeam + "'");
             db.Update(oppT, dict, "Name LIKE '" + curTeam + "'");

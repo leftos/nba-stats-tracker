@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -44,7 +43,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public static string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                                            @"\NBA Stats Tracker\";
@@ -138,7 +137,7 @@ namespace NBA_Stats_Tracker.Windows
                 realtst[i] = new TeamStats();
             }
 
-            //TeamOrder = StatsTracker.setTeamOrder("Mode 0");
+            //teamOrder = StatsTracker.setTeamOrder("Mode 0");
             TeamOrder = new SortedDictionary<string, int>();
 
             foreach (KeyValuePair<string, int> kvp in TeamOrder)
@@ -157,6 +156,7 @@ namespace NBA_Stats_Tracker.Windows
                 App.errorReport(ex, "Registry.CurrentUser");
             }
 
+            Debug.Assert(rk != null, "rk != null");
             rk = rk.OpenSubKey(@"SOFTWARE\2K Sports\NBA 2K12");
             if (rk == null)
             {
@@ -214,12 +214,15 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Title = "Please select the Career file you're playing...";
-            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                         +
-                         "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                         "Create A Legend files (*.SMG)|*.SMG";
+            var ofd = new OpenFileDialog
+                          {
+                              Title = "Please select the Career file you're playing...",
+                              Filter =
+                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                                  +
+                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                                  "Create A Legend files (*.SMG)|*.SMG"
+                          };
             if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
             ofd.ShowDialog();
             if (ofd.FileName == "") return;
@@ -236,7 +239,7 @@ namespace NBA_Stats_Tracker.Windows
             //TeamStats[] tempopp = new TeamStats[1];
             TeamStats[] tempopp = tstopp;
 
-            Interop2K12.GetStatsFrom2K12Save(ofd.FileName, ref temp, ref tempopp, ref TeamOrder, ref pt);
+            Interop2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
             if (temp.Length > 1)
             {
                 tst = temp;
@@ -298,9 +301,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "NST Database (*.tst)|*.tst";
-            sfd.InitialDirectory = AppDocsPath;
+            var sfd = new SaveFileDialog {Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath};
             sfd.ShowDialog();
 
             if (sfd.FileName == "") return;
@@ -331,16 +332,18 @@ namespace NBA_Stats_Tracker.Windows
             TeamOrder = new SortedDictionary<string, int>();
             bshist = new List<BoxScoreEntry>();
 
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "NST Database (*.tst)|*.tst";
-            ofd.InitialDirectory = AppDocsPath;
-            ofd.Title = "Please select the TST file that you want to edit...";
+            var ofd = new OpenFileDialog
+                          {
+                              Filter = "NST Database (*.tst)|*.tst",
+                              InitialDirectory = AppDocsPath,
+                              Title = "Please select the TST file that you want to edit..."
+                          };
             ofd.ShowDialog();
 
             if (ofd.FileName == "") return;
 
-            SQLiteIO.LoadSeason(ofd.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
-            //tst = getCustomStats("", ref TeamOrder, ref pt, ref bshist);
+            SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
+            //tst = getCustomStats("", ref teamOrder, ref curPT, ref bshist);
 
             cmbTeam1.SelectedIndex = -1;
             cmbTeam1.SelectedIndex = 0;
@@ -373,23 +376,16 @@ namespace NBA_Stats_Tracker.Windows
 
             if (bs.done == false) return;
 
-            int id1 = -1;
-            int id2 = -1;
+            int id1;
+            int id2;
 
             id1 = TeamOrder[bs.Team1];
             id2 = TeamOrder[bs.Team2];
 
-            SQLiteIO.LoadSeason(currentDB, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist,
+            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist,
                        _curSeason: bs.SeasonNum);
 
-            var list = new List<PlayerBoxScore>();
-            foreach (BindingList<PlayerBoxScore> pbsList in pbsLists)
-            {
-                foreach (PlayerBoxScore pbs in pbsList)
-                {
-                    list.Add(pbs);
-                }
-            }
+            var list = pbsLists.SelectMany(pbsList => pbsList).ToList();
 
             if (!bs.doNotUpdate)
             {
@@ -421,20 +417,20 @@ namespace NBA_Stats_Tracker.Windows
                 "One or more Box Scores have been added/updated. Database saved.");
         }
 
-        public static void AddTeamStatsFromBoxScore(BoxScore bs, ref TeamStats ts1, ref TeamStats ts2)
+        public static void AddTeamStatsFromBoxScore(BoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2)
         {
             var tsopp1 = new TeamStats();
             var tsopp2 = new TeamStats();
-            AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, ref tsopp1, ref tsopp2);
+            AddTeamStatsFromBoxScore(bsToAdd, ref ts1, ref ts2, ref tsopp1, ref tsopp2);
         }
 
-        public static void AddTeamStatsFromBoxScore(BoxScore bs, ref TeamStats ts1, ref TeamStats ts2,
+        public static void AddTeamStatsFromBoxScore(BoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2,
                                                     ref TeamStats tsopp1, ref TeamStats tsopp2)
         {
-            if (!bs.isPlayoff)
+            if (!bsToAdd.isPlayoff)
             {
                 // Add win & loss
-                if (bs.PTS1 > bs.PTS2)
+                if (bsToAdd.PTS1 > bsToAdd.PTS2)
                 {
                     ts1.winloss[0]++;
                     ts2.winloss[1]++;
@@ -445,72 +441,72 @@ namespace NBA_Stats_Tracker.Windows
                     ts2.winloss[0]++;
                 }
                 // Add minutes played
-                ts1.stats[t.MINS] += bs.MINS1;
-                ts2.stats[t.MINS] += bs.MINS2;
+                ts1.stats[t.MINS] += bsToAdd.MINS1;
+                ts2.stats[t.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                ts1.stats[t.PF] += bs.PTS1;
-                ts2.stats[t.PF] += bs.PTS2;
+                ts1.stats[t.PF] += bsToAdd.PTS1;
+                ts2.stats[t.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                ts1.stats[t.PA] += bs.PTS2;
-                ts2.stats[t.PA] += bs.PTS1;
+                ts1.stats[t.PA] += bsToAdd.PTS2;
+                ts2.stats[t.PA] += bsToAdd.PTS1;
 
                 //
-                ts1.stats[t.FGM] += bs.FGM1;
-                ts2.stats[t.FGM] += bs.FGM2;
+                ts1.stats[t.FGM] += bsToAdd.FGM1;
+                ts2.stats[t.FGM] += bsToAdd.FGM2;
 
-                ts1.stats[t.FGA] += bs.FGA1;
-                ts2.stats[t.FGA] += bs.FGA2;
-
-                //
-                ts1.stats[t.TPM] += bs.TPM1;
-                ts2.stats[t.TPM] += bs.TPM2;
+                ts1.stats[t.FGA] += bsToAdd.FGA1;
+                ts2.stats[t.FGA] += bsToAdd.FGA2;
 
                 //
-                ts1.stats[t.TPA] += bs.TPA1;
-                ts2.stats[t.TPA] += bs.TPA2;
+                ts1.stats[t.TPM] += bsToAdd.TPM1;
+                ts2.stats[t.TPM] += bsToAdd.TPM2;
 
                 //
-                ts1.stats[t.FTM] += bs.FTM1;
-                ts2.stats[t.FTM] += bs.FTM2;
+                ts1.stats[t.TPA] += bsToAdd.TPA1;
+                ts2.stats[t.TPA] += bsToAdd.TPA2;
 
                 //
-                ts1.stats[t.FTA] += bs.FTA1;
-                ts2.stats[t.FTA] += bs.FTA2;
+                ts1.stats[t.FTM] += bsToAdd.FTM1;
+                ts2.stats[t.FTM] += bsToAdd.FTM2;
 
                 //
-                ts1.stats[t.OREB] += bs.OREB1;
-                ts2.stats[t.OREB] += bs.OREB2;
+                ts1.stats[t.FTA] += bsToAdd.FTA1;
+                ts2.stats[t.FTA] += bsToAdd.FTA2;
 
                 //
-                ts1.stats[t.DREB] += Convert.ToUInt16(bs.REB1 - bs.OREB1);
-                ts2.stats[t.DREB] += Convert.ToUInt16(bs.REB2 - bs.OREB2);
+                ts1.stats[t.OREB] += bsToAdd.OREB1;
+                ts2.stats[t.OREB] += bsToAdd.OREB2;
 
                 //
-                ts1.stats[t.STL] += bs.STL1;
-                ts2.stats[t.STL] += bs.STL2;
+                ts1.stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                ts2.stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                ts1.stats[t.TO] += bs.TO1;
-                ts2.stats[t.TO] += bs.TO2;
+                ts1.stats[t.STL] += bsToAdd.STL1;
+                ts2.stats[t.STL] += bsToAdd.STL2;
 
                 //
-                ts1.stats[t.BLK] += bs.BLK1;
-                ts2.stats[t.BLK] += bs.BLK2;
+                ts1.stats[t.TO] += bsToAdd.TO1;
+                ts2.stats[t.TO] += bsToAdd.TO2;
 
                 //
-                ts1.stats[t.AST] += bs.AST1;
-                ts2.stats[t.AST] += bs.AST2;
+                ts1.stats[t.BLK] += bsToAdd.BLK1;
+                ts2.stats[t.BLK] += bsToAdd.BLK2;
 
                 //
-                ts1.stats[t.FOUL] += bs.FOUL1;
-                ts2.stats[t.FOUL] += bs.FOUL2;
+                ts1.stats[t.AST] += bsToAdd.AST1;
+                ts2.stats[t.AST] += bsToAdd.AST2;
+
+                //
+                ts1.stats[t.FOUL] += bsToAdd.FOUL1;
+                ts2.stats[t.FOUL] += bsToAdd.FOUL2;
 
 
                 // Opponents Team Stats
                 // Add win & loss
-                if (bs.PTS1 > bs.PTS2)
+                if (bsToAdd.PTS1 > bsToAdd.PTS2)
                 {
                     tsopp2.winloss[0]++;
                     tsopp1.winloss[1]++;
@@ -521,72 +517,72 @@ namespace NBA_Stats_Tracker.Windows
                     tsopp1.winloss[0]++;
                 }
                 // Add minutes played
-                tsopp2.stats[t.MINS] += bs.MINS1;
-                tsopp1.stats[t.MINS] += bs.MINS2;
+                tsopp2.stats[t.MINS] += bsToAdd.MINS1;
+                tsopp1.stats[t.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                tsopp2.stats[t.PF] += bs.PTS1;
-                tsopp1.stats[t.PF] += bs.PTS2;
+                tsopp2.stats[t.PF] += bsToAdd.PTS1;
+                tsopp1.stats[t.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                tsopp2.stats[t.PA] += bs.PTS2;
-                tsopp1.stats[t.PA] += bs.PTS1;
+                tsopp2.stats[t.PA] += bsToAdd.PTS2;
+                tsopp1.stats[t.PA] += bsToAdd.PTS1;
 
                 //
-                tsopp2.stats[t.FGM] += bs.FGM1;
-                tsopp1.stats[t.FGM] += bs.FGM2;
+                tsopp2.stats[t.FGM] += bsToAdd.FGM1;
+                tsopp1.stats[t.FGM] += bsToAdd.FGM2;
 
-                tsopp2.stats[t.FGA] += bs.FGA1;
-                tsopp1.stats[t.FGA] += bs.FGA2;
-
-                //
-                tsopp2.stats[t.TPM] += bs.TPM1;
-                tsopp1.stats[t.TPM] += bs.TPM2;
+                tsopp2.stats[t.FGA] += bsToAdd.FGA1;
+                tsopp1.stats[t.FGA] += bsToAdd.FGA2;
 
                 //
-                tsopp2.stats[t.TPA] += bs.TPA1;
-                tsopp1.stats[t.TPA] += bs.TPA2;
+                tsopp2.stats[t.TPM] += bsToAdd.TPM1;
+                tsopp1.stats[t.TPM] += bsToAdd.TPM2;
 
                 //
-                tsopp2.stats[t.FTM] += bs.FTM1;
-                tsopp1.stats[t.FTM] += bs.FTM2;
+                tsopp2.stats[t.TPA] += bsToAdd.TPA1;
+                tsopp1.stats[t.TPA] += bsToAdd.TPA2;
 
                 //
-                tsopp2.stats[t.FTA] += bs.FTA1;
-                tsopp1.stats[t.FTA] += bs.FTA2;
+                tsopp2.stats[t.FTM] += bsToAdd.FTM1;
+                tsopp1.stats[t.FTM] += bsToAdd.FTM2;
 
                 //
-                tsopp2.stats[t.OREB] += bs.OREB1;
-                tsopp1.stats[t.OREB] += bs.OREB2;
+                tsopp2.stats[t.FTA] += bsToAdd.FTA1;
+                tsopp1.stats[t.FTA] += bsToAdd.FTA2;
 
                 //
-                tsopp2.stats[t.DREB] += Convert.ToUInt16(bs.REB1 - bs.OREB1);
-                tsopp1.stats[t.DREB] += Convert.ToUInt16(bs.REB2 - bs.OREB2);
+                tsopp2.stats[t.OREB] += bsToAdd.OREB1;
+                tsopp1.stats[t.OREB] += bsToAdd.OREB2;
 
                 //
-                tsopp2.stats[t.STL] += bs.STL1;
-                tsopp1.stats[t.STL] += bs.STL2;
+                tsopp2.stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                tsopp1.stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                tsopp2.stats[t.TO] += bs.TO1;
-                tsopp1.stats[t.TO] += bs.TO2;
+                tsopp2.stats[t.STL] += bsToAdd.STL1;
+                tsopp1.stats[t.STL] += bsToAdd.STL2;
 
                 //
-                tsopp2.stats[t.BLK] += bs.BLK1;
-                tsopp1.stats[t.BLK] += bs.BLK2;
+                tsopp2.stats[t.TO] += bsToAdd.TO1;
+                tsopp1.stats[t.TO] += bsToAdd.TO2;
 
                 //
-                tsopp2.stats[t.AST] += bs.AST1;
-                tsopp1.stats[t.AST] += bs.AST2;
+                tsopp2.stats[t.BLK] += bsToAdd.BLK1;
+                tsopp1.stats[t.BLK] += bsToAdd.BLK2;
 
                 //
-                tsopp2.stats[t.FOUL] += bs.FOUL1;
-                tsopp1.stats[t.FOUL] += bs.FOUL2;
+                tsopp2.stats[t.AST] += bsToAdd.AST1;
+                tsopp1.stats[t.AST] += bsToAdd.AST2;
+
+                //
+                tsopp2.stats[t.FOUL] += bsToAdd.FOUL1;
+                tsopp1.stats[t.FOUL] += bsToAdd.FOUL2;
             }
             else
             {
                 // Add win & loss
-                if (bs.PTS1 > bs.PTS2)
+                if (bsToAdd.PTS1 > bsToAdd.PTS2)
                 {
                     ts1.pl_winloss[0]++;
                     ts2.pl_winloss[1]++;
@@ -597,72 +593,72 @@ namespace NBA_Stats_Tracker.Windows
                     ts2.pl_winloss[0]++;
                 }
                 // Add minutes played
-                ts1.pl_stats[t.MINS] += bs.MINS1;
-                ts2.pl_stats[t.MINS] += bs.MINS2;
+                ts1.pl_stats[t.MINS] += bsToAdd.MINS1;
+                ts2.pl_stats[t.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                ts1.pl_stats[t.PF] += bs.PTS1;
-                ts2.pl_stats[t.PF] += bs.PTS2;
+                ts1.pl_stats[t.PF] += bsToAdd.PTS1;
+                ts2.pl_stats[t.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                ts1.pl_stats[t.PA] += bs.PTS2;
-                ts2.pl_stats[t.PA] += bs.PTS1;
+                ts1.pl_stats[t.PA] += bsToAdd.PTS2;
+                ts2.pl_stats[t.PA] += bsToAdd.PTS1;
 
                 //
-                ts1.pl_stats[t.FGM] += bs.FGM1;
-                ts2.pl_stats[t.FGM] += bs.FGM2;
+                ts1.pl_stats[t.FGM] += bsToAdd.FGM1;
+                ts2.pl_stats[t.FGM] += bsToAdd.FGM2;
 
-                ts1.pl_stats[t.FGA] += bs.FGA1;
-                ts2.pl_stats[t.FGA] += bs.FGA2;
-
-                //
-                ts1.pl_stats[t.TPM] += bs.TPM1;
-                ts2.pl_stats[t.TPM] += bs.TPM2;
+                ts1.pl_stats[t.FGA] += bsToAdd.FGA1;
+                ts2.pl_stats[t.FGA] += bsToAdd.FGA2;
 
                 //
-                ts1.pl_stats[t.TPA] += bs.TPA1;
-                ts2.pl_stats[t.TPA] += bs.TPA2;
+                ts1.pl_stats[t.TPM] += bsToAdd.TPM1;
+                ts2.pl_stats[t.TPM] += bsToAdd.TPM2;
 
                 //
-                ts1.pl_stats[t.FTM] += bs.FTM1;
-                ts2.pl_stats[t.FTM] += bs.FTM2;
+                ts1.pl_stats[t.TPA] += bsToAdd.TPA1;
+                ts2.pl_stats[t.TPA] += bsToAdd.TPA2;
 
                 //
-                ts1.pl_stats[t.FTA] += bs.FTA1;
-                ts2.pl_stats[t.FTA] += bs.FTA2;
+                ts1.pl_stats[t.FTM] += bsToAdd.FTM1;
+                ts2.pl_stats[t.FTM] += bsToAdd.FTM2;
 
                 //
-                ts1.pl_stats[t.OREB] += bs.OREB1;
-                ts2.pl_stats[t.OREB] += bs.OREB2;
+                ts1.pl_stats[t.FTA] += bsToAdd.FTA1;
+                ts2.pl_stats[t.FTA] += bsToAdd.FTA2;
 
                 //
-                ts1.pl_stats[t.DREB] += Convert.ToUInt16(bs.REB1 - bs.OREB1);
-                ts2.pl_stats[t.DREB] += Convert.ToUInt16(bs.REB2 - bs.OREB2);
+                ts1.pl_stats[t.OREB] += bsToAdd.OREB1;
+                ts2.pl_stats[t.OREB] += bsToAdd.OREB2;
 
                 //
-                ts1.pl_stats[t.STL] += bs.STL1;
-                ts2.pl_stats[t.STL] += bs.STL2;
+                ts1.pl_stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                ts2.pl_stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                ts1.pl_stats[t.TO] += bs.TO1;
-                ts2.pl_stats[t.TO] += bs.TO2;
+                ts1.pl_stats[t.STL] += bsToAdd.STL1;
+                ts2.pl_stats[t.STL] += bsToAdd.STL2;
 
                 //
-                ts1.pl_stats[t.BLK] += bs.BLK1;
-                ts2.pl_stats[t.BLK] += bs.BLK2;
+                ts1.pl_stats[t.TO] += bsToAdd.TO1;
+                ts2.pl_stats[t.TO] += bsToAdd.TO2;
 
                 //
-                ts1.pl_stats[t.AST] += bs.AST1;
-                ts2.pl_stats[t.AST] += bs.AST2;
+                ts1.pl_stats[t.BLK] += bsToAdd.BLK1;
+                ts2.pl_stats[t.BLK] += bsToAdd.BLK2;
 
                 //
-                ts1.pl_stats[t.FOUL] += bs.FOUL1;
-                ts2.pl_stats[t.FOUL] += bs.FOUL2;
+                ts1.pl_stats[t.AST] += bsToAdd.AST1;
+                ts2.pl_stats[t.AST] += bsToAdd.AST2;
+
+                //
+                ts1.pl_stats[t.FOUL] += bsToAdd.FOUL1;
+                ts2.pl_stats[t.FOUL] += bsToAdd.FOUL2;
 
 
                 // Opponents Team Stats
                 // Add win & loss
-                if (bs.PTS1 > bs.PTS2)
+                if (bsToAdd.PTS1 > bsToAdd.PTS2)
                 {
                     tsopp2.pl_winloss[0]++;
                     tsopp1.pl_winloss[1]++;
@@ -673,67 +669,67 @@ namespace NBA_Stats_Tracker.Windows
                     tsopp1.pl_winloss[0]++;
                 }
                 // Add minutes played
-                tsopp2.pl_stats[t.MINS] += bs.MINS1;
-                tsopp1.pl_stats[t.MINS] += bs.MINS2;
+                tsopp2.pl_stats[t.MINS] += bsToAdd.MINS1;
+                tsopp1.pl_stats[t.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                tsopp2.pl_stats[t.PF] += bs.PTS1;
-                tsopp1.pl_stats[t.PF] += bs.PTS2;
+                tsopp2.pl_stats[t.PF] += bsToAdd.PTS1;
+                tsopp1.pl_stats[t.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                tsopp2.pl_stats[t.PA] += bs.PTS2;
-                tsopp1.pl_stats[t.PA] += bs.PTS1;
+                tsopp2.pl_stats[t.PA] += bsToAdd.PTS2;
+                tsopp1.pl_stats[t.PA] += bsToAdd.PTS1;
 
                 //
-                tsopp2.pl_stats[t.FGM] += bs.FGM1;
-                tsopp1.pl_stats[t.FGM] += bs.FGM2;
+                tsopp2.pl_stats[t.FGM] += bsToAdd.FGM1;
+                tsopp1.pl_stats[t.FGM] += bsToAdd.FGM2;
 
-                tsopp2.pl_stats[t.FGA] += bs.FGA1;
-                tsopp1.pl_stats[t.FGA] += bs.FGA2;
-
-                //
-                tsopp2.pl_stats[t.TPM] += bs.TPM1;
-                tsopp1.pl_stats[t.TPM] += bs.TPM2;
+                tsopp2.pl_stats[t.FGA] += bsToAdd.FGA1;
+                tsopp1.pl_stats[t.FGA] += bsToAdd.FGA2;
 
                 //
-                tsopp2.pl_stats[t.TPA] += bs.TPA1;
-                tsopp1.pl_stats[t.TPA] += bs.TPA2;
+                tsopp2.pl_stats[t.TPM] += bsToAdd.TPM1;
+                tsopp1.pl_stats[t.TPM] += bsToAdd.TPM2;
 
                 //
-                tsopp2.pl_stats[t.FTM] += bs.FTM1;
-                tsopp1.pl_stats[t.FTM] += bs.FTM2;
+                tsopp2.pl_stats[t.TPA] += bsToAdd.TPA1;
+                tsopp1.pl_stats[t.TPA] += bsToAdd.TPA2;
 
                 //
-                tsopp2.pl_stats[t.FTA] += bs.FTA1;
-                tsopp1.pl_stats[t.FTA] += bs.FTA2;
+                tsopp2.pl_stats[t.FTM] += bsToAdd.FTM1;
+                tsopp1.pl_stats[t.FTM] += bsToAdd.FTM2;
 
                 //
-                tsopp2.pl_stats[t.OREB] += bs.OREB1;
-                tsopp1.pl_stats[t.OREB] += bs.OREB2;
+                tsopp2.pl_stats[t.FTA] += bsToAdd.FTA1;
+                tsopp1.pl_stats[t.FTA] += bsToAdd.FTA2;
 
                 //
-                tsopp2.pl_stats[t.DREB] += Convert.ToUInt16(bs.REB1 - bs.OREB1);
-                tsopp1.pl_stats[t.DREB] += Convert.ToUInt16(bs.REB2 - bs.OREB2);
+                tsopp2.pl_stats[t.OREB] += bsToAdd.OREB1;
+                tsopp1.pl_stats[t.OREB] += bsToAdd.OREB2;
 
                 //
-                tsopp2.pl_stats[t.STL] += bs.STL1;
-                tsopp1.pl_stats[t.STL] += bs.STL2;
+                tsopp2.pl_stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                tsopp1.pl_stats[t.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                tsopp2.pl_stats[t.TO] += bs.TO1;
-                tsopp1.pl_stats[t.TO] += bs.TO2;
+                tsopp2.pl_stats[t.STL] += bsToAdd.STL1;
+                tsopp1.pl_stats[t.STL] += bsToAdd.STL2;
 
                 //
-                tsopp2.pl_stats[t.BLK] += bs.BLK1;
-                tsopp1.pl_stats[t.BLK] += bs.BLK2;
+                tsopp2.pl_stats[t.TO] += bsToAdd.TO1;
+                tsopp1.pl_stats[t.TO] += bsToAdd.TO2;
 
                 //
-                tsopp2.pl_stats[t.AST] += bs.AST1;
-                tsopp1.pl_stats[t.AST] += bs.AST2;
+                tsopp2.pl_stats[t.BLK] += bsToAdd.BLK1;
+                tsopp1.pl_stats[t.BLK] += bsToAdd.BLK2;
 
                 //
-                tsopp2.pl_stats[t.FOUL] += bs.FOUL1;
-                tsopp1.pl_stats[t.FOUL] += bs.FOUL2;
+                tsopp2.pl_stats[t.AST] += bsToAdd.AST1;
+                tsopp1.pl_stats[t.AST] += bsToAdd.AST2;
+
+                //
+                tsopp2.pl_stats[t.FOUL] += bsToAdd.FOUL1;
+                tsopp1.pl_stats[t.FOUL] += bsToAdd.FOUL2;
             }
 
             ts1.calcAvg();
@@ -742,18 +738,18 @@ namespace NBA_Stats_Tracker.Windows
             tsopp2.calcAvg();
         }
 
-        private void populateTeamsComboBox(SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
+        private void populateTeamsComboBox(SortedDictionary<string, int> teamOrder, PlayoffTree curPT)
         {
             bool done = false;
 
             cmbTeam1.Items.Clear();
-            if (pt != null)
+            if (curPT != null)
             {
-                if (pt.teams[0] != "Invalid")
+                if (curPT.teams[0] != "Invalid")
                 {
                     var newteams = new List<string>();
                     for (int i = 0; i < 16; i++)
-                        newteams.Add(pt.teams[i]);
+                        newteams.Add(curPT.teams[i]);
                     newteams.Sort();
                     for (int i = 0; i < 16; i++)
                         cmbTeam1.Items.Add(newteams[i]);
@@ -763,7 +759,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (!done)
             {
-                foreach (KeyValuePair<string, int> kvp in TeamOrder)
+                foreach (KeyValuePair<string, int> kvp in teamOrder)
                     cmbTeam1.Items.Add(kvp.Key);
             }
         }
@@ -838,12 +834,15 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnEraseSettings_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Title = "Please select the Career file you want to reset the settings for...";
-            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                         +
-                         "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                         "Create A Legend files (*.SMG)|*.SMG";
+            var ofd = new OpenFileDialog
+                          {
+                              Title = "Please select the Career file you want to reset the settings for...",
+                              Filter =
+                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                                  +
+                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                                  "Create A Legend files (*.SMG)|*.SMG"
+                          };
             if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
             ofd.ShowDialog();
             if (ofd.FileName == "") return;
@@ -873,7 +872,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnScout_Click(object sender, RoutedEventArgs e)
         {
-            int id = -1;
+            int id;
             try
             {
                 id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
@@ -894,7 +893,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnTeamCSV_Click(object sender, RoutedEventArgs e)
         {
-            int id = -1;
+            int id;
             try
             {
                 id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
@@ -904,7 +903,7 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            string header1 = "GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL";
+            const string header1 = "GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL";
             /*
             string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
                 tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[t.FGM], tst[id].stats[t.FGA], tst[id].stats[t.TPM], tst[id].stats[t.TPA],
@@ -919,9 +918,9 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
+            //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
 
-            string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            const string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
             string data2 = String.Format("{0:F3}", tst[id].averages[t.Wp]) + "," +
                            String.Format("{0:F1}", tst[id].averages[t.Weff]);
             for (int j = 0; j <= 15; j++)
@@ -958,10 +957,12 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
-            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            sfd.Title = "Select a file to save the CSV to...";
+            var sfd = new SaveFileDialog
+                          {
+                              Filter = "Comma-Separated Values file (*.csv)|*.csv",
+                              InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                              Title = "Select a file to save the CSV to..."
+                          };
             sfd.ShowDialog();
             if (sfd.FileName == "") return;
 
@@ -984,9 +985,9 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnLeagueCSV_Click(object sender, RoutedEventArgs e)
         {
-            string header1 = ",Team,GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL,";
+            const string header1 = ",Team,GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL,";
             //string header2 = "Team,W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
-            string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            const string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
             /*
             string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
                 tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[t.FGM], tst[id].stats[t.FGA], tst[id].stats[t.TPM], tst[id].stats[t.TPA],
@@ -1034,10 +1035,12 @@ namespace NBA_Stats_Tracker.Windows
                 data1 += "\n";
             }
 
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
-            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            sfd.Title = "Select a file to save the CSV to...";
+            var sfd = new SaveFileDialog
+                          {
+                              Filter = "Comma-Separated Values file (*.csv)|*.csv",
+                              InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                              Title = "Select a file to save the CSV to..."
+                          };
             sfd.ShowDialog();
             if (sfd.FileName == "") return;
 
@@ -1083,12 +1086,15 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnInject_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Title = "Please select the Career file you want to update...";
-            ofd.Filter = "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                         +
-                         "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                         "Create A Legend files (*.SMG)|*.SMG";
+            var ofd = new OpenFileDialog
+                          {
+                              Title = "Please select the Career file you want to update...",
+                              Filter =
+                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                                  +
+                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                                  "Create A Legend files (*.SMG)|*.SMG"
+                          };
             if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
             ofd.ShowDialog();
 
@@ -1100,54 +1106,51 @@ namespace NBA_Stats_Tracker.Windows
             var temp = new TeamStats[1];
             var tempopp = new TeamStats[1];
 
-            Interop2K12.GetStatsFrom2K12Save(fn, ref temp, ref tempopp, ref TeamOrder, ref pt);
+            Interop2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
             if (temp.Length == 1)
             {
                 MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
                 return;
             }
+            bool incompatible = false;
+
+            if (temp.Length != tst.Length) incompatible = true;
             else
             {
-                bool incompatible = false;
-
-                if (temp.Length != tst.Length) incompatible = true;
-                else
+                for (int i = 0; i < temp.Length; i++)
                 {
-                    for (int i = 0; i < temp.Length; i++)
+                    if (temp[i].name != tst[i].name)
                     {
-                        if (temp[i].name != tst[i].name)
-                        {
-                            incompatible = true;
-                            break;
-                        }
+                        incompatible = true;
+                        break;
+                    }
 
-                        if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) ||
-                            (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
-                        {
-                            incompatible = true;
-                            break;
-                        }
+                    if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) ||
+                        (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                    {
+                        incompatible = true;
+                        break;
                     }
                 }
+            }
 
-                if (incompatible)
-                {
-                    MessageBoxResult r =
-                        MessageBox.Show(
-                            "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
-                            "\nThis could be happening for a number of reasons:\n\n" +
-                            "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
-                            "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
-                            "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
-                            "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
-                            "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
-                            "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
-                            "to export the stats from the database to your 2K save.\n\n" +
-                            "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
-                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (incompatible)
+            {
+                MessageBoxResult r =
+                    MessageBox.Show(
+                        "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
+                        "\nThis could be happening for a number of reasons:\n\n" +
+                        "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
+                        "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
+                        "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
+                        "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
+                        "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
+                        "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
+                        "to export the stats from the database to your 2K save.\n\n" +
+                        "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
+                        "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
-                    if (r == MessageBoxResult.No) return;
-                }
+                if (r == MessageBoxResult.No) return;
             }
 
 
@@ -1220,7 +1223,7 @@ namespace NBA_Stats_Tracker.Windows
                                 MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            SQLiteIO.LoadSeason(file, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist);
+                            SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
 
                             cmbTeam1.SelectedIndex = -1;
                             cmbTeam1.SelectedIndex = 0;
@@ -1280,15 +1283,13 @@ namespace NBA_Stats_Tracker.Windows
                                          {"Wizards", "WAS"}
                                      };
 
-            worker1 = new BackgroundWorker();
-            worker1.WorkerReportsProgress = true;
-            worker1.WorkerSupportsCancellation = true;
+            worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             worker1.DoWork += delegate
                                   {
                                       foreach (KeyValuePair<string, string> kvp in TeamNamesShort)
                                       {
-                                          var temppst = new Dictionary<int, PlayerStats>();
+                                          Dictionary<int, PlayerStats> temppst;
                                           InteropBR.ImportRealStats(kvp, out realtst[TeamOrder[kvp.Key]],
                                                                     out realtstopp[TeamOrder[kvp.Key]], out temppst);
                                           foreach (KeyValuePair<int, PlayerStats> kvp2 in temppst)
@@ -1337,7 +1338,7 @@ namespace NBA_Stats_Tracker.Windows
                                                       cmbTeam1.SelectedIndex = -1;
                                                       cmbTeam1.SelectedIndex = 0;
                                                       txtFile.Text = file;
-                                                      SQLiteIO.LoadSeason(file, ref tst, ref tstopp, ref pst, ref TeamOrder,
+                                                      SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder,
                                                                  ref pt, ref bshist, _curSeason: curSeason);
 
                                                       txbWait.Visibility = Visibility.Hidden;
@@ -1399,7 +1400,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 realteam = Helper.getRealStats(cmbTeam1.SelectedItem.ToString());
             }
-            TeamStats curteam = tst[TeamOrder[cmbTeam1.SelectedItem.ToString()]];
+            TeamStats curteam = tst[teamOrder[cmbTeam1.SelectedItem.ToString()]];
 
             var vw = new versusW(curteam, "Current", realteam, "Real");
             vw.ShowDialog();
@@ -1408,22 +1409,22 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCompareOtherFile_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Title = "Select the TST file that has the team stats you want to compare to...";
-            ofd.Filter = "Team Stats files (*.tst)|*.tst";
-            ofd.InitialDirectory = AppDocsPath;
+            var ofd = new OpenFileDialog
+                          {
+                              Title = "Select the TST file that has the team stats you want to compare to...",
+                              Filter = "Team Stats files (*.tst)|*.tst",
+                              InitialDirectory = AppDocsPath
+                          };
             ofd.ShowDialog();
 
             string file = ofd.FileName;
             if (file != "")
             {
                 string team = cmbTeam1.SelectedItem.ToString();
-                string safefn = Tools.getSafeFilename(file);
                 var _newTeamOrder = new SortedDictionary<string, int>();
 
                 FileStream stream = File.Open(ofd.FileName, FileMode.Open);
-                var bf = new BinaryFormatter();
-                bf.AssemblyFormat = FormatterAssemblyStyle.Simple;
+                var bf = new BinaryFormatter {AssemblyFormat = FormatterAssemblyStyle.Simple};
 
                 var _newtst = new TeamStats[30];
                 for (int i = 0; i < 30; i++)
@@ -1459,7 +1460,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            for (int i = SQLiteIO.getMaxSeason(MainWindow.currentDB); i > 0; i--)
+            for (int i = SQLiteIO.getMaxSeason(currentDB); i > 0; i--)
             {
                 cmbSeasonNum.Items.Add(i.ToString());
             }
@@ -1479,20 +1480,21 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (ofd1.FileName == "") return;
 
-                SQLiteIO.LoadSeason(ofd1.FileName, ref tst, ref tstopp, ref pst, ref TeamOrder, ref pt, ref bshist, true);
+                SQLiteIO.LoadSeason(ofd1.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
                 cmbTeam1.SelectedIndex = 0;
             }
 
-            var ofd = new OpenFileDialog();
-            ofd.Title = "Select the TST file that has the team stats you want to compare to...";
-            ofd.Filter = "Team Stats files (*.tst)|*.tst";
-            ofd.InitialDirectory = AppDocsPath;
+            var ofd = new OpenFileDialog
+                          {
+                              Title = "Select the TST file that has the team stats you want to compare to...",
+                              Filter = "Team Stats files (*.tst)|*.tst",
+                              InitialDirectory = AppDocsPath
+                          };
             ofd.ShowDialog();
 
             if (ofd.FileName == "") return;
 
             string team = cmbTeam1.SelectedItem.ToString();
-            int id = TeamOrder[team];
 
             TeamStats[] curTST = tst;
 
@@ -1501,7 +1503,7 @@ namespace NBA_Stats_Tracker.Windows
             IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
             var oldTST = new TeamStats[1];
             var oldTSTopp = new TeamStats[1];
-            SQLiteIO.LoadSeason(ofd.FileName, ref oldTST, ref oldTSTopp, ref pst, ref oldTeamOrder, ref oldPT, ref oldbshist,
+            SQLiteIO.LoadSeason(ofd.FileName, out oldTST, out oldTSTopp, out pst, out oldTeamOrder, ref oldPT, ref oldbshist,
                        false);
 
             var curR = new TeamRankings(tst);
@@ -1519,25 +1521,16 @@ namespace NBA_Stats_Tracker.Windows
                     mini = i;
             }
 
-            string str = "";
+            string str;
 
             string team1 = tst[maxi].name;
-            if (diffrnk[maxi][0] > 0)
-            {
-                str =
-                    String.Format(
-                        "Most improved in {7}, the {0}. They were #{1} ({4:F1}), climbing {3} places they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
-                        tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0],
-                        oldTST[maxi].averages[0], tst[maxi].averages[0], diffavg[maxi][0], "PPG");
-            }
-            else
-            {
-                str =
-                    String.Format(
-                        "Most improved in {7}, the {0}. They were #{1} ({4:F1}) and they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
-                        tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0],
-                        oldTST[maxi].averages[0], tst[maxi].averages[0], diffavg[maxi][0], "PPG");
-            }
+            str =
+                String.Format(
+                    diffrnk[maxi][0] > 0
+                        ? "Most improved in {7}, the {0}. They were #{1} ({4:F1}), climbing {3} places they are now at #{2} ({5:F1}), a {6:F1} {7} difference!"
+                        : "Most improved in {7}, the {0}. They were #{1} ({4:F1}) and they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
+                    tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0],
+                    oldTST[maxi].averages[0], tst[maxi].averages[0], diffavg[maxi][0], "PPG");
             str += " ";
             str +=
                 String.Format(
@@ -1666,17 +1659,11 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (bs.done)
                 {
-                    var list = new List<PlayerBoxScore>();
-                    foreach (BindingList<PlayerBoxScore> pbsList in pbsLists)
-                    {
-                        foreach (PlayerBoxScore pbs in pbsList)
-                        {
-                            list.Add(pbs);
-                        }
-                    }
+                    var list = pbsLists.SelectMany(pbsList => pbsList).ToList();
 
                     bshist[bs.bshistid].bs = bs;
                     bshist[bs.bshistid].pbsList = list;
+                    bshist[bs.bshistid].date = bs.gamedate;
                     bshist[bs.bshistid].mustUpdate = true;
                 }
             }
@@ -1761,9 +1748,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "NST Database (*.tst)|*.tst";
-            sfd.InitialDirectory = AppDocsPath;
+            var sfd = new SaveFileDialog {Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath};
             sfd.ShowDialog();
 
             if (sfd.FileName == "") return;
@@ -1800,12 +1785,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (addInfo != "$$NST Players Added")
                 {
                     string[] parts = Regex.Split(addInfo, "\r\n");
-                    var newTeams = new List<string>();
-                    foreach (string s in parts)
-                    {
-                        if (!String.IsNullOrWhiteSpace(s))
-                            newTeams.Add(s);
-                    }
+                    var newTeams = parts.Where(s => !String.IsNullOrWhiteSpace(s)).ToList();
 
                     int oldlen = tst.GetLength(0);
                     if (SQLiteIO.isTSTEmpty()) oldlen = 0;
@@ -1854,19 +1834,19 @@ namespace NBA_Stats_Tracker.Windows
                     curSeason = SQLiteIO.getMaxSeason(currentDB);
 
                     string q = "alter table Teams rename to TeamsS" + curSeason;
-                    int code = db.ExecuteNonQuery(q);
+                    db.ExecuteNonQuery(q);
 
                     q = "alter table PlayoffTeams rename to PlayoffTeamsS" + curSeason;
-                    code = db.ExecuteNonQuery(q);
+                    db.ExecuteNonQuery(q);
 
                     q = "alter table Opponents rename to OpponentsS" + curSeason;
-                    code = db.ExecuteNonQuery(q);
+                    db.ExecuteNonQuery(q);
 
                     q = "alter table PlayoffOpponents rename to PlayoffOpponentsS" + curSeason;
-                    code = db.ExecuteNonQuery(q);
+                    db.ExecuteNonQuery(q);
 
                     q = "alter table Players rename to PlayersS" + curSeason;
-                    code = db.ExecuteNonQuery(q);
+                    db.ExecuteNonQuery(q);
 
                     curSeason++;
 
@@ -1938,10 +1918,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuMiscImportBoxScores_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "NST Database (*.tst)|*.tst";
-            ofd.InitialDirectory = AppDocsPath;
-            ofd.Title = "Please select the TST file that you want to import from...";
+            var ofd = new OpenFileDialog
+                          {
+                              Filter = "NST Database (*.tst)|*.tst",
+                              InitialDirectory = AppDocsPath,
+                              Title = "Please select the TST file that you want to import from..."
+                          };
             ofd.ShowDialog();
 
             if (ofd.FileName == "") return;
@@ -1997,7 +1979,8 @@ namespace NBA_Stats_Tracker.Windows
                                     doNotAdd = true;
                                     break;
                                 }
-                                else if (r == MessageBoxResult.No)
+
+                                if (r == MessageBoxResult.No)
                                 {
                                     bshist.Remove(bse);
                                     break;
@@ -2014,11 +1997,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private int GetFreeBseId()
         {
-            var bseIDs = new List<int>();
-            foreach (BoxScoreEntry bse in bshist)
-            {
-                bseIDs.Add(bse.bs.id);
-            }
+            var bseIDs = bshist.Select(bse => bse.bs.id).ToList();
 
             bseIDs.Sort();
 
@@ -2038,7 +2017,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (addInfo == "$$TEAMSENABLED")
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(currentDB, curSeason, ref tst, ref tstopp, ref TeamOrder);
+                SQLiteIO.GetAllTeamStatsFromDatabase(currentDB, curSeason, out tst, out tstopp, out TeamOrder);
                 updateStatus("Teams were enabled/disabled. Database saved.");
             }
         }
@@ -2051,9 +2030,19 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuMiscDeleteBoxScores_Click(object sender, RoutedEventArgs e)
         {
-            BoxScoreListW bslw = new BoxScoreListW();
+            if (SQLiteIO.isTSTEmpty()) return;
+
+            var bslw = new BoxScoreListW();
             bslw.ShowDialog();
             SQLiteIO.LoadSeason();
+        }
+
+        private void btnPlayerSearch_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.isTSTEmpty()) return;
+
+            var psw = new PlayerSearchW();
+            psw.ShowDialog();
         }
     }
 }

@@ -17,6 +17,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Controls;
@@ -42,12 +43,12 @@ namespace LeftosCommonLibrary
 
         public static String getCRC(string filename)
         {
-            var crc32 = new Crc32();
             String hash = String.Empty;
 
-            using (FileStream fs = File.Open(filename, FileMode.Open))
-                foreach (byte b in crc32.ComputeHash(fs))
-                    hash += b.ToString("x2").ToLower();
+            using (var crc32 = new Crc32())
+                using (FileStream fs = File.Open(filename, FileMode.Open))
+                    hash = crc32.ComputeHash(fs).Aggregate(hash, (current, b) => current + b.ToString("x2").ToLower());
+
             return hash;
         }
 
@@ -73,14 +74,15 @@ namespace LeftosCommonLibrary
         public static string GetMD5(string s)
         {
             //Declarations
-            Byte[] originalBytes;
             Byte[] encodedBytes;
             MD5 md5;
 
             //Instantiate MD5CryptoServiceProvider, get bytes for original password and compute hash (encoded password)
-            md5 = new MD5CryptoServiceProvider();
-            originalBytes = Encoding.Default.GetBytes(s);
-            encodedBytes = md5.ComputeHash(originalBytes);
+            using (md5 = new MD5CryptoServiceProvider())
+            {
+                Byte[] originalBytes = Encoding.Default.GetBytes(s);
+                encodedBytes = md5.ComputeHash(originalBytes);
+            }
 
             //Convert encoded bytes back to a 'readable' string
             return BitConverter.ToString(encodedBytes);
@@ -88,7 +90,11 @@ namespace LeftosCommonLibrary
 
         public static DataGridCell GetCell(DataGrid dataGrid, int row, int col)
         {
-            return (dataGrid.Items[row] as DataRowView).Row.ItemArray[col] as DataGridCell;
+            var dataRowView = dataGrid.Items[row] as DataRowView;
+            if (dataRowView != null)
+                return dataRowView.Row.ItemArray[col] as DataGridCell;
+            
+            return null;
         }
 
         public static UInt16 getUInt16(DataRow r, string ColumnName)

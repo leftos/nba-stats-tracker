@@ -23,7 +23,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class inputBoxW : Window
+    public partial class inputBoxW
     {
         public inputBoxW(string message)
         {

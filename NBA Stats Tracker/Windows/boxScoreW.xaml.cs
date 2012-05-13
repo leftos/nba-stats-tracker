@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -34,7 +35,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class boxScoreW : Window
+    public partial class boxScoreW
     {
         #region Mode enum
 
@@ -123,9 +124,9 @@ namespace NBA_Stats_Tracker.Windows
 
             dtpGameDate.SelectedDate = bs.gamedate;
             curSeason = bs.SeasonNum;
-            SortedDictionary<string, int> TeamOrder = new SortedDictionary<string, int>();
-            SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, ref tst, ref tstopp,
-                                                 ref TeamOrder);
+            var TeamOrder = new SortedDictionary<string, int>();
+            SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out tst, out tstopp,
+                                                 out TeamOrder);
             chkIsPlayoff.IsChecked = bs.isPlayoff;
 
             calculateScore1();
@@ -214,10 +215,10 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateDataGrid(int team)
         {
-            string Team1, Team2;
             string q;
             if (team == 1)
             {
+                string Team1;
                 try
                 {
                     Team1 = GetCurTeamFromDisplayName(cmbTeam1.SelectedItem.ToString());
@@ -230,6 +231,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
+                string Team2;
                 try
                 {
                     Team2 = GetCurTeamFromDisplayName(cmbTeam2.SelectedItem.ToString());
@@ -438,19 +440,21 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                if (MainWindow.isCustom)
+                if (curmode == Mode.View)
                 {
-                    if (cbHistory.SelectedIndex != -1)
+                    if (curBoxScore.bshistid != -1)
                     {
                         MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?",
                                                              "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
                                                              MessageBoxImage.Question);
                         if (r == MessageBoxResult.Cancel) return;
-                        else if (r == MessageBoxResult.Yes)
+                        
+                        if (r == MessageBoxResult.Yes)
                         {
                             tryParseBS();
                             if (MainWindow.bs.done == false) return;
 
+                            MainWindow.UpdateBoxScore();
                             MessageBox.Show("It is recommended to save the database for changes to take effect.");
                         }
                         else
@@ -622,11 +626,8 @@ namespace NBA_Stats_Tracker.Windows
                     pbs.Team = Team2;
 
                 int starters = 0;
-                var pbsLists = new List<BindingList<PlayerBoxScore>>(2);
-                pbsLists.Add(pbsAwayList);
-                pbsLists.Add(pbsHomeList);
-                var allPlayers = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, string> kvp in PlayersListAway) allPlayers.Add(kvp.Key, kvp.Value);
+                var pbsLists = new List<BindingList<PlayerBoxScore>>(2) {pbsAwayList, pbsHomeList};
+                var allPlayers = PlayersListAway.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 foreach (KeyValuePair<int, string> kvp in PlayersListHome) allPlayers.Add(kvp.Key, kvp.Value);
                 foreach (BindingList<PlayerBoxScore> pbsList in pbsLists)
                 {
@@ -798,22 +799,7 @@ namespace NBA_Stats_Tracker.Windows
             UpdateDataGrid(2);
         }
 
-        private void txtFGM1_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore1();
-        }
-
-        private void calculateScore1()
-        {
-            calculateScore1(null, null);
-        }
-
-        private void calculateScore2()
-        {
-            calculateScore2(null, null);
-        }
-
-        private void calculateScore1(object sender, TextChangedEventArgs e)
+        private void calculateScore1(object sender = null, TextChangedEventArgs e = null)
         {
             try
             {
@@ -835,22 +821,7 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
-        private void txt3PM1_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore1();
-        }
-
-        private void txtFTM1_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore1();
-        }
-
-        private void txtFGM2_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore2();
-        }
-
-        private void calculateScore2(object sender, TextChangedEventArgs e)
+        private void calculateScore2(object sender = null, TextChangedEventArgs e = null)
         {
             try
             {
@@ -870,16 +841,6 @@ namespace NBA_Stats_Tracker.Windows
                 txtPTS2.Text = "N/A";
                 txbT2Avg.Text = "";
             }
-        }
-
-        private void txt3PM2_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore2();
-        }
-
-        private void txtFTM2_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            calculateScore2();
         }
 
         private void btnCSVOK_Click(object sender, RoutedEventArgs e)
@@ -962,12 +923,6 @@ namespace NBA_Stats_Tracker.Windows
             tb.SelectAll();
         }
 
-        private void cbHistory_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            int i = cbHistory.SelectedIndex;
-            
-        }
-
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1) return;
@@ -975,7 +930,7 @@ namespace NBA_Stats_Tracker.Windows
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             //MainWindow.ChangeSeason(curSeason, MainWindow.getMaxSeason(MainWindow.currentDB));
 
-            SQLiteIO.LoadSeason(MainWindow.currentDB, ref tst, ref tstopp, ref pst, ref MainWindow.TeamOrder,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                   ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                   doNotLoadBoxScores: true);
 
@@ -1102,7 +1057,6 @@ namespace NBA_Stats_Tracker.Windows
             }
             catch (Exception)
             {
-                return;
             }
         }
 
@@ -1121,7 +1075,6 @@ namespace NBA_Stats_Tracker.Windows
             }
             catch (Exception)
             {
-                return;
             }
         }
 
@@ -1133,7 +1086,6 @@ namespace NBA_Stats_Tracker.Windows
             }
             catch (Exception)
             {
-                return;
             }
         }
 
@@ -1185,11 +1137,11 @@ namespace NBA_Stats_Tracker.Windows
                 if (pmsrListAway.Count == 0 && pmsrListHome.Count == 0) return;
 
                 pmsrListAway.Sort(
-                    delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+                    (pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 pmsrListAway.Reverse();
 
                 pmsrListHome.Sort(
-                    delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+                    (pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 pmsrListHome.Reverse();
             }
             catch (Exception)
@@ -1243,7 +1195,7 @@ namespace NBA_Stats_Tracker.Windows
                         pbsBest = pbs;
                     }
                 }
-                TeamBest = cmbTeam1.SelectedItem.ToString();
+                TeamBest = cmbTeam2.SelectedItem.ToString();
                 awayid = 0;
                 homeid = 1;
             }
@@ -1352,7 +1304,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateMetric(int team)
         {
-            PlayerStats ps;
             var ts = new TeamStats(cmbTeam1.SelectedItem.ToString());
             var tsopp = new TeamStats(cmbTeam2.SelectedItem.ToString());
 
@@ -1369,14 +1320,13 @@ namespace NBA_Stats_Tracker.Windows
             var pmsrList = new List<PlayerMetricStatsRow>();
             BindingList<PlayerBoxScore> pbsList;
 
-            if (team == 1) pbsList = pbsAwayList;
-            else pbsList = pbsHomeList;
+            pbsList = team == 1 ? pbsAwayList : pbsHomeList;
 
             foreach (PlayerBoxScore pbs in pbsList)
             {
                 if (pbs.PlayerID == -1) continue;
 
-                ps = pst[pbs.PlayerID];
+                PlayerStats ps = pst[pbs.PlayerID];
                 ps.ResetStats();
                 ps.AddBoxScore(pbs);
                 ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
@@ -1384,7 +1334,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             pmsrList.Sort(
-                delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
+                (pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             pmsrList.Reverse();
 
             if (team == 1)

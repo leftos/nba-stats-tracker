@@ -28,257 +28,228 @@ namespace NBA_Stats_Tracker.Interop
 {
     public static class InteropBR
     {
-        private const int tMINS = 0,
-                          tPF = 1,
-                          tPA = 2,
-                          tFGM = 4,
-                          tFGA = 5,
-                          tTPM = 6,
-                          tTPA = 7,
-                          tFTM = 8,
-                          tFTA = 9,
-                          tOREB = 10,
-                          tDREB = 11,
-                          tSTL = 12,
-                          tTO = 13,
-                          tBLK = 14,
-                          tAST = 15,
-                          tFOUL = 16;
-
-        private const int pGP = 0,
-                          pGS = 1,
-                          pMINS = 2,
-                          pPTS = 3,
-                          pDREB = 4,
-                          pOREB = 5,
-                          pAST = 6,
-                          pSTL = 7,
-                          pBLK = 8,
-                          pTO = 9,
-                          pFOUL = 10,
-                          pFGM = 11,
-                          pFGA = 12,
-                          pTPM = 13,
-                          pTPA = 14,
-                          pFTM = 15,
-                          pFTA = 16;
-
+        // TODO: Grab Box Scores from BR
         private static DataSet GetBoxScore(string url)
         {
-            var dataset = new DataSet();
-
-            var htmlweb = new HtmlWeb();
-            HtmlDocument doc = htmlweb.Load(url);
-
-            HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-            foreach (HtmlNode cur in tables)
+            using (var dataset = new DataSet())
             {
-                try
-                {
-                    if (!cur.Attributes["id"].Value.EndsWith("_basic")) continue;
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                var table = new DataTable(cur.Attributes["id"].Value);
+                var htmlweb = new HtmlWeb();
+                HtmlDocument doc = htmlweb.Load(url);
 
-                HtmlNode thead = cur.SelectSingleNode("thead");
-                HtmlNodeCollection theadrows = thead.SelectNodes("tr");
-                HtmlNodeCollection header = theadrows[1].SelectNodes("th");
-
-                IEnumerable<string> headers = theadrows[1]
-                    .Elements("th")
-                    .Select(th => th.InnerText.Trim());
-                foreach (string colheader in headers)
+                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (HtmlNode cur in tables)
                 {
-                    table.Columns.Add(colheader);
-                }
+                    try
+                    {
+                        if (!cur.Attributes["id"].Value.EndsWith("_basic")) continue;
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    using (var table = new DataTable(cur.Attributes["id"].Value))
+                    {
+                        HtmlNode thead = cur.SelectSingleNode("thead");
+                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
 
-                HtmlNode tbody = cur.SelectSingleNode("tbody");
-                HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
-                                                                        .Select(td => td.InnerText.Trim())
-                                                                        .ToArray());
-                foreach (string[] row in rows)
-                {
-                    table.Rows.Add(row);
-                }
+                        IEnumerable<string> headers = theadrows[1]
+                            .Elements("th")
+                            .Select(th => th.InnerText.Trim());
+                        foreach (string colheader in headers)
+                        {
+                            table.Columns.Add(colheader);
+                        }
 
-                dataset.Tables.Add(table);
+                        HtmlNode tbody = cur.SelectSingleNode("tbody");
+                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
+                        IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                                                .Select(td => td.InnerText.Trim())
+                                                                                .ToArray());
+                        foreach (object[] row in rows)
+                        {
+                            table.Rows.Add(row);
+                        }
+
+                        dataset.Tables.Add(table);
+                    }
+                }
+                return dataset;
             }
-            return dataset;
         }
 
         private static DataSet GetSeasonTeamStats(string url, out string[] recordparts)
         {
-            var dataset = new DataSet();
-
-            var htmlweb = new HtmlWeb();
-            HtmlDocument doc = htmlweb.Load(url);
-
-            HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//div[@id='info_box']");
-            HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
-            HtmlNode infoboxp = infoboxps[2];
-            HtmlNode infoboxpstrong = infoboxp.NextSibling;
-            string record = infoboxpstrong.InnerText;
-            recordparts = record.Split('-');
-
-            HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-            foreach (HtmlNode cur in tables)
+            using (var dataset = new DataSet())
             {
-                try
-                {
-                    if (cur.Attributes["id"].Value != "team") continue;
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                var table = new DataTable(cur.Attributes["id"].Value);
+                var htmlweb = new HtmlWeb();
+                HtmlDocument doc = htmlweb.Load(url);
 
-                HtmlNode thead = cur.SelectSingleNode("thead");
-                HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//div[@id='info_box']");
+                HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
+                HtmlNode infoboxp = infoboxps[2];
+                HtmlNode infoboxpstrong = infoboxp.NextSibling;
+                string record = infoboxpstrong.InnerText;
+                recordparts = record.Split('-');
 
-                IEnumerable<string> headers = theadrows[0]
-                    .Elements("th")
-                    .Select(th => th.InnerText.Trim());
-                foreach (string colheader in headers)
+                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (HtmlNode cur in tables)
                 {
-                    table.Columns.Add(colheader);
-                }
+                    try
+                    {
+                        if (cur.Attributes["id"].Value != "team") continue;
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    using (var table = new DataTable(cur.Attributes["id"].Value))
+                    {
+                        HtmlNode thead = cur.SelectSingleNode("thead");
+                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
 
-                HtmlNode tbody = cur.SelectSingleNode("tbody");
-                HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
-                                                                        .Select(td => td.InnerText.Trim())
-                                                                        .ToArray());
-                foreach (string[] row in rows)
-                {
-                    table.Rows.Add(row);
-                }
+                        IEnumerable<string> headers = theadrows[0]
+                            .Elements("th")
+                            .Select(th => th.InnerText.Trim());
+                        foreach (string colheader in headers)
+                        {
+                            table.Columns.Add(colheader);
+                        }
 
-                dataset.Tables.Add(table);
+                        HtmlNode tbody = cur.SelectSingleNode("tbody");
+                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
+                        IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                                                .Select(td => td.InnerText.Trim())
+                                                                                .ToArray());
+                        foreach (object[] row in rows)
+                        {
+                            table.Rows.Add(row);
+                        }
+
+                        dataset.Tables.Add(table);
+                    }
+                }
+                return dataset;
             }
-            return dataset;
         }
 
         private static DataSet GetPlayerStats(string url)
         {
-            var dataset = new DataSet();
-
-            var htmlweb = new HtmlWeb();
-            HtmlDocument doc = htmlweb.Load(url);
-
-            HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-            foreach (HtmlNode cur in tables)
+            using (var dataset = new DataSet())
             {
-                try
-                {
-                    if (
-                        !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs" ||
-                          cur.Attributes["id"].Value == "roster")) continue;
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                var table = new DataTable(cur.Attributes["id"].Value);
+                var htmlweb = new HtmlWeb();
+                HtmlDocument doc = htmlweb.Load(url);
 
-                HtmlNode thead = cur.SelectSingleNode("thead");
-                HtmlNodeCollection theadrows = thead.SelectNodes("tr");
-
-                HtmlNode theadrow;
-                if (cur.Attributes["id"].Value == "playoffs") theadrow = theadrows[1];
-                else theadrow = theadrows[0];
-
-                IEnumerable<string> headers = theadrow
-                    .Elements("th")
-                    .Select(th => th.InnerText.Trim());
-                foreach (string colheader in headers)
+                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (HtmlNode cur in tables)
                 {
                     try
                     {
-                        table.Columns.Add(colheader);
+                        if (
+                            !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs" ||
+                              cur.Attributes["id"].Value == "roster")) continue;
                     }
                     catch (Exception)
                     {
-                        table.Columns.Add(colheader + "2");
+                        continue;
+                    }
+                    using (var table = new DataTable(cur.Attributes["id"].Value))
+                    {
+                        HtmlNode thead = cur.SelectSingleNode("thead");
+                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+
+                        HtmlNode theadrow;
+                        theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
+
+                        IEnumerable<string> headers = theadrow
+                            .Elements("th")
+                            .Select(th => th.InnerText.Trim());
+                        foreach (string colheader in headers)
+                        {
+                            try
+                            {
+                                table.Columns.Add(colheader);
+                            }
+                            catch (Exception)
+                            {
+                                table.Columns.Add(colheader + "2");
+                            }
+                        }
+
+                        HtmlNode tbody = cur.SelectSingleNode("tbody");
+                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
+                        IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                                                .Select(td => td.InnerText.Trim())
+                                                                                .ToArray());
+                        foreach (object[] row in rows)
+                        {
+                            table.Rows.Add(row);
+                        }
+
+                        dataset.Tables.Add(table);
                     }
                 }
-
-                HtmlNode tbody = cur.SelectSingleNode("tbody");
-                HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
-                                                                        .Select(td => td.InnerText.Trim())
-                                                                        .ToArray());
-                foreach (string[] row in rows)
-                {
-                    table.Rows.Add(row);
-                }
-
-                dataset.Tables.Add(table);
+                return dataset;
             }
-            return dataset;
         }
 
         private static DataSet GetPlayoffTeamStats(string url)
         {
-            var dataset = new DataSet();
-
-            var htmlweb = new HtmlWeb();
-            HtmlDocument doc = htmlweb.Load(url);
-
-            HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-            foreach (HtmlNode cur in tables)
+            using (var dataset = new DataSet())
             {
-                try
-                {
-                    if (
-                        !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" ||
-                          cur.Attributes["id"].Value == "misc")) continue;
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                var table = new DataTable(cur.Attributes["id"].Value);
+                var htmlweb = new HtmlWeb();
+                HtmlDocument doc = htmlweb.Load(url);
 
-                HtmlNode thead = cur.SelectSingleNode("thead");
-                HtmlNodeCollection theadrows = thead.SelectNodes("tr");
-                HtmlNode theadrow;
-
-                if (cur.Attributes["id"].Value == "misc") theadrow = theadrows[1];
-                else theadrow = theadrows[0];
-
-                IEnumerable<string> headers = theadrow
-                    .Elements("th")
-                    .Select(th => th.InnerText.Trim());
-                foreach (string colheader in headers)
+                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (HtmlNode cur in tables)
                 {
                     try
                     {
-                        table.Columns.Add(colheader);
+                        if (
+                            !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" ||
+                              cur.Attributes["id"].Value == "misc")) continue;
                     }
                     catch (Exception)
                     {
-                        table.Columns.Add(colheader + "2");
+                        continue;
+                    }
+                    using (var table = new DataTable(cur.Attributes["id"].Value))
+                    {
+                        HtmlNode thead = cur.SelectSingleNode("thead");
+                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                        HtmlNode theadrow;
+
+                        theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
+
+                        IEnumerable<string> headers = theadrow
+                            .Elements("th")
+                            .Select(th => th.InnerText.Trim());
+                        foreach (string colheader in headers)
+                        {
+                            try
+                            {
+                                table.Columns.Add(colheader);
+                            }
+                            catch (Exception)
+                            {
+                                table.Columns.Add(colheader + "2");
+                            }
+                        }
+
+                        HtmlNode tbody = cur.SelectSingleNode("tbody");
+                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
+                        IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
+                                                                                .Select(td => td.InnerText.Trim())
+                                                                                .ToArray());
+                        foreach (object[] row in rows)
+                        {
+                            table.Rows.Add(row);
+                        }
+
+                        dataset.Tables.Add(table);
                     }
                 }
-
-                HtmlNode tbody = cur.SelectSingleNode("tbody");
-                HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                IEnumerable<string[]> rows = tbodyrows.Select(tr => tr.Elements("td")
-                                                                        .Select(td => td.InnerText.Trim())
-                                                                        .ToArray());
-                foreach (string[] row in rows)
-                {
-                    table.Rows.Add(row);
-                }
-
-                dataset.Tables.Add(table);
+                return dataset;
             }
-            return dataset;
         }
 
         private static void TeamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts,
@@ -420,8 +391,7 @@ namespace NBA_Stats_Tracker.Interop
         {
             var pstnames = new Dictionary<string, PlayerStats>();
 
-            DataTable dt;
-            dt = ds.Tables["roster"];
+            DataTable dt = ds.Tables["roster"];
 
             foreach (DataRow r in dt.Rows)
             {
@@ -482,7 +452,7 @@ namespace NBA_Stats_Tracker.Interop
                 pstnames[name].stats[p.MINS] = Tools.getUInt16(r, "MP");
                 pstnames[name].stats[p.FGM] = Tools.getUInt16(r, "FG");
                 pstnames[name].stats[p.FGA] = Tools.getUInt16(r, "FGA");
-                pstnames[name].stats[p.TPA] = Tools.getUInt16(r, "3P");
+                pstnames[name].stats[p.TPM] = Tools.getUInt16(r, "3P");
                 pstnames[name].stats[p.TPA] = Tools.getUInt16(r, "3PA");
                 pstnames[name].stats[p.FTM] = Tools.getUInt16(r, "FT");
                 pstnames[name].stats[p.FTA] = Tools.getUInt16(r, "FTA");
@@ -508,7 +478,7 @@ namespace NBA_Stats_Tracker.Interop
                     pstnames[name].stats[p.MINS] += Tools.getUInt16(r, "MP");
                     pstnames[name].stats[p.FGM] += Tools.getUInt16(r, "FG");
                     pstnames[name].stats[p.FGA] += Tools.getUInt16(r, "FGA");
-                    pstnames[name].stats[p.TPA] += Tools.getUInt16(r, "3P");
+                    pstnames[name].stats[p.TPM] += Tools.getUInt16(r, "3P");
                     pstnames[name].stats[p.TPA] += Tools.getUInt16(r, "3PA");
                     pstnames[name].stats[p.FTM] += Tools.getUInt16(r, "FT");
                     pstnames[name].stats[p.FTA] += Tools.getUInt16(r, "FTA");

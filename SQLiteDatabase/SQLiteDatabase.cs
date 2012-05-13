@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Linq;
 using System.Windows;
 
 #endregion
@@ -51,11 +52,7 @@ namespace SQLite_Database
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
-            String str = "";
-            foreach (KeyValuePair<string, string> row in connectionOpts)
-            {
-                str += String.Format("{0}={1}; ", row.Key, row.Value);
-            }
+            String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
             dbConnection = str;
         }
@@ -67,23 +64,29 @@ namespace SQLite_Database
         /// <returns>A DataTable containing the result set.</returns>
         public DataTable GetDataTable(string sql)
         {
-            var dt = new DataTable();
-            try
+            using (var dt = new DataTable())
             {
-                var cnn = new SQLiteConnection(dbConnection);
-                cnn.Open();
-                var mycommand = new SQLiteCommand(cnn);
-                mycommand.CommandText = sql;
-                SQLiteDataReader reader = mycommand.ExecuteReader();
-                dt.Load(reader);
-                reader.Close();
-                cnn.Close();
+                try
+                {
+                    using (var cnn = new SQLiteConnection(dbConnection))
+                    {
+                        cnn.Open();
+                        SQLiteDataReader reader;
+                        using (var mycommand = new SQLiteCommand(cnn))
+                        {
+                            mycommand.CommandText = sql;
+                            reader = mycommand.ExecuteReader();
+                        }
+                        dt.Load(reader);
+                        reader.Close();
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message + "\n\nQuery: " + sql);
+                }
+                return dt;
             }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message + "\n\nQuery: " + sql);
-            }
-            return dt;
         }
 
         /// <summary>
@@ -93,12 +96,18 @@ namespace SQLite_Database
         /// <returns>An Integer containing the number of rows updated.</returns>
         public int ExecuteNonQuery(string sql)
         {
-            var cnn = new SQLiteConnection(dbConnection);
-            cnn.Open();
-            var mycommand = new SQLiteCommand(cnn);
-            mycommand.CommandText = sql;
-            int rowsUpdated = mycommand.ExecuteNonQuery();
-            cnn.Close();
+            SQLiteConnection cnn;
+            int rowsUpdated;
+            using (cnn = new SQLiteConnection(dbConnection))
+            {
+                cnn.Open();
+                SQLiteCommand mycommand;
+                using (mycommand = new SQLiteCommand(cnn))
+                {
+                    mycommand.CommandText = sql;
+                    rowsUpdated = mycommand.ExecuteNonQuery();
+                }
+            }
             return rowsUpdated;
         }
 
@@ -109,12 +118,16 @@ namespace SQLite_Database
         /// <returns>A string.</returns>
         public string ExecuteScalar(string sql)
         {
-            var cnn = new SQLiteConnection(dbConnection);
-            cnn.Open();
-            var mycommand = new SQLiteCommand(cnn);
-            mycommand.CommandText = sql;
-            object value = mycommand.ExecuteScalar();
-            cnn.Close();
+            object value;
+            using (var cnn = new SQLiteConnection(dbConnection))
+            {
+                cnn.Open();
+                using (var mycommand = new SQLiteCommand(cnn))
+                {
+                    mycommand.CommandText = sql;
+                    value = mycommand.ExecuteScalar();
+                }
+            }
             if (value != null)
             {
                 return value.ToString();
@@ -136,10 +149,7 @@ namespace SQLite_Database
             Boolean returnCode = true;
             if (data.Count >= 1)
             {
-                foreach (KeyValuePair<string, string> val in data)
-                {
-                    vals += String.Format(" {0} = \"{1}\",", val.Key, val.Value);
-                }
+                vals = data.Aggregate(vals, (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
                 vals = vals.Substring(0, vals.Length - 1);
             }
             try
@@ -218,24 +228,18 @@ namespace SQLite_Database
         {
             if (data.Count > 500) throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
 
-            string sql = "";
+            string sql;
             Boolean returnCode = true;
 
             sql = "insert into " + tableName + " SELECT";
 
-            foreach (KeyValuePair<string, string> val in data[0])
-            {
-                sql += String.Format(" \"{0}\" AS {1},", val.Value, val.Key);
-            }
+            sql = data[0].Aggregate(sql, (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
             sql = sql.Remove(sql.Length - 1);
             data.RemoveAt(0);
             foreach (Dictionary<string, string> dict in data)
             {
                 sql += " UNION SELECT";
-                foreach (KeyValuePair<string, string> val in dict)
-                {
-                    sql += String.Format(" \"{0}\",", val.Value);
-                }
+                sql = dict.Aggregate(sql, (current, val) => current + String.Format(" \"{0}\",", val.Value));
                 sql = sql.Remove(sql.Length - 1);
             }
 
@@ -257,10 +261,9 @@ namespace SQLite_Database
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool ClearDB()
         {
-            DataTable tables;
             try
             {
-                tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
+                DataTable tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
                 foreach (DataRow table in tables.Rows)
                 {
                     ClearTable(table["NAME"].ToString());

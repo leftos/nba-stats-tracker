@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -34,7 +36,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for playerOverviewW.xaml
     /// </summary>
-    public partial class playerOverviewW : Window
+    public partial class playerOverviewW
     {
         public static string askedTeam;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
@@ -105,14 +107,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            foreach (TeamStats t in MainWindow.tst)
             {
-                if (MainWindow.tst[i].displayName == p)
+                if (t.displayName == p)
                 {
-                    if (MainWindow.tst[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
+                    if (t.isHidden)
+                        throw new Exception("Requested team that is hidden: " + t.name);
 
-                    return MainWindow.tst[i].name;
+                    return t.name;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -120,14 +122,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            foreach (TeamStats t in MainWindow.tst)
             {
-                if (MainWindow.tst[i].name == p)
+                if (t.name == p)
                 {
-                    if (MainWindow.tst[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
+                    if (t.isHidden)
+                        throw new Exception("Requested team that is hidden: " + t.name);
 
-                    return MainWindow.tst[i].displayName;
+                    return t.displayName;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -336,6 +338,7 @@ namespace NBA_Stats_Tracker.Windows
             psrList.Add(new PlayerStatsRow(psCareer, "Career", "Career"));
 
             var psrListCollection = new ListCollectionView(psrList);
+            Debug.Assert(psrListCollection.GroupDescriptions != null, "psrListCollection.GroupDescriptions != null");
             psrListCollection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             dgvYearly.ItemsSource = psrListCollection;
         }
@@ -552,8 +555,7 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
-            var dv_ov = new DataView(dt_ov);
-            dv_ov.AllowNew = false;
+            var dv_ov = new DataView(dt_ov) {AllowNew = false};
 
             dgvOverviewStats.DataContext = dv_ov;
 
@@ -629,12 +631,10 @@ namespace NBA_Stats_Tracker.Windows
 
             qr_teams += " GROUP BY Team";
 
-            DataTable res;
-
             splitPSRs = new ObservableCollection<PlayerStatsRow>();
 
             //Home
-            res = db.GetDataTable(qr_home);
+            DataTable res = db.GetDataTable(qr_home);
             var ps =
                 new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
 
@@ -701,8 +701,7 @@ namespace NBA_Stats_Tracker.Windows
             if (res.Rows.Count > 1)
             {
                 var teams = new List<string>(res.Rows.Count);
-                foreach (DataRow r in res.Rows)
-                    teams.Add(r["Team"].ToString());
+                teams.AddRange(from DataRow r in res.Rows select r["Team"].ToString());
 
                 foreach (string team in teams)
                 {
@@ -796,6 +795,7 @@ namespace NBA_Stats_Tracker.Windows
             #endregion
 
             var splitPSRsCollection = new ListCollectionView(splitPSRs);
+            Debug.Assert(splitPSRsCollection.GroupDescriptions != null, "splitPSRsCollection.GroupDescriptions != null");
             splitPSRsCollection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             dgvSplitStats.ItemsSource = splitPSRsCollection;
         }
@@ -835,26 +835,18 @@ namespace NBA_Stats_Tracker.Windows
                     GetActivePlayers();
 
                     SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                           ref MainWindow.tst, ref MainWindow.tstopp,
-                                                           ref MainWindow.TeamOrder);
+                                                           out MainWindow.tst, out MainWindow.tstopp,
+                                                           out MainWindow.TeamOrder);
                     PopulateTeamsCombo();
 
                     string q = "select * from " + playersT + " where ID = " + ps.ID;
                     DataTable res = db.GetDataTable(q);
 
-                    string newTeam;
-                    bool nowActive;
                     if (res.Rows.Count > 0)
                     {
-                        nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                        if (nowActive)
-                        {
-                            newTeam = res.Rows[0]["TeamFin"].ToString();
-                        }
-                        else
-                        {
-                            newTeam = " - Inactive -";
-                        }
+                        bool nowActive = Tools.getBoolean(res.Rows[0], "isActive");
+                        string newTeam;
+                        newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
                         cmbTeam.SelectedIndex = -1;
                         if (nowActive)
                         {
@@ -888,8 +880,8 @@ namespace NBA_Stats_Tracker.Windows
                 else
                 {
                     SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                           ref MainWindow.tst, ref MainWindow.tstopp,
-                                                           ref MainWindow.TeamOrder);
+                                                           out MainWindow.tst, out MainWindow.tstopp,
+                                                           out MainWindow.TeamOrder);
                     PopulateTeamsCombo();
                 }
             }
@@ -915,24 +907,16 @@ namespace NBA_Stats_Tracker.Windows
 
             PlayerStats ps = CreatePlayerStatsFromCurrent();
 
-            var pslist = new Dictionary<int, PlayerStats>();
-            pslist.Add(ps.ID, ps);
+            var pslist = new Dictionary<int, PlayerStats> {{ps.ID, ps}};
 
-            SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason);
+            SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason, true);
 
             MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp,
                                                                MainWindow.TeamOrder, curSeason, maxSeason);
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
-            if (ps.isActive)
-            {
-                cmbTeam.SelectedItem = GetDisplayNameFromTeam(ps.TeamF);
-            }
-            else
-            {
-                cmbTeam.SelectedItem = "- Inactive -";
-            }
+            cmbTeam.SelectedItem = ps.isActive ? GetDisplayNameFromTeam(ps.TeamF) : "- Inactive -";
             cmbPlayer.SelectedIndex = -1;
             cmbPlayer.SelectedValue = ps.ID;
             //cmbPlayer.SelectedValue = ps.LastName + " " + ps.FirstName + " (" + ps.Position1 + ")";
@@ -1294,7 +1278,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            hthAllPBS.Sort(delegate(PlayerBoxScore pbs1, PlayerBoxScore pbs2) { return pbs1.Date.CompareTo(pbs2.Date); });
+            hthAllPBS.Sort((pbs1, pbs2) => pbs1.Date.CompareTo(pbs2.Date));
             hthAllPBS.Reverse();
 
             dgvHTH.ItemsSource = psrList;

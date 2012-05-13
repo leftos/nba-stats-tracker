@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Windows;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
@@ -11,11 +9,10 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for BoxScoreListW.xaml
     /// </summary>
-    public partial class BoxScoreListW : Window
+    public partial class BoxScoreListW
     {
-        private DataTable res;
-        private ObservableCollection<BoxScoreEntry> bshist;
-        private SQLiteDatabase db;
+        private readonly ObservableCollection<BoxScoreEntry> bshist;
+        private readonly SQLiteDatabase db;
 
         public BoxScoreListW()
         {
@@ -43,7 +40,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 int id = boxScoreEntry.bs.id;
 
-                boxScoreW bw = new boxScoreW(boxScoreW.Mode.ViewAndIgnore, id);
+                var bw = new boxScoreW(boxScoreW.Mode.ViewAndIgnore, id);
                 try
                 {
                     bw.ShowDialog();

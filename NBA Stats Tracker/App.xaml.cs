@@ -27,7 +27,7 @@ namespace NBA_Stats_Tracker
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         public static bool realNBAonly;
         public static int openWindows = 1;

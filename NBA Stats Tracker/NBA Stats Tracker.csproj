@@ -102,6 +102,9 @@
     <Compile Include="Windows\playerOverviewW.xaml.cs">
       <DependentUpon>playerOverviewW.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\PlayerSearchW.xaml.cs">
+      <DependentUpon>PlayerSearchW.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\playoffTreeW.xaml.cs">
       <DependentUpon>playoffTreeW.xaml</DependentUpon>
     </Compile>
@@ -164,6 +167,10 @@
     <Page Include="Windows\playerOverviewW.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\PlayerSearchW.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\playoffTreeW.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -24,7 +24,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for askTeam.xaml
     /// </summary>
-    public partial class askTeamW : Window
+    public partial class askTeamW
     {
         private readonly bool _oneTeam;
         private readonly bool _versus;
@@ -57,13 +57,10 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             cmbTeams1.SelectedIndex = index;
-            if (index != 0)
-                cmbTeams2.SelectedIndex = 0;
-            else
-                cmbTeams2.SelectedIndex = 1;
+            cmbTeams2.SelectedIndex = index != 0 ? 0 : 1;
         }
 
-        public askTeamW(List<string> teams)
+        public askTeamW(IEnumerable<string> teams)
         {
             InitializeComponent();
 

@@ -25,7 +25,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for trendsW.xaml
     /// </summary>
-    public partial class trendsW : Window
+    public partial class trendsW
     {
         public trendsW(string str, string team1, string team2)
         {

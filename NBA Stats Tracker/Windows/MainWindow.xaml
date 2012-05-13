@@ -1,7 +1,7 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="NBA Stats Tracker BETA - Lefteris &quot;Leftos&quot; Aslanoglou" Height="415" Width="612"
+        Title="NBA Stats Tracker BETA - Lefteris &quot;Leftos&quot; Aslanoglou" Height="415" Width="613"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded" Closed="Window_Closed">
   <Grid>
@@ -143,7 +143,10 @@
           <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center"
                   IsEnabled="True" Margin="6,59,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
                   Click="btnPlayerOverview_Click" />
-        </Grid>
+                    <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch" TabIndex="29" VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
+                        <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">Advanced Player Search</TextBlock>
+                    </Button>
+                </Grid>
       </GroupBox>
       <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
         <Grid>
@@ -180,7 +183,7 @@
               to Database
             </TextBlock>
           </Button>
-        </Grid>
+                </Grid>
       </GroupBox>
       <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
         <Grid>

@@ -46,6 +46,8 @@ Features in a glance
 			Compare any two players stats and averages, either in games against the league, or each other's teams.
 		Yearly Report
 			See a player's progress over each season, as well as their career averages.
+	Advanced Player Search
+		Search among all the players in any season by setting whatever criteria you want, such as position, total stats, average stats, team, etc.
 	League Overview
 		Team Stats
 			All the teams, all the averages, all of the regular season.
@@ -132,6 +134,28 @@ Credits to
 	
 	
 Version History
+	v0.10.7.4
+		- Fix: Metric Stats tables in Team & League Overview wouldn't copy to clipboard correctly
+		- Fix: Fixed a crash when the tool tried to calculate the metrics of a player that is currently inactive
+
+	v0.10.7.3
+		- Fix: Fixed some wrong averages and rankings in the Team Overview screen
+		- Fix: Fixed wrong team name for the Player of the Game if they were from the home team
+		- Fix: Fixed recent bug that broke editing & saving a Box Score you had previously inserted
+
+	v0.10.7.2
+		- Fix: Advanced Player Search options Active, Injured, All Star and Champion now have three settings: true, false and none; setting any of them to none will search for both players that are for example injured and not injured
+		- Fix: Fixed bugs regarding inactive player handling
+
+	v0.10.7.1
+		- Fix: Fixed recent bug that made all displayed team names blank when importing stats from a 2K12 save
+
+	v0.10.7
+		- Addition: Added Advanced Player Search
+
+	v0.10.6.5
+		- Fix: Fixed a recent bug that messed up 3P stats
+
 	v0.10.6.4
 		- Addition: Current Season can now be changed from the Main Window as well
 		- Addition: Box Scores can now be deleted (Miscellaneous > Delete Box Scores...)

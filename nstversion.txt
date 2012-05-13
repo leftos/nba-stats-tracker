@@ -1,11 +1,23 @@
-0.10.6.4
+0.10.7.4
 http://www.mediafire.com/?w3zcr3mw6c3tnwm
 
-- Addition: Current Season can now be changed from the Main Window as well
-- Addition: Box Scores can now be deleted (Miscellaneous > Delete Box Scores...)
-- Fix: Fixed bug that in some cases didn't allow users to view box scores of teams disabled in some seasons but enabled in others
-- Fix: The tool would crash whenever you tried to view a box score that included a team that's disabled for that season; now it shows a message informing you of the fact
-- Improvement: When disabling teams, you're warned if you're about to disable a team that has box scores for that season
-- Fix: Various minor fixes around the program
+v0.10.7.4
+- Fix: Metric Stats tables in Team & League Overview wouldn't copy to clipboard correctly
+- Fix: Fixed a crash when the tool tried to calculate the metrics of a player that is currently inactive
+
+v0.10.7.3
+- Fix: Fixed some wrong averages and rankings in the Team Overview screen
+- Fix: Fixed wrong team name for the Player of the Game if they were from the home team
+- Fix: Fixed recent bug that broke editing & saving a Box Score you had previously inserted
+
+v0.10.7.2
+- Fix: Advanced Player Search options Active, Injured, All Star and Champion now have three settings: true, false and none; setting any of them to none will search for both players that are for example injured and not injured
+- Fix: Fixed bugs regarding inactive player handling
+
+v0.10.7.1
+- Fix: Fixed recent bug that made all displayed team names blank when importing stats from a 2K12 save
+
+v0.10.7
+- Addition: Added Advanced Player Search
 
 IMPORTANT NOTE: Databases created prior to v0.10.6 will have some Team-related fields missing. To make sure you can continue using them, open them with NST and then IMMEDIATELY click on File > Save Database As. It's important that you click on Save Database As under the File menu, NOT Save Current Season or Save All Seasons. If you do this, your databases will be compatible with the new version.

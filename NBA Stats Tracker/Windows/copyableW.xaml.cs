@@ -24,7 +24,7 @@ namespace NBA_Stats_Tracker.Windows
     /// <summary>
     /// Interaction logic for copyableW.xaml
     /// </summary>
-    public partial class copyableW : Window
+    public partial class copyableW
     {
         public copyableW(String msg, String title, TextAlignment align)
         {
