@@ -134,6 +134,11 @@ Credits to
 	
 	
 Version History
+	v0.10.7.5
+		- Fix: If after saving an edited box score you tried to update the database with a new one, the new one would overwrite the just edited box score instead of creating a new entry for itself
+		- Improvement: Improved saving speed related to player box scores
+		- Fix: Some box scores would not get imported correctly when using the Import Box Scores feature
+
 	v0.10.7.4
 		- Fix: Metric Stats tables in Team & League Overview wouldn't copy to clipboard correctly
 		- Fix: Fixed a crash when the tool tried to calculate the metrics of a player that is currently inactive

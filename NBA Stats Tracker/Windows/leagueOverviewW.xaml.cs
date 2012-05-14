@@ -441,6 +441,7 @@ namespace NBA_Stats_Tracker.Windows
                 q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                           dtpEnd.SelectedDate.GetValueOrDefault(), true);
             }
+            q += " ORDER BY Date DESC";
 
             res = db.GetDataTable(q);
 
@@ -466,7 +467,7 @@ namespace NBA_Stats_Tracker.Windows
                 dt_bs.Rows.Add(r);
             }
 
-            var dv_bs = new DataView(dt_bs) {AllowNew = false, AllowEdit = false, Sort = "Date DESC"};
+            var dv_bs = new DataView(dt_bs) {AllowNew = false, AllowEdit = false};
 
             dgvBoxScores.DataContext = dv_bs;
         }

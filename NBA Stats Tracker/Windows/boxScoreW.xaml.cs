@@ -72,6 +72,11 @@ namespace NBA_Stats_Tracker.Windows
             prepareWindow(_curmode);
 
             MainWindow.bs = new BoxScore();
+
+            if (_curmode == Mode.Update)
+            {
+                curBoxScore = new BoxScore();
+            }
         }
 
         public boxScoreW(Mode _curmode, int id) : this(_curmode)

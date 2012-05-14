@@ -113,8 +113,11 @@
           <Separator />
           <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
                     <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
+                    <Separator />
+                    <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats" Click="mnuMiscResetTeamStats_Click" />
+                    <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats" Click="mnuMiscResetPlayerStats_Click" />
                 </MenuItem>
-        <MenuItem Header="_Help">
+                <MenuItem Header="_Help">
           <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
           <Separator />
           <MenuItem Header="_About" Name="mnuHelpAbout" Click="mnuHelpAbout_Click" />

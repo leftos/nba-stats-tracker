@@ -1990,7 +1990,11 @@ namespace NBA_Stats_Tracker.Windows
                             break;
                         }
                     }
-                    if (!doNotAdd) bshist.Add(newbse);
+                    if (!doNotAdd)
+                    {
+                        newbse.mustUpdate = true;
+                        bshist.Add(newbse);
+                    }
                 }
             }
         }
@@ -2043,6 +2047,51 @@ namespace NBA_Stats_Tracker.Windows
 
             var psw = new PlayerSearchW();
             psw.ShowDialog();
+        }
+
+        private void mnuMiscResetTeamStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SQLiteIO.isTSTEmpty())
+            {
+                MessageBoxResult r =
+                    MessageBox.Show(
+                        "Are you sure you want to do this? This is an irreversible action.\nThis only applies to the current season.",
+                        "Reset All Team Stats", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                if (r == MessageBoxResult.Yes)
+                {
+                    foreach (TeamStats team in tst)
+                        team.ResetStats("All");
+
+                    foreach (TeamStats team in tstopp)
+                        team.ResetStats("All");
+                }
+            }
+
+            SQLiteIO.saveSeasonToDatabase();
+
+            updateStatus("All Team Stats for current season have been reset. Database saved.");
+        }
+
+        private void mnuMiscResetPlayerStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SQLiteIO.isTSTEmpty())
+            {
+                MessageBoxResult r =
+                    MessageBox.Show(
+                        "Are you sure you want to do this? This is an irreversible action.\nThis only applies to the current season.",
+                        "Reset All Team Stats", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                if (r == MessageBoxResult.Yes)
+                {
+                    foreach (PlayerStats ps in pst.Values)
+                        ps.ResetStats();
+                }
+            }
+
+            SQLiteIO.saveSeasonToDatabase();
+
+            updateStatus("All Player Stats for current season have been reset. Database saved.");
         }
     }
 }

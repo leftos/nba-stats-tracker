@@ -135,53 +135,55 @@ namespace NBA_Stats_Tracker.Data
                                             "GameID"].ToString());
                             bse.bs.id = lastid;
                         }
-                    }
-                    MainWindow.db.Delete("PlayerResults", "GameID = " + bse.bs.id.ToString());
+                        MainWindow.db.Delete("PlayerResults", "GameID = " + bse.bs.id);
 
-                    var sqlinsert = new List<Dictionary<string, string>>(500);
-                    var used = new List<int>();
-                    foreach (PlayerBoxScore pbs in bse.pbsList)
-                    {
-                        var dict2 = new Dictionary<string, string>();
-                        int id = GetFreePlayerResultID(file, used);
-                        used.Add(id);
-                        dict2.Add("ID", id.ToString());
-                        dict2.Add("GameID", bse.bs.id.ToString());
-                        dict2.Add("PlayerID", pbs.PlayerID.ToString());
-                        dict2.Add("Team", pbs.Team);
-                        dict2.Add("isStarter", pbs.isStarter.ToString());
-                        dict2.Add("playedInjured", pbs.playedInjured.ToString());
-                        dict2.Add("isOut", pbs.isOut.ToString());
-                        dict2.Add("MINS", pbs.MINS.ToString());
-                        dict2.Add("PTS", pbs.PTS.ToString());
-                        dict2.Add("REB", pbs.REB.ToString());
-                        dict2.Add("AST", pbs.AST.ToString());
-                        dict2.Add("STL", pbs.STL.ToString());
-                        dict2.Add("BLK", pbs.BLK.ToString());
-                        dict2.Add("TOS", pbs.TOS.ToString());
-                        dict2.Add("FGM", pbs.FGM.ToString());
-                        dict2.Add("FGA", pbs.FGA.ToString());
-                        dict2.Add("TPM", pbs.TPM.ToString());
-                        dict2.Add("TPA", pbs.TPA.ToString());
-                        dict2.Add("FTM", pbs.FTM.ToString());
-                        dict2.Add("FTA", pbs.FTA.ToString());
-                        dict2.Add("OREB", pbs.OREB.ToString());
-                        dict2.Add("FOUL", pbs.FOUL.ToString());
-
-                        sqlinsert.Add(dict2);
-
-                        if (sqlinsert.Count == 500)
+                        var sqlinsert = new List<Dictionary<string, string>>(500);
+                        var used = new List<int>();
+                        foreach (PlayerBoxScore pbs in bse.pbsList)
                         {
-                            MainWindow.db.InsertMany("PlayerResults", sqlinsert);
-                            sqlinsert.Clear();
+                            int id = GetFreePlayerResultID(file, used);
+                            used.Add(id);
+                            dict2 = new Dictionary<string, string>
+                                        {
+                                            {"ID", id.ToString()},
+                                            {"GameID", bse.bs.id.ToString()},
+                                            {"PlayerID", pbs.PlayerID.ToString()},
+                                            {"Team", pbs.Team},
+                                            {"isStarter", pbs.isStarter.ToString()},
+                                            {"playedInjured", pbs.playedInjured.ToString()},
+                                            {"isOut", pbs.isOut.ToString()},
+                                            {"MINS", pbs.MINS.ToString()},
+                                            {"PTS", pbs.PTS.ToString()},
+                                            {"REB", pbs.REB.ToString()},
+                                            {"AST", pbs.AST.ToString()},
+                                            {"STL", pbs.STL.ToString()},
+                                            {"BLK", pbs.BLK.ToString()},
+                                            {"TOS", pbs.TOS.ToString()},
+                                            {"FGM", pbs.FGM.ToString()},
+                                            {"FGA", pbs.FGA.ToString()},
+                                            {"TPM", pbs.TPM.ToString()},
+                                            {"TPA", pbs.TPA.ToString()},
+                                            {"FTM", pbs.FTM.ToString()},
+                                            {"FTA", pbs.FTA.ToString()},
+                                            {"OREB", pbs.OREB.ToString()},
+                                            {"FOUL", pbs.FOUL.ToString()}
+                                        };
+
+                            sqlinsert.Add(dict2);
+
+                            if (sqlinsert.Count == 500)
+                            {
+                                MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                                sqlinsert.Clear();
+                            }
+
+                            //db.Insert("PlayerResults", dict2);
                         }
 
-                        //db.Insert("PlayerResults", dict2);
-                    }
-
-                    if (sqlinsert.Count > 0)
-                    {
-                        MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                        if (sqlinsert.Count > 0)
+                        {
+                            MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                        }
                     }
                 }
             }

@@ -273,6 +273,68 @@ namespace NBA_Stats_Tracker.Data
                         calcAvg();
                         break;
                     }
+                default:
+                    {
+                        throw new Exception("Team Add Stats called with invalid parameter: " + mode);
+                    }
+            }
+        }
+
+        public void ResetStats(string mode)
+        {
+            switch (mode)
+            {
+                case "Season":
+                    {
+                        winloss[0] = 0;
+                        winloss[1] = 0;
+
+                        for (int i = 0; i < stats.Length; i++)
+                        {
+                            stats[i] = 0;
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+                case "Playoffs":
+                    {
+                        pl_winloss[0] = 0;
+                        pl_winloss[1] = 0;
+
+                        for (int i = 0; i < pl_stats.Length; i++)
+                        {
+                            pl_stats[i] = 0;
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+                case "All":
+                    {
+                        winloss[0] = 0;
+                        winloss[1] = 0;
+
+                        for (int i = 0; i < stats.Length; i++)
+                        {
+                            stats[i] = 0;
+                        }
+
+                        pl_winloss[0] = 0;
+                        pl_winloss[1] = 0;
+
+                        for (int i = 0; i < pl_stats.Length; i++)
+                        {
+                            pl_stats[i] = 0;
+                        }
+
+                        calcAvg();
+                        break;
+                    }
+                default:
+                    {
+                        throw new Exception("Team Reset Stats called with invalid parameter: " + mode);
+                    }
             }
         }
 
