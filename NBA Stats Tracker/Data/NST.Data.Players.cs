@@ -920,7 +920,7 @@ namespace NBA_Stats_Tracker.Data
                         break;
 
                     case "ftrn":
-                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, FTM/FGA);
+                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double)FTM/FGA);
                         break;
                 }
 

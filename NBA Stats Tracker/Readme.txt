@@ -134,6 +134,11 @@ Credits to
 	
 	
 Version History
+	v0.10.7.6
+		- Fix: Tool would crash when reactivating an inactive player
+		- Fix: FTM/FGA percentage wouldn't show correctly in Best Performers tab in the Box Score window
+		- Addition: Now you can reset all player/team stats for a season (Miscellaneous menu)
+
 	v0.10.7.5
 		- Fix: If after saving an edited box score you tried to update the database with a new one, the new one would overwrite the just edited box score instead of creating a new entry for itself
 		- Improvement: Improved saving speed related to player box scores

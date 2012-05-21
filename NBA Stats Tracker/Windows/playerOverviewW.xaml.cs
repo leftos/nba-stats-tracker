@@ -107,6 +107,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
+            if (p == "- Inactive -") return p;
             foreach (TeamStats t in MainWindow.tst)
             {
                 if (t.displayName == p)
