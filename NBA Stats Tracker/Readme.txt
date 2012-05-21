@@ -134,6 +134,11 @@ Credits to
 	
 	
 Version History
+	v0.10.7.7
+		- Addition: Check For Updates on start can now be disabled (Options Menu)
+		- Addition: You can manually check for updates after the tool starts (About window)
+		- Improvement: Players in the list-boxes in the Player Overview & Box Score windows are now sorted by last name for easier discovery
+
 	v0.10.7.6
 		- Fix: Tool would crash when reactivating an inactive player
 		- Fix: FTM/FGA percentage wouldn't show correctly in Best Performers tab in the Box Score window

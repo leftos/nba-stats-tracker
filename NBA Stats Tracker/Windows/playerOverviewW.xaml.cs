@@ -252,6 +252,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 q = "select * from " + playersT + " where isActive LIKE 'False'";
             }
+            q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
             playersSameTeam = new Dictionary<int, PlayerStats>();
@@ -259,8 +260,8 @@ namespace NBA_Stats_Tracker.Windows
             foreach (DataRow r in res.Rows)
             {
                 PlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                              Tools.getString(r, "FirstName") + " " +
-                                                              Tools.getString(r, "LastName") +
+                                                              Tools.getString(r, "LastName") + " " +
+                                                              Tools.getString(r, "FirstName") +
                                                               " (" + Tools.getString(r, "Position1") + ")"));
                 var ps = new PlayerStats(r);
                 playersSameTeam.Add(ps.ID, ps);
@@ -1029,13 +1030,14 @@ namespace NBA_Stats_Tracker.Windows
             {
                 q = "select * from " + playersT + " where isActive LIKE 'False'";
             }
+            q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
             foreach (DataRow r in res.Rows)
             {
                 oppPlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                                 Tools.getString(r, "FirstName") + " " +
-                                                                 Tools.getString(r, "LastName") +
+                                                                 Tools.getString(r, "LastName") + " " +
+                                                                 Tools.getString(r, "FirstName") +
                                                                  " (" + Tools.getString(r, "Position1") + ")"));
             }
 

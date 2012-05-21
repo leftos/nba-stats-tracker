@@ -247,6 +247,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 q = "select * from " + playersT + " where TeamFin LIKE '" + Team2 + "'";
             }
+            q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
             if (team == 1)
@@ -257,19 +258,20 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (DataRow r in res.Rows)
                 {
                     var ps = new PlayerStats(r);
-                    PlayersListAway.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                    PlayersListAway.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + " " + ps.FirstName));
                 }
 
                 foreach (PlayerBoxScore cur in pbsAwayList)
                 {
                     var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                               MainWindow.pst[cur.PlayerID].FirstName + " " +
-                                                               MainWindow.pst[cur.PlayerID].LastName);
+                                                               MainWindow.pst[cur.PlayerID].LastName + " " +
+                                                               MainWindow.pst[cur.PlayerID].FirstName);
                     if (!PlayersListAway.Contains(player))
                     {
                         PlayersListAway.Add(player);
                     }
                 }
+                PlayersListAway = new ObservableCollection<KeyValuePair<int, string>>(PlayersListAway.OrderBy(item => item.Value));
 
                 colPlayerAway.ItemsSource = PlayersListAway;
                 dgvPlayersAway.ItemsSource = pbsAwayList;
@@ -282,19 +284,20 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (DataRow r in res.Rows)
                 {
                     var ps = new PlayerStats(r);
-                    PlayersListHome.Add(new KeyValuePair<int, string>(ps.ID, ps.FirstName + " " + ps.LastName));
+                    PlayersListHome.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + " " + ps.FirstName));
                 }
 
                 foreach (PlayerBoxScore cur in pbsHomeList)
                 {
                     var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                               MainWindow.pst[cur.PlayerID].FirstName + " " +
-                                                               MainWindow.pst[cur.PlayerID].LastName);
+                                                               MainWindow.pst[cur.PlayerID].LastName + " " +
+                                                               MainWindow.pst[cur.PlayerID].FirstName);
                     if (!PlayersListHome.Contains(player))
                     {
                         PlayersListHome.Add(player);
                     }
                 }
+                PlayersListHome = new ObservableCollection<KeyValuePair<int, string>>(PlayersListHome.OrderBy(item => item.Value));
 
                 colPlayerHome.ItemsSource = PlayersListHome;
                 dgvPlayersHome.ItemsSource = pbsHomeList;
