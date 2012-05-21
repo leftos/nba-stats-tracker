@@ -109,9 +109,6 @@ namespace NBA_Stats_Tracker.Windows
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
-            btnSave.Visibility = Visibility.Hidden;
-            btnCRC.Visibility = Visibility.Hidden;
-            btnSaveCustomTeam.Visibility = Visibility.Hidden;
             //btnInject.Visibility = Visibility.Hidden;
             btnTest.Visibility = Visibility.Hidden;
 
@@ -140,11 +137,6 @@ namespace NBA_Stats_Tracker.Windows
             //teamOrder = StatsTracker.setTeamOrder("Mode 0");
             TeamOrder = new SortedDictionary<string, int>();
 
-            foreach (KeyValuePair<string, int> kvp in TeamOrder)
-            {
-                cmbTeam1.Items.Add(kvp.Key);
-            }
-
             RegistryKey rk = null;
 
             try
@@ -172,13 +164,33 @@ namespace NBA_Stats_Tracker.Windows
 
             if (App.realNBAonly)
             {
-                mnuFileGetRealStats_Click(null, new RoutedEventArgs());
+                mnuFileGetRealStats_Click(null, null);
                 MessageBox.Show("Nothing but net! Thanks for using NBA Stats Tracker!");
                 Environment.Exit(-1);
             }
             else
             {
-                checkForUpdates();
+                rk = Registry.CurrentUser;
+                try
+                {
+                    if (rk == null) throw new Exception();
+                    
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    int checkForUpdatesSetting = Convert.ToInt32(rk.GetValue("CheckForUpdates", 1));
+                    if (checkForUpdatesSetting == 1)
+                    {
+                        mnuOptionsCheckForUpdates.IsChecked = true;
+                        CheckForUpdates();
+                    }
+                    else
+                    {
+                        mnuOptionsCheckForUpdates.IsChecked = false;
+                    }
+                }
+                catch
+                {
+                    
+                }
             }
         }
 
@@ -226,9 +238,7 @@ namespace NBA_Stats_Tracker.Windows
             if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
             ofd.ShowDialog();
             if (ofd.FileName == "") return;
-
-            cmbTeam1.SelectedIndex = -1;
-
+            
             isCustom = true;
             //prepareWindow(isCustom);
             TeamOrder = Helper.setTeamOrder("Mode 0");
@@ -244,7 +254,6 @@ namespace NBA_Stats_Tracker.Windows
             {
                 tst = temp;
                 tstopp = tempopp;
-                populateTeamsComboBox(TeamOrder, pt);
             }
 
             if (tst.Length != tstopp.Length)
@@ -252,53 +261,10 @@ namespace NBA_Stats_Tracker.Windows
                 tstopp = new TeamStats[tst.Length];
                 for (int i = 0; i < tst.Length; i++) tstopp[i] = new TeamStats(tst[i].name);
             }
-
-            cmbTeam1.SelectedIndex = 0;
-
+            
             updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
         }
-
-        private void btnCRC_Click(object sender, RoutedEventArgs e)
-        {
-            String hash = Tools.getCRC(txtFile.Text);
-
-            MessageBox.Show(hash);
-        }
-
-        private void btnSave_Click(object sender, RoutedEventArgs e)
-        {
-            Interop2K12.updateSavegame(txtFile.Text, tst, TeamOrder, pt);
-        }
-
-        private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                string team = cmbTeam1.SelectedItem.ToString();
-                int id = TeamOrder[team];
-                txtW1.Text = tst[id].winloss[0].ToString();
-                txtL1.Text = tst[id].winloss[1].ToString();
-                txtPF1.Text = tst[id].stats[t.PF].ToString();
-                txtPA1.Text = tst[id].stats[t.PA].ToString();
-                txtFGM1.Text = tst[id].stats[t.FGM].ToString();
-                txtFGA1.Text = tst[id].stats[t.FGA].ToString();
-                txt3PM1.Text = tst[id].stats[t.TPM].ToString();
-                txt3PA1.Text = tst[id].stats[t.TPA].ToString();
-                txtFTM1.Text = tst[id].stats[t.FTM].ToString();
-                txtFTA1.Text = tst[id].stats[t.FTA].ToString();
-                txtOREB1.Text = tst[id].stats[t.OREB].ToString();
-                txtDREB1.Text = tst[id].stats[t.DREB].ToString();
-                txtSTL1.Text = tst[id].stats[t.STL].ToString();
-                txtTO1.Text = tst[id].stats[t.TO].ToString();
-                txtBLK1.Text = tst[id].stats[t.BLK].ToString();
-                txtAST1.Text = tst[id].stats[t.AST].ToString();
-                txtFOUL1.Text = tst[id].stats[t.FOUL].ToString();
-            }
-            catch
-            {
-            }
-        }
-
+        
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog {Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath};
@@ -345,8 +311,6 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref teamOrder, ref curPT, ref bshist);
 
-            cmbTeam1.SelectedIndex = -1;
-            cmbTeam1.SelectedIndex = 0;
             txtFile.Text = ofd.FileName;
 
             updateStatus(tst.GetLength(0).ToString() + " teams loaded successfully");
@@ -397,10 +361,7 @@ namespace NBA_Stats_Tracker.Windows
                     pst[pbs.PlayerID].AddBoxScore(pbs);
                 }
             }
-
-            cmbTeam1.SelectedIndex = -1;
-            cmbTeam1.SelectedItem = bs.Team1;
-
+            
             if (bs.bshistid == -1)
             {
                 var bse = new BoxScoreEntry(bs, bs.gamedate, list);
@@ -738,41 +699,26 @@ namespace NBA_Stats_Tracker.Windows
             tsopp2.calcAvg();
         }
 
-        private void populateTeamsComboBox(SortedDictionary<string, int> teamOrder, PlayoffTree curPT)
+        private static bool showUpdateMessage = false;
+
+        public static void CheckForUpdates(bool showMessage = false)
         {
-            bool done = false;
-
-            cmbTeam1.Items.Clear();
-            if (curPT != null)
-            {
-                if (curPT.teams[0] != "Invalid")
-                {
-                    var newteams = new List<string>();
-                    for (int i = 0; i < 16; i++)
-                        newteams.Add(curPT.teams[i]);
-                    newteams.Sort();
-                    for (int i = 0; i < 16; i++)
-                        cmbTeam1.Items.Add(newteams[i]);
-                    done = true;
-                }
-            }
-
-            if (!done)
-            {
-                foreach (KeyValuePair<string, int> kvp in teamOrder)
-                    cmbTeam1.Items.Add(kvp.Key);
-            }
-        }
-
-        private static void checkForUpdates()
-        {
+            showUpdateMessage = showMessage;
             try
             {
                 var webClient = new WebClient();
-                webClient.DownloadFileCompleted += Completed;
-                //webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-                webClient.DownloadFileAsync(new Uri("http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt"),
-                                            AppDocsPath + @"nstversion.txt");
+                if (!showMessage)
+                {
+                    webClient.DownloadFileCompleted += Completed;
+                    webClient.DownloadFileAsync(new Uri("http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt"),
+                                                AppDocsPath + @"nstversion.txt");
+                }
+                else
+                {
+                    webClient.DownloadFile(new Uri("http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt"),
+                                                AppDocsPath + @"nstversion.txt");
+                    Completed(null, null);
+                }
             }
             catch
             {
@@ -828,8 +774,13 @@ namespace NBA_Stats_Tracker.Windows
                         Process.Start(updateInfo[1]);
                         break;
                     }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
+            if (showUpdateMessage) MessageBox.Show("No updates found!");
         }
 
         private void btnEraseSettings_Click(object sender, RoutedEventArgs e)
@@ -852,135 +803,6 @@ namespace NBA_Stats_Tracker.Windows
             if (File.Exists(SettingsFile)) File.Delete(SettingsFile);
             MessageBox.Show(
                 "Settings for this file have been erased. You'll be asked to set them again next time you import it.");
-        }
-
-        private void _AnyTextbox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            var tb = (TextBox) sender;
-            tb.SelectAll();
-        }
-
-        private void btnShowAvg_Click(object sender, RoutedEventArgs e)
-        {
-            string msg = TeamStats.TeamAveragesAndRankings(cmbTeam1.SelectedItem.ToString(), tst, TeamOrder);
-            if (msg != "")
-            {
-                var cw = new copyableW(msg, cmbTeam1.SelectedItem.ToString(), TextAlignment.Center);
-                cw.ShowDialog();
-            }
-        }
-
-        private void btnScout_Click(object sender, RoutedEventArgs e)
-        {
-            int id;
-            try
-            {
-                id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
-            }
-            catch
-            {
-                return;
-            }
-
-            int[][] rating = TeamStats.CalculateTeamRankings(tst);
-            if (rating.Length != 1)
-            {
-                string msg = TeamStats.TeamScoutingReport(rating, id, cmbTeam1.SelectedItem.ToString());
-                var cw = new copyableW(msg, "Scouting Report", TextAlignment.Left);
-                cw.ShowDialog();
-            }
-        }
-
-        private void btnTeamCSV_Click(object sender, RoutedEventArgs e)
-        {
-            int id;
-            try
-            {
-                id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
-            }
-            catch
-            {
-                return;
-            }
-
-            const string header1 = "GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL";
-            /*
-            string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
-                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[t.FGM], tst[id].stats[t.FGA], tst[id].stats[t.TPM], tst[id].stats[t.TPA],
-                tst[id].stats[t.FTM], tst[id].stats[t.FTA], tst[
-             */
-            string data1 = String.Format("{0},{1},{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
-            for (int j = 1; j <= 16; j++)
-            {
-                if (j != 3)
-                {
-                    data1 += "," + tst[id].stats[j].ToString();
-                }
-            }
-
-            //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
-
-            const string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
-            string data2 = String.Format("{0:F3}", tst[id].averages[t.Wp]) + "," +
-                           String.Format("{0:F1}", tst[id].averages[t.Weff]);
-            for (int j = 0; j <= 15; j++)
-            {
-                switch (j)
-                {
-                    case 2:
-                    case 4:
-                    case 6:
-                        data2 += String.Format(",{0:F3}", tst[id].averages[j]);
-                        break;
-                    default:
-                        data2 += String.Format(",{0:F1}", tst[id].averages[j]);
-                        break;
-                }
-            }
-
-            int[][] rankings = TeamStats.CalculateTeamRankings(tst);
-
-            string data3 = String.Format("{0:F3}", rankings[id][t.Wp]) + "," +
-                           String.Format("{0:F1}", rankings[id][t.Weff]);
-            for (int j = 0; j <= 15; j++)
-            {
-                switch (j)
-                {
-                    case 1:
-                    case 13:
-                    case 15:
-                        data3 += "," + (31 - rankings[id][j]).ToString();
-                        break;
-                    default:
-                        data3 += "," + rankings[id][j].ToString();
-                        break;
-                }
-            }
-
-            var sfd = new SaveFileDialog
-                          {
-                              Filter = "Comma-Separated Values file (*.csv)|*.csv",
-                              InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                              Title = "Select a file to save the CSV to..."
-                          };
-            sfd.ShowDialog();
-            if (sfd.FileName == "") return;
-
-            var sw = new StreamWriter(sfd.FileName);
-            /*
-            sw.WriteLine(header1);
-            sw.WriteLine(data1);
-            sw.WriteLine();
-            sw.WriteLine(header2);
-            sw.WriteLine(data2);
-            sw.WriteLine(data3);
-            */
-            sw.WriteLine(header1 + "," + header2);
-            sw.WriteLine(data1 + "," + data2);
-            sw.WriteLine();
-            sw.WriteLine(header2);
-            sw.WriteLine(data3);
-            sw.Close();
         }
 
         private void btnLeagueCSV_Click(object sender, RoutedEventArgs e)
@@ -1048,35 +870,6 @@ namespace NBA_Stats_Tracker.Windows
             sw.WriteLine(header1 + header2);
             sw.WriteLine(data1);
             sw.Close();
-        }
-
-        private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
-        {
-            btnImport2K12_Click(sender, e);
-        }
-
-        private void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
-        {
-            int id = TeamOrder[cmbTeam1.SelectedItem.ToString()];
-            tst[id].winloss[0] = Convert.ToByte(txtW1.Text);
-            tst[id].winloss[1] = Convert.ToByte(txtL1.Text);
-            tst[id].stats[t.PF] = Convert.ToUInt16(txtPF1.Text);
-            tst[id].stats[t.PA] = Convert.ToUInt16(txtPA1.Text);
-            tst[id].stats[t.FGM] = Convert.ToUInt16(txtFGM1.Text);
-            tst[id].stats[t.FGA] = Convert.ToUInt16(txtFGA1.Text);
-            tst[id].stats[t.TPM] = Convert.ToUInt16(txt3PM1.Text);
-            tst[id].stats[t.TPA] = Convert.ToUInt16(txt3PA1.Text);
-            tst[id].stats[t.FTM] = Convert.ToUInt16(txtFTM1.Text);
-            tst[id].stats[t.FTA] = Convert.ToUInt16(txtFTA1.Text);
-            tst[id].stats[t.OREB] = Convert.ToUInt16(txtOREB1.Text);
-            tst[id].stats[t.DREB] = Convert.ToUInt16(txtDREB1.Text);
-            tst[id].stats[t.STL] = Convert.ToUInt16(txtSTL1.Text);
-            tst[id].stats[t.TO] = Convert.ToUInt16(txtTO1.Text);
-            tst[id].stats[t.BLK] = Convert.ToUInt16(txtBLK1.Text);
-            tst[id].stats[t.AST] = Convert.ToUInt16(txtAST1.Text);
-            tst[id].stats[t.FOUL] = Convert.ToUInt16(txtFOUL1.Text);
-
-            tst[id].calcAvg();
         }
 
         private void mnuExit_Click(object sender, RoutedEventArgs e)
@@ -1156,20 +949,6 @@ namespace NBA_Stats_Tracker.Windows
 
             Interop2K12.updateSavegame(fn, tst, TeamOrder, pt);
             updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
-            cmbTeam1.SelectedIndex = -1;
-            cmbTeam1.SelectedIndex = 0;
-        }
-
-        private void btnCompare_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var aw = new askTeamW(true, cmbTeam1.SelectedIndex);
-                aw.ShowDialog();
-            }
-            catch
-            {
-            }
         }
 
         private void mnuHelpReadme_Click(object sender, RoutedEventArgs e)
@@ -1224,9 +1003,6 @@ namespace NBA_Stats_Tracker.Windows
                         if (r == MessageBoxResult.No)
                         {
                             SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
-
-                            cmbTeam1.SelectedIndex = -1;
-                            cmbTeam1.SelectedIndex = 0;
                             txtFile.Text = file;
                             return;
                         }
@@ -1335,8 +1111,6 @@ namespace NBA_Stats_Tracker.Windows
                                                       pst = realpst;
                                                       SQLiteIO.saveSeasonToDatabase(file, tst, tstopp, pst, curSeason,
                                                                            SQLiteIO.getMaxSeason(file));
-                                                      cmbTeam1.SelectedIndex = -1;
-                                                      cmbTeam1.SelectedIndex = 0;
                                                       txtFile.Text = file;
                                                       SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder,
                                                                  ref pt, ref bshist, _curSeason: curSeason);
@@ -1407,8 +1181,10 @@ namespace NBA_Stats_Tracker.Windows
             */
         }
 
+        // TODO: Implement Compare to Other file again sometime
         private void btnCompareOtherFile_Click(object sender, RoutedEventArgs e)
         {
+            /*
             var ofd = new OpenFileDialog
                           {
                               Title = "Select the TST file that has the team stats you want to compare to...",
@@ -1448,6 +1224,7 @@ namespace NBA_Stats_Tracker.Windows
                 var vw = new versusW(curteam, "Current", newteam, "Other");
                 vw.ShowDialog();
             }
+            */
         }
 
         private void txtFile_TextChanged(object sender, TextChangedEventArgs e)
@@ -1468,6 +1245,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbSeasonNum.SelectedItem = curSeason.ToString();
         }
 
+        // TODO: Implement Trends again sometime
         private void btnTrends_Click(object sender, RoutedEventArgs e)
         {
             var ofd1 = new OpenFileDialog();
@@ -1481,7 +1259,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (ofd1.FileName == "") return;
 
                 SQLiteIO.LoadSeason(ofd1.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
-                cmbTeam1.SelectedIndex = 0;
+                //cmbTeam1.SelectedIndex = 0;
             }
 
             var ofd = new OpenFileDialog
@@ -1494,7 +1272,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (ofd.FileName == "") return;
 
-            string team = cmbTeam1.SelectedItem.ToString();
+            //string team = cmbTeam1.SelectedItem.ToString();
 
             TeamStats[] curTST = tst;
 
@@ -2092,6 +1870,37 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.saveSeasonToDatabase();
 
             updateStatus("All Player Stats for current season have been reset. Database saved.");
+        }
+
+        private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            /*
+            if (mnuOptionsCheckForUpdates.IsChecked) mnuOptionsCheckForUpdates.IsChecked = false;
+            else mnuOptionsCheckForUpdates.IsChecked = true;
+            */
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                if (mnuOptionsCheckForUpdates.IsChecked) rk.SetValue("CheckForUpdates", 1);
+                else rk.SetValue("CheckForUpdates", 0);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't change check for updates setting.");
+            }
         }
     }
 }

@@ -14,9 +14,10 @@
             VerticalAlignment="Bottom" Width="75" Click="btnOK_Click" />
     <TextBlock Height="128" HorizontalAlignment="Left" Margin="22,125,0,0" Name="txbThanks" Text="txbThanks"
                VerticalAlignment="Top" TextWrapping="Wrap" Width="436" />
-    <Button Content="Donate" Height="23" HorizontalAlignment="Right" Margin="0,0,302,9" Name="btnDonate"
+    <Button Content="Donate" Height="23" HorizontalAlignment="Right" Margin="0,0,174,9" Name="btnDonate"
             VerticalAlignment="Bottom" Width="75" Click="btnDonate_Click" />
     <Button Content="Website" Height="23" HorizontalAlignment="Right" Margin="0,0,383,9" Name="btnWebsite"
             VerticalAlignment="Bottom" Width="75" Click="btnWebsite_Click" />
-  </Grid>
+        <Button Content="Check For Updates" Height="23" HorizontalAlignment="Right" Margin="0,0,255,9" Name="btnCheckForUpdates" VerticalAlignment="Bottom" Width="122" Click="btnCheckForUpdates_Click" />
+    </Grid>
 </Window>

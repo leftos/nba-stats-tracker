@@ -55,5 +55,10 @@ namespace NBA_Stats_Tracker.Windows
         {
             Process.Start("http://forums.nba-live.com/viewtopic.php?f=143&t=84110");
         }
+
+        private void btnCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.CheckForUpdates(true);
+        }
     }
 }
