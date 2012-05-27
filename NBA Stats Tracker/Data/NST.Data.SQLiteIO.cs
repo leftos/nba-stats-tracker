@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Windows;
@@ -968,28 +969,26 @@ namespace NBA_Stats_Tracker.Data
             }
 
             IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
-            foreach (DataRow r in res2.Rows)
-            {
-                var bs = new BoxScore(r);
+            Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
+                                            {
+                                                var bs = new BoxScore(r);
 
-                var bse = new BoxScoreEntry(bs)
-                              {
-                                  date = bs.gamedate,
-                                  Team1Display = DisplayNames[bs.Team1],
-                                  Team2Display = DisplayNames[bs.Team2]
-                              };
+                                                var bse = new BoxScoreEntry(bs)
+                                                              {
+                                                                  date = bs.gamedate,
+                                                                  Team1Display = DisplayNames[bs.Team1],
+                                                                  Team2Display = DisplayNames[bs.Team2]
+                                                              };
 
-                string q2 = "select * from PlayerResults WHERE GameID = " + bs.id.ToString();
-                DataTable res3 = _db.GetDataTable(q2);
-                bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
+                                                string q2 = "select * from PlayerResults WHERE GameID = " +
+                                                            bs.id.ToString();
+                                                DataTable res3 = _db.GetDataTable(q2);
+                                                bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
 
-                foreach (DataRow r3 in res3.Rows)
-                {
-                    bse.pbsList.Add(new PlayerBoxScore(r3));
-                }
+                                                Parallel.ForEach(res3.Rows.Cast<DataRow>(), r3 => bse.pbsList.Add(new PlayerBoxScore(r3)));
 
-                _bshist.Add(bse);
-            }
+                                                _bshist.Add(bse);
+                                            });
             return _bshist;
         }
 
@@ -1013,7 +1012,7 @@ namespace NBA_Stats_Tracker.Data
             var _db = new SQLiteDatabase(file);
             DataTable res = _db.GetDataTable(q);
 
-            var _pst = (from DataRow r in res.Rows select new PlayerStats(r)).ToDictionary(ps => ps.ID);
+            var _pst = (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
 
             PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
 

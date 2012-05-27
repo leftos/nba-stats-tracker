@@ -180,6 +180,11 @@ namespace NBA_Stats_Tracker.Windows
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
             reload = true;
+            lastShownTeamSeason = 0;
+            lastShownPlayerSeason = 0;
+            lastShownPlayoffSeason = 0;
+            lastShownLeadersSeason = 0;
+            lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -190,6 +195,11 @@ namespace NBA_Stats_Tracker.Windows
                 dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
             reload = true;
+            lastShownTeamSeason = 0;
+            lastShownPlayerSeason = 0;
+            lastShownPlayoffSeason = 0;
+            lastShownLeadersSeason = 0;
+            lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -205,8 +215,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 if (reload || e.OriginalSource is TabControl)
                 {
                     if (tbcLeagueOverview.SelectedItem == tabTeamStats)
@@ -273,10 +283,11 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     reload = false;
                 }
-            }
-            catch (Exception)
-            {
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    //throw ex;
+            //}
         }
 
         private void PrepareLeagueLeaders()
@@ -295,7 +306,7 @@ namespace NBA_Stats_Tracker.Windows
                                       {
                                           foreach (PlayerStatsRow psr in psrList)
                                           {
-                                              leadersList.Add(ConvertToLeagueLeader(psr, _tst));
+                                              if (psr.isActive) leadersList.Add(ConvertToLeagueLeader(psr, _tst));
                                               worker1.ReportProgress(1);
                                           }
                                       }
@@ -303,7 +314,7 @@ namespace NBA_Stats_Tracker.Windows
                                       {
                                           foreach (PlayerStatsRow psr in psrList)
                                           {
-                                              leadersList.Add(ConvertToLeagueLeader(psr, partialTST));
+                                              if (psr.isActive) leadersList.Add(ConvertToLeagueLeader(psr, partialTST));
                                               worker1.ReportProgress(1);
                                           }
                                       }
@@ -340,11 +351,17 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (KeyValuePair<int, PlayerStats> kvp in _pst)
                 {
                     var psr = new PlayerStatsRow(kvp.Value);
-                    psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                    if (psr.isActive)
+                    {
+                        psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                        var pmsr = new PlayerMetricStatsRow(kvp.Value) { TeamFDisplay = psr.TeamFDisplay };
+                        pmsrList.Add(pmsr);
+                    }
+                    else
+                    {
+                        psr.TeamFDisplay = "- Inactive -";
+                    }
                     psrList.Add(psr);
-                    var pmsr = new PlayerMetricStatsRow(kvp.Value)
-                                   {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
-                    pmsrList.Add(pmsr);
                 }
             }
             else
@@ -407,11 +424,19 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (KeyValuePair<int, PlayerStats> kvp in pstBetween)
                 {
                     var psr = new PlayerStatsRow(kvp.Value);
-                    psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                    if (psr.isActive)
+                    {
+                        psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+
+                        var pmsr = new PlayerMetricStatsRow(kvp.Value)
+                                       {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
+                        pmsrList.Add(pmsr);
+                    }
+                    else
+                    {
+                        psr.TeamFDisplay = "- Inactive -";
+                    }
                     psrList.Add(psr);
-                    var pmsr = new PlayerMetricStatsRow(kvp.Value)
-                                   {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
-                    pmsrList.Add(pmsr);
                 }
             }
 
@@ -586,6 +611,11 @@ namespace NBA_Stats_Tracker.Windows
             {
             }
             reload = true;
+            lastShownTeamSeason = 0;
+            lastShownPlayerSeason = 0;
+            lastShownPlayoffSeason = 0;
+            lastShownLeadersSeason = 0;
+            lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
@@ -601,6 +631,11 @@ namespace NBA_Stats_Tracker.Windows
             {
             }
             reload = true;
+            lastShownTeamSeason = 0;
+            lastShownPlayerSeason = 0;
+            lastShownPlayoffSeason = 0;
+            lastShownLeadersSeason = 0;
+            lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 

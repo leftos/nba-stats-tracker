@@ -1131,7 +1131,7 @@ namespace NBA_Stats_Tracker.Windows
             var percentage = (int) progress;
             if (percentage < 97)
             {
-                status.Content = "Downloading real NBA stats (" + percentage + "% complete)...";
+                status.Content = "Downloading NBA stats from Basketball-Reference.com (" + percentage + "% complete)...";
             }
             else
             {

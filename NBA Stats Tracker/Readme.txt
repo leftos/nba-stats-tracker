@@ -134,6 +134,11 @@ Credits to
 	
 	
 Version History
+	v0.10.7.8
+		- Improvement: Parallelized some code to improve performance
+		- Fix: Fixed various bugs in League Overview regarding inactive players and some tabs not updating correctly
+		- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
+
 	v0.10.7.7
 		- Addition: Check For Updates on start can now be disabled (Options Menu)
 		- Addition: You can manually check for updates after the tool starts (About window)

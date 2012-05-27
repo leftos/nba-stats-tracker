@@ -1,8 +1,13 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
-// 
-// Implementation of thesis
+// Created by brennydoogles, (c) 2010
+// Source: http://www.dreamincode.net/forums/topic/157830-using-sqlite-with-c%23/
+// Adapted from Mike Duncan's tutorial
+// Source: http://www.mikeduncan.com/sqlite-on-dotnet-in-3-mins/
+//
+//
+// Updated and added to by Lefteris Aslanoglou, (c) 2011-2012
+// as a Class Library for the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
 // under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
@@ -222,7 +227,9 @@ namespace SQLite_Database
         ///     Allows the programmer to easily insert multiple lines into the DB
         /// </summary>
         /// <param name="tableName">The table into which we insert the data.</param>
-        /// <param name="data">A list of dictionaries containing the column names and data for the insert. All dictionaries must have the same order of inserted pairs.</param>
+        /// <param name="data">A list of dictionaries containing the column names and data for the insert.
+        ///                     All dictionaries must have the same order of inserted pairs. 
+        ///                     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.</param>
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool InsertMany(String tableName, List<Dictionary<String, String>> data)
         {
