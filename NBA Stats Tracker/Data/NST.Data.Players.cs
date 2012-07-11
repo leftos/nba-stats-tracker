@@ -493,11 +493,11 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
-        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, TeamStats[] teamStats,
-                                               TeamStats[] oppStats, SortedDictionary<string, int> TeamOrder,
+        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats,
+                                               Dictionary<int, TeamStats> oppStats, SortedDictionary<string, int> TeamOrder,
                                                bool leagueOv = false)
         {
-            int tCount = teamStats.Length;
+            int tCount = teamStats.Count;
 
             var ls = new TeamStats();
             var lsopp = new TeamStats();

@@ -20,6 +20,7 @@ using System.Windows;
 
 #endregion
 
+#region Other info
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -57,7 +58,7 @@ using System.Windows;
     //(used if a resource is not found in the page, 
     // app, or any theme specific resource dictionaries)
     )]
-
+#endregion
 
 // Version information for an assembly consists of the following four values:
 //
@@ -70,4 +71,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.10.7.8")]
+[assembly: AssemblyVersion("0.11.0.0")]

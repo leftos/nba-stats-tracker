@@ -23,18 +23,21 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Interop;
 using SQLite_Database;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 #endregion
 
@@ -57,9 +60,9 @@ namespace NBA_Stats_Tracker.Windows
 
         public static MainWindow mwInstance;
 
-        public static TeamStats[] tst = new TeamStats[1];
-        public static TeamStats[] tstopp = new TeamStats[1];
-        public static TeamStats[] realtst = new TeamStats[30];
+        public static Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
+        public static Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
+        public static Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         public static BoxScore bs;
         public static IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
@@ -114,15 +117,6 @@ namespace NBA_Stats_Tracker.Windows
 
             isCustom = true;
 
-            if (
-                Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                 @"\NBA 2K12 Correct Team Stats"))
-                if (Directory.Exists(AppDocsPath) == false)
-                    Directory.Move(
-                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                        @"\NBA 2K12 Correct Team Stats",
-                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker");
-
             if (Directory.Exists(AppDocsPath) == false) Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false) Directory.CreateDirectory(AppTempPath);
 
@@ -171,25 +165,92 @@ namespace NBA_Stats_Tracker.Windows
             else
             {
                 rk = Registry.CurrentUser;
+                int checkForUpdatesSetting;
                 try
                 {
                     if (rk == null) throw new Exception();
                     
                     rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    int checkForUpdatesSetting = Convert.ToInt32(rk.GetValue("CheckForUpdates", 1));
-                    if (checkForUpdatesSetting == 1)
-                    {
-                        mnuOptionsCheckForUpdates.IsChecked = true;
-                        CheckForUpdates();
-                    }
-                    else
-                    {
-                        mnuOptionsCheckForUpdates.IsChecked = false;
-                    }
+                    checkForUpdatesSetting = Convert.ToInt32(rk.GetValue("CheckForUpdates", 1));
                 }
                 catch
                 {
-                    
+                    checkForUpdatesSetting = 1;
+                }
+                if (checkForUpdatesSetting == 1)
+                {
+                    mnuOptionsCheckForUpdates.IsChecked = true;
+                    CheckForUpdates();
+                }
+                else
+                {
+                    mnuOptionsCheckForUpdates.IsChecked = false;
+                }
+
+                rk = Registry.CurrentUser;
+                int importSetting;
+                try
+                {
+                    if (rk == null) throw new Exception();
+
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    importSetting = Convert.ToInt32(rk.GetValue("NBA2K12ImportMethod", 0));
+                }
+                catch
+                {
+                    importSetting = 0;
+                }
+                if (importSetting == 0)
+                {
+                    mnuOptionsImportREditor.IsChecked = true;
+                }
+                else
+                {
+                    mnuOptionsImportOld.IsChecked = true;
+                }
+
+                rk = Registry.CurrentUser;
+                int ExportTeamsOnly;
+                try
+                {
+                    if (rk == null) throw new Exception();
+
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    ExportTeamsOnly = Convert.ToInt32(rk.GetValue("ExportTeamsOnly", 1));
+                }
+                catch
+                {
+                    ExportTeamsOnly = 1;
+                }
+                if (ExportTeamsOnly == 1)
+                {
+                    mnuOptionsExportTeamsOnly.IsChecked = true;
+                }
+                else
+                {
+                    mnuOptionsExportTeamsOnly.IsChecked = false;
+                }
+
+                rk = Registry.CurrentUser;
+                int CompatibilityCheck;
+                try
+                {
+                    if (rk == null) throw new Exception();
+
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    CompatibilityCheck = Convert.ToInt32(rk.GetValue("CompatibilityCheck", 1));
+                }
+                catch
+                {
+                    CompatibilityCheck = 1;
+                }
+                if (CompatibilityCheck == 1)
+                {
+                    mnuOptionsCompatibilityCheck.IsChecked = true;
+                }
+                else
+                {
+                    mnuOptionsCompatibilityCheck.IsChecked = false;
                 }
             }
         }
@@ -226,43 +287,73 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog
-                          {
-                              Title = "Please select the Career file you're playing...",
-                              Filter =
-                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                                  +
-                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                                  "Create A Legend files (*.SMG)|*.SMG"
-                          };
-            if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
-            ofd.ShowDialog();
-            if (ofd.FileName == "") return;
-            
-            isCustom = true;
-            //prepareWindow(isCustom);
-            TeamOrder = Helper.setTeamOrder("Mode 0");
-
-            var temp = new TeamStats[1];
-
-            //TODO: Implement Opponents stats from 2K12 Save
-            //TeamStats[] tempopp = new TeamStats[1];
-            TeamStats[] tempopp = tstopp;
-
-            Interop2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
-            if (temp.Length > 1)
+            if (mnuOptionsImportOld.IsChecked)
             {
-                tst = temp;
-                tstopp = tempopp;
-            }
+                var ofd = new OpenFileDialog
+                              {
+                                  Title = "Please select the Career file you're playing...",
+                                  Filter =
+                                      "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                                      +
+                                      "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                                      "Create A Legend files (*.SMG)|*.SMG"
+                              };
+                if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
+                ofd.ShowDialog();
+                if (ofd.FileName == "") return;
 
-            if (tst.Length != tstopp.Length)
-            {
-                tstopp = new TeamStats[tst.Length];
-                for (int i = 0; i < tst.Length; i++) tstopp[i] = new TeamStats(tst[i].name);
+                isCustom = true;
+                //prepareWindow(isCustom);
+                TeamOrder = Helper.setTeamOrder("Mode 0");
+
+                var temp = new Dictionary<int, TeamStats>();
+
+                //TODO: Implement Opponents stats from 2K12 Save
+                //Dictionary<int, TeamStats> tempopp = new TeamStats[1];
+                Dictionary<int, TeamStats> tempopp = tstopp;
+
+                Interop2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
+                if (temp.Count > 1)
+                {
+                    tst = new Dictionary<int, TeamStats>(temp);
+                    tstopp = new Dictionary<int, TeamStats>(tempopp);
+                }
+
+                if (tst.Count != tstopp.Count)
+                {
+                    tstopp = new Dictionary<int, TeamStats>();
+                    for (int i = 0; i < tst.Count; i++) tstopp[i] = new TeamStats(tst[i].name);
+                }
+
+                updateStatus(
+                    "NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
             }
-            
-            updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
+            else
+            {
+                var fbd = new FolderBrowserDialog
+                              {
+                                  Description = "Select folder with REditor-exported TSVs",
+                                  ShowNewFolderButton = false
+                              };
+                DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+
+                if (!(dr == System.Windows.Forms.DialogResult.OK)) return;
+
+                if (fbd.SelectedPath == "") return;
+
+                int result = InteropREditor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
+
+                if (result != 0)
+                {
+                    MessageBox.Show(
+                        "Import failed! Please reload your database immediatelly to avoid saving corrupt data.",
+                        "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                updateStatus(
+                    "NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
+            }
         }
         
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
@@ -294,7 +385,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuFileOpenCustom_Click(object sender, RoutedEventArgs e)
         {
-            tst = new TeamStats[30];
+            tst = new Dictionary<int, TeamStats>();
             TeamOrder = new SortedDictionary<string, int>();
             bshist = new List<BoxScoreEntry>();
 
@@ -313,7 +404,7 @@ namespace NBA_Stats_Tracker.Windows
 
             txtFile.Text = ofd.FileName;
 
-            updateStatus(tst.GetLength(0).ToString() + " teams loaded successfully");
+            updateStatus(tst.Count.ToString() + " teams loaded successfully");
             currentDB = txtFile.Text;
             //txtFile.Text = "SQLite";
 
@@ -353,7 +444,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (!bs.doNotUpdate)
             {
-                AddTeamStatsFromBoxScore(bs, ref tst[id1], ref tst[id2], ref tstopp[id1], ref tstopp[id2]);
+                AddTeamStatsFromBoxScore(bs, ref tst, ref tstopp, id1, id2);
 
                 foreach (PlayerBoxScore pbs in list)
                 {
@@ -380,14 +471,22 @@ namespace NBA_Stats_Tracker.Windows
 
         public static void AddTeamStatsFromBoxScore(BoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2)
         {
-            var tsopp1 = new TeamStats();
-            var tsopp2 = new TeamStats();
-            AddTeamStatsFromBoxScore(bsToAdd, ref ts1, ref ts2, ref tsopp1, ref tsopp2);
+            Dictionary<int, TeamStats> _tst = new Dictionary<int, TeamStats>();
+            _tst.Add(1, ts1);
+            _tst.Add(2, ts2);
+            var _tstopp = new Dictionary<int, TeamStats> {{1, new TeamStats()}, {2, new TeamStats()}};
+            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, 1, 2);
+            ts1 = _tst[1];
+            ts2 = _tst[2];
         }
 
-        public static void AddTeamStatsFromBoxScore(BoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2,
-                                                    ref TeamStats tsopp1, ref TeamStats tsopp2)
+        public static void AddTeamStatsFromBoxScore(BoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
+                                                    ref Dictionary<int, TeamStats> _tstopp, int id1, int id2)
         {
+            var ts1 = _tst[id1];
+            var ts2 = _tst[id2];
+            var tsopp1 = _tstopp[id1];
+            var tsopp2 = _tstopp[id2];
             if (!bsToAdd.isPlayoff)
             {
                 // Add win & loss
@@ -697,6 +796,11 @@ namespace NBA_Stats_Tracker.Windows
             ts2.calcAvg();
             tsopp1.calcAvg();
             tsopp2.calcAvg();
+
+            _tst[id1] = ts1;
+            _tst[id2] = ts2;
+            _tstopp[id1] = tsopp1;
+            _tstopp[id2] = tsopp2;
         }
 
         private static bool showUpdateMessage = false;
@@ -805,11 +909,11 @@ namespace NBA_Stats_Tracker.Windows
                 "Settings for this file have been erased. You'll be asked to set them again next time you import it.");
         }
 
-        private void btnLeagueCSV_Click(object sender, RoutedEventArgs e)
+        private void btnLeagueTSV_Click(object sender, RoutedEventArgs e)
         {
-            const string header1 = ",Team,GP,W,L,PF,PA,FGM,FGA,3PM,3PA,FTM,FTA,OREB,DREB,STL,TO,BLK,AST,FOUL,";
-            //string header2 = "Team,W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
-            const string header2 = "W%,Weff,PPG,PAPG,FG%,FGeff,3P%,3Peff,FT%,FTeff,RPG,ORPG,DRPG,SPG,BPG,TPG,APG,FPG";
+            const string header1 = "\tTeam\tGP\tW\tL\tPF\tPA\tFGM\tFGA\t3PM\t3PA\tFTM\tFTA\tOREB\tDREB\tSTL\tTO\tBLK\tAST\tFOUL\t";
+            //string header2 = "Team\tW%\tWeff\tPPG\tPAPG\tFG%\tFGeff\t3P%\t3Peff\tFT%\tFTeff\tRPG\tORPG\tDRPG\tSPG\tBPG\tTPG\tAPG\tFPG";
+            const string header2 = "W%\tWeff\tPPG\tPAPG\tFG%\tFGeff\t3P%\t3Peff\tFT%\tFTeff\tRPG\tORPG\tDRPG\tSPG\tBPG\tTPG\tAPG\tFPG";
             /*
             string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
                 tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[t.FGM], tst[id].stats[t.FGA], tst[id].stats[t.TPM], tst[id].stats[t.TPA],
@@ -820,25 +924,25 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (tst[id].name == "") continue;
 
-                data1 += (id + 1).ToString() + ",";
+                data1 += (id + 1).ToString() + "\t";
                 foreach (KeyValuePair<string, int> kvp in TeamOrder)
                 {
                     if (kvp.Value == id)
                     {
-                        data1 += kvp.Key + ",";
+                        data1 += kvp.Key + "\t";
                         break;
                     }
                 }
-                data1 += String.Format("{0},{1},{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
+                data1 += String.Format("{0}\t{1}\t{2}", tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1]);
                 for (int j = 1; j <= 16; j++)
                 {
                     if (j != 3)
                     {
-                        data1 += "," + tst[id].stats[j].ToString();
+                        data1 += "\t" + tst[id].stats[j].ToString();
                     }
                 }
-                data1 += ",";
-                data1 += String.Format("{0:F3}", tst[id].averages[t.Wp]) + "," +
+                data1 += "\t";
+                data1 += String.Format("{0:F3}", tst[id].averages[t.Wp]) + "\t" +
                          String.Format("{0:F1}", tst[id].averages[t.Weff]);
                 for (int j = 0; j <= 15; j++)
                 {
@@ -847,10 +951,10 @@ namespace NBA_Stats_Tracker.Windows
                         case 2:
                         case 4:
                         case 6:
-                            data1 += String.Format(",{0:F3}", tst[id].averages[j]);
+                            data1 += String.Format("\t{0:F3}", tst[id].averages[j]);
                             break;
                         default:
-                            data1 += String.Format(",{0:F1}", tst[id].averages[j]);
+                            data1 += String.Format("\t{0:F1}", tst[id].averages[j]);
                             break;
                     }
                 }
@@ -859,9 +963,9 @@ namespace NBA_Stats_Tracker.Windows
 
             var sfd = new SaveFileDialog
                           {
-                              Filter = "Comma-Separated Values file (*.csv)|*.csv",
+                              Filter = "Tab-Separated Values file (*.tsv)|*.tsv",
                               InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                              Title = "Select a file to save the CSV to..."
+                              Title = "Export To TSV"
                           };
             sfd.ShowDialog();
             if (sfd.FileName == "") return;
@@ -879,76 +983,156 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnInject_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog
-                          {
-                              Title = "Please select the Career file you want to update...",
-                              Filter =
-                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
-                                  +
-                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                                  "Create A Legend files (*.SMG)|*.SMG"
-                          };
-            if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
-            ofd.ShowDialog();
-
-            if (ofd.FileName == "") return;
-            string fn = ofd.FileName;
-
-            Interop2K12.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
-
-            var temp = new TeamStats[1];
-            var tempopp = new TeamStats[1];
-
-            Interop2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
-            if (temp.Length == 1)
+            if (mnuOptionsImportOld.IsChecked)
             {
-                MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
-                return;
-            }
-            bool incompatible = false;
+                var ofd = new OpenFileDialog
+                              {
+                                  Title = "Please select the Career file you want to update...",
+                                  Filter =
+                                      "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|"
+                                      +
+                                      "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
+                                      "Create A Legend files (*.SMG)|*.SMG"
+                              };
+                if (Directory.Exists(SavesPath)) ofd.InitialDirectory = SavesPath;
+                ofd.ShowDialog();
 
-            if (temp.Length != tst.Length) incompatible = true;
-            else
-            {
-                for (int i = 0; i < temp.Length; i++)
+                if (ofd.FileName == "") return;
+                string fn = ofd.FileName;
+
+                Interop2K12.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
+
+                var temp = new Dictionary<int, TeamStats>();
+                var tempopp = new Dictionary<int, TeamStats>();
+
+                Interop2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
+                if (temp.Count == 1)
                 {
-                    if (temp[i].name != tst[i].name)
-                    {
-                        incompatible = true;
-                        break;
-                    }
+                    MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
+                    return;
+                }
+                bool incompatible = false;
 
-                    if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) ||
-                        (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                if (temp.Count != tst.Count) incompatible = true;
+                else
+                {
+                    for (int i = 0; i < temp.Count; i++)
                     {
-                        incompatible = true;
-                        break;
+                        if (temp[i].name != tst[i].name)
+                        {
+                            incompatible = true;
+                            break;
+                        }
+
+                        if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) ||
+                            (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                        {
+                            incompatible = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (incompatible)
+                if (incompatible)
+                {
+                    MessageBoxResult r =
+                        MessageBox.Show(
+                            "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
+                            "\nThis could be happening for a number of reasons:\n\n" +
+                            "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
+                            "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
+                            "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
+                            "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
+                            "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
+                            "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
+                            "to export the stats from the database to your 2K save.\n\n" +
+                            "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
+                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                    if (r == MessageBoxResult.No) return;
+                }
+
+
+                Interop2K12.updateSavegame(fn, tst, TeamOrder, pt);
+                updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
+            }
+            else
             {
-                MessageBoxResult r =
-                    MessageBox.Show(
-                        "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
-                        "\nThis could be happening for a number of reasons:\n\n" +
-                        "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
-                        "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
-                        "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
-                        "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
-                        "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
-                        "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
-                        "to export the stats from the database to your 2K save.\n\n" +
-                        "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
-                        "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var fbd = new FolderBrowserDialog
+                {
+                    Description = "Select folder with REditor-exported TSVs",
+                    ShowNewFolderButton = false
+                };
+                DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
-                if (r == MessageBoxResult.No) return;
+                if (!(dr == System.Windows.Forms.DialogResult.OK)) return;
+
+                if (fbd.SelectedPath == "") return;
+
+                if (mnuOptionsCompatibilityCheck.IsChecked)
+                {
+                    var temptst = new Dictionary<int, TeamStats>();
+                    var temptstopp = new Dictionary<int, TeamStats>();
+                    var temppst = new Dictionary<int, PlayerStats>();
+                    int result = InteropREditor.ImportAll(ref temptst, ref temptstopp, ref TeamOrder, ref temppst,
+                                                          fbd.SelectedPath, true);
+
+                    if (result != 0)
+                    {
+                        MessageBox.Show("Export failed.");
+                        return;
+                    }
+
+                    bool incompatible = false;
+
+                    if (temptst.Count != tst.Count) incompatible = true;
+                    else
+                    {
+                        for (int i = 0; i < temptst.Count; i++)
+                        {
+                            if (temptst[i].name != tst[i].name)
+                            {
+                                incompatible = true;
+                                break;
+                            }
+
+                            if ((!temptst[i].winloss.SequenceEqual(tst[i].winloss)) ||
+                                (!temptst[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                            {
+                                incompatible = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (incompatible)
+                    {
+                        MessageBoxResult r =
+                            MessageBox.Show(
+                                "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
+                                "\nThis could be happening for a number of reasons:\n\n" +
+                                "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
+                                "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
+                                "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
+                                "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
+                                "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
+                                "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
+                                "to export the stats from the database to your 2K save.\n\n" +
+                                "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
+                                "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                        if (r == MessageBoxResult.No) return;
+                    }
+                }
+
+                int eresult = InteropREditor.ExportAll(tst, tstopp, pst, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+
+                if (eresult != 0)
+                {
+                    MessageBox.Show("Export failed.");
+                    return;
+                }
             }
-
-
-            Interop2K12.updateSavegame(fn, tst, TeamOrder, pt);
-            updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
         }
 
         private void mnuHelpReadme_Click(object sender, RoutedEventArgs e)
@@ -1014,7 +1198,7 @@ namespace NBA_Stats_Tracker.Windows
             //grsw.ShowDialog();
             TeamOrder = Helper.setTeamOrder("Mode 0");
 
-            var realtstopp = new TeamStats[realtst.Length];
+            var realtstopp = new Dictionary<int, TeamStats>();
             var realpst = new Dictionary<int, PlayerStats>();
             sem = new Semaphore(1, 1);
 
@@ -1066,8 +1250,12 @@ namespace NBA_Stats_Tracker.Windows
                                       foreach (KeyValuePair<string, string> kvp in TeamNamesShort)
                                       {
                                           Dictionary<int, PlayerStats> temppst;
-                                          InteropBR.ImportRealStats(kvp, out realtst[TeamOrder[kvp.Key]],
-                                                                    out realtstopp[TeamOrder[kvp.Key]], out temppst);
+                                          var realts = new TeamStats();
+                                          var realtsopp = new TeamStats();
+                                          InteropBR.ImportRealStats(kvp, out realts,
+                                                                    out realtsopp, out temppst);
+                                          realtst[TeamOrder[kvp.Key]] = realts;
+                                          realtstopp[TeamOrder[kvp.Key]] = realtsopp;
                                           foreach (KeyValuePair<int, PlayerStats> kvp2 in temppst)
                                           {
                                               kvp2.Value.ID = realpst.Count;
@@ -1089,10 +1277,10 @@ namespace NBA_Stats_Tracker.Windows
                                               {
                                                   if (realtst[0].name != "Canceled")
                                                   {
-                                                      int len = realtst.GetLength(0);
+                                                      int len = realtst.Count;
 
-                                                      tst = new TeamStats[len];
-                                                      tstopp = new TeamStats[len];
+                                                      tst = new Dictionary<int, TeamStats>();
+                                                      tstopp = new Dictionary<int, TeamStats>();
                                                       for (int i = 0; i < len; i++)
                                                       {
                                                           foreach (KeyValuePair<string, int> kvp in TeamOrder)
@@ -1274,13 +1462,13 @@ namespace NBA_Stats_Tracker.Windows
 
             //string team = cmbTeam1.SelectedItem.ToString();
 
-            TeamStats[] curTST = tst;
+            Dictionary<int, TeamStats> curTST = tst;
 
             var oldTeamOrder = new SortedDictionary<string, int>();
             var oldPT = new PlayoffTree();
             IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
-            var oldTST = new TeamStats[1];
-            var oldTSTopp = new TeamStats[1];
+            var oldTST = new Dictionary<int, TeamStats>();
+            var oldTSTopp = new Dictionary<int, TeamStats>();
             SQLiteIO.LoadSeason(ofd.FileName, out oldTST, out oldTSTopp, out pst, out oldTeamOrder, ref oldPT, ref oldbshist,
                        false);
 
@@ -1396,7 +1584,7 @@ namespace NBA_Stats_Tracker.Windows
             return diff;
         }
 
-        private float[][] calculateDifferenceAverage(TeamStats[] curTST, TeamStats[] oldTST)
+        private float[][] calculateDifferenceAverage(Dictionary<int, TeamStats> curTST, Dictionary<int, TeamStats> oldTST)
         {
             var diff = new float[30][];
             for (int i = 0; i < 30; i++)
@@ -1540,7 +1728,7 @@ namespace NBA_Stats_Tracker.Windows
             curSeason = 1;
             txbCurSeason.Text = "Current Season: 1/1";
 
-            tst = new TeamStats[1];
+            tst = new Dictionary<int, TeamStats>();
             tst[0] = new TeamStats("$$NewDB");
             TeamOrder = new SortedDictionary<string, int>();
 
@@ -1565,11 +1753,8 @@ namespace NBA_Stats_Tracker.Windows
                     string[] parts = Regex.Split(addInfo, "\r\n");
                     var newTeams = parts.Where(s => !String.IsNullOrWhiteSpace(s)).ToList();
 
-                    int oldlen = tst.GetLength(0);
+                    int oldlen = tst.Count;
                     if (SQLiteIO.isTSTEmpty()) oldlen = 0;
-
-                    Array.Resize(ref tst, oldlen + newTeams.Count);
-                    Array.Resize(ref tstopp, oldlen + newTeams.Count);
 
                     for (int i = 0; i < newTeams.Count; i++)
                     {
@@ -1631,8 +1816,9 @@ namespace NBA_Stats_Tracker.Windows
                     SQLiteIO.prepareNewDB(db, curSeason, curSeason, true);
 
                     txbCurSeason.Text = "Current Season: " + curSeason.ToString() + "/" + curSeason.ToString();
-                    foreach (TeamStats ts in tst)
+                    foreach (var key in tst.Keys)
                     {
+                        TeamStats ts = tst[key];
                         for (int i = 0; i < ts.stats.Length; i++)
                         {
                             ts.stats[i] = 0;
@@ -1643,10 +1829,12 @@ namespace NBA_Stats_Tracker.Windows
                         ts.pl_winloss[0] = 0;
                         ts.pl_winloss[1] = 0;
                         ts.calcAvg();
+                        tst[key] = ts;
                     }
 
-                    foreach (TeamStats ts in tstopp)
+                    foreach (var key in tstopp.Keys)
                     {
+                        TeamStats ts = tstopp[key];
                         for (int i = 0; i < ts.stats.Length; i++)
                         {
                             ts.stats[i] = 0;
@@ -1657,6 +1845,7 @@ namespace NBA_Stats_Tracker.Windows
                         ts.pl_winloss[0] = 0;
                         ts.pl_winloss[1] = 0;
                         ts.calcAvg();
+                        tstopp[key] = ts;
                     }
 
                     foreach (KeyValuePair<int, PlayerStats> ps in pst)
@@ -1838,11 +2027,11 @@ namespace NBA_Stats_Tracker.Windows
                         MessageBoxImage.Question);
                 if (r == MessageBoxResult.Yes)
                 {
-                    foreach (TeamStats team in tst)
-                        team.ResetStats("All");
+                    foreach (var key in tst.Keys)
+                        tst[key].ResetStats("All");
 
-                    foreach (TeamStats team in tstopp)
-                        team.ResetStats("All");
+                    foreach (var key in tstopp.Keys)
+                        tst[key].ResetStats("All");
                 }
             }
 
@@ -1900,6 +2089,118 @@ namespace NBA_Stats_Tracker.Windows
             catch
             {
                 MessageBox.Show("Couldn't change check for updates setting.");
+            }
+        }
+
+        private void mnuOptionsImportREditor_Click(object sender, RoutedEventArgs e)
+        {
+            if (!mnuOptionsImportREditor.IsChecked) mnuOptionsImportREditor.IsChecked = true;
+            mnuOptionsImportOld.IsChecked = false;
+
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                rk.SetValue("NBA2K12ImportMethod", 0);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't change setting.");
+            }
+        }
+
+        private void mnuOptionsImportOld_Click(object sender, RoutedEventArgs e)
+        {
+            if (!mnuOptionsImportOld.IsChecked) mnuOptionsImportOld.IsChecked = true;
+            mnuOptionsImportREditor.IsChecked = false;
+
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                rk.SetValue("NBA2K12ImportMethod", 1);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't change setting.");
+            }
+        }
+
+        private void mnuOptionsExportTeamsOnly_Click(object sender, RoutedEventArgs e)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                if (mnuOptionsExportTeamsOnly.IsChecked) rk.SetValue("ExportTeamsOnly", 1);
+                else rk.SetValue("ExportTeamsOnly", 0);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't change setting.");
+            }
+        }
+
+        private void mnuOptionsCompatibilityCheck_Click(object sender, RoutedEventArgs e)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                if (mnuOptionsCompatibilityCheck.IsChecked) rk.SetValue("CompatibilityCheck", 1);
+                else rk.SetValue("CompatibilityCheck", 0);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't change setting.");
             }
         }
     }

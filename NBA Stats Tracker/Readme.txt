@@ -71,12 +71,29 @@ NBA 2K12 Features
 	If you have the patience to just enter the Box Score (just the team stats, the players' ones aren't required) in the tool after each game you play, it'll make sure that your Team Stats (and the other team's that you played against) will be correctly updated. 
 	
 	Just follow these steps:
+	REditor
+		1. From in-game, select Play Game, and let it save your career.
+		2. Alt-Tab out of the game and start REditor.
+		3. Open your save in REditor, export everything to TSV (File > Export to TSV).
+		4. Start NBA Stats Tracker.
+		5. Open your database, or create a new one if you haven't previously done so.
+		6. Click on Import from 2K12 Save, select the folder you saved the TSVs into in Step 3.
+		7. Save the database.
+		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again.
+		9. Go back to the tool, open the database you saved before the game.
+		10. Click on Update with Box Score, enter the Box Score and click OK.
+		11. Click on Export to 2K12 Save, select the folder you saved the TSVs into in Step 3.
+		12. Go to REditor, open your career again, import everything from TSV (File > Import from TSV).
+		13. Save your career in REditor.
+		14. You're done!
+
+	Old Season 1 Workaround
 		1. From in-game, select Play Game, and let it save your career.
 		2. Alt-Tab out of the game and into the tool.
 		3. Open your database, or create a new one if you haven't previously done so.
 		4. Import the NBA 2K12 stats from your save right before the game.
 		5. Save the database.
-		6. Alt-Tab into the game and play it or watch it, then after it's done let it save your association again.
+		6. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again.
 		7. Go back to the tool, open the database you saved before the game.
 		8. Click on Update with Box Score, enter the Box Score and click OK.
 		9. Click on Export to 2K12 Save, choose the Career file in the dialog.
@@ -106,11 +123,6 @@ Additional Features
 	Real NBA Stats
 		This feature allows you to automatically grab the real league's Team Stats and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
 		
-Known Issues
-	- NBA 2K12 compatibility is still not there completely yet; we're still at the same point as 0.7, waiting for Vlad to finish decoding the Team Stats so that we can make NST compatible with all 2K12 saves, all seasons; you can still try and see if a specific mode works for you, or you can request a new mode by following the tutorial in this post: 
-	   
-	  http://forums.nba-live.com/viewtopic.php?p=1467471#p1467471
-	
 
 Disclaimer
 	The tool is still in beta. I've tested it in my environment, on my Association files and it seems to work perfectly. If you encounter any problems, you'll find a backup of your Association in the Saves folder. Keep one thing in mind however... 
@@ -123,7 +135,7 @@ Disclaimer
 Credits to
 	- JaoSming, for his roster editing tutorial, especially the part regarding the CRC checks
 	- Onisak, for his help with debugging
-	- Vl@d Zola Jr, for helping make NBA Stats Tracker what it is and will be
+	- Vl@d Zola Jr, for his invaluable help in making NST compatible with all NBA 2K12 saves
 	- albidnis, for his idea to export to CSV
 	- jrlocke, for being the first donator, and a generous one
 	- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues & Real NBA Stats features
@@ -134,6 +146,12 @@ Credits to
 	
 	
 Version History
+	v0.11
+		- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
+
+	v0.10.7.9
+		- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
+
 	v0.10.7.8
 		- Improvement: Parallelized some code to improve performance
 		- Fix: Fixed various bugs in League Overview regarding inactive players and some tabs not updating correctly

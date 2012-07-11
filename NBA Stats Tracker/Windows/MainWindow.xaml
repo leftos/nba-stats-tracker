@@ -35,10 +35,18 @@
           <Separator />
           <MenuItem Header="_Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
         </MenuItem>
-        <MenuItem Header="_Export (CSV)">
-          <MenuItem Header="_League Stats to CSV" Name="mnuExportLeague" Click="btnLeagueCSV_Click" />
+        <MenuItem Header="_Export (TSV)">
+          <MenuItem Header="_League Stats to TSV" Name="mnuExportLeague" Click="btnLeagueTSV_Click" />
         </MenuItem>
                 <MenuItem Header="_Options">
+                    <MenuItem Header="_NBA 2K12 Options">
+                        <MenuItem Header="_Import/Export Method">
+                            <MenuItem Header="_REditor" Name="mnuOptionsImportREditor" IsCheckable="True" Click="mnuOptionsImportREditor_Click"/>
+                            <MenuItem Header="_Old Season 1 Workaround" Name="mnuOptionsImportOld" IsCheckable="True" Click="mnuOptionsImportOld_Click"/>
+                        </MenuItem>
+                        <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly" IsCheckable="True" Click="mnuOptionsExportTeamsOnly_Click"/>
+                        <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck" IsCheckable="True" Click="mnuOptionsCompatibilityCheck_Click"/>
+                    </MenuItem>
                     <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates" Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
                 </MenuItem>
         <MenuItem Header="_Miscellaneous">

@@ -108,14 +108,14 @@ namespace NBA_Stats_Tracker.Windows
         private string GetCurTeamFromDisplayName(string p)
         {
             if (p == "- Inactive -") return p;
-            foreach (TeamStats t in MainWindow.tst)
+            foreach (var kvp in MainWindow.tst.Keys)
             {
-                if (t.displayName == p)
+                if (MainWindow.tst[kvp].displayName == p)
                 {
-                    if (t.isHidden)
-                        throw new Exception("Requested team that is hidden: " + t.name);
+                    if (MainWindow.tst[kvp].isHidden)
+                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[kvp].name);
 
-                    return t.name;
+                    return MainWindow.tst[kvp].name;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -123,14 +123,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (TeamStats t in MainWindow.tst)
+            foreach (var kvp in MainWindow.tst.Keys)
             {
-                if (t.name == p)
+                if (MainWindow.tst[kvp].name == p)
                 {
-                    if (t.isHidden)
-                        throw new Exception("Requested team that is hidden: " + t.name);
+                    if (MainWindow.tst[kvp].isHidden)
+                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[kvp].name);
 
-                    return t.displayName;
+                    return MainWindow.tst[kvp].displayName;
                 }
             }
             throw new Exception("Team not found: " + p);

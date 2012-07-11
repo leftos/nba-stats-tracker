@@ -1,8 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
-// 
-// Implementation of thesis
+// Created by Damien Guard (c) 2006-2012
+// Source: http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net
+//
+// Included in LeftosCommonLibrary by Lefteris Aslanoglou (c) 2011-2012, as part of
+// implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
 // under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
@@ -25,11 +27,11 @@ namespace LeftosCommonLibrary
     {
         public const UInt32 DefaultPolynomial = 0xedb88320;
         public const UInt32 DefaultSeed = 0xffffffff;
-        private static UInt32[] defaultTable;
 
-        private readonly UInt32 seed;
-        private readonly UInt32[] table;
         private UInt32 hash;
+        private UInt32 seed;
+        private UInt32[] table;
+        private static UInt32[] defaultTable;
 
         public Crc32()
         {
@@ -45,12 +47,7 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
-        public override int HashSize
-        {
-            get { return 32; }
-        }
-
-        public override sealed void Initialize()
+        public override void Initialize()
         {
             hash = seed;
         }
@@ -63,8 +60,13 @@ namespace LeftosCommonLibrary
         protected override byte[] HashFinal()
         {
             byte[] hashBuffer = UInt32ToBigEndianBytes(~hash);
-            HashValue = hashBuffer;
+            this.HashValue = hashBuffer;
             return hashBuffer;
+        }
+
+        public override int HashSize
+        {
+            get { return 32; }
         }
 
         public static UInt32 Compute(byte[] buffer)
@@ -87,10 +89,10 @@ namespace LeftosCommonLibrary
             if (polynomial == DefaultPolynomial && defaultTable != null)
                 return defaultTable;
 
-            var createTable = new UInt32[256];
+            UInt32[] createTable = new UInt32[256];
             for (int i = 0; i < 256; i++)
             {
-                var entry = (UInt32) i;
+                UInt32 entry = (UInt32) i;
                 for (int j = 0; j < 8; j++)
                     if ((entry & 1) == 1)
                         entry = (entry >> 1) ^ polynomial;
@@ -118,7 +120,7 @@ namespace LeftosCommonLibrary
 
         private byte[] UInt32ToBigEndianBytes(UInt32 x)
         {
-            return new[]
+            return new byte[]
                        {
                            (byte) ((x >> 24) & 0xff),
                            (byte) ((x >> 16) & 0xff),

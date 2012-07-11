@@ -33,11 +33,11 @@ namespace NBA_Stats_Tracker.Interop
 {
     public static class Interop2K12
     {
-        public static void GetStatsFrom2K12Save(string fn, out TeamStats[] tst, ref TeamStats[] tstopp,
+        public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                                 ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt,
                                                 bool havePT = false)
         {
-            var _teamStats = new TeamStats[30];
+            var _teamStats = new Dictionary<int, TeamStats>();
             for (int i = 0; i < 30; i++)
             {
                 _teamStats[i] = new TeamStats();
@@ -60,7 +60,7 @@ namespace NBA_Stats_Tracker.Interop
                         ptw.ShowDialog();
                         if (!pt.done)
                         {
-                            tst = new TeamStats[1];
+                            tst = new Dictionary<int, TeamStats>();
                             return;
                         }
 
@@ -74,7 +74,7 @@ namespace NBA_Stats_Tracker.Interop
 
                         if (spt.FileName == "")
                         {
-                            tst = new TeamStats[1];
+                            tst = new Dictionary<int, TeamStats>();
                             return;
                         }
 
@@ -105,7 +105,7 @@ namespace NBA_Stats_Tracker.Interop
 
                         if (ofd.FileName == "")
                         {
-                            tst = new TeamStats[1];
+                            tst = new Dictionary<int, TeamStats>();
                             return;
                         }
 
@@ -118,7 +118,7 @@ namespace NBA_Stats_Tracker.Interop
                     }
                     else
                     {
-                        tst = new TeamStats[1];
+                        tst = new Dictionary<int, TeamStats>();
                         return;
                     }
                 }
@@ -175,24 +175,24 @@ namespace NBA_Stats_Tracker.Interop
                 
             }
 
-            foreach (TeamStats t in _teamStats)
+            foreach (var key in _teamStats.Keys)
             {
-                t.calcAvg();
+                _teamStats[key].calcAvg();
             }
 
-            tst = _teamStats;
+            tst = new Dictionary<int, TeamStats>(_teamStats);
 
             //TODO: Implement loading opponents stats from 2K12 save here
             /*
-            tstopp = new TeamStats[tst.Length];
-            for (int i = 0; i < tst.Length; i++)
+            tstopp = new TeamStats[tst.Count];
+            for (int i = 0; i < tst.Count; i++)
             {
                 tstopp[i] = new TeamStats(tst[i].name);
             }
             */
         }
 
-        public static void prepareOffsets(string fn, TeamStats[] _teamStats, ref SortedDictionary<string, int> TeamOrder,
+        public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
                                           ref PlayoffTree pt)
         {
             // Stage 1
@@ -238,7 +238,7 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        public static int checkIfIntoPlayoffs(string fn, TeamStats[] _teamStats,
+        public static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats,
                                               ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt)
         {
             int gamesInSeason = -1;
@@ -388,7 +388,7 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        public static void updateSavegame(string fn, TeamStats[] tst, SortedDictionary<string, int> TeamOrder,
+        public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst, SortedDictionary<string, int> TeamOrder,
                                           PlayoffTree pt)
         {
             using (var openRead = File.OpenRead(fn))

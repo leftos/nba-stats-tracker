@@ -9,6 +9,10 @@
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
 // author.
+//
+// Additional code:
+//  - FolderBrowseDialog
+//     Source: http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application
 
 #endregion
 
@@ -24,7 +28,7 @@ using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker
 {
-    internal class Helper
+    internal static class Helper
     {
         public static string AppDocsPath = MainWindow.AppDocsPath;
         public static string SavesPath = MainWindow.SavesPath;
@@ -32,6 +36,29 @@ namespace NBA_Stats_Tracker
         public static string mode = "";
 
         public static PlayoffTree tempPT;
+
+        public static System.Windows.Forms.IWin32Window GetIWin32Window(this System.Windows.Media.Visual visual)
+        {
+            var source = System.Windows.PresentationSource.FromVisual(visual) as System.Windows.Interop.HwndSource;
+            System.Windows.Forms.IWin32Window win = new OldWindow(source.Handle);
+            return win;
+        }
+
+        private class OldWindow : System.Windows.Forms.IWin32Window
+        {
+            private readonly System.IntPtr _handle;
+            public OldWindow(System.IntPtr handle)
+            {
+                _handle = handle;
+            }
+
+            #region IWin32Window Members
+            System.IntPtr System.Windows.Forms.IWin32Window.Handle
+            {
+                get { return _handle; }
+            }
+            #endregion
+        }
 
         public static SortedDictionary<string, int> setTeamOrder(string modeToSet)
         {

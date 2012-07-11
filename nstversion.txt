@@ -1,17 +1,4 @@
-0.10.7.8
-http://www.mediafire.com/?w3zcr3mw6c3tnwm
+0.10.7.9
+http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-v0.10.7.8
-- Improvement: Parallelized some code to improve performance
-- Fix: Fixed various bugs in League Overview regarding inactive players and some tabs not updating correctly
 - Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
-
-v0.10.7.7
-- Addition: Check For Updates on start can now be disabled (Options Menu)
-- Addition: You can manually check for updates after the tool starts (About window)
-- Improvement: Players in the list-boxes in the Player Overview & Box Score windows are now sorted by last name for easier discovery
-
-v0.10.7.6
-- Fix: Tool would crash when reactivating an inactive player
-- Fix: FTM/FGA percentage wouldn't show correctly in Best Performers tab in the Box Score window
-- Addition: Now you can reset all player/team stats for a season (Miscellaneous menu)

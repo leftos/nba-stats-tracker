@@ -76,6 +76,7 @@ namespace NBA_Stats_Tracker.Data
         public string displayName;
         public bool isHidden;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
+        public int ID;
 
         public string name;
         public int offset;
@@ -100,8 +101,7 @@ namespace NBA_Stats_Tracker.Data
             prepareEmpty();
         }
 
-        public TeamStats(string name)
-            : this()
+        public TeamStats(string name): this()
         {
             this.name = name;
             displayName = name;
@@ -338,9 +338,9 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public static int[][] CalculateTeamRankings(TeamStats[] _teamStats, bool playoffs = false)
+        public static int[][] CalculateTeamRankings(Dictionary<int, TeamStats> _teamStats, bool playoffs = false)
         {
-            int len = _teamStats.GetLength(0);
+            int len = _teamStats.Count;
             var rating = new int[len][];
             for (int i = 0; i < len; i++)
             {
@@ -377,7 +377,7 @@ namespace NBA_Stats_Tracker.Data
             return rating;
         }
 
-        public static string TeamAveragesAndRankings(string teamName, TeamStats[] tst,
+        public static string TeamAveragesAndRankings(string teamName, Dictionary<int, TeamStats> tst,
                                                      SortedDictionary<string, int> TeamOrder)
         {
             int id;
@@ -402,10 +402,10 @@ namespace NBA_Stats_Tracker.Data
                     tst[id].averages[t.ORPG],
                     tst[id].averages[t.DRPG], tst[id].averages[t.SPG],
                     tst[id].averages[t.BPG], tst[id].averages[t.TPG], tst[id].averages[t.APG], tst[id].averages[t.FPG],
-                    rating[id][0], tst.GetLength(0) + 1 - rating[id][1], rating[id][2], rating[id][3], rating[id][4],
+                    rating[id][0], tst.Count + 1 - rating[id][1], rating[id][2], rating[id][3], rating[id][4],
                     rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
-                    rating[id][10], rating[id][11], rating[id][12], tst.GetLength(0) + 1 - rating[id][13],
-                    rating[id][14], tst.GetLength(0) + 1 - rating[id][15], tst[id].averages[t.Wp], rating[id][16],
+                    rating[id][10], rating[id][11], rating[id][12], tst.Count + 1 - rating[id][13],
+                    rating[id][14], tst.Count + 1 - rating[id][15], tst[id].averages[t.Wp], rating[id][16],
                     tst[id].averages[t.Weff], rating[id][t.Weff]);
             return text;
         }
@@ -676,17 +676,17 @@ namespace NBA_Stats_Tracker.Data
 
         public int[][] rankings;
 
-        public TeamRankings(TeamStats[] _tst)
+        public TeamRankings(Dictionary<int, TeamStats> _tst)
         {
-            rankings = new int[_tst.Length][];
-            for (int i = 0; i < _tst.Length; i++)
+            rankings = new int[_tst.Count][];
+            for (int i = 0; i < _tst.Count; i++)
             {
                 rankings[i] = new int[_tst[i].averages.Length];
             }
             for (int j = 0; j < _tst[0].averages.Length; j++)
             {
                 var averages = new Dictionary<int, float>();
-                for (int i = 0; i < _tst.Length; i++)
+                for (int i = 0; i < _tst.Count; i++)
                 {
                     averages.Add(i, _tst[i].averages[j]);
                 }

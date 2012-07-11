@@ -55,8 +55,8 @@ namespace NBA_Stats_Tracker.Windows
         private DataView dv_hth;
         private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
-        private TeamStats[] tst;
-        private TeamStats[] tstopp;
+        private Dictionary<int, TeamStats> tst;
+        private Dictionary<int, TeamStats> tstopp;
 
         public teamOverviewW()
         {
@@ -629,7 +629,11 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     DataRow dr2 = dt_ov.NewRow();
 
-                    int count = tst.Count(z => z.getPlayoffGames() > 0);
+                    int count = 0;
+                    foreach (KeyValuePair<int, TeamStats> z in tst)
+                    {
+                        if (z.Value.getPlayoffGames() > 0) count++;
+                    }
 
                     dr2["Type"] = "Pl Rank";
                     dr2["Wins (W%)"] = pl_rankings[i][t.Wp];
@@ -1019,11 +1023,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (TeamStats t in tst)
+            foreach (var key in tst.Keys)
             {
-                if (t.displayName == p)
+                if (tst[key].displayName == p)
                 {
-                    return t.name;
+                    return tst[key].name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -1031,11 +1035,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (TeamStats t in tst)
+            foreach (var key in tst.Keys)
             {
-                if (t.name == p)
+                if (tst[key].name == p)
                 {
-                    return t.displayName;
+                    return tst[key].displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;

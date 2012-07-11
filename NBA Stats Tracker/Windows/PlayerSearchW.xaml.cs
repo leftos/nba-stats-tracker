@@ -21,7 +21,7 @@ namespace NBA_Stats_Tracker.Windows
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private int curSeason;
         private int maxSeason;
-        private TeamStats[] tst, tstopp;
+        private Dictionary<int, TeamStats> tst, tstopp;
         private SortedDictionary<string, int> TeamOrder; 
 
         public PlayerSearchW()
@@ -111,11 +111,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (TeamStats t in tst)
+            foreach (var kvp in tst.Keys)
             {
-                if (t.displayName == p)
+                if (tst[kvp].displayName == p)
                 {
-                    return t.name;
+                    return tst[kvp].name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -123,11 +123,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (TeamStats t in tst)
+            foreach (var kvp in tst.Keys)
             {
-                if (t.name == p)
+                if (tst[kvp].name == p)
                 {
-                    return t.displayName;
+                    return tst[kvp].displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;

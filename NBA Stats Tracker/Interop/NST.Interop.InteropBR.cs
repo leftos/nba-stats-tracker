@@ -96,7 +96,7 @@ namespace NBA_Stats_Tracker.Interop
                 {
                     try
                     {
-                        if (cur.Attributes["id"].Value != "team") continue;
+                        if (cur.Attributes["id"].Value != "team_stats") continue;
                     }
                     catch (Exception)
                     {
@@ -303,13 +303,13 @@ namespace NBA_Stats_Tracker.Interop
             tsopp.calcAvg();
         }
 
-        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref TeamStats[] tst, ref TeamStats[] tstopp)
+        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
         {
             DataTable dt = ds.Tables["team"];
             DataTable dtopp = ds.Tables["opponent"];
             DataTable dtmisc = ds.Tables["misc"];
 
-            for (int i = 0; i < tst.Length; i++)
+            for (int i = 0; i < tst.Count; i++)
             {
                 DataRow tr = dt.Rows[0];
                 DataRow toppr = dtopp.Rows[0];
@@ -520,7 +520,7 @@ namespace NBA_Stats_Tracker.Interop
             PlayerStatsFromDataSet(ds, teamAbbr.Key, out pst);
         }
 
-        public static void AddPlayoffTeamStats(ref TeamStats[] tst, ref TeamStats[] tstopp)
+        public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
         {
             DataSet ds = GetPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2012.html");
             PlayoffTeamStatsFromDataSet(ds, ref tst, ref tstopp);

@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -66,6 +67,7 @@
     <Compile Include="Data\NST.Data.SQLiteIO.cs" />
     <Compile Include="Data\NST.Data.Players.cs" />
     <Compile Include="Data\NST.Data.Teams.cs" />
+    <Compile Include="Interop\NST.Interop.InteropREditor.cs" />
     <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
     <Compile Include="Interop\NST.Interop.InteropBR.cs" />
     <Compile Include="Helper.cs" />
@@ -212,6 +214,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

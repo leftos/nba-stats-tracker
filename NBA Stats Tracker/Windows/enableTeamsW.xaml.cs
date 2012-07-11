@@ -79,11 +79,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (TeamStats t in MainWindow.tst)
+            foreach (var key in MainWindow.tst.Keys)
             {
-                if (t.displayName == p)
+                if (MainWindow.tst[key].displayName == p)
                 {
-                    return t.name;
+                    return MainWindow.tst[key].name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -91,11 +91,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (TeamStats t in MainWindow.tst)
+            foreach (var key in MainWindow.tst.Keys)
             {
-                if (t.name == p)
+                if (MainWindow.tst[key].name == p)
                 {
-                    return t.displayName;
+                    return MainWindow.tst[key].displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;

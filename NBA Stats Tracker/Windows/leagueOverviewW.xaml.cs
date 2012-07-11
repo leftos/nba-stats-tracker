@@ -34,8 +34,8 @@ namespace NBA_Stats_Tracker.Windows
     public partial class leagueOverviewW
     {
         private static Dictionary<int, PlayerStats> _pst;
-        private static TeamStats[] _tst, partialTST;
-        private static TeamStats[] _tstopp, partialOppTST;
+        private static Dictionary<int, TeamStats> _tst, partialTST;
+        private static Dictionary<int, TeamStats> _tstopp, partialOppTST;
         private static int lastShownPlayerSeason;
         private static int lastShownLeadersSeason;
         private static int lastShownTeamSeason;
@@ -57,7 +57,7 @@ namespace NBA_Stats_Tracker.Windows
         private TeamStats ts;
         private TeamStats tsopp;
 
-        public leagueOverviewW(TeamStats[] tst, TeamStats[] tstopp, Dictionary<int, PlayerStats> pst)
+        public leagueOverviewW(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -145,14 +145,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (TeamStats t in _tst)
+            foreach (var key in _tst.Keys)
             {
-                if (t.displayName == p)
+                if (_tst[key].displayName == p)
                 {
-                    if (t.isHidden)
-                        throw new Exception("Requested team that is hidden: " + t.name);
+                    if (_tst[key].isHidden)
+                        throw new Exception("Requested team that is hidden: " + _tst[key].name);
 
-                    return t.name;
+                    return _tst[key].name;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -160,14 +160,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (TeamStats t in _tst)
+            foreach (var key in _tst.Keys)
             {
-                if (t.name == p)
+                if (_tst[key].name == p)
                 {
-                    if (t.isHidden)
-                        throw new Exception("Requested team that is hidden: " + t.name);
+                    if (_tst[key].isHidden)
+                        throw new Exception("Requested team that is hidden: " + _tst[key].name);
 
-                    return t.displayName;
+                    return _tst[key].displayName;
                 }
             }
             throw new Exception("Team not found: " + p);
@@ -366,8 +366,8 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                partialTST = new TeamStats[MainWindow.TeamOrder.Count];
-                partialOppTST = new TeamStats[MainWindow.TeamOrder.Count];
+                partialTST = new Dictionary<int, TeamStats>();
+                partialOppTST = new Dictionary<int, TeamStats>();
                 // Prepare Teams
                 foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
                 {
@@ -382,13 +382,15 @@ namespace NBA_Stats_Tracker.Windows
                         " ORDER BY Date DESC";
                     res = db.GetDataTable(q);
 
-                    partialTST[teamID] = new TeamStats(curTeam);
-                    partialOppTST[teamID] = new TeamStats(curTeam);
+                    var ts2 = new TeamStats(curTeam);
+                    var tsopp2 = new TeamStats(curTeam);
                     foreach (DataRow r in res.Rows)
                     {
-                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(r, ref partialTST[teamID],
-                                                                    ref partialOppTST[teamID]);
+                        teamOverviewW.AddToTeamStatsFromSQLBoxScore(r, ref ts2,
+                                                                    ref tsopp2);
                     }
+                    partialTST[teamID] = ts2;
+                    partialOppTST[teamID] = tsopp2;
                 }
 
                 // Prepare Players
@@ -507,14 +509,14 @@ namespace NBA_Stats_Tracker.Windows
                                       ref MainWindow.pt, ref MainWindow.bshist,
                                       _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
 
-                foreach (TeamStats cur in _tst)
+                foreach (var key in _tst.Keys)
                 {
-                    if (cur.isHidden) continue;
-                    if (cur.getPlayoffGames() == 0) continue;
+                    if (_tst[key].isHidden) continue;
+                    if (_tst[key].getPlayoffGames() == 0) continue;
 
                     DataRow r = dt_pts.NewRow();
 
-                    teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, GetDisplayNameFromTeam(cur.name), true);
+                    teamOverviewW.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name), true);
 
                     dt_pts.Rows.Add(r);
                 }
@@ -558,13 +560,13 @@ namespace NBA_Stats_Tracker.Windows
                 SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp,
                                                        out MainWindow.TeamOrder);
 
-                foreach (TeamStats cur in _tst)
+                foreach (var key in _tst.Keys)
                 {
-                    if (cur.isHidden) continue;
+                    if (_tst[key].isHidden) continue;
 
                     DataRow r = dt_ts.NewRow();
 
-                    teamOverviewW.CreateDataRowFromTeamStats(cur, ref r, GetDisplayNameFromTeam(cur.name));
+                    teamOverviewW.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name));
 
                     dt_ts.Rows.Add(r);
                 }
@@ -700,7 +702,7 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
-        private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, TeamStats[] teamStats)
+        private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats)
         {
             string team = psr.TeamF;
             ts = teamStats[MainWindow.TeamOrder[team]];

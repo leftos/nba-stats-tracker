@@ -6,7 +6,7 @@
 // Source: http://www.mikeduncan.com/sqlite-on-dotnet-in-3-mins/
 //
 //
-// Updated and added to by Lefteris Aslanoglou, (c) 2011-2012
+// Improved by Lefteris Aslanoglou, (c) 2011-2012
 // as a Class Library for the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
 // under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou

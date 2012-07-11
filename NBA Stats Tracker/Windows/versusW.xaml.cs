@@ -15,6 +15,7 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using NBA_Stats_Tracker.Data;
 
@@ -30,7 +31,7 @@ namespace NBA_Stats_Tracker.Windows
         public static string _team1 = "";
         public static string _team2 = "";
 
-        public versusW(string team1, string team2, TeamStats[] ts)
+        public versusW(string team1, string team2, Dictionary<int, TeamStats> ts)
         {
             InitializeComponent();
 

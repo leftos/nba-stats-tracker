@@ -60,8 +60,8 @@ namespace NBA_Stats_Tracker.Windows
         private bool minsUpdating;
         private string playersT;
         private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
-        private TeamStats[] tst = new TeamStats[MainWindow.tst.Length];
-        private TeamStats[] tstopp = new TeamStats[MainWindow.tst.Length];
+        private Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
+        private Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
 
         public boxScoreW(Mode _curmode = Mode.Update)
         {
@@ -190,7 +190,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            for (int i = 0; i < MainWindow.tst.Length; i++)
+            for (int i = 0; i < MainWindow.tst.Count; i++)
             {
                 if (tst[i].displayName == p)
                 {
@@ -205,7 +205,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            for (int i = 0; i < tst.Length; i++)
+            for (int i = 0; i < tst.Count; i++)
             {
                 if (tst[i].name == p)
                 {
