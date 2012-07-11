@@ -9,7 +9,8 @@
 // Improved by Lefteris Aslanoglou, (c) 2011-2012
 // as a Class Library for the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
+// Computer Engineering & Informatics Department, University of Patras, Greece.
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 

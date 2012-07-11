@@ -1,4 +1,21 @@
-﻿using System;
+﻿#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2012
+// 
+// Implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
+// Computer Engineering & Informatics Department, University of Patras, Greece.
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -7,7 +24,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
-using SQLite_Database;
+using SQLite_Database; 
+
+#endregion
 
 namespace NBA_Stats_Tracker.Windows
 {

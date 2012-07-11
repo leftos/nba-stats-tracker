@@ -19,7 +19,6 @@ Quick notes
 	Each database can keep data from multiple seasons. You can compare yearly averages, as well as compare results against a particular opponent over the years, for example.
 	
 Features in a glance
------------------------
 	Team Overview
 		Overview
 			The Overview Tab offers you just that, a quick overview over each team's stats, averages, and rankings during the season and playoffs. You can edit and save each team's stats from this tab.
@@ -63,7 +62,6 @@ Features in a glance
 			Every box score saved in the specific timeframe.
 			
 NBA 2K12 Features
------------------------
 	This tool was originally made to offer a temporary workaround to the Association/ Season/My Player/Create A Legend team stats bug. Any game you entered and played would have the team stats of the teams that played in it all wrong afterwards. For example 85BPG, 92APG, 70RPG, etc. This really ruined the immersion the Association offers for those that like to play or even watch the games, instead of just simulating them from the Calendar. The Team Stats screen was wrong, the in-game overlays about the team were wrong. A mess. Even after the first console patches, 2K still hasn't fixed this issue. 
 	
 	Don't worry though.
@@ -101,7 +99,6 @@ NBA 2K12 Features
 
 		
 Additional Features
------------------------
 	Stat Averages, Ranking and Scout Reports
 		See how well your team is doing, and scout your next opponent for their strengths and weaknesses in a quick glance! 
 
@@ -143,6 +140,23 @@ Credits to
 	- Tinifu Tuitama, for his donation
 	- koberulz, for his extensive suggestions and help with debugging
 	- Everyone at the NLSC community, for their continued support
+
+
+Development Credits
+	All development for NBA Stats Tracker was done by myself, Lefteris Aslanoglou, as the implementation of my thesis "Application Development for Basketball Statistical Analysis in Natural Language" under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou.
+
+	This software uses, with permission (whether implicit or explicit), the following binary implementations, class libraries and code examples:
+		Uses the SQLite database engine (http://www.sqlite.org/)
+		Uses the System.Data.SQLite .NET wrapper for SQLite (http://system.data.sqlite.org/index.html/doc/trunk/www/index.wiki)
+		Uses the HTMLAgilityPack HTML parser (http://htmlagilitypack.codeplex.com/)
+		Uses an SQLite Class Library 
+			originally based on a tutorial by Mike Duncan,
+				(http://www.mikeduncan.com/sqlite-on-dotnet-in-3-mins/)
+			implemented by brennydoogles,		
+				(http://www.dreamincode.net/forums/topic/157830-using-sqlite-with-c%23/)
+			and improved upon by myself.
+		Uses a CRC32 Class Library by Damien Guard (http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net)
+		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
 	
 	
 Version History
