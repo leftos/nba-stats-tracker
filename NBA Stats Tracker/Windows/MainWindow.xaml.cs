@@ -426,7 +426,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             bs = new BoxScore();
-            var bsW = new boxScoreW();
+            var bsW = new BoxScoreWindow();
             bsW.ShowDialog();
 
             if (bs.done == false) return;
@@ -1142,7 +1142,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuHelpAbout_Click(object sender, RoutedEventArgs e)
         {
-            var aw = new aboutW();
+            var aw = new AboutWindow();
             aw.ShowDialog();
         }
 
@@ -1364,7 +1364,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             TeamStats curteam = tst[teamOrder[cmbTeam1.SelectedItem.ToString()]];
 
-            var vw = new versusW(curteam, "Current", realteam, "Real");
+            var vw = new VersusWindow(curteam, "Current", realteam, "Real");
             vw.ShowDialog();
             */
         }
@@ -1409,7 +1409,7 @@ namespace NBA_Stats_Tracker.Windows
                 TeamStats newteam = _newtst[_newTeamOrder[team]];
                 TeamStats curteam = tst[TeamOrder[team]];
 
-                var vw = new versusW(curteam, "Current", newteam, "Other");
+                var vw = new VersusWindow(curteam, "Current", newteam, "Other");
                 vw.ShowDialog();
             }
             */
@@ -1566,7 +1566,7 @@ namespace NBA_Stats_Tracker.Windows
                         " You can't score as many points when you commit turnovers; they've seen them increase by {0:F1} per game.",
                         diffavg[mini][t.TPG]);
 
-            var tw = new trendsW(str, team1, team2);
+            var tw = new TrendsWindow(str, team1, team2);
             tw.ShowDialog();
         }
 
@@ -1603,7 +1603,7 @@ namespace NBA_Stats_Tracker.Windows
             /*
             DataSet ds = RealStats.GetPlayoffTeamStats(@"http://www.basketball-reference.com/playoffs/NBA_2012.html");
 
-            testW tw = new testW(ds);
+            TestWindow tw = new TestWindow(ds);
             tw.ShowDialog();
             */
         }
@@ -1613,7 +1613,7 @@ namespace NBA_Stats_Tracker.Windows
             if (SQLiteIO.isTSTEmpty()) return;
 
             bs = new BoxScore();
-            var bsw = new boxScoreW(boxScoreW.Mode.View);
+            var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View);
             bsw.ShowDialog();
 
             UpdateBoxScore();
@@ -1644,7 +1644,7 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            var tow = new teamOverviewW();
+            var tow = new TeamOverviewWindow();
             tow.ShowDialog();
         }
 
@@ -1707,7 +1707,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             dispatcherTimer.Stop();
-            var low = new leagueOverviewW(tst, tstopp, pst);
+            var low = new LeagueOverviewWindow(tst, tstopp, pst);
             low.ShowDialog();
             dispatcherTimer.Start();
         }
@@ -1743,7 +1743,7 @@ namespace NBA_Stats_Tracker.Windows
             if (String.IsNullOrEmpty(currentDB)) return;
 
             addInfo = "";
-            var aw = new addW(ref pst);
+            var aw = new AddWindow(ref pst);
             aw.ShowDialog();
 
             if (!String.IsNullOrEmpty(addInfo))
@@ -1879,7 +1879,7 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            var pow = new playerOverviewW();
+            var pow = new PlayerOverviewWindow();
             pow.ShowDialog();
         }
 
@@ -1983,7 +1983,7 @@ namespace NBA_Stats_Tracker.Windows
         private void mnuMiscEnableTeams_Click(object sender, RoutedEventArgs e)
         {
             addInfo = "";
-            var etw = new enableTeamsW(currentDB, curSeason, SQLiteIO.getMaxSeason(currentDB));
+            var etw = new DualListWindow(currentDB, curSeason, SQLiteIO.getMaxSeason(currentDB));
             etw.ShowDialog();
 
             if (addInfo == "$$TEAMSENABLED")
@@ -2003,7 +2003,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (SQLiteIO.isTSTEmpty()) return;
 
-            var bslw = new BoxScoreListW();
+            var bslw = new BoxScoreListWindow();
             bslw.ShowDialog();
             SQLiteIO.LoadSeason();
         }
@@ -2012,7 +2012,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (SQLiteIO.isTSTEmpty()) return;
 
-            var psw = new PlayerSearchW();
+            var psw = new PlayerSearchWindow();
             psw.ShowDialog();
         }
 

@@ -56,7 +56,7 @@ namespace NBA_Stats_Tracker.Interop
                                         "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                     if (r == MessageBoxResult.No)
                     {
-                        var ptw = new playoffTreeW();
+                        var ptw = new PlayoffTreeWindow();
                         ptw.ShowDialog();
                         if (!pt.done)
                         {
@@ -322,7 +322,7 @@ namespace NBA_Stats_Tracker.Interop
                     pt = new PlayoffTree();
 */
                     Helper.tempPT = new PlayoffTree();
-                    var ptW = new playoffTreeW();
+                    var ptW = new PlayoffTreeWindow();
                     ptW.ShowDialog();
                     pt = Helper.tempPT;
 
@@ -374,7 +374,7 @@ namespace NBA_Stats_Tracker.Interop
 
         private static string askMode()
         {
-            var at = new askTeamW(false);
+            var at = new ComboChoiceWindow(false);
             at.ShowDialog();
             return Helper.mode;
         }

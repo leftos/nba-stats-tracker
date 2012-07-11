@@ -71,94 +71,94 @@
     <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
     <Compile Include="Interop\NST.Interop.InteropBR.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="Windows\aboutW.xaml.cs">
-      <DependentUpon>aboutW.xaml</DependentUpon>
+    <Compile Include="Windows\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\addW.xaml.cs">
-      <DependentUpon>addW.xaml</DependentUpon>
+    <Compile Include="Windows\AddWindow.xaml.cs">
+      <DependentUpon>AddWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\askTeamW.xaml.cs">
-      <DependentUpon>askTeamW.xaml</DependentUpon>
+    <Compile Include="Windows\ComboChoiceWindow.xaml.cs">
+      <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\BoxScoreListW.xaml.cs">
-      <DependentUpon>BoxScoreListW.xaml</DependentUpon>
+    <Compile Include="Windows\BoxScoreListWindow.xaml.cs">
+      <DependentUpon>BoxScoreListWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\boxScoreW.xaml.cs">
-      <DependentUpon>boxScoreW.xaml</DependentUpon>
+    <Compile Include="Windows\BoxScoreWindow.xaml.cs">
+      <DependentUpon>BoxScoreWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\copyableW.xaml.cs">
-      <DependentUpon>copyableW.xaml</DependentUpon>
+    <Compile Include="Windows\CopyableMessageWindow.xaml.cs">
+      <DependentUpon>CopyableMessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\enableTeamsW.xaml.cs">
-      <DependentUpon>enableTeamsW.xaml</DependentUpon>
+    <Compile Include="Windows\DualListWindow.xaml.cs">
+      <DependentUpon>DualListWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\inputBoxW.xaml.cs">
-      <DependentUpon>inputBoxW.xaml</DependentUpon>
+    <Compile Include="Windows\InputBoxWindow.xaml.cs">
+      <DependentUpon>InputBoxWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\leagueOverviewW.xaml.cs">
-      <DependentUpon>leagueOverviewW.xaml</DependentUpon>
+    <Compile Include="Windows\LeagueOverviewWindow.xaml.cs">
+      <DependentUpon>LeagueOverviewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\playerOverviewW.xaml.cs">
-      <DependentUpon>playerOverviewW.xaml</DependentUpon>
+    <Compile Include="Windows\PlayerOverviewWindow.xaml.cs">
+      <DependentUpon>PlayerOverviewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\PlayerSearchW.xaml.cs">
-      <DependentUpon>PlayerSearchW.xaml</DependentUpon>
+    <Compile Include="Windows\PlayerSearchWindow.xaml.cs">
+      <DependentUpon>PlayerSearchWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\playoffTreeW.xaml.cs">
-      <DependentUpon>playoffTreeW.xaml</DependentUpon>
+    <Compile Include="Windows\PlayoffTreeWindow.xaml.cs">
+      <DependentUpon>PlayoffTreeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\teamOverviewW.xaml.cs">
-      <DependentUpon>teamOverviewW.xaml</DependentUpon>
+    <Compile Include="Windows\TeamOverviewWindow.xaml.cs">
+      <DependentUpon>TeamOverviewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\testW.xaml.cs">
-      <DependentUpon>testW.xaml</DependentUpon>
+    <Compile Include="Windows\TestWindow.xaml.cs">
+      <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\trendsW.xaml.cs">
-      <DependentUpon>trendsW.xaml</DependentUpon>
+    <Compile Include="Windows\TrendsWindow.xaml.cs">
+      <DependentUpon>TrendsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\versusW.xaml.cs">
-      <DependentUpon>versusW.xaml</DependentUpon>
+    <Compile Include="Windows\VersusWindow.xaml.cs">
+      <DependentUpon>VersusWindow.xaml</DependentUpon>
     </Compile>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Windows\aboutW.xaml">
+    <Page Include="Windows\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\addW.xaml">
+    <Page Include="Windows\AddWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\askTeamW.xaml">
+    <Page Include="Windows\ComboChoiceWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\BoxScoreListW.xaml">
+    <Page Include="Windows\BoxScoreListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\boxScoreW.xaml">
+    <Page Include="Windows\BoxScoreWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\copyableW.xaml">
+    <Page Include="Windows\CopyableMessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\enableTeamsW.xaml">
+    <Page Include="Windows\DualListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\inputBoxW.xaml">
+    <Page Include="Windows\InputBoxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\leagueOverviewW.xaml">
+    <Page Include="Windows\LeagueOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -166,31 +166,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\playerOverviewW.xaml">
+    <Page Include="Windows\PlayerOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\PlayerSearchW.xaml">
+    <Page Include="Windows\PlayerSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\playoffTreeW.xaml">
+    <Page Include="Windows\PlayoffTreeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\teamOverviewW.xaml">
+    <Page Include="Windows\TeamOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\testW.xaml">
+    <Page Include="Windows\TestWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\trendsW.xaml">
+    <Page Include="Windows\TrendsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\versusW.xaml">
+    <Page Include="Windows\VersusWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
