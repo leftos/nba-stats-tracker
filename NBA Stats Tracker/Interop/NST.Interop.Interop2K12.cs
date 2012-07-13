@@ -241,7 +241,7 @@ namespace NBA_Stats_Tracker.Interop
         }
 
         private static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats,
-                                              ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt)
+                                               ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt)
         {
             int gamesInSeason = -1;
             string ptFile = "";
@@ -382,7 +382,7 @@ namespace NBA_Stats_Tracker.Interop
         }
 
         private static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode,
-                                               string SettingsFile)
+                                                string SettingsFile)
         {
             using (var sw2 = new StreamWriter(SettingsFile, false))
             {
@@ -755,8 +755,8 @@ namespace NBA_Stats_Tracker.Interop
     [Serializable]
     public class PlayoffTree : ISerializable
     {
-        public bool done;
         public readonly string[] teams = new string[16];
+        public bool done;
 
         public PlayoffTree()
         {

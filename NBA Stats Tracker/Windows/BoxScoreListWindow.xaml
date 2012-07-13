@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Box Scores List" Height="438" Width="661"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" WindowStartupLocation="CenterScreen">
   <Grid>
-    <DataGrid Margin="6,6,6,44" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
-              FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-              Name="dgvBoxScores" VerticalAlignment="Stretch" SelectionMode="Single">
+    <DataGrid Margin="6,6,6,44" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
+              HorizontalAlignment="Stretch" IsReadOnly="True" MouseDoubleClick="dgvBoxScores_MouseDoubleClick" Name="dgvBoxScores"
+              VerticalAlignment="Stretch" SelectionMode="Single">
       <DataGrid.Columns>
         <DataGridTextColumn Binding="{Binding bs.GameID}" Header="GameID" Visibility="Collapsed" />
         <DataGridTextColumn Binding="{Binding bs.SeasonNum}" Header="Season" />

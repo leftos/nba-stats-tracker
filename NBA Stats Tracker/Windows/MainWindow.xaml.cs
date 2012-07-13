@@ -53,7 +53,7 @@ namespace NBA_Stats_Tracker.Windows
     public partial class MainWindow
     {
         public static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                           @"\NBA Stats Tracker\";
+                                                    @"\NBA Stats Tracker\";
 
         public static readonly string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
@@ -84,23 +84,23 @@ namespace NBA_Stats_Tracker.Windows
         public static SortedDictionary<string, int> TeamOrder;
 
         public static readonly List<string> West = new List<string>
-                                              {
-                                                  "Thunder",
-                                                  "Spurs",
-                                                  "Trail Blazers",
-                                                  "Clippers",
-                                                  "Nuggets",
-                                                  "Jazz",
-                                                  "Lakers",
-                                                  "Mavericks",
-                                                  "Suns",
-                                                  "Grizzlies",
-                                                  "Kings",
-                                                  "Timberwolves",
-                                                  "Rockets",
-                                                  "Hornets",
-                                                  "Warriors"
-                                              };
+                                                       {
+                                                           "Thunder",
+                                                           "Spurs",
+                                                           "Trail Blazers",
+                                                           "Clippers",
+                                                           "Nuggets",
+                                                           "Jazz",
+                                                           "Lakers",
+                                                           "Mavericks",
+                                                           "Suns",
+                                                           "Grizzlies",
+                                                           "Kings",
+                                                           "Timberwolves",
+                                                           "Rockets",
+                                                           "Hornets",
+                                                           "Warriors"
+                                                       };
 
         public static SQLiteDatabase db;
         public static bool loadingSeason;

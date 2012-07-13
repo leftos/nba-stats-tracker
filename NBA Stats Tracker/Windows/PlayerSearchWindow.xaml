@@ -6,23 +6,26 @@
     <TabControl Name="tbcPlayerSearch">
       <TabItem Header="Query" Name="tabQuery">
         <Grid>
-          <Label Content="Last Name" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label3" VerticalAlignment="Top" />
-          <TextBox Height="23" HorizontalAlignment="Left" Margin="169,12,0,0" Name="txtLastName" VerticalAlignment="Top"
-                   Width="120" />
-          <Label Content="First Name" HorizontalAlignment="Left" Margin="10,39,0,0" Name="label4" VerticalAlignment="Top" />
-          <TextBox Height="23" HorizontalAlignment="Left" Margin="169,39,0,0" Name="txtFirstName" VerticalAlignment="Top"
-                   Width="120" />
+          <Label Content="Last Name" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label3"
+                 VerticalAlignment="Top" />
+          <TextBox Height="23" HorizontalAlignment="Left" Margin="169,12,0,0" Name="txtLastName"
+                   VerticalAlignment="Top" Width="120" />
+          <Label Content="First Name" HorizontalAlignment="Left" Margin="10,39,0,0" Name="label4"
+                 VerticalAlignment="Top" />
+          <TextBox Height="23" HorizontalAlignment="Left" Margin="169,39,0,0" Name="txtFirstName"
+                   VerticalAlignment="Top" Width="120" />
           <CheckBox Content="Injured" Height="16" HorizontalAlignment="Left" Margin="558,12,0,0" Name="chkIsInjured"
                     VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
           <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="326,42,0,0" Name="chkIsActive"
                     VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" Click="chkIsActive_Click" />
           <CheckBox Content="All-Star" Height="16" HorizontalAlignment="Left" Margin="558,34,0,0" Name="chkIsAllStar"
                     VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
-          <CheckBox Content="Champion" Height="16" HorizontalAlignment="Left" Margin="558,56,0,0" Name="chkIsNBAChampion"
-                    VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
+          <CheckBox Content="Champion" Height="16" HorizontalAlignment="Left" Margin="558,56,0,0"
+                    Name="chkIsNBAChampion" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="355,12,0,0" Name="cmbPosition1"
                     VerticalAlignment="Top" Width="50" />
-          <Label Content="Position" HorizontalAlignment="Left" Margin="306,12,0,0" Name="label5" VerticalAlignment="Top" />
+          <Label Content="Position" HorizontalAlignment="Left" Margin="306,12,0,0" Name="label5"
+                 VerticalAlignment="Top" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="479,12,0,0" Name="cmbPosition2"
                     VerticalAlignment="Top" Width="50" />
           <Label Content="2nd Position" HorizontalAlignment="Left" Margin="411,12,0,0" Name="label6"
@@ -33,90 +36,81 @@
                     VerticalAlignment="Top" Width="84" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="376,39,0,0" Name="cmbTeam" VerticalAlignment="Top"
                     Width="153" SelectionChanged="cmbTeam_SelectionChanged" />
-          <Button Content="Search" Height="23" HorizontalAlignment="Left" Margin="326,366,0,0"
-                  Name="btnSearch" VerticalAlignment="Top" Width="75" Click="btnSearch_Click" />
+          <Button Content="Search" Height="23" HorizontalAlignment="Left" Margin="326,366,0,0" Name="btnSearch"
+                  VerticalAlignment="Top" Width="75" Click="btnSearch_Click" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="435,68,0,0" Name="cmbSeasonNum"
                     VerticalAlignment="Top" Width="94" SelectionChanged="cmbSeasonNum_SelectionChanged" DisplayMemberPath="Value"
                     SelectedValuePath="Key" />
-          <Label Content="Season" HorizontalAlignment="Left" Margin="384,68,0,0" Name="label17"
-                 VerticalAlignment="Top" />
-          <GroupBox Header="Totals" Height="243" HorizontalAlignment="Left" Margin="10,104,0,0"
-                    Name="groupBox1" VerticalAlignment="Top" Width="344">
+          <Label Content="Season" HorizontalAlignment="Left" Margin="384,68,0,0" Name="label17" VerticalAlignment="Top" />
+          <GroupBox Header="Totals" Height="243" HorizontalAlignment="Left" Margin="10,104,0,0" Name="groupBox1"
+                    VerticalAlignment="Top" Width="344">
             <Grid>
 
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,11,0,0" Name="txtGS"
-                       TabIndex="16" VerticalAlignment="Top" Width="54" />
-              <Label Content="GS" HorizontalAlignment="Left" Margin="168,11,0,0" Name="label18"
-                     VerticalAlignment="Top" />
-              <Label Content="GP" HorizontalAlignment="Left" Margin="9,11,0,0" Name="label19"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,11,0,0" Name="txtGP"
-                       TabIndex="7" VerticalAlignment="Top" Width="54" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,11,0,0" Name="cmbGP"
-                        VerticalAlignment="Top" Width="43" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="211,11,0,0" Name="cmbGS"
-                        VerticalAlignment="Top" Width="43" />
-              <Label Content="FGM" HorizontalAlignment="Left" Margin="9,59,0,0" Name="label1"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,59,0,0" Name="txtFGM"
-                       TabIndex="9" VerticalAlignment="Top" Width="54" />
-              <Label Content="FGA" HorizontalAlignment="Left" Margin="9,83,0,0" Name="lblFGA"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,83,0,0" Name="txtFGA"
-                       TabIndex="10" VerticalAlignment="Top" Width="54" />
-              <Label Content="3PM" HorizontalAlignment="Left" Margin="9,107,0,0" Name="label2"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,107,0,0" Name="txt3PM"
-                       TabIndex="11" VerticalAlignment="Top" Width="54" />
-              <Label Content="3PA" HorizontalAlignment="Left" Margin="9,131,0,0" Name="label7"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,131,0,0" Name="txt3PA"
-                       TabIndex="12" VerticalAlignment="Top" Width="54" />
-              <Label Content="FTM" HorizontalAlignment="Left" Margin="9,156,0,0" Name="label8"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,156,0,0" Name="txtFTM"
-                       TabIndex="13" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,11,0,0" Name="txtGS" TabIndex="16"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="GS" HorizontalAlignment="Left" Margin="168,11,0,0" Name="label18" VerticalAlignment="Top" />
+              <Label Content="GP" HorizontalAlignment="Left" Margin="9,11,0,0" Name="label19" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,11,0,0" Name="txtGP" TabIndex="7"
+                       VerticalAlignment="Top" Width="54" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,11,0,0" Name="cmbGP" VerticalAlignment="Top"
+                        Width="43" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="211,11,0,0" Name="cmbGS" VerticalAlignment="Top"
+                        Width="43" />
+              <Label Content="FGM" HorizontalAlignment="Left" Margin="9,59,0,0" Name="label1" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,59,0,0" Name="txtFGM" TabIndex="9"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="FGA" HorizontalAlignment="Left" Margin="9,83,0,0" Name="lblFGA" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,83,0,0" Name="txtFGA" TabIndex="10"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="3PM" HorizontalAlignment="Left" Margin="9,107,0,0" Name="label2" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,107,0,0" Name="txt3PM" TabIndex="11"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="3PA" HorizontalAlignment="Left" Margin="9,131,0,0" Name="label7" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,131,0,0" Name="txt3PA" TabIndex="12"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="FTM" HorizontalAlignment="Left" Margin="9,156,0,0" Name="label8" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,156,0,0" Name="txtFTM" TabIndex="13"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="FTA" HorizontalAlignment="Left" Margin="9,180,0,0" VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,180,0,0" Name="txtFTA"
-                       TabIndex="14" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,180,0,0" Name="txtFTA" TabIndex="14"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="OREB" HorizontalAlignment="Left" Margin="169,59,0,0" Name="label9"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,35,0,0" Name="txtREB"
-                       TabIndex="16" VerticalAlignment="Top" Width="54" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,59,0,0" Name="txtOREB"
-                       TabIndex="15" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,35,0,0" Name="txtREB" TabIndex="16"
+                       VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,59,0,0" Name="txtOREB" TabIndex="15"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="REB" HorizontalAlignment="Left" Margin="168,35,0,0" Name="label10"
                      VerticalAlignment="Top" />
               <Label Content="STL" HorizontalAlignment="Left" Margin="169,83,0,0" Name="label11"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,83,0,0" Name="txtSTL"
-                       TabIndex="17" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,83,0,0" Name="txtSTL" TabIndex="17"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="TO" HorizontalAlignment="Left" Margin="170,107,0,0" Name="label12"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,107,0,0" Name="txtTO"
-                       TabIndex="18" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,107,0,0" Name="txtTO" TabIndex="18"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="BLK" HorizontalAlignment="Left" Margin="170,131,0,0" Name="label13"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,131,0,0" Name="txtBLK"
-                       TabIndex="19" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,131,0,0" Name="txtBLK" TabIndex="19"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="AST" HorizontalAlignment="Left" Margin="169,156,0,0" Name="label14"
                      VerticalAlignment="Top" />
-              <TextBox HorizontalAlignment="Left" Margin="260,156,0,0" Name="txtAST" TabIndex="20"
-                       Width="54" Height="23" VerticalAlignment="Top" />
+              <TextBox HorizontalAlignment="Left" Margin="260,156,0,0" Name="txtAST" TabIndex="20" Width="54"
+                       Height="23" VerticalAlignment="Top" />
               <Label Content="FOUL" HorizontalAlignment="Left" Margin="169,180,0,0" Name="label15"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,180,0,0" Name="txtFOUL"
-                       TabIndex="21" VerticalAlignment="Top" Width="54" />
-              <Label Content="PTS" HorizontalAlignment="Left" Margin="9,35,0,0" Name="label16"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,35,0,0" Name="txtPTS"
-                       TabIndex="7" VerticalAlignment="Top" Width="54" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,35,0,0" Name="cmbPTS"
-                        VerticalAlignment="Top" Width="43" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,59,0,0" Name="cmbFGM"
-                        VerticalAlignment="Top" Width="43" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,83,0,0" Name="cmbFGA"
-                        VerticalAlignment="Top" Width="43" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="260,180,0,0" Name="txtFOUL" TabIndex="21"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="PTS" HorizontalAlignment="Left" Margin="9,35,0,0" Name="label16" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="93,35,0,0" Name="txtPTS" TabIndex="7"
+                       VerticalAlignment="Top" Width="54" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,35,0,0" Name="cmbPTS" VerticalAlignment="Top"
+                        Width="43" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,59,0,0" Name="cmbFGM" VerticalAlignment="Top"
+                        Width="43" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,83,0,0" Name="cmbFGA" VerticalAlignment="Top"
+                        Width="43" />
               <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,107,0,0" Name="cmb3PM"
                         VerticalAlignment="Top" Width="43" />
               <ComboBox Height="23" HorizontalAlignment="Left" Margin="44,131,0,0" Name="cmb3PA"
@@ -141,73 +135,68 @@
                         VerticalAlignment="Top" Width="43" />
             </Grid>
           </GroupBox>
-          <GroupBox Header="Averages" Height="243" HorizontalAlignment="Left" Margin="367,102,0,0"
-                    Name="groupBox2" VerticalAlignment="Top" Width="344">
+          <GroupBox Header="Averages" Height="243" HorizontalAlignment="Left" Margin="367,102,0,0" Name="groupBox2"
+                    VerticalAlignment="Top" Width="344">
             <Grid>
-              <Label Content="FG%" HorizontalAlignment="Left" Margin="6,37,0,0" Name="label22"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,37,0,0" Name="txtFGp"
-                       TabIndex="9" VerticalAlignment="Top" Width="54" />
+              <Label Content="FG%" HorizontalAlignment="Left" Margin="6,37,0,0" Name="label22" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,37,0,0" Name="txtFGp" TabIndex="9"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="FGeff" HorizontalAlignment="Left" Margin="6,61,0,0" Name="label23"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,61,0,0" Name="txtFGeff"
-                       TabIndex="10" VerticalAlignment="Top" Width="54" />
-              <Label Content="3P%" HorizontalAlignment="Left" Margin="6,85,0,0" Name="label24"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,85,0,0" Name="txt3Pp"
-                       TabIndex="11" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,61,0,0" Name="txtFGeff" TabIndex="10"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="3P%" HorizontalAlignment="Left" Margin="6,85,0,0" Name="label24" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,85,0,0" Name="txt3Pp" TabIndex="11"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="3Peff" HorizontalAlignment="Left" Margin="6,109,0,0" Name="label25"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,109,0,0" Name="txt3Peff"
-                       TabIndex="12" VerticalAlignment="Top" Width="54" />
-              <Label Content="FT%" HorizontalAlignment="Left" Margin="6,134,0,0" Name="label26"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,134,0,0" Name="txtFTp"
-                       TabIndex="13" VerticalAlignment="Top" Width="54" />
-              <Label Content="FTeff" HorizontalAlignment="Left" Margin="6,158,0,0"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,158,0,0" Name="txtFTeff"
-                       TabIndex="14" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,109,0,0" Name="txt3Peff" TabIndex="12"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="FT%" HorizontalAlignment="Left" Margin="6,134,0,0" Name="label26" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,134,0,0" Name="txtFTp" TabIndex="13"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="FTeff" HorizontalAlignment="Left" Margin="6,158,0,0" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,158,0,0" Name="txtFTeff" TabIndex="14"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="ORPG" HorizontalAlignment="Left" Margin="166,37,0,0" Name="label27"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,13,0,0" Name="txtRPG"
-                       TabIndex="16" VerticalAlignment="Top" Width="54" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,37,0,0" Name="txtORPG"
-                       TabIndex="15" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,13,0,0" Name="txtRPG" TabIndex="16"
+                       VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,37,0,0" Name="txtORPG" TabIndex="15"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="RPG" HorizontalAlignment="Left" Margin="165,13,0,0" Name="label28"
                      VerticalAlignment="Top" />
               <Label Content="SPG" HorizontalAlignment="Left" Margin="166,61,0,0" Name="label29"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,61,0,0" Name="txtSPG"
-                       TabIndex="17" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,61,0,0" Name="txtSPG" TabIndex="17"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="TPG" HorizontalAlignment="Left" Margin="167,85,0,0" Name="label30"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,85,0,0" Name="txtTPG"
-                       TabIndex="18" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,85,0,0" Name="txtTPG" TabIndex="18"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="BPG" HorizontalAlignment="Left" Margin="167,109,0,0" Name="label31"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,109,0,0" Name="txtBPG"
-                       TabIndex="19" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,109,0,0" Name="txtBPG" TabIndex="19"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="APG" HorizontalAlignment="Left" Margin="166,134,0,0" Name="label32"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,134,0,0" Name="txtAPG"
-                       TabIndex="20" VerticalAlignment="Top" Width="54" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,134,0,0" Name="txtAPG" TabIndex="20"
+                       VerticalAlignment="Top" Width="54" />
               <Label Content="FPG" HorizontalAlignment="Left" Margin="166,158,0,0" Name="label33"
                      VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,158,0,0" Name="txtFPG"
-                       TabIndex="21" VerticalAlignment="Top" Width="54" />
-              <Label Content="PPG" HorizontalAlignment="Left" Margin="6,13,0,0" Name="label34"
-                     VerticalAlignment="Top" />
-              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,13,0,0" Name="txtPPG"
-                       TabIndex="7" VerticalAlignment="Top" Width="54" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,13,0,0" Name="cmbPPG"
-                        VerticalAlignment="Top" Width="43" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,37,0,0" Name="cmbFGp"
-                        VerticalAlignment="Top" Width="43" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="257,158,0,0" Name="txtFPG" TabIndex="21"
+                       VerticalAlignment="Top" Width="54" />
+              <Label Content="PPG" HorizontalAlignment="Left" Margin="6,13,0,0" Name="label34" VerticalAlignment="Top" />
+              <TextBox Height="23" HorizontalAlignment="Left" Margin="90,13,0,0" Name="txtPPG" TabIndex="7"
+                       VerticalAlignment="Top" Width="54" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,13,0,0" Name="cmbPPG" VerticalAlignment="Top"
+                        Width="43" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,37,0,0" Name="cmbFGp" VerticalAlignment="Top"
+                        Width="43" />
               <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,61,0,0" Name="cmbFGeff"
                         VerticalAlignment="Top" Width="43" />
-              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,85,0,0" Name="cmb3Pp"
-                        VerticalAlignment="Top" Width="43" />
+              <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,85,0,0" Name="cmb3Pp" VerticalAlignment="Top"
+                        Width="43" />
               <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,109,0,0" Name="cmb3Peff"
                         VerticalAlignment="Top" Width="43" />
               <ComboBox Height="23" HorizontalAlignment="Left" Margin="41,134,0,0" Name="cmbFTp"
@@ -234,8 +223,8 @@
       </TabItem>
       <TabItem Header="Results" Name="tabResults">
         <Grid>
-          <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                    CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats"
+          <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False" CanUserAddRows="True"
+                    CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats"
                     VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
                     MouseDoubleClick="dgvPlayerStats_MouseDoubleClick">
             <DataGrid.Columns>

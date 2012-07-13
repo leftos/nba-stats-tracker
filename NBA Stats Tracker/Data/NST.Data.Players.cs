@@ -69,20 +69,20 @@ namespace NBA_Stats_Tracker.Data
     // easier when importing/exporting from REditor's CSV
     public class PlayerStats
     {
-        public readonly string FirstName;
+        public string FirstName;
+        public string LastName;
+        public string Position1;
+        public string Position2;
+        public float[] averages = new float[16];
+        public UInt16[] stats = new UInt16[17];
         public int ID;
-        public readonly string LastName;
-        public readonly string Position1;
-        public readonly string Position2;
         public string TeamF;
         public string TeamS = "";
-        public readonly float[] averages = new float[16];
         public bool isActive;
         public bool isAllStar;
         public bool isInjured;
         public bool isNBAChampion;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
-        public readonly UInt16[] stats = new UInt16[17];
 
         public PlayerStats(Player player)
         {
@@ -1008,10 +1008,10 @@ namespace NBA_Stats_Tracker.Data
 
     public class PlayerRankings
     {
-        public readonly int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
+        public int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
 
-        public readonly Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
-        public readonly Dictionary<int, int[]> list = new Dictionary<int, int[]>();
+        public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
+        public Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
 
         public PlayerRankings(Dictionary<int, PlayerStats> pst)
         {
@@ -1197,7 +1197,7 @@ namespace NBA_Stats_Tracker.Data
         public bool isNBAChampion { get; set; }
 
         public string Type { get; set; }
-        string Group { get; set; }
+        private string Group { get; set; }
     }
 
     public class PlayerMetricStatsRow

@@ -46,10 +46,10 @@
               <MenuItem Header="_Old Season 1 Workaround" Name="mnuOptionsImportOld" IsCheckable="True"
                         Click="mnuOptionsImportOld_Click" />
             </MenuItem>
-            <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly"
-                      IsCheckable="True" Click="mnuOptionsExportTeamsOnly_Click" />
-            <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck"
-                      IsCheckable="True" Click="mnuOptionsCompatibilityCheck_Click" />
+            <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly" IsCheckable="True"
+                      Click="mnuOptionsExportTeamsOnly_Click" />
+            <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck" IsCheckable="True"
+                      Click="mnuOptionsCompatibilityCheck_Click" />
           </MenuItem>
           <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
                     Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
@@ -62,13 +62,11 @@
                     Click="mnuMiscEnableTeams_Click" />
           <Separator />
           <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
-          <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores"
-                    Click="mnuMiscDeleteBoxScores_Click" />
+          <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
           <Separator />
           <MenuItem Header="_Live Box Score..." Name="mnuMiscLiveBoxScore" Click="mnuMiscLiveBoxScore_Click" />
           <Separator />
-          <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats"
-                    Click="mnuMiscResetTeamStats_Click" />
+          <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats" Click="mnuMiscResetTeamStats_Click" />
           <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
                     Click="mnuMiscResetPlayerStats_Click" />
         </MenuItem>
@@ -93,8 +91,8 @@
           <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center"
                   IsEnabled="True" Margin="6,59,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
                   Click="btnPlayerOverview_Click" />
-          <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch"
-                  TabIndex="29" VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
+          <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch" TabIndex="29"
+                  VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
             <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Advanced Player Search
             </TextBlock>

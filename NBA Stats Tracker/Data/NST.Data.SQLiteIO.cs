@@ -249,8 +249,8 @@ namespace NBA_Stats_Tracker.Data
         }
 
         private static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
-                                               Dictionary<int, TeamStats> tstoppToSave, int season,
-                                               int maxSeason)
+                                                Dictionary<int, TeamStats> tstoppToSave, int season,
+                                                int maxSeason)
         {
             var _db = new SQLiteDatabase(file);
             string teamsT = "Teams";

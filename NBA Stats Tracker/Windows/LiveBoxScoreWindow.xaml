@@ -146,8 +146,8 @@ SourceUpdated="IntegerUpDown_SourceUpdated" />
         <DataGridTemplateColumn Header="FGM" Visibility="Collapsed">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <xctk:IntegerUpDown Value="{Binding FGM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  Minimum="0" IsReadOnly="True" SourceUpdated="IntegerUpDown_SourceUpdated" />
+              <xctk:IntegerUpDown Value="{Binding FGM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0"
+                                  IsReadOnly="True" SourceUpdated="IntegerUpDown_SourceUpdated" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -250,8 +250,8 @@ SourceUpdated="IntegerUpDown_SourceUpdated" />
     </DataGrid>
     <TextBlock Height="23" HorizontalAlignment="Left" Margin="138,12,0,0" Name="txbAwayStats" Text=""
                VerticalAlignment="Top" Width="571" Padding="0,5,0,0" />
-    <TextBlock Height="23" HorizontalAlignment="Left" Margin="138,12,0,0" Name="txbHomeStats" Padding="0,5,0,0"
-               Text="" VerticalAlignment="Top" Width="571" Grid.Row="1" />
+    <TextBlock Height="23" HorizontalAlignment="Left" Margin="138,12,0,0" Name="txbHomeStats" Padding="0,5,0,0" Text=""
+               VerticalAlignment="Top" Width="571" Grid.Row="1" />
     <Button Content="Copy to NST Box Score" Grid.Row="2" Height="23" HorizontalAlignment="Right" Margin="0,10,93,0"
             Name="btnCopy" VerticalAlignment="Top" Width="149" Click="btnCopy_Click" />
     <Button Content="Close" Grid.Row="2" Height="23" HorizontalAlignment="Right" Margin="0,10,12,0" Name="btnClose"
