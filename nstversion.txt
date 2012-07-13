@@ -1,4 +1,13 @@
-0.10.7.9
+0.11.0.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
+v0.11.0.1
+- Improvement: Tool will now inform you of a successful REditor export
+- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
+
+v0.11
+- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
+- Addition: Added Live Box Score feature, which allows you to easily keep track of a live game, and then save it as a box score in your database
+- Improvement: Seasons can now have names, so that for example, Season "1" can now be Season "1967-1968"
+- Fix: Advanced Player Search wouldn't take GP or GS into account
+- Improvement: When you choose to sort a stat-table by a specific stat, the tool now will sort in descending order by default

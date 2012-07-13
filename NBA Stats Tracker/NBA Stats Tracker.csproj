@@ -58,6 +58,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>.\WPFToolkit.Extended.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -67,10 +70,13 @@
     <Compile Include="Data\NST.Data.SQLiteIO.cs" />
     <Compile Include="Data\NST.Data.Players.cs" />
     <Compile Include="Data\NST.Data.Teams.cs" />
+    <Compile Include="Data\NST.Data.Season.cs" />
+    <Compile Include="Helper\NST.Helper.Misc.cs" />
+    <Compile Include="Helper\NST.Helper.EventHandlers.cs" />
+    <Compile Include="Helper\NST.Helper.WindowsForms.cs" />
     <Compile Include="Interop\NST.Interop.InteropREditor.cs" />
     <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
     <Compile Include="Interop\NST.Interop.InteropBR.cs" />
-    <Compile Include="Helper.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -97,6 +103,9 @@
     </Compile>
     <Compile Include="Windows\LeagueOverviewWindow.xaml.cs">
       <DependentUpon>LeagueOverviewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\LiveBoxScoreWindow.xaml.cs">
+      <DependentUpon>LiveBoxScoreWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -161,6 +170,10 @@
     <Page Include="Windows\LeagueOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\LiveBoxScoreWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

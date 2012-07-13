@@ -18,6 +18,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
@@ -52,7 +53,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvBoxScores.ItemsSource = bshist;
         }
 
-        private void dgvBoxScores_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var boxScoreEntry = dgvBoxScores.SelectedItem as BoxScoreEntry;
             if (boxScoreEntry != null)

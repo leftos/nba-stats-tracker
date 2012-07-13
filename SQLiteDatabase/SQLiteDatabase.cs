@@ -58,7 +58,9 @@ namespace SQLite_Database
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
-            String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
+            String str = connectionOpts.Aggregate("",
+                                                  (current, row) =>
+                                                  current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
             dbConnection = str;
         }
@@ -147,26 +149,27 @@ namespace SQLite_Database
         /// <param name="tableName">The table to update.</param>
         /// <param name="data">A dictionary containing Column names and their new values.</param>
         /// <param name="where">The where clause for the update statement.</param>
-        /// <returns>A boolean true or false to signify success or failure.</returns>
-        public bool Update(String tableName, Dictionary<String, String> data, String where)
+        /// <returns>An integer that represents the amount of rows updated, or -1 if the query failed.</returns>
+        public int Update(String tableName, Dictionary<String, String> data, String where)
         {
             string sql = "";
             String vals = "";
-            Boolean returnCode = true;
+            int returnCode;
             if (data.Count >= 1)
             {
-                vals = data.Aggregate(vals, (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
+                vals = data.Aggregate(vals,
+                                      (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
                 vals = vals.Substring(0, vals.Length - 1);
             }
             try
             {
                 sql = String.Format("update {0} set {1} where {2};", tableName, vals, where);
-                ExecuteNonQuery(sql);
+                returnCode = ExecuteNonQuery(sql);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + "\n\nQuery: " + sql);
-                returnCode = false;
+                returnCode = -1;
             }
             return returnCode;
         }
@@ -204,7 +207,7 @@ namespace SQLite_Database
             String values = "";
             string sql = "";
             Boolean returnCode = true;
-            foreach (KeyValuePair<string, string> val in data)
+            foreach (var val in data)
             {
                 columns += String.Format(" {0},", val.Key);
                 values += String.Format(" \"{0}\",", val.Value);
@@ -236,15 +239,15 @@ namespace SQLite_Database
         {
             if (data.Count > 500) throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
 
-            string sql;
             Boolean returnCode = true;
 
-            sql = "insert into " + tableName + " SELECT";
+            string sql = "insert into " + tableName + " SELECT";
 
-            sql = data[0].Aggregate(sql, (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
+            sql = data[0].Aggregate(sql,
+                                    (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
             sql = sql.Remove(sql.Length - 1);
             data.RemoveAt(0);
-            foreach (Dictionary<string, string> dict in data)
+            foreach (var dict in data)
             {
                 sql += " UNION SELECT";
                 sql = dict.Aggregate(sql, (current, val) => current + String.Format(" \"{0}\",", val.Value));

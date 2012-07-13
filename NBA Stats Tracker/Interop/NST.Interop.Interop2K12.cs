@@ -34,7 +34,8 @@ namespace NBA_Stats_Tracker.Interop
 {
     public static class Interop2K12
     {
-        public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
+        public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst,
+                                                ref Dictionary<int, TeamStats> tstopp,
                                                 ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt,
                                                 bool havePT = false)
         {
@@ -68,7 +69,7 @@ namespace NBA_Stats_Tracker.Interop
                         var spt = new SaveFileDialog
                                       {
                                           Title = "Please select a file to save the Playoff Tree to...",
-                                          InitialDirectory = Helper.AppDocsPath,
+                                          InitialDirectory = App.AppDocsPath,
                                           Filter = "Playoff Tree files (*.ptr)|*.ptr"
                                       };
                         spt.ShowDialog();
@@ -98,7 +99,7 @@ namespace NBA_Stats_Tracker.Interop
                         var ofd = new OpenFileDialog
                                       {
                                           Filter = "Playoff Tree files (*.ptr)|*.ptr",
-                                          InitialDirectory = Helper.AppDocsPath,
+                                          InitialDirectory = App.AppDocsPath,
                                           Title = "Please select the file you saved the Playoff Tree to for " +
                                                   Tools.getSafeFilename(fn) + "..."
                                       };
@@ -126,15 +127,15 @@ namespace NBA_Stats_Tracker.Interop
             }
             prepareOffsets(fn, _teamStats, ref TeamOrder, ref pt);
 
-            using (var fileStream = File.OpenRead(fn))
+            using (FileStream fileStream = File.OpenRead(fn))
             {
                 var br = new BinaryReader(fileStream);
-                
+
                 using (var ms = new MemoryStream(br.ReadBytes(Convert.ToInt32(br.BaseStream.Length)), true))
                 {
                     var buf = new byte[2];
 
-                    foreach (KeyValuePair<string, int> kvp in TeamOrder)
+                    foreach (var kvp in TeamOrder)
                     {
                         if (kvp.Key != "")
                         {
@@ -173,10 +174,9 @@ namespace NBA_Stats_Tracker.Interop
                         }
                     }
                 }
-                
             }
 
-            foreach (var key in _teamStats.Keys)
+            foreach (int key in _teamStats.Keys)
             {
                 _teamStats[key].calcAvg();
             }
@@ -193,7 +193,8 @@ namespace NBA_Stats_Tracker.Interop
             */
         }
 
-        public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
+        public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats,
+                                          ref SortedDictionary<string, int> TeamOrder,
                                           ref PlayoffTree pt)
         {
             // Stage 1
@@ -239,13 +240,13 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        public static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats,
+        private static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats,
                                               ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt)
         {
             int gamesInSeason = -1;
             string ptFile = "";
             string safefn = Tools.getSafeFilename(fn);
-            string SettingsFile = Helper.AppDocsPath + safefn + ".cfg";
+            string SettingsFile = App.AppDocsPath + safefn + ".cfg";
             string mode = "";
 
             if (File.Exists(SettingsFile))
@@ -265,7 +266,7 @@ namespace NBA_Stats_Tracker.Interop
                                 ptFile = parts[2];
                                 mode = parts[3];
 
-                                TeamOrder = Helper.setTeamOrder(mode);
+                                TeamOrder = setTeamOrder(mode);
                             }
                             catch
                             {
@@ -278,17 +279,17 @@ namespace NBA_Stats_Tracker.Interop
             }
             if (gamesInSeason == -1)
             {
-                gamesInSeason = Helper.askGamesInSeason(gamesInSeason);
+                gamesInSeason = askGamesInSeason(gamesInSeason);
 
                 mode = askMode();
 
-                TeamOrder = Helper.setTeamOrder(mode);
+                TeamOrder = setTeamOrder(mode);
 
                 saveSettingsForFile(fn, gamesInSeason, "", mode, SettingsFile);
             }
 
             bool done;
-            using (var fileStream = File.OpenRead(fn))
+            using (FileStream fileStream = File.OpenRead(fn))
             {
                 var br = new BinaryReader(fileStream);
                 MemoryStream ms;
@@ -322,17 +323,17 @@ namespace NBA_Stats_Tracker.Interop
                     pt = null;
                     pt = new PlayoffTree();
 */
-                    Helper.tempPT = new PlayoffTree();
+                    App.tempPT = new PlayoffTree();
                     var ptW = new PlayoffTreeWindow();
                     ptW.ShowDialog();
-                    pt = Helper.tempPT;
+                    pt = App.tempPT;
 
                     if (!pt.done) return -1;
 
                     var spt = new SaveFileDialog
                                   {
                                       Title = "Please select a file to save the Playoff Tree to...",
-                                      InitialDirectory = Helper.AppDocsPath,
+                                      InitialDirectory = App.AppDocsPath,
                                       Filter = "Playoff Tree files (*.ptr)|*.ptr"
                                   };
                     spt.ShowDialog();
@@ -369,7 +370,7 @@ namespace NBA_Stats_Tracker.Interop
             saveSettingsForFile(fn, gamesInSeason, ptFile, mode, SettingsFile);
 
             if (done) return 1;
-            
+
             return 0;
         }
 
@@ -377,10 +378,10 @@ namespace NBA_Stats_Tracker.Interop
         {
             var at = new ComboChoiceWindow(false);
             at.ShowDialog();
-            return Helper.mode;
+            return App.mode;
         }
 
-        public static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode,
+        private static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode,
                                                string SettingsFile)
         {
             using (var sw2 = new StreamWriter(SettingsFile, false))
@@ -389,10 +390,11 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst, SortedDictionary<string, int> TeamOrder,
+        public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst,
+                                          SortedDictionary<string, int> TeamOrder,
                                           PlayoffTree pt)
         {
-            using (var openRead = File.OpenRead(fn))
+            using (FileStream openRead = File.OpenRead(fn))
             {
                 var br = new BinaryReader(openRead);
                 using (var ms = new MemoryStream(br.ReadBytes(Convert.ToInt32(br.BaseStream.Length)), true))
@@ -420,7 +422,7 @@ namespace NBA_Stats_Tracker.Interop
                         }
                     }
 
-                    using (var fileStream = File.OpenWrite(Helper.AppTempPath + Tools.getSafeFilename(fn)))
+                    using (FileStream fileStream = File.OpenWrite(App.AppTempPath + Tools.getSafeFilename(fn)))
                     {
                         var bw = new BinaryWriter(fileStream);
 
@@ -435,20 +437,21 @@ namespace NBA_Stats_Tracker.Interop
                     }
                 }
             }
-            
+
             byte[] crc =
                 Tools.ReverseByteOrder(
-                    Tools.StringToByteArray(Tools.getCRC(Helper.AppTempPath + Tools.getSafeFilename(fn))), 4);
+                    Tools.StringToByteArray(Tools.getCRC(App.AppTempPath + Tools.getSafeFilename(fn))), 4);
 
             File.Delete(fn + ".bak");
-            
+
             File.Move(fn, fn + ".bak");
-            using (var fileStream = File.OpenRead(Helper.AppTempPath + Tools.getSafeFilename(fn)))
+            using (FileStream fileStream = File.OpenRead(App.AppTempPath + Tools.getSafeFilename(fn)))
             {
                 var br2 = new BinaryReader(fileStream);
-                using (var openWrite = File.OpenWrite(fn))
+                using (FileStream openWrite = File.OpenWrite(fn))
                 {
-                    var bw2 = new BinaryWriter(openWrite); bw2.Write(crc);
+                    var bw2 = new BinaryWriter(openWrite);
+                    bw2.Write(crc);
                     byte[] readBytes;
                     do
                     {
@@ -457,7 +460,295 @@ namespace NBA_Stats_Tracker.Interop
                     } while (readBytes.Length > 0);
                 }
             }
-            File.Delete(Helper.AppTempPath + Tools.getSafeFilename(fn));
+            File.Delete(App.AppTempPath + Tools.getSafeFilename(fn));
+        }
+
+        public static SortedDictionary<string, int> setTeamOrder(string modeToSet)
+        {
+            SortedDictionary<string, int> TeamOrder;
+
+            switch (modeToSet)
+            {
+                default:
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 9},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 11},
+                                        {"Celtics", 12},
+                                        {"Clippers", 7},
+                                        {"Grizzlies", 6},
+                                        {"Hawks", 16},
+                                        {"Heat", 4},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 13},
+                                        {"Knicks", 5},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 2},
+                                        {"Pistons", 3},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 10},
+                                        {"Suns", 14},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 8},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 1":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 2},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 11},
+                                        {"Celtics", 12},
+                                        {"Clippers", 7},
+                                        {"Grizzlies", 6},
+                                        {"Hawks", 16},
+                                        {"Heat", 4},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 13},
+                                        {"Knicks", 5},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 9},
+                                        {"Pistons", 10},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 3},
+                                        {"Suns", 14},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 8},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 6":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 8},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 12},
+                                        {"Celtics", 13},
+                                        {"Clippers", 6},
+                                        {"Grizzlies", 5},
+                                        {"Hawks", 16},
+                                        {"Heat", 3},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 14},
+                                        {"Knicks", 4},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 10},
+                                        {"Pistons", 11},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 9},
+                                        {"Suns", 2},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 7},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 2":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 8},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 12},
+                                        {"Celtics", 13},
+                                        {"Clippers", 6},
+                                        {"Grizzlies", 5},
+                                        {"Hawks", 16},
+                                        {"Heat", 3},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 2},
+                                        {"Knicks", 4},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 10},
+                                        {"Pistons", 11},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 9},
+                                        {"Suns", 14},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 7},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 3":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 7},
+                                        {"Bulls", 28},
+                                        {"Cavaliers", 11},
+                                        {"Celtics", 12},
+                                        {"Clippers", 5},
+                                        {"Grizzlies", 4},
+                                        {"Hawks", 16},
+                                        {"Heat", 2},
+                                        {"Hornets", 15},
+                                        {"Jazz", 27},
+                                        {"Kings", 13},
+                                        {"Knicks", 3},
+                                        {"Lakers", 25},
+                                        {"Magic", 23},
+                                        {"Mavericks", 29},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 9},
+                                        {"Pistons", 10},
+                                        {"Raptors", 21},
+                                        {"Rockets", 26},
+                                        {"Spurs", 8},
+                                        {"Suns", 14},
+                                        {"Thunder", 24},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 6},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 4":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 20},
+                                        {"Bobcats", 22},
+                                        {"Bucks", 7},
+                                        {"Bulls", 24},
+                                        {"Cavaliers", 11},
+                                        {"Celtics", 12},
+                                        {"Clippers", 5},
+                                        {"Grizzlies", 4},
+                                        {"Hawks", 16},
+                                        {"Heat", 2},
+                                        {"Hornets", 15},
+                                        {"Jazz", 29},
+                                        {"Kings", 13},
+                                        {"Knicks", 3},
+                                        {"Lakers", 27},
+                                        {"Magic", 23},
+                                        {"Mavericks", 25},
+                                        {"Nets", 18},
+                                        {"Nuggets", 0},
+                                        {"Pacers", 9},
+                                        {"Pistons", 10},
+                                        {"Raptors", 21},
+                                        {"Rockets", 28},
+                                        {"Spurs", 8},
+                                        {"Suns", 14},
+                                        {"Thunder", 26},
+                                        {"Timberwolves", 17},
+                                        {"Trail Blazers", 1},
+                                        {"Warriors", 6},
+                                        {"Wizards", 19}
+                                    };
+                    break;
+
+                case "Mode 5":
+                    TeamOrder = new SortedDictionary<string, int>
+                                    {
+                                        {"76ers", 13},
+                                        {"Bobcats", 10},
+                                        {"Bucks", 0},
+                                        {"Bulls", 4},
+                                        {"Cavaliers", 20},
+                                        {"Celtics", 14},
+                                        {"Clippers", 5},
+                                        {"Grizzlies", 16},
+                                        {"Hawks", 22},
+                                        {"Heat", 1},
+                                        {"Hornets", 9},
+                                        {"Jazz", 11},
+                                        {"Kings", 29},
+                                        {"Knicks", 17},
+                                        {"Lakers", 28},
+                                        {"Magic", 8},
+                                        {"Mavericks", 26},
+                                        {"Nets", 3},
+                                        {"Nuggets", 27},
+                                        {"Pacers", 19},
+                                        {"Pistons", 25},
+                                        {"Raptors", 21},
+                                        {"Rockets", 24},
+                                        {"Spurs", 12},
+                                        {"Suns", 23},
+                                        {"Thunder", 7},
+                                        {"Timberwolves", 18},
+                                        {"Trail Blazers", 2},
+                                        {"Warriors", 6},
+                                        {"Wizards", 15}
+                                    };
+                    break;
+            }
+
+            var checklist = new List<int>();
+            foreach (var kvp in TeamOrder)
+            {
+                if (checklist.Contains(kvp.Value) == false)
+                {
+                    checklist.Add(kvp.Value);
+                }
+                else
+                {
+                    MessageBox.Show("Conflict for " + modeToSet + " TeamOrder on ID " + kvp.Value);
+                    Environment.Exit(-1);
+                }
+            }
+
+            return TeamOrder;
+        }
+
+        private static int askGamesInSeason(int gamesInSeason)
+        {
+            MessageBoxResult r =
+                MessageBox.Show(
+                    "How many games does each season have in this save?\n\n82 Games: Yes\n58 Games: No\n29 Games: Cancel",
+                    "", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (r == MessageBoxResult.Yes) gamesInSeason = 82;
+            else if (r == MessageBoxResult.No) gamesInSeason = 58;
+            else if (r == MessageBoxResult.Cancel) gamesInSeason = 28;
+            return gamesInSeason;
         }
     }
 
@@ -465,7 +756,7 @@ namespace NBA_Stats_Tracker.Interop
     public class PlayoffTree : ISerializable
     {
         public bool done;
-        public string[] teams = new string[16];
+        public readonly string[] teams = new string[16];
 
         public PlayoffTree()
         {
@@ -480,12 +771,6 @@ namespace NBA_Stats_Tracker.Interop
 
         #region ISerializable Members
 
-        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("teams", teams);
-            info.AddValue("done", done);
-        }
-
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -494,7 +779,12 @@ namespace NBA_Stats_Tracker.Interop
             GetObjectData(info, context);
         }
 
-
         #endregion
+
+        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("teams", teams);
+            info.AddValue("done", done);
+        }
     }
 }

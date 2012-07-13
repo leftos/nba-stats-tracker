@@ -200,7 +200,7 @@
         <Grid>
           <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True"
                     CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch" Name="dgvYearly"
-                    VerticalAlignment="Stretch" IsReadOnly="True">
+                    VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting">
             <DataGrid.GroupStyle>
               <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                 <GroupStyle.Panel>
@@ -303,8 +303,9 @@ Text="Remember to save the stats before you switch to another team or season, or
         <TextBlock Height="31" Margin="6,119,0,0" Width="304" HorizontalAlignment="Left" Name="textBlock1"
                    Text="* Availability of stats between dates depends on whether there are box-scores saved for this player."
                    TextWrapping="Wrap" VerticalAlignment="Top" />
-        <ComboBox Height="23" Margin="116,31,0,0" Width="41" HorizontalAlignment="Left" Name="cmbSeasonNum"
-                  SelectionChanged="cmbSeasonNum_SelectionChanged" VerticalAlignment="Top" />
+        <ComboBox Height="23" Margin="116,31,0,0" Width="94" HorizontalAlignment="Left" Name="cmbSeasonNum"
+                  SelectionChanged="cmbSeasonNum_SelectionChanged" VerticalAlignment="Top" DisplayMemberPath="Value"
+                  SelectedValuePath="Key" />
       </Grid>
     </GroupBox>
   </Grid>

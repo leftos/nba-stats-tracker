@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
 
 #endregion
@@ -58,7 +59,8 @@ namespace NBA_Stats_Tracker.Windows
         private TeamStats ts;
         private TeamStats tsopp;
 
-        public LeagueOverviewWindow(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, Dictionary<int, PlayerStats> pst)
+        public LeagueOverviewWindow(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp,
+                                    Dictionary<int, PlayerStats> pst)
         {
             InitializeComponent();
 
@@ -146,32 +148,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (var key in _tst.Keys)
-            {
-                if (_tst[key].displayName == p)
-                {
-                    if (_tst[key].isHidden)
-                        throw new Exception("Requested team that is hidden: " + _tst[key].name);
-
-                    return _tst[key].name;
-                }
-            }
-            throw new Exception("Team not found: " + p);
+            return Misc.GetCurTeamFromDisplayName(_tst, p);
         }
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (var key in _tst.Keys)
-            {
-                if (_tst[key].name == p)
-                {
-                    if (_tst[key].isHidden)
-                        throw new Exception("Requested team that is hidden: " + _tst[key].name);
-
-                    return _tst[key].displayName;
-                }
-            }
-            throw new Exception("Team not found: " + p);
+            return Misc.GetDisplayNameFromTeam(_tst, p);
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -206,84 +188,81 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            for (int i = SQLiteIO.getMaxSeason(MainWindow.currentDB); i > 0; i--)
-            {
-                cmbSeasonNum.Items.Add(i.ToString());
-            }
+            cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
 
-            cmbSeasonNum.SelectedItem = MainWindow.curSeason.ToString();
+            cmbSeasonNum.SelectedValue = curSeason;
         }
 
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //try
             //{
-                if (reload || e.OriginalSource is TabControl)
+            if (reload || e.OriginalSource is TabControl)
+            {
+                if (tbcLeagueOverview.SelectedItem == tabTeamStats)
                 {
-                    if (tbcLeagueOverview.SelectedItem == tabTeamStats)
-                    {
-                        bool doIt = false;
-                        if (lastShownTeamSeason != curSeason) doIt = true;
-                        else if (reload) doIt = true;
+                    bool doIt = false;
+                    if (lastShownTeamSeason != curSeason) doIt = true;
+                    else if (reload) doIt = true;
 
-                        if (doIt)
-                        {
-                            PrepareTeamStats();
-                            lastShownTeamSeason = curSeason;
-                        }
-                    }
-                    else if (tbcLeagueOverview.SelectedItem == tabPlayoffStats)
+                    if (doIt)
                     {
-                        bool doIt = false;
-                        if (lastShownPlayoffSeason != curSeason) doIt = true;
-                        else if (reload) doIt = true;
-
-                        if (doIt)
-                        {
-                            PreparePlayoffStats();
-                            lastShownPlayoffSeason = curSeason;
-                        }
+                        PrepareTeamStats();
+                        lastShownTeamSeason = curSeason;
                     }
-                    else if (tbcLeagueOverview.SelectedItem == tabLeaders)
-                    {
-                        bool doIt = false;
-                        if (lastShownLeadersSeason != curSeason) doIt = true;
-                        else if (reload) doIt = true;
-
-                        if (doIt)
-                        {
-                            PreparePlayerAndMetricStats();
-                            PrepareLeagueLeaders();
-                            lastShownLeadersSeason = curSeason;
-                        }
-                    }
-                    else if (tbcLeagueOverview.SelectedItem == tabPlayerStats ||
-                             tbcLeagueOverview.SelectedItem == tabMetricStats)
-                    {
-                        bool doIt = false;
-                        if (lastShownPlayerSeason != curSeason) doIt = true;
-                        else if (reload) doIt = true;
-
-                        if (doIt)
-                        {
-                            PreparePlayerAndMetricStats();
-                            lastShownPlayerSeason = curSeason;
-                        }
-                    }
-                    else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
-                    {
-                        bool doIt = false;
-                        if (lastShownBoxSeason != curSeason) doIt = true;
-                        else if (reload) doIt = true;
-
-                        if (doIt)
-                        {
-                            PrepareBoxScores();
-                            lastShownBoxSeason = curSeason;
-                        }
-                    }
-                    reload = false;
                 }
+                else if (tbcLeagueOverview.SelectedItem == tabPlayoffStats)
+                {
+                    bool doIt = false;
+                    if (lastShownPlayoffSeason != curSeason) doIt = true;
+                    else if (reload) doIt = true;
+
+                    if (doIt)
+                    {
+                        PreparePlayoffStats();
+                        lastShownPlayoffSeason = curSeason;
+                    }
+                }
+                else if (tbcLeagueOverview.SelectedItem == tabLeaders)
+                {
+                    bool doIt = false;
+                    if (lastShownLeadersSeason != curSeason) doIt = true;
+                    else if (reload) doIt = true;
+
+                    if (doIt)
+                    {
+                        PreparePlayerAndMetricStats();
+                        PrepareLeagueLeaders();
+                        lastShownLeadersSeason = curSeason;
+                    }
+                }
+                else if (tbcLeagueOverview.SelectedItem == tabPlayerStats ||
+                         tbcLeagueOverview.SelectedItem == tabMetricStats)
+                {
+                    bool doIt = false;
+                    if (lastShownPlayerSeason != curSeason) doIt = true;
+                    else if (reload) doIt = true;
+
+                    if (doIt)
+                    {
+                        PreparePlayerAndMetricStats();
+                        lastShownPlayerSeason = curSeason;
+                    }
+                }
+                else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
+                {
+                    bool doIt = false;
+                    if (lastShownBoxSeason != curSeason) doIt = true;
+                    else if (reload) doIt = true;
+
+                    if (doIt)
+                    {
+                        PrepareBoxScores();
+                        lastShownBoxSeason = curSeason;
+                    }
+                }
+                reload = false;
+            }
             //}
             //catch (Exception ex)
             //{
@@ -349,13 +328,13 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                foreach (KeyValuePair<int, PlayerStats> kvp in _pst)
+                foreach (var kvp in _pst)
                 {
                     var psr = new PlayerStatsRow(kvp.Value);
                     if (psr.isActive)
                     {
                         psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
-                        var pmsr = new PlayerMetricStatsRow(kvp.Value) { TeamFDisplay = psr.TeamFDisplay };
+                        var pmsr = new PlayerMetricStatsRow(kvp.Value) {TeamFDisplay = psr.TeamFDisplay};
                         pmsrList.Add(pmsr);
                     }
                     else
@@ -370,16 +349,16 @@ namespace NBA_Stats_Tracker.Windows
                 partialTST = new Dictionary<int, TeamStats>();
                 partialOppTST = new Dictionary<int, TeamStats>();
                 // Prepare Teams
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     string curTeam = kvp.Key;
                     int teamID = MainWindow.TeamOrder[curTeam];
 
-                    q = "select * from GameResults where ((T1Name LIKE '" + curTeam + "') OR (T2Name LIKE '"
-                        + curTeam + "')) AND ((Date >= '" +
+                    q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \""
+                        + curTeam + "\")) AND ((Date >= \"" +
                         SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault())
-                        + "') AND (Date <= '" +
-                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "'))" +
+                        + "\") AND (Date <= \"" +
+                        SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "\"))" +
                         " ORDER BY Date DESC";
                     res = db.GetDataTable(q);
 
@@ -388,7 +367,7 @@ namespace NBA_Stats_Tracker.Windows
                     foreach (DataRow r in res.Rows)
                     {
                         TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(r, ref ts2,
-                                                                    ref tsopp2);
+                                                                         ref tsopp2);
                     }
                     partialTST[teamID] = ts2;
                     partialOppTST[teamID] = tsopp2;
@@ -424,7 +403,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 PlayerStats.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST, MainWindow.TeamOrder, true);
 
-                foreach (KeyValuePair<int, PlayerStats> kvp in pstBetween)
+                foreach (var kvp in pstBetween)
                 {
                     var psr = new PlayerStatsRow(kvp.Value);
                     if (psr.isActive)
@@ -447,7 +426,7 @@ namespace NBA_Stats_Tracker.Windows
             psrList.Reverse();
 
             pmsrList.Sort(
-                (pmsr1, pmsr2) => pmsr1.PER.CompareTo(pmsr2.PER));
+                delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.PER.CompareTo(pmsr2.PER); });
             pmsrList.Reverse();
 
             dgvPlayerStats.ItemsSource = psrList;
@@ -462,7 +441,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                q += " where SeasonNum = " + cmbSeasonNum.SelectedItem;
+                q += " where SeasonNum = " + cmbSeasonNum.SelectedValue;
             }
             else
             {
@@ -507,28 +486,29 @@ namespace NBA_Stats_Tracker.Windows
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
-                                      ref MainWindow.pt, ref MainWindow.bshist,
-                                      _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString()));
+                                    ref MainWindow.pt, ref MainWindow.bshist,
+                                    _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedValue.ToString()));
 
-                foreach (var key in _tst.Keys)
+                foreach (int key in _tst.Keys)
                 {
                     if (_tst[key].isHidden) continue;
                     if (_tst[key].getPlayoffGames() == 0) continue;
 
                     DataRow r = dt_pts.NewRow();
 
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name), true);
+                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r,
+                                                                  GetDisplayNameFromTeam(_tst[key].name), true);
 
                     dt_pts.Rows.Add(r);
                 }
             }
             else
             {
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     q =
                         String.Format(
-                            "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'True');",
+                            "select * from GameResults where ((T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") AND IsPlayoff LIKE \"True\");",
                             kvp.Key);
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
@@ -559,26 +539,27 @@ namespace NBA_Stats_Tracker.Windows
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp,
-                                                       out MainWindow.TeamOrder);
+                                                     out MainWindow.TeamOrder);
 
-                foreach (var key in _tst.Keys)
+                foreach (int key in _tst.Keys)
                 {
                     if (_tst[key].isHidden) continue;
 
                     DataRow r = dt_ts.NewRow();
 
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name));
+                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r,
+                                                                  GetDisplayNameFromTeam(_tst[key].name));
 
                     dt_ts.Rows.Add(r);
                 }
             }
             else
             {
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     q =
                         String.Format(
-                            "select * from GameResults where ((T1Name LIKE '{0}' OR T2Name LIKE '{0}') AND IsPlayoff LIKE 'False');",
+                            "select * from GameResults where ((T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") AND IsPlayoff LIKE \"False\");",
                             kvp.Key);
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
@@ -649,9 +630,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem);
+            if (cmbSeasonNum.SelectedIndex == -1) return;
+
+            curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+
             SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
-                                  ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
+                                ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 reload = true;
@@ -781,6 +765,11 @@ namespace NBA_Stats_Tracker.Windows
             lastShownPlayoffSeason = 0;
             lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
+        }
+
+        private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            EventHandlers.StatColumn_Sorting(e);
         }
     }
 }

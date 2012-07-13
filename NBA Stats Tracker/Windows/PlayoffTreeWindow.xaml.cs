@@ -40,9 +40,9 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            myPT = Helper.tempPT;
+            myPT = App.tempPT;
 
-            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TeamOrder)
             {
                 if (MainWindow.West.Contains(kvp.Key))
                 {
@@ -228,7 +228,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Helper.tempPT = myPT;
+            App.tempPT = myPT;
         }
     }
 }

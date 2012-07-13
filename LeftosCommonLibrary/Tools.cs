@@ -47,8 +47,8 @@ namespace LeftosCommonLibrary
             String hash = String.Empty;
 
             using (var crc32 = new Crc32())
-                using (FileStream fs = File.Open(filename, FileMode.Open))
-                    hash = crc32.ComputeHash(fs).Aggregate(hash, (current, b) => current + b.ToString("x2").ToLower());
+            using (FileStream fs = File.Open(filename, FileMode.Open))
+                hash = crc32.ComputeHash(fs).Aggregate(hash, (current, b) => current + b.ToString("x2").ToLower());
 
             return hash;
         }
@@ -94,7 +94,7 @@ namespace LeftosCommonLibrary
             var dataRowView = dataGrid.Items[row] as DataRowView;
             if (dataRowView != null)
                 return dataRowView.Row.ItemArray[col] as DataGridCell;
-            
+
             return null;
         }
 

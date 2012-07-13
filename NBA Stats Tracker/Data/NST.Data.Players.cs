@@ -69,22 +69,20 @@ namespace NBA_Stats_Tracker.Data
     // easier when importing/exporting from REditor's CSV
     public class PlayerStats
     {
-        // TODO: Metric Stats here
-
-        public string FirstName;
+        public readonly string FirstName;
         public int ID;
-        public string LastName;
-        public string Position1;
-        public string Position2;
+        public readonly string LastName;
+        public readonly string Position1;
+        public readonly string Position2;
         public string TeamF;
         public string TeamS = "";
-        public float[] averages = new float[16];
+        public readonly float[] averages = new float[16];
         public bool isActive;
         public bool isAllStar;
         public bool isInjured;
         public bool isNBAChampion;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
-        public UInt16[] stats = new UInt16[17];
+        public readonly UInt16[] stats = new UInt16[17];
 
         public PlayerStats(Player player)
         {
@@ -437,7 +435,7 @@ namespace NBA_Stats_Tracker.Data
         {
             try
             {
-                metrics.Add("PER", metrics["aPER"] * (15 / lg_aPER));
+                metrics.Add("PER", metrics["aPER"]*(15/lg_aPER));
             }
             catch (Exception)
             {
@@ -494,8 +492,10 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
-        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats,
-                                               Dictionary<int, TeamStats> oppStats, SortedDictionary<string, int> TeamOrder,
+        public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats,
+                                               Dictionary<int, TeamStats> teamStats,
+                                               Dictionary<int, TeamStats> oppStats,
+                                               SortedDictionary<string, int> TeamOrder,
                                                bool leagueOv = false)
         {
             int tCount = teamStats.Count;
@@ -552,7 +552,7 @@ namespace NBA_Stats_Tracker.Data
         private UInt16 _FTA;
         private UInt16 _FTM;
         private UInt16 _TPA;
-        private UInt16 _TPM;
+        protected UInt16 _TPM;
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
         public PlayerBoxScore()
         {
@@ -726,7 +726,7 @@ namespace NBA_Stats_Tracker.Data
         }
 
         public float FTp { get; set; }
-        public UInt16 REB { get; set; }
+        public UInt16 REB { get; protected set; }
         public UInt16 OREB { get; set; }
         public UInt16 DREB { get; set; }
         public UInt16 STL { get; set; }
@@ -745,9 +745,9 @@ namespace NBA_Stats_Tracker.Data
 
         #endregion
 
-        private void CalculatePoints()
+        protected void CalculatePoints()
         {
-            PTS = (ushort) ((_FGM - _TPM)*2 + _TPM*3 + _FTM); //(fgm - tpm)*2 + tpm*3 + ftm
+            PTS = (ushort) ((_FGM - _TPM)*2 + _TPM*3 + _FTM);
         }
 
         public string GetBestStats(int count, string position)
@@ -862,7 +862,7 @@ namespace NBA_Stats_Tracker.Data
 
             if (FTM > 3)
             {
-                ftrn = ((double)FTM/FGA)/ftrfactor;
+                ftrn = ((double) FTM/FGA)/ftrfactor;
             }
             statsn.Add("ftrn", ftrn);
 
@@ -921,7 +921,7 @@ namespace NBA_Stats_Tracker.Data
                         break;
 
                     case "ftrn":
-                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double)FTM/FGA);
+                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double) FTM/FGA);
                         break;
                 }
 
@@ -953,7 +953,7 @@ namespace NBA_Stats_Tracker.Data
             TPp = 0;
         }
 
-        private void NotifyPropertyChanged(string info)
+        protected void NotifyPropertyChanged(string info)
         {
             if (PropertyChanged != null)
             {
@@ -962,46 +962,73 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    public class LivePlayerBoxScore : PlayerBoxScore
+    {
+        private ushort _OREB;
+        private ushort _TwoPM;
+
+        public UInt16 TwoPM
+        {
+            get { return _TwoPM; }
+            set
+            {
+                _TwoPM = value;
+                FGM = (ushort) (TPM + _TwoPM);
+                CalculatePoints();
+                NotifyPropertyChanged("FGM");
+                NotifyPropertyChanged("PTS");
+            }
+        }
+
+        public new UInt16 TPM
+        {
+            get { return _TPM; }
+            set
+            {
+                _TPM = value;
+                FGM = (ushort) (TPM + _TwoPM);
+                CalculatePoints();
+                NotifyPropertyChanged("FGM");
+                NotifyPropertyChanged("PTS");
+            }
+        }
+
+        public new UInt16 OREB
+        {
+            get { return _OREB; }
+            set
+            {
+                if (_OREB < value) REB++;
+                else if (_OREB > value) REB--;
+                _OREB = value;
+                NotifyPropertyChanged("REB");
+            }
+        }
+    }
+
     public class PlayerRankings
     {
-        public const int pMPG = 0,
-                         pPPG = 1,
-                         pDRPG = 2,
-                         pORPG = 3,
-                         pAPG = 4,
-                         pSPG = 5,
-                         pBPG = 6,
-                         pTPG = 7,
-                         pFPG = 8,
-                         pFGp = 9,
-                         pFGeff = 10,
-                         pTPp = 11,
-                         pTPeff = 12,
-                         pFTp = 13,
-                         pFTeff = 14,
-                         pRPG = 15;
+        public readonly int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
 
-        private readonly int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
-
-        private readonly Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
-        public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
+        public readonly Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
+        public readonly Dictionary<int, int[]> list = new Dictionary<int, int[]>();
 
         public PlayerRankings(Dictionary<int, PlayerStats> pst)
         {
-            foreach (KeyValuePair<int, PlayerStats> kvp in pst)
+            foreach (var kvp in pst)
             {
                 rankings.Add(kvp.Key, new int[avgcount]);
             }
             for (int j = 0; j < avgcount; j++)
             {
-                var averages = pst.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
+                Dictionary<int, float> averages = pst.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
                 tempList.Reverse();
 
                 int k = 1;
-                foreach (KeyValuePair<int, float> kvp in tempList)
+                foreach (var kvp in tempList)
                 {
                     rankings[kvp.Key][j] = k;
                     k++;
@@ -1170,7 +1197,7 @@ namespace NBA_Stats_Tracker.Data
         public bool isNBAChampion { get; set; }
 
         public string Type { get; set; }
-        public string Group { get; set; }
+        string Group { get; set; }
     }
 
     public class PlayerMetricStatsRow
@@ -1240,7 +1267,7 @@ namespace NBA_Stats_Tracker.Data
 
         #region Metrics that require opponents' stats
 
-        public double PER { get; set; }
+        internal double PER { get; set; }
         public double BLKp { get; set; }
         public double DREBp { get; set; }
         public double OREBp { get; set; }

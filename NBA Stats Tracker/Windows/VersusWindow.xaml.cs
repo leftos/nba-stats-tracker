@@ -29,8 +29,8 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class VersusWindow
     {
-        public static string _team1 = "";
-        public static string _team2 = "";
+        private static string _team1 = "";
+        private static string _team2 = "";
 
         public VersusWindow(string team1, string team2, Dictionary<int, TeamStats> ts)
         {

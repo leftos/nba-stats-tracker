@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
 #endregion
@@ -80,7 +79,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (var key in MainWindow.tst.Keys)
+            foreach (int key in MainWindow.tst.Keys)
             {
                 if (MainWindow.tst[key].displayName == p)
                 {
@@ -92,7 +91,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (var key in MainWindow.tst.Keys)
+            foreach (int key in MainWindow.tst.Keys)
             {
                 if (MainWindow.tst[key].name == p)
                 {
@@ -146,16 +145,17 @@ namespace NBA_Stats_Tracker.Windows
             foreach (string name in lstEnabled.Items)
             {
                 var dict = new Dictionary<string, string> {{"isHidden", "False"}};
-                db.Update(teamsT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(pl_teamsT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(oppT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(pl_oppT, dict, "DisplayName LIKE '" + name + "'");
+                db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(pl_teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(pl_oppT, dict, "DisplayName LIKE \"" + name + "\"");
             }
 
             foreach (string name in lstDisabled.Items)
             {
-                string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (T1Name LIKE '" + GetCurTeamFromDisplayName(name) +
-                           "' OR T2Name LIKE '" + GetCurTeamFromDisplayName(name) + "')";
+                string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (T1Name LIKE \"" +
+                           GetCurTeamFromDisplayName(name) +
+                           "\" OR T2Name LIKE \"" + GetCurTeamFromDisplayName(name) + "\")";
                 DataTable res = db.GetDataTable(q);
 
                 if (res.Rows.Count > 0)
@@ -169,10 +169,10 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 var dict = new Dictionary<string, string> {{"isHidden", "True"}};
-                db.Update(teamsT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(pl_teamsT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(oppT, dict, "DisplayName LIKE '" + name + "'");
-                db.Update(pl_oppT, dict, "DisplayName LIKE '" + name + "'");
+                db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(pl_teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
+                db.Update(pl_oppT, dict, "DisplayName LIKE \"" + name + "\"");
             }
 
             MainWindow.addInfo = "$$TEAMSENABLED";

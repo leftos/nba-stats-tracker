@@ -29,6 +29,7 @@ using System.Windows.Input;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
+using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
 #endregion
 
@@ -42,7 +43,6 @@ namespace NBA_Stats_Tracker.Windows
         public static string askedTeam;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
-        private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
         private int SelectedPlayerID = -1;
         private List<string> Teams;
 
@@ -70,6 +70,7 @@ namespace NBA_Stats_Tracker.Windows
         private PlayerRankings rankingsPosition;
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
+        private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
 
         public PlayerOverviewWindow()
         {
@@ -84,7 +85,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbPlayer.SelectedValue = playerID.ToString();
         }
 
-        public ObservableCollection<KeyValuePair<int, string>> PlayersList
+        private ObservableCollection<KeyValuePair<int, string>> PlayersList
         {
             get { return _playersList; }
             set
@@ -109,7 +110,7 @@ namespace NBA_Stats_Tracker.Windows
         private string GetCurTeamFromDisplayName(string p)
         {
             if (p == "- Inactive -") return p;
-            foreach (var kvp in MainWindow.tst.Keys)
+            foreach (int kvp in MainWindow.tst.Keys)
             {
                 if (MainWindow.tst[kvp].displayName == p)
                 {
@@ -124,7 +125,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (var kvp in MainWindow.tst.Keys)
+            foreach (int kvp in MainWindow.tst.Keys)
             {
                 if (MainWindow.tst[kvp].name == p)
                 {
@@ -140,7 +141,7 @@ namespace NBA_Stats_Tracker.Windows
         private void PopulateTeamsCombo()
         {
             Teams = new List<string>();
-            foreach (KeyValuePair<string, int> kvp in teamOrder)
+            foreach (var kvp in teamOrder)
             {
                 if (!MainWindow.tst[kvp.Value].isHidden) Teams.Add(MainWindow.tst[kvp.Value].displayName);
             }
@@ -204,7 +205,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             playersActive = new Dictionary<int, PlayerStats>();
 
-            string q = "select * from " + playersT + " where isActive LIKE 'True'";
+            string q = "select * from " + playersT + " where isActive LIKE \"True\"";
             DataTable res = db.GetDataTable(q);
             foreach (DataRow r in res.Rows)
             {
@@ -217,12 +218,9 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            for (int i = maxSeason; i > 0; i--)
-            {
-                cmbSeasonNum.Items.Add(i.ToString());
-            }
+            cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
 
-            cmbSeasonNum.SelectedItem = curSeason.ToString();
+            cmbSeasonNum.SelectedValue = curSeason;
         }
 
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -245,13 +243,13 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE '" +
+                q = "select * from " + playersT + " where TeamFin LIKE \"" +
                     GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) +
-                    "' AND isActive LIKE 'True'";
+                    "\" AND isActive LIKE \"True\"";
             }
             else
             {
-                q = "select * from " + playersT + " where isActive LIKE 'False'";
+                q = "select * from " + playersT + " where isActive LIKE \"False\"";
             }
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
@@ -274,7 +272,7 @@ namespace NBA_Stats_Tracker.Windows
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
 
@@ -355,8 +353,8 @@ namespace NBA_Stats_Tracker.Windows
             {
                 grdOverview.DataContext = psr;
 
-                string q = "select * from " + playersT + " where Position1 LIKE '" + psr.Position1 +
-                           "' AND isActive LIKE 'True'";
+                string q = "select * from " + playersT + " where Position1 LIKE \"" + psr.Position1 +
+                           "\" AND isActive LIKE \"True\"";
                 DataTable res = db.GetDataTable(q);
 
                 playersSamePosition = new Dictionary<int, PlayerStats>();
@@ -593,10 +591,10 @@ namespace NBA_Stats_Tracker.Windows
                                              psr.ID);
             string qr_season = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
                                              + "(PlayerResults.GameID = GameResults.GameID) "
-                                             + "WHERE PlayerID = {0} AND IsPlayoff LIKE 'False'", psr.ID);
+                                             + "WHERE PlayerID = {0} AND IsPlayoff LIKE \"False\"", psr.ID);
             string qr_playoffs = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
                                                + "(PlayerResults.GameID = GameResults.GameID) "
-                                               + "WHERE PlayerID = {0} AND IsPlayoff LIKE 'True'", psr.ID);
+                                               + "WHERE PlayerID = {0} AND IsPlayoff LIKE \"True\"", psr.ID);
             string qr_teams = String.Format("select Team from PlayerResults INNER JOIN GameResults ON " +
                                             "(PlayerResults.GameID = GameResults.GameID) " +
                                             " WHERE PlayerID = {0}", psr.ID);
@@ -622,7 +620,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem;
+                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
                 qr_home += s;
                 qr_away += s;
                 qr_wins += s;
@@ -710,7 +708,7 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     string q = String.Format("select * from PlayerResults INNER JOIN GameResults" +
                                              " ON (PlayerResults.GameID = GameResults.GameID)" +
-                                             " WHERE PlayerID = {0} AND Team = '{1}'",
+                                             " WHERE PlayerID = {0} AND Team = \"{1}\"",
                                              psr.ID, team);
                     if (rbStatsBetween.IsChecked.GetValueOrDefault())
                     {
@@ -719,7 +717,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     else
                     {
-                        string s = " AND SeasonNum = " + cmbSeasonNum.SelectedItem;
+                        string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
                         q += s;
                     }
                     res = db.GetDataTable(q);
@@ -809,7 +807,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+                    curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
                 }
                 catch (Exception)
                 {
@@ -830,16 +828,16 @@ namespace NBA_Stats_Tracker.Windows
                     MainWindow.ChangeSeason(curSeason, maxSeason);
 
                     MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst,
-                                                                       MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
-                                                                       maxSeason);
+                                                                     MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
+                                                                     maxSeason);
 
                     teamOrder = MainWindow.TeamOrder;
 
                     GetActivePlayers();
 
                     SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                           out MainWindow.tst, out MainWindow.tstopp,
-                                                           out MainWindow.TeamOrder);
+                                                         out MainWindow.tst, out MainWindow.tstopp,
+                                                         out MainWindow.TeamOrder);
                     PopulateTeamsCombo();
 
                     string q = "select * from " + playersT + " where ID = " + ps.ID;
@@ -848,8 +846,7 @@ namespace NBA_Stats_Tracker.Windows
                     if (res.Rows.Count > 0)
                     {
                         bool nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                        string newTeam;
-                        newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                        string newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
                         cmbTeam.SelectedIndex = -1;
                         if (nowActive)
                         {
@@ -883,8 +880,8 @@ namespace NBA_Stats_Tracker.Windows
                 else
                 {
                     SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                           out MainWindow.tst, out MainWindow.tstopp,
-                                                           out MainWindow.TeamOrder);
+                                                         out MainWindow.tst, out MainWindow.tstopp,
+                                                         out MainWindow.TeamOrder);
                     PopulateTeamsCombo();
                 }
             }
@@ -915,7 +912,7 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason, true);
 
             MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp,
-                                                               MainWindow.TeamOrder, curSeason, maxSeason);
+                                                             MainWindow.TeamOrder, curSeason, maxSeason);
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
@@ -1024,12 +1021,12 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE '" + cmbOppTeam.SelectedItem +
-                    "' AND isActive LIKE 'True'";
+                q = "select * from " + playersT + " where TeamFin LIKE \"" + cmbOppTeam.SelectedItem +
+                    "\" AND isActive LIKE \"True\"";
             }
             else
             {
-                q = "select * from " + playersT + " where isActive LIKE 'False'";
+                q = "select * from " + playersT + " where isActive LIKE \"False\"";
             }
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
@@ -1282,7 +1279,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            hthAllPBS.Sort((pbs1, pbs2) => pbs1.Date.CompareTo(pbs2.Date));
+            hthAllPBS.Sort((pbs1, pbs2) => String.CompareOrdinal(pbs1.Date, pbs2.Date));
             hthAllPBS.Reverse();
 
             dgvHTH.ItemsSource = psrList;
@@ -1338,6 +1335,11 @@ namespace NBA_Stats_Tracker.Windows
         private void rbHTHStatsEachOther_Checked(object sender, RoutedEventArgs e)
         {
             cmbOppPlayer_SelectionChanged(null, null);
+        }
+
+        private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            EventHandlers.StatColumn_Sorting(e);
         }
     }
 }

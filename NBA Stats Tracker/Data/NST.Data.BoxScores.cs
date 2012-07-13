@@ -25,46 +25,6 @@ namespace NBA_Stats_Tracker.Data
 {
     public class BoxScore
     {
-        public UInt16 AST1 { get; set; }
-        public UInt16 AST2 { get; set; }
-        public UInt16 BLK1{ get; set; }
-        public UInt16 BLK2{ get; set; }
-        public UInt16 FGA1{ get; set; }
-        public UInt16 FGA2{ get; set; }
-        public UInt16 FGM1{ get; set; }
-        public UInt16 FGM2{ get; set; }
-        public UInt16 FTA1{ get; set; }
-        public UInt16 FTA2{ get; set; }
-        public UInt16 FTM1{ get; set; }
-        public UInt16 FTM2{ get; set; }
-        public UInt16 MINS1{ get; set; }
-        public UInt16 MINS2{ get; set; }
-        public UInt16 OREB1{ get; set; }
-        public UInt16 OREB2{ get; set; }
-        public UInt16 FOUL1{ get; set; }
-        public UInt16 FOUL2{ get; set; }
-        public UInt16 PTS1{ get; set; }
-        public UInt16 PTS2{ get; set; }
-        public UInt16 REB1{ get; set; }
-        public UInt16 REB2{ get; set; }
-        public UInt16 STL1{ get; set; }
-        public UInt16 STL2{ get; set; }
-        public int SeasonNum{ get; set; }
-        public UInt16 TO1{ get; set; }
-        public UInt16 TO2{ get; set; }
-        public UInt16 TPA1{ get; set; }
-        public UInt16 TPA2{ get; set; }
-        public UInt16 TPM1{ get; set; }
-        public UInt16 TPM2{ get; set; }
-        public string Team1{ get; set; }
-        public string Team2{ get; set; }
-        public int bshistid { get; set; }
-        public bool doNotUpdate{ get; set; }
-        public bool done{ get; set; }
-        public DateTime gamedate{ get; set; }
-        public int id{ get; set; }
-        public bool isPlayoff{ get; set; }
-
         public BoxScore()
         {
             id = -1;
@@ -111,17 +71,53 @@ namespace NBA_Stats_Tracker.Data
             FOUL2 = Convert.ToUInt16(r["T2FOUL"].ToString());
             MINS2 = Convert.ToUInt16(r["T2MINS"].ToString());
         }
+
+        public UInt16 AST1 { get; set; }
+        public UInt16 AST2 { get; set; }
+        public UInt16 BLK1 { get; set; }
+        public UInt16 BLK2 { get; set; }
+        public UInt16 FGA1 { get; set; }
+        public UInt16 FGA2 { get; set; }
+        public UInt16 FGM1 { get; set; }
+        public UInt16 FGM2 { get; set; }
+        public UInt16 FTA1 { get; set; }
+        public UInt16 FTA2 { get; set; }
+        public UInt16 FTM1 { get; set; }
+        public UInt16 FTM2 { get; set; }
+        public UInt16 MINS1 { get; set; }
+        public UInt16 MINS2 { get; set; }
+        public UInt16 OREB1 { get; set; }
+        public UInt16 OREB2 { get; set; }
+        public UInt16 FOUL1 { get; set; }
+        public UInt16 FOUL2 { get; set; }
+        public UInt16 PTS1 { get; set; }
+        public UInt16 PTS2 { get; set; }
+        public UInt16 REB1 { get; set; }
+        public UInt16 REB2 { get; set; }
+        public UInt16 STL1 { get; set; }
+        public UInt16 STL2 { get; set; }
+        public int SeasonNum { get; set; }
+        public UInt16 TO1 { get; set; }
+        public UInt16 TO2 { get; set; }
+        public UInt16 TPA1 { get; set; }
+        public UInt16 TPA2 { get; set; }
+        public UInt16 TPM1 { get; set; }
+        public UInt16 TPM2 { get; set; }
+        public string Team1 { get; set; }
+        public string Team2 { get; set; }
+        public int bshistid { get; set; }
+        public bool doNotUpdate { get; set; }
+        public bool done { get; set; }
+        public DateTime gamedate { get; set; }
+        public int id { get; set; }
+        public bool isPlayoff { get; set; }
     }
 
     public class BoxScoreEntry
     {
-        public BoxScore bs { get; set; }
         public DateTime date;
         public bool mustUpdate;
         public List<PlayerBoxScore> pbsList;
-
-        public string Team1Display { get; set; }
-        public string Team2Display { get; set; }
 
         public BoxScoreEntry(BoxScore bs)
         {
@@ -135,5 +131,9 @@ namespace NBA_Stats_Tracker.Data
             this.date = date;
             this.pbsList = pbsList;
         }
+
+        public BoxScore bs { get; set; }
+        public string Team1Display { get; set; }
+        public string Team2Display { get; set; }
     }
 }

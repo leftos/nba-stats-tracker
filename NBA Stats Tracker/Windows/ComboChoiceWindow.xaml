@@ -1,4 +1,5 @@
-<Window x:Class="NBA_Stats_Tracker.Windows.ComboChoiceWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window x:Class="NBA_Stats_Tracker.Windows.ComboChoiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="NBA Stats Tracker" Height="211" Width="202"
         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
   <Grid>

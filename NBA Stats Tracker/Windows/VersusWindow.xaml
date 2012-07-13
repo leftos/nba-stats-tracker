@@ -1,4 +1,5 @@
-<Window x:Class="NBA_Stats_Tracker.Windows.VersusWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window x:Class="NBA_Stats_Tracker.Windows.VersusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Vs" Height="612" Width="262">
   <Grid>
     <Label Content="Team 1" HorizontalAlignment="Left" Margin="12,12,0,0" Name="lblTeam1" VerticalAlignment="Top" />

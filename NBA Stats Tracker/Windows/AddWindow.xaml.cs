@@ -40,7 +40,7 @@ namespace NBA_Stats_Tracker.Windows
             this.pst = pst;
 
             Teams = new ObservableCollection<string>();
-            foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TeamOrder)
             {
                 Teams.Add(kvp.Key);
             }

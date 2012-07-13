@@ -85,6 +85,13 @@ NBA 2K12 Features
 		13. Save your career in REditor.
 		14. You're done!
 
+		Q: I imported the stats from my save into NST before the first game of the Association/Season but my team is nowhere to be found!
+		A: There's no way to know which 30 teams are in your Association, until each one of them has played a game. For the first game of the Association, you'll have to import the stats after the game, and edit them directly. You should see your team in the database from Game 2 onwards, whenever you import.
+		
+		Q: I don't even know what REditor is! Care to throw me a bone?
+		A: In short, REditor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
+		http://www.red-mods.com/
+
 	Old Season 1 Workaround
 		1. From in-game, select Play Game, and let it save your career.
 		2. Alt-Tab out of the game and into the tool.
@@ -139,6 +146,7 @@ Credits to
 	- AreaOfEffect, for his help with debugging
 	- Tinifu Tuitama, for his donation
 	- koberulz, for his extensive suggestions and help with debugging
+	- nbagnome, for his live box score idea
 	- Everyone at the NLSC community, for their continued support
 
 
@@ -157,11 +165,21 @@ Development Credits
 			and improved upon by myself.
 		Uses a CRC32 Class Library by Damien Guard (http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net)
 		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
+		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
+		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 	
 	
 Version History
+	v0.11.0.1
+		- Improvement: Tool will now inform you of a successful REditor export
+		- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
+
 	v0.11
 		- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
+		- Addition: Added Live Box Score feature, which allows you to easily keep track of a live game, and then save it as a box score in your database
+		- Improvement: Seasons can now have names, so that for example, Season "1" can now be Season "1967-1968"
+		- Fix: Advanced Player Search wouldn't take GP or GS into account
+		- Improvement: When you choose to sort a stat-table by a specific stat, the tool now will sort in descending order by default
 
 	v0.10.7.9
 		- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format

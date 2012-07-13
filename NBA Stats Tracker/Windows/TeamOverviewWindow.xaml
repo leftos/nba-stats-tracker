@@ -23,7 +23,7 @@
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats"
                     VerticalAlignment="Stretch" MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" FrozenColumnCount="2"
-                    AlternatingRowBackground="#FFE5E5E5">
+                    AlternatingRowBackground="#FFE5E5E5" Sorting="StatColumn_Sorting">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
               <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -69,12 +69,14 @@
       <TabItem Header="Metric Stats" Name="tabMetricStats">
         <Grid>
           <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
-                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricStats" VerticalAlignment="Stretch" IsReadOnly="True">
+                    HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricStats" VerticalAlignment="Stretch" IsReadOnly="True"
+                    Sorting="StatColumn_Sorting">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
               <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-              <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" Visibility="Collapsed"/>
-                            <DataGridTemplateColumn Header="PER" x:Name="dgvMetricStatsPERColumn" SortMemberPath="PER" ClipboardContentBinding="{Binding PER}">
+              <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" Visibility="Collapsed" />
+              <DataGridTemplateColumn Header="PER" x:Name="dgvMetricStatsPERColumn" SortMemberPath="PER"
+                                      ClipboardContentBinding="{Binding PER}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding PER, StringFormat=F2}">
@@ -87,7 +89,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="EFF" x:Name="dgvMetricStatsEFFColumn" SortMemberPath="EFF" ClipboardContentBinding="{Binding EFF}">
+              <DataGridTemplateColumn Header="EFF" x:Name="dgvMetricStatsEFFColumn" SortMemberPath="EFF"
+                                      ClipboardContentBinding="{Binding EFF}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding EFF, StringFormat=F2}">
@@ -100,7 +103,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="GmSc" SortMemberPath="GmSc" ClipboardContentBinding="{Binding GmSc}">
+              <DataGridTemplateColumn Header="GmSc" SortMemberPath="GmSc"
+                                      ClipboardContentBinding="{Binding GmSc}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding GmSc, StringFormat=F2}">
@@ -112,7 +116,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp" ClipboardContentBinding="{Binding TSp}">
+              <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp"
+                                      ClipboardContentBinding="{Binding TSp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding TSp, StringFormat=F3}">
@@ -125,7 +130,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="EFG%" SortMemberPath="EFGp" ClipboardContentBinding="{Binding EFGp}">
+              <DataGridTemplateColumn Header="EFG%" SortMemberPath="EFGp"
+                                      ClipboardContentBinding="{Binding EFGp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding EFGp, StringFormat=F3}">
@@ -138,7 +144,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="PPR" SortMemberPath="PPR" x:Name="dgvMetricStatsPPRColumn" ClipboardContentBinding="{Binding PPR}">
+              <DataGridTemplateColumn Header="PPR" SortMemberPath="PPR" x:Name="dgvMetricStatsPPRColumn"
+                                      ClipboardContentBinding="{Binding PPR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding PPR, StringFormat=F1}">
@@ -151,7 +158,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="OREB%" SortMemberPath="OREBp" ClipboardContentBinding="{Binding OREBp}">
+              <DataGridTemplateColumn Header="OREB%" SortMemberPath="OREBp"
+                                      ClipboardContentBinding="{Binding OREBp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding OREBp, StringFormat=F1}">
@@ -164,7 +172,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="DREB%" SortMemberPath="DREBp" ClipboardContentBinding="{Binding DREBp}">
+              <DataGridTemplateColumn Header="DREB%" SortMemberPath="DREBp"
+                                      ClipboardContentBinding="{Binding DREBp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding DREBp, StringFormat=F1}">
@@ -177,7 +186,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="REB%" SortMemberPath="REBp" ClipboardContentBinding="{Binding REBp}">
+              <DataGridTemplateColumn Header="REB%" SortMemberPath="REBp"
+                                      ClipboardContentBinding="{Binding REBp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding REBp, StringFormat=F1}">
@@ -190,7 +200,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="AST%" SortMemberPath="ASTp" ClipboardContentBinding="{Binding ASTp}">
+              <DataGridTemplateColumn Header="AST%" SortMemberPath="ASTp"
+                                      ClipboardContentBinding="{Binding ASTp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding ASTp, StringFormat=F1}">
@@ -203,7 +214,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="STL%" SortMemberPath="STLp" ClipboardContentBinding="{Binding STLp}">
+              <DataGridTemplateColumn Header="STL%" SortMemberPath="STLp"
+                                      ClipboardContentBinding="{Binding STLp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding STLp, StringFormat=F1}">
@@ -216,7 +228,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="BLK%" SortMemberPath="BLKp" ClipboardContentBinding="{Binding BLKp}">
+              <DataGridTemplateColumn Header="BLK%" SortMemberPath="BLKp"
+                                      ClipboardContentBinding="{Binding BLKp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding BLKp, StringFormat=F1}">
@@ -229,7 +242,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="TO%" SortMemberPath="TOp" ClipboardContentBinding="{Binding TOp}">
+              <DataGridTemplateColumn Header="TO%" SortMemberPath="TOp"
+                                      ClipboardContentBinding="{Binding TOp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding TOp, StringFormat=F1}">
@@ -241,7 +255,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="USG%" SortMemberPath="USGp" ClipboardContentBinding="{Binding USGp}">
+              <DataGridTemplateColumn Header="USG%" SortMemberPath="USGp"
+                                      ClipboardContentBinding="{Binding USGp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding USGp, StringFormat=F1}">
@@ -254,7 +269,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="PTSR" SortMemberPath="PTSR" ClipboardContentBinding="{Binding PTSR}">
+              <DataGridTemplateColumn Header="PTSR" SortMemberPath="PTSR"
+                                      ClipboardContentBinding="{Binding PTSR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding PTSR, StringFormat=F1}">
@@ -266,7 +282,8 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="REBR" SortMemberPath="REBR" ClipboardContentBinding="{Binding REBR}">
+              <DataGridTemplateColumn Header="REBR" SortMemberPath="REBR"
+                                      ClipboardContentBinding="{Binding REBR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding REBR, StringFormat=F1}">
@@ -279,7 +296,8 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR" ClipboardContentBinding="{Binding ASTR}">
+              <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR"
+                                      ClipboardContentBinding="{Binding ASTR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding ASTR, StringFormat=F1}">
@@ -291,7 +309,8 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="BLKR" SortMemberPath="BLKR" ClipboardContentBinding="{Binding BLKR}">
+              <DataGridTemplateColumn Header="BLKR" SortMemberPath="BLKR"
+                                      ClipboardContentBinding="{Binding BLKR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding BLKR, StringFormat=F1}">
@@ -303,7 +322,8 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="STLR" SortMemberPath="STLR" ClipboardContentBinding="{Binding STLR}">
+              <DataGridTemplateColumn Header="STLR" SortMemberPath="STLR"
+                                      ClipboardContentBinding="{Binding STLR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding STLR, StringFormat=F1}">
@@ -315,7 +335,8 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR" ClipboardContentBinding="{Binding TOR}">
+              <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR"
+                                      ClipboardContentBinding="{Binding TOR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding TOR, StringFormat=F1}">
@@ -327,7 +348,8 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR" ClipboardContentBinding="{Binding FTR}">
+              <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR"
+                                      ClipboardContentBinding="{Binding FTR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding FTR, StringFormat=F1}">
@@ -379,7 +401,7 @@ MaxWidth="400" />
         <Grid>
           <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                     ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5"
-                    FrozenColumnCount="1" IsReadOnly="True" />
+                    FrozenColumnCount="1" IsReadOnly="True" Sorting="StatColumn_Sorting" />
         </Grid>
       </TabItem>
     </TabControl>
@@ -432,7 +454,8 @@ Text="Remember to save the stats before you switch to another team or season, or
                    Text="* Availability of stats between dates depends on whether there are box-scores saved for this team."
                    VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,31,0,0" Name="cmbSeasonNum"
-                  VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+                  VerticalAlignment="Top" Width="94" SelectionChanged="cmbSeasonNum_SelectionChanged" DisplayMemberPath="Value"
+                  SelectedValuePath="Key" />
       </Grid>
     </GroupBox>
   </Grid>

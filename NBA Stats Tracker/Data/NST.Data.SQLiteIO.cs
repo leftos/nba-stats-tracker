@@ -27,7 +27,7 @@ using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Data
 {
-    class SQLiteIO
+    internal static class SQLiteIO
     {
         public static void saveAllSeasons(string file)
         {
@@ -37,27 +37,33 @@ namespace NBA_Stats_Tracker.Data
             int maxSeason = getMaxSeason(oldDB);
 
             MainWindow.bshist = GetAllBoxScoresFromDatabase(oldDB);
-            saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason);
+            saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
+                                 maxSeason);
 
             for (int i = 1; i <= maxSeason; i++)
             {
                 if (i != oldSeason)
                 {
-                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, _curSeason: i,
+                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst,
+                               out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, _curSeason: i,
                                doNotLoadBoxScores: true);
-                    saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason, doNotSaveBoxScores: true);
+                    saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
+                                         maxSeason, doNotSaveBoxScores: true);
                 }
             }
-            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, true, oldSeason,
+            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
+                       ref MainWindow.pt, ref MainWindow.bshist, true, oldSeason,
                        doNotLoadBoxScores: true);
         }
 
         public static void saveSeasonToDatabase()
         {
-            saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, getMaxSeason(MainWindow.currentDB));
+            saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst,
+                                 MainWindow.curSeason, getMaxSeason(MainWindow.currentDB));
         }
 
-        public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave,
+        public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
+                                                Dictionary<int, TeamStats> tstoppToSave,
                                                 Dictionary<int, PlayerStats> pstToSave,
                                                 int season, int maxSeason, bool doNotSaveBoxScores = false)
         {
@@ -74,6 +80,8 @@ namespace NBA_Stats_Tracker.Data
             MainWindow.db = new SQLiteDatabase(file);
             if (!FileExists) prepareNewDB(MainWindow.db, season, maxSeason);
 
+            SaveSeasonName(season);
+
             SaveTeamsToDatabase(file, tstToSave, tstoppToSave, season, maxSeason);
 
             #region Save Player Stats
@@ -86,9 +94,9 @@ namespace NBA_Stats_Tracker.Data
 
             if (!doNotSaveBoxScores)
             {
-                string q = "select GameID from GameResults;";
+                const string q = "select GameID from GameResults;";
                 DataTable res = MainWindow.db.GetDataTable(q);
-                var idList = (from DataRow r in res.Rows select Convert.ToInt32(r[0].ToString())).ToList();
+                List<int> idList = (from DataRow r in res.Rows select Convert.ToInt32(r[0].ToString())).ToList();
 
                 foreach (BoxScoreEntry bse in MainWindow.bshist)
                 {
@@ -145,7 +153,8 @@ namespace NBA_Stats_Tracker.Data
 
                             int lastid =
                                 Convert.ToInt32(
-                                    MainWindow.db.GetDataTable("select GameID from GameResults where HASH LIKE '" + md5 + "'").
+                                    MainWindow.db.GetDataTable("select GameID from GameResults where HASH LIKE \"" + md5 +
+                                                               "\"").
                                         Rows
                                         [0][
                                             "GameID"].ToString());
@@ -209,7 +218,7 @@ namespace NBA_Stats_Tracker.Data
             MainWindow.mwInstance.txtFile.Text = file;
             MainWindow.currentDB = file;
             MainWindow.isCustom = true;
-            
+
             //}
             //catch (Exception ex)
             //{
@@ -217,7 +226,30 @@ namespace NBA_Stats_Tracker.Data
             //}
         }
 
-        public static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave, int season,
+        public static void SaveSeasonName(int season)
+        {
+            var dict = new Dictionary<string, string> {{"ID", season.ToString()}};
+            try
+            {
+                dict.Add("Name", MainWindow.GetSeasonName(season));
+            }
+            catch
+            {
+                dict.Add("Name", season.ToString());
+            }
+            try
+            {
+                int result = MainWindow.db.Update("SeasonNames", dict, "ID = " + season.ToString());
+                if (result < 1) throw (new Exception());
+            }
+            catch (Exception)
+            {
+                MainWindow.db.Insert("SeasonNames", dict);
+            }
+        }
+
+        private static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
+                                               Dictionary<int, TeamStats> tstoppToSave, int season,
                                                int maxSeason)
         {
             var _db = new SQLiteDatabase(file);
@@ -254,7 +286,7 @@ namespace NBA_Stats_Tracker.Data
             var seasonList = new List<Dictionary<string, string>>(500);
             var playoffList = new List<Dictionary<string, string>>(500);
             int i = 0;
-            foreach (var key in tstToSave.Keys)
+            foreach (int key in tstToSave.Keys)
             {
                 //bool found = false;
 
@@ -354,7 +386,7 @@ namespace NBA_Stats_Tracker.Data
             seasonList = new List<Dictionary<string, string>>(500);
             playoffList = new List<Dictionary<string, string>>(500);
             i = 0;
-            foreach (var key in tstoppToSave.Keys)
+            foreach (int key in tstoppToSave.Keys)
             {
                 //bool found = false;
 
@@ -474,7 +506,7 @@ namespace NBA_Stats_Tracker.Data
             var sqlinsert = new List<Dictionary<string, string>>(500);
             int i = 0;
 
-            foreach (KeyValuePair<int, PlayerStats> kvp in playerStats)
+            foreach (var kvp in playerStats)
             {
                 PlayerStats ps = kvp.Value;
                 if (partialUpdate) _db.Delete(playersT, "ID = " + ps.ID);
@@ -561,6 +593,13 @@ namespace NBA_Stats_Tracker.Data
                     sqldb.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"Misc\" (\"CurSeason\" INTEGER);";
                     sqldb.ExecuteNonQuery(qr);
+                    qr = "DROP TABLE IF EXISTS \"SeasonNames\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
+                    sqldb.ExecuteNonQuery(qr);
+                    sqldb.Insert("SeasonNames",
+                                 new Dictionary<string, string>
+                                     {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -619,7 +658,7 @@ namespace NBA_Stats_Tracker.Data
 
                 var _db = new SQLiteDatabase(file);
 
-                string q = "select Name from sqlite_master";
+                const string q = "select Name from sqlite_master";
                 DataTable res = _db.GetDataTable(q);
 
                 int maxseason = (from DataRow r in res.Rows
@@ -649,11 +688,11 @@ namespace NBA_Stats_Tracker.Data
 
             if (maxSeason == season)
             {
-                q = "select * from Teams where Name LIKE '" + team + "'";
+                q = "select * from Teams where Name LIKE \"" + team + "\"";
             }
             else
             {
-                q = "select * from TeamsS" + season.ToString() + " where Name LIKE '" + team + "'";
+                q = "select * from TeamsS" + season.ToString() + " where Name LIKE \"" + team + "'";
             }
 
             DataTable res = _db.GetDataTable(q);
@@ -701,11 +740,11 @@ namespace NBA_Stats_Tracker.Data
 
             if (maxSeason == season)
             {
-                q = "select * from PlayoffTeams where Name LIKE '" + team + "'";
+                q = "select * from PlayoffTeams where Name LIKE \"" + team + "\"";
             }
             else
             {
-                q = "select * from PlayoffTeamsS" + season.ToString() + " where Name LIKE '" + team + "'";
+                q = "select * from PlayoffTeamsS" + season.ToString() + " where Name LIKE \"" + team + "\"";
             }
             res = _db.GetDataTable(q);
 
@@ -736,11 +775,11 @@ namespace NBA_Stats_Tracker.Data
 
             if (maxSeason == season)
             {
-                q = "select * from Opponents where Name LIKE '" + team + "'";
+                q = "select * from Opponents where Name LIKE \"" + team + "\"";
             }
             else
             {
-                q = "select * from OpponentsS" + season.ToString() + " where Name LIKE '" + team + "'";
+                q = "select * from OpponentsS" + season.ToString() + " where Name LIKE \"" + team + "\"";
             }
 
             res = _db.GetDataTable(q);
@@ -787,11 +826,11 @@ namespace NBA_Stats_Tracker.Data
 
             if (maxSeason == season)
             {
-                q = "select * from PlayoffOpponents where Name LIKE '" + team + "'";
+                q = "select * from PlayoffOpponents where Name LIKE \"" + team + "\"";
             }
             else
             {
-                q = "select * from PlayoffOpponentsS" + season.ToString() + " where Name LIKE '" + team + "'";
+                q = "select * from PlayoffOpponentsS" + season.ToString() + " where Name LIKE \"" + team + "\"";
             }
             res = _db.GetDataTable(q);
 
@@ -866,11 +905,14 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         public static void LoadSeason()
         {
-            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, _curSeason: MainWindow.curSeason,
+            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst,
+                       out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist,
+                       _curSeason: MainWindow.curSeason,
                        doNotLoadBoxScores: true);
         }
 
-        public static void LoadSeason(string file, out Dictionary<int, TeamStats> _tst, out Dictionary<int, TeamStats> _tstopp,
+        public static void LoadSeason(string file, out Dictionary<int, TeamStats> _tst,
+                                      out Dictionary<int, TeamStats> _tstopp,
                                       out Dictionary<int, PlayerStats> pst,
                                       out SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
                                       ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
@@ -878,27 +920,11 @@ namespace NBA_Stats_Tracker.Data
         {
             MainWindow.loadingSeason = true;
 
-            var _db = new SQLiteDatabase(file);
+            UpgradeDB(file);
 
-            String q;
             int maxSeason = getMaxSeason(file);
 
             if (_curSeason == 0) _curSeason = maxSeason;
-
-            if (maxSeason == _curSeason)
-            {
-                q = "select Name from Teams;";
-            }
-            else
-            {
-                q = "select Name from TeamsS" + _curSeason.ToString() + ";";
-            }
-
-            DataTable res = _db.GetDataTable(q);
-
-            _tst = new Dictionary<int, TeamStats>();
-            _tstopp = new Dictionary<int, TeamStats>();
-            _TeamOrder = new SortedDictionary<string, int>();
 
             GetAllTeamStatsFromDatabase(file, _curSeason, out _tst, out _tstopp, out _TeamOrder);
 
@@ -932,6 +958,39 @@ namespace NBA_Stats_Tracker.Data
             */
 
             MainWindow.loadingSeason = false;
+        }
+
+        /// <summary>
+        /// Checks for missing and changed fields in older databases and upgrades them to the current format.
+        /// </summary>
+        /// <param name="file">The path to the database.</param>
+        private static void UpgradeDB(string file)
+        {
+            var db = new SQLiteDatabase(file);
+
+            // Check for missing SeasonNames table (v0.11)
+
+            #region SeasonNames
+
+            string qr = "SELECT * FROM SeasonNames";
+            try
+            {
+                DataTable dt = db.GetDataTable(qr);
+            }
+            catch (Exception)
+            {
+                int maxSeason = getMaxSeason(file);
+                qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
+                db.ExecuteNonQuery(qr);
+
+                for (int i = 1; i <= maxSeason; i++)
+                {
+                    db.Insert("SeasonNames",
+                              new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", i.ToString()}});
+                }
+            }
+
+            #endregion
         }
 
         public static IList<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file)
@@ -988,25 +1047,28 @@ namespace NBA_Stats_Tracker.Data
 
             IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
             Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
-                                            {
-                                                var bs = new BoxScore(r);
+                                                            {
+                                                                var bs = new BoxScore(r);
 
-                                                var bse = new BoxScoreEntry(bs)
-                                                              {
-                                                                  date = bs.gamedate,
-                                                                  Team1Display = DisplayNames[bs.Team1],
-                                                                  Team2Display = DisplayNames[bs.Team2]
-                                                              };
+                                                                var bse = new BoxScoreEntry(bs)
+                                                                              {
+                                                                                  date = bs.gamedate,
+                                                                                  Team1Display = DisplayNames[bs.Team1],
+                                                                                  Team2Display = DisplayNames[bs.Team2]
+                                                                              };
 
-                                                string q2 = "select * from PlayerResults WHERE GameID = " +
-                                                            bs.id.ToString();
-                                                DataTable res3 = _db.GetDataTable(q2);
-                                                bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
+                                                                string q2 =
+                                                                    "select * from PlayerResults WHERE GameID = " +
+                                                                    bs.id.ToString();
+                                                                DataTable res3 = _db.GetDataTable(q2);
+                                                                bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
 
-                                                Parallel.ForEach(res3.Rows.Cast<DataRow>(), r3 => bse.pbsList.Add(new PlayerBoxScore(r3)));
+                                                                Parallel.ForEach(res3.Rows.Cast<DataRow>(),
+                                                                                 r3 =>
+                                                                                 bse.pbsList.Add(new PlayerBoxScore(r3)));
 
-                                                _bshist.Add(bse);
-                                            });
+                                                                _bshist.Add(bse);
+                                                            });
             return _bshist;
         }
 
@@ -1030,7 +1092,8 @@ namespace NBA_Stats_Tracker.Data
             var _db = new SQLiteDatabase(file);
             DataTable res = _db.GetDataTable(q);
 
-            var _pst = (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
+            Dictionary<int, PlayerStats> _pst =
+                (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
 
             PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
 
@@ -1051,7 +1114,7 @@ namespace NBA_Stats_Tracker.Data
             try
             {
                 if (res.Rows[0]["Name"].ToString() == "$$NewDB") return true;
-                
+
                 return false;
             }
             catch
@@ -1092,11 +1155,11 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public static int GetFreePlayerResultID(string dbFile, List<int> used)
+        private static int GetFreePlayerResultID(string dbFile, List<int> used)
         {
             var db = new SQLiteDatabase(dbFile);
-            
-            string q = "select ID from PlayerResults ORDER BY ID ASC;";
+
+            const string q = "select ID from PlayerResults ORDER BY ID ASC;";
             DataTable res = db.GetDataTable(q);
 
             int i;
@@ -1122,7 +1185,8 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         public static void SaveTeamsToDatabase()
         {
-            SaveTeamsToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.curSeason, getMaxSeason(MainWindow.currentDB));
+            SaveTeamsToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.curSeason,
+                                getMaxSeason(MainWindow.currentDB));
         }
     }
 }

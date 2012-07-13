@@ -66,6 +66,8 @@ namespace NBA_Stats_Tracker.Data
 
     public class TeamStats
     {
+        public int ID;
+
         /// <summary>
         /// Averages for each team.
         /// 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
@@ -77,7 +79,6 @@ namespace NBA_Stats_Tracker.Data
         public string displayName;
         public bool isHidden;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
-        public int ID;
 
         public string name;
         public int offset;
@@ -102,7 +103,7 @@ namespace NBA_Stats_Tracker.Data
             prepareEmpty();
         }
 
-        public TeamStats(string name): this()
+        public TeamStats(string name) : this()
         {
             this.name = name;
             displayName = name;
@@ -646,7 +647,7 @@ namespace NBA_Stats_Tracker.Data
             string teamsT = "Teams";
             if (season != maxSeason) teamsT += "S" + season;
 
-            string q = "select isHidden from " + teamsT + " where Name LIKE '" + name + "'";
+            string q = "select isHidden from " + teamsT + " where Name LIKE \"" + name + "\"";
             bool isHidden = Tools.getBoolean(db.GetDataTable(q).Rows[0], "isHidden");
 
             return isHidden;
@@ -697,7 +698,7 @@ namespace NBA_Stats_Tracker.Data
                 tempList.Reverse();
 
                 int k = 1;
-                foreach (KeyValuePair<int, float> kvp in tempList)
+                foreach (var kvp in tempList)
                 {
                     rankings[kvp.Key][j] = k;
                     k++;

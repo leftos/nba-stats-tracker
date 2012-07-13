@@ -158,8 +158,7 @@ namespace NBA_Stats_Tracker.Interop
                         HtmlNode thead = cur.SelectSingleNode("thead");
                         HtmlNodeCollection theadrows = thead.SelectNodes("tr");
 
-                        HtmlNode theadrow;
-                        theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
+                        HtmlNode theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
 
                         IEnumerable<string> headers = theadrow
                             .Elements("th")
@@ -217,9 +216,8 @@ namespace NBA_Stats_Tracker.Interop
                     {
                         HtmlNode thead = cur.SelectSingleNode("thead");
                         HtmlNodeCollection theadrows = thead.SelectNodes("tr");
-                        HtmlNode theadrow;
 
-                        theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
+                        HtmlNode theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
 
                         IEnumerable<string> headers = theadrow
                             .Elements("th")
@@ -304,7 +302,8 @@ namespace NBA_Stats_Tracker.Interop
             tsopp.calcAvg();
         }
 
-        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
+        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst,
+                                                        ref Dictionary<int, TeamStats> tstopp)
         {
             DataTable dt = ds.Tables["team"];
             DataTable dtopp = ds.Tables["opponent"];
@@ -501,7 +500,7 @@ namespace NBA_Stats_Tracker.Interop
             }
 
             pst = new Dictionary<int, PlayerStats>();
-            foreach (KeyValuePair<string, PlayerStats> kvp in pstnames)
+            foreach (var kvp in pstnames)
             {
                 kvp.Value.ID = pst.Count;
                 pst.Add(pst.Count, kvp.Value);

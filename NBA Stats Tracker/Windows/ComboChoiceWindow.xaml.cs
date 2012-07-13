@@ -50,7 +50,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 label1.Content = "Pick the two teams";
                 cmbTeams2.Visibility = Visibility.Visible;
-                foreach (KeyValuePair<string, int> kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TeamOrder)
                 {
                     cmbTeams1.Items.Add(kvp.Key);
                     cmbTeams2.Items.Add(kvp.Key);
@@ -78,12 +78,12 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (!_versus)
                 {
-                    Helper.mode = cmbTeams1.SelectedItem.ToString();
+                    App.mode = cmbTeams1.SelectedItem.ToString();
                 }
                 else
                 {
                     var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(),
-                                         MainWindow.tst);
+                                              MainWindow.tst);
                     vw.ShowDialog();
                 }
             }

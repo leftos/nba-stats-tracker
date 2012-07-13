@@ -38,11 +38,18 @@ namespace NBA_Stats_Tracker.Windows
         public InputBoxWindow(string message, string defaultValue) : this(message)
         {
             txtInput.Text = defaultValue;
+            txtInput.SelectAll();
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.input = txtInput.Text;
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.input = "";
             Close();
         }
     }

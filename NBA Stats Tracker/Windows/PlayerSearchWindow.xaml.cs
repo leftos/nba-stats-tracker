@@ -24,7 +24,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
-using SQLite_Database; 
+using SQLite_Database;
 
 #endregion
 
@@ -35,13 +35,13 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class PlayerSearchWindow
     {
+        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
-        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+        private readonly int maxSeason;
+        private SortedDictionary<string, int> TeamOrder;
         private int curSeason;
-        private int maxSeason;
         private Dictionary<int, TeamStats> tst, tstopp;
-        private SortedDictionary<string, int> TeamOrder; 
 
         public PlayerSearchWindow()
         {
@@ -119,18 +119,19 @@ namespace NBA_Stats_Tracker.Windows
             cmbPosition2.ItemsSource = Positions;
             cmbPosition2.SelectedIndex = 0;
 
+            curSeason = MainWindow.curSeason;
             PopulateSeasonCombo();
-            cmbSeasonNum.SelectedItem = MainWindow.curSeason;
+            maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
 
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
-            
+
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
         }
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (var kvp in tst.Keys)
+            foreach (int kvp in tst.Keys)
             {
                 if (tst[kvp].displayName == p)
                 {
@@ -142,7 +143,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (var kvp in tst.Keys)
+            foreach (int kvp in tst.Keys)
             {
                 if (tst[kvp].name == p)
                 {
@@ -154,20 +155,21 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateSeasonCombo()
         {
-            maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+            cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
 
-            for (int i = maxSeason; i >= 1; i--)
-            {
-                cmbSeasonNum.Items.Add(i);
-            }
+            cmbSeasonNum.SelectedValue = curSeason;
         }
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            if (cmbSeasonNum.SelectedIndex == -1) return;
+
+            curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+
             SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out tst, out tstopp, out TeamOrder);
 
-            var teams = (from kvp in TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
+            List<string> teams =
+                (from kvp in TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -187,11 +189,11 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (cmbLastNameSetting.SelectedItem.ToString() == "Contains")
                 {
-                    where += "LastName LIKE '%" + txtLastName.Text + "%' AND ";
+                    where += "LastName LIKE \"%" + txtLastName.Text + "%\" AND ";
                 }
                 else
                 {
-                    where += "LastName LIKE '" + txtLastName.Text + "' AND ";
+                    where += "LastName LIKE \"" + txtLastName.Text + "\" AND ";
                 }
             }
 
@@ -199,63 +201,74 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (cmbFirstNameSetting.SelectedItem.ToString() == "Contains")
                 {
-                    where += "FirstName LIKE '%" + txtFirstName.Text + "%' AND ";
+                    where += "FirstName LIKE \"%" + txtFirstName.Text + "%\" AND ";
                 }
                 else
                 {
-                    where += "FirstName LIKE '" + txtFirstName.Text + "' AND ";
+                    where += "FirstName LIKE \"" + txtFirstName.Text + "\" AND ";
                 }
             }
 
             if (cmbPosition1.SelectedIndex != -1 && cmbPosition1.SelectedItem.ToString() != "Any")
             {
-                where += "Position1 LIKE '" + cmbPosition1.SelectedItem + "' AND ";
+                where += "Position1 LIKE \"" + cmbPosition1.SelectedItem + "\" AND ";
             }
 
             if (cmbPosition2.SelectedIndex != -1 && cmbPosition2.SelectedItem.ToString() != "Any")
             {
-                where += "Position2 LIKE '" + cmbPosition2.SelectedItem + "' AND ";
+                where += "Position2 LIKE \"" + cmbPosition2.SelectedItem + "\" AND ";
             }
 
             if (chkIsActive.IsChecked.GetValueOrDefault())
             {
-                where += "isActive LIKE 'True' AND ";
+                where += "isActive LIKE \"True\" AND ";
             }
             else if (chkIsActive.IsChecked != null)
             {
-                where += "isActive LIKE 'False' AND ";
+                where += "isActive LIKE \"False\" AND ";
             }
 
             if (chkIsInjured.IsChecked.GetValueOrDefault())
             {
-                where += "isInjured LIKE 'True' AND ";
+                where += "isInjured LIKE \"True\" AND ";
             }
             else if (chkIsInjured.IsChecked != null)
             {
-                where += "isInjured LIKE 'False' AND ";
+                where += "isInjured LIKE \"False\" AND ";
             }
 
             if (chkIsAllStar.IsChecked.GetValueOrDefault())
             {
-                where += "isAllStar LIKE 'True' AND ";
+                where += "isAllStar LIKE \"True\" AND ";
             }
             else if (chkIsAllStar.IsChecked != null)
             {
-                where += "isAllStar LIKE 'False' AND ";
+                where += "isAllStar LIKE \"False\" AND ";
             }
 
             if (chkIsNBAChampion.IsChecked.GetValueOrDefault())
             {
-                where += "isNBAChampion LIKE 'True' AND ";
+                where += "isNBAChampion LIKE \"True\" AND ";
             }
             else if (chkIsNBAChampion.IsChecked != null)
             {
-                where += "isNBAChampion LIKE 'False' AND ";
+                where += "isNBAChampion LIKE \"False\" AND ";
             }
 
-            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) && chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
+            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
+                chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
             {
-                where += "TeamFin LIKE '" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "' AND ";
+                where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
+            }
+
+            if (!String.IsNullOrWhiteSpace(txtGP.Text))
+            {
+                where += "GP " + cmbGP.SelectedItem + " " + txtGP.Text + " AND ";
+            }
+
+            if (!String.IsNullOrWhiteSpace(txtGS.Text))
+            {
+                where += "GS " + cmbGS.SelectedItem + " " + txtGS.Text + " AND ";
             }
 
             if (!String.IsNullOrWhiteSpace(txtPTS.Text))
@@ -430,7 +443,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
         }
 
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)

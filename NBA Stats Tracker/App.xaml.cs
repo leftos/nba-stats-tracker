@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using NBA_Stats_Tracker.Interop;
 
 #endregion
 
@@ -32,6 +33,12 @@ namespace NBA_Stats_Tracker
     {
         public static bool realNBAonly;
         public static int openWindows = 1;
+        public static PlayoffTree tempPT;
+
+        public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath;
+        public static string SavesPath = NBA_Stats_Tracker.Windows.MainWindow.SavesPath;
+        public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainWindow.AppTempPath;
+        public static string mode = "";
 
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
