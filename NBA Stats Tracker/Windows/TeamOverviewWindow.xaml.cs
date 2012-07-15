@@ -570,6 +570,8 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
+            dt_ov.Rows.Add(dt_ov.NewRow());
+
             #region Playoffs
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
@@ -1325,7 +1327,7 @@ namespace NBA_Stats_Tracker.Windows
                 psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate,
-                                          curSeason, maxSeason);
+                                          curSeason, maxSeason, partialUpdate: true);
             SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                 ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
                                 doNotLoadBoxScores: true);

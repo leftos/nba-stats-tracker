@@ -65,7 +65,7 @@ namespace NBA_Stats_Tracker.Data
         public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
                                                 Dictionary<int, TeamStats> tstoppToSave,
                                                 Dictionary<int, PlayerStats> pstToSave,
-                                                int season, int maxSeason, bool doNotSaveBoxScores = false)
+                                                int season, int maxSeason, bool doNotSaveBoxScores = false, bool partialUpdate = false)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
             // we won't delete the file before all this.
@@ -86,7 +86,7 @@ namespace NBA_Stats_Tracker.Data
 
             #region Save Player Stats
 
-            savePlayersToDatabase(file, pstToSave, season, maxSeason);
+            savePlayersToDatabase(file, pstToSave, season, maxSeason, partialUpdate);
 
             #endregion
 
@@ -392,58 +392,58 @@ namespace NBA_Stats_Tracker.Data
 
                 var dict = new Dictionary<string, string>
                                {
-                                   {"ID", MainWindow.TeamOrder[tstToSave[key].name].ToString()},
-                                   {"Name", tstToSave[key].name},
-                                   {"DisplayName", tstToSave[key].displayName},
-                                   {"isHidden", tstToSave[key].isHidden.ToString()},
-                                   {"WIN", tstToSave[key].winloss[0].ToString()},
-                                   {"LOSS", tstToSave[key].winloss[1].ToString()},
-                                   {"MINS", tstToSave[key].stats[t.MINS].ToString()},
-                                   {"PF", tstToSave[key].stats[t.PF].ToString()},
-                                   {"PA", tstToSave[key].stats[t.PA].ToString()},
-                                   {"FGM", tstToSave[key].stats[t.FGM].ToString()},
-                                   {"FGA", tstToSave[key].stats[t.FGA].ToString()},
-                                   {"TPM", tstToSave[key].stats[t.TPM].ToString()},
-                                   {"TPA", tstToSave[key].stats[t.TPA].ToString()},
-                                   {"FTM", tstToSave[key].stats[t.FTM].ToString()},
-                                   {"FTA", tstToSave[key].stats[t.FTA].ToString()},
-                                   {"OREB", tstToSave[key].stats[t.OREB].ToString()},
-                                   {"DREB", tstToSave[key].stats[t.DREB].ToString()},
-                                   {"STL", tstToSave[key].stats[t.STL].ToString()},
-                                   {"TOS", tstToSave[key].stats[t.TO].ToString()},
-                                   {"BLK", tstToSave[key].stats[t.BLK].ToString()},
-                                   {"AST", tstToSave[key].stats[t.AST].ToString()},
-                                   {"FOUL", tstToSave[key].stats[t.FOUL].ToString()},
-                                   {"OFFSET", tstToSave[key].offset.ToString()}
+                                   {"ID", MainWindow.TeamOrder[tstoppToSave[key].name].ToString()},
+                                   {"Name", tstoppToSave[key].name},
+                                   {"DisplayName", tstoppToSave[key].displayName},
+                                   {"isHidden", tstoppToSave[key].isHidden.ToString()},
+                                   {"WIN", tstoppToSave[key].winloss[0].ToString()},
+                                   {"LOSS", tstoppToSave[key].winloss[1].ToString()},
+                                   {"MINS", tstoppToSave[key].stats[t.MINS].ToString()},
+                                   {"PF", tstoppToSave[key].stats[t.PF].ToString()},
+                                   {"PA", tstoppToSave[key].stats[t.PA].ToString()},
+                                   {"FGM", tstoppToSave[key].stats[t.FGM].ToString()},
+                                   {"FGA", tstoppToSave[key].stats[t.FGA].ToString()},
+                                   {"TPM", tstoppToSave[key].stats[t.TPM].ToString()},
+                                   {"TPA", tstoppToSave[key].stats[t.TPA].ToString()},
+                                   {"FTM", tstoppToSave[key].stats[t.FTM].ToString()},
+                                   {"FTA", tstoppToSave[key].stats[t.FTA].ToString()},
+                                   {"OREB", tstoppToSave[key].stats[t.OREB].ToString()},
+                                   {"DREB", tstoppToSave[key].stats[t.DREB].ToString()},
+                                   {"STL", tstoppToSave[key].stats[t.STL].ToString()},
+                                   {"TOS", tstoppToSave[key].stats[t.TO].ToString()},
+                                   {"BLK", tstoppToSave[key].stats[t.BLK].ToString()},
+                                   {"AST", tstoppToSave[key].stats[t.AST].ToString()},
+                                   {"FOUL", tstoppToSave[key].stats[t.FOUL].ToString()},
+                                   {"OFFSET", tstoppToSave[key].offset.ToString()}
                                };
 
                 seasonList.Add(dict);
 
                 var pl_dict = new Dictionary<string, string>
                                   {
-                                      {"ID", MainWindow.TeamOrder[tstToSave[key].name].ToString()},
-                                      {"Name", tstToSave[key].name},
-                                      {"DisplayName", tstToSave[key].displayName},
-                                      {"isHidden", tstToSave[key].isHidden.ToString()},
-                                      {"WIN", tstToSave[key].pl_winloss[0].ToString()},
-                                      {"LOSS", tstToSave[key].pl_winloss[1].ToString()},
-                                      {"MINS", tstToSave[key].pl_stats[t.MINS].ToString()},
-                                      {"PF", tstToSave[key].pl_stats[t.PF].ToString()},
-                                      {"PA", tstToSave[key].pl_stats[t.PA].ToString()},
-                                      {"FGM", tstToSave[key].pl_stats[t.FGM].ToString()},
-                                      {"FGA", tstToSave[key].pl_stats[t.FGA].ToString()},
-                                      {"TPM", tstToSave[key].pl_stats[t.TPM].ToString()},
-                                      {"TPA", tstToSave[key].pl_stats[t.TPA].ToString()},
-                                      {"FTM", tstToSave[key].pl_stats[t.FTM].ToString()},
-                                      {"FTA", tstToSave[key].pl_stats[t.FTA].ToString()},
-                                      {"OREB", tstToSave[key].pl_stats[t.OREB].ToString()},
-                                      {"DREB", tstToSave[key].pl_stats[t.DREB].ToString()},
-                                      {"STL", tstToSave[key].pl_stats[t.STL].ToString()},
-                                      {"TOS", tstToSave[key].pl_stats[t.TO].ToString()},
-                                      {"BLK", tstToSave[key].pl_stats[t.BLK].ToString()},
-                                      {"AST", tstToSave[key].pl_stats[t.AST].ToString()},
-                                      {"FOUL", tstToSave[key].pl_stats[t.FOUL].ToString()},
-                                      {"OFFSET", tstToSave[key].pl_offset.ToString()}
+                                      {"ID", MainWindow.TeamOrder[tstoppToSave[key].name].ToString()},
+                                      {"Name", tstoppToSave[key].name},
+                                      {"DisplayName", tstoppToSave[key].displayName},
+                                      {"isHidden", tstoppToSave[key].isHidden.ToString()},
+                                      {"WIN", tstoppToSave[key].pl_winloss[0].ToString()},
+                                      {"LOSS", tstoppToSave[key].pl_winloss[1].ToString()},
+                                      {"MINS", tstoppToSave[key].pl_stats[t.MINS].ToString()},
+                                      {"PF", tstoppToSave[key].pl_stats[t.PF].ToString()},
+                                      {"PA", tstoppToSave[key].pl_stats[t.PA].ToString()},
+                                      {"FGM", tstoppToSave[key].pl_stats[t.FGM].ToString()},
+                                      {"FGA", tstoppToSave[key].pl_stats[t.FGA].ToString()},
+                                      {"TPM", tstoppToSave[key].pl_stats[t.TPM].ToString()},
+                                      {"TPA", tstoppToSave[key].pl_stats[t.TPA].ToString()},
+                                      {"FTM", tstoppToSave[key].pl_stats[t.FTM].ToString()},
+                                      {"FTA", tstoppToSave[key].pl_stats[t.FTA].ToString()},
+                                      {"OREB", tstoppToSave[key].pl_stats[t.OREB].ToString()},
+                                      {"DREB", tstoppToSave[key].pl_stats[t.DREB].ToString()},
+                                      {"STL", tstoppToSave[key].pl_stats[t.STL].ToString()},
+                                      {"TOS", tstoppToSave[key].pl_stats[t.TO].ToString()},
+                                      {"BLK", tstoppToSave[key].pl_stats[t.BLK].ToString()},
+                                      {"AST", tstoppToSave[key].pl_stats[t.AST].ToString()},
+                                      {"FOUL", tstoppToSave[key].pl_stats[t.FOUL].ToString()},
+                                      {"OFFSET", tstoppToSave[key].pl_offset.ToString()}
                                   };
 
                 playoffList.Add(pl_dict);

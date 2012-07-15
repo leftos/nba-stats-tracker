@@ -47,6 +47,9 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="SoftwareArchitects.Windows.Controls.ScrollSynchronizer">
+      <HintPath>.\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />

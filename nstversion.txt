@@ -1,5 +1,19 @@
-0.11.0.1
+0.11.2.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+
+v0.11.2.1
+
+- Fix: Fixed bug that made the PER column blank wherever PER was supposed to be shown
+- Fix: Fixed bug that would save the team's stats as the opponents' stats as well
+- Fix: Fixed bug that would erase all other teams' but the current's players when saving changes in the Team Overview window
+
+v0.11.2
+- Addition: League Overview now offers league-wide averages in all tabs (except League Leaders & Box Scores)
+- Addition: Team Metric Stats added to League Overview
+
+v0.11.1
+- Improvement: User is asked which teams are active in their Career if they can't be detected from the REditor import
+- Improvement: Improvements in REditor import handling
 
 v0.11.0.1
 - Improvement: Tool will now inform you of a successful REditor export

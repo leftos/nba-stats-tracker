@@ -74,7 +74,7 @@ namespace NBA_Stats_Tracker.Data
         public string Position1;
         public string Position2;
         public float[] averages = new float[16];
-        public UInt16[] stats = new UInt16[17];
+        public uint[] stats = new uint[17];
         public int ID;
         public string TeamF;
         public string TeamS = "";
@@ -230,7 +230,7 @@ namespace NBA_Stats_Tracker.Data
 
         public void CalcAvg()
         {
-            int games = stats[p.GP];
+            uint games = stats[p.GP];
             averages[p.MPG] = (float) stats[p.MINS]/games;
             averages[p.PPG] = (float) stats[p.PTS]/games;
             averages[p.FGp] = (float) stats[p.FGM]/stats[p.FGA];
@@ -492,6 +492,32 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
+        {
+            PlayerStats lps = new PlayerStats(new Player(-1, "", "League", "Averages", " ", " "));
+            for (int i = 0; i < playerStats.Count; i++)
+            {
+                lps.AddPlayerStats(playerStats[i]);
+            }
+
+            TeamStats ls = new TeamStats("League");
+            for (int i = 0; i < teamStats.Count; i++)
+            {
+                ls.AddTeamStats(teamStats[i], "All");
+            }
+            ls.CalcMetrics(ls);
+
+            lps.CalcMetrics(ls, ls, ls, true);
+
+            uint playerCount = (uint) playerStats.Count;
+            for (int i = 0; i < lps.stats.Length; i++)
+            {
+                lps.stats[i] /= playerCount;
+            }
+            //ps.CalcAvg();
+            return lps;
+        }
+
         public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats,
                                                Dictionary<int, TeamStats> teamStats,
                                                Dictionary<int, TeamStats> oppStats,
@@ -501,7 +527,6 @@ namespace NBA_Stats_Tracker.Data
             int tCount = teamStats.Count;
 
             var ls = new TeamStats();
-            var lsopp = new TeamStats();
             var tst = new TeamStats[tCount];
             var tstopp = new TeamStats[tCount];
             for (int i = 0; i < tCount; i++)
@@ -509,12 +534,11 @@ namespace NBA_Stats_Tracker.Data
                 ls.AddTeamStats(teamStats[i], "All");
                 tst[i] = new TeamStats();
                 tst[i].AddTeamStats(teamStats[i], "All");
-                lsopp.AddTeamStats(oppStats[i], "All");
                 tstopp[i] = new TeamStats();
                 tstopp[i].AddTeamStats(oppStats[i], "All");
                 tst[i].CalcMetrics(tstopp[i]);
             }
-            ls.CalcMetrics(lsopp);
+            ls.CalcMetrics(ls);
 
             double lg_aPER = 0;
             double totalMins = 0;
@@ -1146,25 +1170,25 @@ namespace NBA_Stats_Tracker.Data
             Group = group;
         }
 
-        public UInt16 GP { get; set; }
-        public UInt16 GS { get; set; }
+        public uint GP { get; set; }
+        public uint GS { get; set; }
 
-        public UInt16 MINS { get; set; }
-        public UInt16 PTS { get; set; }
-        public UInt16 FGM { get; set; }
-        public UInt16 FGA { get; set; }
-        public UInt16 TPM { get; set; }
-        public UInt16 TPA { get; set; }
-        public UInt16 FTM { get; set; }
-        public UInt16 FTA { get; set; }
-        public UInt16 REB { get; set; }
-        public UInt16 OREB { get; set; }
-        public UInt16 DREB { get; set; }
-        public UInt16 STL { get; set; }
-        public UInt16 TOS { get; set; }
-        public UInt16 BLK { get; set; }
-        public UInt16 AST { get; set; }
-        public UInt16 FOUL { get; set; }
+        public uint MINS { get; set; }
+        public uint PTS { get; set; }
+        public uint FGM { get; set; }
+        public uint FGA { get; set; }
+        public uint TPM { get; set; }
+        public uint TPA { get; set; }
+        public uint FTM { get; set; }
+        public uint FTA { get; set; }
+        public uint REB { get; set; }
+        public uint OREB { get; set; }
+        public uint DREB { get; set; }
+        public uint STL { get; set; }
+        public uint TOS { get; set; }
+        public uint BLK { get; set; }
+        public uint AST { get; set; }
+        public uint FOUL { get; set; }
 
         public float MPG { get; set; }
         public float PPG { get; set; }
@@ -1267,7 +1291,7 @@ namespace NBA_Stats_Tracker.Data
 
         #region Metrics that require opponents' stats
 
-        internal double PER { get; set; }
+        public double PER { get; set; }
         public double BLKp { get; set; }
         public double DREBp { get; set; }
         public double OREBp { get; set; }

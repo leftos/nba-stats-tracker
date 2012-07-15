@@ -43,7 +43,6 @@ Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
@@ -86,6 +85,9 @@ Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\up.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Warriors.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
 Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\Wizards.gif"; DestDir: "{app}\Images"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"

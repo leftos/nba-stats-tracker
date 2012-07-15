@@ -47,7 +47,9 @@ namespace NBA_Stats_Tracker.Windows
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
         private readonly DataTable dt_pts;
+        private readonly DataTable dt_lpts;
         private readonly DataTable dt_ts;
+        private readonly DataTable dt_lts;
 /*
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
 */
@@ -68,56 +70,19 @@ namespace NBA_Stats_Tracker.Windows
 
             dt_ts = new DataTable();
 
-            dt_ts.Columns.Add("Name");
-            dt_ts.Columns.Add("Games", typeof (int));
-            dt_ts.Columns.Add("Wins", typeof (int));
-            dt_ts.Columns.Add("Losses", typeof (int));
-            dt_ts.Columns.Add("W%", typeof (float));
-            dt_ts.Columns.Add("Weff", typeof (float));
-            dt_ts.Columns.Add("PF", typeof (float));
-            dt_ts.Columns.Add("PA", typeof (float));
-            dt_ts.Columns.Add("PD", typeof (float));
-            dt_ts.Columns.Add("FG", typeof (float));
-            dt_ts.Columns.Add("FGeff", typeof (float));
-            dt_ts.Columns.Add("3PT", typeof (float));
-            dt_ts.Columns.Add("3Peff", typeof (float));
-            dt_ts.Columns.Add("FT", typeof (float));
-            dt_ts.Columns.Add("FTeff", typeof (float));
-            dt_ts.Columns.Add("REB", typeof (float));
-            dt_ts.Columns.Add("OREB", typeof (float));
-            dt_ts.Columns.Add("DREB", typeof (float));
-            dt_ts.Columns.Add("AST", typeof (float));
-            dt_ts.Columns.Add("TO", typeof (float));
-            dt_ts.Columns.Add("STL", typeof (float));
-            dt_ts.Columns.Add("BLK", typeof (float));
-            dt_ts.Columns.Add("FOUL", typeof (float));
+            PrepareTeamDataTable(ref dt_ts);
+
+            dt_lts = new DataTable();
+
+            PrepareTeamDataTable(ref dt_lts);
 
             dt_pts = new DataTable();
 
-            dt_pts.Columns.Add("Name");
-            dt_pts.Columns.Add("Games", typeof (int));
-            dt_pts.Columns.Add("Wins", typeof (int));
-            dt_pts.Columns.Add("Losses", typeof (int));
-            dt_pts.Columns.Add("W%", typeof (float));
-            dt_pts.Columns.Add("Weff", typeof (float));
-            dt_pts.Columns.Add("PF", typeof (float));
-            dt_pts.Columns.Add("PA", typeof (float));
-            dt_pts.Columns.Add("PD", typeof (float));
-            dt_pts.Columns.Add("FG", typeof (float));
-            dt_pts.Columns.Add("FGeff", typeof (float));
-            dt_pts.Columns.Add("3PT", typeof (float));
-            dt_pts.Columns.Add("3Peff", typeof (float));
-            dt_pts.Columns.Add("FT", typeof (float));
-            dt_pts.Columns.Add("FTeff", typeof (float));
-            dt_pts.Columns.Add("REB", typeof (float));
-            dt_pts.Columns.Add("OREB", typeof (float));
-            dt_pts.Columns.Add("DREB", typeof (float));
-            dt_pts.Columns.Add("AST", typeof (float));
-            dt_pts.Columns.Add("TO", typeof (float));
-            dt_pts.Columns.Add("STL", typeof (float));
-            dt_pts.Columns.Add("BLK", typeof (float));
-            dt_pts.Columns.Add("FOUL", typeof (float));
+            PreparePlayoffDataTable(ref dt_pts);
 
+            dt_lpts = new DataTable();
+
+            PreparePlayoffDataTable(ref dt_lpts);
 
             dt_bs = new DataTable();
 
@@ -144,6 +109,64 @@ namespace NBA_Stats_Tracker.Windows
             dgvLeaders.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvTeamMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvLeagueTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvLeagueTeamMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvLeaguePlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+        }
+
+        private void PreparePlayoffDataTable(ref DataTable dt_pts)
+        {
+            dt_pts.Columns.Add("Name");
+            dt_pts.Columns.Add("Games", typeof (int));
+            dt_pts.Columns.Add("Wins", typeof (int));
+            dt_pts.Columns.Add("Losses", typeof (int));
+            dt_pts.Columns.Add("W%", typeof (float));
+            dt_pts.Columns.Add("Weff", typeof (float));
+            dt_pts.Columns.Add("PF", typeof (float));
+            dt_pts.Columns.Add("PA", typeof (float));
+            dt_pts.Columns.Add("PD", typeof (float));
+            dt_pts.Columns.Add("FG", typeof (float));
+            dt_pts.Columns.Add("FGeff", typeof (float));
+            dt_pts.Columns.Add("3PT", typeof (float));
+            dt_pts.Columns.Add("3Peff", typeof (float));
+            dt_pts.Columns.Add("FT", typeof (float));
+            dt_pts.Columns.Add("FTeff", typeof (float));
+            dt_pts.Columns.Add("REB", typeof (float));
+            dt_pts.Columns.Add("OREB", typeof (float));
+            dt_pts.Columns.Add("DREB", typeof (float));
+            dt_pts.Columns.Add("AST", typeof (float));
+            dt_pts.Columns.Add("TO", typeof (float));
+            dt_pts.Columns.Add("STL", typeof (float));
+            dt_pts.Columns.Add("BLK", typeof (float));
+            dt_pts.Columns.Add("FOUL", typeof (float));
+        }
+
+        private void PrepareTeamDataTable(ref DataTable dt_ts)
+        {
+            dt_ts.Columns.Add("Name");
+            dt_ts.Columns.Add("Games", typeof (int));
+            dt_ts.Columns.Add("Wins", typeof (int));
+            dt_ts.Columns.Add("Losses", typeof (int));
+            dt_ts.Columns.Add("W%", typeof (float));
+            dt_ts.Columns.Add("Weff", typeof (float));
+            dt_ts.Columns.Add("PF", typeof (float));
+            dt_ts.Columns.Add("PA", typeof (float));
+            dt_ts.Columns.Add("PD", typeof (float));
+            dt_ts.Columns.Add("FG", typeof (float));
+            dt_ts.Columns.Add("FGeff", typeof (float));
+            dt_ts.Columns.Add("3PT", typeof (float));
+            dt_ts.Columns.Add("3Peff", typeof (float));
+            dt_ts.Columns.Add("FT", typeof (float));
+            dt_ts.Columns.Add("FTeff", typeof (float));
+            dt_ts.Columns.Add("REB", typeof (float));
+            dt_ts.Columns.Add("OREB", typeof (float));
+            dt_ts.Columns.Add("DREB", typeof (float));
+            dt_ts.Columns.Add("AST", typeof (float));
+            dt_ts.Columns.Add("TO", typeof (float));
+            dt_ts.Columns.Add("STL", typeof (float));
+            dt_ts.Columns.Add("BLK", typeof (float));
+            dt_ts.Columns.Add("FOUL", typeof (float));
         }
 
         private string GetCurTeamFromDisplayName(string p)
@@ -199,7 +222,8 @@ namespace NBA_Stats_Tracker.Windows
             //{
             if (reload || e.OriginalSource is TabControl)
             {
-                if (tbcLeagueOverview.SelectedItem == tabTeamStats)
+                if (tbcLeagueOverview.SelectedItem == tabTeamStats ||
+                    tbcLeagueOverview.SelectedItem == tabTeamMetricStats)
                 {
                     bool doIt = false;
                     if (lastShownTeamSeason != curSeason) doIt = true;
@@ -324,7 +348,9 @@ namespace NBA_Stats_Tracker.Windows
         private void PreparePlayerAndMetricStats()
         {
             psrList = new List<PlayerStatsRow>();
+            var lpsr = new List<PlayerStatsRow>();
             var pmsrList = new List<PlayerMetricStatsRow>();
+            var lpmsr = new List<PlayerMetricStatsRow>();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -343,6 +369,9 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     psrList.Add(psr);
                 }
+                var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
+                lpsr.Add(new PlayerStatsRow(leagueAverages));
+                lpmsr.Add(new PlayerMetricStatsRow(leagueAverages));
             }
             else
             {
@@ -420,17 +449,22 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     psrList.Add(psr);
                 }
+                var leagueAverages = PlayerStats.CalculateLeagueAverages(pstBetween, partialTST);
+                lpsr.Add(new PlayerStatsRow(leagueAverages));
+                lpmsr.Add(new PlayerMetricStatsRow(leagueAverages));
             }
 
             psrList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
             psrList.Reverse();
 
             pmsrList.Sort(
-                delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.PER.CompareTo(pmsr2.PER); });
+                delegate(PlayerMetricStatsRow pmsr1, PlayerMetricStatsRow pmsr2) { return pmsr1.GmSc.CompareTo(pmsr2.GmSc); });
             pmsrList.Reverse();
 
             dgvPlayerStats.ItemsSource = psrList;
+            dgvLeaguePlayerStats.ItemsSource = lpsr;
             dgvMetricStats.ItemsSource = pmsrList;
+            dgvLeagueMetricStats.ItemsSource = lpmsr;
         }
 
         private void PrepareBoxScores()
@@ -482,12 +516,17 @@ namespace NBA_Stats_Tracker.Windows
         private void PreparePlayoffStats()
         {
             dt_pts.Clear();
+            dt_lpts.Clear();
+
+            var ls = new TeamStats("League");
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
                                     ref MainWindow.pt, ref MainWindow.bshist,
                                     _curSeason: Convert.ToInt32(cmbSeasonNum.SelectedValue.ToString()));
+
+                ls = TeamStats.CalculateLeagueAverages(_tst, "Playoffs");
 
                 foreach (int key in _tst.Keys)
                 {
@@ -504,6 +543,10 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
+                partialTST = new Dictionary<int, TeamStats>();
+                partialOppTST = new Dictionary<int, TeamStats>();
+
+                int i = 0;
                 foreach (var kvp in MainWindow.TeamOrder)
                 {
                     q =
@@ -521,25 +564,46 @@ namespace NBA_Stats_Tracker.Windows
                     tsopp = new TeamStats();
                     TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key), true);
+                    partialTST[i] = ts;
+                    partialOppTST[i] = tsopp;
 
                     dt_pts.Rows.Add(r);
+                    i++;
                 }
+
+                ls = TeamStats.CalculateLeagueAverages(partialTST, "Playoffs");
             }
 
+            DataRow r2 = dt_lpts.NewRow();
+
+            TeamOverviewWindow.CreateDataRowFromTeamStats(ls, ref r2, "League", true);
+
+            dt_lpts.Rows.Add(r2);
+
             // DataTable's ready, set DataView and fill DataGrid
-            var dv_pts = new DataView(dt_pts) {AllowNew = false, AllowEdit = false, Sort = "Name ASC"};
+            var dv_pts = new DataView(dt_pts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};
+            var dv_lpts = new DataView(dt_lpts) { AllowNew = false, AllowEdit = false};
 
             dgvPlayoffStats.DataContext = dv_pts;
+            dgvLeaguePlayoffStats.DataContext = dv_lpts;
         }
 
         private void PrepareTeamStats()
         {
+            List<TeamMetricStatsRow> tmsrList = new List<TeamMetricStatsRow>();
+            List<TeamMetricStatsRow> lssr = new List<TeamMetricStatsRow>();
+
+            var ls = new TeamStats("League");
+
+            dt_lts.Clear();
             dt_ts.Clear();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp,
                                                      out MainWindow.TeamOrder);
+
+                TeamStats.CalculateAllMetrics(ref _tst, _tstopp);
 
                 foreach (int key in _tst.Keys)
                 {
@@ -551,10 +615,18 @@ namespace NBA_Stats_Tracker.Windows
                                                                   GetDisplayNameFromTeam(_tst[key].name));
 
                     dt_ts.Rows.Add(r);
+
+                    tmsrList.Add(new TeamMetricStatsRow(_tst[key]));
                 }
+
+                ls = TeamStats.CalculateLeagueAverages(_tst, "Season");
             }
             else
             {
+                Dictionary<int, TeamStats> partialTST = new Dictionary<int, TeamStats>();
+                Dictionary<int, TeamStats> partialOppTST = new Dictionary<int, TeamStats>();
+
+                int i = 0;
                 foreach (var kvp in MainWindow.TeamOrder)
                 {
                     q =
@@ -572,15 +644,39 @@ namespace NBA_Stats_Tracker.Windows
                     tsopp = new TeamStats();
                     TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key));
+                    partialTST[i] = ts;
+                    partialOppTST[i] = tsopp;
+
+                    tmsrList.Add(new TeamMetricStatsRow(ts));
 
                     dt_ts.Rows.Add(r);
+
+                    i++;
                 }
+                TeamStats.CalculateAllMetrics(ref partialTST, partialOppTST);
+
+                ls = TeamStats.CalculateLeagueAverages(partialTST, "Season");
             }
+
+            DataRow r2 = dt_lts.NewRow();
+
+            TeamOverviewWindow.CreateDataRowFromTeamStats(ls, ref r2, "League");
+
+            dt_lts.Rows.Add(r2);
+
+            lssr.Add(new TeamMetricStatsRow(ls));
 
             // DataTable's ready, set DataView and fill DataGrid
             var dv_ts = new DataView(dt_ts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};
+            var dv_lts = new DataView(dt_lts) {AllowNew = false, AllowEdit = false};
 
             dgvTeamStats.DataContext = dv_ts;
+            dgvLeagueTeamStats.DataContext = dv_lts;
+
+            tmsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
+            tmsrList.Reverse();
+            dgvTeamMetricStats.ItemsSource = tmsrList;
+            dgvLeagueTeamMetricStats.ItemsSource = lssr;
         }
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
@@ -691,8 +787,8 @@ namespace NBA_Stats_Tracker.Windows
         {
             string team = psr.TeamF;
             ts = teamStats[MainWindow.TeamOrder[team]];
-            int gamesTeam = ts.getGames();
-            int gamesPlayer = psr.GP;
+            uint gamesTeam = ts.getGames();
+            uint gamesPlayer = psr.GP;
             var newpsr = new PlayerStatsRow(new PlayerStats(psr));
 
             // Below functions found using Eureqa II
@@ -770,6 +866,41 @@ namespace NBA_Stats_Tracker.Windows
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
+        }
+
+        private void dgvTeamMetricStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvTeamMetricStats.Columns.Count && i < dgvLeagueTeamMetricStats.Columns.Count; ++i)
+                dgvLeagueTeamMetricStats.Columns[i].Width = dgvTeamMetricStats.Columns[i].ActualWidth;
+        }
+
+        private void dgvTeamStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvTeamStats.Columns.Count && i < dgvLeagueTeamStats.Columns.Count; ++i)
+                dgvLeagueTeamStats.Columns[i].Width = dgvTeamStats.Columns[i].ActualWidth;
+        }
+
+        private void dgvPlayoffStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvPlayoffStats.Columns.Count && i < dgvLeaguePlayoffStats.Columns.Count; ++i)
+                dgvLeaguePlayoffStats.Columns[i].Width = dgvPlayoffStats.Columns[i].ActualWidth;
+        }
+
+        private void dgvPlayerStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvPlayerStats.Columns.Count && i < dgvLeaguePlayerStats.Columns.Count; ++i)
+                dgvLeaguePlayerStats.Columns[i].Width = dgvPlayerStats.Columns[i].ActualWidth;
+        }
+
+        private void dgvMetricStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvMetricStats.Columns.Count && i < dgvLeagueMetricStats.Columns.Count; ++i)
+                dgvLeagueMetricStats.Columns[i].Width = dgvMetricStats.Columns[i].ActualWidth;
+        }
+
+        private void dgLeague_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = "L";
         }
     }
 }

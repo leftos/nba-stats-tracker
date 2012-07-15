@@ -15,9 +15,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Windows;
+using MessageBox = System.Windows.MessageBox;
 
 namespace NBA_Stats_Tracker.Interop
 {
@@ -32,6 +36,31 @@ namespace NBA_Stats_Tracker.Interop
                                                                                {"4", "C"},
                                                                                {"5", " "}
                                                                            };
+
+        public static void CreateSettingsFile(List<Dictionary<string,string>> activeTeams, string folder)
+        {
+            string s1 = "Folder$$" + folder + "\n";
+            string s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["Name"] + "$%"));
+            s2 = s2.Substring(0, s2.Length - 2);
+            s2 += "\n";
+
+            string stg = s1 + s2;
+
+            SaveFileDialog sfd = new SaveFileDialog
+                                     {
+                                         Title = "Save Active Teams List",
+                                         Filter = "Active Teams List (*.red)|*.red",
+                                         DefaultExt = "red",
+                                         InitialDirectory = App.AppDocsPath
+                                     };
+            sfd.ShowDialog();
+
+            if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
+
+            StreamWriter sw = new StreamWriter(sfd.FileName);
+            sw.Write(stg);
+            sw.Close();
+        }
 
         public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                     ref SortedDictionary<string, int> TeamOrder, ref Dictionary<int, PlayerStats> pst,
@@ -56,12 +85,17 @@ namespace NBA_Stats_Tracker.Interop
 
             #region Import Teams & Team Stats
 
-            var illegalTTypes = new List<string> {"1", "6", "7", "16", "17"};
-            List<Dictionary<string, string>> activeTeams = teams.FindAll(delegate(Dictionary<string, string> team)
+            var legalTTypes = new List<string> {"0", "4"};
+
+            List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
+            {
+                if (legalTTypes.IndexOf(team["TType"]) != -1) return true;
+                return false;
+            });
+
+            List<Dictionary<string, string>> activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
                                                                              {
-                                                                                 if (team["StatCurS"] != "-1" &&
-                                                                                     illegalTTypes.IndexOf(team["TType"]) ==
-                                                                                     -1) return true;
+                                                                                 if (team["StatCurS"] != "-1") return true;
                                                                                  return false;
                                                                              });
 
@@ -69,6 +103,22 @@ namespace NBA_Stats_Tracker.Interop
             {
                 MessageBox.Show("No Team Stats found in save.");
                 return -1;
+            }
+
+            if (activeTeams.Count < 30)
+            {
+                DualListWindow dlw = new DualListWindow(validTeams, activeTeams);
+                if (dlw.ShowDialog() == false)
+                {
+                    return -1;
+                }
+
+                activeTeams = new List<Dictionary<string, string>>(MainWindow.selectedTeams);
+
+                if (MainWindow.selectedTeamsChanged)
+                {
+                    CreateSettingsFile(activeTeams, folder);
+                }
             }
 
             bool madeNew = false;
@@ -115,55 +165,61 @@ namespace NBA_Stats_Tracker.Interop
                                                                                return true;
                                                                            return false;
                                                                        });
-                tst[id].ID = Convert.ToInt32(team["ID"]);
-                tst[id].winloss[0] = Convert.ToByte(sStats["Wins"]);
-                tst[id].winloss[1] = Convert.ToByte(sStats["Losses"]);
-                tst[id].stats[t.MINS] = Convert.ToUInt16(sStats["Mins"]);
-                tst[id].stats[t.PF] = Convert.ToUInt16(sStats["PtsFor"]);
-                tst[id].stats[t.PA] = Convert.ToUInt16(sStats["PtsAg"]);
-                tst[id].stats[t.FGM] = Convert.ToUInt16(sStats["FGMade"]);
-                tst[id].stats[t.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
-                tst[id].stats[t.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
-                tst[id].stats[t.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
-                tst[id].stats[t.FTM] = Convert.ToUInt16(sStats["FTMade"]);
-                tst[id].stats[t.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
-                tst[id].stats[t.DREB] = Convert.ToUInt16(sStats["DRebs"]);
-                tst[id].stats[t.OREB] = Convert.ToUInt16(sStats["ORebs"]);
-                tst[id].stats[t.STL] = Convert.ToUInt16(sStats["Steals"]);
-                tst[id].stats[t.BLK] = Convert.ToUInt16(sStats["Blocks"]);
-                tst[id].stats[t.AST] = Convert.ToUInt16(sStats["Assists"]);
-                tst[id].stats[t.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
-                tst[id].stats[t.TO] = Convert.ToUInt16(sStats["TOs"]);
-                //tstopp[id].stats[t.TO] = Convert.ToUInt16(sStats["TOsAg"]);
 
-                if (pStatsID != -1)
+                tst[id].ID = Convert.ToInt32(team["ID"]);
+
+                if (sStats != null)
                 {
-                    Dictionary<string, string> pStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                                                                           {
-                                                                               if (s["ID"] == pStatsID.ToString())
-                                                                                   return true;
-                                                                               return false;
-                                                                           });
-                    tst[id].pl_winloss[0] = Convert.ToByte(pStats["Wins"]);
-                    tst[id].pl_winloss[1] = Convert.ToByte(pStats["Losses"]);
-                    tst[id].pl_stats[t.MINS] = Convert.ToUInt16(pStats["Mins"]);
-                    tst[id].pl_stats[t.PF] = Convert.ToUInt16(pStats["PtsFor"]);
-                    tst[id].pl_stats[t.PA] = Convert.ToUInt16(pStats["PtsAg"]);
-                    tst[id].pl_stats[t.FGM] = Convert.ToUInt16(pStats["FGMade"]);
-                    tst[id].pl_stats[t.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
-                    tst[id].pl_stats[t.TPM] = Convert.ToUInt16(pStats["3PTMade"]);
-                    tst[id].pl_stats[t.TPA] = Convert.ToUInt16(pStats["3PTAtt"]);
-                    tst[id].pl_stats[t.FTM] = Convert.ToUInt16(pStats["FTMade"]);
-                    tst[id].pl_stats[t.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
-                    tst[id].pl_stats[t.DREB] = Convert.ToUInt16(pStats["DRebs"]);
-                    tst[id].pl_stats[t.OREB] = Convert.ToUInt16(pStats["ORebs"]);
-                    tst[id].pl_stats[t.STL] = Convert.ToUInt16(pStats["Steals"]);
-                    tst[id].pl_stats[t.BLK] = Convert.ToUInt16(pStats["Blocks"]);
-                    tst[id].pl_stats[t.AST] = Convert.ToUInt16(pStats["Assists"]);
-                    tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
-                    tst[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOs"]);
-                    //tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOsAg"]);
+                    tst[id].winloss[0] = Convert.ToByte(sStats["Wins"]);
+                    tst[id].winloss[1] = Convert.ToByte(sStats["Losses"]);
+                    tst[id].stats[t.MINS] = Convert.ToUInt16(sStats["Mins"]);
+                    tst[id].stats[t.PF] = Convert.ToUInt16(sStats["PtsFor"]);
+                    tst[id].stats[t.PA] = Convert.ToUInt16(sStats["PtsAg"]);
+                    tst[id].stats[t.FGM] = Convert.ToUInt16(sStats["FGMade"]);
+                    tst[id].stats[t.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
+                    tst[id].stats[t.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
+                    tst[id].stats[t.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
+                    tst[id].stats[t.FTM] = Convert.ToUInt16(sStats["FTMade"]);
+                    tst[id].stats[t.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
+                    tst[id].stats[t.DREB] = Convert.ToUInt16(sStats["DRebs"]);
+                    tst[id].stats[t.OREB] = Convert.ToUInt16(sStats["ORebs"]);
+                    tst[id].stats[t.STL] = Convert.ToUInt16(sStats["Steals"]);
+                    tst[id].stats[t.BLK] = Convert.ToUInt16(sStats["Blocks"]);
+                    tst[id].stats[t.AST] = Convert.ToUInt16(sStats["Assists"]);
+                    tst[id].stats[t.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
+                    tst[id].stats[t.TO] = Convert.ToUInt16(sStats["TOs"]);
+                    //tstopp[id].stats[t.TO] = Convert.ToUInt16(sStats["TOsAg"]);
+
+                    if (pStatsID != -1)
+                    {
+                        Dictionary<string, string> pStats = teamStats.Find(delegate(Dictionary<string, string> s)
+                        {
+                            if (s["ID"] == pStatsID.ToString())
+                                return true;
+                            return false;
+                        });
+                        tst[id].pl_winloss[0] = Convert.ToByte(pStats["Wins"]);
+                        tst[id].pl_winloss[1] = Convert.ToByte(pStats["Losses"]);
+                        tst[id].pl_stats[t.MINS] = Convert.ToUInt16(pStats["Mins"]);
+                        tst[id].pl_stats[t.PF] = Convert.ToUInt16(pStats["PtsFor"]);
+                        tst[id].pl_stats[t.PA] = Convert.ToUInt16(pStats["PtsAg"]);
+                        tst[id].pl_stats[t.FGM] = Convert.ToUInt16(pStats["FGMade"]);
+                        tst[id].pl_stats[t.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
+                        tst[id].pl_stats[t.TPM] = Convert.ToUInt16(pStats["3PTMade"]);
+                        tst[id].pl_stats[t.TPA] = Convert.ToUInt16(pStats["3PTAtt"]);
+                        tst[id].pl_stats[t.FTM] = Convert.ToUInt16(pStats["FTMade"]);
+                        tst[id].pl_stats[t.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
+                        tst[id].pl_stats[t.DREB] = Convert.ToUInt16(pStats["DRebs"]);
+                        tst[id].pl_stats[t.OREB] = Convert.ToUInt16(pStats["ORebs"]);
+                        tst[id].pl_stats[t.STL] = Convert.ToUInt16(pStats["Steals"]);
+                        tst[id].pl_stats[t.BLK] = Convert.ToUInt16(pStats["Blocks"]);
+                        tst[id].pl_stats[t.AST] = Convert.ToUInt16(pStats["Assists"]);
+                        tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
+                        tst[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOs"]);
+                        //tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOsAg"]);
+                    }
                 }
+                
                 tst[id].calcAvg();
 
                 rosters[id] = new List<int>
@@ -217,10 +273,15 @@ namespace NBA_Stats_Tracker.Interop
                         if (cur != "-1") playerStatsID = Convert.ToInt32(cur);
                     }
                     */
+                    int playerID = Convert.ToInt32(player["ID"]);
+
+                    int pTeam = Convert.ToInt32(player["TeamID1"]);
+                    if (!activeTeamsIDs.Contains(pTeam) && player["IsFA"] != "1") continue;
+
                     int playerStatsID = Convert.ToInt32(player["StatY0"]);
 
                     //TODO: Handle this a bit more gracefully
-                    if (playerStatsID == -1) continue;
+                    //if (playerStatsID == -1) continue;
 
                     Dictionary<string, string> plStats = playerStats.Find(delegate(Dictionary<string, string> s)
                                                                               {
@@ -230,7 +291,6 @@ namespace NBA_Stats_Tracker.Interop
                                                                                   return false;
                                                                               });
 
-                    int playerID = Convert.ToInt32(player["ID"]);
 
                     if (!pst.ContainsKey(playerID))
                     {
@@ -244,62 +304,89 @@ namespace NBA_Stats_Tracker.Interop
                                                               }));
                     }
 
-                    string TeamFName = "";
-                    string team1 = plStats["TeamID1"];
-                    if (team1 != "-1" && player["IsFA"] != "1")
+                    if (plStats != null)
                     {
-                        Dictionary<string, string> TeamF = teams.Find(delegate(Dictionary<string, string> s)
-                                                                          {
-                                                                              if (s["ID"] == team1) return true;
-                                                                              return false;
-                                                                          });
-                        TeamFName = TeamF["Name"];
-                    }
+                        string TeamFName = "";
+                        string team1 = plStats["TeamID1"];
+                        if (team1 != "-1" && player["IsFA"] != "1")
+                        {
+                            Dictionary<string, string> TeamF = teams.Find(delegate(Dictionary<string, string> s)
+                                                                              {
+                                                                                  if (s["ID"] == team1) return true;
+                                                                                  return false;
+                                                                              });
+                            TeamFName = TeamF["Name"];
+                        }
 
-                    string TeamSName = "";
-                    string team2 = plStats["TeamID2"];
-                    if (team2 != "-1")
+                        string TeamSName = "";
+                        string team2 = plStats["TeamID2"];
+                        if (team2 != "-1")
+                        {
+                            Dictionary<string, string> TeamS = teams.Find(delegate(Dictionary<string, string> s)
+                                                                              {
+                                                                                  if (s["ID"] == team2) return true;
+                                                                                  return false;
+                                                                              });
+                            TeamSName = TeamS["Name"];
+                        }
+
+                        PlayerStats ps = pst[playerID];
+                        ps.TeamF = TeamFName;
+                        ps.TeamS = TeamSName;
+
+                        ps.isActive = player["IsFA"] != "1";
+
+                        ps.stats[p.GP] = Convert.ToUInt16(plStats["GamesP"]);
+                        ps.stats[p.GS] = Convert.ToUInt16(plStats["GamesS"]);
+                        ps.stats[p.MINS] = Convert.ToUInt16(plStats["Minutes"]);
+                        ps.stats[p.PTS] = Convert.ToUInt16(plStats["Points"]);
+                        ps.stats[p.DREB] = Convert.ToUInt16(plStats["DRebs"]);
+                        ps.stats[p.OREB] = Convert.ToUInt16(plStats["ORebs"]);
+                        ps.stats[p.AST] = Convert.ToUInt16(plStats["Assists"]);
+                        ps.stats[p.STL] = Convert.ToUInt16(plStats["Steals"]);
+                        ps.stats[p.BLK] = Convert.ToUInt16(plStats["Blocks"]);
+                        ps.stats[p.TO] = Convert.ToUInt16(plStats["TOs"]);
+                        ps.stats[p.FOUL] = Convert.ToUInt16(plStats["Fouls"]);
+                        ps.stats[p.FGM] = Convert.ToUInt16(plStats["FGMade"]);
+                        ps.stats[p.FGA] = Convert.ToUInt16(plStats["FGAtt"]);
+                        ps.stats[p.TPM] = Convert.ToUInt16(plStats["3PTMade"]);
+                        ps.stats[p.TPA] = Convert.ToUInt16(plStats["3PTAtt"]);
+                        ps.stats[p.FTM] = Convert.ToUInt16(plStats["FTMade"]);
+                        ps.stats[p.FTA] = Convert.ToUInt16(plStats["FTAtt"]);
+
+                        ps.isAllStar = Convert.ToBoolean(Convert.ToInt32(plStats["IsAStar"]));
+                        ps.isNBAChampion = Convert.ToBoolean(Convert.ToInt32(plStats["IsChamp"]));
+
+                        ps.isInjured = player["InjType"] != "0";
+
+                        ps.CalcAvg();
+
+                        pst[playerID] = ps;
+                    }
+                    else
                     {
-                        Dictionary<string, string> TeamS = teams.Find(delegate(Dictionary<string, string> s)
-                                                                          {
-                                                                              if (s["ID"] == team2) return true;
-                                                                              return false;
-                                                                          });
-                        TeamSName = TeamS["Name"];
+                        PlayerStats ps = pst[playerID];
+
+                        string TeamFName = "";
+                        string team1 = player["TeamID1"];
+                        if (team1 != "-1" && player["IsFA"] != "1")
+                        {
+                            Dictionary<string, string> TeamF = teams.Find(delegate(Dictionary<string, string> s)
+                                                                              {
+                                                                                  if (s["ID"] == team1) return true;
+                                                                                  return false;
+                                                                              });
+                            TeamFName = TeamF["Name"];
+                        }
+                        ps.TeamF = TeamFName;
+
+                        ps.isActive = player["IsFA"] != "1";
+                        ps.isInjured = player["InjType"] != "0";
+
+                        ps.CalcAvg();
+
+                        pst[playerID] = ps;
                     }
-
-                    PlayerStats ps = pst[playerID];
-                    ps.TeamF = TeamFName;
-                    ps.TeamS = TeamSName;
-
-                    ps.isActive = player["IsFA"] != "1";
-
-                    ps.stats[p.GP] = Convert.ToUInt16(plStats["GamesP"]);
-                    ps.stats[p.GS] = Convert.ToUInt16(plStats["GamesS"]);
-                    ps.stats[p.MINS] = Convert.ToUInt16(plStats["Minutes"]);
-                    ps.stats[p.PTS] = Convert.ToUInt16(plStats["Points"]);
-                    ps.stats[p.DREB] = Convert.ToUInt16(plStats["DRebs"]);
-                    ps.stats[p.OREB] = Convert.ToUInt16(plStats["ORebs"]);
-                    ps.stats[p.AST] = Convert.ToUInt16(plStats["Assists"]);
-                    ps.stats[p.STL] = Convert.ToUInt16(plStats["Steals"]);
-                    ps.stats[p.BLK] = Convert.ToUInt16(plStats["Blocks"]);
-                    ps.stats[p.TO] = Convert.ToUInt16(plStats["TOs"]);
-                    ps.stats[p.FOUL] = Convert.ToUInt16(plStats["Fouls"]);
-                    ps.stats[p.FGM] = Convert.ToUInt16(plStats["FGMade"]);
-                    ps.stats[p.FGA] = Convert.ToUInt16(plStats["FGAtt"]);
-                    ps.stats[p.TPM] = Convert.ToUInt16(plStats["3PTMade"]);
-                    ps.stats[p.TPA] = Convert.ToUInt16(plStats["3PTAtt"]);
-                    ps.stats[p.FTM] = Convert.ToUInt16(plStats["FTMade"]);
-                    ps.stats[p.FTA] = Convert.ToUInt16(plStats["FTAtt"]);
-
-                    ps.isAllStar = Convert.ToBoolean(Convert.ToInt32(plStats["IsAStar"]));
-                    ps.isNBAChampion = Convert.ToBoolean(Convert.ToInt32(plStats["IsChamp"]));
-
-                    ps.isInjured = player["InjType"] != "0";
-
-                    ps.CalcAvg();
-
-                    pst[playerID] = ps;
                 }
             }
 

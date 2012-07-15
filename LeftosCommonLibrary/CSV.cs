@@ -30,7 +30,7 @@ namespace LeftosCommonLibrary
     {
         private const string QUOTE = "\"";
         private const string ESCAPED_QUOTE = "\"\"";
-        private static readonly char[] CHARACTERS_THAT_MUST_BE_QUOTED = {',', '"', '\n'};
+        private static readonly char[] CHARACTERS_THAT_MUST_BE_QUOTED = {',', '"', '\n', ' '};
 
         public static List<Dictionary<string, string>> CreateDictionaryListFromCSV(string path)
         {

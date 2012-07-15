@@ -83,6 +83,9 @@ namespace NBA_Stats_Tracker.Windows
 
         public static SortedDictionary<string, int> TeamOrder;
 
+        public static List<Dictionary<string, string>> selectedTeams;
+        public static bool selectedTeamsChanged;
+
         public static readonly List<string> West = new List<string>
                                                        {
                                                            "Thunder",
@@ -172,19 +175,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                rk = Registry.CurrentUser;
-                int checkForUpdatesSetting = 1;
-                try
-                {
-                    if (rk == null) throw new Exception();
-
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    if (rk != null) checkForUpdatesSetting = Convert.ToInt32(rk.GetValue("CheckForUpdates", 1));
-                }
-                catch
-                {
-                    checkForUpdatesSetting = 1;
-                }
+                int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
                 if (checkForUpdatesSetting == 1)
                 {
                     mnuOptionsCheckForUpdates.IsChecked = true;
@@ -195,19 +186,7 @@ namespace NBA_Stats_Tracker.Windows
                     mnuOptionsCheckForUpdates.IsChecked = false;
                 }
 
-                rk = Registry.CurrentUser;
-                int importSetting = 0;
-                try
-                {
-                    if (rk == null) throw new Exception();
-
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    if (rk != null) importSetting = Convert.ToInt32(rk.GetValue("NBA2K12ImportMethod", 0));
-                }
-                catch
-                {
-                    importSetting = 0;
-                }
+                int importSetting = Misc.GetRegistrySetting("NBA2K12ImportMethod", 0);
                 if (importSetting == 0)
                 {
                     mnuOptionsImportREditor.IsChecked = true;
@@ -217,34 +196,10 @@ namespace NBA_Stats_Tracker.Windows
                     mnuOptionsImportOld.IsChecked = true;
                 }
 
-                rk = Registry.CurrentUser;
-                int ExportTeamsOnly = 1;
-                try
-                {
-                    if (rk == null) throw new Exception();
-
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    if (rk != null) ExportTeamsOnly = Convert.ToInt32(rk.GetValue("ExportTeamsOnly", 1));
-                }
-                catch
-                {
-                    ExportTeamsOnly = 1;
-                }
+                int ExportTeamsOnly = Misc.GetRegistrySetting("ExportTeamsOnly", 1);
                 mnuOptionsExportTeamsOnly.IsChecked = ExportTeamsOnly == 1;
 
-                rk = Registry.CurrentUser;
-                int CompatibilityCheck = 1;
-                try
-                {
-                    if (rk == null) throw new Exception();
-
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    if (rk != null) CompatibilityCheck = Convert.ToInt32(rk.GetValue("CompatibilityCheck", 1));
-                }
-                catch
-                {
-                    CompatibilityCheck = 1;
-                }
+                int CompatibilityCheck = Misc.GetRegistrySetting("CompatibilityCheck", 1);
                 mnuOptionsCompatibilityCheck.IsChecked = CompatibilityCheck == 1;
             }
         }
@@ -281,6 +236,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrEmpty(currentDB)) return;
             if (mnuOptionsImportOld.IsChecked)
             {
                 var ofd = new OpenFileDialog
@@ -327,13 +283,16 @@ namespace NBA_Stats_Tracker.Windows
                 var fbd = new FolderBrowserDialog
                               {
                                   Description = "Select folder with REditor-exported CSVs",
-                                  ShowNewFolderButton = false
+                                  ShowNewFolderButton = false,
+                                  SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
                               };
                 DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
                 if (dr != System.Windows.Forms.DialogResult.OK) return;
 
                 if (fbd.SelectedPath == "") return;
+
+                Helper.Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
                 int result = InteropREditor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
 
@@ -974,6 +933,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnInject2K12_Click(object sender, RoutedEventArgs e)
         {
+            if (tst.Count != 30)
+            {
+                MessageBox.Show("You can't export a database that has less/more than 30 teams to an NBA 2K12 save.");
+                return;
+            }
+
             if (mnuOptionsImportOld.IsChecked)
             {
                 var ofd = new OpenFileDialog
@@ -2077,32 +2042,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            if (mnuOptionsCheckForUpdates.IsChecked) mnuOptionsCheckForUpdates.IsChecked = false;
-            else mnuOptionsCheckForUpdates.IsChecked = true;
-            */
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-
-                rk.SetValue("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't change check for updates setting.");
-            }
+            Misc.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
 
         private void mnuOptionsImportREditor_Click(object sender, RoutedEventArgs e)
@@ -2110,109 +2050,25 @@ namespace NBA_Stats_Tracker.Windows
             if (!mnuOptionsImportREditor.IsChecked) mnuOptionsImportREditor.IsChecked = true;
             mnuOptionsImportOld.IsChecked = false;
 
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-
-                rk.SetValue("NBA2K12ImportMethod", 0);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't change setting.");
-            }
+            Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
         }
 
         private void mnuOptionsImportOld_Click(object sender, RoutedEventArgs e)
         {
             if (!mnuOptionsImportOld.IsChecked) mnuOptionsImportOld.IsChecked = true;
             mnuOptionsImportREditor.IsChecked = false;
-
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-
-                rk.SetValue("NBA2K12ImportMethod", 1);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't change setting.");
-            }
+            
+            Misc.SetRegistrySetting("NBA2K12ImportMethod", 1);
         }
 
         private void mnuOptionsExportTeamsOnly_Click(object sender, RoutedEventArgs e)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-
-                rk.SetValue("ExportTeamsOnly", mnuOptionsExportTeamsOnly.IsChecked ? 1 : 0);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't change setting.");
-            }
+            Misc.SetRegistrySetting("ExportTeamsOnly", mnuOptionsExportTeamsOnly.IsChecked ? 1 : 0);
         }
 
         private void mnuOptionsCompatibilityCheck_Click(object sender, RoutedEventArgs e)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
-                }
-
-                rk.SetValue("CompatibilityCheck", mnuOptionsCompatibilityCheck.IsChecked ? 1 : 0);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't change setting.");
-            }
+            Misc.SetRegistrySetting("CompatibilityCheck", mnuOptionsCompatibilityCheck.IsChecked ? 1 : 0);
         }
 
         private void mnuMiscRenameCurrentSeason_Click(object sender, RoutedEventArgs e)

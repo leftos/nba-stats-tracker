@@ -15,6 +15,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
+using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Windows;
 
@@ -50,6 +52,96 @@ namespace NBA_Stats_Tracker.Helper
                 }
             }
             throw new Exception("Team not found: " + p);
+        }
+
+        public static void SetRegistrySetting(string setting, int value)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                rk.SetValue(setting, value);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't save changed setting.");
+            }
+        }
+
+        public static void SetRegistrySetting(string setting, string value)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    if (rk == null) throw new Exception();
+                }
+
+                rk.SetValue(setting, value);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't save changed setting.");
+            }
+        }
+
+        public static int GetRegistrySetting(string setting, int defaultValue)
+        {
+            var rk = Registry.CurrentUser;
+            int settingValue = defaultValue;
+            try
+            {
+                if (rk == null) throw new Exception();
+
+                rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                if (rk != null) settingValue = Convert.ToInt32(rk.GetValue(setting, defaultValue));
+            }
+            catch
+            {
+                settingValue = defaultValue;
+            }
+
+            return settingValue;
+        }
+
+        public static string GetRegistrySetting(string setting, string defaultValue)
+        {
+            var rk = Registry.CurrentUser;
+            string settingValue = defaultValue;
+            try
+            {
+                if (rk == null) throw new Exception();
+
+                rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                if (rk != null) settingValue = rk.GetValue(setting, defaultValue).ToString();
+            }
+            catch
+            {
+                settingValue = defaultValue;
+            }
+
+            return settingValue;
         }
     }
 }

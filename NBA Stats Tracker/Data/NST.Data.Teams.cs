@@ -85,8 +85,8 @@ namespace NBA_Stats_Tracker.Data
 
         public float[] pl_averages = new float[19];
         public int pl_offset;
-        public UInt16[] pl_stats = new UInt16[18];
-        public byte[] pl_winloss = new byte[2];
+        public uint[] pl_stats = new uint[18];
+        public uint[] pl_winloss = new uint[2];
 
         /// <summary>
         /// Stats for each team.
@@ -94,9 +94,8 @@ namespace NBA_Stats_Tracker.Data
         /// 10: OREB, 11: DREB, 12: STL, 13: TO, 14: BLK, 15: AST,
         /// 16: FOUL
         /// </summary>
-        public UInt16[] stats = new UInt16[18];
-
-        public byte[] winloss = new byte[2];
+        public uint[] stats = new uint[18];
+        public uint[] winloss = new uint[2];
 
         public TeamStats()
         {
@@ -130,8 +129,8 @@ namespace NBA_Stats_Tracker.Data
 
         public void calcAvg()
         {
-            int games = winloss[0] + winloss[1];
-            int pl_games = pl_winloss[0] + pl_winloss[1];
+            uint games = winloss[0] + winloss[1];
+            uint pl_games = pl_winloss[0] + pl_winloss[1];
 
             averages[t.Wp] = (float) winloss[0]/games;
             averages[t.Weff] = averages[t.Wp]*winloss[0];
@@ -174,6 +173,65 @@ namespace NBA_Stats_Tracker.Data
             pl_averages[t.PD] = pl_averages[t.PPG] - pl_averages[t.PAPG];
         }
 
+        public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, string statRange)
+        {
+            TeamStats ls = new TeamStats("League");
+            uint teamCount = CountTeams(tst, statRange);
+            for (int i = 0; i < tst.Count; i++)
+            {
+                ls.AddTeamStats(tst[i], statRange);
+            }
+            ls.CalcMetrics(ls);
+
+            ls.winloss[0] /= teamCount;
+            ls.winloss[1] /= teamCount;
+            ls.pl_winloss[0] /= teamCount;
+            ls.pl_winloss[1] /= teamCount;
+            ls.averages[t.Weff] /= teamCount;
+            ls.pl_averages[t.Weff] /= teamCount;
+
+            return ls;
+        }
+
+        public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp)
+        {
+            var temp = new Dictionary<int, TeamStats>();
+            var tempopp= new Dictionary<int, TeamStats>();
+            var teamCount = CountTeams(tst, "All");
+
+            for (int i = 0; i < tst.Count; i++)
+            {
+                temp[i] = new TeamStats();
+                temp[i].AddTeamStats(tst[i], "All");
+                tempopp[i] = new TeamStats();
+                tempopp[i].AddTeamStats(tstopp[i], "All");
+
+                temp[i].CalcMetrics(tempopp[i]);
+                tst[i].metrics = new Dictionary<string, double>(temp[i].metrics);
+            }
+        }
+
+        private static uint CountTeams(Dictionary<int, TeamStats> tst, string statRange)
+        {
+            uint teamCount = 0;
+
+            if (statRange != "Playoffs")
+            {
+                for (int i = 0; i < tst.Count; i++)
+                {
+                    if (tst[i].getGames() > 0) teamCount++;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < tst.Count; i++)
+                {
+                    if (tst[i].getPlayoffGames() > 0) teamCount++;
+                }
+            }
+            return teamCount;
+        }
+
         public void CalcMetrics(TeamStats tsopp)
         {
             metrics = new Dictionary<string, double>();
@@ -192,12 +250,46 @@ namespace NBA_Stats_Tracker.Data
 
             double Poss = GetPossMetric(tstats, toppstats);
             metrics.Add("Poss", Poss);
+            metrics.Add("PossPG", Poss/getGames());
 
             Poss = GetPossMetric(toppstats, tstats);
-            tsopp.metrics.Add("Poss", Poss);
+            try { tsopp.metrics.Add("Poss", Poss); }
+            catch
+            {
+            }
 
-            double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(stats[t.MINS])));
+            double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(tstats[t.MINS])));
             metrics.Add("Pace", Pace);
+
+            double ORTG = (tstats[t.PF]/Poss) * 100;
+            metrics.Add("ORTG", ORTG);
+
+            double DRTG = (tstats[t.PA]/Poss)*100;
+            metrics.Add("DRTG", DRTG);
+
+            double ASTp = (tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
+            metrics.Add("AST%", ASTp);
+
+            double DREBp = tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
+            metrics.Add("DREB%", DREBp);
+
+            double EFGp = (tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
+            metrics.Add("EFG%", EFGp);
+
+            double EFFd = ORTG - DRTG;
+            metrics.Add("EFFd", EFFd);
+
+            double TOR = tstats[t.TO]/(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]);
+            metrics.Add("TOR", TOR);
+
+            double OREBp = tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
+            metrics.Add("OREB%", OREBp);
+
+            double FTR = tstats[t.FTM]/tstats[t.FGA];
+            metrics.Add("FTR", FTR);
+
+            double PWp = (((averages[t.PPG] - averages[t.PAPG])*2.7) + 41)/82;
+            metrics.Add("PW%", PWp);
         }
 
         private static double GetPossMetric(double[] tstats, double[] toppstats)
@@ -212,15 +304,15 @@ namespace NBA_Stats_Tracker.Data
             return Poss;
         }
 
-        internal int getGames()
+        internal uint getGames()
         {
-            int games = winloss[0] + winloss[1];
+            uint games = winloss[0] + winloss[1];
             return games;
         }
 
-        internal int getPlayoffGames()
+        internal uint getPlayoffGames()
         {
-            int pl_games = pl_winloss[0] + pl_winloss[1];
+            uint pl_games = pl_winloss[0] + pl_winloss[1];
             return pl_games;
         }
 
@@ -374,7 +466,7 @@ namespace NBA_Stats_Tracker.Data
                         }
                     }
                 }
-                rating[k][19] = _teamStats[k].getGames();
+                rating[k][19] = (int) _teamStats[k].getGames();
             }
             return rating;
         }
@@ -654,27 +746,42 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    public class TeamMetricStatsRow
+    {
+        public string Name { get; set; }
+        public double ORTG { get; set; }
+        public double DRTG { get; set; }
+        public double EFFd { get; set; }
+        public double PWp { get; set; }
+        public double EFGp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double ASTp { get; set; }
+        public double TOR { get; set; }
+        public double FTR { get; set; }
+        public double Poss { get; set; }
+        public double Pace { get; set; }
+
+        public TeamMetricStatsRow(TeamStats ts)
+        {
+            Name = ts.displayName;
+            Poss = ts.metrics["PossPG"];
+            Pace = ts.metrics["Pace"];
+            ORTG = ts.metrics["ORTG"];
+            DRTG = ts.metrics["DRTG"];
+            ASTp = ts.metrics["AST%"];
+            DREBp = ts.metrics["DREB%"];
+            EFGp = ts.metrics["EFG%"];
+            EFFd = ts.metrics["EFFd"];
+            TOR = ts.metrics["TOR"];
+            OREBp = ts.metrics["OREB%"];
+            FTR = ts.metrics["FTR"];
+            PWp = ts.metrics["PW%"];
+        }
+    }
+
     public class TeamRankings
     {
-        public const int tPPG = 0,
-                         tPAPG = 1,
-                         tFGp = 2,
-                         tFGeff = 3,
-                         tTPp = 4,
-                         tTPeff = 5,
-                         tFTp = 6,
-                         tFTeff = 7,
-                         tRPG = 8,
-                         tORPG = 9,
-                         tDRPG = 10,
-                         tSPG = 11,
-                         tBPG = 12,
-                         tTPG = 13,
-                         tAPG = 14,
-                         tFPG = 15,
-                         tWp = 16,
-                         tWeff = 17,
-                         tPD = 18;
 
         public int[][] rankings;
 

@@ -60,6 +60,8 @@ Features in a glance
 			Advanced player statistics that take into account multiple factors of the player, team and league performance.
 		Box Scores
 			Every box score saved in the specific timeframe.
+	Live Box Scores
+		Besides being able to input the box scores after the fact, you can easily keep track of a game that you're watching using Live Box Score. Every important stat has up and down arrows which allow you to easily add a 3PT to a specific player, an offensive rebound, or whatever else is happening.
 			
 NBA 2K12 Features
 	This tool was originally made to offer a temporary workaround to the Association/ Season/My Player/Create A Legend team stats bug. Any game you entered and played would have the team stats of the teams that played in it all wrong afterwards. For example 85BPG, 92APG, 70RPG, etc. This really ruined the immersion the Association offers for those that like to play or even watch the games, instead of just simulating them from the Calendar. The Team Stats screen was wrong, the in-game overlays about the team were wrong. A mess. Even after the first console patches, 2K still hasn't fixed this issue. 
@@ -85,9 +87,6 @@ NBA 2K12 Features
 		13. Save your career in REditor.
 		14. You're done!
 
-		Q: I imported the stats from my save into NST before the first game of the Association/Season but my team is nowhere to be found!
-		A: There's no way to know which 30 teams are in your Association, until each one of them has played a game. For the first game of the Association, you'll have to import the stats after the game, and edit them directly. You should see your team in the database from Game 2 onwards, whenever you import.
-		
 		Q: I don't even know what REditor is! Care to throw me a bone?
 		A: In short, REditor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
 		http://www.red-mods.com/
@@ -136,7 +135,7 @@ Disclaimer
 	I won't take any responsibility if this tool messes up your Saves. You've been warned.
 	
 	
-Credits to
+Special thanks
 	- JaoSming, for his roster editing tutorial, especially the part regarding the CRC checks
 	- Onisak, for his help with debugging
 	- Vl@d Zola Jr, for his invaluable help in making NST compatible with all NBA 2K12 saves
@@ -146,7 +145,7 @@ Credits to
 	- AreaOfEffect, for his help with debugging
 	- Tinifu Tuitama, for his donation
 	- koberulz, for his extensive suggestions and help with debugging
-	- nbagnome, for his live box score idea
+	- nbagnome, for his live box score idea and his donation
 	- Everyone at the NLSC community, for their continued support
 
 
@@ -167,9 +166,23 @@ Development Credits
 		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
 		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
+		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
 	
 	
 Version History
+	v0.11.2.1
+		- Fix: Fixed bug that made the PER column blank wherever PER was supposed to be shown
+		- Fix: Fixed bug that would save the team's stats as the opponents' stats as well
+		- Fix: Fixed bug that would erase all other teams' but the current's players when saving changes in the Team Overview window
+
+	v0.11.2
+		- Addition: League Overview now offers league-wide averages in all tabs (except League Leaders & Box Scores)
+		- Addition: Team Metric Stats added to League Overview
+
+	v0.11.1
+		- Improvement: User is asked which teams are active in their Career if they can't be detected from the REditor import
+		- Improvement: Improvements in REditor import handling
+
 	v0.11.0.1
 		- Improvement: Tool will now inform you of a successful REditor export
 		- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
