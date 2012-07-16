@@ -6,7 +6,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="45*" />
       <RowDefinition Height="45*" />
-      <RowDefinition Height="10*" />
+      <RowDefinition Height="50" />
     </Grid.RowDefinitions>
     <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="cmbTeam1" TabIndex="0"
               VerticalAlignment="Top" Width="120" SelectionChanged="cmbTeam1_SelectionChanged" />

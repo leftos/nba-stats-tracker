@@ -22,6 +22,7 @@ using System.Linq;
 using HtmlAgilityPack;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Windows;
 
 #endregion
 
@@ -29,13 +30,29 @@ namespace NBA_Stats_Tracker.Interop
 {
     public static class InteropBR
     {
-        // TODO: Grab Box Scores from BR
-        private static DataSet GetBoxScore(string url)
+        private static DataSet GetBoxScore(string url, out string[] parts)
         {
+            parts = new string[1];
             using (var dataset = new DataSet())
             {
                 var htmlweb = new HtmlWeb();
                 HtmlDocument doc = htmlweb.Load(url);
+
+                HtmlNodeCollection divs = doc.DocumentNode.SelectNodes("//div");
+                foreach (HtmlNode cur in divs)
+                {
+                    try
+                    {
+                        if (cur.Attributes["id"].Value != ("page_content")) continue;
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    HtmlNode h1 = cur.SelectSingleNode("h1");
+                    string name = h1.InnerText;
+                    parts = name.Split(new [] {"at", ", "}, StringSplitOptions.None);
+                }
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
                 foreach (HtmlNode cur in tables)
@@ -70,6 +87,15 @@ namespace NBA_Stats_Tracker.Interop
                         {
                             table.Rows.Add(row);
                         }
+                        HtmlNode tfoot = cur.SelectSingleNode("tfoot");
+                        HtmlNode frow = tfoot.SelectSingleNode("tr");
+                        var elements = frow.Elements("td");
+                        string[] erow = new string[elements.Count()];
+                        for (int i = 0; i < elements.Count(); i++)
+                        {
+                            erow[i] = elements.ElementAt(i).InnerText;
+                        }
+                        table.Rows.Add(erow);
 
                         dataset.Tables.Add(table);
                     }
@@ -507,6 +533,41 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
+        private static int BoxScoreFromDataSet(DataSet ds, string[] parts, out BoxScoreEntry bse)
+        {
+            DataTable awayDT = ds.Tables[0];
+            DataTable homeDT = ds.Tables[1];
+
+            var bs = new BoxScore(ds, parts);
+            bse = new BoxScoreEntry(bs);
+            bse.date = bs.gamedate;
+            bse.pbsList = new List<PlayerBoxScore>();
+            int result = 0;
+            for (int i = 0; i < awayDT.Rows.Count - 1; i++)
+            {
+                if (i == 5) continue;
+                PlayerBoxScore pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1, bs.id, (i < 5), MainWindow.pst);
+                if (pbs.PlayerID == -1)
+                {
+                    result = -1;
+                    continue;
+                }
+                bse.pbsList.Add(pbs);
+            }
+            for (int i = 0; i < homeDT.Rows.Count - 1; i++)
+            {
+                if (i == 5) continue;
+                PlayerBoxScore pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2, bs.id, (i < 5), MainWindow.pst);
+                if (pbs.PlayerID == -1)
+                {
+                    result = -1;
+                    continue;
+                }
+                bse.pbsList.Add(pbs);
+            }
+            return result;
+        }
+
         public static void ImportRealStats(KeyValuePair<string, string> teamAbbr, out TeamStats ts, out TeamStats tsopp,
                                            out Dictionary<int, PlayerStats> pst)
         {
@@ -518,6 +579,18 @@ namespace NBA_Stats_Tracker.Interop
 
             ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2012.html");
             PlayerStatsFromDataSet(ds, teamAbbr.Key, out pst);
+        }
+
+        public static int ImportBoxScore(string url)
+        {
+            string[] parts;
+            DataSet ds = GetBoxScore(url, out parts);
+            BoxScoreEntry bse;
+            int result = BoxScoreFromDataSet(ds, parts, out bse);
+
+            MainWindow.bshist.Add(bse);
+
+            return result;
         }
 
         public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)

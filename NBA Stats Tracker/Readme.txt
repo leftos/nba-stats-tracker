@@ -18,6 +18,9 @@ Quick notes
 	
 	Each database can keep data from multiple seasons. You can compare yearly averages, as well as compare results against a particular opponent over the years, for example.
 	
+Installation Notes
+	NBA Stats Tracker requires the .NET Framework 4 Client Profile. The installer should download and install it automatically.
+
 Features in a glance
 	Team Overview
 		Overview
@@ -28,10 +31,14 @@ Features in a glance
 			A list of each team's players with their averages and total stats. You can quickly edit the player stats from this tab.
 		Metric Stats
 			Advanced player statistics that take into account multiple factors of the player, team and league performance.
+		Best Performers
+			The best players of each team with a summary of their most significant stats.
 		Box Scores
 			A list of each team's games, with easy access to the Box Score window, which allows you to view the full team and player stats, as well as edit them.
 		Head-To-Head
 			Compare each team's averages to another team's; either against the league or each other; view the box scores of the games between the two teams.
+		Head-To-Head Best Performers
+			Compare the best guard, forward and center of two teams; get a quick overview of the important matchups.
 		Yearly Report
 			See the averages of the team each season, as well as its total averages for all seasons.
 	Player Overview
@@ -46,7 +53,8 @@ Features in a glance
 		Yearly Report
 			See a player's progress over each season, as well as their career averages.
 	Advanced Player Search
-		Search among all the players in any season by setting whatever criteria you want, such as position, total stats, average stats, team, etc.
+		Search among all the players in any season by setting whatever criteria you want, such as position, total stats, average stats, team, PER, etc.
+		When doing an advanced search, the players are sorted by each filter you use, by taking Metrics filters into account first, then Averages, then Totals.
 	League Overview
 		Team Stats
 			All the teams, all the averages, all of the regular season.
@@ -58,8 +66,12 @@ Features in a glance
 			All the players, all stats and averages, no restrictions applied.
 		Metric Stats
 			Advanced player statistics that take into account multiple factors of the player, team and league performance.
+		Best Performers
+			The best players of the whole league with a summary of their most significant stats.
 		Box Scores
 			Every box score saved in the specific timeframe.
+	Box Scores
+		Box Scores include Team Stats, Player Stats (simple & metric) as well as a Best Performers tab, which shows you the best players of the game from both teams.
 	Live Box Scores
 		Besides being able to input the box scores after the fact, you can easily keep track of a game that you're watching using Live Box Score. Every important stat has up and down arrows which allow you to easily add a 3PT to a specific player, an offensive rebound, or whatever else is happening.
 			
@@ -124,7 +136,7 @@ Additional Features
 		The resulting text is in Tab-Separated Values format, supported by Excel and many other spreadsheet editors for pasting into.
 
 	Real NBA Stats
-		This feature allows you to automatically grab the real league's Team Stats and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
+		This feature allows you to automatically grab the real league's team stats, player stats and box scores, and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
 		
 
 Disclaimer
@@ -167,9 +179,33 @@ Development Credits
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
 		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
+		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
 	
 	
 Version History
+	v0.11.5.2
+		- Fix: Fixed bug that would crash NST when using Live Box Score
+		- Fix: Fixed bug that would crash NST when loading a database with multiple seasons
+		- Fix: Fixed grouping of Player Split Stats
+
+	v0.11.5
+		- Improvement: Advanced Player Search has been overhauled, to allow easy addition and removal of filters, as well as automatically sort the results by each filter
+		- Addition: Advanced Player Search filters can now be saved and loaded at a later time
+		- Change: Changed rate metrics to be calculated per 36 minutes of play, as in Basketball-Reference.com
+		- Addition: Added Offensive Rebound Rate (OREBR) as a metric stat
+
+	v0.11.4
+		- Addition: NBA Box Scores can now be downloaded from Basketball-Reference.com
+
+	v0.11.3
+		- Addition: 6 Best Performers of each team are now shown in Team Overview, with a summary of their most significant stats
+		- Addition: 6 Best League-Wide Performers  are now shown in League Overview, with a summary of their most significant stats
+		- Addition: Head-To-Head Best Performers tab added to Team Overview; presents a comparison of the best Guard, Forward and Center of each team along with their most significant stats
+		- Improvement: Team Overview should now open faster
+		- Change: PTS and PPG will always be shown as the first significant stat of any player in the Best Performers tabs
+		- Fix: Fixed stat presentation in Overview tab of Team Overview regarding playoffs and limited timeframes
+		- Improvement: Minor other interface improvements
+
 	v0.11.2.1
 		- Fix: Fixed bug that made the PER column blank wherever PER was supposed to be shown
 		- Fix: Fixed bug that would save the team's stats as the opponents' stats as well

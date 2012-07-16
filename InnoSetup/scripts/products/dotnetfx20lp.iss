@@ -15,14 +15,17 @@ de.dotnetfx20lp_url_ia64=http://download.microsoft.com/download/8/9/8/898c5670-5
 
 [Code]
 procedure dotnetfx20lp();
+var
+	version: cardinal;
 begin
-	if (ActiveLanguage() <> 'en') then begin
-		if (not netfxinstalled(NetFx20, CustomMessage('dotnetfx20lp_lcid'))) then
-			AddProduct('dotnetfx20' + GetArchitectureString() + '_' + ActiveLanguage() + '.exe',
-				'/passive /norestart /lang:ENU',
+	if ActiveLanguage() <> 'en' then begin
+		RegQueryDWordValue(HKLM, 'Software\Microsoft\NET Framework Setup\NDP\v2.0.50727\' + CustomMessage('dotnetfx20lp_lcid'), 'Install', version);
+		
+		if version <> 1 then
+			AddProduct(ExpandConstant('dotnetfx20_langpack.exe'),
+				'/q:a /c:"install /qb /l"',
 				CustomMessage('dotnetfx20lp_title'),
 				CustomMessage('dotnetfx20lp_size'),
-				CustomMessage('dotnetfx20lp_url' + GetArchitectureString()),
-				false, false);
+				GetURL(CustomMessage('dotnetfx20lp_url'), CustomMessage('dotnetfx20lp_url_x64'), CustomMessage('dotnetfx20lp_url_ia64')),false,false);
 	end;
 end;

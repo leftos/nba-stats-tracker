@@ -1,27 +1,24 @@
-0.11.2.1
+0.11.5.2
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-v0.11.2.1
+v0.11.5.2
+- Fix: Fixed bug that would crash NST when using Live Box Score
+- Fix: Fixed bug that would crash NST when loading a database with multiple seasons
+- Fix: Fixed grouping of Player Split Stats
 
-- Fix: Fixed bug that made the PER column blank wherever PER was supposed to be shown
-- Fix: Fixed bug that would save the team's stats as the opponents' stats as well
-- Fix: Fixed bug that would erase all other teams' but the current's players when saving changes in the Team Overview window
+v0.11.5
+- Improvement: Advanced Player Search has been overhauled, to allow easy addition and removal of filters, as well as automatically sort the results by each filter
+- Addition: Advanced Player Search filters can now be saved and loaded at a later time
+- Change: Changed rate metrics to be calculated per 36 minutes of play, as in Basketball-Reference.com
+- Addition: Added Offensive Rebound Rate (OREBR) as a metric stat
 
-v0.11.2
-- Addition: League Overview now offers league-wide averages in all tabs (except League Leaders & Box Scores)
-- Addition: Team Metric Stats added to League Overview
+v0.11.4
+- Addition: NBA Box Scores can now be downloaded from Basketball-Reference.com
 
-v0.11.1
-- Improvement: User is asked which teams are active in their Career if they can't be detected from the REditor import
-- Improvement: Improvements in REditor import handling
-
-v0.11.0.1
-- Improvement: Tool will now inform you of a successful REditor export
-- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
-
-v0.11
-- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
-- Addition: Added Live Box Score feature, which allows you to easily keep track of a live game, and then save it as a box score in your database
-- Improvement: Seasons can now have names, so that for example, Season "1" can now be Season "1967-1968"
-- Fix: Advanced Player Search wouldn't take GP or GS into account
-- Improvement: When you choose to sort a stat-table by a specific stat, the tool now will sort in descending order by default
+v0.11.3
+- Addition: 6 Best Performers of each team are now shown in Team Overview, with a summary of their most significant stats
+- Addition: 6 Best League-Wide Performers  are now shown in League Overview, with a summary of their most significant stats
+- Addition: Head-To-Head Best Performers tab added to Team Overview; presents a comparison of the best Guard, Forward and Center of each team along with their most significant stats
+- Improvement: Team Overview should now open faster
+- Fix: Fixed stat presentation in Overview tab of Team Overview regarding playoffs and limited timeframes
+- Improvement: Minor other interface improvements

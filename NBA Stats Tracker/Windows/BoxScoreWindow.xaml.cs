@@ -62,6 +62,7 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         private Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         private Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
+        private List<PlayerStatsRow> pmsrListAway, pmsrListHome;
 
         public BoxScoreWindow(Mode _curmode = Mode.Update)
         {
@@ -93,8 +94,6 @@ namespace NBA_Stats_Tracker.Windows
         private BindingList<PlayerBoxScore> pbsHomeList { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
-        private List<PlayerMetricStatsRow> pmsrListAway { get; set; }
-        private List<PlayerMetricStatsRow> pmsrListHome { get; set; }
 
         private void LoadBoxScore(int id)
         {
@@ -234,12 +233,14 @@ namespace NBA_Stats_Tracker.Windows
             if (team == 1)
             {
                 colPlayerAway.ItemsSource = PlayersList;
+                PlayersListAway = PlayersList;
                 pbsAwayList = pbsList;
                 dgvPlayersAway.ItemsSource = pbsAwayList;
             }
             else
             {
                 colPlayerHome.ItemsSource = PlayersList;
+                PlayersListHome = PlayersList;
                 pbsHomeList = pbsList;
                 dgvPlayersHome.ItemsSource = pbsHomeList;
             }
@@ -586,6 +587,7 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (var kvp in PlayersListHome) allPlayers.Add(kvp.Key, kvp.Value);
                 foreach (var pbsList in pbsLists)
                 {
+                    starters = 0;
                     foreach (PlayerBoxScore pbs in pbsList)
                     {
                         //pbs.PlayerID = 
@@ -1115,7 +1117,7 @@ namespace NBA_Stats_Tracker.Windows
 
             PlayerStats ps = pst[pbsBest.PlayerID];
             string text = pbsBest.GetBestStats(5, ps.Position1);
-            txbMVP.Text = ps.FirstName + " " + ps.LastName;
+            txbMVP.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")";
             txbMVPStats.Text = TeamBest + "\n\n" + text;
 
             if (pmsrListAway.Count > awayid)
@@ -1131,7 +1133,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsAway1.PlayerID];
                 text = pbsAway1.GetBestStats(4, ps.Position1);
-                txbAway1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbAway1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
             if (pmsrListAway.Count > awayid)
@@ -1147,7 +1149,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsAway2.PlayerID];
                 text = pbsAway2.GetBestStats(4, ps.Position1);
-                txbAway2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbAway2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
             if (pmsrListAway.Count > awayid)
@@ -1163,7 +1165,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsAway3.PlayerID];
                 text = pbsAway3.GetBestStats(4, ps.Position1);
-                txbAway3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbAway3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
             if (pmsrListHome.Count > homeid)
@@ -1179,7 +1181,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsHome1.PlayerID];
                 text = pbsHome1.GetBestStats(4, ps.Position1);
-                txbHome1.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbHome1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
             if (pmsrListHome.Count > homeid)
@@ -1195,7 +1197,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsHome2.PlayerID];
                 text = pbsHome2.GetBestStats(4, ps.Position1);
-                txbHome2.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbHome2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
             if (pmsrListHome.Count > homeid)
@@ -1211,7 +1213,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 ps = pst[pbsHome3.PlayerID];
                 text = pbsHome3.GetBestStats(4, ps.Position1);
-                txbHome3.Text = ps.FirstName + " " + ps.LastName + "\n\n" + text;
+                txbHome3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
         }
 
@@ -1230,7 +1232,7 @@ namespace NBA_Stats_Tracker.Windows
 
             ts.CalcMetrics(tsopp);
 
-            var pmsrList = new List<PlayerMetricStatsRow>();
+            var pmsrList = new List<PlayerStatsRow>();
 
             BindingList<PlayerBoxScore> pbsList = team == 1 ? pbsAwayList : pbsHomeList;
 
@@ -1242,7 +1244,7 @@ namespace NBA_Stats_Tracker.Windows
                 ps.ResetStats();
                 ps.AddBoxScore(pbs);
                 ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
-                pmsrList.Add(new PlayerMetricStatsRow(ps));
+                pmsrList.Add(new PlayerStatsRow(ps));
             }
 
             pmsrList.Sort(
@@ -1251,12 +1253,12 @@ namespace NBA_Stats_Tracker.Windows
 
             if (team == 1)
             {
-                pmsrListAway = new List<PlayerMetricStatsRow>(pmsrList);
+                pmsrListAway = new List<PlayerStatsRow>(pmsrList);
                 dgvMetricAway.ItemsSource = pmsrListAway;
             }
             else
             {
-                pmsrListHome = new List<PlayerMetricStatsRow>(pmsrList);
+                pmsrListHome = new List<PlayerStatsRow>(pmsrList);
                 dgvMetricHome.ItemsSource = pmsrListHome;
             }
         }

@@ -16,13 +16,21 @@
 #region Using Directives
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using Ciloci.Flee;
+using LeftosCommonLibrary;
+using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
@@ -38,10 +46,72 @@ namespace NBA_Stats_Tracker.Windows
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
+
+        private readonly List<string> Totals = new List<string>
+                                                   {
+                                                       "GP",
+                                                       "GS",
+                                                       "PTS",
+                                                       "FGM",
+                                                       "FGA",
+                                                       "3PM",
+                                                       "3PA",
+                                                       "FTM",
+                                                       "FTA",
+                                                       "REB",
+                                                       "OREB",
+                                                       "AST",
+                                                       "STL",
+                                                       "BLK",
+                                                       "TO",
+                                                       "FOUL"
+                                                   };
+
+        private readonly List<string> Averages = new List<string>
+                                                     {
+                                                         "PPG",
+                                                         "FG%",
+                                                         "FGeff",
+                                                         "3P%",
+                                                         "3Peff",
+                                                         "FT%",
+                                                         "FTeff",
+                                                         "RPG",
+                                                         "ORPG",
+                                                         "APG",
+                                                         "SPG",
+                                                         "BPG",
+                                                         "TPG",
+                                                         "FPG"
+                                                     }; 
+
+        private readonly List<string> Metrics = new List<string>
+                                                    {
+                                                        "PER",
+                                                        "EFF",
+                                                        "GmSc",
+                                                        "TS%",
+                                                        "PPR",
+                                                        "OREB%",
+                                                        "DREB%",
+                                                        "AST%",
+                                                        "STL%",
+                                                        "BLK%",
+                                                        "TO%",
+                                                        "USG%",
+                                                        "PTSR",
+                                                        "REBR",
+                                                        "OREBR",
+                                                        "ASTR",
+                                                        "BLKR",
+                                                        "STLR",
+                                                        "TOR",
+                                                        "FTR"
+                                                    }; 
+
         private readonly int maxSeason;
-        private SortedDictionary<string, int> TeamOrder;
         private int curSeason;
-        private Dictionary<int, TeamStats> tst, tstopp;
+        private string folder = App.AppDocsPath + @"\Search Filters";
 
         public PlayerSearchWindow()
         {
@@ -52,68 +122,6 @@ namespace NBA_Stats_Tracker.Windows
             cmbLastNameSetting.ItemsSource = StringOptions;
             cmbLastNameSetting.SelectedIndex = 0;
 
-            cmbPTS.ItemsSource = NumericOptions;
-            cmbPTS.SelectedIndex = 3;
-            cmbFGM.ItemsSource = NumericOptions;
-            cmbFGM.SelectedIndex = 3;
-            cmbFGA.ItemsSource = NumericOptions;
-            cmbFGA.SelectedIndex = 3;
-            cmb3PM.ItemsSource = NumericOptions;
-            cmb3PM.SelectedIndex = 3;
-            cmb3PA.ItemsSource = NumericOptions;
-            cmb3PA.SelectedIndex = 3;
-            cmbFTM.ItemsSource = NumericOptions;
-            cmbFTM.SelectedIndex = 3;
-            cmbFTA.ItemsSource = NumericOptions;
-            cmbFTA.SelectedIndex = 3;
-            cmbREB.ItemsSource = NumericOptions;
-            cmbREB.SelectedIndex = 3;
-            cmbOREB.ItemsSource = NumericOptions;
-            cmbOREB.SelectedIndex = 3;
-            cmbAST.ItemsSource = NumericOptions;
-            cmbAST.SelectedIndex = 3;
-            cmbSTL.ItemsSource = NumericOptions;
-            cmbSTL.SelectedIndex = 3;
-            cmbBLK.ItemsSource = NumericOptions;
-            cmbBLK.SelectedIndex = 3;
-            cmbTO.ItemsSource = NumericOptions;
-            cmbTO.SelectedIndex = 3;
-            cmbFOUL.ItemsSource = NumericOptions;
-            cmbFOUL.SelectedIndex = 3;
-            cmbGP.ItemsSource = NumericOptions;
-            cmbGP.SelectedIndex = 3;
-            cmbGS.ItemsSource = NumericOptions;
-            cmbGS.SelectedIndex = 3;
-
-            cmbPPG.ItemsSource = NumericOptions;
-            cmbPPG.SelectedIndex = 3;
-            cmbFGp.ItemsSource = NumericOptions;
-            cmbFGp.SelectedIndex = 3;
-            cmbFGeff.ItemsSource = NumericOptions;
-            cmbFGeff.SelectedIndex = 3;
-            cmb3Pp.ItemsSource = NumericOptions;
-            cmb3Pp.SelectedIndex = 3;
-            cmb3Peff.ItemsSource = NumericOptions;
-            cmb3Peff.SelectedIndex = 3;
-            cmbFTp.ItemsSource = NumericOptions;
-            cmbFTp.SelectedIndex = 3;
-            cmbFTeff.ItemsSource = NumericOptions;
-            cmbFTeff.SelectedIndex = 3;
-            cmbRPG.ItemsSource = NumericOptions;
-            cmbRPG.SelectedIndex = 3;
-            cmbORPG.ItemsSource = NumericOptions;
-            cmbORPG.SelectedIndex = 3;
-            cmbAPG.ItemsSource = NumericOptions;
-            cmbAPG.SelectedIndex = 3;
-            cmbSPG.ItemsSource = NumericOptions;
-            cmbSPG.SelectedIndex = 3;
-            cmbBPG.ItemsSource = NumericOptions;
-            cmbBPG.SelectedIndex = 3;
-            cmbTPG.ItemsSource = NumericOptions;
-            cmbTPG.SelectedIndex = 3;
-            cmbFPG.ItemsSource = NumericOptions;
-            cmbFPG.SelectedIndex = 3;
-
             cmbPosition1.ItemsSource = Positions;
             cmbPosition1.SelectedIndex = 0;
             cmbPosition2.ItemsSource = Positions;
@@ -123,6 +131,18 @@ namespace NBA_Stats_Tracker.Windows
             PopulateSeasonCombo();
             maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
 
+            cmbTotalsPar.ItemsSource = Totals;
+            cmbTotalsOp.ItemsSource = NumericOptions;
+            cmbTotalsOp.SelectedIndex = 3;
+
+            cmbAvgPar.ItemsSource = Averages;
+            cmbAvgOp.ItemsSource = NumericOptions;
+            cmbAvgOp.SelectedIndex = 3;
+
+            cmbMetricsPar.ItemsSource = Metrics;
+            cmbMetricsOp.ItemsSource = NumericOptions;
+            cmbMetricsOp.SelectedIndex = 3;
+
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
 
@@ -131,11 +151,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            foreach (int kvp in tst.Keys)
+            foreach (int kvp in MainWindow.tst.Keys)
             {
-                if (tst[kvp].displayName == p)
+                if (MainWindow.tst[kvp].displayName == p)
                 {
-                    return tst[kvp].name;
+                    return MainWindow.tst[kvp].name;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -143,11 +163,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetDisplayNameFromTeam(string p)
         {
-            foreach (int kvp in tst.Keys)
+            foreach (int kvp in MainWindow.tst.Keys)
             {
-                if (tst[kvp].name == p)
+                if (MainWindow.tst[kvp].name == p)
                 {
-                    return tst[kvp].displayName;
+                    return MainWindow.tst[kvp].displayName;
                 }
             }
             return "$$TEAMNOTFOUND: " + p;
@@ -166,10 +186,11 @@ namespace NBA_Stats_Tracker.Windows
 
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
-            SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out tst, out tstopp, out TeamOrder);
+            MainWindow.curSeason = curSeason;
+            SQLiteIO.LoadSeason();
 
             List<string> teams =
-                (from kvp in TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
+                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -179,6 +200,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
+            dgvPlayerStats.ItemsSource = null;
+
             string playersT = "Players";
             if (curSeason != maxSeason) playersT += "S" + curSeason;
 
@@ -246,11 +269,11 @@ namespace NBA_Stats_Tracker.Windows
                 where += "isAllStar LIKE \"False\" AND ";
             }
 
-            if (chkIsNBAChampion.IsChecked.GetValueOrDefault())
+            if (chkIsChampion.IsChecked.GetValueOrDefault())
             {
                 where += "isNBAChampion LIKE \"True\" AND ";
             }
-            else if (chkIsNBAChampion.IsChecked != null)
+            else if (chkIsChampion.IsChecked != null)
             {
                 where += "isNBAChampion LIKE \"False\" AND ";
             }
@@ -261,154 +284,80 @@ namespace NBA_Stats_Tracker.Windows
                 where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
             }
 
-            if (!String.IsNullOrWhiteSpace(txtGP.Text))
+            foreach (var item in lstTotals.Items.Cast<string>())
             {
-                where += "GP " + cmbGP.SelectedItem + " " + txtGP.Text + " AND ";
+                string filter = item;
+                filter = filter.Replace(" REB ", " (OREB+DREB) ");
+                filter = filter.Replace("3P", "TP");
+                filter = filter.Replace(" TO ", " TOS ");
+
+                where += filter + " AND ";
             }
 
-            if (!String.IsNullOrWhiteSpace(txtGS.Text))
+            foreach (var item in lstAvg.Items.Cast<string>())
             {
-                where += "GS " + cmbGS.SelectedItem + " " + txtGS.Text + " AND ";
-            }
+                string filter = item;
+                string[] parts = filter.Split(' ');
+                switch(parts[0])
+                {
+                    case "PPG":
+                        filter = filter.Replace("PPG", "cast(PTS as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtPTS.Text))
-            {
-                where += "PTS " + cmbPTS.SelectedItem + " " + txtPTS.Text + " AND ";
-            }
+                    case "FG%":
+                        filter = filter.Replace("FG%", "cast(FGM as REAL)/FGA");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtFGM.Text))
-            {
-                where += "FGM " + cmbFGM.SelectedItem + " " + txtFGM.Text + " AND ";
-            }
+                    case "FGeff":
+                        filter = filter.Replace("FGeff", "(cast(FGM as REAL)/FGA)*FGM/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtFGA.Text))
-            {
-                where += "FGA " + cmbFGA.SelectedItem + " " + txtFGA.Text + " AND ";
-            }
+                    case "3P%":
+                        filter = filter.Replace("3P%", "cast(TPM as REAL)/TPA");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txt3PM.Text))
-            {
-                where += "TPM " + cmb3PM.SelectedItem + " " + txt3PM.Text + " AND ";
-            }
+                    case "3Peff":
+                        filter = filter.Replace("3Peff", "(cast(TPM as REAL)/TPA)*TPM/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txt3PA.Text))
-            {
-                where += "TPA " + cmb3PA.SelectedItem + " " + txt3PA.Text + " AND ";
-            }
+                    case "FT%":
+                        filter = filter.Replace("FT%", "cast(FTM as REAL)/FTA");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtFTM.Text))
-            {
-                where += "FTM " + cmbFTM.SelectedItem + " " + txtFTM.Text + " AND ";
-            }
+                    case "FTeff":
+                        filter = filter.Replace("FTeff", "(cast(FTM as REAL)/FTA)*FTM/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtFTA.Text))
-            {
-                where += "FTA " + cmbFTA.SelectedItem + " " + txtFTA.Text + " AND ";
-            }
+                    case "ORPG":
+                        filter = filter.Replace("ORPG", "cast(OREB as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtREB.Text))
-            {
-                where += "(OREB+DREB) " + cmbREB.SelectedItem + " " + txtREB.Text + " AND ";
-            }
+                    case "RPG":
+                        filter = filter.Replace("RPG", "cast((OREB+DREB) as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtOREB.Text))
-            {
-                where += "OREB " + cmbOREB.SelectedItem + " " + txtOREB.Text + " AND ";
-            }
+                    case "BPG":
+                        filter = filter.Replace("BPG", "cast(BLK as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtSTL.Text))
-            {
-                where += "STL " + cmbSTL.SelectedItem + " " + txtSTL.Text + " AND ";
-            }
+                    case "APG":
+                        filter = filter.Replace("APG", "cast(AST as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtTO.Text))
-            {
-                where += "TOS " + cmbTO.SelectedItem + " " + txtTO.Text + " AND ";
-            }
+                    case "SPG":
+                        filter = filter.Replace("SPG", "cast(STL as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtBLK.Text))
-            {
-                where += "BLK " + cmbBLK.SelectedItem + " " + txtBLK.Text + " AND ";
-            }
+                    case "TPG":
+                        filter = filter.Replace("TPG", "cast(TOS as REAL)/GP");
+                        break;
 
-            if (!String.IsNullOrWhiteSpace(txtAST.Text))
-            {
-                where += "AST " + cmbAST.SelectedItem + " " + txtAST.Text + " AND ";
-            }
+                    case "FPG":
+                        filter = filter.Replace("FPG", "cast(FOUL as REAL)/GP");
+                        break;
+                }
 
-            if (!String.IsNullOrWhiteSpace(txtFOUL.Text))
-            {
-                where += "FOUL " + cmbFOUL.SelectedItem + " " + txtFOUL.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtPPG.Text))
-            {
-                where += "cast(PTS as REAL)/GP " + cmbPPG.SelectedItem + " " + txtPPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtFGp.Text))
-            {
-                where += "cast(FGM as REAL)/FGA " + cmbFGp.SelectedItem + " " + txtFGp.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtFGeff.Text))
-            {
-                where += "(cast(FGM as REAL)/FGA)*FGM/GP " + cmbFGeff.SelectedItem + " " + txtFGeff.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txt3Pp.Text))
-            {
-                where += "cast(TPM as REAL)/TPA " + cmb3Pp.SelectedItem + " " + txt3Pp.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txt3Peff.Text))
-            {
-                where += "(cast(TPM as REAL)/TPA)*TPM/GP " + cmb3Peff.SelectedItem + " " + txt3Peff.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtFTp.Text))
-            {
-                where += "cast(FTM as REAL)/FTA " + cmbFTp.SelectedItem + " " + txtFTp.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtFTeff.Text))
-            {
-                where += "(cast(FTM as REAL)/FTA)*FTM/GP " + cmbFTeff.SelectedItem + " " + txtFTeff.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtORPG.Text))
-            {
-                where += "cast(OREB as REAL)/GP " + cmbORPG.SelectedItem + " " + txtORPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtRPG.Text))
-            {
-                where += "cast((OREB+DREB) as REAL)/GP " + cmbRPG.SelectedItem + " " + txtRPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtSPG.Text))
-            {
-                where += "cast(STL as REAL)/GP " + cmbSPG.SelectedItem + " " + txtSPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtTPG.Text))
-            {
-                where += "cast(TOS as REAL)/GP " + cmbTPG.SelectedItem + " " + txtTPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtBLK.Text))
-            {
-                where += "cast(BLK as REAL)/GP " + cmbBPG.SelectedItem + " " + txtBPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtAPG.Text))
-            {
-                where += "cast(AST as REAL)/GP " + cmbAPG.SelectedItem + " " + txtAPG.Text + " AND ";
-            }
-
-            if (!String.IsNullOrWhiteSpace(txtFPG.Text))
-            {
-                where += "cast(FOUL as REAL)/GP " + cmbFPG.SelectedItem + " " + txtFPG.Text + " AND ";
+                where += filter + " AND ";
             }
 
             where = where.Remove(where.Length - 4);
@@ -425,15 +374,61 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            var psr = new ObservableCollection<PlayerStatsRow>();
-
+            var psr = new List<PlayerStatsRow>();
             foreach (DataRow dr in res.Rows)
             {
-                psr.Add(new PlayerStatsRow(new PlayerStats(dr)));
+                int id = Tools.getInt(dr, "ID");
+                psr.Add(new PlayerStatsRow(MainWindow.pst[id]));
             }
 
-            dgvPlayerStats.ItemsSource = psr;
+            var psrView = CollectionViewSource.GetDefaultView(psr);
+            psrView.Filter = Filter;
+
+            dgvPlayerStats.ItemsSource = psrView;
+
+            string sortColumn;
+            foreach (var item in lstMetrics.Items.Cast<string>())
+            {
+                sortColumn = item.Split(' ')[0];
+                sortColumn = sortColumn.Replace("%", "p");
+                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+            }
+            foreach (var item in lstAvg.Items.Cast<string>())
+            {
+                sortColumn = item.Split(' ')[0];
+                sortColumn = sortColumn.Replace("3P", "TP");
+                sortColumn = sortColumn.Replace("%", "p");
+                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+            }
+            foreach (var item in lstTotals.Items.Cast<string>())
+            {
+                sortColumn = item.Split(' ')[0];
+                sortColumn = sortColumn.Replace("3P", "TP");
+                sortColumn = sortColumn.Replace("TO", "TOS");
+                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+            }
+
+            if (psrView.SortDescriptions.Count == 0)
+                psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+
             tbcPlayerSearch.SelectedItem = tabResults;
+        }
+
+        private bool Filter(object o)
+        {
+            var psr = (PlayerStatsRow) o;
+            var ps = new PlayerStats(psr);
+            bool keep = true;
+            Parallel.ForEach(lstMetrics.Items.Cast<string>(), (item, loopState) =>
+                                                                  {
+                                                                      string[] parts = item.Split(' ');
+                                                                      //double val = Convert.ToDouble(parts[2]);
+                                                                      ExpressionContext context = new ExpressionContext();
+                                                                      var ige = context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
+                                                                      keep = ige.Evaluate();
+                                                                      if (!keep) loopState.Stop();
+                                                                  });
+            return keep;
         }
 
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)
@@ -454,6 +449,316 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (chkIsActive.IsChecked.GetValueOrDefault()) cmbTeam.SelectedIndex = 0;
             else cmbTeam.SelectedIndex = -1;
+        }
+
+        private void btnTotalsAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtTotalsVal.Text))
+                return;
+
+            try
+            {
+                Convert.ToSingle(txtTotalsVal.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            lstTotals.Items.Add(cmbTotalsPar.SelectedItem + " " + cmbTotalsOp.SelectedItem + " " + txtTotalsVal.Text);
+            cmbTotalsPar.SelectedIndex = -1;
+            txtTotalsVal.Text = "";
+        }
+
+        private void btnTotalsDel_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstTotals.SelectedIndex == -1) return;
+
+            if (lstTotals.SelectedItems.Count == 1)
+            {
+                var item = lstTotals.SelectedItem.ToString();
+                lstTotals.Items.Remove(item);
+                string[] parts = item.Split(' ');
+                cmbTotalsPar.SelectedItem = parts[0];
+                cmbTotalsOp.SelectedItem = parts[1];
+                txtTotalsVal.Text = parts[2];
+            }
+            else
+            {
+                foreach (var item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
+                {
+                    lstTotals.Items.Remove(item);
+                }
+            }
+        }
+
+        private void btnAvgAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtAvgVal.Text))
+                return;
+
+            try
+            {
+                Convert.ToSingle(txtAvgVal.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            lstAvg.Items.Add(cmbAvgPar.SelectedItem + " " + cmbAvgOp.SelectedItem + " " + txtAvgVal.Text);
+            cmbAvgPar.SelectedIndex = -1;
+            txtAvgVal.Text = "";
+        }
+
+        private void btnAvgDel_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstAvg.SelectedIndex == -1) return;
+
+            if (lstAvg.SelectedItems.Count == 1)
+            {
+                var item = lstAvg.SelectedItem.ToString();
+                lstAvg.Items.Remove(item);
+                string[] parts = item.Split(' ');
+                cmbAvgPar.SelectedItem = parts[0];
+                cmbAvgOp.SelectedItem = parts[1];
+                txtAvgVal.Text = parts[2];
+            }
+            else
+            {
+                foreach (var item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
+                {
+                    lstAvg.Items.Remove(item);
+                }
+            }
+        }
+
+        private void btnMetricsAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtMetricsVal.Text))
+                return;
+
+            try
+            {
+                Convert.ToSingle(txtMetricsVal.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            lstMetrics.Items.Add(cmbMetricsPar.SelectedItem + " " + cmbMetricsOp.SelectedItem + " " + txtMetricsVal.Text);
+            cmbMetricsPar.SelectedIndex = -1;
+            txtMetricsVal.Text = "";
+        }
+
+        private void btnMetricsDel_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstMetrics.SelectedIndex == -1) return;
+
+            if (lstMetrics.SelectedItems.Count == 1)
+            {
+                var item = lstMetrics.SelectedItem.ToString();
+                lstMetrics.Items.Remove(item);
+                string[] parts = item.Split(' ');
+                cmbMetricsPar.SelectedItem = parts[0];
+                cmbMetricsOp.SelectedItem = parts[1];
+                txtMetricsVal.Text = parts[2];
+            }
+            else
+            {
+                foreach (var item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
+                {
+                    lstMetrics.Items.Remove(item);
+                }
+            }
+        }
+
+        private void dgvPlayerStats_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            Helper.EventHandlers.StatColumn_Sorting(e);
+        }
+
+        private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog sfd = new OpenFileDialog
+                                     {
+                InitialDirectory = Path.GetFullPath(folder),
+                Filter = "NST Search Filters (*.nsf)|*.nsf",
+                DefaultExt = "nsf"
+            };
+
+            sfd.ShowDialog();
+
+            if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
+
+            int filterCount = lstTotals.Items.Count + lstAvg.Items.Count + lstMetrics.Items.Count;
+            if (filterCount > 0)
+            {
+                MessageBoxResult mbr = MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
+                                "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (mbr == MessageBoxResult.Cancel) return;
+                if (mbr == MessageBoxResult.Yes)
+                {
+                    lstTotals.Items.Clear();
+                    lstAvg.Items.Clear();
+                    lstMetrics.Items.Clear();
+                }
+            }
+
+            string[] s = File.ReadAllLines(sfd.FileName);
+            for (int i = 0; i < s.Length; i++)
+            {
+                string[] parts = s[i].Split('\t');
+                switch (parts[0])
+                {
+                    case "LastName":
+                        cmbLastNameSetting.SelectedItem = parts[1];
+                        txtLastName.Text = parts[2];
+                        break;
+
+                    case "FirstName":
+                        cmbFirstNameSetting.SelectedItem = parts[1];
+                        txtFirstName.Text = parts[2];
+                        break;
+
+                    case "Position":
+                        cmbPosition1.SelectedItem = parts[1];
+                        cmbPosition2.SelectedItem = parts[2];
+                        break;
+
+                    case "Active":
+                        try
+                        {
+                            chkIsActive.IsChecked = bool.Parse(parts[1]);
+                        }
+                        catch
+                        {
+                            chkIsActive.IsChecked = null;
+                        }
+                        break;
+
+                    case "Injured":
+                        try
+                        {
+                            chkIsInjured.IsChecked = bool.Parse(parts[1]);
+                        }
+                        catch
+                        {
+                            chkIsInjured.IsChecked = null;
+                        }
+                        break;
+
+                    case "AllStar":
+                        try
+                        {
+                            chkIsAllStar.IsChecked = bool.Parse(parts[1]);
+                        }
+                        catch
+                        {
+                            chkIsAllStar.IsChecked = null;
+                        }
+                        break;
+
+                    case "Champion":
+                        try
+                        {
+                            chkIsChampion.IsChecked = bool.Parse(parts[1]);
+                        }
+                        catch
+                        {
+                            chkIsChampion.IsChecked = null;
+                        }
+                        break;
+
+                    case "Team":
+                        cmbTeam.SelectedItem = GetDisplayNameFromTeam(parts[1]);
+                        break;
+
+                    case "Season":
+                        cmbSeasonNum.SelectedItem = MainWindow.GetSeasonName(Convert.ToInt32(parts[1]));
+                        break;
+
+                    case "Totals":
+                        while (true)
+                        {
+                            string line = s[++i];
+                            if (line.StartsWith("TotalsEND")) break;
+
+                            lstTotals.Items.Add(line);
+                        }
+                        break;
+
+                    case "Avg":
+                        while (true)
+                        {
+                            string line = s[++i];
+                            if (line.StartsWith("AvgEND")) break;
+
+                            lstAvg.Items.Add(line);
+                        }
+                        break;
+
+                    case "Metrics":
+                        while (true)
+                        {
+                            string line = s[++i];
+                            if (line.StartsWith("MetricsEND")) break;
+
+                            lstMetrics.Items.Add(line);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void btnSaveFilters_Click(object sender, RoutedEventArgs e)
+        {
+            string s = "";
+            s += String.Format("LastName\t{0}\t{1}\n", cmbLastNameSetting.SelectedItem, txtLastName.Text);
+            s += String.Format("FirstName\t{0}\t{1}\n", cmbFirstNameSetting.SelectedItem, txtFirstName.Text);
+            s += String.Format("Position\t{0}\t{1}\n", cmbPosition1.SelectedItem, cmbPosition2.SelectedItem);
+            s += String.Format("Active\t{0}\n", chkIsActive.IsChecked.ToString());
+            s += String.Format("Injured\t{0}\n", chkIsInjured.IsChecked.ToString());
+            s += String.Format("AllStar\t{0}\n", chkIsAllStar.IsChecked.ToString());
+            s += String.Format("Champion\t{0}\n", chkIsChampion.IsChecked.ToString());
+            if (cmbTeam.SelectedItem != null)
+                s += String.Format("Team\t{0}\n", GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
+            s += String.Format("Season\t{0}\n", curSeason);
+            s += String.Format("Totals\n");
+            foreach (var item in lstTotals.Items.Cast<string>())
+            {
+                s += item + "\n";
+            }
+            s += "TotalsEND\n";
+            s += String.Format("Avg\n");
+            foreach (var item in lstAvg.Items.Cast<string>())
+            {
+                s += item + "\n";
+            }
+            s += "AvgEND\n";
+            s += String.Format("Metrics\n");
+            foreach (var item in lstMetrics.Items.Cast<string>())
+            {
+                s += item + "\n";
+            }
+            s += "MetricsEND\n";
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            SaveFileDialog sfd = new SaveFileDialog
+                                     {
+                                         InitialDirectory = Path.GetFullPath(folder),
+                                         Filter = "NST Search Filters (*.nsf)|*.nsf",
+                                         DefaultExt = "nsf"
+                                     };
+
+            sfd.ShowDialog();
+
+            if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
+
+            File.WriteAllText(sfd.FileName, s);
         }
     }
 }

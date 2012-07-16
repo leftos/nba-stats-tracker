@@ -156,7 +156,7 @@
           </Button>
           <Button Content="Reset 2K Related Settings" HorizontalAlignment="Left" Margin="9,0,0,100"
                   Name="btnEraseSettings" Width="158" Click="btnEraseSettings_Click" TabIndex="3" Height="23" VerticalAlignment="Bottom" />
-          <Button HorizontalAlignment="Left" Margin="9,0,0,15" Name="btnGrabNBAStats" TabIndex="28" Width="158"
+          <Button HorizontalAlignment="Left" Margin="9,0,0,42" Name="btnGrabNBAStats" TabIndex="28" Width="158"
                   Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Download
@@ -164,6 +164,8 @@
               NBA Stats
             </TextBlock>
           </Button>
+          <Button Content="Download Box Score" Height="23" HorizontalAlignment="Left" Margin="9,0,0,14"
+                  Name="btnDownloadBoxScore" TabIndex="3" VerticalAlignment="Bottom" Width="158" Click="btnDownloadBoxScore_Click" />
         </Grid>
       </GroupBox>
       <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"

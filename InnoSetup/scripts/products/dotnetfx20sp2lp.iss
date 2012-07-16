@@ -15,14 +15,17 @@ de.dotnetfx20sp2lp_url_ia64=http://download.microsoft.com/download/a/3/3/a3349a2
 
 [Code]
 procedure dotnetfx20sp2lp();
+var
+	version: cardinal;
 begin
-	if (ActiveLanguage() <> 'en') then begin
-		if (netfxspversion(NetFx20, CustomMessage('dotnetfx20sp2lp_lcid')) < 2) then
-			AddProduct('dotnetfx20sp2' + GetArchitectureString() + '_' + ActiveLanguage() + '.exe',
-				'/lang:enu /passive /norestart"',
+	if ActiveLanguage() <> 'en' then begin
+		RegQueryDWordValue(HKLM, 'Software\Microsoft\NET Framework Setup\NDP\v2.0.50727\' + CustomMessage('dotnetfx20sp2lp_lcid'), 'SP', version);
+		
+		if version < 2 then
+			AddProduct(ExpandConstant('dotnetfx20sp2_langpack.exe'),
+				'/lang:enu /qb /norestart"',
 				CustomMessage('dotnetfx20sp2lp_title'),
 				CustomMessage('dotnetfx20sp2lp_size'),
-				CustomMessage('dotnetfx20sp2lp_url' + GetArchitectureString()),
-				false, false);
+				GetURL(CustomMessage('dotnetfx20sp2lp_url'), CustomMessage('dotnetfx20sp2lp_url_x64'), CustomMessage('dotnetfx20sp2lp_url_ia64')),false,false);
 	end;
 end;

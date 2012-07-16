@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Windows;
 using LeftosCommonLibrary;
 
 #endregion
@@ -215,6 +216,29 @@ namespace NBA_Stats_Tracker.Data
             stats[p.AST] = playerStatsRow.AST;
             stats[p.FOUL] = playerStatsRow.FOUL;
 
+            metrics["GmSc"] = playerStatsRow.GmSc;
+            metrics["EFF"] = playerStatsRow.EFF;
+            metrics["EFG%"] = playerStatsRow.EFGp;
+            metrics["TS%"] = playerStatsRow.TSp;
+            metrics["AST%"] = playerStatsRow.ASTp;
+            metrics["STL%"] = playerStatsRow.STLp;
+            metrics["TO%"] = playerStatsRow.TOp;
+            metrics["USG%"] = playerStatsRow.USGp;
+            metrics["PTSR"] = playerStatsRow.PTSR;
+            metrics["REBR"] = playerStatsRow.REBR;
+            metrics["OREBR"] = playerStatsRow.OREBR;
+            metrics["ASTR"] = playerStatsRow.ASTR;
+            metrics["BLKR"] = playerStatsRow.BLKR;
+            metrics["STLR"] = playerStatsRow.STLR;
+            metrics["TOR"] = playerStatsRow.TOR;
+            metrics["FTR"] = playerStatsRow.FTR;
+            metrics["PER"] = playerStatsRow.PER;
+            metrics["BLK%"] = playerStatsRow.BLKp;
+            metrics["DREB%"] = playerStatsRow.DREBp;
+            metrics["OREB%"] = playerStatsRow.OREBp;
+            metrics["REB%"] = playerStatsRow.REBp;
+            metrics["PPR"] = playerStatsRow.PPR;
+
             ID = playerStatsRow.ID;
             Position1 = playerStatsRow.Position1;
             Position2 = playerStatsRow.Position2;
@@ -231,22 +255,22 @@ namespace NBA_Stats_Tracker.Data
         public void CalcAvg()
         {
             uint games = stats[p.GP];
-            averages[p.MPG] = (float) stats[p.MINS]/games;
-            averages[p.PPG] = (float) stats[p.PTS]/games;
-            averages[p.FGp] = (float) stats[p.FGM]/stats[p.FGA];
-            averages[p.FGeff] = averages[p.FGp]*((float) stats[p.FGM]/games);
-            averages[p.TPp] = (float) stats[p.TPM]/stats[p.TPA];
-            averages[p.TPeff] = averages[p.TPp]*((float) stats[p.TPM]/games);
-            averages[p.FTp] = (float) stats[p.FTM]/stats[p.FTA];
-            averages[p.FTeff] = averages[p.FTp]*((float) stats[p.FTM]/games);
-            averages[p.RPG] = (float) (stats[p.OREB] + stats[p.DREB])/games;
-            averages[p.ORPG] = (float) stats[p.OREB]/games;
-            averages[p.DRPG] = (float) stats[p.DREB]/games;
-            averages[p.SPG] = (float) stats[p.STL]/games;
-            averages[p.BPG] = (float) stats[p.BLK]/games;
-            averages[p.TPG] = (float) stats[p.TO]/games;
-            averages[p.APG] = (float) stats[p.AST]/games;
-            averages[p.FPG] = (float) stats[p.FOUL]/games;
+            averages[p.MPG] = (float)stats[p.MINS] / games;
+            averages[p.PPG] = (float)stats[p.PTS] / games;
+            averages[p.FGp] = (float)stats[p.FGM] / stats[p.FGA];
+            averages[p.FGeff] = averages[p.FGp] * ((float)stats[p.FGM] / games);
+            averages[p.TPp] = (float)stats[p.TPM] / stats[p.TPA];
+            averages[p.TPeff] = averages[p.TPp] * ((float)stats[p.TPM] / games);
+            averages[p.FTp] = (float)stats[p.FTM] / stats[p.FTA];
+            averages[p.FTeff] = averages[p.FTp] * ((float)stats[p.FTM] / games);
+            averages[p.RPG] = (float)(stats[p.OREB] + stats[p.DREB]) / games;
+            averages[p.ORPG] = (float)stats[p.OREB] / games;
+            averages[p.DRPG] = (float)stats[p.DREB] / games;
+            averages[p.SPG] = (float)stats[p.STL] / games;
+            averages[p.BPG] = (float)stats[p.BLK] / games;
+            averages[p.TPG] = (float)stats[p.TO] / games;
+            averages[p.APG] = (float)stats[p.AST] / games;
+            averages[p.FPG] = (float)stats[p.FOUL] / games;
         }
 
         /// <summary>
@@ -256,7 +280,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="tsopp">The player's team's opponents' stats</param>
         /// <param name="ls">The total league stats</param>
         /// <param name="leagueOv">Whether CalcMetrics is being called from the League Overview screen</param>
-        public void CalcMetrics(TeamStats ts, TeamStats tsopp, TeamStats ls, bool leagueOv = false)
+        public void CalcMetrics(TeamStats ts, TeamStats tsopp, TeamStats ls, bool leagueOv = false, bool GmScOnly = false)
         {
             var pstats = new double[stats.Length];
             for (int i = 0; i < stats.Length; i++)
@@ -287,140 +311,144 @@ namespace NBA_Stats_Tracker.Data
 
             metrics = new Dictionary<string, double>();
 
-            #region Metrics that do not require Opponent Stats
+            double GmSc = pstats[p.PTS] + 0.4 * pstats[p.FGM] - 0.7 * pstats[p.FGA] - 0.4 * (pstats[p.FTA] - pstats[p.FTM]) +
+                          0.7 * pstats[p.OREB] + 0.3 * pstats[p.DREB] + pstats[p.STL] + 0.7 * pstats[p.AST] +
+                          0.7 * pstats[p.BLK] -
+                          0.4 * pstats[p.FOUL] - pstats[p.TO];
+            metrics.Add("GmSc", GmSc / pstats[p.GP]);
 
-            double ASTp = 100*pstats[p.AST]/(((pstats[p.MINS]/(tstats[t.MINS]))*tstats[t.FGM]) - pstats[p.FGM]);
-            metrics.Add("AST%", ASTp);
-
-            double EFGp = (pstats[p.FGM] + 0.5*pstats[p.TPM])/pstats[p.FGA];
-            metrics.Add("EFG%", EFGp);
-
-            double GmSc = pstats[p.PTS] + 0.4*pstats[p.FGM] - 0.7*pstats[p.FGA] - 0.4*(pstats[p.FTA] - pstats[p.FTM]) +
-                          0.7*pstats[p.OREB] + 0.3*pstats[p.DREB] + pstats[p.STL] + 0.7*pstats[p.AST] +
-                          0.7*pstats[p.BLK] -
-                          0.4*pstats[p.FOUL] - pstats[p.TO];
-            metrics.Add("GmSc", GmSc/pstats[p.GP]);
-
-            double STLp = 100*(pstats[p.STL]*(tstats[t.MINS]))/(pstats[p.MINS]*tsopp.metrics["Poss"]);
-            metrics.Add("STL%", STLp);
-
-            double TOp = 100*pstats[p.TO]/(pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO]);
-            metrics.Add("TO%", TOp);
-
-            double TSp = pstats[p.PTS]/(2*(pstats[p.FGA] + 0.44*pstats[p.FTA]));
-            metrics.Add("TS%", TSp);
-
-            double USGp = 100*
-                          ((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO])*
-                           (tstats[t.MINS]))/(pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]));
-            metrics.Add("USG%", USGp);
-
-            // Rates, stat per 49 minutes played
-            double PTSR = (pstats[p.PTS]/pstats[p.MINS])*48;
-            metrics.Add("PTSR", PTSR);
-
-            double REBR = (pREB/pstats[p.MINS])*48;
-            metrics.Add("REBR", REBR);
-
-            double ASTR = (pstats[p.AST]/pstats[p.MINS])*48;
-            metrics.Add("ASTR", ASTR);
-
-            double BLKR = (pstats[p.BLK]/pstats[p.MINS])*48;
-            metrics.Add("BLKR", BLKR);
-
-            double STLR = (pstats[p.STL]/pstats[p.MINS])*48;
-            metrics.Add("STLR", STLR);
-
-            double TOR = (pstats[p.TO]/pstats[p.MINS])*48;
-            metrics.Add("TOR", TOR);
-
-            double FTR = (pstats[p.FTM]/pstats[p.FGA]);
-            metrics.Add("FTR", FTR);
-            //
-            // PER preparations
-            double lREB = lstats[t.OREB] + lstats[t.DREB];
-            double factor = (2/3) - (0.5*(lstats[t.AST]/lstats[t.FGM]))/(2*(lstats[t.FGM]/lstats[t.FTM]));
-            double VOP = lstats[t.PF]/(lstats[t.FGA] - lstats[t.OREB] + lstats[t.TO] + 0.44*lstats[t.FTA]);
-            double lDRBp = lstats[t.DREB]/lREB;
-
-            double uPER = (1/pstats[p.MINS])*
-                          (pstats[p.TPM]
-                           + (2/3)*pstats[p.AST]
-                           + (2 - factor*(tstats[t.AST]/tstats[t.FGM]))*pstats[p.FGM]
-                           +
-                           (pstats[p.FTM]*0.5*
-                            (1 + (1 - (tstats[t.AST]/tstats[t.FGM])) + (2/3)*(tstats[t.AST]/tstats[t.FGM])))
-                           - VOP*pstats[p.TO]
-                           - VOP*lDRBp*(pstats[p.FGA] - pstats[p.FGM])
-                           - VOP*0.44*(0.44 + (0.56*lDRBp))*(pstats[p.FTA] - pstats[p.FTM])
-                           + VOP*(1 - lDRBp)*(pREB - pstats[p.OREB])
-                           + VOP*lDRBp*pstats[p.OREB]
-                           + VOP*pstats[p.STL]
-                           + VOP*lDRBp*pstats[p.BLK]
-                           - pstats[p.FOUL]*((lstats[t.FTM]/lstats[t.FOUL]) - 0.44*(lstats[t.FTA]/lstats[t.FOUL])*VOP));
-            metrics.Add("EFF", uPER*100);
-
-            #endregion
-
-            #region Metrics that require Opponents stats
-
-            if (ts.getGames() == tsopp.getGames())
+            if (!GmScOnly)
             {
-                double BLKp = 100*(pstats[p.BLK]*(tstats[t.MINS]))/
-                              (pstats[p.MINS]*(toppstats[t.FGA] - toppstats[t.TPA]));
+                #region Metrics that do not require Opponent Stats
+                double ASTp = 100 * pstats[p.AST] / (((pstats[p.MINS] / (tstats[t.MINS])) * tstats[t.FGM]) - pstats[p.FGM]);
+                metrics.Add("AST%", ASTp);
 
-                double DRBp = 100*(pstats[p.DREB]*(tstats[t.MINS]))/
-                              (pstats[p.MINS]*(tstats[t.DREB] + toppstats[t.OREB]));
+                double EFGp = (pstats[p.FGM] + 0.5 * pstats[p.TPM]) / pstats[p.FGA];
+                metrics.Add("EFG%", EFGp);
 
-                double ORBp = 100*(pstats[p.OREB]*(tstats[t.MINS]))/
-                              (pstats[p.MINS]*(tstats[t.OREB] + toppstats[t.DREB]));
+                double STLp = 100 * (pstats[p.STL] * (tstats[t.MINS])) / (pstats[p.MINS] * tsopp.metrics["Poss"]);
+                metrics.Add("STL%", STLp);
 
-                double toppREB = toppstats[t.OREB] + toppstats[t.DREB];
+                double TOp = 100 * pstats[p.TO] / (pstats[p.FGA] + 0.44 * pstats[p.FTA] + pstats[p.TO]);
+                metrics.Add("TO%", TOp);
 
-                double REBp = 100*(pREB*(tstats[t.MINS]))/(pstats[p.MINS]*(tREB + toppREB));
+                double TSp = pstats[p.PTS] / (2 * (pstats[p.FGA] + 0.44 * pstats[p.FTA]));
+                metrics.Add("TS%", TSp);
 
-                #region Metrics that require league stats
+                double USGp = 100 *
+                              ((pstats[p.FGA] + 0.44 * pstats[p.FTA] + pstats[p.TO]) *
+                               (tstats[t.MINS])) / (pstats[p.MINS] * (tstats[t.FGA] + 0.44 * tstats[t.FTA] + tstats[t.TO]));
+                metrics.Add("USG%", USGp);
 
-                double aPER;
-                double PPR;
+                // Rates, stat per 36 minutes played
+                double PTSR = (pstats[p.PTS] / pstats[p.MINS]) * 36;
+                metrics.Add("PTSR", PTSR);
 
-                if (ls.name != "$$Empty")
-                {
-                    //double paceAdj = ls.metrics["Pace"]/ts.metrics["Pace"];
-                    double estPaceAdj = 2*ls.averages[t.PPG]/(ts.averages[t.PPG] + tsopp.averages[t.PPG]);
+                double REBR = (pREB / pstats[p.MINS]) * 36;
+                metrics.Add("REBR", REBR);
 
-                    aPER = estPaceAdj*uPER;
+                double OREBR = (pstats[p.OREB] / pstats[p.MINS]) * 36;
+                metrics.Add("OREBR", OREBR);
 
-                    PPR = 100*estPaceAdj*(((pstats[p.AST]*2/3) - pstats[p.TO])/pstats[p.MINS]);
-                }
-                else
-                {
-                    aPER = Double.NaN;
-                    PPR = Double.NaN;
-                }
+                double ASTR = (pstats[p.AST] / pstats[p.MINS]) * 36;
+                metrics.Add("ASTR", ASTR);
+
+                double BLKR = (pstats[p.BLK] / pstats[p.MINS]) * 36;
+                metrics.Add("BLKR", BLKR);
+
+                double STLR = (pstats[p.STL] / pstats[p.MINS]) * 36;
+                metrics.Add("STLR", STLR);
+
+                double TOR = (pstats[p.TO] / pstats[p.MINS]) * 36;
+                metrics.Add("TOR", TOR);
+
+                double FTR = (pstats[p.FTM] / pstats[p.FGA]);
+                metrics.Add("FTR", FTR);
+                //
+                // PER preparations
+                double lREB = lstats[t.OREB] + lstats[t.DREB];
+                double factor = (2 / 3) - (0.5 * (lstats[t.AST] / lstats[t.FGM])) / (2 * (lstats[t.FGM] / lstats[t.FTM]));
+                double VOP = lstats[t.PF] / (lstats[t.FGA] - lstats[t.OREB] + lstats[t.TO] + 0.44 * lstats[t.FTA]);
+                double lDRBp = lstats[t.DREB] / lREB;
+
+                double uPER = (1 / pstats[p.MINS]) *
+                              (pstats[p.TPM]
+                               + (2 / 3) * pstats[p.AST]
+                               + (2 - factor * (tstats[t.AST] / tstats[t.FGM])) * pstats[p.FGM]
+                               +
+                               (pstats[p.FTM] * 0.5 *
+                                (1 + (1 - (tstats[t.AST] / tstats[t.FGM])) + (2 / 3) * (tstats[t.AST] / tstats[t.FGM])))
+                               - VOP * pstats[p.TO]
+                               - VOP * lDRBp * (pstats[p.FGA] - pstats[p.FGM])
+                               - VOP * 0.44 * (0.44 + (0.56 * lDRBp)) * (pstats[p.FTA] - pstats[p.FTM])
+                               + VOP * (1 - lDRBp) * (pREB - pstats[p.OREB])
+                               + VOP * lDRBp * pstats[p.OREB]
+                               + VOP * pstats[p.STL]
+                               + VOP * lDRBp * pstats[p.BLK]
+                               - pstats[p.FOUL] * ((lstats[t.FTM] / lstats[t.FOUL]) - 0.44 * (lstats[t.FTA] / lstats[t.FOUL]) * VOP));
+                metrics.Add("EFF", uPER * 100);
 
                 #endregion
 
-                metrics.Add("aPER", aPER);
-                metrics.Add("BLK%", BLKp);
-                metrics.Add("DREB%", DRBp);
-                metrics.Add("OREB%", ORBp);
-                metrics.Add("REB%", REBp);
-                metrics.Add("PPR", PPR);
-            }
-            else
-            {
-                metrics.Add("aPER", Double.NaN);
-                metrics.Add("BLK%", Double.NaN);
-                metrics.Add("DREB%", Double.NaN);
-                metrics.Add("OREB%", Double.NaN);
-                metrics.Add("REB%", Double.NaN);
-                metrics.Add("PPR", Double.NaN);
+                #region Metrics that require Opponents stats
+
+                if (ts.getGames() == tsopp.getGames())
+                {
+                    double BLKp = 100 * (pstats[p.BLK] * (tstats[t.MINS])) /
+                                  (pstats[p.MINS] * (toppstats[t.FGA] - toppstats[t.TPA]));
+
+                    double DRBp = 100 * (pstats[p.DREB] * (tstats[t.MINS])) /
+                                  (pstats[p.MINS] * (tstats[t.DREB] + toppstats[t.OREB]));
+
+                    double ORBp = 100 * (pstats[p.OREB] * (tstats[t.MINS])) /
+                                  (pstats[p.MINS] * (tstats[t.OREB] + toppstats[t.DREB]));
+
+                    double toppREB = toppstats[t.OREB] + toppstats[t.DREB];
+
+                    double REBp = 100 * (pREB * (tstats[t.MINS])) / (pstats[p.MINS] * (tREB + toppREB));
+
+                    #region Metrics that require league stats
+
+                    double aPER;
+                    double PPR;
+
+                    if (ls.name != "$$Empty")
+                    {
+                        //double paceAdj = ls.metrics["Pace"]/ts.metrics["Pace"];
+                        double estPaceAdj = 2 * ls.averages[t.PPG] / (ts.averages[t.PPG] + tsopp.averages[t.PPG]);
+
+                        aPER = estPaceAdj * uPER;
+
+                        PPR = 100 * estPaceAdj * (((pstats[p.AST] * 2 / 3) - pstats[p.TO]) / pstats[p.MINS]);
+                    }
+                    else
+                    {
+                        aPER = Double.NaN;
+                        PPR = Double.NaN;
+                    }
+
+                    #endregion
+
+                    metrics.Add("aPER", aPER);
+                    metrics.Add("BLK%", BLKp);
+                    metrics.Add("DREB%", DRBp);
+                    metrics.Add("OREB%", ORBp);
+                    metrics.Add("REB%", REBp);
+                    metrics.Add("PPR", PPR);
+                }
+                else
+                {
+                    metrics.Add("aPER", Double.NaN);
+                    metrics.Add("BLK%", Double.NaN);
+                    metrics.Add("DREB%", Double.NaN);
+                    metrics.Add("OREB%", Double.NaN);
+                    metrics.Add("REB%", Double.NaN);
+                    metrics.Add("PPR", Double.NaN);
+                }
+                #endregion
             }
 
-            #endregion
-
-            var gamesRequired = (int) Math.Ceiling(0.8522*ts.getGames());
+            var gamesRequired = (int)Math.Ceiling(0.8522 * ts.getGames());
             if (leagueOv)
             {
                 if (stats[p.GP] < gamesRequired)
@@ -435,7 +463,7 @@ namespace NBA_Stats_Tracker.Data
         {
             try
             {
-                metrics.Add("PER", metrics["aPER"]*(15/lg_aPER));
+                metrics.Add("PER", metrics["aPER"] * (15 / lg_aPER));
             }
             catch (Exception)
             {
@@ -509,7 +537,7 @@ namespace NBA_Stats_Tracker.Data
 
             lps.CalcMetrics(ls, ls, ls, true);
 
-            uint playerCount = (uint) playerStats.Count;
+            uint playerCount = (uint)playerStats.Count;
             for (int i = 0; i < lps.stats.Length; i++)
             {
                 lps.stats[i] /= playerCount;
@@ -554,7 +582,7 @@ namespace NBA_Stats_Tracker.Data
                 playerStats[playerid].CalcMetrics(ts, tsopp, ls, leagueOv);
                 if (!(Double.IsNaN(playerStats[playerid].metrics["aPER"])))
                 {
-                    lg_aPER += playerStats[playerid].metrics["aPER"]*playerStats[playerid].stats[p.MINS];
+                    lg_aPER += playerStats[playerid].metrics["aPER"] * playerStats[playerid].stats[p.MINS];
                     totalMins += playerStats[playerid].stats[p.MINS];
                 }
             }
@@ -611,10 +639,10 @@ namespace NBA_Stats_Tracker.Data
             FTA = Convert.ToUInt16(r["FTA"].ToString());
             OREB = Convert.ToUInt16(r["OREB"].ToString());
             FOUL = Convert.ToUInt16(r["FOUL"].ToString());
-            DREB = (UInt16) (REB - OREB);
-            FGp = (float) FGM/FGA;
-            TPp = (float) TPM/TPA;
-            FTp = (float) FTM/FTA;
+            DREB = (UInt16)(REB - OREB);
+            FGp = (float)FGM / FGA;
+            TPp = (float)TPM / TPA;
+            FTp = (float)FTM / FTA;
 
             // Let's try to get the result and date of the game
             // Only works for INNER JOIN'ed rows
@@ -656,6 +684,67 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        public PlayerBoxScore(DataRow brRow, string team, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
+        {
+            string[] nameParts = brRow[0].ToString().Split(new char[] {' '}, 2);
+            try
+            {
+                PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
+                {
+                    if (kvp.Value.LastName == nameParts[1] &&
+                        kvp.Value.FirstName == nameParts[0] &&
+                        kvp.Value.TeamF == team)
+                        return true;
+                    return false;
+                }).Value.ID;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
+                    {
+                        if (kvp.Value.LastName == nameParts[1] &&
+                            kvp.Value.FirstName == nameParts[0])
+                            return true;
+                        return false;
+                    }).Value.ID;
+                }
+                catch (Exception)
+                {
+                    //MessageBox.Show("No player with the name " + nameParts[0] + " " + nameParts[1] + " was found in the database.");
+                    PlayerID = -1;
+                    return;
+                }
+            }
+            
+            GameID = gameID;
+            Team = team;
+            isStarter = starter;
+            playedInjured = false;
+            isOut = false;
+            PTS = Tools.getUInt16(brRow, "PTS");
+            REB = Convert.ToUInt16(brRow["TRB"].ToString());
+            AST = Convert.ToUInt16(brRow["AST"].ToString());
+            STL = Convert.ToUInt16(brRow["STL"].ToString());
+            BLK = Convert.ToUInt16(brRow["BLK"].ToString());
+            TOS = Convert.ToUInt16(brRow["TOV"].ToString());
+            FGM = Convert.ToUInt16(brRow["FG"].ToString());
+            FGA = Convert.ToUInt16(brRow["FGA"].ToString());
+            TPM = Convert.ToUInt16(brRow["3P"].ToString());
+            TPA = Convert.ToUInt16(brRow["3PA"].ToString());
+            FTM = Convert.ToUInt16(brRow["FT"].ToString());
+            FTA = Convert.ToUInt16(brRow["FTA"].ToString());
+            OREB = Convert.ToUInt16(brRow["ORB"].ToString());
+            FOUL = Convert.ToUInt16(brRow["PF"].ToString());
+            MINS = Convert.ToUInt16(brRow["MP"].ToString().Split(':')[0]);
+            if (Convert.ToUInt16(brRow["MP"].ToString().Split(':')[1]) >= 30) MINS++;
+            DREB = (UInt16)(REB - OREB);
+            FGp = (float)FGM / FGA;
+            TPp = (float)TPM / TPA;
+            FTp = (float)FTM / FTA;
+        }
+
         public int PlayerID { get; set; }
         public string Team { get; set; }
         public int TeamPTS { get; set; }
@@ -673,7 +762,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _FGM = value;
-                FGp = (float) _FGM/_FGA;
+                FGp = (float)_FGM / _FGA;
                 CalculatePoints();
                 NotifyPropertyChanged("FGp");
                 NotifyPropertyChanged("PTS");
@@ -686,7 +775,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _FGA = value;
-                FGp = (float) _FGM/_FGA;
+                FGp = (float)_FGM / _FGA;
                 CalculatePoints();
                 NotifyPropertyChanged("FGp");
                 NotifyPropertyChanged("PTS");
@@ -701,7 +790,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _TPM = value;
-                TPp = (float) _TPM/_TPA;
+                TPp = (float)_TPM / _TPA;
                 CalculatePoints();
                 NotifyPropertyChanged("TPp");
                 NotifyPropertyChanged("PTS");
@@ -714,7 +803,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _TPA = value;
-                TPp = (float) _TPM/_TPA;
+                TPp = (float)_TPM / _TPA;
                 CalculatePoints();
                 NotifyPropertyChanged("TPp");
                 NotifyPropertyChanged("PTS");
@@ -729,7 +818,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _FTM = value;
-                FTp = (float) FTM/FTA;
+                FTp = (float)FTM / FTA;
                 CalculatePoints();
                 NotifyPropertyChanged("FTp");
                 NotifyPropertyChanged("PTS");
@@ -742,7 +831,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _FTA = value;
-                FTp = (float) FTM/FTA;
+                FTp = (float)FTM / FTA;
                 CalculatePoints();
                 NotifyPropertyChanged("FTp");
                 NotifyPropertyChanged("PTS");
@@ -750,7 +839,7 @@ namespace NBA_Stats_Tracker.Data
         }
 
         public float FTp { get; set; }
-        public UInt16 REB { get; protected set; }
+        public UInt16 REB { get; set; }
         public UInt16 OREB { get; set; }
         public UInt16 DREB { get; set; }
         public UInt16 STL { get; set; }
@@ -771,7 +860,7 @@ namespace NBA_Stats_Tracker.Data
 
         protected void CalculatePoints()
         {
-            PTS = (ushort) ((_FGM - _TPM)*2 + _TPM*3 + _FTM);
+            PTS = (ushort)((_FGM - _TPM) * 2 + _TPM * 3 + _FTM);
         }
 
         public string GetBestStats(int count, string position)
@@ -845,23 +934,23 @@ namespace NBA_Stats_Tracker.Data
 
             if (FGM > 4)
             {
-                fgn = FGp/fgfactor;
+                fgn = FGp / fgfactor;
             }
             statsn.Add("fgn", fgn);
 
             if (TPM > 2)
             {
-                tpn = TPp/tpfactor;
+                tpn = TPp / tpfactor;
             }
             statsn.Add("tpn", tpn);
 
             if (FTM > 4)
             {
-                ftn = FTp/ftfactor;
+                ftn = FTp / ftfactor;
             }
             statsn.Add("ftn", ftn);
 
-            double orebn = OREB/orebfactor;
+            double orebn = OREB / orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -869,24 +958,24 @@ namespace NBA_Stats_Tracker.Data
             statsn.Add("drebn", drebn);
             */
 
-            double rebn = REB/rebfactor;
+            double rebn = REB / rebfactor;
             statsn.Add("rebn", rebn);
 
-            double astn = AST/astfactor;
+            double astn = AST / astfactor;
             statsn.Add("astn", astn);
 
-            double stln = STL/stlfactor;
+            double stln = STL / stlfactor;
             statsn.Add("stln", stln);
 
-            double blkn = BLK/blkfactor;
+            double blkn = BLK / blkfactor;
             statsn.Add("blkn", blkn);
 
-            double ptsn = PTS/ptsfactor;
+            double ptsn = PTS / ptsfactor;
             statsn.Add("ptsn", ptsn);
 
             if (FTM > 3)
             {
-                ftrn = ((double) FTM/FGA)/ftrfactor;
+                ftrn = ((double)FTM / FGA) / ftrfactor;
             }
             statsn.Add("ftrn", ftrn);
 
@@ -895,7 +984,8 @@ namespace NBA_Stats_Tracker.Data
                                                select k;
 
             string s = "";
-            int i = 0;
+            s += String.Format("PTS: {0}\n", PTS);
+            int i = 1;
             foreach (string item in items)
             {
                 if (i == count) break;
@@ -918,11 +1008,11 @@ namespace NBA_Stats_Tracker.Data
                         s += String.Format("OREB: {0}\n", OREB);
                         break;
 
-                        /*
-                    case "drebn":
-                        s += String.Format("DREB: {0}\n", REB - OREB);
-                        break;
-                    */
+                    /*
+                case "drebn":
+                    s += String.Format("DREB: {0}\n", REB - OREB);
+                    break;
+                */
 
                     case "rebn":
                         s += String.Format("REB: {0}\n", REB);
@@ -941,11 +1031,10 @@ namespace NBA_Stats_Tracker.Data
                         break;
 
                     case "ptsn":
-                        s += String.Format("PTS: {0}\n", PTS);
-                        break;
+                        continue;
 
                     case "ftrn":
-                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double) FTM/FGA);
+                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double)FTM / FGA);
                         break;
                 }
 
@@ -997,7 +1086,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _TwoPM = value;
-                FGM = (ushort) (TPM + _TwoPM);
+                FGM = (ushort)(TPM + _TwoPM);
                 CalculatePoints();
                 NotifyPropertyChanged("FGM");
                 NotifyPropertyChanged("PTS");
@@ -1010,7 +1099,7 @@ namespace NBA_Stats_Tracker.Data
             set
             {
                 _TPM = value;
-                FGM = (ushort) (TPM + _TwoPM);
+                FGM = (ushort)(TPM + _TwoPM);
                 CalculatePoints();
                 NotifyPropertyChanged("FGM");
                 NotifyPropertyChanged("PTS");
@@ -1122,7 +1211,7 @@ namespace NBA_Stats_Tracker.Data
             FTA = ps.stats[p.FTA];
             OREB = ps.stats[p.OREB];
             DREB = ps.stats[p.DREB];
-            REB = (UInt16) (OREB + DREB);
+            REB = (UInt16)(OREB + DREB);
             STL = ps.stats[p.STL];
             TOS = ps.stats[p.TO];
             BLK = ps.stats[p.BLK];
@@ -1145,6 +1234,44 @@ namespace NBA_Stats_Tracker.Data
             BPG = ps.averages[p.BPG];
             APG = ps.averages[p.APG];
             FPG = ps.averages[p.FPG];
+
+            try
+            {
+                GmSc = ps.metrics["GmSc"];
+                EFF = ps.metrics["EFF"];
+                EFGp = ps.metrics["EFG%"];
+                TSp = ps.metrics["TS%"];
+                ASTp = ps.metrics["AST%"];
+                STLp = ps.metrics["STL%"];
+                TOp = ps.metrics["TO%"];
+                USGp = ps.metrics["USG%"];
+                PTSR = ps.metrics["PTSR"];
+                REBR = ps.metrics["REBR"];
+                OREBR = ps.metrics["OREBR"];
+                ASTR = ps.metrics["ASTR"];
+                BLKR = ps.metrics["BLKR"];
+                STLR = ps.metrics["STLR"];
+                TOR = ps.metrics["TOR"];
+                FTR = ps.metrics["FTR"];
+
+                try
+                {
+                    PER = ps.metrics["PER"];
+                }
+                catch (Exception)
+                {
+                    PER = double.NaN;
+                }
+
+                BLKp = ps.metrics["BLK%"];
+                DREBp = ps.metrics["DREB%"];
+                OREBp = ps.metrics["OREB%"];
+                REBp = ps.metrics["REB%"];
+                PPR = ps.metrics["PPR"];
+            }
+            catch (KeyNotFoundException)
+            {
+            }
 
             ID = ps.ID;
             Position1 = ps.Position1;
@@ -1207,72 +1334,6 @@ namespace NBA_Stats_Tracker.Data
         public float APG { get; set; }
         public float FPG { get; set; }
 
-        public int ID { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public string Position1 { get; set; }
-        public string Position2 { get; set; }
-        public string TeamF { get; set; }
-        public string TeamFDisplay { get; set; }
-        public string TeamS { get; set; }
-        public bool isActive { get; set; }
-        public bool isAllStar { get; set; }
-        public bool isInjured { get; set; }
-        public bool isNBAChampion { get; set; }
-
-        public string Type { get; set; }
-        private string Group { get; set; }
-    }
-
-    public class PlayerMetricStatsRow
-    {
-        public PlayerMetricStatsRow(PlayerStats ps)
-        {
-            //ps.CalcMetrics();
-
-            ID = ps.ID;
-            LastName = ps.LastName;
-            FirstName = ps.FirstName;
-            TeamF = ps.TeamF;
-
-            EFF = ps.metrics["EFF"];
-            GmSc = ps.metrics["GmSc"];
-            EFGp = ps.metrics["EFG%"];
-            TSp = ps.metrics["TS%"];
-            ASTp = ps.metrics["AST%"];
-            STLp = ps.metrics["STL%"];
-            TOp = ps.metrics["TO%"];
-            USGp = ps.metrics["USG%"];
-            PTSR = ps.metrics["PTSR"];
-            REBR = ps.metrics["REBR"];
-            ASTR = ps.metrics["ASTR"];
-            BLKR = ps.metrics["BLKR"];
-            STLR = ps.metrics["STLR"];
-            TOR = ps.metrics["TOR"];
-            FTR = ps.metrics["FTR"];
-
-            try
-            {
-                PER = ps.metrics["PER"];
-            }
-            catch (Exception)
-            {
-                PER = double.NaN;
-            }
-
-            BLKp = ps.metrics["BLK%"];
-            DREBp = ps.metrics["DREB%"];
-            OREBp = ps.metrics["OREB%"];
-            REBp = ps.metrics["REB%"];
-            PPR = ps.metrics["PPR"];
-        }
-
-        public int ID { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public string TeamF { get; set; }
-        public string TeamFDisplay { get; set; }
-
         public double EFF { get; set; }
         public double GmSc { get; set; }
         public double EFGp { get; set; }
@@ -1283,6 +1344,7 @@ namespace NBA_Stats_Tracker.Data
         public double USGp { get; set; }
         public double PTSR { get; set; }
         public double REBR { get; set; }
+        public double OREBR { get; set; }
         public double ASTR { get; set; }
         public double BLKR { get; set; }
         public double STLR { get; set; }
@@ -1299,5 +1361,202 @@ namespace NBA_Stats_Tracker.Data
         public double PPR { get; set; }
 
         #endregion
+
+        public int ID { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string Position1 { get; set; }
+        public string Position2 { get; set; }
+        public string TeamF { get; set; }
+        public string TeamFDisplay { get; set; }
+        public string TeamS { get; set; }
+        public bool isActive { get; set; }
+        public bool isAllStar { get; set; }
+        public bool isInjured { get; set; }
+        public bool isNBAChampion { get; set; }
+
+        public string Type { get; set; }
+        public string Group { get; set; }
+
+        public string GetBestStats(int count)
+        {
+            string position = Position1;
+            double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
+            var statsn = new Dictionary<string, double>();
+
+            double fgfactor,
+                   tpfactor,
+                   ftfactor,
+                   orebfactor,
+                   rebfactor,
+                   astfactor,
+                   stlfactor,
+                   blkfactor,
+                   ptsfactor,
+                   ftrfactor;
+
+            if (position.EndsWith("G"))
+            {
+                fgfactor = 0.4871;
+                tpfactor = 0.39302;
+                ftfactor = 0.86278;
+                orebfactor = 1.242;
+                rebfactor = 4.153;
+                astfactor = 6.324;
+                stlfactor = 1.619;
+                blkfactor = 0.424;
+                ptsfactor = 17.16;
+                ftrfactor = 0.271417;
+            }
+            else if (position.EndsWith("F"))
+            {
+                fgfactor = 0.52792;
+                tpfactor = 0.38034;
+                ftfactor = 0.82656;
+                orebfactor = 2.671;
+                rebfactor = 8.145;
+                astfactor = 3.037;
+                stlfactor = 1.209;
+                blkfactor = 1.24;
+                ptsfactor = 17.731;
+                ftrfactor = 0.307167;
+            }
+            else if (position.EndsWith("C"))
+            {
+                fgfactor = 0.52862;
+                tpfactor = 0.23014;
+                ftfactor = 0.75321;
+                orebfactor = 2.328;
+                rebfactor = 7.431;
+                astfactor = 1.688;
+                stlfactor = 0.68;
+                blkfactor = 1.536;
+                ptsfactor = 11.616;
+                ftrfactor = 0.302868;
+            }
+            else
+            {
+                fgfactor = 0.51454;
+                tpfactor = 0.3345;
+                ftfactor = 0.81418;
+                orebfactor = 2.0803;
+                rebfactor = 6.5763;
+                astfactor = 3.683;
+                stlfactor = 1.1693;
+                blkfactor = 1.0667;
+                ptsfactor = 15.5023;
+                ftrfactor = 0.385722;
+            }
+
+            if (FGM / GP > 4)
+            {
+                fgn = FGp / fgfactor;
+            }
+            statsn.Add("fgn", fgn);
+
+            if (TPM / GP > 2)
+            {
+                tpn = TPp / tpfactor;
+            }
+            statsn.Add("tpn", tpn);
+
+            if (FTM / GP > 4)
+            {
+                ftn = FTp / ftfactor;
+            }
+            statsn.Add("ftn", ftn);
+
+            double orebn = ORPG / orebfactor;
+            statsn.Add("orebn", orebn);
+
+            /*
+            drebn = (REB-OREB)/6.348;
+            statsn.Add("drebn", drebn);
+            */
+
+            double rebn = RPG / rebfactor;
+            statsn.Add("rebn", rebn);
+
+            double astn = APG / astfactor;
+            statsn.Add("astn", astn);
+
+            double stln = SPG / stlfactor;
+            statsn.Add("stln", stln);
+
+            double blkn = BPG / blkfactor;
+            statsn.Add("blkn", blkn);
+
+            double ptsn = PPG / ptsfactor;
+            statsn.Add("ptsn", ptsn);
+
+            if (FTM / GP > 3)
+            {
+                ftrn = ((double)FTM / FGA) / ftrfactor;
+            }
+            statsn.Add("ftrn", ftrn);
+
+            IOrderedEnumerable<string> items = from k in statsn.Keys
+                                               orderby statsn[k] descending
+                                               select k;
+
+            string s = "";
+            int i = 1;
+            s += String.Format("PPG: {0:F1}\n", PPG);
+            foreach (string item in items)
+            {
+                if (i == count) break;
+
+                switch (item)
+                {
+                    case "fgn":
+                        s += String.Format("FG: {0:F1}-{1:F1} ({2:F3})\n", (double)FGM / GP, (double)FGA / GP, FGp);
+                        break;
+
+                    case "tpn":
+                        s += String.Format("3P: {0:F1}-{1:F1} ({2:F3})\n", (double)TPM / GP, (double)TPA / GP, TPp);
+                        break;
+
+                    case "ftn":
+                        s += String.Format("FT: {0:F1}-{1:F1} ({2:F3})\n", (double)FTM / GP, (double)FTA / GP, FTp);
+                        break;
+
+                    case "orebn":
+                        s += String.Format("ORPG: {0:F1}\n", ORPG);
+                        break;
+
+                    /*
+                case "drebn":
+                    s += String.Format("DREB: {0}\n", REB - OREB);
+                    break;
+                */
+
+                    case "rebn":
+                        s += String.Format("RPG: {0:F1}\n", RPG);
+                        break;
+
+                    case "astn":
+                        s += String.Format("APG: {0:F1}\n", APG);
+                        break;
+
+                    case "stln":
+                        s += String.Format("SPG: {0:F1}\n", SPG);
+                        break;
+
+                    case "blkn":
+                        s += String.Format("BPG: {0:F1}\n", BPG);
+                        break;
+
+                    case "ptsn":
+                        continue;
+
+                    case "ftrn":
+                        s += String.Format("FTM/FGA: {0:F1}-{1:F1} ({2:F3})\n", (double)FTM / GP, (double)FGA / GP, (double)FTM / FGA);
+                        break;
+                }
+
+                i++;
+            }
+            return s;
+        }
     }
 }

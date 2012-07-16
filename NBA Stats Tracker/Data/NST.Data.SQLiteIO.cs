@@ -692,7 +692,7 @@ namespace NBA_Stats_Tracker.Data
             }
             else
             {
-                q = "select * from TeamsS" + season.ToString() + " where Name LIKE \"" + team + "'";
+                q = "select * from TeamsS" + season.ToString() + " where Name LIKE \"" + team + "\"";
             }
 
             DataTable res = _db.GetDataTable(q);
@@ -1178,6 +1178,24 @@ namespace NBA_Stats_Tracker.Data
 
                 i++;
             }
+        }
+
+        public static int GetFreeID(string dbFile, string table, string columnName = "ID")
+        {
+            var db = new SQLiteDatabase(dbFile);
+
+            string q = "select " + columnName + " from " + table + " ORDER BY " + columnName + " ASC;";
+            DataTable res = db.GetDataTable(q);
+
+            int i;
+            for (i = 0; i < res.Rows.Count; i++)
+            {
+                if (Convert.ToInt32(res.Rows[i][columnName].ToString()) != i)
+                {
+                    return i;
+                }
+            }
+            return res.Rows.Count;
         }
 
         /// <summary>

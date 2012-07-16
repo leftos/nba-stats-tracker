@@ -18,6 +18,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Windows;
+using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Windows;
 
 #endregion
 
@@ -70,6 +73,73 @@ namespace NBA_Stats_Tracker.Data
             OREB2 = Convert.ToUInt16(r["T2OREB"].ToString());
             FOUL2 = Convert.ToUInt16(r["T2FOUL"].ToString());
             MINS2 = Convert.ToUInt16(r["T2MINS"].ToString());
+        }
+
+        public BoxScore(DataSet ds, string[] parts)
+        {
+            DataTable away = ds.Tables[0];
+            DataTable home = ds.Tables[1];
+
+            int done = 0;
+            foreach (var team in MainWindow.TeamOrder)
+            {
+                if (parts[0].Contains(team.Key))
+                {
+                    Team1 = team.Key;
+                    done++;
+                }
+                if (parts[1].Contains(team.Key))
+                {
+                    Team2 = team.Key;
+                    done++;
+                }
+                if (done == 2) break;
+            }
+            if (done != 2)
+            {
+                Team1 = "$$Invalid";
+                Team2 = "$$Invalid";
+                return;
+            }
+            string date = parts[2].Trim() + ", " + parts[3].Trim();
+            gamedate = Convert.ToDateTime(date);
+
+            id = SQLiteIO.GetFreeID(MainWindow.currentDB, "GameResults", "GameID");
+            SeasonNum = MainWindow.curSeason;
+
+            DataRow rt = away.Rows[away.Rows.Count - 1];
+            PTS1 = Tools.getUInt16(rt, "PTS");
+            REB1 = Convert.ToUInt16(rt["TRB"].ToString());
+            AST1 = Convert.ToUInt16(rt["AST"].ToString());
+            STL1 = Convert.ToUInt16(rt["STL"].ToString());
+            BLK1 = Convert.ToUInt16(rt["BLK"].ToString());
+            TO1 = Convert.ToUInt16(rt["TOV"].ToString());
+            FGM1 = Convert.ToUInt16(rt["FG"].ToString());
+            FGA1 = Convert.ToUInt16(rt["FGA"].ToString());
+            TPM1 = Convert.ToUInt16(rt["3P"].ToString());
+            TPA1 = Convert.ToUInt16(rt["3PA"].ToString());
+            FTM1 = Convert.ToUInt16(rt["FT"].ToString());
+            FTA1 = Convert.ToUInt16(rt["FTA"].ToString());
+            OREB1 = Convert.ToUInt16(rt["ORB"].ToString());
+            FOUL1 = Convert.ToUInt16(rt["PF"].ToString());
+            MINS1 = (ushort) (Convert.ToUInt16(rt["MP"].ToString())/5);
+
+            rt = home.Rows[home.Rows.Count - 1];
+            PTS2 = Tools.getUInt16(rt, "PTS");
+            REB2 = Convert.ToUInt16(rt["TRB"].ToString());
+            AST2 = Convert.ToUInt16(rt["AST"].ToString());
+            STL2 = Convert.ToUInt16(rt["STL"].ToString());
+            BLK2 = Convert.ToUInt16(rt["BLK"].ToString());
+            TO2 = Convert.ToUInt16(rt["TOV"].ToString());
+            FGM2 = Convert.ToUInt16(rt["FG"].ToString());
+            FGA2 = Convert.ToUInt16(rt["FGA"].ToString());
+            TPM2 = Convert.ToUInt16(rt["3P"].ToString());
+            TPA2 = Convert.ToUInt16(rt["3PA"].ToString());
+            FTM2 = Convert.ToUInt16(rt["FT"].ToString());
+            FTA2 = Convert.ToUInt16(rt["FTA"].ToString());
+            OREB2 = Convert.ToUInt16(rt["ORB"].ToString());
+            FOUL2 = Convert.ToUInt16(rt["PF"].ToString());
+            MINS2 = (ushort) (Convert.ToUInt16(rt["MP"].ToString())/5);
         }
 
         public UInt16 AST1 { get; set; }

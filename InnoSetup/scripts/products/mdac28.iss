@@ -15,11 +15,10 @@ var
 begin
 	//check for MDAC installation
 	RegQueryStringValue(HKLM, 'Software\Microsoft\DataAccess', 'FullInstallVer', version);
-	if (compareversion(version, MinVersion) < 0) then
+	if version < MinVersion then
 		AddProduct('mdac28.exe',
 			'/q:a /c:"install /qb /l"',
 			CustomMessage('mdac28_title'),
 			CustomMessage('mdac28_size'),
-			mdac28_url,
-			false, false);
+			mdac28_url,false,false);
 end;

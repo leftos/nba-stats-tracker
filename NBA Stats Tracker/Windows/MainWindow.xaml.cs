@@ -1578,14 +1578,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            DataSet ds = RealStats.GetPlayoffTeamStats(@"http://www.basketball-reference.com/playoffs/NBA_2012.html");
+            
+            //TestWindow tw = new TestWindow(ds);
+            //tw.ShowDialog();
 
-            TestWindow tw = new TestWindow(ds);
-            tw.ShowDialog();
-            */
+            /*
             var lbsw = new LiveBoxScoreWindow();
             lbsw.ShowDialog();
+            */
         }
 
         private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
@@ -2117,6 +2117,33 @@ namespace NBA_Stats_Tracker.Windows
                 bsw.ShowDialog();
 
                 ParseBoxScoreResult();
+            }
+        }
+
+        private void btnDownloadBoxScore_Click(object sender, RoutedEventArgs e)
+        {
+            InputBoxWindow ibw = new InputBoxWindow("Enter the full URL of the box score you want to download");
+            if (ibw.ShowDialog() == true)
+            {
+                try
+                {
+                    int result = InteropBR.ImportBoxScore(input);
+                    if (result == -1)
+                    {
+                        MessageBox.Show(
+                            "The Box Score was saved, but some required players were missing.\nMake sure you're using an up-to-date downloaded database." +
+                            "\n\nThe database wasn't saved in case you want to reload it and try again.");
+                    }
+                    else
+                    {
+                        SQLiteIO.saveSeasonToDatabase();
+                        updateStatus("Box score downloaded and season saved!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Couldn't download & import box score.\n\nError: " + ex.Message);
+                }
             }
         }
     }

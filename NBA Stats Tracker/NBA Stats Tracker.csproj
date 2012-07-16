@@ -44,6 +44,9 @@
     <StartupObject>NBA_Stats_Tracker.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ciloci.Flee">
+      <HintPath>.\Ciloci.Flee.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>

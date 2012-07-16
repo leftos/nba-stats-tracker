@@ -267,13 +267,13 @@ namespace NBA_Stats_Tracker.Data
             double DRTG = (tstats[t.PA]/Poss)*100;
             metrics.Add("DRTG", DRTG);
 
-            double ASTp = (tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
+            double ASTp = 100*(tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
             metrics.Add("AST%", ASTp);
 
-            double DREBp = tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
+            double DREBp = 100*tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
             metrics.Add("DREB%", DREBp);
 
-            double EFGp = (tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
+            double EFGp = 100*(tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
             metrics.Add("EFG%", EFGp);
 
             double EFFd = ORTG - DRTG;
@@ -282,7 +282,7 @@ namespace NBA_Stats_Tracker.Data
             double TOR = tstats[t.TO]/(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]);
             metrics.Add("TOR", TOR);
 
-            double OREBp = tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
+            double OREBp = 100*tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
             metrics.Add("OREB%", OREBp);
 
             double FTR = tstats[t.FTM]/tstats[t.FGA];

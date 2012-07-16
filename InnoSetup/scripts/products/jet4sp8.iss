@@ -14,11 +14,10 @@ const
 procedure jet4sp8(MinVersion: string);
 begin
 	//check for Jet4 Service Pack 8 installation
-	if (compareversion(fileversion(ExpandConstant('{sys}{\}msjet40.dll')), MinVersion) < 0) then
+	if fileversion(ExpandConstant('{sys}{\}msjet40.dll')) < MinVersion then
 		AddProduct('jet4sp8.exe',
 			'/q:a /c:"install /qb /l"',
 			CustomMessage('jet4sp8_title'),
 			CustomMessage('jet4sp8_size'),
-			jet4sp8_url,
-			false, false);
+			jet4sp8_url,false,false);
 end;
