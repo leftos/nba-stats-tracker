@@ -183,6 +183,11 @@ Development Credits
 	
 	
 Version History
+	v0.11.5.3
+		- Fix: Fixed missing stat records handling when exporting to REditor CSVs
+		- Fix: Fixed crashes when importing/exporting to REditor CSVs when current culture (regional settings) had a list separator other than comma (",")
+		- Fix: Other minor REditor CSV handling bugs fixed
+
 	v0.11.5.2
 		- Fix: Fixed bug that would crash NST when using Live Box Score
 		- Fix: Fixed bug that would crash NST when loading a database with multiple seasons

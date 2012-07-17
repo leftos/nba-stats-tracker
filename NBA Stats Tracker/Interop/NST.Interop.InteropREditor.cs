@@ -439,25 +439,28 @@ namespace NBA_Stats_Tracker.Interop
                                                               return false;
                                                           });
 
-                teamStats[sStatsIndex]["Wins"] = ts.winloss[0].ToString();
-                teamStats[sStatsIndex]["Losses"] = ts.winloss[1].ToString();
-                teamStats[sStatsIndex]["Mins"] = ts.stats[t.MINS].ToString();
-                teamStats[sStatsIndex]["PtsFor"] = ts.stats[t.PF].ToString();
-                teamStats[sStatsIndex]["PtsAg"] = ts.stats[t.PA].ToString();
-                teamStats[sStatsIndex]["FGMade"] = ts.stats[t.FGM].ToString();
-                teamStats[sStatsIndex]["FGAtt"] = ts.stats[t.FGA].ToString();
-                teamStats[sStatsIndex]["3PTMade"] = ts.stats[t.TPM].ToString();
-                teamStats[sStatsIndex]["3PTAtt"] = ts.stats[t.TPA].ToString();
-                teamStats[sStatsIndex]["FTMade"] = ts.stats[t.FTM].ToString();
-                teamStats[sStatsIndex]["FTAtt"] = ts.stats[t.FTA].ToString();
-                teamStats[sStatsIndex]["DRebs"] = ts.stats[t.DREB].ToString();
-                teamStats[sStatsIndex]["ORebs"] = ts.stats[t.OREB].ToString();
-                teamStats[sStatsIndex]["Steals"] = ts.stats[t.STL].ToString();
-                teamStats[sStatsIndex]["Blocks"] = ts.stats[t.BLK].ToString();
-                teamStats[sStatsIndex]["Assists"] = ts.stats[t.AST].ToString();
-                teamStats[sStatsIndex]["Fouls"] = ts.stats[t.FOUL].ToString();
-                teamStats[sStatsIndex]["TOs"] = ts.stats[t.TO].ToString();
-                //teamStats[sStatsIndex]["TOsAg"] = tsopp.stats[t.TO].ToString();
+                if (sStatsIndex != -1)
+                {
+                    teamStats[sStatsIndex]["Wins"] = ts.winloss[0].ToString();
+                    teamStats[sStatsIndex]["Losses"] = ts.winloss[1].ToString();
+                    teamStats[sStatsIndex]["Mins"] = ts.stats[t.MINS].ToString();
+                    teamStats[sStatsIndex]["PtsFor"] = ts.stats[t.PF].ToString();
+                    teamStats[sStatsIndex]["PtsAg"] = ts.stats[t.PA].ToString();
+                    teamStats[sStatsIndex]["FGMade"] = ts.stats[t.FGM].ToString();
+                    teamStats[sStatsIndex]["FGAtt"] = ts.stats[t.FGA].ToString();
+                    teamStats[sStatsIndex]["3PTMade"] = ts.stats[t.TPM].ToString();
+                    teamStats[sStatsIndex]["3PTAtt"] = ts.stats[t.TPA].ToString();
+                    teamStats[sStatsIndex]["FTMade"] = ts.stats[t.FTM].ToString();
+                    teamStats[sStatsIndex]["FTAtt"] = ts.stats[t.FTA].ToString();
+                    teamStats[sStatsIndex]["DRebs"] = ts.stats[t.DREB].ToString();
+                    teamStats[sStatsIndex]["ORebs"] = ts.stats[t.OREB].ToString();
+                    teamStats[sStatsIndex]["Steals"] = ts.stats[t.STL].ToString();
+                    teamStats[sStatsIndex]["Blocks"] = ts.stats[t.BLK].ToString();
+                    teamStats[sStatsIndex]["Assists"] = ts.stats[t.AST].ToString();
+                    teamStats[sStatsIndex]["Fouls"] = ts.stats[t.FOUL].ToString();
+                    teamStats[sStatsIndex]["TOs"] = ts.stats[t.TO].ToString();
+                    //teamStats[sStatsIndex]["TOsAg"] = tsopp.stats[t.TO].ToString();
+                }
 
                 if (pStatsID != -1)
                 {
@@ -467,25 +470,28 @@ namespace NBA_Stats_Tracker.Interop
                                                                   return false;
                                                               });
 
-                    teamStats[pStatsIndex]["Wins"] = ts.pl_winloss[0].ToString();
-                    teamStats[pStatsIndex]["Losses"] = ts.pl_winloss[1].ToString();
-                    teamStats[pStatsIndex]["Mins"] = ts.pl_stats[t.MINS].ToString();
-                    teamStats[pStatsIndex]["PtsFor"] = ts.pl_stats[t.PF].ToString();
-                    teamStats[pStatsIndex]["PtsAg"] = ts.pl_stats[t.PA].ToString();
-                    teamStats[pStatsIndex]["FGMade"] = ts.pl_stats[t.FGM].ToString();
-                    teamStats[pStatsIndex]["FGAtt"] = ts.pl_stats[t.FGA].ToString();
-                    teamStats[pStatsIndex]["3PTMade"] = ts.pl_stats[t.TPM].ToString();
-                    teamStats[pStatsIndex]["3PTAtt"] = ts.pl_stats[t.TPA].ToString();
-                    teamStats[pStatsIndex]["FTMade"] = ts.pl_stats[t.FTM].ToString();
-                    teamStats[pStatsIndex]["FTAtt"] = ts.pl_stats[t.FTA].ToString();
-                    teamStats[pStatsIndex]["DRebs"] = ts.pl_stats[t.DREB].ToString();
-                    teamStats[pStatsIndex]["ORebs"] = ts.pl_stats[t.OREB].ToString();
-                    teamStats[pStatsIndex]["Steals"] = ts.pl_stats[t.STL].ToString();
-                    teamStats[pStatsIndex]["Blocks"] = ts.pl_stats[t.BLK].ToString();
-                    teamStats[pStatsIndex]["Assists"] = ts.pl_stats[t.AST].ToString();
-                    teamStats[pStatsIndex]["Fouls"] = ts.pl_stats[t.FOUL].ToString();
-                    teamStats[pStatsIndex]["TOs"] = ts.pl_stats[t.TO].ToString();
-                    //teamStats[pStatsIndex]["TOsAg"] = tsopp.stats[t.TO].ToString();
+                    if (pStatsIndex != -1)
+                    {
+                        teamStats[pStatsIndex]["Wins"] = ts.pl_winloss[0].ToString();
+                        teamStats[pStatsIndex]["Losses"] = ts.pl_winloss[1].ToString();
+                        teamStats[pStatsIndex]["Mins"] = ts.pl_stats[t.MINS].ToString();
+                        teamStats[pStatsIndex]["PtsFor"] = ts.pl_stats[t.PF].ToString();
+                        teamStats[pStatsIndex]["PtsAg"] = ts.pl_stats[t.PA].ToString();
+                        teamStats[pStatsIndex]["FGMade"] = ts.pl_stats[t.FGM].ToString();
+                        teamStats[pStatsIndex]["FGAtt"] = ts.pl_stats[t.FGA].ToString();
+                        teamStats[pStatsIndex]["3PTMade"] = ts.pl_stats[t.TPM].ToString();
+                        teamStats[pStatsIndex]["3PTAtt"] = ts.pl_stats[t.TPA].ToString();
+                        teamStats[pStatsIndex]["FTMade"] = ts.pl_stats[t.FTM].ToString();
+                        teamStats[pStatsIndex]["FTAtt"] = ts.pl_stats[t.FTA].ToString();
+                        teamStats[pStatsIndex]["DRebs"] = ts.pl_stats[t.DREB].ToString();
+                        teamStats[pStatsIndex]["ORebs"] = ts.pl_stats[t.OREB].ToString();
+                        teamStats[pStatsIndex]["Steals"] = ts.pl_stats[t.STL].ToString();
+                        teamStats[pStatsIndex]["Blocks"] = ts.pl_stats[t.BLK].ToString();
+                        teamStats[pStatsIndex]["Assists"] = ts.pl_stats[t.AST].ToString();
+                        teamStats[pStatsIndex]["Fouls"] = ts.pl_stats[t.FOUL].ToString();
+                        teamStats[pStatsIndex]["TOs"] = ts.pl_stats[t.TO].ToString();
+                        //teamStats[pStatsIndex]["TOsAg"] = tsopp.stats[t.TO].ToString();
+                    }
                 }
             }
 
@@ -519,25 +525,28 @@ namespace NBA_Stats_Tracker.Interop
                                                                          return false;
                                                                      });
 
-                    playerStats[playerStatsIndex]["GamesP"] = ps.stats[p.GP].ToString();
-                    playerStats[playerStatsIndex]["GamesS"] = ps.stats[p.GS].ToString();
-                    playerStats[playerStatsIndex]["Minutes"] = ps.stats[p.MINS].ToString();
-                    playerStats[playerStatsIndex]["Points"] = ps.stats[p.PTS].ToString();
-                    playerStats[playerStatsIndex]["DRebs"] = ps.stats[p.DREB].ToString();
-                    playerStats[playerStatsIndex]["ORebs"] = ps.stats[p.OREB].ToString();
-                    playerStats[playerStatsIndex]["Assists"] = ps.stats[p.AST].ToString();
-                    playerStats[playerStatsIndex]["Steals"] = ps.stats[p.STL].ToString();
-                    playerStats[playerStatsIndex]["Blocks"] = ps.stats[p.BLK].ToString();
-                    playerStats[playerStatsIndex]["TOs"] = ps.stats[p.TO].ToString();
-                    playerStats[playerStatsIndex]["Fouls"] = ps.stats[p.FOUL].ToString();
-                    playerStats[playerStatsIndex]["FGMade"] = ps.stats[p.FGM].ToString();
-                    playerStats[playerStatsIndex]["FGAtt"] = ps.stats[p.FGA].ToString();
-                    playerStats[playerStatsIndex]["3PTMade"] = ps.stats[p.TPM].ToString();
-                    playerStats[playerStatsIndex]["3PTAtt"] = ps.stats[p.TPA].ToString();
-                    playerStats[playerStatsIndex]["FTMade"] = ps.stats[p.FTM].ToString();
-                    playerStats[playerStatsIndex]["FTAtt"] = ps.stats[p.FTA].ToString();
-                    playerStats[playerStatsIndex]["IsAStar"] = (ps.isAllStar ? 1 : 0).ToString();
-                    playerStats[playerStatsIndex]["IsChamp"] = (ps.isNBAChampion ? 1 : 0).ToString();
+                    if (playerStatsIndex != -1)
+                    {
+                        playerStats[playerStatsIndex]["GamesP"] = ps.stats[p.GP].ToString();
+                        playerStats[playerStatsIndex]["GamesS"] = ps.stats[p.GS].ToString();
+                        playerStats[playerStatsIndex]["Minutes"] = ps.stats[p.MINS].ToString();
+                        playerStats[playerStatsIndex]["Points"] = ps.stats[p.PTS].ToString();
+                        playerStats[playerStatsIndex]["DRebs"] = ps.stats[p.DREB].ToString();
+                        playerStats[playerStatsIndex]["ORebs"] = ps.stats[p.OREB].ToString();
+                        playerStats[playerStatsIndex]["Assists"] = ps.stats[p.AST].ToString();
+                        playerStats[playerStatsIndex]["Steals"] = ps.stats[p.STL].ToString();
+                        playerStats[playerStatsIndex]["Blocks"] = ps.stats[p.BLK].ToString();
+                        playerStats[playerStatsIndex]["TOs"] = ps.stats[p.TO].ToString();
+                        playerStats[playerStatsIndex]["Fouls"] = ps.stats[p.FOUL].ToString();
+                        playerStats[playerStatsIndex]["FGMade"] = ps.stats[p.FGM].ToString();
+                        playerStats[playerStatsIndex]["FGAtt"] = ps.stats[p.FGA].ToString();
+                        playerStats[playerStatsIndex]["3PTMade"] = ps.stats[p.TPM].ToString();
+                        playerStats[playerStatsIndex]["3PTAtt"] = ps.stats[p.TPA].ToString();
+                        playerStats[playerStatsIndex]["FTMade"] = ps.stats[p.FTM].ToString();
+                        playerStats[playerStatsIndex]["FTAtt"] = ps.stats[p.FTA].ToString();
+                        playerStats[playerStatsIndex]["IsAStar"] = (ps.isAllStar ? 1 : 0).ToString();
+                        playerStats[playerStatsIndex]["IsChamp"] = (ps.isNBAChampion ? 1 : 0).ToString();
+                    }
                 }
             }
 

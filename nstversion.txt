@@ -1,5 +1,12 @@
-0.11.5.2
+0.11.5.3
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+
+Note that there's a known issue with REditor II v3.7 that makes it not save any changes to Team Stats. Once a new REditor version is out, you should be able to update Team Stats again, without a need for a further NST update.
+
+v0.11.5.3
+- Fix: Fixed missing stat records handling when exporting to REditor CSVs
+- Fix: Fixed crashes when importing/exporting to REditor CSVs when current culture (regional settings) had a list separator other than comma (",")
+- Fix: Other minor REditor CSV handling bugs fixed
 
 v0.11.5.2
 - Fix: Fixed bug that would crash NST when using Live Box Score
@@ -11,14 +18,3 @@ v0.11.5
 - Addition: Advanced Player Search filters can now be saved and loaded at a later time
 - Change: Changed rate metrics to be calculated per 36 minutes of play, as in Basketball-Reference.com
 - Addition: Added Offensive Rebound Rate (OREBR) as a metric stat
-
-v0.11.4
-- Addition: NBA Box Scores can now be downloaded from Basketball-Reference.com
-
-v0.11.3
-- Addition: 6 Best Performers of each team are now shown in Team Overview, with a summary of their most significant stats
-- Addition: 6 Best League-Wide Performers  are now shown in League Overview, with a summary of their most significant stats
-- Addition: Head-To-Head Best Performers tab added to Team Overview; presents a comparison of the best Guard, Forward and Center of each team along with their most significant stats
-- Improvement: Team Overview should now open faster
-- Fix: Fixed stat presentation in Overview tab of Team Overview regarding playoffs and limited timeframes
-- Improvement: Minor other interface improvements

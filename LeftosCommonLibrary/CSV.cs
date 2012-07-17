@@ -32,9 +32,12 @@ namespace LeftosCommonLibrary
         private const string ESCAPED_QUOTE = "\"\"";
         private static readonly char[] CHARACTERS_THAT_MUST_BE_QUOTED = {',', '"', '\n', ' '};
 
+        private static readonly char listSeparator =
+            System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
+
         public static List<Dictionary<string, string>> CreateDictionaryListFromCSV(string path)
         {
-            var cr = new CsvReader(new StreamReader(path), true);
+            var cr = new CsvReader(new StreamReader(path), true, listSeparator);
             List<Dictionary<string, string>> dictList;
             using (cr)
             {
@@ -45,7 +48,7 @@ namespace LeftosCommonLibrary
 
                 for (int i = 0; i < headers.Length; i++)
                 {
-                    var regex = new Regex("[^a-zA-Z]");
+                    var regex = new Regex("[^a-zA-Z0-9]");
                     if (regex.IsMatch(headers[i].Substring(0, 1)))
                     {
                         headers[i] = headers[i].Split(new[] {" ", "\r\n", "\n"}, 2, StringSplitOptions.None)[1];
@@ -92,17 +95,17 @@ namespace LeftosCommonLibrary
             string str = "";
             foreach (var kvp in dList[0])
             {
-                if (!kvp.Key.StartsWith("Column")) str += kvp.Key + ",";
-                else str += "\" \",";
+                if (!kvp.Key.StartsWith("Column")) str += kvp.Key + listSeparator;
+                else str += "\" \"" + listSeparator;
             }
-            str = str.TrimEnd(new[] {','});
+            str = str.TrimEnd(new[] { listSeparator });
 
             sw.WriteLine(str);
 
             foreach (var team in dList)
             {
-                string s2 = team.Aggregate("", (current, kvp) => current + (Escape(kvp.Value) + ","));
-                s2 = s2.TrimEnd(new[] {','});
+                string s2 = team.Aggregate("", (current, kvp) => current + (Escape(kvp.Value) + listSeparator));
+                s2 = s2.TrimEnd(new[] { listSeparator });
 
                 sw.WriteLine(s2);
             }
