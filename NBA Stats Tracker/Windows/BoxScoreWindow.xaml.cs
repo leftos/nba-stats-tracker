@@ -50,7 +50,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private static Mode curmode = Mode.Update;
 
-        private static BoxScore curBoxScore;
+        private static TeamBoxScore _curTeamBoxScore;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private List<string> Teams;
@@ -72,11 +72,11 @@ namespace NBA_Stats_Tracker.Windows
 
             prepareWindow(_curmode);
 
-            MainWindow.bs = new BoxScore();
+            MainWindow.bs = new TeamBoxScore();
 
             if (_curmode == Mode.Update)
             {
-                curBoxScore = new BoxScore();
+                _curTeamBoxScore = new TeamBoxScore();
             }
         }
 
@@ -106,14 +106,14 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             BoxScoreEntry bse = MainWindow.bshist[bshistid];
-            curBoxScore = MainWindow.bshist[bshistid].bs;
-            curBoxScore.bshistid = bshistid;
+            _curTeamBoxScore = MainWindow.bshist[bshistid].bs;
+            _curTeamBoxScore.bshistid = bshistid;
             LoadBoxScore(bse);
         }
 
         private void LoadBoxScore(BoxScoreEntry bse)
         {
-            BoxScore bs = bse.bs;
+            TeamBoxScore bs = bse.bs;
             txtPTS1.Text = bs.PTS1.ToString();
             txtREB1.Text = bs.REB1.ToString();
             txtAST1.Text = bs.AST1.ToString();
@@ -398,7 +398,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (curmode == Mode.View)
                 {
-                    if (curBoxScore.bshistid != -1)
+                    if (_curTeamBoxScore.bshistid != -1)
                     {
                         MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?",
                                                              "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
@@ -448,8 +448,8 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    MainWindow.bs.id = curBoxScore.id;
-                    MainWindow.bs.bshistid = curBoxScore.bshistid;
+                    MainWindow.bs.id = _curTeamBoxScore.id;
+                    MainWindow.bs.bshistid = _curTeamBoxScore.bshistid;
                 }
                 catch
                 {
@@ -1225,10 +1225,10 @@ namespace NBA_Stats_Tracker.Windows
             tryParseBS();
             if (!MainWindow.bs.done) return;
 
-            BoxScore bs = MainWindow.bs;
+            TeamBoxScore bs = MainWindow.bs;
 
-            if (team == 1) MainWindow.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
-            else MainWindow.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+            if (team == 1) TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            else TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
 
             ts.CalcMetrics(tsopp);
 

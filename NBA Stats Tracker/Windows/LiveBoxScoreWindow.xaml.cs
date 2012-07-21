@@ -251,7 +251,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private BoxScoreEntry calculateBoxScoreEntry()
         {
-            var bs = new BoxScore
+            var bs = new TeamBoxScore
                          {
                              REB1 = 0,
                              AST1 = 0,

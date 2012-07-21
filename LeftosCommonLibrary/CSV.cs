@@ -71,24 +71,6 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
-        public static List<Dictionary<string, string>> CreateDictionaryListFromTSV(string path)
-        {
-            string[] TSV = File.ReadAllLines(path);
-            var dictList = new List<Dictionary<string, string>>();
-            string[] headers = TSV[0].Split('\t');
-            for (int i = 1; i < TSV.Length; i++)
-            {
-                string[] values = TSV[i].Split('\t');
-                dictList.Add(new Dictionary<string, string>());
-                for (int index = 0; index < headers.Length; index++)
-                {
-                    dictList[i - 1][headers[index]] = values[index];
-                }
-            }
-
-            return dictList;
-        }
-
         public static void CreateCSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
         {
             var sw = new StreamWriter(path);
@@ -111,6 +93,24 @@ namespace LeftosCommonLibrary
             }
 
             sw.Close();
+        }
+
+        public static List<Dictionary<string, string>> CreateDictionaryListFromTSV(string path)
+        {
+            string[] TSV = File.ReadAllLines(path);
+            var dictList = new List<Dictionary<string, string>>();
+            string[] headers = TSV[0].Split('\t');
+            for (int i = 1; i < TSV.Length; i++)
+            {
+                string[] values = TSV[i].Split('\t');
+                dictList.Add(new Dictionary<string, string>());
+                for (int index = 0; index < headers.Length; index++)
+                {
+                    dictList[i - 1][headers[index]] = values[index];
+                }
+            }
+
+            return dictList;
         }
 
         private static string Escape(string s)

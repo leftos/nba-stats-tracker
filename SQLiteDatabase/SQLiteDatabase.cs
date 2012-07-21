@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -49,7 +50,7 @@ namespace SQLite_Database
         /// <param name="inputFile">The File containing the DB</param>
         public SQLiteDatabase(String inputFile)
         {
-            dbConnection = String.Format("Data Source={0}", inputFile);
+            dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
         }
 
         /// <summary>
@@ -109,12 +110,16 @@ namespace SQLite_Database
             using (cnn = new SQLiteConnection(dbConnection))
             {
                 cnn.Open();
+                var sqLiteTransaction = cnn.BeginTransaction();
                 SQLiteCommand mycommand;
                 using (mycommand = new SQLiteCommand(cnn))
                 {
+                    mycommand.Transaction = sqLiteTransaction;
                     mycommand.CommandText = sql;
                     rowsUpdated = mycommand.ExecuteNonQuery();
+                    sqLiteTransaction.Commit();
                 }
+                cnn.Close();
             }
             return rowsUpdated;
         }
@@ -228,18 +233,63 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        ///     Allows the programmer to easily insert multiple lines into the DB
+        ///     Allows the programmer to easily insert multiple records into the DB via transaction command-wrapping
+        /// </summary>
+        /// <param name="tableName">The table into which we insert the data.</param>
+        /// <param name="dataList">A list of dictionaries containing the column names and data for the insert.</param>
+        public void InsertManyTransaction(String tableName, List<Dictionary<String, String>> dataList)
+        {
+            SQLiteConnection cnn;
+            int returnCode;
+            using (cnn = new SQLiteConnection(dbConnection))
+            {
+                cnn.Open();
+                using (var cmd = new SQLiteCommand(cnn))
+                {
+                    using (var transaction = cnn.BeginTransaction())
+                    {
+                        for (int i = 0; i < dataList.Count; i++)
+                        {
+                            var data = dataList[i];
+                            String columns = "";
+                            String values = "";
+                            foreach (var val in data)
+                            {
+                                columns += String.Format(" {0},", val.Key);
+                                values += String.Format(" \"{0}\",", val.Value);
+                            }
+                            columns = columns.Substring(0, columns.Length - 1);
+                            values = values.Substring(0, values.Length - 1);
+                            try
+                            {
+                                cmd.CommandText = String.Format("insert into {0}({1}) values({2});", tableName, columns,
+                                                                values);
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception fail)
+                            {
+                                MessageBox.Show(fail.Message + "\n\nIndex: " + i + "\n\nQuery: " + cmd.CommandText);
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Allows the programmer to easily insert multiple records into the DB
         /// </summary>
         /// <param name="tableName">The table into which we insert the data.</param>
         /// <param name="data">A list of dictionaries containing the column names and data for the insert.
         ///                     All dictionaries must have the same order of inserted pairs. 
         ///                     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.</param>
-        /// <returns>A boolean true or false to signify success or failure.</returns>
-        public bool InsertMany(String tableName, List<Dictionary<String, String>> data)
+        /// <returns>The number of lines affected by this query.</returns>
+        public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
         {
             if (data.Count > 500) throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
 
-            Boolean returnCode = true;
+            int returnCode;
 
             string sql = "insert into " + tableName + " SELECT";
 
@@ -256,12 +306,12 @@ namespace SQLite_Database
 
             try
             {
-                ExecuteNonQuery(sql);
+                returnCode = ExecuteNonQuery(sql);
             }
             catch (Exception fail)
             {
                 MessageBox.Show(fail.Message + "\n\nQuery: " + sql);
-                returnCode = false;
+                returnCode = 0;
             }
             return returnCode;
         }

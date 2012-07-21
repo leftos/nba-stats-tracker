@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using LeftosCommonLibrary;
 
@@ -84,6 +85,10 @@ namespace NBA_Stats_Tracker.Data
         public bool isInjured;
         public bool isNBAChampion;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
+
+        public PlayerStats() : this(new Player())
+        {
+        }
 
         public PlayerStats(Player player)
         {
@@ -523,9 +528,9 @@ namespace NBA_Stats_Tracker.Data
         public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
         {
             PlayerStats lps = new PlayerStats(new Player(-1, "", "League", "Averages", " ", " "));
-            for (int i = 0; i < playerStats.Count; i++)
+            foreach (int key in playerStats.Keys)
             {
-                lps.AddPlayerStats(playerStats[i]);
+                lps.AddPlayerStats(playerStats[key]);
             }
 
             TeamStats ls = new TeamStats("League");
@@ -678,10 +683,36 @@ namespace NBA_Stats_Tracker.Data
                 }
 
                 Date = Tools.getString(r, "Date").Split(' ')[0];
+                RealDate = Convert.ToDateTime(Date);
+
+                CalcMetrics(GameID, r);
             }
             catch (Exception)
             {
             }
+        }
+
+        public DateTime RealDate { get; set; }
+
+        private void CalcMetrics(int gameID, DataRow r)
+        {
+            TeamBoxScore bs = new TeamBoxScore(r);
+
+            var ts = new TeamStats(Team);
+            var tsopp = new TeamStats(OppTeam);
+
+            string Team1 = Tools.getString(r, "T1Name");
+            string Team2 = Tools.getString(r, "T2Name");
+
+            if (Team == Team1) TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            else TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+
+            PlayerStats ps = new PlayerStats();
+            ps.ID = PlayerID;
+            ps.AddBoxScore(this);
+            ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"), GmScOnly: true);
+
+            GmSc = ps.metrics["GmSc"];
         }
 
         public PlayerBoxScore(DataRow brRow, string team, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
@@ -753,6 +784,7 @@ namespace NBA_Stats_Tracker.Data
         public bool isStarter { get; set; }
         public bool playedInjured { get; set; }
         public bool isOut { get; set; }
+        public double GmSc { get; set; }
         public UInt16 MINS { get; set; }
         public UInt16 PTS { get; set; }
 

@@ -93,11 +93,12 @@
                     HorizontalAlignment="Stretch" IsReadOnly="True" MouseDoubleClick="dgvBoxScores_MouseDoubleClick" Name="dgvBoxScores"
                     VerticalAlignment="Stretch">
             <DataGrid.Columns>
-              <DataGridTextColumn Binding="{Binding Date}" Header="Date" />
+              <DataGridTextColumn Binding="{Binding RealDate, StringFormat=d}" Header="Date" />
               <DataGridTextColumn Binding="{Binding Team}" Header="Team" />
               <DataGridTextColumn Binding="{Binding OppTeam}" Header="Opponent" />
-              <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
-              <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                            <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
+                            <DataGridTextColumn Binding="{Binding GmSc}" Header="GmSc" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
               <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
               <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
               <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
@@ -121,7 +122,32 @@
           </DataGrid>
         </Grid>
       </TabItem>
-      <TabItem Header="Head-To-Head" Name="tabHTH">
+            <TabItem Header="Best Performances" Name="tabBest">
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame1" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                    <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6"
+                     Name="txbGame2" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                    <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6"
+                     Name="txbGame3" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                    <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame4" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+                    <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbGame5"
+                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+                    <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbGame6"
+                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Head-To-Head" Name="tabHTH">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
           <ComboBox Height="23" Margin="298,6,214,0" Width="153" DisplayMemberPath="Value" HorizontalAlignment="Center"
                     ItemsSource="{Binding PlayersList}" Name="cmbOppPlayer" SelectedValuePath="Key"

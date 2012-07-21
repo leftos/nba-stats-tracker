@@ -61,6 +61,7 @@ namespace NBA_Stats_Tracker.Windows
         private DataTable res;
         private TeamStats ts;
         private TeamStats tsopp;
+        private bool changingTimeframe;
 
         public LeagueOverviewWindow(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp,
                                     Dictionary<int, PlayerStats> pst)
@@ -102,8 +103,11 @@ namespace NBA_Stats_Tracker.Windows
 
             PopulateSeasonCombo();
 
+            changingTimeframe = true;
             dtpEnd.SelectedDate = DateTime.Today;
             dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
+            rbStatsAllTime.IsChecked = true;
+            changingTimeframe = false;
 
             dgvTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -182,32 +186,44 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+            if (!changingTimeframe)
             {
-                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
+                changingTimeframe = true;
+                if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+                {
+                    dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
+                }
+                rbStatsBetween.IsChecked = true;
+                reload = true;
+                lastShownTeamSeason = 0;
+                lastShownPlayerSeason = 0;
+                lastShownPlayoffSeason = 0;
+                lastShownLeadersSeason = 0;
+                lastShownBoxSeason = 0;
+                changingTimeframe = false;
+                tbcLeagueOverview_SelectionChanged(null, null);
             }
-            reload = true;
-            lastShownTeamSeason = 0;
-            lastShownPlayerSeason = 0;
-            lastShownPlayoffSeason = 0;
-            lastShownLeadersSeason = 0;
-            lastShownBoxSeason = 0;
-            tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+            if (!changingTimeframe)
             {
-                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
+                changingTimeframe = true;
+                if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+                {
+                    dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
+                }
+                rbStatsBetween.IsChecked = true;
+                reload = true;
+                lastShownTeamSeason = 0;
+                lastShownPlayerSeason = 0;
+                lastShownPlayoffSeason = 0;
+                lastShownLeadersSeason = 0;
+                lastShownBoxSeason = 0;
+                changingTimeframe = false;
+                tbcLeagueOverview_SelectionChanged(null, null);
             }
-            reload = true;
-            lastShownTeamSeason = 0;
-            lastShownPlayerSeason = 0;
-            lastShownPlayoffSeason = 0;
-            lastShownLeadersSeason = 0;
-            lastShownBoxSeason = 0;
-            tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void PopulateSeasonCombo()
@@ -614,7 +630,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
-                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
+                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key), true);
                     partialTST[i] = ts;
                     partialOppTST[i] = tsopp;
@@ -694,8 +710,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
-                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(res, ref ts, ref tsopp);
+                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key));
+                    ts.CalcMetrics(tsopp);
                     partialTST[i] = ts;
                     partialOppTST[i] = tsopp;
 
@@ -733,42 +750,30 @@ namespace NBA_Stats_Tracker.Windows
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            try
+            if (!changingTimeframe)
             {
-                dtpEnd.IsEnabled = false;
-                dtpStart.IsEnabled = false;
-                cmbSeasonNum.IsEnabled = true;
+                reload = true;
+                lastShownTeamSeason = 0;
+                lastShownPlayerSeason = 0;
+                lastShownPlayoffSeason = 0;
+                lastShownLeadersSeason = 0;
+                lastShownBoxSeason = 0;
+                tbcLeagueOverview_SelectionChanged(null, null);
             }
-            catch
-            {
-            }
-            reload = true;
-            lastShownTeamSeason = 0;
-            lastShownPlayerSeason = 0;
-            lastShownPlayoffSeason = 0;
-            lastShownLeadersSeason = 0;
-            lastShownBoxSeason = 0;
-            tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            try
+            if (!changingTimeframe)
             {
-                dtpEnd.IsEnabled = true;
-                dtpStart.IsEnabled = true;
-                cmbSeasonNum.IsEnabled = false;
+                reload = true;
+                lastShownTeamSeason = 0;
+                lastShownPlayerSeason = 0;
+                lastShownPlayoffSeason = 0;
+                lastShownLeadersSeason = 0;
+                lastShownBoxSeason = 0;
+                tbcLeagueOverview_SelectionChanged(null, null);
             }
-            catch
-            {
-            }
-            reload = true;
-            lastShownTeamSeason = 0;
-            lastShownPlayerSeason = 0;
-            lastShownPlayoffSeason = 0;
-            lastShownLeadersSeason = 0;
-            lastShownBoxSeason = 0;
-            tbcLeagueOverview_SelectionChanged(null, null);
         }
 
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)

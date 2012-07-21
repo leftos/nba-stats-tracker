@@ -390,10 +390,17 @@ MaxWidth="400" />
       </TabItem>
       <TabItem Header="Box Scores" Name="tabBoxScores">
         <Grid VerticalAlignment="Stretch">
-          <DataGrid AutoGenerateColumns="True" CanUserSortColumns="True" ItemsSource="{Binding Path=.}"
+                    <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True"
                     Name="dgvBoxScores" VerticalAlignment="Stretch" Margin="6,34,6,0" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                    AlternatingRowBackground="#FFE5E5E5" Height="227" IsReadOnly="True" />
-          <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="533,11,0,0"
+                    AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True" >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date"/>
+                            <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent"/>
+                            <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location"/>
+                            <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="533,11,0,0"
                        Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
           <RadioButton Content="Detailed" Height="16" HorizontalAlignment="Left" Margin="600,11,0,0"
                        Name="rbBSDetailed" VerticalAlignment="Top" Checked="rbBSDetailed_Checked" />
@@ -485,7 +492,7 @@ MaxWidth="400" />
             VerticalAlignment="Top" Width="24" Click="btnPrev_Click" />
     <Button Content="&gt;" Height="23" HorizontalAlignment="Center" Margin="420,12,232,0" Name="btnNext"
             VerticalAlignment="Top" Width="24" Click="btnNext_Click" />
-    <GroupBox HorizontalAlignment="Left" Margin="7,0,0,12" Name="groupBox1" Width="327" Header="Actions" Height="175"
+    <GroupBox HorizontalAlignment="Left" Margin="7,0,0,8" Name="groupBox1" Width="327" Header="Actions" Height="175"
               VerticalAlignment="Bottom">
       <Grid>
         <Button Content="Alternate Averages &amp; Rankings Window" Height="23" HorizontalAlignment="Center"
@@ -506,7 +513,7 @@ Text="Remember to save the stats before you switch to another team or season, or
         <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,121,0,0" Name="textBlock2"
                    Text="* Always remember to save each team's stats before switching teams or else your changes could be lost."
                    TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
-        <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="33,64,33,0"
+        <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="0,64,0,0"
                 Name="btnChangeName" VerticalAlignment="Top" Width="249" Click="btnChangeName_Click" />
       </Grid>
     </GroupBox>
@@ -532,5 +539,5 @@ Text="Remember to save the stats before you switch to another team or season, or
                   SelectedValuePath="Key" />
       </Grid>
     </GroupBox>
-  </Grid>
+    </Grid>
 </Window>

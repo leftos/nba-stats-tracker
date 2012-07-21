@@ -16,10 +16,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Windows;
@@ -29,6 +32,28 @@ namespace NBA_Stats_Tracker.Data
 {
     internal static class SQLiteIO
     {
+        private static bool upgrading;
+
+        public static bool SaveDatabaseAs(string file)
+        {
+            string oldDB = MainWindow.currentDB + ".tmp";
+            File.Copy(MainWindow.currentDB, oldDB, true);
+            MainWindow.currentDB = oldDB;
+            try
+            {
+                File.Delete(file);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Error while trying to overwrite file. Make sure the file is not in use by another program.");
+                return false;
+            }
+            saveAllSeasons(file);
+            File.Delete(oldDB);
+            return true;
+        }
+
         public static void saveAllSeasons(string file)
         {
             string oldDB = MainWindow.currentDB;
@@ -52,7 +77,7 @@ namespace NBA_Stats_Tracker.Data
                 }
             }
             LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                       ref MainWindow.pt, ref MainWindow.bshist, true, oldSeason,
+                       ref MainWindow.pt, ref MainWindow.bshist, oldSeason,
                        doNotLoadBoxScores: true);
         }
 
@@ -98,9 +123,11 @@ namespace NBA_Stats_Tracker.Data
                 DataTable res = MainWindow.db.GetDataTable(q);
                 List<int> idList = (from DataRow r in res.Rows select Convert.ToInt32(r[0].ToString())).ToList();
 
-                foreach (BoxScoreEntry bse in MainWindow.bshist)
+                var sqlinsert = new List<Dictionary<string, string>>();
+                for (int i = 0; i < MainWindow.bshist.Count; i++)
                 {
-                    string md5 = Tools.GetMD5(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    BoxScoreEntry bse = MainWindow.bshist[i];
+                    string md5 = Tools.GetMD5((new Random()).Next().ToString());
                     if ((!FileExists) || (bse.bs.id == -1) || (!idList.Contains(bse.bs.id)) || (bse.mustUpdate))
                     {
                         var dict2 = new Dictionary<string, string>
@@ -154,23 +181,20 @@ namespace NBA_Stats_Tracker.Data
                             int lastid =
                                 Convert.ToInt32(
                                     MainWindow.db.GetDataTable("select GameID from GameResults where HASH LIKE \"" + md5 +
-                                                               "\"").
-                                        Rows
-                                        [0][
-                                            "GameID"].ToString());
+                                                               "\"").Rows[0]["GameID"].ToString());
                             bse.bs.id = lastid;
                         }
                         MainWindow.db.Delete("PlayerResults", "GameID = " + bse.bs.id);
 
-                        var sqlinsert = new List<Dictionary<string, string>>(500);
-                        var used = new List<int>();
-                        foreach (PlayerBoxScore pbs in bse.pbsList)
+                        //var used = new List<int>();
+                        for (int j = 0; j < bse.pbsList.Count; j++)
                         {
-                            int id = GetFreePlayerResultID(file, used);
-                            used.Add(id);
+                            PlayerBoxScore pbs = bse.pbsList[j];
+                            //int id = GetFreePlayerResultID(file, used);
+                            //used.Add(id);
                             dict2 = new Dictionary<string, string>
                                         {
-                                            {"ID", id.ToString()},
+                                            //{"ID", id.ToString()},
                                             {"GameID", bse.bs.id.ToString()},
                                             {"PlayerID", pbs.PlayerID.ToString()},
                                             {"Team", pbs.Team},
@@ -195,21 +219,27 @@ namespace NBA_Stats_Tracker.Data
                                         };
 
                             sqlinsert.Add(dict2);
-
+                            /*
                             if (sqlinsert.Count == 500)
                             {
-                                MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                                int linesAffected = MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                                //Thread.Sleep(2000);
+                                DataTable dt = MainWindow.db.GetDataTable("SELECT * FROM PlayerResults");
+                                Debug.Print(dt.Rows.Count.ToString() + " " + linesAffected.ToString());
                                 sqlinsert.Clear();
                             }
-
+                            */
                             //db.Insert("PlayerResults", dict2);
                         }
-
-                        if (sqlinsert.Count > 0)
-                        {
-                            MainWindow.db.InsertMany("PlayerResults", sqlinsert);
-                        }
                     }
+                }
+                if (sqlinsert.Count > 0)
+                {
+                    MainWindow.db.InsertManyTransaction("PlayerResults", sqlinsert);
+                    //int linesAffected = MainWindow.db.InsertMany("PlayerResults", sqlinsert);
+                    //Thread.Sleep(500);
+                    //DataTable dt = MainWindow.db.GetDataTable("SELECT * FROM PlayerResults");
+                    //Debug.Print(dt.Rows.Count.ToString() + " " + linesAffected.ToString());
                 }
             }
 
@@ -352,8 +382,8 @@ namespace NBA_Stats_Tracker.Data
 
                 if (i == 500)
                 {
-                    _db.InsertMany(teamsT, seasonList);
-                    _db.InsertMany(pl_teamsT, playoffList);
+                    _db.InsertManyUnion(teamsT, seasonList);
+                    _db.InsertManyUnion(pl_teamsT, playoffList);
                     i = 0;
                     seasonList.Clear();
                     playoffList.Clear();
@@ -379,8 +409,8 @@ namespace NBA_Stats_Tracker.Data
             }
             if (i > 0)
             {
-                _db.InsertMany(teamsT, seasonList);
-                _db.InsertMany(pl_teamsT, playoffList);
+                _db.InsertManyUnion(teamsT, seasonList);
+                _db.InsertManyUnion(pl_teamsT, playoffList);
             }
 
             seasonList = new List<Dictionary<string, string>>(500);
@@ -452,8 +482,8 @@ namespace NBA_Stats_Tracker.Data
 
                 if (i == 500)
                 {
-                    _db.InsertMany(oppT, seasonList);
-                    _db.InsertMany(pl_oppT, playoffList);
+                    _db.InsertManyUnion(oppT, seasonList);
+                    _db.InsertManyUnion(pl_oppT, playoffList);
                     i = 0;
                     seasonList.Clear();
                     playoffList.Clear();
@@ -480,8 +510,8 @@ namespace NBA_Stats_Tracker.Data
             }
             if (i > 0)
             {
-                _db.InsertMany(oppT, seasonList);
-                _db.InsertMany(pl_oppT, playoffList);
+                _db.InsertManyUnion(oppT, seasonList);
+                _db.InsertManyUnion(pl_oppT, playoffList);
             }
         }
 
@@ -556,18 +586,19 @@ namespace NBA_Stats_Tracker.Data
                     _db.Insert(playersT, dict);
                 }
                 */
-
+                /*
                 if (i == 500)
                 {
                     _db.InsertMany(playersT, sqlinsert);
                     i = 0;
                     sqlinsert.Clear();
                 }
+                */
             }
 
             if (i > 0)
             {
-                _db.InsertMany(playersT, sqlinsert);
+                _db.InsertManyTransaction(playersT, sqlinsert);
             }
         }
 
@@ -587,19 +618,18 @@ namespace NBA_Stats_Tracker.Data
                     qr = "DROP TABLE IF EXISTS \"PlayerResults\"";
                     sqldb.ExecuteNonQuery(qr);
                     qr =
-                        "CREATE TABLE \"PlayerResults\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"Team\" TEXT NOT NULL ,\"isStarter\" TEXT, \"playedInjured\" TEXT, \"isOut\" TEXT, \"MINS\" INTEGER NOT NULL  DEFAULT (0), \"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0) )";
+                        "CREATE TABLE \"PlayerResults\" (\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"Team\" TEXT NOT NULL ,\"isStarter\" TEXT, \"playedInjured\" TEXT, \"isOut\" TEXT, \"MINS\" INTEGER NOT NULL  DEFAULT (0), \"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0), PRIMARY KEY (\"GameID\", \"PlayerID\") )";
                     sqldb.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"Misc\"";
                     sqldb.ExecuteNonQuery(qr);
-                    qr = "CREATE TABLE \"Misc\" (\"CurSeason\" INTEGER);";
+                    qr = "CREATE TABLE \"Misc\" (\"Setting\" TEXT PRIMARY KEY,\"Value\" TEXT)";
                     sqldb.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"SeasonNames\"";
                     sqldb.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
                     sqldb.ExecuteNonQuery(qr);
                     sqldb.Insert("SeasonNames",
-                                 new Dictionary<string, string>
-                                     {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
+                                 new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -915,12 +945,16 @@ namespace NBA_Stats_Tracker.Data
                                       out Dictionary<int, TeamStats> _tstopp,
                                       out Dictionary<int, PlayerStats> pst,
                                       out SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
-                                      ref IList<BoxScoreEntry> _bshist, bool updateCombo = true,
+                                      ref IList<BoxScoreEntry> _bshist,
                                       int _curSeason = 0, bool doNotLoadBoxScores = false)
         {
             MainWindow.loadingSeason = true;
 
-            UpgradeDB(file);
+            bool mustSave = false;
+            if (!upgrading)
+            {
+                mustSave = UpgradeDB(file);
+            }
 
             int maxSeason = getMaxSeason(file);
 
@@ -932,30 +966,15 @@ namespace NBA_Stats_Tracker.Data
 
             if (!doNotLoadBoxScores) _bshist = GetSeasonBoxScoresFromDatabase(file, _curSeason, maxSeason);
 
-            /*
-            try
-            {
-                q = "select CurSeason from Misc limit 1;";
-                res = _db.GetDataTable(q);
-                curSeason = Convert.ToInt32(res.Rows[0]["CurSeason"].ToString());
-            }
-            catch
-            {
-                curSeason = 1;
-            }
-            */
             MainWindow.ChangeSeason(_curSeason, maxSeason);
-
-            /*
-            if (updateCombo)
+            
+            if (mustSave)
             {
-                mwInstance.cmbTeam1.Items.Clear();
-                foreach (KeyValuePair<string, int> kvp in _TeamOrder)
-                {
-                    mwInstance.cmbTeam1.Items.Add(kvp.Key);
-                }
+                upgrading = true;
+                MainWindow.currentDB = file;
+                SaveDatabaseAs(file);
+                upgrading = false;
             }
-            */
 
             MainWindow.loadingSeason = false;
         }
@@ -964,18 +983,21 @@ namespace NBA_Stats_Tracker.Data
         /// Checks for missing and changed fields in older databases and upgrades them to the current format.
         /// </summary>
         /// <param name="file">The path to the database.</param>
-        private static void UpgradeDB(string file)
+        private static bool UpgradeDB(string file)
         {
             var db = new SQLiteDatabase(file);
+
+            bool mustSave = false;
 
             // Check for missing SeasonNames table (v0.11)
 
             #region SeasonNames
 
             string qr = "SELECT * FROM SeasonNames";
+            DataTable dt;
             try
             {
-                DataTable dt = db.GetDataTable(qr);
+                dt = db.GetDataTable(qr);
             }
             catch (Exception)
             {
@@ -991,6 +1013,57 @@ namespace NBA_Stats_Tracker.Data
             }
 
             #endregion
+
+            #region Misc
+
+            qr = "SELECT * FROM sqlite_master";
+            try
+            {
+                dt = db.GetDataTable(qr); foreach (DataRow dr in dt.Rows)
+                {
+                    if (dr["name"].ToString() == "Misc")
+                    {
+                        if (dr["sql"].ToString().Contains("CurSeason"))
+                        {
+                            qr = "DROP TABLE IF EXISTS \"Misc\"";
+                            db.ExecuteNonQuery(qr);
+                            qr = "CREATE TABLE \"Misc\" (\"Setting\" TEXT PRIMARY KEY,\"Value\" TEXT)";
+                            db.ExecuteNonQuery(qr);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                
+            }
+
+            #endregion
+
+            #region PlayerResults
+
+            qr = "SELECT * FROM sqlite_master";
+            try
+            {
+                dt = db.GetDataTable(qr); foreach (DataRow dr in dt.Rows)
+                {
+                    if (dr["name"].ToString() == "PlayerResults")
+                    {
+                        if (dr["sql"].ToString().Contains("\"ID\""))
+                        {
+                            mustSave = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                
+            }
+
+            #endregion
+
+            return mustSave;
         }
 
         public static IList<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file)
@@ -1048,7 +1121,7 @@ namespace NBA_Stats_Tracker.Data
             IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
             Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
                                                             {
-                                                                var bs = new BoxScore(r);
+                                                                var bs = new TeamBoxScore(r);
 
                                                                 var bse = new BoxScoreEntry(bs)
                                                                               {

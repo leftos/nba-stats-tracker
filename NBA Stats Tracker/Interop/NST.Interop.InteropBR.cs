@@ -538,7 +538,7 @@ namespace NBA_Stats_Tracker.Interop
             DataTable awayDT = ds.Tables[0];
             DataTable homeDT = ds.Tables[1];
 
-            var bs = new BoxScore(ds, parts);
+            var bs = new TeamBoxScore(ds, parts);
             bse = new BoxScoreEntry(bs);
             bse.date = bs.gamedate;
             bse.pbsList = new List<PlayerBoxScore>();

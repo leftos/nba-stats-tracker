@@ -86,16 +86,16 @@ NBA 2K12 Features
 	REditor
 		1. From in-game, select Play Game, and let it save your career.
 		2. Alt-Tab out of the game and start REditor.
-		3. Open your save in REditor, export everything to TSV (File > Export to TSV).
+		3. Open your save in REditor, export everything to CSV (File > Export to CSV).
 		4. Start NBA Stats Tracker.
 		5. Open your database, or create a new one if you haven't previously done so.
-		6. Click on Import from 2K12 Save, select the folder you saved the TSVs into in Step 3.
+		6. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 3.
 		7. Save the database.
 		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again.
 		9. Go back to the tool, open the database you saved before the game.
 		10. Click on Update with Box Score, enter the Box Score and click OK.
-		11. Click on Export to 2K12 Save, select the folder you saved the TSVs into in Step 3.
-		12. Go to REditor, open your career again, import everything from TSV (File > Import from TSV).
+		11. Click on Export to 2K12 Save, select the folder you saved the CSVs into in Step 3.
+		12. Go to REditor, open your career again, import everything from CSV (File > Import from CSV).
 		13. Save your career in REditor.
 		14. You're done!
 
@@ -183,6 +183,17 @@ Development Credits
 	
 	
 Version History
+	v0.11.6
+		- Improvement: Best Performances tab added to Player Overview
+		- Improvement: Improved saving speed of Players and Player Box Scores
+		- Improvement: Upgraded System.Data.SQLite to v1.0.81.0
+		- Fix: Fixed disappearing player box scores when saving
+		- Improvement/Fix: Various improvements and fixes to Team, Player & League Overview, most of them regarding specific timeframe handling
+
+	v0.11.5.4
+		- Fix: Fixed bug that would show an error instead of the "Select Active Teams" screen when no teams had current season stats set in a 2K12 save
+		- Fix: Fixed crash when trying to view League Overview in a league where no teams had played any games
+
 	v0.11.5.3
 		- Fix: Fixed missing stat records handling when exporting to REditor CSVs
 		- Fix: Fixed crashes when importing/exporting to REditor CSVs when current culture (regional settings) had a list separator other than comma (",")

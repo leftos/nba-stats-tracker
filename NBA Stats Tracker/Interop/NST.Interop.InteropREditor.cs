@@ -98,13 +98,13 @@ namespace NBA_Stats_Tracker.Interop
                                                                                  if (team["StatCurS"] != "-1") return true;
                                                                                  return false;
                                                                              });
-
+            /*
             if (activeTeams.Count == 0)
             {
                 MessageBox.Show("No Team Stats found in save.");
                 return -1;
             }
-
+            */
             if (activeTeams.Count < 30)
             {
                 DualListWindow dlw = new DualListWindow(validTeams, activeTeams);
