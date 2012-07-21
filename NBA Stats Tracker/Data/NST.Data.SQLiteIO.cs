@@ -16,11 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using LeftosCommonLibrary;
@@ -90,7 +87,8 @@ namespace NBA_Stats_Tracker.Data
         public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
                                                 Dictionary<int, TeamStats> tstoppToSave,
                                                 Dictionary<int, PlayerStats> pstToSave,
-                                                int season, int maxSeason, bool doNotSaveBoxScores = false, bool partialUpdate = false)
+                                                int season, int maxSeason, bool doNotSaveBoxScores = false,
+                                                bool partialUpdate = false)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
             // we won't delete the file before all this.
@@ -629,7 +627,8 @@ namespace NBA_Stats_Tracker.Data
                     qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
                     sqldb.ExecuteNonQuery(qr);
                     sqldb.Insert("SeasonNames",
-                                 new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
+                                 new Dictionary<string, string>
+                                     {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -967,7 +966,7 @@ namespace NBA_Stats_Tracker.Data
             if (!doNotLoadBoxScores) _bshist = GetSeasonBoxScoresFromDatabase(file, _curSeason, maxSeason);
 
             MainWindow.ChangeSeason(_curSeason, maxSeason);
-            
+
             if (mustSave)
             {
                 upgrading = true;
@@ -1019,7 +1018,8 @@ namespace NBA_Stats_Tracker.Data
             qr = "SELECT * FROM sqlite_master";
             try
             {
-                dt = db.GetDataTable(qr); foreach (DataRow dr in dt.Rows)
+                dt = db.GetDataTable(qr);
+                foreach (DataRow dr in dt.Rows)
                 {
                     if (dr["name"].ToString() == "Misc")
                     {
@@ -1035,7 +1035,6 @@ namespace NBA_Stats_Tracker.Data
             }
             catch (Exception)
             {
-                
             }
 
             #endregion
@@ -1045,7 +1044,8 @@ namespace NBA_Stats_Tracker.Data
             qr = "SELECT * FROM sqlite_master";
             try
             {
-                dt = db.GetDataTable(qr); foreach (DataRow dr in dt.Rows)
+                dt = db.GetDataTable(qr);
+                foreach (DataRow dr in dt.Rows)
                 {
                     if (dr["name"].ToString() == "PlayerResults")
                     {
@@ -1058,7 +1058,6 @@ namespace NBA_Stats_Tracker.Data
             }
             catch (Exception)
             {
-                
             }
 
             #endregion

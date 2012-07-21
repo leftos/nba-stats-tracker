@@ -404,7 +404,7 @@ namespace NBA_Stats_Tracker.Interop
                         for (int i = 0; i < 16; i++)
                         {
                             ms.Seek(tst[TeamOrder[pt.teams[i]]].pl_offset, SeekOrigin.Begin);
-                            byte[] pl_winloss = new byte[2];
+                            var pl_winloss = new byte[2];
                             tst[TeamOrder[pt.teams[i]]].pl_winloss.CopyTo(pl_winloss, 0);
                             ms.Write(pl_winloss, 0, 2);
                             for (int j = 0; j < 18; j++)
@@ -417,7 +417,7 @@ namespace NBA_Stats_Tracker.Interop
                     for (int i = 0; i < 30; i++)
                     {
                         ms.Seek(tst[i].offset, SeekOrigin.Begin);
-                        byte[] winloss = new byte[2];
+                        var winloss = new byte[2];
                         tst[i].winloss.CopyTo(winloss, 0);
                         ms.Write(winloss, 0, 2);
                         for (int j = 0; j < 18; j++)

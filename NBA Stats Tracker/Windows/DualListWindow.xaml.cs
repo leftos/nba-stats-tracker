@@ -33,27 +33,22 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class DualListWindow
     {
-        private readonly List<Dictionary<string, string>> _validTeams;
         private readonly List<Dictionary<string, string>> _activeTeams;
         private readonly int _curSeason;
         private readonly string _currentDB;
         private readonly int _maxSeason;
+        private readonly List<Dictionary<string, string>> _validTeams;
+
+        private readonly Mode mode;
         private bool changed = true;
-
-        private enum Mode
-        {
-            REditor,
-            Hidden
-        }
-
-        private Mode mode;
 
         private DualListWindow()
         {
             InitializeComponent();
         }
 
-        public DualListWindow(List<Dictionary<string,string>> validTeams, List<Dictionary<string,string>> activeTeams) :this()
+        public DualListWindow(List<Dictionary<string, string>> validTeams, List<Dictionary<string, string>> activeTeams)
+            : this()
         {
             _validTeams = validTeams;
             _activeTeams = activeTeams;
@@ -76,7 +71,7 @@ namespace NBA_Stats_Tracker.Windows
             btnLoadList.Visibility = Visibility.Visible;
         }
 
-        public DualListWindow(string currentDB, int curSeason, int maxSeason) :this()
+        public DualListWindow(string currentDB, int curSeason, int maxSeason) : this()
         {
             mode = Mode.Hidden;
 
@@ -238,7 +233,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 MainWindow.selectedTeams = new List<Dictionary<string, string>>(_activeTeams);
-                foreach (var team in lstEnabled.Items)
+                foreach (object team in lstEnabled.Items)
                 {
                     MainWindow.selectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
                                                                       {
@@ -263,23 +258,24 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (mode == Mode.REditor)
             {
-                OpenFileDialog ofd = new OpenFileDialog()
-                                         {
-                                             Title = "Load Active Teams List",
-                                             InitialDirectory = App.AppDocsPath,
-                                             Filter = "Active Teams List (*.red)|*.red"
-                                         };
+                var ofd = new OpenFileDialog
+                              {
+                                  Title = "Load Active Teams List",
+                                  InitialDirectory = App.AppDocsPath,
+                                  Filter = "Active Teams List (*.red)|*.red"
+                              };
                 ofd.ShowDialog();
 
                 if (String.IsNullOrWhiteSpace(ofd.FileName)) return;
 
                 string stg = File.ReadAllText(ofd.FileName);
-                string[] lines = stg.Split(new char[]{'\n'});
-                foreach (var line in lines)
+                string[] lines = stg.Split(new[] {'\n'});
+                foreach (string line in lines)
                 {
                     if (line.StartsWith("Active$$"))
                     {
-                        List<string> enabledTeams = new List<string>(line.Substring(8).Split(new string[] {"$%"}, StringSplitOptions.None));
+                        var enabledTeams =
+                            new List<string>(line.Substring(8).Split(new[] {"$%"}, StringSplitOptions.None));
                         foreach (string team in enabledTeams)
                         {
                             if (lstDisabled.Items.Contains(team))
@@ -302,5 +298,15 @@ namespace NBA_Stats_Tracker.Windows
                 changed = false;
             }
         }
+
+        #region Nested type: Mode
+
+        private enum Mode
+        {
+            REditor,
+            Hidden
+        }
+
+        #endregion
     }
 }

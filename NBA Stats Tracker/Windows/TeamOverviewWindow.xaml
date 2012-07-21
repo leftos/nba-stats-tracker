@@ -283,8 +283,7 @@ MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="OREBR" SortMemberPath="OREBR"
-                                      ClipboardContentBinding="{Binding OREBR}">
+              <DataGridTemplateColumn Header="OREBR" SortMemberPath="OREBR" ClipboardContentBinding="{Binding OREBR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding OREBR, StringFormat=F1}">
@@ -297,8 +296,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR"
-                                      ClipboardContentBinding="{Binding ASTR}">
+              <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR" ClipboardContentBinding="{Binding ASTR}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding ASTR, StringFormat=F1}">
@@ -376,32 +374,32 @@ MaxWidth="400" />
           </Grid.ColumnDefinitions>
           <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer1" Text=""
                      TextWrapping="Wrap" VerticalAlignment="Stretch" />
-          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6"
-                     Name="txbPlayer2" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6"
-                     Name="txbPlayer3" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
+          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer2" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" />
+          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer3" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" />
           <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer4" Text=""
                      TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
-          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer5"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
-          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer6"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer5" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer6" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
         </Grid>
       </TabItem>
       <TabItem Header="Box Scores" Name="tabBoxScores">
         <Grid VerticalAlignment="Stretch">
-                    <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True"
-                    Name="dgvBoxScores" VerticalAlignment="Stretch" Margin="6,34,6,0" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                    AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True" >
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date"/>
-                            <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent"/>
-                            <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location"/>
-                            <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="533,11,0,0"
-                       Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
+          <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True" Name="dgvBoxScores"
+                    VerticalAlignment="Stretch" Margin="6,34,6,0" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
+                    AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
+              <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent" />
+              <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location" />
+              <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
+            </DataGrid.Columns>
+          </DataGrid>
+          <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True"
+                       Margin="533,11,0,0" Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
           <RadioButton Content="Detailed" Height="16" HorizontalAlignment="Left" Margin="600,11,0,0"
                        Name="rbBSDetailed" VerticalAlignment="Top" Checked="rbBSDetailed_Checked" />
         </Grid>
@@ -430,10 +428,10 @@ MaxWidth="400" />
         <Grid VerticalAlignment="Stretch">
           <ComboBox Height="23" HorizontalAlignment="Center" Margin="261,6,259,0" Name="cmbOppTeamBest"
                     VerticalAlignment="Top" Width="153" SelectionChanged="cmbOppTeam_SelectionChanged" />
-          <Button Content="&lt;" Height="23" HorizontalAlignment="Center" Margin="231,6,418,0"
-                  Name="btnPrevOppBest" VerticalAlignment="Top" Width="24" Click="btnPrevOpp_Click" />
-          <Button Content="&gt;" Height="23" HorizontalAlignment="Center" Margin="419,6,230,0"
-                  Name="btnNextOppBest" VerticalAlignment="Top" Width="24" Click="btnNextOpp_Click" />
+          <Button Content="&lt;" Height="23" HorizontalAlignment="Center" Margin="231,6,418,0" Name="btnPrevOppBest"
+                  VerticalAlignment="Top" Width="24" Click="btnPrevOpp_Click" />
+          <Button Content="&gt;" Height="23" HorizontalAlignment="Center" Margin="419,6,230,0" Name="btnNextOppBest"
+                  VerticalAlignment="Top" Width="24" Click="btnNextOpp_Click" />
           <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Left" Margin="531,11,0,0"
                        Name="rbHTHStatsAnyoneBest" VerticalAlignment="Top" IsChecked="True" Checked="rbHTHStatsAnyone_Checked" />
           <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Left" Margin="598,11,0,0"
@@ -451,12 +449,12 @@ MaxWidth="400" />
                   <ColumnDefinition />
                   <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbTeam1"
+                <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbTeam1" Text=""
+                           TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbTeam2"
                            Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-                <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6"
-                           Name="txbTeam2" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-                <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6"
-                           Name="txbTeam3" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbTeam3"
+                           Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
               </Grid>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="Opponent" HorizontalAlignment="Stretch" Margin="0,0,0,0"
@@ -467,12 +465,12 @@ MaxWidth="400" />
                   <ColumnDefinition />
                   <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbOpp1"
+                <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbOpp1" Text=""
+                           TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbOpp2"
                            Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-                <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6"
-                           Name="txbOpp2" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-                <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6"
-                           Name="txbOpp3" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
+                <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbOpp3"
+                           Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
               </Grid>
             </GroupBox>
           </Grid>
@@ -539,5 +537,5 @@ Text="Remember to save the stats before you switch to another team or season, or
                   SelectedValuePath="Key" />
       </Grid>
     </GroupBox>
-    </Grid>
+  </Grid>
 </Window>

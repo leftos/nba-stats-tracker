@@ -20,7 +20,7 @@
            VerticalAlignment="Top" />
     <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="317,371,0,0" Name="btnCancel"
             VerticalAlignment="Top" Width="111" Click="btnCancel_Click" />
-    <Button Content="Load Active Teams" Height="23" HorizontalAlignment="Left" Margin="255,232,0,0"
-            Name="btnLoadList" VerticalAlignment="Top" Width="111" Click="btnLoadList_Click" />
+    <Button Content="Load Active Teams" Height="23" HorizontalAlignment="Left" Margin="255,232,0,0" Name="btnLoadList"
+            VerticalAlignment="Top" Width="111" Click="btnLoadList_Click" />
   </Grid>
 </Window>

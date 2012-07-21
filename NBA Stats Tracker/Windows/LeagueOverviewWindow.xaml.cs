@@ -47,10 +47,11 @@ namespace NBA_Stats_Tracker.Windows
         private static string message;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
-        private readonly DataTable dt_pts;
         private readonly DataTable dt_lpts;
-        private readonly DataTable dt_ts;
         private readonly DataTable dt_lts;
+        private readonly DataTable dt_pts;
+        private readonly DataTable dt_ts;
+        private bool changingTimeframe;
 /*
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
 */
@@ -61,7 +62,6 @@ namespace NBA_Stats_Tracker.Windows
         private DataTable res;
         private TeamStats ts;
         private TeamStats tsopp;
-        private bool changingTimeframe;
 
         public LeagueOverviewWindow(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp,
                                     Dictionary<int, PlayerStats> pst)
@@ -387,7 +387,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     psrList.Add(psr);
                 }
-                var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
+                PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
                 lpsr.Add(new PlayerStatsRow(leagueAverages));
                 lpmsr.Add(new PlayerStatsRow(leagueAverages));
             }
@@ -467,7 +467,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     psrList.Add(psr);
                 }
-                var leagueAverages = PlayerStats.CalculateLeagueAverages(pstBetween, partialTST);
+                PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(pstBetween, partialTST);
                 lpsr.Add(new PlayerStatsRow(leagueAverages));
                 lpmsr.Add(new PlayerStatsRow(leagueAverages));
             }
@@ -492,7 +492,7 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                var templist = pmsrList.ToList();
+                List<PlayerStatsRow> templist = pmsrList.ToList();
                 /*
                 if (double.IsNaN(templist[0].PER))
                 {
@@ -506,29 +506,35 @@ namespace NBA_Stats_Tracker.Windows
                 templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 templist.Reverse();
 
-                var psr1 = templist[0];
+                PlayerStatsRow psr1 = templist[0];
                 string text = psr1.GetBestStats(5);
-                txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
+                txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " +
+                                  psr1.TeamFDisplay + ")\n\n" + text;
 
-                var psr2 = templist[1];
+                PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n" + text;
+                txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " +
+                                  psr2.TeamFDisplay + ")\n\n" + text;
 
-                var psr3 = templist[2];
+                PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n" + text;
+                txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " +
+                                  psr3.TeamFDisplay + ")\n\n" + text;
 
-                var psr4 = templist[3];
+                PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n" + text;
+                txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " +
+                                  psr4.TeamFDisplay + ")\n\n" + text;
 
-                var psr5 = templist[4];
+                PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n" + text;
+                txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " +
+                                  psr5.TeamFDisplay + ")\n\n" + text;
 
-                var psr6 = templist[5];
+                PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n" + text;
+                txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " +
+                                  psr6.TeamFDisplay + ")\n\n" + text;
             }
             catch (Exception)
             {
@@ -650,7 +656,7 @@ namespace NBA_Stats_Tracker.Windows
 
             // DataTable's ready, set DataView and fill DataGrid
             var dv_pts = new DataView(dt_pts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};
-            var dv_lpts = new DataView(dt_lpts) { AllowNew = false, AllowEdit = false};
+            var dv_lpts = new DataView(dt_lpts) {AllowNew = false, AllowEdit = false};
 
             dgvPlayoffStats.DataContext = dv_pts;
             dgvLeaguePlayoffStats.DataContext = dv_lpts;
@@ -658,8 +664,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PrepareTeamStats()
         {
-            List<TeamMetricStatsRow> tmsrList = new List<TeamMetricStatsRow>();
-            List<TeamMetricStatsRow> lssr = new List<TeamMetricStatsRow>();
+            var tmsrList = new List<TeamMetricStatsRow>();
+            var lssr = new List<TeamMetricStatsRow>();
 
             var ls = new TeamStats("League");
 
@@ -691,8 +697,8 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                Dictionary<int, TeamStats> partialTST = new Dictionary<int, TeamStats>();
-                Dictionary<int, TeamStats> partialOppTST = new Dictionary<int, TeamStats>();
+                var partialTST = new Dictionary<int, TeamStats>();
+                var partialOppTST = new Dictionary<int, TeamStats>();
 
                 int i = 0;
                 foreach (var kvp in MainWindow.TeamOrder)

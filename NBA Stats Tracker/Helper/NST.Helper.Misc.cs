@@ -40,7 +40,7 @@ namespace NBA_Stats_Tracker.Helper
             // Check if the object already has been copied
             if (copies.TryGetValue(original, out tmpResult))
             {
-                return (T)tmpResult;
+                return (T) tmpResult;
             }
             else
             {
@@ -50,11 +50,14 @@ namespace NBA_Stats_Tracker.Helper
                         * the constructor if the constructor if there is no default constructor
                         * or you change it to Activator.CreateInstance<T>() if there is always
                         * a default constructor */
-                    result = (T)Activator.CreateInstance(t, args);
+                    result = (T) Activator.CreateInstance(t, args);
                     copies.Add(original, result);
 
                     // Maybe you need here some more BindingFlags
-                    foreach (FieldInfo field in t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
+                    foreach (
+                        FieldInfo field in
+                            t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy |
+                                        BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
@@ -66,7 +69,7 @@ namespace NBA_Stats_Tracker.Helper
 
                         /* You can check here for ft.GetCustomAttributes(typeof(SerializableAttribute), false).Length != 0 to 
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
-                        if (fieldValue != null && !ft.IsValueType && ft != typeof(String))
+                        if (fieldValue != null && !ft.IsValueType && ft != typeof (String))
                         {
                             fieldValue = fieldValue.DeepClone(copies);
                             /* Does not support parameters for subobjects nativly, but you can provide them when using
@@ -80,15 +83,15 @@ namespace NBA_Stats_Tracker.Helper
                 else
                 {
                     // Handle arrays here
-                    Array originalArray = (Array)(Object)original;
-                    Array resultArray = (Array)originalArray.Clone();
+                    var originalArray = (Array) (Object) original;
+                    var resultArray = (Array) originalArray.Clone();
                     copies.Add(original, resultArray);
 
                     // If the type is not a value type we need to copy each of the elements
                     if (!t.GetElementType().IsValueType)
                     {
-                        Int32[] lengths = new Int32[t.GetArrayRank()];
-                        Int32[] indicies = new Int32[lengths.Length];
+                        var lengths = new Int32[t.GetArrayRank()];
+                        var indicies = new Int32[lengths.Length];
                         // Get lengths from original array
                         for (int i = 0; i < lengths.Length; i++)
                         {
@@ -104,10 +107,9 @@ namespace NBA_Stats_Tracker.Helper
                             Object value = resultArray.GetValue(indicies);
                             if (value != null)
                                 resultArray.SetValue(value.DeepClone(copies), indicies);
-
                         }
                     }
-                    result = (T)(Object)resultArray;
+                    result = (T) (Object) resultArray;
                 }
                 return result;
             }
@@ -232,7 +234,7 @@ namespace NBA_Stats_Tracker.Helper
 
         public static int GetRegistrySetting(string setting, int defaultValue)
         {
-            var rk = Registry.CurrentUser;
+            RegistryKey rk = Registry.CurrentUser;
             int settingValue = defaultValue;
             try
             {
@@ -251,7 +253,7 @@ namespace NBA_Stats_Tracker.Helper
 
         public static string GetRegistrySetting(string setting, string defaultValue)
         {
-            var rk = Registry.CurrentUser;
+            RegistryKey rk = Registry.CurrentUser;
             string settingValue = defaultValue;
             try
             {

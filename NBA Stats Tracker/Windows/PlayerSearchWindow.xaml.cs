@@ -16,9 +16,7 @@
 #region Using Directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -33,6 +31,7 @@ using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
+using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
 #endregion
 
@@ -43,6 +42,48 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class PlayerSearchWindow
     {
+        private readonly List<string> Averages = new List<string>
+                                                     {
+                                                         "PPG",
+                                                         "FG%",
+                                                         "FGeff",
+                                                         "3P%",
+                                                         "3Peff",
+                                                         "FT%",
+                                                         "FTeff",
+                                                         "RPG",
+                                                         "ORPG",
+                                                         "APG",
+                                                         "SPG",
+                                                         "BPG",
+                                                         "TPG",
+                                                         "FPG"
+                                                     };
+
+        private readonly List<string> Metrics = new List<string>
+                                                    {
+                                                        "PER",
+                                                        "EFF",
+                                                        "GmSc",
+                                                        "TS%",
+                                                        "PPR",
+                                                        "OREB%",
+                                                        "DREB%",
+                                                        "AST%",
+                                                        "STL%",
+                                                        "BLK%",
+                                                        "TO%",
+                                                        "USG%",
+                                                        "PTSR",
+                                                        "REBR",
+                                                        "OREBR",
+                                                        "ASTR",
+                                                        "BLKR",
+                                                        "STLR",
+                                                        "TOR",
+                                                        "FTR"
+                                                    };
+
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
@@ -67,51 +108,10 @@ namespace NBA_Stats_Tracker.Windows
                                                        "FOUL"
                                                    };
 
-        private readonly List<string> Averages = new List<string>
-                                                     {
-                                                         "PPG",
-                                                         "FG%",
-                                                         "FGeff",
-                                                         "3P%",
-                                                         "3Peff",
-                                                         "FT%",
-                                                         "FTeff",
-                                                         "RPG",
-                                                         "ORPG",
-                                                         "APG",
-                                                         "SPG",
-                                                         "BPG",
-                                                         "TPG",
-                                                         "FPG"
-                                                     }; 
-
-        private readonly List<string> Metrics = new List<string>
-                                                    {
-                                                        "PER",
-                                                        "EFF",
-                                                        "GmSc",
-                                                        "TS%",
-                                                        "PPR",
-                                                        "OREB%",
-                                                        "DREB%",
-                                                        "AST%",
-                                                        "STL%",
-                                                        "BLK%",
-                                                        "TO%",
-                                                        "USG%",
-                                                        "PTSR",
-                                                        "REBR",
-                                                        "OREBR",
-                                                        "ASTR",
-                                                        "BLKR",
-                                                        "STLR",
-                                                        "TOR",
-                                                        "FTR"
-                                                    }; 
+        private readonly string folder = App.AppDocsPath + @"\Search Filters";
 
         private readonly int maxSeason;
         private int curSeason;
-        private string folder = App.AppDocsPath + @"\Search Filters";
 
         public PlayerSearchWindow()
         {
@@ -190,7 +190,9 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.LoadSeason();
 
             List<string> teams =
-                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
+                (from kvp in MainWindow.TeamOrder
+                 where !MainWindow.tst[kvp.Value].isHidden
+                 select MainWindow.tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -284,7 +286,7 @@ namespace NBA_Stats_Tracker.Windows
                 where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
             }
 
-            foreach (var item in lstTotals.Items.Cast<string>())
+            foreach (string item in lstTotals.Items.Cast<string>())
             {
                 string filter = item;
                 filter = filter.Replace(" REB ", " (OREB+DREB) ");
@@ -294,11 +296,11 @@ namespace NBA_Stats_Tracker.Windows
                 where += filter + " AND ";
             }
 
-            foreach (var item in lstAvg.Items.Cast<string>())
+            foreach (string item in lstAvg.Items.Cast<string>())
             {
                 string filter = item;
                 string[] parts = filter.Split(' ');
-                switch(parts[0])
+                switch (parts[0])
                 {
                     case "PPG":
                         filter = filter.Replace("PPG", "cast(PTS as REAL)/GP");
@@ -381,26 +383,26 @@ namespace NBA_Stats_Tracker.Windows
                 psr.Add(new PlayerStatsRow(MainWindow.pst[id]));
             }
 
-            var psrView = CollectionViewSource.GetDefaultView(psr);
+            ICollectionView psrView = CollectionViewSource.GetDefaultView(psr);
             psrView.Filter = Filter;
 
             dgvPlayerStats.ItemsSource = psrView;
 
             string sortColumn;
-            foreach (var item in lstMetrics.Items.Cast<string>())
+            foreach (string item in lstMetrics.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (var item in lstAvg.Items.Cast<string>())
+            foreach (string item in lstAvg.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (var item in lstTotals.Items.Cast<string>())
+            foreach (string item in lstTotals.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
@@ -423,8 +425,10 @@ namespace NBA_Stats_Tracker.Windows
                                                                   {
                                                                       string[] parts = item.Split(' ');
                                                                       //double val = Convert.ToDouble(parts[2]);
-                                                                      ExpressionContext context = new ExpressionContext();
-                                                                      var ige = context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
+                                                                      var context = new ExpressionContext();
+                                                                      IGenericExpression<bool> ige =
+                                                                          context.CompileGeneric<bool>(
+                                                                              ps.metrics[parts[0]] + parts[1] + parts[2]);
                                                                       keep = ige.Evaluate();
                                                                       if (!keep) loopState.Stop();
                                                                   });
@@ -453,7 +457,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnTotalsAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtTotalsVal.Text))
+            if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 ||
+                String.IsNullOrWhiteSpace(txtTotalsVal.Text))
                 return;
 
             try
@@ -476,7 +481,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (lstTotals.SelectedItems.Count == 1)
             {
-                var item = lstTotals.SelectedItem.ToString();
+                string item = lstTotals.SelectedItem.ToString();
                 lstTotals.Items.Remove(item);
                 string[] parts = item.Split(' ');
                 cmbTotalsPar.SelectedItem = parts[0];
@@ -485,7 +490,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (var item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
                 {
                     lstTotals.Items.Remove(item);
                 }
@@ -494,7 +499,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAvgAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtAvgVal.Text))
+            if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 ||
+                String.IsNullOrWhiteSpace(txtAvgVal.Text))
                 return;
 
             try
@@ -517,7 +523,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (lstAvg.SelectedItems.Count == 1)
             {
-                var item = lstAvg.SelectedItem.ToString();
+                string item = lstAvg.SelectedItem.ToString();
                 lstAvg.Items.Remove(item);
                 string[] parts = item.Split(' ');
                 cmbAvgPar.SelectedItem = parts[0];
@@ -526,7 +532,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (var item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
                 {
                     lstAvg.Items.Remove(item);
                 }
@@ -535,7 +541,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnMetricsAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtMetricsVal.Text))
+            if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 ||
+                String.IsNullOrWhiteSpace(txtMetricsVal.Text))
                 return;
 
             try
@@ -558,7 +565,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (lstMetrics.SelectedItems.Count == 1)
             {
-                var item = lstMetrics.SelectedItem.ToString();
+                string item = lstMetrics.SelectedItem.ToString();
                 lstMetrics.Items.Remove(item);
                 string[] parts = item.Split(' ');
                 cmbMetricsPar.SelectedItem = parts[0];
@@ -567,7 +574,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (var item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
                 {
                     lstMetrics.Items.Remove(item);
                 }
@@ -576,17 +583,17 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dgvPlayerStats_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            Helper.EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting(e);
         }
 
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog sfd = new OpenFileDialog
-                                     {
-                InitialDirectory = Path.GetFullPath(folder),
-                Filter = "NST Search Filters (*.nsf)|*.nsf",
-                DefaultExt = "nsf"
-            };
+            var sfd = new OpenFileDialog
+                          {
+                              InitialDirectory = Path.GetFullPath(folder),
+                              Filter = "NST Search Filters (*.nsf)|*.nsf",
+                              DefaultExt = "nsf"
+                          };
 
             sfd.ShowDialog();
 
@@ -595,8 +602,9 @@ namespace NBA_Stats_Tracker.Windows
             int filterCount = lstTotals.Items.Count + lstAvg.Items.Count + lstMetrics.Items.Count;
             if (filterCount > 0)
             {
-                MessageBoxResult mbr = MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
-                                "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                MessageBoxResult mbr =
+                    MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
+                                    "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (mbr == MessageBoxResult.Cancel) return;
                 if (mbr == MessageBoxResult.Yes)
                 {
@@ -726,19 +734,19 @@ namespace NBA_Stats_Tracker.Windows
                 s += String.Format("Team\t{0}\n", GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
             s += String.Format("Season\t{0}\n", curSeason);
             s += String.Format("Totals\n");
-            foreach (var item in lstTotals.Items.Cast<string>())
+            foreach (string item in lstTotals.Items.Cast<string>())
             {
                 s += item + "\n";
             }
             s += "TotalsEND\n";
             s += String.Format("Avg\n");
-            foreach (var item in lstAvg.Items.Cast<string>())
+            foreach (string item in lstAvg.Items.Cast<string>())
             {
                 s += item + "\n";
             }
             s += "AvgEND\n";
             s += String.Format("Metrics\n");
-            foreach (var item in lstMetrics.Items.Cast<string>())
+            foreach (string item in lstMetrics.Items.Cast<string>())
             {
                 s += item + "\n";
             }
@@ -747,12 +755,12 @@ namespace NBA_Stats_Tracker.Windows
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
-            SaveFileDialog sfd = new SaveFileDialog
-                                     {
-                                         InitialDirectory = Path.GetFullPath(folder),
-                                         Filter = "NST Search Filters (*.nsf)|*.nsf",
-                                         DefaultExt = "nsf"
-                                     };
+            var sfd = new SaveFileDialog
+                          {
+                              InitialDirectory = Path.GetFullPath(folder),
+                              Filter = "NST Search Filters (*.nsf)|*.nsf",
+                              DefaultExt = "nsf"
+                          };
 
             sfd.ShowDialog();
 

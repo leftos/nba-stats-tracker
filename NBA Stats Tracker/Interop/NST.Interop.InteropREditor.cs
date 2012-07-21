@@ -37,7 +37,7 @@ namespace NBA_Stats_Tracker.Interop
                                                                                {"5", " "}
                                                                            };
 
-        public static void CreateSettingsFile(List<Dictionary<string,string>> activeTeams, string folder)
+        public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
         {
             string s1 = "Folder$$" + folder + "\n";
             string s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["Name"] + "$%"));
@@ -46,18 +46,18 @@ namespace NBA_Stats_Tracker.Interop
 
             string stg = s1 + s2;
 
-            SaveFileDialog sfd = new SaveFileDialog
-                                     {
-                                         Title = "Save Active Teams List",
-                                         Filter = "Active Teams List (*.red)|*.red",
-                                         DefaultExt = "red",
-                                         InitialDirectory = App.AppDocsPath
-                                     };
+            var sfd = new SaveFileDialog
+                          {
+                              Title = "Save Active Teams List",
+                              Filter = "Active Teams List (*.red)|*.red",
+                              DefaultExt = "red",
+                              InitialDirectory = App.AppDocsPath
+                          };
             sfd.ShowDialog();
 
             if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
 
-            StreamWriter sw = new StreamWriter(sfd.FileName);
+            var sw = new StreamWriter(sfd.FileName);
             sw.Write(stg);
             sw.Close();
         }
@@ -88,16 +88,19 @@ namespace NBA_Stats_Tracker.Interop
             var legalTTypes = new List<string> {"0", "4"};
 
             List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
-            {
-                if (legalTTypes.IndexOf(team["TType"]) != -1) return true;
-                return false;
-            });
+                                                                            {
+                                                                                if (
+                                                                                    legalTTypes.IndexOf(team["TType"]) !=
+                                                                                    -1) return true;
+                                                                                return false;
+                                                                            });
 
             List<Dictionary<string, string>> activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
-                                                                             {
-                                                                                 if (team["StatCurS"] != "-1") return true;
-                                                                                 return false;
-                                                                             });
+                                                                                  {
+                                                                                      if (team["StatCurS"] != "-1")
+                                                                                          return true;
+                                                                                      return false;
+                                                                                  });
             /*
             if (activeTeams.Count == 0)
             {
@@ -107,7 +110,7 @@ namespace NBA_Stats_Tracker.Interop
             */
             if (activeTeams.Count < 30)
             {
-                DualListWindow dlw = new DualListWindow(validTeams, activeTeams);
+                var dlw = new DualListWindow(validTeams, activeTeams);
                 if (dlw.ShowDialog() == false)
                 {
                     return -1;
@@ -193,11 +196,11 @@ namespace NBA_Stats_Tracker.Interop
                     if (pStatsID != -1)
                     {
                         Dictionary<string, string> pStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                        {
-                            if (s["ID"] == pStatsID.ToString())
-                                return true;
-                            return false;
-                        });
+                                                                               {
+                                                                                   if (s["ID"] == pStatsID.ToString())
+                                                                                       return true;
+                                                                                   return false;
+                                                                               });
                         tst[id].pl_winloss[0] = Convert.ToByte(pStats["Wins"]);
                         tst[id].pl_winloss[1] = Convert.ToByte(pStats["Losses"]);
                         tst[id].pl_stats[t.MINS] = Convert.ToUInt16(pStats["Mins"]);
@@ -219,7 +222,7 @@ namespace NBA_Stats_Tracker.Interop
                         //tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOsAg"]);
                     }
                 }
-                
+
                 tst[id].calcAvg();
 
                 rosters[id] = new List<int>

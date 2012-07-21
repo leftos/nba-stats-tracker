@@ -50,7 +50,7 @@ namespace NBA_Stats_Tracker.Windows
             new ObservableCollection<KeyValuePair<int, string>>();
 
         private string _selectedPlayer;
-        private ObservableCollection<PlayerBoxScore> pbsList;
+        private bool changingTimeframe;
         private int curSeason = MainWindow.curSeason;
         private DataTable dt_ov;
         private List<PlayerBoxScore> hthAllPBS;
@@ -59,6 +59,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private ObservableCollection<KeyValuePair<int, string>> oppPlayersList =
             new ObservableCollection<KeyValuePair<int, string>>();
+
+        private ObservableCollection<PlayerBoxScore> pbsList;
 
         private Dictionary<int, PlayerStats> playersActive;
         private Dictionary<int, PlayerStats> playersSamePosition;
@@ -71,7 +73,6 @@ namespace NBA_Stats_Tracker.Windows
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
         private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
-        private bool changingTimeframe;
 
         public PlayerOverviewWindow()
         {
@@ -583,7 +584,7 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                var templist = pbsList.ToList();
+                List<PlayerBoxScore> templist = pbsList.ToList();
                 /*
                 if (double.IsNaN(templist[0].PER))
                 {
@@ -597,9 +598,9 @@ namespace NBA_Stats_Tracker.Windows
                 templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 templist.Reverse();
 
-                var psr1 = templist[0];
+                PlayerBoxScore psr1 = templist[0];
                 string text = psr1.GetBestStats(4, psr.Position1);
-                txbGame1.Text = "1: "+ psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame1.Text = "1: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[1];
                 text = psr1.GetBestStats(4, psr.Position1);
@@ -889,16 +890,16 @@ namespace NBA_Stats_Tracker.Windows
                 MainWindow.ChangeSeason(curSeason, maxSeason);
 
                 MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst,
-                                                                    MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
-                                                                    maxSeason);
+                                                                 MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
+                                                                 maxSeason);
 
                 teamOrder = MainWindow.TeamOrder;
 
                 GetActivePlayers();
 
                 SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                        out MainWindow.tst, out MainWindow.tstopp,
-                                                        out MainWindow.TeamOrder);
+                                                     out MainWindow.tst, out MainWindow.tstopp,
+                                                     out MainWindow.TeamOrder);
                 PopulateTeamsCombo();
 
                 string q = "select * from " + playersT + " where ID = " + ps.ID;
@@ -941,11 +942,10 @@ namespace NBA_Stats_Tracker.Windows
             else
             {
                 SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                        out MainWindow.tst, out MainWindow.tstopp,
-                                                        out MainWindow.TeamOrder);
+                                                     out MainWindow.tst, out MainWindow.tstopp,
+                                                     out MainWindow.TeamOrder);
                 PopulateTeamsCombo();
             }
-            
         }
 
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
@@ -1059,7 +1059,7 @@ namespace NBA_Stats_Tracker.Windows
                 rbStatsBetween.IsChecked = true;
                 changingTimeframe = false;
 
-                cmbPlayer_SelectionChanged(null, null); 
+                cmbPlayer_SelectionChanged(null, null);
             }
         }
 

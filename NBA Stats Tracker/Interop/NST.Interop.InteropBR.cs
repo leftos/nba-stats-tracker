@@ -51,7 +51,7 @@ namespace NBA_Stats_Tracker.Interop
                     }
                     HtmlNode h1 = cur.SelectSingleNode("h1");
                     string name = h1.InnerText;
-                    parts = name.Split(new [] {"at", ", "}, StringSplitOptions.None);
+                    parts = name.Split(new[] {"at", ", "}, StringSplitOptions.None);
                 }
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
@@ -89,8 +89,8 @@ namespace NBA_Stats_Tracker.Interop
                         }
                         HtmlNode tfoot = cur.SelectSingleNode("tfoot");
                         HtmlNode frow = tfoot.SelectSingleNode("tr");
-                        var elements = frow.Elements("td");
-                        string[] erow = new string[elements.Count()];
+                        IEnumerable<HtmlNode> elements = frow.Elements("td");
+                        var erow = new string[elements.Count()];
                         for (int i = 0; i < elements.Count(); i++)
                         {
                             erow[i] = elements.ElementAt(i).InnerText;
@@ -546,7 +546,7 @@ namespace NBA_Stats_Tracker.Interop
             for (int i = 0; i < awayDT.Rows.Count - 1; i++)
             {
                 if (i == 5) continue;
-                PlayerBoxScore pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1, bs.id, (i < 5), MainWindow.pst);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;
@@ -557,7 +557,7 @@ namespace NBA_Stats_Tracker.Interop
             for (int i = 0; i < homeDT.Rows.Count - 1; i++)
             {
                 if (i == 5) continue;
-                PlayerBoxScore pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2, bs.id, (i < 5), MainWindow.pst);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;

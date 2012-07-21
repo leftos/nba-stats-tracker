@@ -23,7 +23,6 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
@@ -41,31 +40,31 @@ namespace NBA_Stats_Tracker.Windows
     public partial class TeamOverviewWindow
     {
         private static string teamsT, pl_teamsT, oppT, pl_oppT;
+        private readonly string teamToLoad;
+        private List<TeamBoxScore> bsrList = new List<TeamBoxScore>();
+        private bool changingOppRange;
+        private bool changingOppTeam;
+        private bool changingTimeframe;
 
-        private DataTable dt_bs;
-        private DataTable dt_hth;
-        private DataTable dt_ov;
-        private DataTable dt_ss;
-        private DataTable dt_yea;
-        private int[][] pl_rankings;
-        private int[][] rankings;
         private int curSeason = MainWindow.curSeason;
         private string curTeam;
         private TeamStats curts;
         private TeamStats curtsopp;
         private SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+        private DataTable dt_bs;
         private DataTable dt_bs_res;
+        private DataTable dt_hth;
+        private DataTable dt_ov;
+        private DataTable dt_ss;
+        private DataTable dt_yea;
         private DataView dv_hth;
         private int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private int[][] pl_rankings;
         private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
+        private int[][] rankings;
         private Dictionary<int, TeamStats> tst;
         private Dictionary<int, TeamStats> tstopp;
-        private string teamToLoad;
-        private bool changingOppTeam = false;
-        private bool changingOppRange = false;
-        private List<TeamBoxScore> bsrList = new List<TeamBoxScore>();
-        private bool changingTimeframe;
 
         public TeamOverviewWindow()
         {
@@ -133,7 +132,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 foreach (DataRow r in res.Rows)
                 {
-                    TeamBoxScore bsr = new TeamBoxScore(r);
+                    var bsr = new TeamBoxScore(r);
                     bsr.Prepare(curTeam);
                     bsrList.Add(bsr);
                 }
@@ -153,7 +152,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r in res.Rows)
                     {
-                        TeamBoxScore bsr = new TeamBoxScore(r);
+                        var bsr = new TeamBoxScore(r);
                         bsr.Prepare(curTeam);
                         bsrList.Add(bsr);
                     }
@@ -436,9 +435,10 @@ namespace NBA_Stats_Tracker.Windows
             dt_ov.Rows.Add(dr2);
 
             curtsopp.calcAvg();
+
             #endregion
 
-            var dv_ov = new DataView(dt_ov) { AllowNew = false };
+            var dv_ov = new DataView(dt_ov) {AllowNew = false};
 
             dgvTeamStats.DataContext = dv_ov;
 
@@ -634,7 +634,7 @@ namespace NBA_Stats_Tracker.Windows
             #endregion
 
             // DataTable is done, create DataView and load into DataGrid
-            var dv_ss = new DataView(dt_ss) { AllowEdit = false, AllowNew = false };
+            var dv_ss = new DataView(dt_ss) {AllowEdit = false, AllowNew = false};
 
             dgvSplit.DataContext = dv_ss;
         }
@@ -676,7 +676,8 @@ namespace NBA_Stats_Tracker.Windows
             UpdateSplitStats();
 
             TeamStats ts = tst[MainWindow.TeamOrder[curTeam]];
-            Title = cmbTeam.SelectedItem + " Team Overview - " + (ts.getGames() + ts.getPlayoffGames()) + " games played";
+            Title = cmbTeam.SelectedItem + " Team Overview - " + (ts.getGames() + ts.getPlayoffGames()) +
+                    " games played";
 
             UpdateHeadToHead();
 
@@ -708,7 +709,7 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                var templist = psrList.ToList();
+                List<PlayerStatsRow> templist = psrList.ToList();
                 /*
                 if (double.IsNaN(templist[0].PER))
                 {
@@ -722,27 +723,27 @@ namespace NBA_Stats_Tracker.Windows
                 templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 templist.Reverse();
 
-                var psr1 = templist[0];
+                PlayerStatsRow psr1 = templist[0];
                 string text = psr1.GetBestStats(4);
                 txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
 
-                var psr2 = templist[1];
+                PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(4);
                 txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + ")\n\n" + text;
 
-                var psr3 = templist[2];
+                PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(4);
                 txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + ")\n\n" + text;
 
-                var psr4 = templist[3];
+                PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(4);
                 txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + ")\n\n" + text;
 
-                var psr5 = templist[4];
+                PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(4);
                 txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + ")\n\n" + text;
 
-                var psr6 = templist[5];
+                PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(4);
                 txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + ")\n\n" + text;
             }
@@ -886,7 +887,7 @@ namespace NBA_Stats_Tracker.Windows
             CreateDataRowFromTeamStats(tsAll, ref drcur, "All Games");
             dt_yea.Rows.Add(drcur);
 
-            var dv_yea = new DataView(dt_yea) { AllowNew = false, AllowEdit = false };
+            var dv_yea = new DataView(dt_yea) {AllowNew = false, AllowEdit = false};
 
             dgvYearly.DataContext = dv_yea;
 
@@ -1132,7 +1133,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
-                var row = (TeamBoxScore)dgvBoxScores.SelectedItems[0];
+                var row = (TeamBoxScore) dgvBoxScores.SelectedItems[0];
 
                 var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View, row.id);
                 try
@@ -1348,7 +1349,7 @@ namespace NBA_Stats_Tracker.Windows
                             "SELECT * FROM PlayerResults INNER JOIN GameResults ON GameResults.GameID = PlayerResults.GameID " +
                             "WHERE GameResults.GameID={0}", dr2["GameID"]);
 
-                    var res2 = db.GetDataTable(q2);
+                    DataTable res2 = db.GetDataTable(q2);
                     foreach (DataRow dr3 in res2.Rows)
                     {
                         int pID = Tools.getInt(dr3, "PlayerID");
@@ -1356,7 +1357,7 @@ namespace NBA_Stats_Tracker.Windows
                         string playersT = "Players";
                         if (season != maxSeason) playersT += "S" + season;
                         string q3 = String.Format("SELECT * FROM {0} WHERE ID={1}", playersT, pID);
-                        var res3 = db.GetDataTable(q3);
+                        DataTable res3 = db.GetDataTable(q3);
 
                         PlayerStats ps;
                         if (partialPST.ContainsKey(pID))
@@ -1379,12 +1380,12 @@ namespace NBA_Stats_Tracker.Windows
 
             //ts.CalcMetrics(tsopp);
             //tsopp.CalcMetrics(ts);
-            TeamStats ls = new TeamStats();
+            var ls = new TeamStats();
             ls.AddTeamStats(ts, "All");
             ls.AddTeamStats(tsopp, "All");
             List<int> keys = partialPST.Keys.ToList();
             List<PlayerStatsRow> teamPMSRList = new List<PlayerStatsRow>(), oppPMSRList = new List<PlayerStatsRow>();
-            foreach (var key in keys)
+            foreach (int key in keys)
             {
                 if (partialPST[key].TeamF == ts.name)
                 {
@@ -1473,15 +1474,15 @@ namespace NBA_Stats_Tracker.Windows
                 dt_hth.Rows.Add(dr);
             }
 
-            dv_hth = new DataView(dt_hth) { AllowNew = false, AllowEdit = false };
+            dv_hth = new DataView(dt_hth) {AllowNew = false, AllowEdit = false};
 
             dgvHTHStats.DataContext = dv_hth;
 
-            var dv_hth_bs = new DataView(dt_hth_bs) { AllowNew = false, AllowEdit = false };
+            var dv_hth_bs = new DataView(dt_hth_bs) {AllowNew = false, AllowEdit = false};
 
             dgvHTHBoxScores.DataContext = dv_hth_bs;
 
-            var guards = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+            List<PlayerStatsRow> guards = teamPMSRList.Where(delegate(PlayerStatsRow psr)
                                                                  {
                                                                      if (psr.Position1.EndsWith("G")) return true;
                                                                      return false;
@@ -1489,19 +1490,19 @@ namespace NBA_Stats_Tracker.Windows
             guards.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             guards.Reverse();
 
-            var fors = teamPMSRList.Where(delegate(PlayerStatsRow psr)
-            {
-                if (psr.Position1.EndsWith("F")) return true;
-                return false;
-            }).ToList();
+            List<PlayerStatsRow> fors = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+                                                               {
+                                                                   if (psr.Position1.EndsWith("F")) return true;
+                                                                   return false;
+                                                               }).ToList();
             fors.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             fors.Reverse();
 
-            var centers = teamPMSRList.Where(delegate(PlayerStatsRow psr)
-            {
-                if (psr.Position1.EndsWith("C")) return true;
-                return false;
-            }).ToList();
+            List<PlayerStatsRow> centers = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+                                                                  {
+                                                                      if (psr.Position1.EndsWith("C")) return true;
+                                                                      return false;
+                                                                  }).ToList();
             centers.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             centers.Reverse();
 
@@ -1517,29 +1518,30 @@ namespace NBA_Stats_Tracker.Windows
                 txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + "\n\n" + text;
             }
             catch
-            { }
+            {
+            }
 
             guards = oppPMSRList.Where(delegate(PlayerStatsRow psr)
-            {
-                if (psr.Position1.EndsWith("G")) return true;
-                return false;
-            }).ToList();
+                                           {
+                                               if (psr.Position1.EndsWith("G")) return true;
+                                               return false;
+                                           }).ToList();
             guards.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             guards.Reverse();
 
             fors = oppPMSRList.Where(delegate(PlayerStatsRow psr)
-            {
-                if (psr.Position1.EndsWith("F")) return true;
-                return false;
-            }).ToList();
+                                         {
+                                             if (psr.Position1.EndsWith("F")) return true;
+                                             return false;
+                                         }).ToList();
             fors.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             fors.Reverse();
 
             centers = oppPMSRList.Where(delegate(PlayerStatsRow psr)
-            {
-                if (psr.Position1.EndsWith("C")) return true;
-                return false;
-            }).ToList();
+                                            {
+                                                if (psr.Position1.EndsWith("C")) return true;
+                                                return false;
+                                            }).ToList();
             centers.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             centers.Reverse();
 
@@ -1555,7 +1557,8 @@ namespace NBA_Stats_Tracker.Windows
                 txbOpp3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + "\n\n" + text;
             }
             catch
-            { }
+            {
+            }
 
             changingOppTeam = false;
         }
@@ -1811,7 +1814,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                     UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                    ts.stats[t.DREB] += (ushort)(T1reb - T1oreb);
+                    ts.stats[t.DREB] += (ushort) (T1reb - T1oreb);
                     ts.stats[t.OREB] += T1oreb;
 
                     ts.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
@@ -1829,7 +1832,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                     UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                    tsopp.stats[t.DREB] += (ushort)(T2reb - T2oreb);
+                    tsopp.stats[t.DREB] += (ushort) (T2reb - T2oreb);
                     tsopp.stats[t.OREB] += T2oreb;
 
                     tsopp.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
@@ -1855,7 +1858,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                     UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                    ts.stats[t.DREB] += (ushort)(T2reb - T2oreb);
+                    ts.stats[t.DREB] += (ushort) (T2reb - T2oreb);
                     ts.stats[t.OREB] += T2oreb;
 
                     ts.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
@@ -1873,7 +1876,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                     UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                    tsopp.stats[t.DREB] += (ushort)(T1reb - T1oreb);
+                    tsopp.stats[t.DREB] += (ushort) (T1reb - T1oreb);
                     tsopp.stats[t.OREB] += T1oreb;
 
                     tsopp.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
@@ -1907,7 +1910,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                     UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                    ts.pl_stats[t.DREB] += (ushort)(T1reb - T1oreb);
+                    ts.pl_stats[t.DREB] += (ushort) (T1reb - T1oreb);
                     ts.pl_stats[t.OREB] += T1oreb;
 
                     ts.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
@@ -1925,7 +1928,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                     UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                    tsopp.pl_stats[t.DREB] += (ushort)(T2reb - T2oreb);
+                    tsopp.pl_stats[t.DREB] += (ushort) (T2reb - T2oreb);
                     tsopp.pl_stats[t.OREB] += T2oreb;
 
                     tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
@@ -1951,7 +1954,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
                     UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
-                    ts.pl_stats[t.DREB] += (ushort)(T2reb - T2oreb);
+                    ts.pl_stats[t.DREB] += (ushort) (T2reb - T2oreb);
                     ts.pl_stats[t.OREB] += T2oreb;
 
                     ts.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
@@ -1969,7 +1972,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
                     UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
-                    tsopp.pl_stats[t.DREB] += (ushort)(T1reb - T1oreb);
+                    tsopp.pl_stats[t.DREB] += (ushort) (T1reb - T1oreb);
                     tsopp.pl_stats[t.OREB] += T1oreb;
 
                     tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
@@ -2136,7 +2139,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (dgvPlayerStats.SelectedCells.Count > 0)
             {
-                var row = (PlayerStatsRow)dgvPlayerStats.SelectedItems[0];
+                var row = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
                 int playerID = row.ID;
 
                 var pow = new PlayerOverviewWindow(curTeam, playerID);
@@ -2150,7 +2153,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (dgvHTHBoxScores.SelectedCells.Count > 0)
             {
-                var row = (DataRowView)dgvHTHBoxScores.SelectedItems[0];
+                var row = (DataRowView) dgvHTHBoxScores.SelectedItems[0];
                 int gameid = Convert.ToInt32(row["GameID"].ToString());
 
                 var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View, gameid);
@@ -2185,7 +2188,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             string newname = MainWindow.input;
-            var dict = new Dictionary<string, string> { { "DisplayName", newname } };
+            var dict = new Dictionary<string, string> {{"DisplayName", newname}};
             db.Update(teamsT, dict, "Name LIKE \"" + curTeam + "\"");
             db.Update(pl_teamsT, dict, "Name LIKE \"" + curTeam + "\"");
             db.Update(oppT, dict, "Name LIKE \"" + curTeam + "\"");

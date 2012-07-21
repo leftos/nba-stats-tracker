@@ -292,6 +292,7 @@ namespace NBA_Stats_Tracker.Data
         /// 16: FOUL
         /// </summary>
         public uint[] stats = new uint[18];
+
         public uint[] winloss = new uint[2];
 
         public TeamStats()
@@ -372,7 +373,7 @@ namespace NBA_Stats_Tracker.Data
 
         public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, string statRange)
         {
-            TeamStats ls = new TeamStats("League");
+            var ls = new TeamStats("League");
             uint teamCount = CountTeams(tst, statRange);
             for (int i = 0; i < tst.Count; i++)
             {
@@ -393,8 +394,8 @@ namespace NBA_Stats_Tracker.Data
         public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp)
         {
             var temp = new Dictionary<int, TeamStats>();
-            var tempopp= new Dictionary<int, TeamStats>();
-            var teamCount = CountTeams(tst, "All");
+            var tempopp = new Dictionary<int, TeamStats>();
+            uint teamCount = CountTeams(tst, "All");
 
             for (int i = 0; i < tst.Count; i++)
             {
@@ -426,7 +427,7 @@ namespace NBA_Stats_Tracker.Data
                     if (tst[i].getPlayoffGames() > 0) teamCount++;
                 }
             }
-            return (teamCount!=0) ? teamCount : 1;
+            return (teamCount != 0) ? teamCount : 1;
         }
 
         public void CalcMetrics(TeamStats tsopp)
@@ -448,17 +449,20 @@ namespace NBA_Stats_Tracker.Data
             double Poss = GetPossMetric(tstats, toppstats);
             metrics.Add("Poss", Poss);
             metrics.Add("PossPG", Poss/getGames());
-            
+
             Poss = GetPossMetric(toppstats, tstats);
-            try { tsopp.metrics.Add("Poss", Poss); }
+            try
+            {
+                tsopp.metrics.Add("Poss", Poss);
+            }
             catch
             {
             }
-            
+
             double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(tstats[t.MINS])));
             metrics.Add("Pace", Pace);
 
-            double ORTG = (tstats[t.PF]/Poss) * 100;
+            double ORTG = (tstats[t.PF]/Poss)*100;
             metrics.Add("ORTG", ORTG);
 
             double DRTG = (tstats[t.PA]/Poss)*100;
@@ -1277,20 +1281,6 @@ namespace NBA_Stats_Tracker.Data
 
     public class TeamMetricStatsRow
     {
-        public string Name { get; set; }
-        public double ORTG { get; set; }
-        public double DRTG { get; set; }
-        public double EFFd { get; set; }
-        public double PWp { get; set; }
-        public double EFGp { get; set; }
-        public double DREBp { get; set; }
-        public double OREBp { get; set; }
-        public double ASTp { get; set; }
-        public double TOR { get; set; }
-        public double FTR { get; set; }
-        public double Poss { get; set; }
-        public double Pace { get; set; }
-
         public TeamMetricStatsRow(TeamStats ts)
         {
             Name = ts.displayName;
@@ -1307,11 +1297,24 @@ namespace NBA_Stats_Tracker.Data
             FTR = ts.metrics["FTR"];
             PWp = ts.metrics["PW%"];
         }
+
+        public string Name { get; set; }
+        public double ORTG { get; set; }
+        public double DRTG { get; set; }
+        public double EFFd { get; set; }
+        public double PWp { get; set; }
+        public double EFGp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double ASTp { get; set; }
+        public double TOR { get; set; }
+        public double FTR { get; set; }
+        public double Poss { get; set; }
+        public double Pace { get; set; }
     }
 
     public class TeamRankings
     {
-
         public int[][] rankings;
 
         public TeamRankings(Dictionary<int, TeamStats> _tst)

@@ -108,12 +108,12 @@ namespace NBA_Stats_Tracker.Windows
         public static SQLiteDatabase db;
         public static bool loadingSeason;
         private static bool showUpdateMessage;
+        public static Dictionary<string, string> imageDict = new Dictionary<string, string>();
 
         private DispatcherTimer dispatcherTimer;
         private double progress;
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
-        public static Dictionary<string, string> imageDict = new Dictionary<string, string>();
 
         public MainWindow()
         {
@@ -240,8 +240,8 @@ namespace NBA_Stats_Tracker.Windows
         private static void prepareImageCache()
         {
             string curTeamsPath = AppPath + @"Images\Teams\Current";
-            var curTeamsImages = Directory.GetFiles(curTeamsPath);
-            foreach (var file in curTeamsImages)
+            string[] curTeamsImages = Directory.GetFiles(curTeamsPath);
+            foreach (string file in curTeamsImages)
             {
                 imageDict.Add(Path.GetFileNameWithoutExtension(file), Path.GetFullPath(file));
             }
@@ -305,7 +305,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (fbd.SelectedPath == "") return;
 
-                Helper.Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+                Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
                 int result = InteropREditor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
 
@@ -1244,7 +1244,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            
             //TestWindow tw = new TestWindow(ds);
             //tw.ShowDialog();
 
@@ -1725,7 +1724,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (!mnuOptionsImportOld.IsChecked) mnuOptionsImportOld.IsChecked = true;
             mnuOptionsImportREditor.IsChecked = false;
-            
+
             Misc.SetRegistrySetting("NBA2K12ImportMethod", 1);
         }
 
@@ -1790,7 +1789,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnDownloadBoxScore_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow("Enter the full URL of the box score you want to download");
+            var ibw = new InputBoxWindow("Enter the full URL of the box score you want to download");
             if (ibw.ShowDialog() == true)
             {
                 try

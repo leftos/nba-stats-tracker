@@ -59,10 +59,10 @@ namespace NBA_Stats_Tracker.Windows
         private bool loading;
         private bool minsUpdating;
         private string playersT;
+        private List<PlayerStatsRow> pmsrListAway, pmsrListHome;
         private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         private Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         private Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
-        private List<PlayerStatsRow> pmsrListAway, pmsrListHome;
 
         public BoxScoreWindow(Mode _curmode = Mode.Update)
         {
