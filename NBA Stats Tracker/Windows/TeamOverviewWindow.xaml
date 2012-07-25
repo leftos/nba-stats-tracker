@@ -49,8 +49,8 @@
               <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
               <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
               <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
-              <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
-              <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+              <DataGridTextColumn Binding="{Binding TPM}" Header="3PM" />
+              <DataGridTextColumn Binding="{Binding TPA}" Header="3PA" />
               <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
               <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
               <DataGridTextColumn Binding="{Binding REB}" Header="REB" />

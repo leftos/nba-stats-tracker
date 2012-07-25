@@ -1100,7 +1100,8 @@ namespace NBA_Stats_Tracker.Windows
             bool skipaway = pmsrListAway.Count == 0;
             bool skiphome = pmsrListHome.Count == 0;
 
-            if (skiphome || (!skipaway && pmsrListAway[0].GmSc > pmsrListHome[0].GmSc))
+            //if (skiphome || (!skipaway && pmsrListAway[0].GmSc > pmsrListHome[0].GmSc))
+            if (skiphome || (!skipaway && Convert.ToInt32(txtPTS1.Text) > Convert.ToInt32(txtPTS2.Text)))
             {
                 int bestID = pmsrListAway[0].ID;
                 foreach (PlayerBoxScore pbs in pbsAwayList)

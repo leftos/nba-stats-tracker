@@ -2324,7 +2324,8 @@ namespace NBA_Stats_Tracker.Windows
                         }
                     }
                 }
-                
+
+                dgvPlayerStats.ItemsSource = null;
                 dgvPlayerStats.ItemsSource = psrList;
                 //btnSaveCustomTeam_Click(null, null);
             }

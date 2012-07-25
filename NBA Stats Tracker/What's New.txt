@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v0.12.0.3
+		- Fix: Fixed player matching bug during REditor import that would duplicate players
+		- Fix: Fixed warning about duplicate players showing up even when it shouldn't
+		- Change: Player of The Game in Box Score's Best Performers will always be from the winning team
+
 	v0.12.0.2
 		- Fix: Fixed Start New Season not saving the name of the new season (if the user entered any) correctly
 		- Improvement: 2K12 saves can now be imported into non-2K12 created databases and the tool will try to match the teams and players
