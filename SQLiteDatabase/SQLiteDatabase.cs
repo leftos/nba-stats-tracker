@@ -180,6 +180,50 @@ namespace SQLite_Database
         }
 
         /// <summary>
+        ///     Allows the programmer to easily update multiple records into the DB via transaction command-wrapping
+        /// </summary>
+        /// <param name="tableName">The table into which we update the data.</param>
+        /// <param name="dataList">A list of dictionaries containing the column names and data for the update.</param>
+        /// <param name="whereList">A list of strings containing the according where criteria for each update.</param>
+        public void UpdateManyTransaction(String tableName, List<Dictionary<String, String>> dataList, List<String> whereList)
+        {
+            SQLiteConnection cnn;
+            int returnCode;
+            String vals = "";
+            using (cnn = new SQLiteConnection(dbConnection))
+            {
+                cnn.Open();
+                using (var cmd = new SQLiteCommand(cnn))
+                {
+                    using (var transaction = cnn.BeginTransaction())
+                    {
+                        for (int i = 0; i < dataList.Count; i++)
+                        {
+                            var data = dataList[i];
+                            String columns = "";
+                            String values = "";
+                            if (data.Count >= 1)
+                            {
+                                vals = data.Aggregate("", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
+                                vals = vals.Substring(0, vals.Length - 1);
+                            }
+                            try
+                            {
+                                cmd.CommandText = String.Format("update {0} set {1} where {2};", tableName, vals, whereList[i]);
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception fail)
+                            {
+                                MessageBox.Show(fail.Message + "\n\nIndex: " + i + "\n\nQuery: " + cmd.CommandText);
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         ///     Allows the programmer to easily delete rows from the DB.
         /// </summary>
         /// <param name="tableName">The table from which to delete.</param>

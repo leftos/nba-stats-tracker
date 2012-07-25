@@ -60,7 +60,9 @@
                     Click="mnuMiscRenameCurrentSeason_Click" />
           <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
                     Click="mnuMiscEnableTeams_Click" />
-          <Separator />
+                    <MenuItem Header="_Enable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
+                    Click="mnuMiscEnablePlayers_Click" />
+                    <Separator />
           <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
           <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
           <Separator />
@@ -101,8 +103,8 @@
       </GroupBox>
       <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
         <Grid>
-          <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,8,69"
-                  Name="btnSaveTeamStats" Width="160" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
+          <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,69"
+                  Name="btnSaveTeamStats" Width="156" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
                   VerticalAlignment="Bottom">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Save Current Season
@@ -110,7 +112,7 @@
               to Database
             </TextBlock>
           </Button>
-          <Button Height="46" HorizontalAlignment="Left" Margin="6,9,0,0" Name="btnLoadUpdate" VerticalAlignment="Top"
+          <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate" VerticalAlignment="Top"
                   Width="156" Click="btnLoadUpdate_Click" TabIndex="29">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Update with
@@ -118,7 +120,7 @@
               Box Score
             </TextBlock>
           </Button>
-          <Button Height="46" HorizontalAlignment="Left" Margin="6,59,0,0" Name="btnAdd" TabIndex="29"
+          <Button Height="46" HorizontalAlignment="Center" Margin="6,59,6,0" Name="btnAdd" TabIndex="29"
                   VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Add
@@ -127,7 +129,7 @@
             </TextBlock>
           </Button>
           <Button FontSize="14" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True"
-                  Margin="6,0,8,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="160" Click="btnSaveAllSeasons_Click">
+                  Margin="6,0,6,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="156" Click="btnSaveAllSeasons_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Save All Seasons
               <LineBreak />
@@ -138,25 +140,25 @@
       </GroupBox>
       <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
         <Grid>
-          <Button Height="46" HorizontalAlignment="Left" Margin="9,8,0,0" Name="btnImport2K12" VerticalAlignment="Top"
-                  Width="158" Click="btnImport2K12_Click" TabIndex="2">
+          <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12" VerticalAlignment="Top"
+                  Width="154" Click="btnImport2K12_Click" TabIndex="2">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Import from
               <LineBreak />
               2K12 Save
             </TextBlock>
           </Button>
-          <Button Height="46" HorizontalAlignment="Left" Margin="9,58,0,0" Name="btnInject" VerticalAlignment="Top"
-                  Width="158" Click="btnInject2K12_Click" TabIndex="28">
+          <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" Name="btnInject" VerticalAlignment="Top"
+                  Width="154" Click="btnInject2K12_Click" TabIndex="28">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Export to
               <LineBreak />
               2K12 Save
             </TextBlock>
           </Button>
-          <Button Content="Reset 2K Related Settings" HorizontalAlignment="Left" Margin="9,0,0,100"
-                  Name="btnEraseSettings" Width="158" Click="btnEraseSettings_Click" TabIndex="3" Height="23" VerticalAlignment="Bottom" />
-          <Button HorizontalAlignment="Left" Margin="9,0,0,42" Name="btnGrabNBAStats" TabIndex="28" Width="158"
+          <Button Content="Reset 2K Related Settings" HorizontalAlignment="Center" Margin="9,0,9,100"
+                  Name="btnEraseSettings" Width="154" Click="btnEraseSettings_Click" TabIndex="3" Height="23" VerticalAlignment="Bottom" />
+          <Button HorizontalAlignment="Center" Margin="9,0,9,42" Name="btnGrabNBAStats" TabIndex="28" Width="154"
                   Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Download
@@ -164,8 +166,8 @@
               NBA Stats
             </TextBlock>
           </Button>
-          <Button Content="Download Box Score" Height="23" HorizontalAlignment="Left" Margin="9,0,0,14"
-                  Name="btnDownloadBoxScore" TabIndex="3" VerticalAlignment="Bottom" Width="158" Click="btnDownloadBoxScore_Click" />
+          <Button Content="Download Box Score" Height="23" HorizontalAlignment="Center" Margin="9,0,9,14"
+                  Name="btnDownloadBoxScore" TabIndex="3" VerticalAlignment="Bottom" Width="154" Click="btnDownloadBoxScore_Click" />
         </Grid>
       </GroupBox>
       <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"

@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
@@ -70,7 +71,12 @@ namespace NBA_Stats_Tracker.Windows
 
             if (tbcAdd.SelectedItem == tabTeams)
             {
-                MainWindow.addInfo = txtTeams.Text;
+                List<string> lines = Tools.SplitLinesToList(txtTeams.Text, false);
+                MainWindow.addInfo = "";
+                foreach (var line in lines)
+                {
+                    MainWindow.addInfo += line + "\n";
+                }
             }
             else if (tbcAdd.SelectedItem == tabPlayers)
             {

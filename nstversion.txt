@@ -1,8 +1,9 @@
-0.11.6.0
+0.12.0.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-- Improvement: Best Performances tab added to Player Overview
-- Improvement: Improved saving speed of Players and Player Box Scores
-- Improvement: Upgraded System.Data.SQLite to v1.0.81.0
-- Fix: Fixed disappearing player box scores when saving
-- Improvement/Fix: Various improvements and fixes to Team, Player & League Overview, most of them regarding specific timeframe handling
+v0.12.0.1
+- Fix: Fixed a minor issue with box score dates during REditor import
+
+v0.12
+- Addition: Tool now checks if it can detect a single game played since the last REditor import, and if it can, it automatically fills out the box score
+- Improvement: Tool now checks and won't add a second team with the same name as an existing one using the Add Teams/Players window

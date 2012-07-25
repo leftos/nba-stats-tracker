@@ -78,13 +78,13 @@ namespace NBA_Stats_Tracker.Helper
             foreach (DataRow r in res.Rows)
             {
                 var ps = new PlayerStats(r);
-                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + " " + ps.FirstName));
+                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
             foreach (PlayerBoxScore cur in pbsList)
             {
                 var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                           MainWindow.pst[cur.PlayerID].LastName + " " +
+                                                           MainWindow.pst[cur.PlayerID].LastName + ", " +
                                                            MainWindow.pst[cur.PlayerID].FirstName);
                 if (!PlayersList.Contains(player))
                 {
@@ -110,13 +110,13 @@ namespace NBA_Stats_Tracker.Helper
             foreach (DataRow r in res.Rows)
             {
                 var ps = new PlayerStats(r);
-                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + " " + ps.FirstName));
+                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
             foreach (LivePlayerBoxScore cur in pbsList)
             {
                 var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                           MainWindow.pst[cur.PlayerID].LastName + " " +
+                                                           MainWindow.pst[cur.PlayerID].LastName + ", " +
                                                            MainWindow.pst[cur.PlayerID].FirstName);
                 if (!PlayersList.Contains(player))
                 {

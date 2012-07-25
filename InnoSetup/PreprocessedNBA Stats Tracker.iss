@@ -40,21 +40,22 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 [Files]
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Leftos\Documents\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: createallsubdirs recursesubdirs
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\What's New.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: createallsubdirs recursesubdirs
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"
 Name: "{group}\{cm:UninstallProgram,NBA Stats Tracker}"; Filename: "{uninstallexe}"
@@ -391,30 +392,6 @@ begin
 			msi45win51_url,false,false);
 end;
 [CustomMessages]
-dotnetfx40client_title=.NET 4.0 Client Framework
-dotnetfx40client_size=3 MB - 197 MB
-en.dotnetfx40client_lcid=''
-;de.dotnetfx40client_lcid='/lcid 1031 '
-[Code]
-const
-	dotnetfx40client_url = 'http://download.microsoft.com/download/7/B/6/7B629E05-399A-4A92-B5BC-484C74B5124B/dotNetFx40_Client_setup.exe';
-function dotnetfx40client(checkOnly : boolean) : boolean;
-var
-	version: cardinal;
-begin
-    result := true;
-	RegQueryDWordValue(HKLM, 'Software\Microsoft\NET Framework Setup\NDP\v4\client', 'Install', version);
-	if version <> 1 then begin
-        result := false;
-        if not checkOnly then
-    		AddProduct('dotNetFx40_Client_setup.exe',
-    			CustomMessage('dotnetfx40client_lcid') + '/q ' + '/passive ' + '/norestart',
-    			CustomMessage('dotnetfx40client_title'),
-    			CustomMessage('dotnetfx40client_size'),
-    			dotnetfx40client_url,false,false);
-    end;
-end;
-[CustomMessages]
 dotnetfx40full_title=.NET 4.0 Full Framework
 dotnetfx40full_size=3 MB - 197 MB
 en.dotnetfx40full_lcid=''
@@ -436,6 +413,40 @@ begin
     			CustomMessage('dotnetfx40full_title'),
     			CustomMessage('dotnetfx40full_size'),
     			dotnetfx40full_url,false,false);
+    end;
+end;
+[CustomMessages]
+vc2010x86_title=MS Visual C++ 2010 Redistributable package (x86)
+vc2010x64_title=MS Visual C++ 2010 Redistributable package (x64)
+en.vc2010x86_size=4.8 MB
+en.vc2010x64_size=5.5 MB
+en.vc2010_lcid=''
+[Code]
+const
+    vc2010x86_url = 'http://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe';
+    vc2010x64_url = 'http://download.microsoft.com/download/3/2/2/3224B87F-CFA0-4E70-BDA3-3DE650EFEBA5/vcredist_x64.exe';
+procedure vc2010();
+var
+	version: cardinal;
+begin
+    if not RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x86', 'Installed', version) then
+        RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\10.0\VC\Runtimes\x86', 'Installed', version);
+        if version <> 1 then
+    		AddProduct('vcredist_x86.exe',
+    			CustomMessage('vc2010_lcid') + '/q ' + '/passive ' + '/norestart',
+    			CustomMessage('vc2010x86_title'),
+    			CustomMessage('vc2010x86_size'),
+    			vc2010x86_url,false,false);
+    if isX64 then begin
+        version := 0;
+	    if not RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x64', 'Installed', version) then
+            RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\10.0\VC\Runtimes\x64', 'Installed', version);
+        if version <> 1 then
+    		AddProduct('vcredist_x64.exe',
+    			CustomMessage('vc2010_lcid') + '/q ' + '/passive ' + '/norestart',
+    			CustomMessage('vc2010x64_title'),
+    			CustomMessage('vc2010x64_size'),
+    			vc2010x64_url,false,false);
     end;
 end;
 [CustomMessages]

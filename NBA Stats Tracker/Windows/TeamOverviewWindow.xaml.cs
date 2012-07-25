@@ -28,7 +28,10 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
+using DataGrid = System.Windows.Controls.DataGrid;
 using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
 
 #endregion
 
@@ -404,6 +407,7 @@ namespace NBA_Stats_Tracker.Windows
             dr2["STL"] = curtsopp.pl_stats[t.STL].ToString();
             dr2["BLK"] = curtsopp.pl_stats[t.BLK].ToString();
             dr2["FOUL"] = curtsopp.pl_stats[t.FOUL].ToString();
+            dr2["MINS"] = curtsopp.pl_stats[t.MINS].ToString();
 
             dt_ov.Rows.Add(dr2);
 
@@ -438,13 +442,17 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
-            var dv_ov = new DataView(dt_ov) {AllowNew = false};
-
-            dgvTeamStats.DataContext = dv_ov;
+            CreateViewAndUpdateOverview();
 
             dgvBoxScores.ItemsSource = bsrList;
 
             #endregion
+        }
+
+        private void CreateViewAndUpdateOverview()
+        {
+            var dv_ov = new DataView(dt_ov) {AllowNew = false, AllowDelete = false};
+            dgvTeamStats.DataContext = dv_ov;
         }
 
         private void UpdateSplitStats()
@@ -758,6 +766,7 @@ namespace NBA_Stats_Tracker.Windows
             if (curSeason != maxSeason) playersT += "S" + curSeason;
 
             string q = "select * from " + playersT + " where TeamFin LIKE \"" + curTeam + "\"";
+            q += " AND isHidden LIKE \"False\"";
             DataTable res = db.GetDataTable(q);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
@@ -806,6 +815,9 @@ namespace NBA_Stats_Tracker.Windows
                     dgvMetricStatsPPRColumn.Visibility = Visibility.Collapsed;
                 }
             }
+
+            psrList.Sort(delegate(PlayerStatsRow row1, PlayerStatsRow row2)
+                             { return String.Compare(row1.LastName, row2.LastName); });
 
             dgvPlayerStats.ItemsSource = psrList;
             dgvMetricStats.ItemsSource = psrList;
@@ -960,32 +972,32 @@ namespace NBA_Stats_Tracker.Windows
             tst[id].stats[t.FOUL] = Convert.ToUInt16(myCell(0, 20));
             tst[id].stats[t.MINS] = Convert.ToUInt16(myCell(0, 21));
 
-            tst[id].pl_winloss[0] = Convert.ToByte(myCell(5, 2));
-            tst[id].pl_winloss[1] = Convert.ToByte(myCell(5, 3));
-            tst[id].pl_stats[t.PF] = Convert.ToUInt16(myCell(5, 4));
-            tst[id].pl_stats[t.PA] = Convert.ToUInt16(myCell(5, 5));
+            tst[id].pl_winloss[0] = Convert.ToByte(myCell(6, 2));
+            tst[id].pl_winloss[1] = Convert.ToByte(myCell(6, 3));
+            tst[id].pl_stats[t.PF] = Convert.ToUInt16(myCell(6, 4));
+            tst[id].pl_stats[t.PA] = Convert.ToUInt16(myCell(6, 5));
 
-            parts = myCell(5, 7).Split('-');
+            parts = myCell(6, 7).Split('-');
             tst[id].pl_stats[t.FGM] = Convert.ToUInt16(parts[0]);
             tst[id].pl_stats[t.FGA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(5, 9).Split('-');
+            parts = myCell(6, 9).Split('-');
             tst[id].pl_stats[t.TPM] = Convert.ToUInt16(parts[0]);
             tst[id].pl_stats[t.TPA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(5, 11).Split('-');
+            parts = myCell(6, 11).Split('-');
             tst[id].pl_stats[t.FTM] = Convert.ToUInt16(parts[0]);
             tst[id].pl_stats[t.FTA] = Convert.ToUInt16(parts[1]);
 
-            tst[id].pl_stats[t.OREB] = Convert.ToUInt16(myCell(5, 14));
-            tst[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(5, 15));
+            tst[id].pl_stats[t.OREB] = Convert.ToUInt16(myCell(6, 14));
+            tst[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(6, 15));
 
-            tst[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(5, 16));
-            tst[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(5, 17));
-            tst[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(5, 18));
-            tst[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(5, 19));
-            tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(5, 20));
-            tst[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(5, 21));
+            tst[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(6, 16));
+            tst[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(6, 17));
+            tst[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(6, 18));
+            tst[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(6, 19));
+            tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(6, 20));
+            tst[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(6, 21));
 
             tst[id].calcAvg();
 
@@ -1018,32 +1030,32 @@ namespace NBA_Stats_Tracker.Windows
             tstopp[id].stats[t.FOUL] = Convert.ToUInt16(myCell(3, 20));
             tstopp[id].stats[t.MINS] = Convert.ToUInt16(myCell(3, 21));
 
-            tstopp[id].pl_winloss[0] = Convert.ToByte(myCell(5, 2));
-            tstopp[id].pl_winloss[1] = Convert.ToByte(myCell(5, 3));
-            tstopp[id].pl_stats[t.PF] = Convert.ToUInt16(myCell(5, 4));
-            tstopp[id].pl_stats[t.PA] = Convert.ToUInt16(myCell(5, 5));
+            tstopp[id].pl_winloss[0] = Convert.ToByte(myCell(9, 2));
+            tstopp[id].pl_winloss[1] = Convert.ToByte(myCell(9, 3));
+            tstopp[id].pl_stats[t.PF] = Convert.ToUInt16(myCell(9, 4));
+            tstopp[id].pl_stats[t.PA] = Convert.ToUInt16(myCell(9, 5));
 
-            parts = myCell(5, 7).Split('-');
+            parts = myCell(9, 7).Split('-');
             tstopp[id].pl_stats[t.FGM] = Convert.ToUInt16(parts[0]);
             tstopp[id].pl_stats[t.FGA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(5, 9).Split('-');
+            parts = myCell(9, 9).Split('-');
             tstopp[id].pl_stats[t.TPM] = Convert.ToUInt16(parts[0]);
             tstopp[id].pl_stats[t.TPA] = Convert.ToUInt16(parts[1]);
 
-            parts = myCell(5, 11).Split('-');
+            parts = myCell(9, 11).Split('-');
             tstopp[id].pl_stats[t.FTM] = Convert.ToUInt16(parts[0]);
             tstopp[id].pl_stats[t.FTA] = Convert.ToUInt16(parts[1]);
 
-            tstopp[id].pl_stats[t.OREB] = Convert.ToUInt16(myCell(5, 14));
-            tstopp[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(5, 15));
+            tstopp[id].pl_stats[t.OREB] = Convert.ToUInt16(myCell(9, 14));
+            tstopp[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(9, 15));
 
-            tstopp[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(5, 16));
-            tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(5, 17));
-            tstopp[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(5, 18));
-            tstopp[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(5, 19));
-            tstopp[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(5, 20));
-            tstopp[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(5, 21));
+            tstopp[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(9, 16));
+            tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(9, 17));
+            tstopp[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(9, 18));
+            tstopp[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(9, 19));
+            tstopp[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(9, 20));
+            tstopp[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(9, 21));
 
             tstopp[id].calcAvg();
 
@@ -1756,6 +1768,8 @@ namespace NBA_Stats_Tracker.Windows
 
             PopulateSeasonCombo();
 
+            //cmbSeasonNum.SelectedIndex = MainWindow.mwInstance.cmbSeasonNum.SelectedIndex;
+
             dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTHStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTHBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -2119,7 +2133,12 @@ namespace NBA_Stats_Tracker.Windows
 
                 SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                     ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
+                MainWindow.CopySeasonToMainWindow(tst, tstopp, pst);
                 PopulateTeamsCombo();
+
+                rankings = TeamStats.CalculateTeamRankings(tst);
+                pl_rankings = TeamStats.CalculateTeamRankings(tst, playoffs: true);
+
                 try
                 {
                     cmbTeam.SelectedIndex = -1;
@@ -2132,7 +2151,7 @@ namespace NBA_Stats_Tracker.Windows
                 changingTimeframe = false;
             }
 
-            //MainWindow.ChangeSeason(curSeason, Convert.ToInt32(cmbSeasonNum.Items[cmbSeasonNum.Items.Count-1].ToString()));
+            MainWindow.ChangeSeason(curSeason);
         }
 
         private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -2209,6 +2228,129 @@ namespace NBA_Stats_Tracker.Windows
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
+        }
+
+        private void dgvTeamStats_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
+                var dictList = CSV.DictionaryListFromTSV(lines);
+
+                foreach (var dict in dictList)
+                {
+                    string type = "Stats";
+                    try
+                    {
+                        type = dict["Type"];
+                    }
+                    catch (Exception)
+                    {}
+                    switch (type)
+                    {
+                        case "Stats":
+                            TryChangeRow(0, dict);
+                            break;
+
+                        case "Playoffs":
+                            TryChangeRow(6, dict);
+                            break;
+
+                        case "Opp Stats":
+                            TryChangeRow(3, dict);
+                            break;
+
+                        case "Opp Pl Stats":
+                            TryChangeRow(9, dict);
+                            break;
+                    }
+                }
+
+                CreateViewAndUpdateOverview();
+
+                //btnSaveCustomTeam_Click(null, null);
+            }
+        }
+
+        private void TryChangeRow(int row, Dictionary<string, string> dict)
+        {
+            dt_ov.Rows[row].TryChangeValue(dict, "Games", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "Wins (W%)", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "Losses (Weff)", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "PF", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "PA", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FG", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "3PT", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "FT", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "REB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "OREB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "DREB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "AST", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "TO", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "STL", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "BLK", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FOUL", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "MINS", typeof(UInt16));
+        }
+
+        private void dgvPlayerStats_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
+                var dictList = CSV.DictionaryListFromTSV(lines);
+
+                foreach (var dict in dictList)
+                {
+                    int ID;
+                    try
+                    {
+                        ID = Convert.ToInt32(dict["ID"]);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Couldn't detect a player's ID in the pasted data. " +
+                                        "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there.");
+                        return;
+                    }
+                    for (int i = 0; i < psrList.Count; i++)
+                    {
+                        var psr = psrList[i];
+                        if (psr.ID == ID)
+                        {
+                            TryChangePSR(ref psr, dict);
+                            psrList[i] = psr;
+                            break;
+                        }
+                    }
+                }
+                
+                dgvPlayerStats.ItemsSource = psrList;
+                //btnSaveCustomTeam_Click(null, null);
+            }
+        }
+
+        private void TryChangePSR(ref PlayerStatsRow psr, Dictionary<string, string> dict)
+        {
+            psr.GP = psr.GP.TrySetValue(dict, "GP", typeof (UInt16));
+            psr.GS = psr.GS.TrySetValue(dict, "GS", typeof (UInt16));
+            psr.MINS = psr.MINS.TrySetValue(dict, "MINS", typeof (UInt16));
+            psr.PTS = psr.PTS.TrySetValue(dict, "PTS", typeof (UInt16));
+            psr.FGM = psr.FGM.TrySetValue(dict, "FGM", typeof (UInt16));
+            psr.FGA = psr.FGA.TrySetValue(dict, "FGA", typeof (UInt16));
+            psr.TPM = psr.TPM.TrySetValue(dict, "3PM", typeof (UInt16));
+            psr.TPA = psr.TPA.TrySetValue(dict, "3PA", typeof (UInt16));
+            psr.FTM = psr.FTM.TrySetValue(dict, "FTM", typeof (UInt16));
+            psr.FTA = psr.FTA.TrySetValue(dict, "FTA", typeof (UInt16));
+            psr.REB = psr.REB.TrySetValue(dict, "REB", typeof (UInt16));
+            psr.OREB = psr.OREB.TrySetValue(dict, "OREB", typeof (UInt16));
+            psr.DREB = psr.DREB.TrySetValue(dict, "DREB", typeof (UInt16));
+            psr.AST = psr.AST.TrySetValue(dict, "AST", typeof (UInt16));
+            psr.TOS = psr.TOS.TrySetValue(dict, "TO", typeof (UInt16));
+            psr.STL = psr.STL.TrySetValue(dict, "STL", typeof (UInt16));
+            psr.BLK = psr.BLK.TrySetValue(dict, "BLK", typeof (UInt16));
+            psr.FOUL = psr.FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
+
         }
     }
 }

@@ -546,6 +546,7 @@ namespace NBA_Stats_Tracker.Data
                                    {"Position1", ps.Position1},
                                    {"Position2", ps.Position2},
                                    {"isActive", ps.isActive.ToString()},
+                                   {"isHidden", ps.isHidden.ToString()},
                                    {"isInjured", ps.isInjured.ToString()},
                                    {"TeamFin", ps.TeamF},
                                    {"TeamSta", ps.TeamS},
@@ -671,7 +672,7 @@ namespace NBA_Stats_Tracker.Data
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + playersT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"isHidden\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
                 sqldb.ExecuteNonQuery(qr);
             }
             catch
@@ -965,12 +966,13 @@ namespace NBA_Stats_Tracker.Data
 
             if (!doNotLoadBoxScores) _bshist = GetSeasonBoxScoresFromDatabase(file, _curSeason, maxSeason);
 
-            MainWindow.ChangeSeason(_curSeason, maxSeason);
+            MainWindow.currentDB = file;
+
+            MainWindow.ChangeSeason(_curSeason);
 
             if (mustSave)
             {
                 upgrading = true;
-                MainWindow.currentDB = file;
                 SaveDatabaseAs(file);
                 upgrading = false;
             }
@@ -1015,7 +1017,7 @@ namespace NBA_Stats_Tracker.Data
 
             #region Misc
 
-            qr = "SELECT * FROM sqlite_master";
+            qr = "SELECT * FROM sqlite_master WHERE name = \"Misc\"";
             try
             {
                 dt = db.GetDataTable(qr);
@@ -1030,6 +1032,7 @@ namespace NBA_Stats_Tracker.Data
                             qr = "CREATE TABLE \"Misc\" (\"Setting\" TEXT PRIMARY KEY,\"Value\" TEXT)";
                             db.ExecuteNonQuery(qr);
                         }
+                        break;
                     }
                 }
             }
@@ -1041,7 +1044,7 @@ namespace NBA_Stats_Tracker.Data
 
             #region PlayerResults
 
-            qr = "SELECT * FROM sqlite_master";
+            qr = "SELECT * FROM sqlite_master WHERE name = \"PlayerResults\"";
             try
             {
                 dt = db.GetDataTable(qr);
@@ -1050,6 +1053,30 @@ namespace NBA_Stats_Tracker.Data
                     if (dr["name"].ToString() == "PlayerResults")
                     {
                         if (dr["sql"].ToString().Contains("\"ID\""))
+                        {
+                            mustSave = true;
+                        }
+                        break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            #endregion
+
+            #region Players
+
+            qr = "SELECT * FROM sqlite_master WHERE name = \"Players\"";
+            try
+            {
+                dt = db.GetDataTable(qr);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    if (dr["name"].ToString() == "Players")
+                    {
+                        if (!dr["sql"].ToString().Contains("\"isHidden\""))
                         {
                             mustSave = true;
                         }

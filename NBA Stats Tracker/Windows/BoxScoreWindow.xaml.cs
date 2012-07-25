@@ -24,9 +24,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
+using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
 #endregion
 
@@ -63,6 +65,7 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         private Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         private Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
+        private bool onImport;
 
         public BoxScoreWindow(Mode _curmode = Mode.Update)
         {
@@ -85,9 +88,36 @@ namespace NBA_Stats_Tracker.Windows
             LoadBoxScore(id);
         }
 
-        public BoxScoreWindow(BoxScoreEntry bse) : this()
+        public BoxScoreWindow(BoxScoreEntry bse, bool onImport = false) : this()
         {
             LoadBoxScore(bse);
+            this.onImport = onImport;
+
+            if (onImport)
+            {
+                chkDoNotUpdate.IsEnabled = false;
+                cmbSeasonNum.IsEnabled = false;
+                cmbTeam1.IsEnabled = false;
+                cmbTeam2.IsEnabled = false;
+                btnCalculateTeams_Click(null, null);
+            }
+        }
+
+        public BoxScoreWindow(BoxScoreEntry bse, Dictionary<int, PlayerStats> pst, bool onImport) : this(bse, onImport)
+        {
+            this.pst = pst;
+
+            LoadBoxScore(bse);
+            this.onImport = onImport;
+
+            if (onImport)
+            {
+                chkDoNotUpdate.IsEnabled = false;
+                cmbSeasonNum.IsEnabled = false;
+                cmbTeam1.IsEnabled = false;
+                cmbTeam2.IsEnabled = false;
+                btnCalculateTeams_Click(null, null);
+            }
         }
 
         private BindingList<PlayerBoxScore> pbsAwayList { get; set; }
@@ -182,6 +212,9 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
+            pbsAwayList.Sort((pbs1, pbs2) => (pbs2.MINS - pbs1.MINS));
+            pbsHomeList.Sort((pbs1, pbs2) => (pbs2.MINS - pbs1.MINS));
+
             try
             {
                 cmbTeam1.SelectedItem = Misc.GetDisplayNameFromTeam(tst, bs.Team1);
@@ -195,6 +228,8 @@ namespace NBA_Stats_Tracker.Windows
                 Close();
             }
             PopulateSeasonCombo();
+
+
             loading = false;
         }
 
@@ -790,22 +825,14 @@ namespace NBA_Stats_Tracker.Windows
             txbT2Avg.Text = T2Avg;
         }
 
-        private void btnCSVOK_Click(object sender, RoutedEventArgs e)
+        private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             tryParseBS();
             if (MainWindow.bs.done)
             {
-                /*
-                string header1 = 
-                    //"Team,PTS,REB,AST,STL,BLK,TO,FGM,FGA,FG%,3PM,3PA,3P%,FTM,FTA,FT%,OREB,FOUL";
-                    "Team\tPTS\tREB\tAST\tSTL\tBLK\tTO\tFGM\tFGA\tFG%\t3PM\t3PA\t3P%\tFTM\tFTA\tFT%\tOREB\tFOUL";
-                */
-
                 string data1 =
                     String.Format(
-                        //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
-                        //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1,
                         MainWindow.bs.REB1 - MainWindow.bs.OREB1,
                         MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1,
@@ -813,13 +840,11 @@ namespace NBA_Stats_Tracker.Windows
                         MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1, MainWindow.bs.TPM1,
                         MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1,
                         MainWindow.bs.FTM1, MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1,
-                        MainWindow.bs.FOUL1);
+                        MainWindow.bs.FOUL1, MainWindow.bs.MINS1);
 
                 string data2 =
                     String.Format(
-                        //"{0},{1},{2},{5},{6},{7},{8},{9},{10},{11:F3},{12},{13},{14:F3},{15},{16},{17:F3},{3},{18}",
-                        //"{0}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        "{0}\t\t\t\t\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
                         cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2,
                         MainWindow.bs.REB2 - MainWindow.bs.OREB2,
                         MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2,
@@ -827,22 +852,8 @@ namespace NBA_Stats_Tracker.Windows
                         MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2, MainWindow.bs.TPM2,
                         MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2,
                         MainWindow.bs.FTM2, MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2,
-                        MainWindow.bs.FOUL2);
+                        MainWindow.bs.FOUL2, MainWindow.bs.MINS2);
 
-                /*
-                var sfd = new SaveFileDialog();
-                sfd.Filter = "Comma-Separated Values file (*.csv)|*.csv";
-                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                sfd.Title = "Select a file to save the CSV to...";
-                sfd.ShowDialog();
-                if (sfd.FileName == "") return;
-
-                var sw = new StreamWriter(sfd.FileName);
-                sw.WriteLine(header1);
-                sw.WriteLine(data1);
-                sw.WriteLine(data2);
-                sw.Close();
-                */
                 dgvPlayersAway.SelectAllCells();
                 ApplicationCommands.Copy.Execute(null, dgvPlayersAway);
                 dgvPlayersAway.UnselectAllCells();
@@ -852,13 +863,12 @@ namespace NBA_Stats_Tracker.Windows
                 dgvPlayersHome.UnselectAllCells();
                 var result2 = (string) Clipboard.GetData(DataFormats.Text);
 
-                //string result = header1 + "\n" + result1 + "\n" + data1 + "\n" + data2;
                 string result = result1 + data1 + "\n\n\n" + result2 + data2;
                 Clipboard.SetText(result);
             }
         }
 
-        private void button2_Click(object sender, RoutedEventArgs e)
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.bs.done = false;
             Close();
@@ -877,18 +887,22 @@ namespace NBA_Stats_Tracker.Windows
             curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             //MainWindow.ChangeSeason(curSeason, MainWindow.getMaxSeason(MainWindow.currentDB));
 
-            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
-                                ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason,
-                                doNotLoadBoxScores: true);
-
-            playersT = "Players";
-
-            if (curSeason != maxSeason)
+            if (!onImport)
             {
-                playersT += "S" + curSeason;
-            }
+                SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
+                                    ref MainWindow.pt, ref MainWindow.bshist, curSeason,
+                                    doNotLoadBoxScores: true);
+                MainWindow.CopySeasonToMainWindow(tst, tstopp, pst);
 
-            PopulateBoxScoreCombo();
+                playersT = "Players";
+
+                if (curSeason != maxSeason)
+                {
+                    playersT += "S" + curSeason;
+                }
+
+                PopulateBoxScoreCombo();
+            }
             PopulateTeamsCombo();
         }
 
@@ -1240,7 +1254,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (pbs.PlayerID == -1) continue;
 
-                PlayerStats ps = pst[pbs.PlayerID];
+                PlayerStats ps = pst[pbs.PlayerID].Clone();
                 ps.ResetStats();
                 ps.AddBoxScore(pbs);
                 ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
@@ -1261,6 +1275,145 @@ namespace NBA_Stats_Tracker.Windows
                 pmsrListHome = new List<PlayerStatsRow>(pmsrList);
                 dgvMetricHome.ItemsSource = pmsrListHome;
             }
+        }
+
+        private void btnPaste_Click(object sender, RoutedEventArgs e)
+        {
+            string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
+            int found = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                string team = "";
+                if (line.StartsWith("\t") && !(lines[i+1].StartsWith("\t")))
+                {
+                    team = lines[i + 1].Split('\t')[0];
+                }
+                else continue;
+
+                if (found == 0) cmbTeam1.SelectedItem = team;
+                else cmbTeam2.SelectedItem = team;
+
+                found++;
+                i += 4;
+
+                if (found == 2) break;
+            }
+            var dictList = CSV.DictionaryListFromTSV(lines);
+
+            int status = 0;
+            for (int j = 0; j < dictList.Count; j++)
+            {
+                var dict = dictList[j];
+                string name;
+                try
+                {
+                    name = dict["Player"];
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Couldn't detect a player's name in the pasted data. " +
+                                    "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there.");
+                    return;
+                }
+
+                if (name == "" && (dictList[j + 1]["Player"] == cmbTeam1.SelectedItem.ToString() || dictList[j + 1]["Player"] == cmbTeam2.SelectedItem.ToString()))
+                {
+                    status++;
+                    continue;
+                }
+
+                if (status == 0)
+                {
+                    for (int i = 0; i < PlayersListAway.Count; i++)
+                    {
+                        if (PlayersListAway[i].Value == name)
+                        {
+                            try
+                            {
+                                pbsAwayList.Remove(pbsAwayList.Single(delegate(PlayerBoxScore pbs)
+                                                                                              {
+                                                                                                  if (PlayersListAway[i].Key == pbs.PlayerID)
+                                                                                                      return true;
+                                                                                                  return false;
+                                                                                              }));
+                            }
+                            catch (Exception)
+                            { }
+                            
+                            pbsAwayList.Add(new PlayerBoxScore(dict, PlayersListAway[i].Key, cmbTeam1.SelectedItem.ToString()));
+                            break;
+                        }
+                    }
+                }
+                else if (status == 1)
+                {
+                    txtMINS1.Text = txtMINS1.Text.TrySetValue(dict, "MINS", typeof(UInt16));
+                    txtPTS1.Text = txtPTS1.Text.TrySetValue(dict, "PTS", typeof(UInt16));
+                    txtREB1.Text = txtREB1.Text.TrySetValue(dict, "REB", typeof(UInt16));
+                    txtAST1.Text = txtAST1.Text.TrySetValue(dict, "AST", typeof(UInt16));
+                    txtSTL1.Text = txtSTL1.Text.TrySetValue(dict, "STL", typeof(UInt16));
+                    txtBLK1.Text = txtBLK1.Text.TrySetValue(dict, "BLK", typeof(UInt16));
+                    txtTO1.Text = txtTO1.Text.TrySetValue(dict, "TO", typeof(UInt16));
+                    txtFGM1.Text = txtFGM1.Text.TrySetValue(dict, "FGM", typeof(UInt16));
+                    txtFGA1.Text = txtFGA1.Text.TrySetValue(dict, "FGA", typeof(UInt16));
+                    txt3PM1.Text = txt3PM1.Text.TrySetValue(dict, "3PM", typeof(UInt16));
+                    txt3PA1.Text = txt3PA1.Text.TrySetValue(dict, "3PA", typeof(UInt16));
+                    txtFTM1.Text = txtFTM1.Text.TrySetValue(dict, "FTM", typeof(UInt16));
+                    txtFTA1.Text = txtFTA1.Text.TrySetValue(dict, "FTA", typeof(UInt16));
+                    txtOFF1.Text = txtOFF1.Text.TrySetValue(dict, "OREB", typeof(UInt16));
+                    txtPF1.Text = txtPF1.Text.TrySetValue(dict, "FOUL", typeof(UInt16));
+                    status++;
+                }
+                else if (status == 2)
+                {
+                    for (int i = 0; i < PlayersListHome.Count; i++)
+                    {
+                        if (PlayersListHome[i].Value == name)
+                        {
+                            try
+                            {
+                                pbsHomeList.Remove(pbsHomeList.Single(delegate(PlayerBoxScore pbs)
+                                {
+                                    if (PlayersListHome[i].Key == pbs.PlayerID)
+                                        return true;
+                                    return false;
+                                }));
+                            }
+                            catch (Exception)
+                            { }
+
+                            pbsHomeList.Add(new PlayerBoxScore(dict, PlayersListHome[i].Key, cmbTeam1.SelectedItem.ToString()));
+                            break;
+                        }
+                    }
+                }
+                else if (status == 3)
+                {
+                    txtMINS2.Text = txtMINS2.Text.TrySetValue(dict, "MINS", typeof(UInt16));
+                    txtPTS2.Text = txtPTS2.Text.TrySetValue(dict, "PTS", typeof(UInt16));
+                    txtREB2.Text = txtREB2.Text.TrySetValue(dict, "REB", typeof(UInt16));
+                    txtAST2.Text = txtAST2.Text.TrySetValue(dict, "AST", typeof(UInt16));
+                    txtSTL2.Text = txtSTL2.Text.TrySetValue(dict, "STL", typeof(UInt16));
+                    txtBLK2.Text = txtBLK2.Text.TrySetValue(dict, "BLK", typeof(UInt16));
+                    txtTO2.Text = txtTO2.Text.TrySetValue(dict, "TO", typeof(UInt16));
+                    txtFGM2.Text = txtFGM2.Text.TrySetValue(dict, "FGM", typeof(UInt16));
+                    txtFGA2.Text = txtFGA2.Text.TrySetValue(dict, "FGA", typeof(UInt16));
+                    txt3PM2.Text = txt3PM2.Text.TrySetValue(dict, "3PM", typeof(UInt16));
+                    txt3PA2.Text = txt3PA2.Text.TrySetValue(dict, "3PA", typeof(UInt16));
+                    txtFTM2.Text = txtFTM2.Text.TrySetValue(dict, "FTM", typeof(UInt16));
+                    txtFTA2.Text = txtFTA2.Text.TrySetValue(dict, "FTA", typeof(UInt16));
+                    txtOFF2.Text = txtOFF2.Text.TrySetValue(dict, "OREB", typeof(UInt16));
+                    txtPF2.Text = txtPF2.Text.TrySetValue(dict, "FOUL", typeof(UInt16));
+                    break;
+                }
+            }
+        }
+
+        private void btnTools_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            cxmTools.PlacementTarget = this;
+            cxmTools.IsOpen = true;
         }
     }
 }

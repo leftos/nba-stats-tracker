@@ -7,13 +7,10 @@ vc2010x86_title=MS Visual C++ 2010 Redistributable package (x86)
 vc2010x64_title=MS Visual C++ 2010 Redistributable package (x64)
 
 en.vc2010x86_size=4.8 MB
-de.vc2010x86_size=4,8 MB
 en.vc2010x64_size=5.5 MB
-de.vc2010x64_size=5,5 MB
 // specifiy the full /lcid parameter, including a trailing space! or leave it an empty string if default or unknown
 // en.dotnetfx40client_lcid='/lcid 1033 '
 en.vc2010_lcid=''
-de.vc2010_lcid='/lcid 1031 '
 
 #ifdef dotnet_Passive
 #define vc2010_passive "'/passive '"

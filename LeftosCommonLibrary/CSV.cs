@@ -35,7 +35,7 @@ namespace LeftosCommonLibrary
         private static readonly char listSeparator =
             System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
 
-        public static List<Dictionary<string, string>> CreateDictionaryListFromCSV(string path)
+        public static List<Dictionary<string, string>> DictionaryListFromCSV(string path)
         {
             var cr = new CsvReader(new StreamReader(path), true, listSeparator);
             List<Dictionary<string, string>> dictList;
@@ -71,7 +71,7 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
-        public static void CreateCSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
+        public static void CSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
         {
             var sw = new StreamWriter(path);
             string str = "";
@@ -95,14 +95,21 @@ namespace LeftosCommonLibrary
             sw.Close();
         }
 
-        public static List<Dictionary<string, string>> CreateDictionaryListFromTSV(string path)
+        public static List<Dictionary<string, string>> DictionaryListFromTSV(string path)
         {
             string[] TSV = File.ReadAllLines(path);
+            return DictionaryListFromTSV(TSV);
+        }
+
+        public static List<Dictionary<string, string>> DictionaryListFromTSV(string[] lines)
+        {
             var dictList = new List<Dictionary<string, string>>();
-            string[] headers = TSV[0].Split('\t');
-            for (int i = 1; i < TSV.Length; i++)
+            string[] headers = lines[0].Split('\t');
+            for (int i = 1; i < lines.Length; i++)
             {
-                string[] values = TSV[i].Split('\t');
+                string[] values = lines[i].Split('\t');
+                if (values.Length < headers.Length) continue;
+
                 dictList.Add(new Dictionary<string, string>());
                 for (int index = 0; index < headers.Length; index++)
                 {

@@ -261,6 +261,7 @@ namespace NBA_Stats_Tracker.Data
                          PD = 18;
     }
 
+    [Serializable]
     public class TeamStats
     {
         public int ID;

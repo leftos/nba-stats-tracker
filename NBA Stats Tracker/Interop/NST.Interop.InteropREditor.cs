@@ -37,6 +37,10 @@ namespace NBA_Stats_Tracker.Interop
                                                                                {"5", " "}
                                                                            };
 
+        public static List<int> teamsThatPlayedAGame;
+        public static List<int> pickedTeams;
+        private static Dictionary<int, PlayerStats> _pst;
+
         public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
         {
             string s1 = "Folder$$" + folder + "\n";
@@ -70,12 +74,13 @@ namespace NBA_Stats_Tracker.Interop
             List<Dictionary<string, string>> players;
             List<Dictionary<string, string>> teamStats;
             List<Dictionary<string, string>> playerStats;
+            
             try
             {
-                teams = CSV.CreateDictionaryListFromCSV(folder + @"\Teams.csv");
-                players = CSV.CreateDictionaryListFromCSV(folder + @"\Players.csv");
-                teamStats = CSV.CreateDictionaryListFromCSV(folder + @"\Team_Stats.csv");
-                playerStats = CSV.CreateDictionaryListFromCSV(folder + @"\Player_Stats.csv");
+                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
+                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
+                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
+                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
             }
             catch (Exception ex)
             {
@@ -132,6 +137,23 @@ namespace NBA_Stats_Tracker.Interop
                 tstopp = new Dictionary<int, TeamStats>();
                 madeNew = true;
             }
+
+            var oldTST = new Dictionary<int, TeamStats>();
+            foreach (var ts in tst)
+            {
+                oldTST.Add(ts.Key, ts.Value.Clone());
+            }
+            var oldTSTOpp = new Dictionary<int, TeamStats>();
+            foreach (var ts in tstopp)
+            {
+                oldTSTOpp.Add(ts.Key, ts.Value.Clone());
+            }
+            var oldPST = new Dictionary<int, PlayerStats>();
+            foreach (var ps in pst)
+            {
+                oldPST.Add(ps.Key, ps.Value.Clone());
+            }
+
             var activeTeamsIDs = new List<int>();
             var rosters = new Dictionary<int, List<int>>();
             foreach (var team in activeTeams)
@@ -170,7 +192,7 @@ namespace NBA_Stats_Tracker.Interop
                                                                        });
 
                 tst[id].ID = Convert.ToInt32(team["ID"]);
-
+                
                 if (sStats != null)
                 {
                     tst[id].winloss[0] = Convert.ToByte(sStats["Wins"]);
@@ -250,7 +272,8 @@ namespace NBA_Stats_Tracker.Interop
             #endregion
 
             #region Import Players & Player Stats
-
+            
+            List<string> duplicatePlayers = new List<string>();
             if (!teamsOnly)
             {
                 List<Dictionary<string, string>> activePlayers =
@@ -282,10 +305,7 @@ namespace NBA_Stats_Tracker.Interop
                     if (!activeTeamsIDs.Contains(pTeam) && player["IsFA"] != "1") continue;
 
                     int playerStatsID = Convert.ToInt32(player["StatY0"]);
-
-                    //TODO: Handle this a bit more gracefully
-                    //if (playerStatsID == -1) continue;
-
+                    
                     Dictionary<string, string> plStats = playerStats.Find(delegate(Dictionary<string, string> s)
                                                                               {
                                                                                   if (s["ID"] ==
@@ -294,7 +314,54 @@ namespace NBA_Stats_Tracker.Interop
                                                                                   return false;
                                                                               });
 
+                    var LastName = player["Last_Name"];
+                    var FirstName = player["First_Name"];
+                    
+                    if (pst.ContainsKey(playerID) && (pst[playerID].LastName != LastName || pst[playerID].FirstName != FirstName))
+                    {
+                        var candidates = pst.Where(pair => pair.Value.LastName == LastName && pair.Value.FirstName == FirstName && pair.Value.isHidden == false).ToList();
+                        if (candidates.Count() > 0)
+                        {
+                            SortedDictionary<string, int> order = TeamOrder;
+                            var c2 = candidates.Where(pair => order.ContainsKey(pair.Value.TeamF)).ToList();
+                            if (c2.Count() == 1)
+                            {
+                                playerID = c2.First().Value.ID;
+                            }
+                            else
+                            {
+                                if (pTeam != -1)
+                                {
+                                    var curTeam = tst.Single(
+                                        team =>
+                                        team.Value.name ==
+                                        activeTeams.Find(ateam => ateam["ID"] == pTeam.ToString())["Name"]);
 
+                                    var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.Value.name).ToList();
+                                    if (c3.Count == 1)
+                                    {
+                                        playerID = c3.First().Value.ID;
+                                    }
+                                    else
+                                    {
+                                        duplicatePlayers.Add(FirstName + " " + LastName);
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            playerID = CreateNewPlayer(ref pst, player);
+                        }
+                    }
+                    else
+                    {
+                        playerID = CreateNewPlayer(ref pst, player);
+                    }
+
+                    #region Old Player Matching Code
+                    /*
                     if (!pst.ContainsKey(playerID))
                     {
                         pst.Add(playerID, new PlayerStats(new Player
@@ -306,11 +373,22 @@ namespace NBA_Stats_Tracker.Interop
                                                                   Position2 = Positions[player["SecondPos"]]
                                                               }));
                     }
+                    
+                    */
+                    #endregion
 
                     if (plStats != null)
                     {
                         string TeamFName = "";
-                        string team1 = plStats["TeamID1"];
+                        string TeamSName = "";
+                        string team1 = plStats["TeamID2"];
+                        string team2 = plStats["TeamID1"];
+                        bool hasBeenTraded = (team1 != "-1");
+
+                        if (!hasBeenTraded)
+                        {
+                            team1 = team2;
+                        }
                         if (team1 != "-1" && player["IsFA"] != "1")
                         {
                             Dictionary<string, string> TeamF = teams.Find(delegate(Dictionary<string, string> s)
@@ -321,9 +399,7 @@ namespace NBA_Stats_Tracker.Interop
                             TeamFName = TeamF["Name"];
                         }
 
-                        string TeamSName = "";
-                        string team2 = plStats["TeamID2"];
-                        if (team2 != "-1")
+                        if (hasBeenTraded)
                         {
                             Dictionary<string, string> TeamS = teams.Find(delegate(Dictionary<string, string> s)
                                                                               {
@@ -393,9 +469,222 @@ namespace NBA_Stats_Tracker.Interop
                 }
             }
 
+            string msg =
+                "The following names belong to two or more players in the database and the tool couldn't determine who to import to:\n\n";
+            duplicatePlayers.ForEach(item => msg += item + ", ");
+            msg = msg.TrimEnd(new [] {' ', ','});
+            msg += "\n\nImport will continue, but there will be some stats missing." +
+                   "\n\nTo avoid this problem, either\n" +
+                   "1) disable the duplicate occurences via (Miscellaneous > Enable/Disable Players For This Season...), or\n" +
+                   "2) transfer the correct instance of the player to their current team.";
+            MessageBox.Show(msg);
+
+            #endregion
+
+            #region Check for box-scores we can calculate
+
+            if (oldTST.Count == 30)
+            {
+                teamsThatPlayedAGame = new List<int>();
+                bool inPlayoffs;
+                foreach (var team in tst)
+                {
+                    var newTeam = team.Value;
+                    var teamID = team.Key;
+                    var oldTeam = oldTST[teamID];
+
+                    if (oldTeam.getGames() + 1 == newTeam.getGames() ||
+                        oldTeam.getPlayoffGames() + 1 == newTeam.getPlayoffGames())
+                    {
+                        teamsThatPlayedAGame.Add(team.Key);
+                    }
+                }
+
+                if (teamsThatPlayedAGame.Count == 2)
+                {
+                    DualListWindow dlw = new DualListWindow(DualListWindow.Mode.PickBoxScore);
+
+                    if (dlw.ShowDialog() == true)
+                    {
+                        var t1 = pickedTeams[0];
+                        var t2 = pickedTeams[1];
+
+                        var bse = PrepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
+
+                        _pst = new Dictionary<int, PlayerStats>();
+                        foreach (var ps in pst) _pst.Add(ps.Key, ps.Value.Clone());
+
+                        BoxScoreWindow bsw = new BoxScoreWindow(bse, pst, true);
+                        bsw.ShowDialog();
+
+                        if (MainWindow.bs.done)
+                        {
+                            bse.date = MainWindow.bs.gamedate;
+                            bse.bs = MainWindow.bs;
+                            TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref oldTST, ref oldTSTOpp, t1, t2);
+                            MainWindow.bshist.Add(bse);
+                            tst = oldTST;
+                            tstopp = oldTSTOpp;
+                        }
+                        pst = _pst;
+                    }
+                }
+            }
+
             #endregion
 
             return 0;
+        }
+
+        private static int CreateNewPlayer(ref Dictionary<int, PlayerStats> pst, Dictionary<string, string> player)
+        {
+            int playerID;
+            playerID = SQLiteIO.GetFreeID(MainWindow.currentDB,
+                                          "Players" +
+                                          (MainWindow.curSeason !=
+                                           SQLiteIO.getMaxSeason(MainWindow.currentDB)
+                                               ? "S" + MainWindow.curSeason
+                                               : ""));
+            while (pst.ContainsKey(playerID))
+            {
+                playerID++;
+            }
+            pst.Add(playerID, new PlayerStats(new Player
+                                                  {
+                                                      ID = Convert.ToInt32(player["ID"]),
+                                                      FirstName = player["First_Name"],
+                                                      LastName = player["Last_Name"],
+                                                      Position = Positions[player["Pos"]],
+                                                      Position2 = Positions[player["SecondPos"]]
+                                                  }));
+            return playerID;
+        }
+
+        private static BoxScoreEntry PrepareBoxScore(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int t1, int t2)
+        {
+            TeamBoxScore bs = new TeamBoxScore
+                                  {
+                                      isPlayoff = (tst[t1].getPlayoffGames() > 0),
+                                      Team1 = tst[t1].name,
+                                      PTS1 = getDiff(tst, oldTST, t1, t.PF),
+                                      AST1 = getDiff(tst, oldTST, t1, t.AST),
+                                      REB1 =
+                                          (ushort)
+                                          ((tst[t1].stats[t.OREB] + tst[t1].stats[t.DREB]) -
+                                           (oldTST[t1].stats[t.OREB] + oldTST[t1].stats[t.DREB])),
+                                      STL1 = getDiff(tst, oldTST, t1, t.STL),
+                                      BLK1 = getDiff(tst, oldTST, t1, t.BLK),
+                                      TO1 = getDiff(tst, oldTST, t1, t.TO),
+                                      FGM1 = getDiff(tst, oldTST, t1, t.FGM),
+                                      FGA1 = getDiff(tst, oldTST, t1, t.FGA),
+                                      TPM1 = getDiff(tst, oldTST, t1, t.TPM),
+                                      TPA1 = getDiff(tst, oldTST, t1, t.TPA),
+                                      FTM1 = getDiff(tst, oldTST, t1, t.FTM),
+                                      FTA1 = getDiff(tst, oldTST, t1, t.FTA),
+                                      OREB1 = getDiff(tst, oldTST, t1, t.OREB),
+                                      FOUL1 = getDiff(tst, oldTST, t1, t.FOUL),
+                                      MINS1 = getDiff(tst, oldTST, t1, t.MINS),
+                                      Team2 = tst[t2].name,
+                                      PTS2 = getDiff(tst, oldTST, t2, t.PF),
+                                      AST2 = getDiff(tst, oldTST, t2, t.AST),
+                                      REB2 =
+                                          (ushort)
+                                          ((tst[t2].stats[t.OREB] + tst[t2].stats[t.DREB]) -
+                                           (oldTST[t2].stats[t.OREB] + oldTST[t2].stats[t.DREB])),
+                                      STL2 = getDiff(tst, oldTST, t2, t.STL),
+                                      BLK2 = getDiff(tst, oldTST, t2, t.BLK),
+                                      TO2 = getDiff(tst, oldTST, t2, t.TO),
+                                      FGM2 = getDiff(tst, oldTST, t2, t.FGM),
+                                      FGA2 = getDiff(tst, oldTST, t2, t.FGA),
+                                      TPM2 = getDiff(tst, oldTST, t2, t.TPM),
+                                      TPA2 = getDiff(tst, oldTST, t2, t.TPA),
+                                      FTM2 = getDiff(tst, oldTST, t2, t.FTM),
+                                      FTA2 = getDiff(tst, oldTST, t2, t.FTA),
+                                      OREB2 = getDiff(tst, oldTST, t2, t.OREB),
+                                      FOUL2 = getDiff(tst, oldTST, t2, t.FOUL),
+                                      MINS2 = getDiff(tst, oldTST, t2, t.MINS)
+                                  };
+
+
+            BoxScoreEntry bse = new BoxScoreEntry(bs);
+            bse.pbsList = new List<PlayerBoxScore>();
+
+            /*
+                        var team1Players = pst.Where(pair => pair.Value.TeamF == bs.Team1);
+                        var team2Players = pst.Where(pair => pair.Value.TeamF == bs.Team2);
+                        */
+
+            var bothTeamsPlayers =
+                pst.Where(pair => pair.Value.TeamF == bs.Team1 || pair.Value.TeamF == bs.Team2);
+            foreach (var playerKVP in bothTeamsPlayers)
+            {
+                var oldplayerKVP = oldPST.Single(pair => pair.Value.ID == playerKVP.Value.ID);
+
+                var newPlayer = playerKVP.Value;
+                var oldPlayer = oldplayerKVP.Value;
+
+                PlayerBoxScore pbs;
+                if (getDiff(newPlayer, oldPlayer, p.GP) == 1)
+                {
+                    pbs = new PlayerBoxScore
+                              {
+                                  PlayerID = newPlayer.ID,
+                                  Team = newPlayer.TeamF,
+                                  isStarter = (getDiff(newPlayer, oldPlayer, p.GS) == 1),
+                                  playedInjured = newPlayer.isInjured,
+                                  MINS = getDiff(newPlayer, oldPlayer, p.MINS),
+                                  PTS = getDiff(newPlayer, oldPlayer, p.PTS),
+                                  OREB = getDiff(newPlayer, oldPlayer, p.OREB),
+                                  DREB = getDiff(newPlayer, oldPlayer, p.DREB),
+                                  AST = getDiff(newPlayer, oldPlayer, p.AST),
+                                  STL = getDiff(newPlayer, oldPlayer, p.STL),
+                                  BLK = getDiff(newPlayer, oldPlayer, p.BLK),
+                                  TOS = getDiff(newPlayer, oldPlayer, p.TO),
+                                  FGM = getDiff(newPlayer, oldPlayer, p.FGM),
+                                  FGA = getDiff(newPlayer, oldPlayer, p.FGA),
+                                  TPM = getDiff(newPlayer, oldPlayer, p.TPM),
+                                  TPA = getDiff(newPlayer, oldPlayer, p.TPA),
+                                  FTM = getDiff(newPlayer, oldPlayer, p.FTM),
+                                  FTA = getDiff(newPlayer, oldPlayer, p.FTA),
+                                  FOUL = getDiff(newPlayer, oldPlayer, p.FOUL)
+                              };
+                    pbs.REB = (ushort) (pbs.OREB + pbs.DREB);
+                    pbs.FGp = (float) pbs.FGM/pbs.FGA;
+                    pbs.TPp = (float) pbs.TPM/pbs.TPA;
+                    pbs.FTp = (float) pbs.FTM/pbs.FTA;
+                }
+                else
+                {
+                    pbs = new PlayerBoxScore
+                              {
+                                  PlayerID = newPlayer.ID,
+                                  Team = newPlayer.TeamF,
+                                  isOut = true
+                              };
+                }
+
+                bse.pbsList.Add(pbs);
+            }
+            bse.date = DateTime.Today;
+            bse.bs.gamedate = bse.date;
+            bse.bs.SeasonNum = MainWindow.curSeason;
+
+            return bse;
+        }
+
+        private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int team, int stat)
+        {
+            return (ushort) (tst[team].stats[stat] - oldTST[team].stats[stat]);
+        }
+
+        private static ushort getDiff(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> oldPST, int ID, int stat)
+        {
+            return (ushort)(pst[ID].stats[stat] - oldPST[ID].stats[stat]);
+        }
+
+        private static ushort getDiff(PlayerStats newPS, PlayerStats oldPS, int stat)
+        {
+            return (ushort)(newPS.stats[stat] - oldPS.stats[stat]);
         }
 
         public static int ExportAll(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp,
@@ -407,10 +696,10 @@ namespace NBA_Stats_Tracker.Interop
             List<Dictionary<string, string>> playerStats;
             try
             {
-                teams = CSV.CreateDictionaryListFromCSV(folder + @"\Teams.csv");
-                players = CSV.CreateDictionaryListFromCSV(folder + @"\Players.csv");
-                teamStats = CSV.CreateDictionaryListFromCSV(folder + @"\Team_Stats.csv");
-                playerStats = CSV.CreateDictionaryListFromCSV(folder + @"\Player_Stats.csv");
+                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
+                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
+                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
+                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
             }
             catch (Exception ex)
             {
@@ -554,9 +843,9 @@ namespace NBA_Stats_Tracker.Interop
             }
 
             string path = folder + @"\Team_Stats.csv";
-            CSV.CreateCSVFromDictionaryList(teamStats, path);
+            CSV.CSVFromDictionaryList(teamStats, path);
             path = folder + @"Player_Stats.csv";
-            CSV.CreateCSVFromDictionaryList(playerStats, path);
+            CSV.CSVFromDictionaryList(playerStats, path);
 
             return 0;
         }

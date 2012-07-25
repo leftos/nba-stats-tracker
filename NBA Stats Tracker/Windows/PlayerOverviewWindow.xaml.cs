@@ -28,6 +28,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
 using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
@@ -210,6 +211,7 @@ namespace NBA_Stats_Tracker.Windows
             playersActive = new Dictionary<int, PlayerStats>();
 
             string q = "select * from " + playersT + " where isActive LIKE \"True\"";
+            q += " AND isHidden LIKE \"False\"";
             DataTable res = db.GetDataTable(q);
             foreach (DataRow r in res.Rows)
             {
@@ -255,6 +257,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 q = "select * from " + playersT + " where isActive LIKE \"False\"";
             }
+            q += " AND isHidden LIKE \"False\"";
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
@@ -263,7 +266,7 @@ namespace NBA_Stats_Tracker.Windows
             foreach (DataRow r in res.Rows)
             {
                 PlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                              Tools.getString(r, "LastName") + " " +
+                                                              Tools.getString(r, "LastName") + ", " +
                                                               Tools.getString(r, "FirstName") +
                                                               " (" + Tools.getString(r, "Position1") + ")"));
                 var ps = new PlayerStats(r);
@@ -312,10 +315,10 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateYearlyReport();
 
-            if (tbcPlayerOverview.SelectedItem == tabHTH)
-            {
-                cmbOppPlayer_SelectionChanged(null, null);
-            }
+            //if (tbcPlayerOverview.SelectedItem == tabHTH)
+            //{
+            cmbOppPlayer_SelectionChanged(null, null);
+            //}
         }
 
         private void UpdateYearlyReport()
@@ -875,7 +878,9 @@ namespace NBA_Stats_Tracker.Windows
             {
                 return;
             }
-            MainWindow.curSeason = curSeason;
+
+            MainWindow.ChangeSeason(curSeason);
+
             playersT = "Players";
 
             if (curSeason != maxSeason)
@@ -887,22 +892,16 @@ namespace NBA_Stats_Tracker.Windows
             {
                 PlayerStats ps = CreatePlayerStatsFromCurrent();
 
-                MainWindow.ChangeSeason(curSeason, maxSeason);
-
-                MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst,
-                                                                 MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
-                                                                 maxSeason);
+                SQLiteIO.LoadSeason();
 
                 teamOrder = MainWindow.TeamOrder;
 
                 GetActivePlayers();
 
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                     out MainWindow.tst, out MainWindow.tstopp,
-                                                     out MainWindow.TeamOrder);
                 PopulateTeamsCombo();
 
                 string q = "select * from " + playersT + " where ID = " + ps.ID;
+                q += " AND isHidden LIKE \"False\"";
                 DataTable res = db.GetDataTable(q);
 
                 if (res.Rows.Count > 0)
@@ -932,11 +931,56 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     cmbPlayer.SelectedIndex = -1;
                     cmbPlayer.SelectedValue = ps.ID;
+
+                    if (cmbOppPlayer.SelectedIndex != -1)
+                    {
+                        SelectedOppPlayerID = ((KeyValuePair<int, string>) (((cmbOppPlayer)).SelectedItem)).Key;
+
+                        q = "select * from " + playersT + " where ID = " + SelectedOppPlayerID;
+                        q += " AND isHidden LIKE \"False\"";
+                        res = db.GetDataTable(q);
+
+                        if (res.Rows.Count > 0)
+                        {
+                            nowActive = Tools.getBoolean(res.Rows[0], "isActive");
+                            newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                            cmbOppTeam.SelectedIndex = -1;
+                            if (nowActive)
+                            {
+                                if (newTeam != "")
+                                {
+                                    try
+                                    {
+                                        cmbOppTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        cmbOppTeam.SelectedIndex = -1;
+                                        cmbOppPlayer.SelectedIndex = -1;
+                                        return;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                cmbOppTeam.SelectedItem = "- Inactive -";
+                            }
+                            cmbOppPlayer.SelectedIndex = -1;
+                            cmbOppPlayer.SelectedValue = SelectedOppPlayerID;
+                        }
+                        else
+                        {
+                            cmbOppTeam.SelectedIndex = -1;
+                            cmbOppPlayer.SelectedIndex = -1;
+                        }
+                    }
                 }
                 else
                 {
                     cmbTeam.SelectedIndex = -1;
                     cmbPlayer.SelectedIndex = -1;
+                    cmbOppTeam.SelectedIndex = -1;
+                    cmbOppPlayer.SelectedIndex = -1;
                 }
             }
             else
@@ -1007,7 +1051,7 @@ namespace NBA_Stats_Tracker.Windows
             var ps = new PlayerStats(
                 psr.ID, txtLastName.Text, txtFirstName.Text, cmbPosition1.SelectedItem.ToString(),
                 cmbPosition2.SelectedItem.ToString(), TeamF, psr.TeamS,
-                chkIsActive.IsChecked.GetValueOrDefault(), chkIsInjured.IsChecked.GetValueOrDefault(),
+                chkIsActive.IsChecked.GetValueOrDefault(), false, chkIsInjured.IsChecked.GetValueOrDefault(),
                 chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
                 dt_ov.Rows[0]);
             return ps;
@@ -1097,13 +1141,14 @@ namespace NBA_Stats_Tracker.Windows
             {
                 q = "select * from " + playersT + " where isActive LIKE \"False\"";
             }
+            q += " AND isHidden LIKE \"False\"";
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
             foreach (DataRow r in res.Rows)
             {
                 oppPlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                                 Tools.getString(r, "LastName") + " " +
+                                                                 Tools.getString(r, "LastName") + ", " +
                                                                  Tools.getString(r, "FirstName") +
                                                                  " (" + Tools.getString(r, "Position1") + ")"));
             }
@@ -1120,6 +1165,8 @@ namespace NBA_Stats_Tracker.Windows
                     || cmbPlayer.SelectedIndex == -1
                     || cmbOppPlayer.SelectedIndex == -1)
                 {
+                    dgvHTH.ItemsSource = null;
+                    dgvHTHBoxScores.ItemsSource = null;
                     return;
                 }
             }
@@ -1409,6 +1456,61 @@ namespace NBA_Stats_Tracker.Windows
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
+        }
+
+        private void dgvOverviewStats_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
+                var dictList = CSV.DictionaryListFromTSV(lines);
+
+                foreach (var dict in dictList)
+                {
+                    string type = "Stats";
+                    try
+                    {
+                        type = dict["Type"];
+                    }
+                    catch (Exception)
+                    { }
+                    switch (type)
+                    {
+                        case "Stats":
+                            TryChangeRow(0, dict);
+                            break;
+                    }
+                }
+
+                CreateViewAndUpdateOverview();
+
+                //btnSavePlayer_Click(null, null);
+            }
+        }
+
+        private void TryChangeRow(int row, Dictionary<string, string> dict)
+        {
+            dt_ov.Rows[row].TryChangeValue(dict, "GP", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "GS", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "MINS", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "PTS", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FG", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "3PT", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "FT", typeof (UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "REB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "OREB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "DREB", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "AST", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "TO", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "STL", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "BLK", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FOUL", typeof(UInt16));
+        }
+
+        private void CreateViewAndUpdateOverview()
+        {
+            var dv_ov = new DataView(dt_ov) { AllowNew = false, AllowDelete = false };
+            dgvOverviewStats.DataContext = dv_ov;
         }
     }
 }

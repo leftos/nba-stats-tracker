@@ -20,7 +20,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Windows;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Helper;
 
 #endregion
 
@@ -67,6 +69,7 @@ namespace NBA_Stats_Tracker.Data
     // Unlike TeamStats which was designed before REditor implemented such stats,
     // PlayerStats were made according to REditor's standards, to make life 
     // easier when importing/exporting from REditor's CSV
+    [Serializable]
     public class PlayerStats
     {
         public string FirstName;
@@ -78,6 +81,7 @@ namespace NBA_Stats_Tracker.Data
         public string TeamS = "";
         public float[] averages = new float[16];
         public bool isActive;
+        public bool isHidden;
         public bool isAllStar;
         public bool isInjured;
         public bool isNBAChampion;
@@ -97,6 +101,7 @@ namespace NBA_Stats_Tracker.Data
             Position2 = player.Position2;
             TeamF = player.Team;
             isActive = true;
+            isHidden = false;
             isInjured = false;
             isAllStar = false;
             isNBAChampion = false;
@@ -124,6 +129,17 @@ namespace NBA_Stats_Tracker.Data
             TeamF = Tools.getString(dataRow, "TeamFin");
             TeamS = Tools.getString(dataRow, "TeamSta");
             isActive = Tools.getBoolean(dataRow, "isActive");
+
+            // Backwards compatibility with databases that didn't have the field
+            try
+            {
+                isHidden = Tools.getBoolean(dataRow, "isHidden");
+            }
+            catch
+            {
+                isHidden = false;
+            }
+
             isInjured = Tools.getBoolean(dataRow, "isInjured");
             isAllStar = Tools.getBoolean(dataRow, "isAllStar");
             isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
@@ -151,7 +167,7 @@ namespace NBA_Stats_Tracker.Data
 
         public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF,
                            string TeamS,
-                           bool isActive, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow)
+                           bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow)
         {
             this.ID = ID;
             this.LastName = LastName;
@@ -161,37 +177,46 @@ namespace NBA_Stats_Tracker.Data
             this.TeamF = TeamF;
             this.TeamS = TeamS;
             this.isActive = isActive;
+            this.isHidden = isHidden;
             this.isAllStar = isAllStar;
             this.isInjured = isInjured;
             this.isNBAChampion = isNBAChampion;
 
-            stats[p.GP] = Tools.getUInt16(dataRow, "GP");
-            stats[p.GS] = Tools.getUInt16(dataRow, "GS");
-            stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
-            stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
+            try
+            {
+                stats[p.GP] = Tools.getUInt16(dataRow, "GP");
+                stats[p.GS] = Tools.getUInt16(dataRow, "GS");
+                stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
+                stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
 
-            string[] parts = Tools.getString(dataRow, "FG").Split('-');
+                string[] parts = Tools.getString(dataRow, "FG").Split('-');
 
-            stats[p.FGM] = Convert.ToUInt16(parts[0]);
-            stats[p.FGA] = Convert.ToUInt16(parts[1]);
+                stats[p.FGM] = Convert.ToUInt16(parts[0]);
+                stats[p.FGA] = Convert.ToUInt16(parts[1]);
 
-            parts = Tools.getString(dataRow, "3PT").Split('-');
+                parts = Tools.getString(dataRow, "3PT").Split('-');
 
-            stats[p.TPM] = Convert.ToUInt16(parts[0]);
-            stats[p.TPA] = Convert.ToUInt16(parts[1]);
+                stats[p.TPM] = Convert.ToUInt16(parts[0]);
+                stats[p.TPA] = Convert.ToUInt16(parts[1]);
 
-            parts = Tools.getString(dataRow, "FT").Split('-');
+                parts = Tools.getString(dataRow, "FT").Split('-');
 
-            stats[p.FTM] = Convert.ToUInt16(parts[0]);
-            stats[p.FTA] = Convert.ToUInt16(parts[1]);
+                stats[p.FTM] = Convert.ToUInt16(parts[0]);
+                stats[p.FTA] = Convert.ToUInt16(parts[1]);
 
-            stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
-            stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
-            stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-            stats[p.TO] = Tools.getUInt16(dataRow, "TO");
-            stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
-            stats[p.AST] = Tools.getUInt16(dataRow, "AST");
-            stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
+                stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
+                stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
+                stats[p.STL] = Tools.getUInt16(dataRow, "STL");
+                stats[p.TO] = Tools.getUInt16(dataRow, "TO");
+                stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
+                stats[p.AST] = Tools.getUInt16(dataRow, "AST");
+                stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0} {1} ({2}) has some invalid data.\n\nError: {3}", FirstName, LastName, TeamF,
+                                              ex.Message));
+            }
 
             CalcAvg();
         }
@@ -248,6 +273,7 @@ namespace NBA_Stats_Tracker.Data
             TeamF = playerStatsRow.TeamF;
             TeamS = playerStatsRow.TeamS;
             isActive = playerStatsRow.isActive;
+            isHidden = playerStatsRow.isHidden;
             isAllStar = playerStatsRow.isAllStar;
             isInjured = playerStatsRow.isInjured;
             isNBAChampion = playerStatsRow.isNBAChampion;
@@ -755,6 +781,30 @@ namespace NBA_Stats_Tracker.Data
             FGp = (float) FGM/FGA;
             TPp = (float) TPM/TPA;
             FTp = (float) FTM/FTA;
+        }
+
+        public PlayerBoxScore(Dictionary<string, string> dict, int playerID, string team)
+        {
+            PlayerID = playerID;
+            Team = team;
+            isStarter = isStarter.TrySetValue(dict, "Starter", typeof (bool));
+            playedInjured = playedInjured.TrySetValue(dict, "Injured", typeof (bool));
+            isOut = isOut.TrySetValue(dict, "Out", typeof(bool));
+            MINS = MINS.TrySetValue(dict, "MINS", typeof(UInt16));
+            PTS = PTS.TrySetValue(dict, "PTS", typeof(UInt16));
+            REB = REB.TrySetValue(dict, "REB", typeof(UInt16));
+            AST = AST.TrySetValue(dict, "AST", typeof(UInt16));
+            STL = STL.TrySetValue(dict, "STL", typeof(UInt16));
+            BLK = BLK.TrySetValue(dict, "BLK", typeof(UInt16));
+            TOS = TOS.TrySetValue(dict, "TO", typeof(UInt16));
+            FGM = FGM.TrySetValue(dict, "FGM", typeof(UInt16));
+            FGA = FGA.TrySetValue(dict, "FGA", typeof(UInt16));
+            TPM = TPM.TrySetValue(dict, "3PM", typeof(UInt16));
+            TPA = TPA.TrySetValue(dict, "3PA", typeof(UInt16));
+            FTM = FTM.TrySetValue(dict, "FTM", typeof(UInt16));
+            FTA = FTA.TrySetValue(dict, "FTA", typeof(UInt16));
+            OREB = OREB.TrySetValue(dict, "OREB", typeof(UInt16));
+            FOUL = FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
         public DateTime RealDate { get; set; }
@@ -1315,6 +1365,7 @@ namespace NBA_Stats_Tracker.Data
             TeamF = ps.TeamF;
             TeamS = ps.TeamS;
             isActive = ps.isActive;
+            isHidden = ps.isHidden;
             isAllStar = ps.isAllStar;
             isInjured = ps.isInjured;
             isNBAChampion = ps.isNBAChampion;
@@ -1396,6 +1447,7 @@ namespace NBA_Stats_Tracker.Data
         public string TeamFDisplay { get; set; }
         public string TeamS { get; set; }
         public bool isActive { get; set; }
+        public bool isHidden { get; set; }
         public bool isAllStar { get; set; }
         public bool isInjured { get; set; }
         public bool isNBAChampion { get; set; }

@@ -97,12 +97,12 @@
           <Label Content="FOUL" HorizontalAlignment="Left" Margin="558,175,0,0" Name="label29" VerticalAlignment="Top" />
           <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2" VerticalAlignment="Top"
                    Width="36" TabIndex="29" GotFocus="_bsAnyTextbox_GotFocus" />
-          <Button Content="Calculate" Height="23" HorizontalAlignment="Left" Margin="394,257,0,0"
-                  Name="btnCalculateTeams" VerticalAlignment="Top" Width="75" TabIndex="30" Click="btnCalculateTeams_Click" />
-          <Button Content="Copy" Height="23" HorizontalAlignment="Left" Margin="476,257,0,0" Name="btnCSVOK"
-                  TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCSVOK_Click" />
+          <Button Content="Calculate" Height="23" HorizontalAlignment="Left" Margin="315,257,0,0"
+                  Name="btnCalculateTeams" VerticalAlignment="Top" Width="75" TabIndex="30" Click="btnCalculateTeams_Click" Visibility="Collapsed" />
+          <Button Content="Copy" Height="23" HorizontalAlignment="Left" Margin="397,257,0,0" Name="btnCopy"
+                  TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCopy_Click" Visibility="Collapsed" />
           <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="561,257,0,0" Name="btnCancel"
-                  TabIndex="30" VerticalAlignment="Top" Width="75" Click="button2_Click" />
+                  TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCancel_Click" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="7,288,0,0" Name="cbHistory" VerticalAlignment="Top"
                     Width="629" />
           <DatePicker Height="25" HorizontalAlignment="Right" Margin="0,8,4,0" Name="dtpGameDate"
@@ -125,15 +125,25 @@
                      Width="339" />
           <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,8,130,0" Name="cmbSeasonNum"
                     VerticalAlignment="Top" Width="41" SelectionChanged="cmbSeasonNum_SelectionChanged" />
-          <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="310,257,0,0" Name="btnOK" TabIndex="30"
-                  VerticalAlignment="Top" Width="75" Click="btnOK_Click" />
+          <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="478,257,0,0" Name="btnOK" TabIndex="30"
+                  VerticalAlignment="Top" Width="75" Click="btnOK_Click" FontWeight="Bold" />
           <Label Content="MINS" HorizontalAlignment="Left" Margin="600,66,0,0" Name="label32" VerticalAlignment="Top" />
           <TextBox Height="23" HorizontalAlignment="Left" Margin="600,95,0,0" Name="txtMINS1" TabIndex="14"
                    VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged" />
           <Label Content="MINS" HorizontalAlignment="Left" Margin="600,175,0,0" Name="label33" VerticalAlignment="Top" />
           <TextBox Height="23" HorizontalAlignment="Left" Margin="600,204,0,0" Name="txtMINS2" TabIndex="29"
                    VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged" />
-        </Grid>
+                    <Button Content="Paste" Height="23" HorizontalAlignment="Left" Margin="478,257,0,0" Name="btnPaste" TabIndex="30" VerticalAlignment="Top" Width="75" Visibility="Collapsed" Click="btnPaste_Click" />
+                    <Button Content="Tools" Height="23" HorizontalAlignment="Left" Margin="368,257,0,0" Name="btnTools" VerticalAlignment="Top" Width="75" PreviewMouseLeftButtonDown="btnTools_PreviewMouseLeftButtonDown">
+                        <Button.ContextMenu>
+                            <ContextMenu Name="cxmTools">
+                                <MenuItem Header="Calculate" Click="btnCalculateTeams_Click"/>
+                                <MenuItem Header="Copy" Click="btnCopy_Click"/>
+                                <MenuItem Header="Paste" Click="btnPaste_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                </Grid>
       </TabItem>
       <TabItem Header="Away Team" Name="tabTeam1">
         <Grid>

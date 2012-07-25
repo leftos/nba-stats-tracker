@@ -374,6 +374,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 foreach (var kvp in _pst)
                 {
+                    if (kvp.Value.isHidden) continue;
                     var psr = new PlayerStatsRow(kvp.Value);
                     if (psr.isActive)
                     {
@@ -795,6 +796,8 @@ namespace NBA_Stats_Tracker.Windows
 
             SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
                                 ref MainWindow.pt, ref MainWindow.bshist, _curSeason: curSeason);
+            MainWindow.CopySeasonToMainWindow(_tst, _tstopp, _pst);
+
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 reload = true;

@@ -1,0 +1,274 @@
+NBA Stats Tracker - Version History
+
+	v0.12.0.2
+		- Fix: Fixed Start New Season not saving the name of the new season (if the user entered any) correctly
+		- Improvement: 2K12 saves can now be imported into non-2K12 created databases and the tool will try to match the teams and players
+
+	v0.12.0.1
+		- Fix: Fixed a minor issue with box score dates during REditor import
+
+	v0.12
+		- Addition: Tool now checks if it can detect a single game played since the last REditor import, and if it can, it automatically fills out the box score
+		- Improvement: Tool now checks and won't add a second team with the same name as an existing one using the Add Teams/Players window
+
+	v0.11.8.2
+		- Fix: Player Stats & Metric Stats in Team Overview wouldn't allow users to sort by column
+
+	v0.11.8.1
+		- Fix: Fixed logic on which team each player gets assigned to on REditor imports
+		- Fix: Fixed bug that made new databases having no seasons to pick from in the Change Season drop-down
+
+	v0.11.8
+		- Addition: The tables in the following tabs now support pasting TSV-formatted tables into them:
+			* Team Overview: Overview, Player Stats
+			* Player Overview: Overview
+			* Box Scores, via Tools > Paste
+		- Change: Box Scores' Copy, Paste and Calculate functions have been moved to the Tools button/menu in the Box Score window
+		- Fix: Fixed crash in "Save This Team's Season Stats & Re-Calculate" function in Team Overview
+		- Fix: Fixed minor issues regarding changing seasons
+		- Fix: Fixed 0.11.7 bug that would hide players whenever they were saved in Player Overview
+
+	v0.11.7
+		- Addition: Players can now be hidden completely for a season or multiple ones, instead of just being inactive
+		- Fix: Fixed Start New Season crash
+
+	v0.11.6
+		- Improvement: Best Performances tab added to Player Overview
+		- Improvement: Improved saving speed of Players and Player Box Scores
+		- Improvement: Upgraded System.Data.SQLite to v1.0.81.0
+		- Fix: Fixed disappearing player box scores when saving
+		- Improvement/Fix: Various improvements and fixes to Team, Player & League Overview, most of them regarding specific timeframe handling
+
+	v0.11.5.4
+		- Fix: Fixed bug that would show an error instead of the "Select Active Teams" screen when no teams had current season stats set in a 2K12 save
+		- Fix: Fixed crash when trying to view League Overview in a league where no teams had played any games
+
+	v0.11.5.3
+		- Fix: Fixed missing stat records handling when exporting to REditor CSVs
+		- Fix: Fixed crashes when importing/exporting to REditor CSVs when current culture (regional settings) had a list separator other than comma (",")
+		- Fix: Other minor REditor CSV handling bugs fixed
+
+	v0.11.5.2
+		- Fix: Fixed bug that would crash NST when using Live Box Score
+		- Fix: Fixed bug that would crash NST when loading a database with multiple seasons
+		- Fix: Fixed grouping of Player Split Stats
+
+	v0.11.5
+		- Improvement: Advanced Player Search has been overhauled, to allow easy addition and removal of filters, as well as automatically sort the results by each filter
+		- Addition: Advanced Player Search filters can now be saved and loaded at a later time
+		- Change: Changed rate metrics to be calculated per 36 minutes of play, as in Basketball-Reference.com
+		- Addition: Added Offensive Rebound Rate (OREBR) as a metric stat
+
+	v0.11.4
+		- Addition: NBA Box Scores can now be downloaded from Basketball-Reference.com
+
+	v0.11.3
+		- Addition: 6 Best Performers of each team are now shown in Team Overview, with a summary of their most significant stats
+		- Addition: 6 Best League-Wide Performers  are now shown in League Overview, with a summary of their most significant stats
+		- Addition: Head-To-Head Best Performers tab added to Team Overview; presents a comparison of the best Guard, Forward and Center of each team along with their most significant stats
+		- Improvement: Team Overview should now open faster
+		- Change: PTS and PPG will always be shown as the first significant stat of any player in the Best Performers tabs
+		- Fix: Fixed stat presentation in Overview tab of Team Overview regarding playoffs and limited timeframes
+		- Improvement: Minor other interface improvements
+
+	v0.11.2.1
+		- Fix: Fixed bug that made the PER column blank wherever PER was supposed to be shown
+		- Fix: Fixed bug that would save the team's stats as the opponents' stats as well
+		- Fix: Fixed bug that would erase all other teams' but the current's players when saving changes in the Team Overview window
+
+	v0.11.2
+		- Addition: League Overview now offers league-wide averages in all tabs (except League Leaders & Box Scores)
+		- Addition: Team Metric Stats added to League Overview
+
+	v0.11.1
+		- Improvement: User is asked which teams are active in their Career if they can't be detected from the REditor import
+		- Improvement: Improvements in REditor import handling
+
+	v0.11.0.1
+		- Improvement: Tool will now inform you of a successful REditor export
+		- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
+
+	v0.11
+		- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
+		- Addition: Added Live Box Score feature, which allows you to easily keep track of a live game, and then save it as a box score in your database
+		- Improvement: Seasons can now have names, so that for example, Season "1" can now be Season "1967-1968"
+		- Fix: Advanced Player Search wouldn't take GP or GS into account
+		- Improvement: When you choose to sort a stat-table by a specific stat, the tool now will sort in descending order by default
+
+	v0.10.7.9
+		- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
+
+	v0.10.7.8
+		- Improvement: Parallelized some code to improve performance
+		- Fix: Fixed various bugs in League Overview regarding inactive players and some tabs not updating correctly
+		- Fix: Adjusted Download NBA Stats to changes in Basketball-Reference.com's format
+
+	v0.10.7.7
+		- Addition: Check For Updates on start can now be disabled (Options Menu)
+		- Addition: You can manually check for updates after the tool starts (About window)
+		- Improvement: Players in the list-boxes in the Player Overview & Box Score windows are now sorted by last name for easier discovery
+
+	v0.10.7.6
+		- Fix: Tool would crash when reactivating an inactive player
+		- Fix: FTM/FGA percentage wouldn't show correctly in Best Performers tab in the Box Score window
+		- Addition: Now you can reset all player/team stats for a season (Miscellaneous menu)
+
+	v0.10.7.5
+		- Fix: If after saving an edited box score you tried to update the database with a new one, the new one would overwrite the just edited box score instead of creating a new entry for itself
+		- Improvement: Improved saving speed related to player box scores
+		- Fix: Some box scores would not get imported correctly when using the Import Box Scores feature
+
+	v0.10.7.4
+		- Fix: Metric Stats tables in Team & League Overview wouldn't copy to clipboard correctly
+		- Fix: Fixed a crash when the tool tried to calculate the metrics of a player that is currently inactive
+
+	v0.10.7.3
+		- Fix: Fixed some wrong averages and rankings in the Team Overview screen
+		- Fix: Fixed wrong team name for the Player of the Game if they were from the home team
+		- Fix: Fixed recent bug that broke editing & saving a Box Score you had previously inserted
+
+	v0.10.7.2
+		- Fix: Advanced Player Search options Active, Injured, All Star and Champion now have three settings: true, false and none; setting any of them to none will search for both players that are for example injured and not injured
+		- Fix: Fixed bugs regarding inactive player handling
+
+	v0.10.7.1
+		- Fix: Fixed recent bug that made all displayed team names blank when importing stats from a 2K12 save
+
+	v0.10.7
+		- Addition: Added Advanced Player Search
+
+	v0.10.6.5
+		- Fix: Fixed a recent bug that messed up 3P stats
+
+	v0.10.6.4
+		- Addition: Current Season can now be changed from the Main Window as well
+		- Addition: Box Scores can now be deleted (Miscellaneous > Delete Box Scores...)
+		- Fix: Fixed bug that in some cases didn't allow users to view box scores of teams disabled in some seasons but enabled in others
+		- Fix: The tool would crash whenever you tried to view a box score that included a team that's disabled for that season; now it shows a message informing you of the fact
+		- Improvement: When disabling teams, you're warned if you're about to disable a team that has box scores for that season
+		- Fix: Various minor fixes around the program
+
+	v0.10.6.3
+		- Improvement: Database is saved immediately after adding teams
+		- Improvement: Player Stats, Metric Stats and League Leaders in League Overview now feature row headers that have the ranking of each row
+		- Fix: Many fixes around the League Overview and Box Score windows regarding teams being renamed and/or disabled
+		- Removal: Since switching between different box scores inside the Box Score window caused too many problems, the functionality is removed; it has been more than replaced by the Box Scores tabs in Team, Player & League Overview; double-click on any box score in each list to view it in full detail
+
+	v0.10.6.2
+		- Improvement: Players are allowed to have no position set; that allows you to keep stats for leagues and years for which no such info is available
+
+	v0.10.6.1
+		- Fix: File > Save Database As wouldn't work when the destination file was the same as the currently open
+		- Improvement: Big performance increase in saving operations; save, save as and start new season should now be much faster
+		- Fix: League Overview displayed Team Stats in the Playoff Stats tab in some cases
+		- Fix: When adding players to separate seasons, they could end up having the same IDs and sharing stats between seasons; now each player added, no matter the season, gets their own unique ID
+
+	v0.10.6 - May 9
+		- Addition: Teams can be enabled and disabled per season (Main Window > Miscellaneous > Enable/Disable Teams For This Season); this can be used to relegate a team for a season and then have them back in another season with their other years' stats intact
+		- Addition: Tool is now able to handle teams that are in one season but not another; either weren't created in it or are disabled
+		- Addition: Teams can be renamed (Team Overview > Change Team Name)
+
+	v0.10.5.1 - May 8
+		- Fix: Fixed a recent bug that broke the Add Players function
+		- Improvement: Database is saved immediately after adding players
+
+	v0.10.5 - May 8
+		- Improvement: Download NBA Stats now downloads both team and player stats (season & playoffs)
+		- Fix: Fixed a recent bug which caused Team Overview to show incorrect playoff stats for all teams
+		- Improvement: A lot of performance improvements to the League Overview window
+
+	v0.10.4.2 - May 7
+		- Improvement: Best Peformers calculations now take player position into account; should be able to pick the most significant stats better
+		- Fix: Players with apostrophes in their name (such as O'Neal) caused SQlite errors and weren't being added to the database
+		- Fix: Tool wouldn't make any checks in the Add Players window, meaning you could add players with no names, no position, no team.
+		- Fix: When in a table that automatically inserts a new row after the current one, pressing Tab while in the last column of the last row would make the table lose focus; it now correctly moves to the first column of the newly inserted row
+		- Removal: Removed Defensive Rebounds from the Best Performers screen as a possibly significant stat; Offensive and Total Rebounds remain
+		- Change: Best Performers tab in Box Scores window now shows Player of the Game plus 3 best players from each team
+		- Fix: Fixed bug (probably since v0.10.3) that broke the Export to 2K12 Save feature
+
+	v0.10.4.1 - May 7
+		- Addition: Best Performers tab Addition to Box Score window, showing you the key stats from the key players of the game
+		- Addition: FTR (Free Throw Rate) metric Addition to Metric Stats
+		- Addition: New edition of NBA Stats Tracker gets its own release channel, with update notifications
+
+	v0.10.3 - May 6
+		- Fix: Tool wouldn't save the 2K12 Compatibility Mode correctly, leading to mixed Team Stats in many occasions
+		- Addition: Metric Stats have been implemented; there's a table for them in Team Overview, League Overview & Box Scores
+		- Addition: Each team now has "Opponents" stats as well, which can either be directly edited or accumulated via box score updating
+		- Addition: You can now import Box Scores from other database files
+		- Improvement: Various performance improvements
+		- Fix: Nearly all BPG and TPG columns were reversed; that is, BPG were in the TPG column, and TPG in the BPG one
+		- Fix: Various other minor bug fixes
+
+	v0.10.2 - May 5
+		- Addition: Minutes Played have been Addition as a stat kept for Teams
+
+	v0.10.1.2 - May 4
+		- Addition: All the tables in the tool support copying to the clipboard; when you do, the table's column names (headers) are included as well
+		- Improvement: The Box Score window's Copy feature now copies both teams' player and team stats into the Clipboard in a TSV table with headers
+		- Fix: Fixed various minor issues
+
+	v0.10 - May 3
+		- Change: The program now uses SQLite 3 databases instead of the custom binary format
+		- Change: Massive UI overhaul, more details below
+		- Addition: Team Overview screen; all statistics can be limited to a specific timeframe if the required box scores are available
+			* Overview: View and edit your team's stats; limit them to a timeframe and see your opponents' stats against you during that time
+			* Split Stats: See how a team's performing when winning or losing, at home or away, during the regular season or the playoffs, as well as its monthly progress
+			* Player Stats: See an overview of the stats of all the team's players
+			* Box Scores: View any team's box scores in an easy to search table
+			* Head-To-Head: Compare your team to any other team; compare stats against the league, as well as each other
+			* Yearly Report: Compare the team's averages over multiple seasons
+		- Addition: Player Overview screen
+			* Overview: View and edit a player's stats and other info
+			* Split Stats: Player performance on wins and losses, home and away, season and playoffs, monthly progress, as well as on each team they played (before/after trade)
+			* Box Scores: View all box scores that this player is in
+			* Head-To-Head: Compare any two players in their games against the league, as well as against each other
+			* Yearly Report: Compare any player's averages over multiple seasons
+		- Addition: League Overview screen
+			* Team Stats: Similar to the 2K Team Stats table, a full overview of the league team averages in a sortable table
+			* Playoff Stats: As above, but limited to teams in the playoffs
+			* League Leaders: See the leading players in the league and their averages (uses NBA rules on whether a player is eligible for inclusion)
+			* Player Stats: All players, all stats, no rules
+			* Box Scores: An overview of all box scores saved around the league
+		- Addition: Box Scores can now be edited after the initial creation
+		- Addition: Box Scores now require a Season number as well as the date the game took place; you can also differentiate between regular season and playoff games for the split stats
+		- Addition: Double-clicking on a team, player or box-score in any table in the tool takes you to the respective screen for further analysis and edits
+		- Addition: Tool now keeps track of stats over multiple seasons; Team Stats, Playoff Stats, Player Stats and Box Scores are all preserved between seasons, and you can switch to any season's stats easily
+
+	v0.8 - Mar 21
+		- Added keeping history of Box Score updates
+		- Changed Team Stats file structure to allow for further expansion and changes; this means that Saved Team Stats from versions previous to this one aren't compatible
+		- Other minor fixes and improvements
+		
+	v0.7.3 - Jan 23
+		- Added preview of Trends feature
+		- Uncluttered interface; many buttons moved to menus, keyboard shortcuts added
+		
+	v0.7 - Jan 21
+		- Real NBA Stats feature added; the tool can now grab all the real league's team stats and import them so you can use all its features on them
+		- Added feature to compare your team to its real life counterpart in a head-to-head comparison
+		- Added feature to compare the same team from two different Team Stats files
+		   
+	v0.6 - Jan 15
+		- Tool can now create and edit custom leagues, offering features such as updating with Box Scores, team averages and rankings and CSV exporting to other leagues too, besides NBA 2K12 Saves (more info above); when the tool's in custom league mode, all stats are directly editable
+		- Tool can now inject the directly editable custom league stats into an NBA 2K12 save; so there is a way to directly edit the stats of your save if you so choose, it's explained above
+		- Tool can now export manually inputted Box Scores to CSV
+		- Versus window implemented, comparing any two teams' averages
+		   
+	v0.5 - Jan 9
+		- Tool can now export any team's stats, averages and rankings to CSV
+		- Tool can now export league-wide team stats and averages to CSV
+		- Tool now checks for saved team stats and Association file compatibility when the user uses "Load & Update Team Stats"; if updating the team stats with the info the user provided in the Box Score would cause a different Wins/Losses stat for any team than the game has saved, the tool shows a warning
+
+	v0.4 - Jan 9
+		- Scouting Reports implemented, translating the stat rankings of each team into natural comments about their play, combining different stats to try and make insightful comments; more depth will be added to scouting in future development
+		   
+	v0.3 - Jan 9
+		- "Show Averages" feature added, which shows a team's averages such as PPG, FG%, RPG, etc., as well as show the team's ranking in the league for each stat
+		   
+	v0.2 - Jan 8
+		- Added functionality to keep the tool working during the playoffs
+		- Now compatible with Season & Playoffs careers
+
+	v0.1 - Jan 8
+		- Initial Release

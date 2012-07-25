@@ -9,7 +9,7 @@
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvTeamStats"
                     VerticalAlignment="Stretch" ItemsSource="{Binding Path=.}" CanUserSortColumns="False"
-                    AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1"></DataGrid>
+                    AlternatingRowBackground="#FFE5E5E5" FrozenColumnCount="1" PreviewKeyDown="dgvTeamStats_PreviewKeyDown"></DataGrid>
         </Grid>
       </TabItem>
       <TabItem Header="Split Stats" Name="tabSplitStats">
@@ -23,7 +23,7 @@
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats"
                     VerticalAlignment="Stretch" MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" FrozenColumnCount="2"
-                    AlternatingRowBackground="#FFE5E5E5" Sorting="StatColumn_Sorting">
+                    AlternatingRowBackground="#FFE5E5E5" Sorting="StatColumn_Sorting" PreviewKeyDown="dgvPlayerStats_PreviewKeyDown">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
               <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />

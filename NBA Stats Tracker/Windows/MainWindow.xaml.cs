@@ -73,7 +73,20 @@ namespace NBA_Stats_Tracker.Windows
         public static PlayoffTree pt;
         public static string currentDB = "";
         public static string addInfo;
-        public static int curSeason = 1;
+        private static int _curSeason;
+        public static int curSeason
+        {
+            get { return _curSeason; }
+            set
+            {
+                try
+                {
+                    _curSeason = value;
+                    mwInstance.cmbSeasonNum.SelectedValue = curSeason;
+                }
+                catch {}
+            }
+        }
 
         public static readonly ObservableCollection<KeyValuePair<int, string>> SeasonList =
             new ObservableCollection<KeyValuePair<int, string>>();
@@ -324,6 +337,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrWhiteSpace(currentDB)) return;
+
             var sfd = new SaveFileDialog {Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath};
             sfd.ShowDialog();
 
@@ -337,6 +352,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuFileOpenCustom_Click(object sender, RoutedEventArgs e)
         {
+            loadingSeason = true;
             tst = new Dictionary<int, TeamStats>();
             TeamOrder = new SortedDictionary<string, int>();
             bshist = new List<BoxScoreEntry>();
@@ -351,6 +367,8 @@ namespace NBA_Stats_Tracker.Windows
 
             if (ofd.FileName == "") return;
 
+            PopulateSeasonCombo(ofd.FileName);
+
             SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
             //tst = getCustomStats("", ref teamOrder, ref curPT, ref bshist);
 
@@ -358,15 +376,16 @@ namespace NBA_Stats_Tracker.Windows
 
             updateStatus(String.Format("{0} teams & {1} players loaded successfully!", tst.Count, pst.Count));
             currentDB = txtFile.Text;
+            loadingSeason = false;
             //txtFile.Text = "SQLite";
 
             //MessageBox.Show(bshist.Count.ToString());
         }
 
-        public static void ChangeSeason(int _curSeason, int maxSeason)
+        public static void ChangeSeason(int _curSeason)
         {
             curSeason = _curSeason;
-            mwInstance.cmbSeasonNum.SelectedItem = curSeason.ToString();
+            mwInstance.cmbSeasonNum.SelectedValue = curSeason.ToString();
         }
 
         private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
@@ -1048,14 +1067,26 @@ namespace NBA_Stats_Tracker.Windows
 
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
             currentDB = txtFile.Text;
-            PopulateSeasonCombo();
+            //PopulateSeasonCombo();
             db = new SQLiteDatabase(currentDB);
         }
 
-        private void PopulateSeasonCombo()
+        public void PopulateSeasonCombo(string file)
+        {
+            db = new SQLiteDatabase(file);
+
+            GenerateSeasons();
+        }
+
+        public void PopulateSeasonCombo()
         {
             db = new SQLiteDatabase(currentDB);
 
+            GenerateSeasons();
+        }
+
+        public void GenerateSeasons()
+        {
             const string qr = "SELECT * FROM SeasonNames ORDER BY ID DESC";
             DataTable dataTable = db.GetDataTable(qr);
             SeasonList.Clear();
@@ -1076,7 +1107,7 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbSeasonNum.SelectedIndex == -1) return;
 
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
-            if (!loadingSeason) SQLiteIO.LoadSeason();
+            //if (!loadingSeason) SQLiteIO.LoadSeason();
         }
 
         // TODO: Implement Trends again sometime
@@ -1369,14 +1400,14 @@ namespace NBA_Stats_Tracker.Windows
             db = new SQLiteDatabase(sfd.FileName);
 
             SQLiteIO.prepareNewDB(db, 1, 1);
-
-            curSeason = 1;
-
+            
             tst = new Dictionary<int, TeamStats>();
             tst[0] = new TeamStats("$$NewDB");
             TeamOrder = new SortedDictionary<string, int>();
 
             txtFile.Text = sfd.FileName;
+            PopulateSeasonCombo();
+            MainWindow.ChangeSeason(1);
 
             //
             // tst = new TeamStats[2];
@@ -1394,7 +1425,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (addInfo != "$$NST Players Added")
                 {
-                    string[] parts = Regex.Split(addInfo, "\r\n");
+                    string[] parts = Tools.SplitLinesToArray(addInfo);
                     List<string> newTeams = parts.Where(s => !String.IsNullOrWhiteSpace(s)).ToList();
 
                     int oldlen = tst.Count;
@@ -1402,6 +1433,12 @@ namespace NBA_Stats_Tracker.Windows
 
                     for (int i = 0; i < newTeams.Count; i++)
                     {
+                        if (tst.Where(pair => pair.Value.name == newTeams[i]).Count() == 1)
+                        {
+                            MessageBox.Show("There's a team with the name " + newTeams[i] +
+                                            " already in the database so it won't be added again.");
+                            continue;
+                        }
                         int newid = oldlen + i;
                         tst[newid] = new TeamStats(newTeams[i]) {ID = newid};
                         tstopp[newid] = new TeamStats(newTeams[i]) {ID = newid};
@@ -1468,7 +1505,7 @@ namespace NBA_Stats_Tracker.Windows
                     db.Insert("SeasonNames",
                               new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", seasonName}});
 
-                    foreach (int key in tst.Keys)
+                    foreach (int key in tst.Keys.ToList())
                     {
                         TeamStats ts = tst[key];
                         for (int i = 0; i < ts.stats.Length; i++)
@@ -1484,7 +1521,7 @@ namespace NBA_Stats_Tracker.Windows
                         tst[key] = ts;
                     }
 
-                    foreach (int key in tstopp.Keys)
+                    foreach (int key in tstopp.Keys.ToList())
                     {
                         TeamStats ts = tstopp[key];
                         for (int i = 0; i < ts.stats.Length; i++)
@@ -1511,7 +1548,9 @@ namespace NBA_Stats_Tracker.Windows
                         ps.Value.CalcAvg();
                     }
 
+                    PopulateSeasonCombo();
                     SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
+                    ChangeSeason(curSeason);
                     updateStatus("New season started. Database saved.");
                 }
             }
@@ -1635,7 +1674,7 @@ namespace NBA_Stats_Tracker.Windows
         private void mnuMiscEnableTeams_Click(object sender, RoutedEventArgs e)
         {
             addInfo = "";
-            var etw = new DualListWindow(currentDB, curSeason, SQLiteIO.getMaxSeason(currentDB));
+            var etw = new DualListWindow(currentDB, curSeason, SQLiteIO.getMaxSeason(currentDB), DualListWindow.Mode.HiddenTeams);
             etw.ShowDialog();
 
             if (addInfo == "$$TEAMSENABLED")
@@ -1812,6 +1851,27 @@ namespace NBA_Stats_Tracker.Windows
                     MessageBox.Show("Couldn't download & import box score.\n\nError: " + ex.Message);
                 }
             }
+        }
+
+        private void mnuMiscEnablePlayers_Click(object sender, RoutedEventArgs e)
+        {
+            addInfo = "";
+            var etw = new DualListWindow(currentDB, curSeason, SQLiteIO.getMaxSeason(currentDB), DualListWindow.Mode.HiddenPlayers);
+            etw.ShowDialog();
+
+            if (addInfo == "$$PLAYERSENABLED")
+            {
+                pst = SQLiteIO.GetPlayersFromDatabase(currentDB, tst, tstopp, TeamOrder, curSeason,
+                                                      SQLiteIO.getMaxSeason(currentDB));
+                updateStatus("Players were enabled/disabled. Database saved.");
+            }
+        }
+
+        public static void CopySeasonToMainWindow(Dictionary<int, TeamStats> teamStats, Dictionary<int, TeamStats> oppStats, Dictionary<int, PlayerStats> playerStats)
+        {
+            tst = teamStats;
+            tstopp = oppStats;
+            pst = playerStats;
         }
     }
 }
