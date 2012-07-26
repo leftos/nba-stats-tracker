@@ -75,10 +75,19 @@ namespace LeftosCommonLibrary
         {
             var sw = new StreamWriter(path);
             string str = "";
+
+            Dictionary<string, string> columns = new Dictionary<string, string>();
+
             foreach (var kvp in dList[0])
             {
-                if (!kvp.Key.StartsWith("Column")) str += kvp.Key + listSeparator;
-                else str += "\" \"" + listSeparator;
+                var oldColumn = kvp.Key;
+                string newColumn;
+                if (!kvp.Key.StartsWith("Column")) newColumn = kvp.Key + listSeparator;
+                else newColumn = "\" \"" + listSeparator;
+
+                columns.Add(oldColumn, newColumn);
+
+                str += newColumn;
             }
             str = str.TrimEnd(new[] { listSeparator });
 
@@ -86,10 +95,13 @@ namespace LeftosCommonLibrary
 
             foreach (var team in dList)
             {
-                string s2 = team.Aggregate("", (current, kvp) => current + (Escape(kvp.Value) + listSeparator));
-                s2 = s2.TrimEnd(new[] { listSeparator });
-
-                sw.WriteLine(s2);
+                string s3 = "";
+                foreach (var col in columns)
+                {
+                    s3 += team[col.Key] + ",";
+                }
+                s3 = s3.TrimEnd(new[] { listSeparator });
+                sw.WriteLine(s3);
             }
 
             sw.Close();

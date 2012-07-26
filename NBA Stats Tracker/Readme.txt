@@ -84,14 +84,14 @@ NBA 2K12 Features
 	
 	Just follow these steps:
 	REditor
-		1. From in-game, select Play Game, and let it save your career on the jersey selection screen.
+		1. From in-game, select Play Game (even if you're going to simulate it), and let it save your career on the jersey selection screen.
 		2. Alt-Tab out of the game and start REditor.
 		3. Open your save in REditor, export everything to CSV (File > Export to CSV).
 		4. Start NBA Stats Tracker.
 		5. Open your database, or create a new one if you haven't previously done so.
 		6. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 3.
 		7. Save the database.
-		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again.
+		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again. If you're simulating games, simulate just this game and then save immediately. Do not let any other games simulate since your last save.
 		9. Alt-Tab out of the game and start REditor.
 		10. Open your save in REditor, export everything to CSV (File > Export to CSV).
 		11. Go back to the tool, open the database you saved before the game.
