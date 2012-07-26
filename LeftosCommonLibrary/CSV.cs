@@ -93,12 +93,12 @@ namespace LeftosCommonLibrary
 
             sw.WriteLine(str);
 
-            foreach (var team in dList)
+            foreach (var dict in dList)
             {
                 string s3 = "";
                 foreach (var col in columns)
                 {
-                    s3 += team[col.Key] + ",";
+                    s3 += Escape(dict[col.Key]) + listSeparator;
                 }
                 s3 = s3.TrimEnd(new[] { listSeparator });
                 sw.WriteLine(s3);
