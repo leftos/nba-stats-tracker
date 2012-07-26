@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v0.12.0.4
+		- Improvement: Added Team IDs to REditor Import Team Selection window
+
 	v0.12.0.3
 		- Fix: Fixed player matching bug during REditor import that would duplicate players
 		- Fix: Fixed warning about duplicate players showing up even when it shouldn't

@@ -66,13 +66,14 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (var team in validTeams)
             {
+                string s = String.Format("{0} (ID: {1})", team["Name"], team["ID"]);
                 if (!activeTeams.Contains(team))
                 {
-                    lstDisabled.Items.Add(team["Name"]);
+                    lstDisabled.Items.Add(s);
                 }
                 else
                 {
-                    lstEnabled.Items.Add(team["Name"]);
+                    lstEnabled.Items.Add(s);
                 }
             }
 
@@ -393,11 +394,12 @@ namespace NBA_Stats_Tracker.Windows
 
                 //MainWindow.selectedTeams = new List<Dictionary<string, string>>(_activeTeams);
                 MainWindow.selectedTeams = new List<Dictionary<string, string>>();
-                foreach (object team in lstEnabled.Items)
+                foreach (string team in lstEnabled.Items)
                 {
+                    string teamName = team.Split(new [] {" (ID: "}, StringSplitOptions.None)[0];
                     MainWindow.selectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
                                                                       {
-                                                                          if (t["Name"] == team.ToString()) return true;
+                                                                          if (t["Name"] == teamName) return true;
                                                                           return false;
                                                                       }));
                 }
