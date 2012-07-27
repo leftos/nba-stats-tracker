@@ -718,7 +718,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     <DataTemplate>
                       <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                         <TextBlock.ToolTip>
-                          <TextBlock Text="Scoring Rate; an estimate of points scored every 48 minutes on the floor."
+                          <TextBlock Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor."
                                      TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -731,7 +731,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                       <TextBlock Text="{Binding REBR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock
-Text="Rebounding Rate; an estimate of rebounds grabbed every 48 minutes on the floor." TextWrapping="Wrap"
+Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap"
 MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -744,7 +744,7 @@ MaxWidth="400" />
                       <TextBlock Text="{Binding OREBR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock
-Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 48 minutes on the floor."
+Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
 TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -756,7 +756,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     <DataTemplate>
                       <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                         <TextBlock.ToolTip>
-                          <TextBlock Text="Assist Rate; an estimate of assists made every 48 minutes on the floor."
+                          <TextBlock Text="Assist Rate; an estimate of assists made every 36 minutes on the floor."
                                      TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -768,7 +768,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     <DataTemplate>
                       <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                         <TextBlock.ToolTip>
-                          <TextBlock Text="Blocking Rate; an estimate of shots blocked every 48 minutes on the floor."
+                          <TextBlock Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor."
                                      TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -780,7 +780,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     <DataTemplate>
                       <TextBlock Text="{Binding STLR, StringFormat=F1}">
                         <TextBlock.ToolTip>
-                          <TextBlock Text="Stealing Rate; an estimate of steals every 48 minutes on the floor."
+                          <TextBlock Text="Stealing Rate; an estimate of steals every 36 minutes on the floor."
                                      TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -792,7 +792,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     <DataTemplate>
                       <TextBlock Text="{Binding TOR, StringFormat=F1}">
                         <TextBlock.ToolTip>
-                          <TextBlock Text="Turnover Rate; an estimate of turnovers every 48 minutes on the floor."
+                          <TextBlock Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor."
                                      TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -1010,7 +1010,7 @@ MaxWidth="400" />
                       <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Scoring Rate; an estimate of points scored every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>
@@ -1022,7 +1022,7 @@ MaxWidth="400" />
                       <TextBlock Text="{Binding REBR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Rebounding Rate; an estimate of rebounds grabbed every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>
@@ -1034,7 +1034,7 @@ MaxWidth="400" />
                       <TextBlock Text="{Binding OREBR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock
-Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 48 minutes on the floor."
+Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
 TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
@@ -1047,7 +1047,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                       <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Assist Rate; an estimate of assists made every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Assist Rate; an estimate of assists made every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>
@@ -1059,7 +1059,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                       <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Blocking Rate; an estimate of shots blocked every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>
@@ -1071,7 +1071,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                       <TextBlock Text="{Binding STLR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Stealing Rate; an estimate of steals every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Stealing Rate; an estimate of steals every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>
@@ -1083,7 +1083,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                       <TextBlock Text="{Binding TOR, StringFormat=F1}">
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
-                                     Text="Turnover Rate; an estimate of turnovers every 48 minutes on the floor." TextWrapping="Wrap" />
+                                     Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor." TextWrapping="Wrap" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>

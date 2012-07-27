@@ -1,18 +1,13 @@
-0.12.0.3
+0.12.1.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-v0.12.0.3
-- Fix: Fixed player matching bug during REditor import that would duplicate players
-- Fix: Fixed warning about duplicate players showing up even when it shouldn't
-- Change: Player of The Game in Box Score's Best Performers will always be from the winning team
+v0.12.1
+- Improvement: Best Performers in Team Overview reports if any players are injured
+- Improvement: Head-To-Head Best Performers in Team Overview reports if any players are injured, and allows the user to hide injured players, showing only available ones
+- Fix: Various minor interface fixes
 
-v0.12.0.2
-- Fix: Fixed Start New Season not saving the name of the new season (if the user entered any) correctly
-- Improvement: 2K12 saves can now be imported into non-2K12 created databases and the tool will try to match the teams and players
+v0.12.0.6
+- Fix: Player Stats weren't being exported correctly when doing an REditor export
 
-v0.12.0.1
-- Fix: Fixed a minor issue with box score dates during REditor import
-
-v0.12
-- Addition: Tool now checks if it can detect a single game played since the last REditor import, and if it can, it automatically fills out the box score
-- Improvement: Tool now checks and won't add a second team with the same name as an existing one using the Add Teams/Players window
+v0.12.0.5
+- Fix: Fixed Load Active Teams in REditor Import Team Selection Window which broke in v0.12.0.4

@@ -1,5 +1,16 @@
 NBA Stats Tracker - Version History
 
+	v0.12.1
+		- Improvement: Best Performers in Team Overview reports if any players are injured
+		- Improvement: Head-To-Head Best Performers in Team Overview reports if any players are injured, and allows the user to hide injured players, showing only available ones
+		- Fix: Various minor interface fixes
+
+	v0.12.0.6
+		- Fix: Player Stats weren't being exported correctly when doing an REditor export
+
+	v0.12.0.5
+		- Fix: Fixed Load Active Teams in REditor Import Team Selection Window which broke in v0.12.0.4
+
 	v0.12.0.4
 		- Improvement: Added Team IDs to REditor Import Team Selection window
 

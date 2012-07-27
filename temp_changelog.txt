@@ -1,1 +1,0 @@
-- Get Real NBA Stats automatically saves them to a TST file

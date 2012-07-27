@@ -44,7 +44,7 @@ namespace NBA_Stats_Tracker.Interop
         public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
         {
             string s1 = "Folder$$" + folder + "\n";
-            string s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["Name"] + "$%"));
+            string s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["ID"] + "$%"));
             s2 = s2.Substring(0, s2.Length - 2);
             s2 += "\n";
 
@@ -511,7 +511,6 @@ namespace NBA_Stats_Tracker.Interop
             if (oldTST.Count == 30)
             {
                 teamsThatPlayedAGame = new List<int>();
-                bool inPlayoffs;
                 foreach (var team in tst)
                 {
                     TeamStats newTeam = team.Value;
@@ -881,8 +880,11 @@ namespace NBA_Stats_Tracker.Interop
 
             string path = folder + @"\Team_Stats.csv";
             CSV.CSVFromDictionaryList(teamStats, path);
-            path = folder + @"Player_Stats.csv";
-            CSV.CSVFromDictionaryList(playerStats, path);
+            if (!teamsOnly)
+            {
+                path = folder + @"\Player_Stats.csv";
+                CSV.CSVFromDictionaryList(playerStats, path); 
+            }
 
             return 0;
         }

@@ -163,6 +163,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (mode == Mode.PickBoxScore)
             {
+                btnLoadList.Visibility = Visibility.Hidden;
                 var candidates = Interop.InteropREditor.teamsThatPlayedAGame;
                 lblCurSeason.Content = "Select the two teams that you want to extract the box score for";
 
@@ -464,14 +465,28 @@ namespace NBA_Stats_Tracker.Windows
                             new List<string>(line.Substring(8).Split(new[] {"$%"}, StringSplitOptions.None));
                         foreach (string team in enabledTeams)
                         {
-                            if (lstDisabled.Items.Contains(team))
+                            bool found = false;
+                            foreach (string dteam in lstDisabled.Items)
                             {
-                                lstDisabled.Items.Remove(team);
-                                lstEnabled.Items.Add(team);
+                                if (dteam.Contains("(ID: " + team + ")"))
+                                {
+                                    lstDisabled.Items.Remove(dteam);
+                                    lstEnabled.Items.Add(dteam);
+                                    found = true;
+                                    break;
+                                }
                             }
-                            else
+                            if (!found)
                             {
-                                if (lstEnabled.Items.Contains(team)) continue;
+                                foreach (string eteam in lstEnabled.Items)
+                                {
+                                    if (eteam.Contains("(ID: " + team + ")"))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) continue;
 
                                 MessageBox.Show(
                                     "The active teams list you loaded is incompatible with the save you're trying to import.");
@@ -480,6 +495,15 @@ namespace NBA_Stats_Tracker.Windows
                         }
                     }
                 }
+
+                var items = new List<string>();
+                foreach (var item in lstEnabled.Items)
+                {
+                    items.Add(item.ToString());
+                }
+                items.Sort();
+                lstEnabled.Items.Clear();
+                items.ForEach(item => lstEnabled.Items.Add(item));
 
                 changed = false;
             }

@@ -722,7 +722,18 @@ namespace NBA_Stats_Tracker.Windows
         {
             checkIfSameTeams();
             tabTeam1.Header = cmbTeam1.SelectedItem;
+            tabAwayMetric.Header = cmbTeam1.SelectedItem + " Metric Stats";
+            grpAway.Header = cmbTeam1.SelectedItem;
             UpdateDataGrid(1);
+        }
+
+        private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            checkIfSameTeams();
+            tabTeam2.Header = cmbTeam2.SelectedItem;
+            tabHomeMetric.Header = cmbTeam2.SelectedItem + " Metric Stats";
+            grpHome.Header = cmbTeam2.SelectedItem;
+            UpdateDataGrid(2);
         }
 
         private void checkIfSameTeams()
@@ -748,13 +759,6 @@ namespace NBA_Stats_Tracker.Windows
 
             cmbTeam1.Background = defaultBackground;
             cmbTeam2.Background = defaultBackground;
-        }
-
-        private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            checkIfSameTeams();
-            tabTeam2.Header = cmbTeam2.SelectedItem;
-            UpdateDataGrid(2);
         }
 
         private void calculateScore1(object sender = null, TextChangedEventArgs e = null)
