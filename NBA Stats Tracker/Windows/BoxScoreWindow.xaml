@@ -154,7 +154,7 @@
                     VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" Sorting="StatColumn_Sorting">
             <DataGrid.Columns>
               <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key"
-                                      DisplayMemberPath="Value" x:Name="colPlayerAway"
+                                      DisplayMemberPath="Value" SortMemberPath="Name" x:Name="colPlayerAway"
                                       CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
               <DataGridCheckBoxColumn Header="Starter" Binding="{Binding isStarter}" />
               <DataGridCheckBoxColumn Header="Injured" Binding="{Binding playedInjured}" />
@@ -481,7 +481,7 @@ MaxWidth="400" />
                     HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome" VerticalAlignment="Stretch" FrozenColumnCount="1" Sorting="StatColumn_Sorting">
             <DataGrid.Columns>
               <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player"
-                                      SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key"
+                                      SelectedValueBinding="{Binding PlayerID}" SortMemberPath="Name" SelectedValuePath="Key"
                                       CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent"/>
               <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />
               <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />

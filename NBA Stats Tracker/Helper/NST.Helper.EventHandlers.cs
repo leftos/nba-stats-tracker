@@ -60,8 +60,11 @@ namespace NBA_Stats_Tracker.Helper
 
         public static void StatColumn_Sorting(DataGridSortingEventArgs e)
         {
+            List<string> namesNotToSortDescendingFirst = new List<string>{"Player", "Last Name", "First Name", "Team"};
             if (e.Column.SortDirection == null)
-                e.Column.SortDirection = ListSortDirection.Ascending;
+            {
+                if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false) e.Column.SortDirection = ListSortDirection.Ascending;
+            }
         }
 
         public static void UpdateBoxScoreDataGrid(string TeamName, out ObservableCollection<KeyValuePair<int, string>> PlayersList,

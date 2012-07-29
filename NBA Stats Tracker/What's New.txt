@@ -2,6 +2,7 @@ NBA Stats Tracker - Version History
 
 	v0.12.2
 		- Addition: Added GmScE metric, as an adjusted measure of a player's Game Score over the minutes they've played
+		- Improvement: Player box scores in the Box Score window can now be sorted
 
 	v0.12.1.1
 		- Fix: Tool would ignore players with PlType = 5 on REditor Import
