@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v0.12.3
+		- Addition: Recommended Starters tab added to Team Overview
+		- Addition: Best Starting 5 tab added to League Overview
+
 	v0.12.2.1
 		- Addition: Added friendly reminder for a donation towards the development of NBA Stats Tracker after the tool is started 50 times
 

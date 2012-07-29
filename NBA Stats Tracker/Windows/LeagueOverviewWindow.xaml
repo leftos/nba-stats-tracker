@@ -1156,7 +1156,44 @@ TextWrapping="Wrap" MaxWidth="400" />
                        TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
           </Grid>
         </TabItem>
-        <TabItem Header="Box Scores" Name="tabBoxScores">
+                <TabItem Header="Best Starting 5" Name="tabStartingFive">
+
+                    <Grid Margin="6" ShowGridLines="False">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="5*"/>
+                                <ColumnDefinition Width="30*"/>
+                                <ColumnDefinition Width="5*"/>
+                                <ColumnDefinition Width="30*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPG" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="0"/>
+                            <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSF" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2"/>
+                            <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingC" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="35*"/>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="35*"/>
+                                <ColumnDefinition Width="10*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSG" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="1"/>
+                            <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPF" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="3"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Box Scores" Name="tabBoxScores">
           <Grid VerticalAlignment="Stretch">
             <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True" HorizontalAlignment="Stretch"
                       ItemsSource="{Binding Path=.}" Margin="6,6,6,0" Name="dgvBoxScores" VerticalAlignment="Stretch"

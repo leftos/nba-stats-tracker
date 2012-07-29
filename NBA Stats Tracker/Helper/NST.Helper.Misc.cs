@@ -165,4 +165,11 @@ namespace NBA_Stats_Tracker.Helper
             return settingValue;
         }
     }
+
+    public class StartingFivePermutation
+    {
+        public List<int> idList = new List<int>();
+        public double sum = 0;
+        public int pInP = 0;
+    }
 }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -282,7 +283,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
                 else if (tbcLeagueOverview.SelectedItem == tabPlayerStats || tbcLeagueOverview.SelectedItem == tabMetricStats ||
-                         tbcLeagueOverview.SelectedItem == tabBest)
+                         tbcLeagueOverview.SelectedItem == tabBest || tbcLeagueOverview.SelectedItem == tabStartingFive)
                 {
                     bool doIt = false;
                     if (lastShownPlayerSeason != curSeason)
@@ -383,6 +384,8 @@ namespace NBA_Stats_Tracker.Windows
             var worker1 = new BackgroundWorker {WorkerReportsProgress = true};
 
             var alltime = rbStatsAllTime.IsChecked.GetValueOrDefault();
+            var startDate = dtpStart.SelectedDate.GetValueOrDefault();
+            var endDate = dtpEnd.SelectedDate.GetValueOrDefault();
 
             int i = 0;
 
@@ -428,11 +431,8 @@ namespace NBA_Stats_Tracker.Windows
                                               int teamID = MainWindow.TeamOrder[curTeam];
 
                                               q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \"" + curTeam +
-                                                  "\")) AND ((Date >= \"" +
-                                                  SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()) +
-                                                  "\") AND (Date <= \"" +
-                                                  SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "\"))" +
-                                                  " ORDER BY Date DESC";
+                                                  "\")) AND ((Date >= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(startDate) + "\") AND (Date <= \"" +
+                                                  SQLiteDatabase.ConvertDateTimeToSQLite(endDate) + "\"))" + " ORDER BY Date DESC";
                                               res = db.GetDataTable(q);
 
                                               var ts2 = new TeamStats(curTeam);
@@ -447,8 +447,7 @@ namespace NBA_Stats_Tracker.Windows
 
                                           // Prepare Players
                                           q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
-                                          q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                                    dtpEnd.SelectedDate.GetValueOrDefault());
+                                          q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate);
                                           res = db.GetDataTable(q);
 
                                           var pstBetween = new Dictionary<int, PlayerStats>();
@@ -503,8 +502,15 @@ namespace NBA_Stats_Tracker.Windows
             worker1.ProgressChanged +=
                 delegate
                     {
-                        txbStatus.Text = "Please wait while player averages and metric stats are calculated (" + ++i + "/" + playerCount +
-                                         " completed)...";
+                        if (++i < playerCount)
+                        {
+                            txbStatus.Text = "Please wait while player averages and metric stats are being calculated (" + i + "/" + playerCount +
+                                             " completed)...";
+                        }
+                        else
+                        {
+                            txbStatus.Text = "Please wait as best performers and best starting 5 are being calculated...";
+                        }
                     };
 
             worker1.RunWorkerCompleted += delegate
@@ -576,12 +582,115 @@ namespace NBA_Stats_Tracker.Windows
                                                   catch (Exception)
                                                   {
                                                   }
+
+                                                  CalculateStarting5();
+
                                                   tbcLeagueOverview.Visibility = Visibility.Visible;
                                                   txbStatus.FontWeight = FontWeights.Normal;
                                                   txbStatus.Text = message;
                                               };
 
             worker1.RunWorkerAsync();
+        }
+
+        private void CalculateStarting5()
+        {
+            string text;
+            PlayerStatsRow psr1;
+            List<PlayerStatsRow> tempList = new List<PlayerStatsRow>();
+
+            var PGList = psrList.Where(row => (row.Position1 == "PG" || row.Position2 == "PG") && row.isInjured == false).Take(10).ToList();
+            PGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+            PGList.Reverse();
+            var SGList = psrList.Where(row => (row.Position1 == "SG" || row.Position2 == "SG") && row.isInjured == false).Take(10).ToList();
+            SGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+            SGList.Reverse();
+            var SFList = psrList.Where(row => (row.Position1 == "SF" || row.Position2 == "SF") && row.isInjured == false).Take(10).ToList();
+            SFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+            SFList.Reverse();
+            var PFList = psrList.Where(row => (row.Position1 == "PF" || row.Position2 == "PF") && row.isInjured == false).Take(10).ToList();
+            PFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+            PFList.Reverse();
+            var CList = psrList.Where(row => (row.Position1 == "C" || row.Position2 == "C") && row.isInjured == false).Take(10).ToList();
+            CList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+            CList.Reverse();
+            List<StartingFivePermutation> permutations = new List<StartingFivePermutation>();
+
+            double max = Double.MinValue;
+            for (int i1 = 0; i1 <PGList.Count; i1++)
+                for (int i2 = 0; i2 < SGList.Count; i2++)
+                    for (int i3 = 0; i3 < SFList.Count; i3++)
+                        for (int i4 = 0; i4 < PFList.Count; i4++)
+                            for (int i5 = 0; i5 < CList.Count; i5++)
+                            {
+                                double _sum = 0;
+                                var _pInP = 0;
+                                var perm = new List<int>();
+                                perm.Add(PGList[i1].ID);
+                                _sum += PGList[i1].GmSc;
+                                if (PGList[i1].Position1 == "PG")
+                                    _pInP++;
+                                if (perm.Contains(SGList[i2].ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(SGList[i2].ID);
+                                _sum += SGList[i2].GmSc;
+                                if (SGList[i2].Position1 == "SG")
+                                    _pInP++;
+                                if (perm.Contains(SFList[i3].ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(SFList[i3].ID);
+                                _sum += SFList[i3].GmSc;
+                                if (SFList[i3].Position1 == "SF")
+                                    _pInP++;
+                                if (perm.Contains(PFList[i4].ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(PFList[i4].ID);
+                                _sum += PFList[i4].GmSc;
+                                if (PFList[i4].Position1 == "PF")
+                                    _pInP++;
+                                if (perm.Contains(CList[i5].ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(CList[i5].ID);
+                                _sum += CList[i5].GmSc;
+                                if (CList[i5].Position1 == "C")
+                                    _pInP++;
+
+                                if (_sum > max)
+                                    max = _sum;
+
+                                permutations.Add(new StartingFivePermutation {idList = perm, pInP = _pInP, sum = _sum});
+                            }
+
+            var bestPerm = permutations.Where(perm1 => perm1.sum.Equals(max)).OrderByDescending(perm2 => perm2.pInP).First();
+            bestPerm.idList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
+
+            psr1 = tempList[0];
+            text = psr1.GetBestStats(5);
+            txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
+
+            psr1 = tempList[1];
+            text = psr1.GetBestStats(5);
+            txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
+
+            psr1 = tempList[2];
+            text = psr1.GetBestStats(5);
+            txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
+
+            psr1 = tempList[3];
+            text = psr1.GetBestStats(5);
+            txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
+
+            psr1 = tempList[4];
+            text = psr1.GetBestStats(5);
+            txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" + text;
         }
 
         private void PrepareBoxScores()
