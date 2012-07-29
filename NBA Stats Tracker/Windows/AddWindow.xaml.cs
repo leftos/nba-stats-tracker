@@ -88,8 +88,10 @@ namespace NBA_Stats_Tracker.Windows
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;
                     }
-                    if (string.IsNullOrEmpty(p.Position)) p.Position = " ";
-                    if (string.IsNullOrEmpty(p.Position2)) p.Position2 = " ";
+                    if (string.IsNullOrEmpty(p.Position))
+                        p.Position = " ";
+                    if (string.IsNullOrEmpty(p.Position2))
+                        p.Position2 = " ";
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));
                 }

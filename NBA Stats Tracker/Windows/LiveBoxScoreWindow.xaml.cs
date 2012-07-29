@@ -21,8 +21,8 @@ namespace NBA_Stats_Tracker.Windows
         private readonly Brush defaultBackground;
         private readonly string playersT;
         private List<string> Teams;
-        private BindingList<LivePlayerBoxScore> pbsAwayList = new BindingList<LivePlayerBoxScore>();
-        private BindingList<LivePlayerBoxScore> pbsHomeList = new BindingList<LivePlayerBoxScore>();
+        private SortableBindingList<LivePlayerBoxScore> pbsAwayList = new SortableBindingList<LivePlayerBoxScore>();
+        private SortableBindingList<LivePlayerBoxScore> pbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
         private DataRowView rowBeingEdited;
 
         public LiveBoxScoreWindow()
@@ -92,7 +92,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateDataGrid(int team)
         {
-            BindingList<LivePlayerBoxScore> pbsList;
+            SortableBindingList<LivePlayerBoxScore> pbsList;
             string TeamName;
             if (team == 1)
             {
@@ -141,7 +141,8 @@ namespace NBA_Stats_Tracker.Windows
             Teams = new List<string>();
             foreach (var kvp in MainWindow.TeamOrder)
             {
-                if (!MainWindow.tst[kvp.Value].isHidden) Teams.Add(MainWindow.tst[kvp.Value].displayName);
+                if (!MainWindow.tst[kvp.Value].isHidden)
+                    Teams.Add(MainWindow.tst[kvp.Value].displayName);
             }
 
             Teams.Sort();
@@ -150,8 +151,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeam2.ItemsSource = Teams;
         }
 
-        private void dataGrid_CellEditEnding(object sender,
-                                             DataGridCellEditEndingEventArgs e)
+        private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var rowView = e.Row.Item as DataRowView;
             rowBeingEdited = rowView;
@@ -215,17 +215,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private string calculateTeam(IEnumerable<LivePlayerBoxScore> pbsList)
         {
-            int REB = 0,
-                AST = 0,
-                STL = 0,
-                TOS = 0,
-                BLK = 0,
-                FGM = 0,
-                TPM = 0,
-                FTM = 0,
-                OREB = 0,
-                FOUL = 0,
-                PTS = 0;
+            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, TPM = 0, FTM = 0, OREB = 0, FOUL = 0, PTS = 0;
 
             foreach (LivePlayerBoxScore pbs in pbsList)
             {
@@ -242,29 +232,15 @@ namespace NBA_Stats_Tracker.Windows
                 FOUL += pbs.FOUL;
             }
 
-            string resp =
-                String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL",
-                              PTS, REB, OREB, AST, BLK, STL, TOS, FOUL);
+            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", PTS, REB, OREB, AST,
+                                        BLK, STL, TOS, FOUL);
 
             return resp;
         }
 
         private BoxScoreEntry calculateBoxScoreEntry()
         {
-            var bs = new TeamBoxScore
-                         {
-                             REB1 = 0,
-                             AST1 = 0,
-                             STL1 = 0,
-                             TO1 = 0,
-                             BLK1 = 0,
-                             FGM1 = 0,
-                             TPM1 = 0,
-                             FTM1 = 0,
-                             OREB1 = 0,
-                             FOUL1 = 0,
-                             PTS1 = 0
-                         };
+            var bs = new TeamBoxScore {REB1 = 0, AST1 = 0, STL1 = 0, TO1 = 0, BLK1 = 0, FGM1 = 0, TPM1 = 0, FTM1 = 0, OREB1 = 0, FOUL1 = 0, PTS1 = 0};
 
             foreach (LivePlayerBoxScore pbs in pbsAwayList)
             {
@@ -347,8 +323,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 ||
-                cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
+            if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 || cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
                 return;
 
             BoxScoreEntry bse = calculateBoxScoreEntry();

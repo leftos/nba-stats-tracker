@@ -82,14 +82,14 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(),
-                                              MainWindow.tst);
+                    var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
                     vw.ShowDialog();
                 }
             }
             else
             {
-                if (cmbTeams1.SelectedIndex == -1) return;
+                if (cmbTeams1.SelectedIndex == -1)
+                    return;
                 PlayerOverviewWindow.askedTeam = cmbTeams1.SelectedItem.ToString();
             }
             Close();

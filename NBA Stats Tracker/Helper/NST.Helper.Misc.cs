@@ -75,14 +75,16 @@ namespace NBA_Stats_Tracker.Helper
                 try
                 {
                     rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
+                    if (rk == null)
+                        throw new Exception();
                 }
                 catch (Exception)
                 {
                     rk = Registry.CurrentUser;
                     rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
                     rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
+                    if (rk == null)
+                        throw new Exception();
                 }
 
                 rk.SetValue(setting, value);
@@ -101,14 +103,16 @@ namespace NBA_Stats_Tracker.Helper
                 try
                 {
                     rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
+                    if (rk == null)
+                        throw new Exception();
                 }
                 catch (Exception)
                 {
                     rk = Registry.CurrentUser;
                     rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
                     rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null) throw new Exception();
+                    if (rk == null)
+                        throw new Exception();
                 }
 
                 rk.SetValue(setting, value);
@@ -125,10 +129,12 @@ namespace NBA_Stats_Tracker.Helper
             int settingValue = defaultValue;
             try
             {
-                if (rk == null) throw new Exception();
+                if (rk == null)
+                    throw new Exception();
 
                 rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                if (rk != null) settingValue = Convert.ToInt32(rk.GetValue(setting, defaultValue));
+                if (rk != null)
+                    settingValue = Convert.ToInt32(rk.GetValue(setting, defaultValue));
             }
             catch
             {
@@ -144,10 +150,12 @@ namespace NBA_Stats_Tracker.Helper
             string settingValue = defaultValue;
             try
             {
-                if (rk == null) throw new Exception();
+                if (rk == null)
+                    throw new Exception();
 
                 rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                if (rk != null) settingValue = rk.GetValue(setting, defaultValue).ToString();
+                if (rk != null)
+                    settingValue = rk.GetValue(setting, defaultValue).ToString();
             }
             catch
             {

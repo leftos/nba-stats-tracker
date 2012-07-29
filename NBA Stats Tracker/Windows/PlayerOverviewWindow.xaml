@@ -39,7 +39,8 @@
           <CheckBox Height="16" Margin="143,44,0,0" Content="Champion" HorizontalAlignment="Left"
                     IsChecked="{Binding isNBAChampion}" Name="chkIsNBAChampion" VerticalAlignment="Top" />
           <DataGrid Margin="0,66,0,0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True"
-                    FrozenColumnCount="1" ItemsSource="{Binding Path=.}" Name="dgvOverviewStats" PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" />
+                    FrozenColumnCount="1" ItemsSource="{Binding Path=.}" Name="dgvOverviewStats"
+                    PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" />
           <ComboBox Height="23" Margin="495,8,0,0" Width="40" HorizontalAlignment="Left" Name="cmbPosition1"
                     VerticalAlignment="Top" />
           <Label Margin="439,8,0,0" Content="Position" HorizontalAlignment="Left" Name="label5" VerticalAlignment="Top" />
@@ -133,18 +134,18 @@
             <ColumnDefinition />
             <ColumnDefinition />
           </Grid.ColumnDefinitions>
-          <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame1" Text=""
+          <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame1" Text="" TextWrapping="Wrap"
+                     VerticalAlignment="Stretch" />
+          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbGame2" Text=""
                      TextWrapping="Wrap" VerticalAlignment="Stretch" />
-          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbGame2"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbGame3"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" />
-          <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame4" Text=""
+          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbGame3" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" />
+          <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbGame4" Text="" TextWrapping="Wrap"
+                     VerticalAlignment="Stretch" Grid.Row="1" />
+          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbGame5" Text=""
                      TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
-          <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" Name="txbGame5"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
-          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbGame6"
-                     Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+          <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6" Name="txbGame6" Text=""
+                     TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
         </Grid>
       </TabItem>
       <TabItem Header="Head-To-Head" Name="tabHTH">
@@ -152,11 +153,12 @@
           <ComboBox Height="23" Margin="298,6,0,0" Width="153" DisplayMemberPath="Value" HorizontalAlignment="Left"
                     ItemsSource="{Binding PlayersList}" Name="cmbOppPlayer" SelectedValuePath="Key"
                     SelectionChanged="cmbOppPlayer_SelectionChanged" VerticalAlignment="Top" />
-          <Button Height="23" Margin="268,6,0,0" Width="24" Content="&lt;" HorizontalAlignment="Left"
-                  Name="btnPrevOpp" VerticalAlignment="Top" />
-          <Button Height="23" Margin="456,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left"
-                  Name="btnNextOpp" VerticalAlignment="Top" />
-          <RadioButton Height="16" Margin="0,11,95,0" Checked="rbHTHStatsAnyone_Checked" Content="Anyone" IsChecked="True" Name="rbHTHStatsAnyone" VerticalAlignment="Top" HorizontalAlignment="Right" Width="51" />
+          <Button Height="23" Margin="268,6,0,0" Width="24" Content="&lt;" HorizontalAlignment="Left" Name="btnPrevOpp"
+                  VerticalAlignment="Top" />
+          <Button Height="23" Margin="456,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left" Name="btnNextOpp"
+                  VerticalAlignment="Top" />
+          <RadioButton Height="16" Margin="0,11,95,0" Checked="rbHTHStatsAnyone_Checked" Content="Anyone"
+                       IsChecked="True" Name="rbHTHStatsAnyone" VerticalAlignment="Top" HorizontalAlignment="Right" Width="51" />
           <RadioButton Height="16" Margin="0,11,10,0" Checked="rbHTHStatsEachOther_Checked" Content="Each Other"
                        HorizontalAlignment="Right" Name="rbHTHStatsEachOther" VerticalAlignment="Top" />
           <ComboBox Height="23" Margin="44,6,0,0" Width="153" HorizontalAlignment="Left" Name="cmbOppTeam"

@@ -93,7 +93,8 @@ namespace NBA_Stats_Tracker.Data
                     Team2 = team.Key;
                     done++;
                 }
-                if (done == 2) break;
+                if (done == 2)
+                    break;
             }
             if (done != 2)
             {
@@ -418,14 +419,16 @@ namespace NBA_Stats_Tracker.Data
             {
                 for (int i = 0; i < tst.Count; i++)
                 {
-                    if (tst[i].getGames() > 0) teamCount++;
+                    if (tst[i].getGames() > 0)
+                        teamCount++;
                 }
             }
             else
             {
                 for (int i = 0; i < tst.Count; i++)
                 {
-                    if (tst[i].getPlayoffGames() > 0) teamCount++;
+                    if (tst[i].getPlayoffGames() > 0)
+                        teamCount++;
                 }
             }
             return (teamCount != 0) ? teamCount : 1;
@@ -498,11 +501,9 @@ namespace NBA_Stats_Tracker.Data
         {
             double Poss = 0.5*
                           ((tstats[t.FGA] + 0.4*tstats[t.FTA] -
-                            1.07*(tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]))*
-                            (tstats[t.FGA] - tstats[t.FGM]) + tstats[t.TO]) +
+                            1.07*(tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]))*(tstats[t.FGA] - tstats[t.FGM]) + tstats[t.TO]) +
                            (toppstats[t.FGA] + 0.4*toppstats[t.FTA] -
-                            1.07*(toppstats[t.OREB]/(toppstats[t.OREB] + tstats[t.DREB]))*
-                            (toppstats[t.FGA] - toppstats[t.FGM]) + toppstats[t.TO]));
+                            1.07*(toppstats[t.OREB]/(toppstats[t.OREB] + tstats[t.DREB]))*(toppstats[t.FGA] - toppstats[t.FGM]) + toppstats[t.TO]));
             return Poss;
         }
 
@@ -673,8 +674,7 @@ namespace NBA_Stats_Tracker.Data
             return rating;
         }
 
-        public static string TeamAveragesAndRankings(string teamName, Dictionary<int, TeamStats> tst,
-                                                     SortedDictionary<string, int> TeamOrder)
+        public static string TeamAveragesAndRankings(string teamName, Dictionary<int, TeamStats> tst, SortedDictionary<string, int> TeamOrder)
         {
             int id;
             try
@@ -688,21 +688,15 @@ namespace NBA_Stats_Tracker.Data
             int[][] rating = CalculateTeamRankings(tst);
             string text =
                 String.Format(
-                    "Win %: {32:F3} ({33})\nWin eff: {34:F2} ({35})\n\nPPG: {0:F1} ({16})\nPAPG: {1:F1} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F2} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F2} ({21})\n"
-                    +
-                    "FT%: {6:F3} ({22})\nFTeff: {7:F2} ({23})\n\nRPG: {8:F1} ({24})\nORPG: {9:F1} ({25})\nDRPG: {10:F1} ({26})\n\nSPG: {11:F1} ({27})\nBPG: {12:F1} ({28})\n"
-                    + "TPG: {13:F1} ({29})\nAPG: {14:F1} ({30})\nFPG: {15:F1} ({31})",
-                    tst[id].averages[t.PPG], tst[id].averages[t.PAPG], tst[id].averages[t.FGp],
-                    tst[id].averages[t.FGeff], tst[id].averages[t.TPp], tst[id].averages[t.TPeff],
-                    tst[id].averages[t.FTp], tst[id].averages[t.FTeff], tst[id].averages[t.RPG],
-                    tst[id].averages[t.ORPG],
-                    tst[id].averages[t.DRPG], tst[id].averages[t.SPG],
-                    tst[id].averages[t.BPG], tst[id].averages[t.TPG], tst[id].averages[t.APG], tst[id].averages[t.FPG],
-                    rating[id][0], tst.Count + 1 - rating[id][1], rating[id][2], rating[id][3], rating[id][4],
-                    rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9],
-                    rating[id][10], rating[id][11], rating[id][12], tst.Count + 1 - rating[id][13],
-                    rating[id][14], tst.Count + 1 - rating[id][15], tst[id].averages[t.Wp], rating[id][16],
-                    tst[id].averages[t.Weff], rating[id][t.Weff]);
+                    "Win %: {32:F3} ({33})\nWin eff: {34:F2} ({35})\n\nPPG: {0:F1} ({16})\nPAPG: {1:F1} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F2} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F2} ({21})\n" +
+                    "FT%: {6:F3} ({22})\nFTeff: {7:F2} ({23})\n\nRPG: {8:F1} ({24})\nORPG: {9:F1} ({25})\nDRPG: {10:F1} ({26})\n\nSPG: {11:F1} ({27})\nBPG: {12:F1} ({28})\n" +
+                    "TPG: {13:F1} ({29})\nAPG: {14:F1} ({30})\nFPG: {15:F1} ({31})", tst[id].averages[t.PPG], tst[id].averages[t.PAPG],
+                    tst[id].averages[t.FGp], tst[id].averages[t.FGeff], tst[id].averages[t.TPp], tst[id].averages[t.TPeff], tst[id].averages[t.FTp],
+                    tst[id].averages[t.FTeff], tst[id].averages[t.RPG], tst[id].averages[t.ORPG], tst[id].averages[t.DRPG], tst[id].averages[t.SPG],
+                    tst[id].averages[t.BPG], tst[id].averages[t.TPG], tst[id].averages[t.APG], tst[id].averages[t.FPG], rating[id][0],
+                    tst.Count + 1 - rating[id][1], rating[id][2], rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7],
+                    rating[id][8], rating[id][9], rating[id][10], rating[id][11], rating[id][12], tst.Count + 1 - rating[id][13], rating[id][14],
+                    tst.Count + 1 - rating[id][15], tst[id].averages[t.Wp], rating[id][16], tst[id].averages[t.Weff], rating[id][t.Weff]);
             return text;
         }
 
@@ -730,20 +724,18 @@ namespace NBA_Stats_Tracker.Data
                     msg += "th";
                     break;
             }
-            msg += " strongest team in the league right now, after having played " + rating[teamID][19].ToString() +
-                   " games.\n\n";
+            msg += " strongest team in the league right now, after having played " + rating[teamID][19].ToString() + " games.\n\n";
 
             if ((rating[teamID][3] <= 5) && (rating[teamID][5] <= 5))
             {
                 if (rating[teamID][7] <= 5)
                 {
-                    msg +=
-                        "This team just can't be beaten offensively. One of the strongest in the league in all aspects.";
+                    msg += "This team just can't be beaten offensively. One of the strongest in the league in all aspects.";
                 }
                 else
                 {
-                    msg += "Great team offensively. Even when they don't get to the line, they know how to raise the bar with "
-                           + "efficiency in both 2 and 3 pointers.";
+                    msg += "Great team offensively. Even when they don't get to the line, they know how to raise the bar with " +
+                           "efficiency in both 2 and 3 pointers.";
                 }
             }
             else if ((rating[teamID][3] <= 10) && (rating[teamID][5] <= 10))
@@ -754,34 +746,33 @@ namespace NBA_Stats_Tracker.Data
                 }
                 else
                 {
-                    msg += "Although their free throwing is not on par with their other offensive qualities, you can't relax "
-                           + "when playing against them. Top 10 in field goals and 3 pointers.";
+                    msg += "Although their free throwing is not on par with their other offensive qualities, you can't relax " +
+                           "when playing against them. Top 10 in field goals and 3 pointers.";
                 }
             }
             else if ((rating[teamID][3] <= 20) && (rating[teamID][5] <= 20))
             {
                 if (rating[teamID][7] <= 10)
                 {
-                    msg += "Although an average offensive team (they can't seem to remain consistent from both inside and "
-                           + "outside the arc), they can get back at you with their efficiency from the line.";
+                    msg += "Although an average offensive team (they can't seem to remain consistent from both inside and " +
+                           "outside the arc), they can get back at you with their efficiency from the line.";
                 }
                 else
                 {
-                    msg += "Average offensive team. Not really efficient in anything they do when they bring the ball down "
-                           + "the court.";
+                    msg += "Average offensive team. Not really efficient in anything they do when they bring the ball down " + "the court.";
                 }
             }
             else
             {
                 if (rating[teamID][7] <= 10)
                 {
-                    msg += "They aren't consistent from the floor, but still manage to get to the line enough times and "
-                           + "be good enough to make a difference.";
+                    msg += "They aren't consistent from the floor, but still manage to get to the line enough times and " +
+                           "be good enough to make a difference.";
                 }
                 else
                 {
-                    msg += "One of the most inconsistent teams at the offensive end, and they aren't efficient enough from "
-                           + "the line to make up for it.";
+                    msg += "One of the most inconsistent teams at the offensive end, and they aren't efficient enough from " +
+                           "the line to make up for it.";
                 }
             }
             msg += "\n\n";
@@ -789,8 +780,7 @@ namespace NBA_Stats_Tracker.Data
             if (rating[teamID][3] <= 5)
                 msg += "Top scoring team, one of the top 5 in field goal efficiency.";
             else if (rating[teamID][3] <= 10)
-                msg +=
-                    "You'll have to worry about their scoring efficiency, as they're one of the Top 10 in the league.";
+                msg += "You'll have to worry about their scoring efficiency, as they're one of the Top 10 in the league.";
             else if (rating[teamID][3] <= 20)
                 msg += "Scoring is not their virtue, but they're not that bad either.";
             else if (rating[teamID][3] <= 30)
@@ -798,38 +788,33 @@ namespace NBA_Stats_Tracker.Data
 
             int comp = rating[teamID][t.FGeff] - rating[teamID][t.FGp];
             if (comp < -15)
-                msg +=
-                    "\nThey score more baskets than their FG% would have you guess, but they need to work on getting more consistent.";
+                msg += "\nThey score more baskets than their FG% would have you guess, but they need to work on getting more consistent.";
             else if (comp > 15)
-                msg +=
-                    "\nThey can be dangerous whenever they shoot the ball. Their offense just doesn't get them enough chances to shoot it, though.";
+                msg += "\nThey can be dangerous whenever they shoot the ball. Their offense just doesn't get them enough chances to shoot it, though.";
 
             msg += "\n";
 
             if (rating[teamID][5] <= 5)
-                msg += "You'll need to always have an eye on the perimeter. They can turn a game around with their 3 pointers. "
-                       + "They score well, they score a lot.";
+                msg += "You'll need to always have an eye on the perimeter. They can turn a game around with their 3 pointers. " +
+                       "They score well, they score a lot.";
             else if (rating[teamID][5] <= 10)
-                msg +=
-                    "Their 3pt shooting is bad news. They're in the top 10, and you can't relax playing against them.";
+                msg += "Their 3pt shooting is bad news. They're in the top 10, and you can't relax playing against them.";
             else if (rating[teamID][5] <= 20)
                 msg += "Not much to say about their 3pt shooting. Average, but it is there.";
             else if (rating[teamID][5] <= 30)
-                msg +=
-                    "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
+                msg += "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
 
             comp = rating[teamID][t.TPeff] - rating[teamID][t.TPp];
             if (comp < -15)
-                msg +=
-                    "\nThey'll get enough 3 pointers to go down each night, but not on a good enough percentage for that amount.";
+                msg += "\nThey'll get enough 3 pointers to go down each night, but not on a good enough percentage for that amount.";
             else if (comp > 15)
                 msg += "\nWith their accuracy from the 3PT line, you'd think they'd shoot more of those.";
 
             msg += "\n";
 
             if (rating[teamID][7] <= 5)
-                msg += "They tend to attack the lanes hard, getting to the line and making the most of it. They're one of the best "
-                       + "teams in the league at it.";
+                msg += "They tend to attack the lanes hard, getting to the line and making the most of it. They're one of the best " +
+                       "teams in the league at it.";
             else if (rating[teamID][7] <= 10)
                 msg +=
                     "One of the best teams in the league at getting to the line. They get enough free throws to punish the opposing team every night. Top 10.";
@@ -838,8 +823,7 @@ namespace NBA_Stats_Tracker.Data
                     "Average free throw efficiency, you don't have to worry about sending them to the line; at least as much as other aspects of their game.";
             else if (rating[teamID][7] <= 30)
                 if (rating[teamID][t.FTp] < 15)
-                    msg +=
-                        "A team that you'll enjoy playing hard and aggressively against on defense. They don't know how to get to the line.";
+                    msg += "A team that you'll enjoy playing hard and aggressively against on defense. They don't know how to get to the line.";
                 else
                     msg +=
                         "A team that doesn't know how to get to the line, or how to score from there. You don't have to worry about freebies against them.";
@@ -849,8 +833,7 @@ namespace NBA_Stats_Tracker.Data
                 msg +=
                     "\nAlthough they get to the line a lot and make some free throws, they have to put up a lot to actually get that amount each night.";
             else if (comp > 15)
-                msg +=
-                    "\nThey're lethal when shooting free throws, but they need to play harder and get there more often.";
+                msg += "\nThey're lethal when shooting free throws, but they need to play harder and get there more often.";
 
             msg += "\n";
 
@@ -858,25 +841,22 @@ namespace NBA_Stats_Tracker.Data
                 msg +=
                     "They know how to find the open man, and they get their offense going by getting it around the perimeter until a clean shot is there.";
             else if ((rating[teamID][14] > 15) && (rating[teamID][3] < 10))
-                msg += "A team that prefers to run its offense through its core players in isolation. Not very good in assists, but they know how to get the job "
-                       + "done more times than not.";
-            else
                 msg +=
-                    "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
+                    "A team that prefers to run its offense through its core players in isolation. Not very good in assists, but they know how to get the job " +
+                    "done more times than not.";
+            else
+                msg += "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
 
             msg += "\n\n";
 
             if (31 - rating[teamID][t.PAPG] <= 5)
-                msg +=
-                    "Don't expect to get your score high against them. An elite defensive team, top 5 in points against them each night.";
+                msg += "Don't expect to get your score high against them. An elite defensive team, top 5 in points against them each night.";
             else if (31 - rating[teamID][t.PAPG] <= 10)
-                msg +=
-                    "One of the better defensive teams out there, limiting their opponents to low scores night in, night out.";
+                msg += "One of the better defensive teams out there, limiting their opponents to low scores night in, night out.";
             else if (31 - rating[teamID][t.PAPG] <= 20)
                 msg += "Average defensively, not much to show for it, but they're no blow-outs.";
             else if (31 - rating[teamID][t.PAPG] <= 30)
-                msg +=
-                    "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
+                msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
 
             msg += "\n\n";
 
@@ -884,14 +864,12 @@ namespace NBA_Stats_Tracker.Data
                 msg +=
                     "Hustle is their middle name. They attack the offensive glass, they block, they steal. Don't even dare to blink or get complacent.\n\n";
             else if ((rating[teamID][9] >= 20) && (rating[teamID][11] >= 20) && (rating[teamID][12] >= 20))
-                msg +=
-                    "This team just doesn't know what hustle means. You'll be doing circles around them if you're careful.\n\n";
+                msg += "This team just doesn't know what hustle means. You'll be doing circles around them if you're careful.\n\n";
 
             if (rating[teamID][8] <= 5)
                 msg += "Sensational rebounding team, everybody jumps for the ball, no missed shot is left loose.";
             else if (rating[teamID][8] <= 10)
-                msg +=
-                    "You can't ignore their rebounding ability, they work together and are in the top 10 in rebounding.";
+                msg += "You can't ignore their rebounding ability, they work together and are in the top 10 in rebounding.";
             else if (rating[teamID][8] <= 20)
                 msg += "They crash the boards as much as the next guy, but they won't give up any freebies.";
             else if (rating[teamID][8] <= 30)
@@ -917,19 +895,17 @@ namespace NBA_Stats_Tracker.Data
                     "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.\n";
 
             if ((rating[teamID][13] <= 10) && (rating[teamID][15] <= 10))
-                msg +=
-                    "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
+                msg += "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
             else if (rating[teamID][13] < 10)
                 msg +=
                     "Not good ball handlers, and that's being polite. Bottom 10 in turnovers, they have work to do until they get their offense going.";
             else if (rating[teamID][15] < 10)
-                msg +=
-                    "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
+                msg += "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
             else
-                msg += "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw "
-                       +
-                       "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the "
-                       + "one you expected.";
+                msg +=
+                    "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw " +
+                    "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the " +
+                    "one you expected.";
 
             return msg;
         }
@@ -939,7 +915,8 @@ namespace NBA_Stats_Tracker.Data
             var db = new SQLiteDatabase(file);
             int maxSeason = SQLiteIO.getMaxSeason(file);
             string teamsT = "Teams";
-            if (season != maxSeason) teamsT += "S" + season;
+            if (season != maxSeason)
+                teamsT += "S" + season;
 
             string q = "select isHidden from " + teamsT + " where Name LIKE \"" + name + "\"";
             bool isHidden = Tools.getBoolean(db.GetDataTable(q).Rows[0], "isHidden");
@@ -956,8 +933,8 @@ namespace NBA_Stats_Tracker.Data
             ts2 = _tst[2];
         }
 
-        public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
-                                                    ref Dictionary<int, TeamStats> _tstopp, int id1, int id2)
+        public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst, ref Dictionary<int, TeamStats> _tstopp,
+                                                    int id1, int id2)
         {
             TeamStats ts1 = _tst[id1];
             TeamStats ts2 = _tst[id2];

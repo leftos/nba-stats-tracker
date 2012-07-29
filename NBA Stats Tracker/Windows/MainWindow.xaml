@@ -60,9 +60,9 @@
                     Click="mnuMiscRenameCurrentSeason_Click" />
           <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
                     Click="mnuMiscEnableTeams_Click" />
-                    <MenuItem Header="_Enable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
+          <MenuItem Header="_Enable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
                     Click="mnuMiscEnablePlayers_Click" />
-                    <Separator />
+          <Separator />
           <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
           <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
           <Separator />
@@ -112,8 +112,8 @@
               to Database
             </TextBlock>
           </Button>
-          <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate" VerticalAlignment="Top"
-                  Width="156" Click="btnLoadUpdate_Click" TabIndex="29">
+          <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate"
+                  VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="29">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Update with
               <LineBreak />
@@ -140,8 +140,8 @@
       </GroupBox>
       <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
         <Grid>
-          <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12" VerticalAlignment="Top"
-                  Width="154" Click="btnImport2K12_Click" TabIndex="2">
+          <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12"
+                  VerticalAlignment="Top" Width="154" Click="btnImport2K12_Click" TabIndex="2">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Import from
               <LineBreak />

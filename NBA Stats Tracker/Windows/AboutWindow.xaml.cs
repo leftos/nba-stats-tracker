@@ -34,12 +34,11 @@ namespace NBA_Stats_Tracker.Windows
 
             lblVersion.Content = "version " + Assembly.GetExecutingAssembly().GetName().Version;
 
-            txbThanks.Text =
-                "I want to thank everyone that took the time to give me suggestions, feedback, and bug reports.\n" +
-                "I also want to thank my family and friends for their support, as well as my professor Mr. " +
-                "Tsakalidis for letting NBA Stats Tracker be the thesis for my Computer Engineering degree.\n" +
-                "Special thanks goes to the NLSC community and specific members which I've named in the Readme.\n" +
-                "\nThanks for all your support, enjoy!";
+            txbThanks.Text = "I want to thank everyone that took the time to give me suggestions, feedback, and bug reports.\n" +
+                             "I also want to thank my family and friends for their support, as well as my professor Mr. " +
+                             "Tsakalidis for letting NBA Stats Tracker be the thesis for my Computer Engineering degree.\n" +
+                             "Special thanks goes to the NLSC community and specific members which I've named in the Readme.\n" +
+                             "\nThanks for all your support, enjoy!";
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)

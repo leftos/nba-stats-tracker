@@ -1,4 +1,5 @@
 ﻿#region Copyright Notice
+
 // Created by Lefteris Aslanoglou, (c) 2011-2012
 // 
 // Uses Object DeepCloning Code Example by Felix K.
@@ -15,6 +16,7 @@
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
 // author.
+
 #endregion
 
 using System;
@@ -33,7 +35,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                variable = (T)Convert.ChangeType(dict[key], typeof(T));
+                variable = (T) Convert.ChangeType(dict[key], typeof (T));
             }
             catch (InvalidCastException)
             {
@@ -94,7 +96,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                return (T)Convert.ChangeType(dict[key], typeof(T));
+                return (T) Convert.ChangeType(dict[key], typeof (T));
             }
             catch (InvalidCastException)
             {
@@ -111,7 +113,7 @@ namespace LeftosCommonLibrary
             try
             {
                 var val = Convert.ChangeType(dict[key], type);
-                return (T)Convert.ChangeType(val, typeof(T));
+                return (T) Convert.ChangeType(val, typeof (T));
             }
             catch (InvalidCastException)
             {
@@ -128,12 +130,12 @@ namespace LeftosCommonLibrary
             try
             {
                 string s = dict[key];
-                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
+                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
                 foreach (var part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
-                return (T)Convert.ChangeType(s, typeof(T));
+                return (T) Convert.ChangeType(s, typeof (T));
             }
             catch (InvalidCastException)
             {
@@ -173,10 +175,8 @@ namespace LeftosCommonLibrary
                     copies.Add(original, result);
 
                     // Maybe you need here some more BindingFlags
-                    foreach (
-                        FieldInfo field in
-                            t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy |
-                                        BindingFlags.Instance))
+                    foreach (FieldInfo field in
+                        t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
@@ -266,7 +266,7 @@ namespace LeftosCommonLibrary
                 IFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(objectStream, RealObject);
                 objectStream.Seek(0, SeekOrigin.Begin);
-                return (T)formatter.Deserialize(objectStream);
+                return (T) formatter.Deserialize(objectStream);
             }
         }
     }

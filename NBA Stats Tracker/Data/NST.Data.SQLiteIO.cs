@@ -42,8 +42,7 @@ namespace NBA_Stats_Tracker.Data
             }
             catch
             {
-                MessageBox.Show(
-                    "Error while trying to overwrite file. Make sure the file is not in use by another program.");
+                MessageBox.Show("Error while trying to overwrite file. Make sure the file is not in use by another program.");
                 return false;
             }
             saveAllSeasons(file);
@@ -59,35 +58,30 @@ namespace NBA_Stats_Tracker.Data
             int maxSeason = getMaxSeason(oldDB);
 
             MainWindow.bshist = GetAllBoxScoresFromDatabase(oldDB);
-            saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
-                                 maxSeason);
+            saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason);
 
             for (int i = 1; i <= maxSeason; i++)
             {
                 if (i != oldSeason)
                 {
-                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst,
-                               out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist, _curSeason: i,
-                               doNotLoadBoxScores: true);
-                    saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
-                                         maxSeason, doNotSaveBoxScores: true);
+                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+                               ref MainWindow.bshist, _curSeason: i, doNotLoadBoxScores: true);
+                    saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason,
+                                         doNotSaveBoxScores: true);
                 }
             }
-            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                       ref MainWindow.pt, ref MainWindow.bshist, oldSeason,
-                       doNotLoadBoxScores: true);
+            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+                       ref MainWindow.bshist, oldSeason, doNotLoadBoxScores: true);
         }
 
         public static void saveSeasonToDatabase()
         {
-            saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst,
-                                 MainWindow.curSeason, getMaxSeason(MainWindow.currentDB));
+            saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
+                                 getMaxSeason(MainWindow.currentDB));
         }
 
-        public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
-                                                Dictionary<int, TeamStats> tstoppToSave,
-                                                Dictionary<int, PlayerStats> pstToSave,
-                                                int season, int maxSeason, bool doNotSaveBoxScores = false,
+        public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave,
+                                                Dictionary<int, PlayerStats> pstToSave, int season, int maxSeason, bool doNotSaveBoxScores = false,
                                                 bool partialUpdate = false)
         {
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
@@ -101,7 +95,8 @@ namespace NBA_Stats_Tracker.Data
             //try
             //{
             MainWindow.db = new SQLiteDatabase(file);
-            if (!FileExists) prepareNewDB(MainWindow.db, season, maxSeason);
+            if (!FileExists)
+                prepareNewDB(MainWindow.db, season, maxSeason);
 
             SaveSeasonName(season);
 
@@ -178,8 +173,8 @@ namespace NBA_Stats_Tracker.Data
 
                             int lastid =
                                 Convert.ToInt32(
-                                    MainWindow.db.GetDataTable("select GameID from GameResults where HASH LIKE \"" + md5 +
-                                                               "\"").Rows[0]["GameID"].ToString());
+                                    MainWindow.db.GetDataTable("select GameID from GameResults where HASH LIKE \"" + md5 + "\"").Rows[0]["GameID"].
+                                        ToString());
                             bse.bs.id = lastid;
                         }
                         MainWindow.db.Delete("PlayerResults", "GameID = " + bse.bs.id);
@@ -192,7 +187,7 @@ namespace NBA_Stats_Tracker.Data
                             //used.Add(id);
                             dict2 = new Dictionary<string, string>
                                         {
-                                            //{"ID", id.ToString()},
+//{"ID", id.ToString()},
                                             {"GameID", bse.bs.id.ToString()},
                                             {"PlayerID", pbs.PlayerID.ToString()},
                                             {"Team", pbs.Team},
@@ -268,7 +263,8 @@ namespace NBA_Stats_Tracker.Data
             try
             {
                 int result = MainWindow.db.Update("SeasonNames", dict, "ID = " + season.ToString());
-                if (result < 1) throw (new Exception());
+                if (result < 1)
+                    throw (new Exception());
             }
             catch (Exception)
             {
@@ -276,8 +272,7 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        private static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave,
-                                                Dictionary<int, TeamStats> tstoppToSave, int season,
+        private static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave, int season,
                                                 int maxSeason)
         {
             var _db = new SQLiteDatabase(file);
@@ -513,8 +508,8 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season,
-                                                 int maxSeason, bool partialUpdate = false)
+        public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason,
+                                                 bool partialUpdate = false)
         {
             var _db = new SQLiteDatabase(file);
 
@@ -525,7 +520,8 @@ namespace NBA_Stats_Tracker.Data
                 playersT += "S" + season.ToString();
             }
 
-            if (!partialUpdate) MainWindow.db.ClearTable(playersT);
+            if (!partialUpdate)
+                MainWindow.db.ClearTable(playersT);
             string q = "select ID from " + playersT + ";";
             DataTable res = MainWindow.db.GetDataTable(q);
 
@@ -537,7 +533,8 @@ namespace NBA_Stats_Tracker.Data
             foreach (var kvp in playerStats)
             {
                 PlayerStats ps = kvp.Value;
-                if (partialUpdate) _db.Delete(playersT, "ID = " + ps.ID);
+                if (partialUpdate)
+                    _db.Delete(playersT, "ID = " + ps.ID);
                 var dict = new Dictionary<string, string>
                                {
                                    {"ID", ps.ID.ToString()},
@@ -627,9 +624,7 @@ namespace NBA_Stats_Tracker.Data
                     sqldb.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
                     sqldb.ExecuteNonQuery(qr);
-                    sqldb.Insert("SeasonNames",
-                                 new Dictionary<string, string>
-                                     {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
+                    sqldb.Insert("SeasonNames", new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -684,7 +679,8 @@ namespace NBA_Stats_Tracker.Data
         {
             try
             {
-                if (!File.Exists(file)) throw (new Exception());
+                if (!File.Exists(file))
+                    throw (new Exception());
 
                 var _db = new SQLiteDatabase(file);
 
@@ -693,8 +689,8 @@ namespace NBA_Stats_Tracker.Data
 
                 int maxseason = (from DataRow r in res.Rows
                                  select r["Name"].ToString()
-                                 into name where name.Length > 5 && name.Substring(0, 5) == "Teams"
-                                 select Convert.ToInt32(name.Substring(6, 1))).Concat(new[] {0}).Max();
+                                 into name where name.Length > 5 && name.Substring(0, 5) == "Teams" select Convert.ToInt32(name.Substring(6, 1))).
+                    Concat(new[] {0}).Max();
 
                 maxseason++;
 
@@ -706,15 +702,15 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public static void GetTeamStatsFromDatabase(string file, string team, int season, out TeamStats ts,
-                                                    out TeamStats tsopp)
+        public static void GetTeamStatsFromDatabase(string file, string team, int season, out TeamStats ts, out TeamStats tsopp)
         {
             var _db = new SQLiteDatabase(file);
 
             String q;
             int maxSeason = getMaxSeason(file);
 
-            if (season == 0) season = maxSeason;
+            if (season == 0)
+                season = maxSeason;
 
             if (maxSeason == season)
             {
@@ -891,15 +887,15 @@ namespace NBA_Stats_Tracker.Data
         }
 
         public static void GetAllTeamStatsFromDatabase(string file, int season, out Dictionary<int, TeamStats> _tst,
-                                                       out Dictionary<int, TeamStats> _tstopp,
-                                                       out SortedDictionary<string, int> TeamOrder)
+                                                       out Dictionary<int, TeamStats> _tstopp, out SortedDictionary<string, int> TeamOrder)
         {
             var _db = new SQLiteDatabase(file);
 
             String q;
             int maxSeason = getMaxSeason(file);
 
-            if (season == 0) season = maxSeason;
+            if (season == 0)
+                season = maxSeason;
 
             if (maxSeason == season)
             {
@@ -935,18 +931,13 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         public static void LoadSeason()
         {
-            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst,
-                       out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist,
-                       _curSeason: MainWindow.curSeason,
-                       doNotLoadBoxScores: true);
+            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
+                       ref MainWindow.pt, ref MainWindow.bshist, _curSeason: MainWindow.curSeason, doNotLoadBoxScores: true);
         }
 
-        public static void LoadSeason(string file, out Dictionary<int, TeamStats> _tst,
-                                      out Dictionary<int, TeamStats> _tstopp,
-                                      out Dictionary<int, PlayerStats> pst,
-                                      out SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
-                                      ref IList<BoxScoreEntry> _bshist,
-                                      int _curSeason = 0, bool doNotLoadBoxScores = false)
+        public static void LoadSeason(string file, out Dictionary<int, TeamStats> _tst, out Dictionary<int, TeamStats> _tstopp,
+                                      out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> _TeamOrder, ref PlayoffTree _pt,
+                                      ref IList<BoxScoreEntry> _bshist, int _curSeason = 0, bool doNotLoadBoxScores = false)
         {
             MainWindow.loadingSeason = true;
 
@@ -958,13 +949,15 @@ namespace NBA_Stats_Tracker.Data
 
             int maxSeason = getMaxSeason(file);
 
-            if (_curSeason == 0) _curSeason = maxSeason;
+            if (_curSeason == 0)
+                _curSeason = maxSeason;
 
             GetAllTeamStatsFromDatabase(file, _curSeason, out _tst, out _tstopp, out _TeamOrder);
 
             pst = GetPlayersFromDatabase(file, _tst, _tstopp, _TeamOrder, _curSeason, maxSeason);
 
-            if (!doNotLoadBoxScores) _bshist = GetSeasonBoxScoresFromDatabase(file, _curSeason, maxSeason);
+            if (!doNotLoadBoxScores)
+                _bshist = GetSeasonBoxScoresFromDatabase(file, _curSeason, maxSeason);
 
             MainWindow.currentDB = file;
 
@@ -1008,8 +1001,7 @@ namespace NBA_Stats_Tracker.Data
 
                 for (int i = 1; i <= maxSeason; i++)
                 {
-                    db.Insert("SeasonNames",
-                              new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", i.ToString()}});
+                    db.Insert("SeasonNames", new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", i.ToString()}});
                 }
             }
 
@@ -1119,7 +1111,8 @@ namespace NBA_Stats_Tracker.Data
             DataTable res2 = _db.GetDataTable(q);
 
             string teamsT = "Teams";
-            if (curSeason != maxSeason) teamsT += "S" + curSeason;
+            if (curSeason != maxSeason)
+                teamsT += "S" + curSeason;
 
             DataTable res;
             var DisplayNames = new Dictionary<string, string>();
@@ -1156,15 +1149,12 @@ namespace NBA_Stats_Tracker.Data
                                                                                   Team2Display = DisplayNames[bs.Team2]
                                                                               };
 
-                                                                string q2 =
-                                                                    "select * from PlayerResults WHERE GameID = " +
-                                                                    bs.id.ToString();
+                                                                string q2 = "select * from PlayerResults WHERE GameID = " + bs.id.ToString();
                                                                 DataTable res3 = _db.GetDataTable(q2);
                                                                 bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
 
                                                                 Parallel.ForEach(res3.Rows.Cast<DataRow>(),
-                                                                                 r3 =>
-                                                                                 bse.pbsList.Add(new PlayerBoxScore(r3)));
+                                                                                 r3 => bse.pbsList.Add(new PlayerBoxScore(r3)));
 
                                                                 _bshist.Add(bse);
                                                             });
@@ -1172,10 +1162,8 @@ namespace NBA_Stats_Tracker.Data
         }
 
         public static Dictionary<int, PlayerStats> GetPlayersFromDatabase(string file, Dictionary<int, TeamStats> _tst,
-                                                                          Dictionary<int, TeamStats> _tstopp,
-                                                                          SortedDictionary<string, int> _TeamOrder,
-                                                                          int curSeason,
-                                                                          int maxSeason)
+                                                                          Dictionary<int, TeamStats> _tstopp, SortedDictionary<string, int> _TeamOrder,
+                                                                          int curSeason, int maxSeason)
         {
             string q;
 
@@ -1191,8 +1179,7 @@ namespace NBA_Stats_Tracker.Data
             var _db = new SQLiteDatabase(file);
             DataTable res = _db.GetDataTable(q);
 
-            Dictionary<int, PlayerStats> _pst =
-                (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
+            Dictionary<int, PlayerStats> _pst = (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
 
             PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
 
@@ -1201,18 +1188,21 @@ namespace NBA_Stats_Tracker.Data
 
         public static bool isTSTEmpty()
         {
-            if (String.IsNullOrWhiteSpace(MainWindow.currentDB)) return true;
+            if (String.IsNullOrWhiteSpace(MainWindow.currentDB))
+                return true;
 
             MainWindow.db = new SQLiteDatabase(MainWindow.currentDB);
 
             string teamsT = "Teams";
-            if (MainWindow.curSeason != getMaxSeason(MainWindow.currentDB)) teamsT += "S" + MainWindow.curSeason;
+            if (MainWindow.curSeason != getMaxSeason(MainWindow.currentDB))
+                teamsT += "S" + MainWindow.curSeason;
             string q = "select Name from " + teamsT;
             DataTable res = MainWindow.db.GetDataTable(q);
 
             try
             {
-                if (res.Rows[0]["Name"].ToString() == "$$NewDB") return true;
+                if (res.Rows[0]["Name"].ToString() == "$$NewDB")
+                    return true;
 
                 return false;
             }
@@ -1273,7 +1263,8 @@ namespace NBA_Stats_Tracker.Data
             i = res.Rows.Count;
             while (true)
             {
-                if (!used.Contains(i)) return i;
+                if (!used.Contains(i))
+                    return i;
 
                 i++;
             }
@@ -1302,8 +1293,7 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         public static void SaveTeamsToDatabase()
         {
-            SaveTeamsToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.curSeason,
-                                getMaxSeason(MainWindow.currentDB));
+            SaveTeamsToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.curSeason, getMaxSeason(MainWindow.currentDB));
         }
     }
 }

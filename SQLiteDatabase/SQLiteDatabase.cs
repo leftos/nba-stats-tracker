@@ -59,9 +59,7 @@ namespace SQLite_Database
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
-            String str = connectionOpts.Aggregate("",
-                                                  (current, row) =>
-                                                  current + String.Format("{0}={1}; ", row.Key, row.Value));
+            String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
             dbConnection = str;
         }
@@ -162,8 +160,7 @@ namespace SQLite_Database
             int returnCode;
             if (data.Count >= 1)
             {
-                vals = data.Aggregate(vals,
-                                      (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
+                vals = data.Aggregate(vals, (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
                 vals = vals.Substring(0, vals.Length - 1);
             }
             try
@@ -306,8 +303,7 @@ namespace SQLite_Database
                             values = values.Substring(0, values.Length - 1);
                             try
                             {
-                                cmd.CommandText = String.Format("insert into {0}({1}) values({2});", tableName, columns,
-                                                                values);
+                                cmd.CommandText = String.Format("insert into {0}({1}) values({2});", tableName, columns, values);
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception fail)
@@ -331,14 +327,14 @@ namespace SQLite_Database
         /// <returns>The number of lines affected by this query.</returns>
         public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
         {
-            if (data.Count > 500) throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
+            if (data.Count > 500)
+                throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
 
             int returnCode;
 
             string sql = "insert into " + tableName + " SELECT";
 
-            sql = data[0].Aggregate(sql,
-                                    (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
+            sql = data[0].Aggregate(sql, (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
             sql = sql.Remove(sql.Length - 1);
             data.RemoveAt(0);
             foreach (var dict in data)
@@ -411,15 +407,15 @@ namespace SQLite_Database
 
             if (!addWhere)
             {
-                query = String.Concat(query, String.Format(" AND (Date >= '{0}' AND Date <= '{1}')",
-                                                           ConvertDateTimeToSQLite(dStart),
-                                                           ConvertDateTimeToSQLite(dEnd)));
+                query = String.Concat(query,
+                                      String.Format(" AND (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart),
+                                                    ConvertDateTimeToSQLite(dEnd)));
             }
             else
             {
-                query = String.Concat(query, String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}')",
-                                                           ConvertDateTimeToSQLite(dStart),
-                                                           ConvertDateTimeToSQLite(dEnd)));
+                query = String.Concat(query,
+                                      String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart),
+                                                    ConvertDateTimeToSQLite(dEnd)));
             }
             return query;
         }

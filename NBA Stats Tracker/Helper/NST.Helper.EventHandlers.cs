@@ -60,12 +60,12 @@ namespace NBA_Stats_Tracker.Helper
 
         public static void StatColumn_Sorting(DataGridSortingEventArgs e)
         {
-            if (e.Column.SortDirection == null) e.Column.SortDirection = ListSortDirection.Ascending;
+            if (e.Column.SortDirection == null)
+                e.Column.SortDirection = ListSortDirection.Ascending;
         }
 
-        public static void UpdateBoxScoreDataGrid(string TeamName,
-                                                  out ObservableCollection<KeyValuePair<int, string>> PlayersList,
-                                                  ref BindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
+        public static void UpdateBoxScoreDataGrid(string TeamName, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+                                                  ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);
             string q = "select * from " + playersT + " where TeamFin LIKE \"" + TeamName + "\"";
@@ -73,7 +73,8 @@ namespace NBA_Stats_Tracker.Helper
             DataTable res = db.GetDataTable(q);
 
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
-            if (!loading) pbsList = new BindingList<PlayerBoxScore>();
+            if (!loading)
+                pbsList = new SortableBindingList<PlayerBoxScore>();
 
             foreach (DataRow r in res.Rows)
             {
@@ -81,23 +82,23 @@ namespace NBA_Stats_Tracker.Helper
                 PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
-            foreach (PlayerBoxScore cur in pbsList)
+            for (int i = 0; i < pbsList.Count; i++)
             {
-                var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                           MainWindow.pst[cur.PlayerID].LastName + ", " +
-                                                           MainWindow.pst[cur.PlayerID].FirstName);
+                var cur = pbsList[i];
+                var name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                var player = new KeyValuePair<int, string>(cur.PlayerID, name);
+                cur.Name = name;
                 if (!PlayersList.Contains(player))
                 {
                     PlayersList.Add(player);
                 }
+                pbsList[i] = cur;
             }
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
         }
 
-        public static void UpdateBoxScoreDataGrid(string TeamName,
-                                                  out ObservableCollection<KeyValuePair<int, string>> PlayersList,
-                                                  ref BindingList<LivePlayerBoxScore> pbsList, string playersT,
-                                                  bool loading)
+        public static void UpdateBoxScoreDataGrid(string TeamName, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+                                                  ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);
             string q = "select * from " + playersT + " where TeamFin LIKE \"" + TeamName + "\"";
@@ -105,7 +106,8 @@ namespace NBA_Stats_Tracker.Helper
             DataTable res = db.GetDataTable(q);
 
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
-            if (!loading) pbsList = new BindingList<LivePlayerBoxScore>();
+            if (!loading)
+                pbsList = new SortableBindingList<LivePlayerBoxScore>();
 
             foreach (DataRow r in res.Rows)
             {
@@ -113,15 +115,17 @@ namespace NBA_Stats_Tracker.Helper
                 PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
-            foreach (LivePlayerBoxScore cur in pbsList)
+            for (int i = 0; i < pbsList.Count; i++)
             {
-                var player = new KeyValuePair<int, string>(cur.PlayerID,
-                                                           MainWindow.pst[cur.PlayerID].LastName + ", " +
-                                                           MainWindow.pst[cur.PlayerID].FirstName);
+                var cur = pbsList[i];
+                var name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                var player = new KeyValuePair<int, string>(cur.PlayerID, name);
+                cur.Name = name;
                 if (!PlayersList.Contains(player))
                 {
                     PlayersList.Add(player);
                 }
+                pbsList[i] = cur;
             }
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
 
@@ -134,8 +138,7 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
-        public static void calculateScore(int fgm, int? fga, int tpm, int? tpa, int ftm, int? fta, out int PTS,
-                                          out string percentages)
+        public static void calculateScore(int fgm, int? fga, int tpm, int? tpa, int ftm, int? fta, out int PTS, out string percentages)
         {
             try
             {
@@ -149,8 +152,7 @@ namespace NBA_Stats_Tracker.Helper
             }
             try
             {
-                percentages = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm/fga, (float) tpm/tpa,
-                                            (float) ftm/fta);
+                percentages = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm/fga, (float) tpm/tpa, (float) ftm/fta);
             }
             catch
             {

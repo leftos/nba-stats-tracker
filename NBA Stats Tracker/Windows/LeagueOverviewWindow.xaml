@@ -570,6 +570,19 @@ TextWrapping="Wrap" MaxWidth="400" />
                     </DataTemplate>
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="GmScE" SortMemberPath="GmScE" ClipboardContentBinding="{Binding GmScE}">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding GmScE, StringFormat=F2}">
+                        <TextBlock.ToolTip>
+                          <TextBlock
+Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
+TextWrapping="Wrap" MaxWidth="400" />
+                        </TextBlock.ToolTip>
+                      </TextBlock>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp" ClipboardContentBinding="{Binding TSp}">
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -856,6 +869,19 @@ MaxWidth="400" />
                         <TextBlock.ToolTip>
                           <TextBlock MaxWidth="400"
                                      Text="Game Score; a linear calculation of the player's performance." TextWrapping="Wrap" />
+                        </TextBlock.ToolTip>
+                      </TextBlock>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="GmScE" SortMemberPath="GmScE" ClipboardContentBinding="{Binding GmScE}">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding GmScE, StringFormat=F2}">
+                        <TextBlock.ToolTip>
+                          <TextBlock
+Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
+TextWrapping="Wrap" MaxWidth="400" />
                         </TextBlock.ToolTip>
                       </TextBlock>
                     </DataTemplate>

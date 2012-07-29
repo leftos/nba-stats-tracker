@@ -182,7 +182,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbSeasonNum.SelectedIndex == -1) return;
+            if (cmbSeasonNum.SelectedIndex == -1)
+                return;
 
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
@@ -190,9 +191,7 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.LoadSeason();
 
             List<string> teams =
-                (from kvp in MainWindow.TeamOrder
-                 where !MainWindow.tst[kvp.Value].isHidden
-                 select MainWindow.tst[kvp.Value].displayName).ToList();
+                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -205,7 +204,8 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayerStats.ItemsSource = null;
 
             string playersT = "Players";
-            if (curSeason != maxSeason) playersT += "S" + curSeason;
+            if (curSeason != maxSeason)
+                playersT += "S" + curSeason;
 
             string q = "select * from " + playersT;
 
@@ -280,8 +280,8 @@ namespace NBA_Stats_Tracker.Windows
                 where += "isNBAChampion LIKE \"False\" AND ";
             }
 
-            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
-                chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
+            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) && chkIsActive.IsChecked.GetValueOrDefault() &&
+                cmbTeam.SelectedItem.ToString() != "- Any -")
             {
                 where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
             }
@@ -427,10 +427,10 @@ namespace NBA_Stats_Tracker.Windows
                                                                       //double val = Convert.ToDouble(parts[2]);
                                                                       var context = new ExpressionContext();
                                                                       IGenericExpression<bool> ige =
-                                                                          context.CompileGeneric<bool>(
-                                                                              ps.metrics[parts[0]] + parts[1] + parts[2]);
+                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
                                                                       keep = ige.Evaluate();
-                                                                      if (!keep) loopState.Stop();
+                                                                      if (!keep)
+                                                                          loopState.Stop();
                                                                   });
             return keep;
         }
@@ -446,19 +446,21 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex != -1) chkIsActive.IsChecked = true;
+            if (cmbTeam.SelectedIndex != -1)
+                chkIsActive.IsChecked = true;
         }
 
         private void chkIsActive_Click(object sender, RoutedEventArgs e)
         {
-            if (chkIsActive.IsChecked.GetValueOrDefault()) cmbTeam.SelectedIndex = 0;
-            else cmbTeam.SelectedIndex = -1;
+            if (chkIsActive.IsChecked.GetValueOrDefault())
+                cmbTeam.SelectedIndex = 0;
+            else
+                cmbTeam.SelectedIndex = -1;
         }
 
         private void btnTotalsAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 ||
-                String.IsNullOrWhiteSpace(txtTotalsVal.Text))
+            if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtTotalsVal.Text))
                 return;
 
             try
@@ -477,7 +479,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnTotalsDel_Click(object sender, RoutedEventArgs e)
         {
-            if (lstTotals.SelectedIndex == -1) return;
+            if (lstTotals.SelectedIndex == -1)
+                return;
 
             if (lstTotals.SelectedItems.Count == 1)
             {
@@ -499,8 +502,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAvgAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 ||
-                String.IsNullOrWhiteSpace(txtAvgVal.Text))
+            if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtAvgVal.Text))
                 return;
 
             try
@@ -519,7 +521,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAvgDel_Click(object sender, RoutedEventArgs e)
         {
-            if (lstAvg.SelectedIndex == -1) return;
+            if (lstAvg.SelectedIndex == -1)
+                return;
 
             if (lstAvg.SelectedItems.Count == 1)
             {
@@ -541,8 +544,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnMetricsAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 ||
-                String.IsNullOrWhiteSpace(txtMetricsVal.Text))
+            if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtMetricsVal.Text))
                 return;
 
             try
@@ -561,7 +563,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnMetricsDel_Click(object sender, RoutedEventArgs e)
         {
-            if (lstMetrics.SelectedIndex == -1) return;
+            if (lstMetrics.SelectedIndex == -1)
+                return;
 
             if (lstMetrics.SelectedItems.Count == 1)
             {
@@ -589,23 +592,20 @@ namespace NBA_Stats_Tracker.Windows
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new OpenFileDialog
-                          {
-                              InitialDirectory = Path.GetFullPath(folder),
-                              Filter = "NST Search Filters (*.nsf)|*.nsf",
-                              DefaultExt = "nsf"
-                          };
+                          {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
 
             sfd.ShowDialog();
 
-            if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
+            if (String.IsNullOrWhiteSpace(sfd.FileName))
+                return;
 
             int filterCount = lstTotals.Items.Count + lstAvg.Items.Count + lstMetrics.Items.Count;
             if (filterCount > 0)
             {
-                MessageBoxResult mbr =
-                    MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
-                                    "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                if (mbr == MessageBoxResult.Cancel) return;
+                MessageBoxResult mbr = MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
+                                                       "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (mbr == MessageBoxResult.Cancel)
+                    return;
                 if (mbr == MessageBoxResult.Yes)
                 {
                     lstTotals.Items.Clear();
@@ -691,7 +691,8 @@ namespace NBA_Stats_Tracker.Windows
                         while (true)
                         {
                             string line = s[++i];
-                            if (line.StartsWith("TotalsEND")) break;
+                            if (line.StartsWith("TotalsEND"))
+                                break;
 
                             lstTotals.Items.Add(line);
                         }
@@ -701,7 +702,8 @@ namespace NBA_Stats_Tracker.Windows
                         while (true)
                         {
                             string line = s[++i];
-                            if (line.StartsWith("AvgEND")) break;
+                            if (line.StartsWith("AvgEND"))
+                                break;
 
                             lstAvg.Items.Add(line);
                         }
@@ -711,7 +713,8 @@ namespace NBA_Stats_Tracker.Windows
                         while (true)
                         {
                             string line = s[++i];
-                            if (line.StartsWith("MetricsEND")) break;
+                            if (line.StartsWith("MetricsEND"))
+                                break;
 
                             lstMetrics.Items.Add(line);
                         }
@@ -756,15 +759,12 @@ namespace NBA_Stats_Tracker.Windows
                 Directory.CreateDirectory(folder);
 
             var sfd = new SaveFileDialog
-                          {
-                              InitialDirectory = Path.GetFullPath(folder),
-                              Filter = "NST Search Filters (*.nsf)|*.nsf",
-                              DefaultExt = "nsf"
-                          };
+                          {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
 
             sfd.ShowDialog();
 
-            if (String.IsNullOrWhiteSpace(sfd.FileName)) return;
+            if (String.IsNullOrWhiteSpace(sfd.FileName))
+                return;
 
             File.WriteAllText(sfd.FileName, s);
         }

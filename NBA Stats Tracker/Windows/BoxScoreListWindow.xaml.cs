@@ -80,8 +80,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             MessageBoxResult r =
                 MessageBox.Show(
-                    "Are you sure you want to delete this box score?\n" +
-                    "This action cannot be undone.\n\n" +
+                    "Are you sure you want to delete this box score?\n" + "This action cannot be undone.\n\n" +
                     "Any changes made to Team Stats by automatically adding this box score to them won't be reverted by its deletion.",
                     "NBA Stats Tracker", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)

@@ -34,17 +34,16 @@ namespace NBA_Stats_Tracker.Interop
 {
     public static class Interop2K12
     {
-        public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst,
-                                                ref Dictionary<int, TeamStats> tstopp,
-                                                ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt,
-                                                bool havePT = false)
+        public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
+                                                ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt, bool havePT = false)
         {
             var _teamStats = new Dictionary<int, TeamStats>();
             for (int i = 0; i < 30; i++)
             {
                 _teamStats[i] = new TeamStats();
             }
-            if (!havePT) pt = null;
+            if (!havePT)
+                pt = null;
 
             string ext = Tools.getExtension(fn);
 
@@ -53,9 +52,8 @@ namespace NBA_Stats_Tracker.Interop
                 if (!havePT)
                 {
                     pt = new PlayoffTree();
-                    MessageBoxResult r =
-                        MessageBox.Show("Do you have a saved Playoff Tree you want to load for this save file?",
-                                        "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    MessageBoxResult r = MessageBox.Show("Do you have a saved Playoff Tree you want to load for this save file?", "NBA Stats Tracker",
+                                                         MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                     if (r == MessageBoxResult.No)
                     {
                         var ptw = new PlayoffTreeWindow();
@@ -100,8 +98,7 @@ namespace NBA_Stats_Tracker.Interop
                                       {
                                           Filter = "Playoff Tree files (*.ptr)|*.ptr",
                                           InitialDirectory = App.AppDocsPath,
-                                          Title = "Please select the file you saved the Playoff Tree to for " +
-                                                  Tools.getSafeFilename(fn) + "..."
+                                          Title = "Please select the file you saved the Playoff Tree to for " + Tools.getSafeFilename(fn) + "..."
                                       };
                         ofd.ShowDialog();
 
@@ -193,8 +190,7 @@ namespace NBA_Stats_Tracker.Interop
             */
         }
 
-        public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats,
-                                          ref SortedDictionary<string, int> TeamOrder,
+        public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
                                           ref PlayoffTree pt)
         {
             // Stage 1
@@ -225,8 +221,7 @@ namespace NBA_Stats_Tracker.Interop
                     _teamStats[TeamOrder[pt.teams[0]]].pl_offset = _teamStats[0].offset - 1440;
                     for (int i = 1; i < 16; i++)
                     {
-                        _teamStats[TeamOrder[pt.teams[i]]].pl_offset =
-                            _teamStats[TeamOrder[pt.teams[i - 1]]].pl_offset + 40;
+                        _teamStats[TeamOrder[pt.teams[i]]].pl_offset = _teamStats[TeamOrder[pt.teams[i - 1]]].pl_offset + 40;
                     }
                 }
                 //else if (inPlayoffs == -1) return;
@@ -240,8 +235,8 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        private static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats,
-                                               ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt)
+        private static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
+                                               ref PlayoffTree pt)
         {
             int gamesInSeason = -1;
             string ptFile = "";
@@ -328,7 +323,8 @@ namespace NBA_Stats_Tracker.Interop
                     ptW.ShowDialog();
                     pt = App.tempPT;
 
-                    if (!pt.done) return -1;
+                    if (!pt.done)
+                        return -1;
 
                     var spt = new SaveFileDialog
                                   {
@@ -338,7 +334,8 @@ namespace NBA_Stats_Tracker.Interop
                                   };
                     spt.ShowDialog();
 
-                    if (spt.FileName == "") return -1;
+                    if (spt.FileName == "")
+                        return -1;
 
                     ptFile = spt.FileName;
 
@@ -369,7 +366,8 @@ namespace NBA_Stats_Tracker.Interop
 
             saveSettingsForFile(fn, gamesInSeason, ptFile, mode, SettingsFile);
 
-            if (done) return 1;
+            if (done)
+                return 1;
 
             return 0;
         }
@@ -381,8 +379,7 @@ namespace NBA_Stats_Tracker.Interop
             return App.mode;
         }
 
-        private static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode,
-                                                string SettingsFile)
+        private static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode, string SettingsFile)
         {
             using (var sw2 = new StreamWriter(SettingsFile, false))
             {
@@ -390,9 +387,7 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
-        public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst,
-                                          SortedDictionary<string, int> TeamOrder,
-                                          PlayoffTree pt)
+        public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst, SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
         {
             using (FileStream openRead = File.OpenRead(fn))
             {
@@ -442,9 +437,7 @@ namespace NBA_Stats_Tracker.Interop
                 }
             }
 
-            byte[] crc =
-                Tools.ReverseByteOrder(
-                    Tools.StringToByteArray(Tools.getCRC(App.AppTempPath + Tools.getSafeFilename(fn))), 4);
+            byte[] crc = Tools.ReverseByteOrder(Tools.StringToByteArray(Tools.getCRC(App.AppTempPath + Tools.getSafeFilename(fn))), 4);
 
             File.Delete(fn + ".bak");
 
@@ -745,13 +738,15 @@ namespace NBA_Stats_Tracker.Interop
 
         private static int askGamesInSeason(int gamesInSeason)
         {
-            MessageBoxResult r =
-                MessageBox.Show(
-                    "How many games does each season have in this save?\n\n82 Games: Yes\n58 Games: No\n29 Games: Cancel",
-                    "", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-            if (r == MessageBoxResult.Yes) gamesInSeason = 82;
-            else if (r == MessageBoxResult.No) gamesInSeason = 58;
-            else if (r == MessageBoxResult.Cancel) gamesInSeason = 28;
+            MessageBoxResult r = MessageBox.Show(
+                "How many games does each season have in this save?\n\n82 Games: Yes\n58 Games: No\n29 Games: Cancel", "",
+                MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (r == MessageBoxResult.Yes)
+                gamesInSeason = 82;
+            else if (r == MessageBoxResult.No)
+                gamesInSeason = 58;
+            else if (r == MessageBoxResult.Cancel)
+                gamesInSeason = 28;
             return gamesInSeason;
         }
     }

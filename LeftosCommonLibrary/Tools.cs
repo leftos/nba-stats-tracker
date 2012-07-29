@@ -129,13 +129,15 @@ namespace LeftosCommonLibrary
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
             var arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
-            if (keepDuplicates) return arr.ToList();
+            if (keepDuplicates)
+                return arr.ToList();
             else
             {
                 List<string> list = new List<string>();
                 foreach (var item in arr)
                 {
-                    if (!list.Contains(item)) list.Add(item);
+                    if (!list.Contains(item))
+                        list.Add(item);
                 }
                 return list;
             }

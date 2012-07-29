@@ -1,4 +1,5 @@
 ﻿#region Copyright Notice
+
 // Created by Lefteris Aslanoglou, (c) 2011-2012
 // 
 // Implementation of thesis
@@ -9,6 +10,7 @@
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
 // author.
+
 #endregion
 
 using System;
@@ -27,14 +29,17 @@ namespace NBA_Stats_Tracker.Helper
         {
             sort(bl, null, null);
         }
+
         public static void Sort<T>(this BindingList<T> bl, IComparer<T> p_Comparer)
         {
             sort(bl, p_Comparer, null);
         }
+
         public static void Sort<T>(this BindingList<T> bl, Comparison<T> p_Comparison)
         {
             sort(bl, null, p_Comparison);
         }
+
         private static void sort<T>(this BindingList<T> bl, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
         {
             //Extract items and sort separately
@@ -46,11 +51,11 @@ namespace NBA_Stats_Tracker.Helper
             if (p_Comparison == null)
             {
                 sortList.Sort(p_Comparer);
-            }//if
+            } //if
             else
             {
                 sortList.Sort(p_Comparison);
-            }//else
+            } //else
 
             //Disable notifications, rebuild, and re-enable notifications
             bool oldRaise = bl.RaiseListChangedEvents;
@@ -65,21 +70,23 @@ namespace NBA_Stats_Tracker.Helper
                 bl.RaiseListChangedEvents = oldRaise;
                 bl.ResetBindings();
             }
-
         }
 
         public static void Sort<T>(this ObservableCollection<T> oc)
         {
             sort(oc, null, null);
         }
+
         public static void Sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer)
         {
             sort(oc, p_Comparer, null);
         }
+
         public static void Sort<T>(this ObservableCollection<T> oc, Comparison<T> p_Comparison)
         {
             sort(oc, null, p_Comparison);
         }
+
         private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
         {
             //Extract items and sort separately
@@ -91,11 +98,11 @@ namespace NBA_Stats_Tracker.Helper
             if (p_Comparison == null)
             {
                 sortList.Sort(p_Comparer);
-            }//if
+            } //if
             else
             {
                 sortList.Sort(p_Comparison);
-            }//else
+            } //else
 
             oc.Clear();
             sortList.ForEach(item => oc.Add(item));

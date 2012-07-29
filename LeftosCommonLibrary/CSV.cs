@@ -32,8 +32,7 @@ namespace LeftosCommonLibrary
         private const string ESCAPED_QUOTE = "\"\"";
         private static readonly char[] CHARACTERS_THAT_MUST_BE_QUOTED = {',', '"', '\n', ' '};
 
-        private static readonly char listSeparator =
-            System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
+        private static readonly char listSeparator = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
 
         public static List<Dictionary<string, string>> DictionaryListFromCSV(string path)
         {
@@ -82,14 +81,16 @@ namespace LeftosCommonLibrary
             {
                 var oldColumn = kvp.Key;
                 string newColumn;
-                if (!kvp.Key.StartsWith("Column")) newColumn = kvp.Key + listSeparator;
-                else newColumn = "\" \"" + listSeparator;
+                if (!kvp.Key.StartsWith("Column"))
+                    newColumn = kvp.Key + listSeparator;
+                else
+                    newColumn = "\" \"" + listSeparator;
 
                 columns.Add(oldColumn, newColumn);
 
                 str += newColumn;
             }
-            str = str.TrimEnd(new[] { listSeparator });
+            str = str.TrimEnd(new[] {listSeparator});
 
             sw.WriteLine(str);
 
@@ -100,7 +101,7 @@ namespace LeftosCommonLibrary
                 {
                     s3 += Escape(dict[col.Key]) + listSeparator;
                 }
-                s3 = s3.TrimEnd(new[] { listSeparator });
+                s3 = s3.TrimEnd(new[] {listSeparator});
                 sw.WriteLine(s3);
             }
 
@@ -120,7 +121,8 @@ namespace LeftosCommonLibrary
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] values = lines[i].Split('\t');
-                if (values.Length < headers.Length) continue;
+                if (values.Length < headers.Length)
+                    continue;
 
                 dictList.Add(new Dictionary<string, string>());
                 for (int index = 0; index < headers.Length; index++)

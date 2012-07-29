@@ -1,5 +1,8 @@
-0.12.1.0
+0.12.1.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+
+v0.12.1.1
+- Fix: Tool would ignore players with PlType = 5 on REditor Import
 
 v0.12.1
 - Improvement: Best Performers in Team Overview reports if any players are injured

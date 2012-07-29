@@ -96,12 +96,12 @@
                           VerticalAlignment="Top" Width="41" />
                 <TextBox Height="23" HorizontalAlignment="Left" Margin="122,6,0,0" Name="txtMetricsVal"
                          VerticalAlignment="Top" Width="67" />
-                <ListBox HorizontalAlignment="Stretch" Margin="6,64,6,6" Name="lstMetrics"
-                         SelectionMode="Extended" VerticalAlignment="Stretch" />
-                <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="6,35,0,0"
-                        Name="btnMetricsAdd" VerticalAlignment="Top" Width="75" Click="btnMetricsAdd_Click" />
-                <Button Content="Remove" Height="23" HorizontalAlignment="Right" Margin="0,35,6,0"
-                        Name="btnMetricsDel" VerticalAlignment="Top" Width="75" Click="btnMetricsDel_Click" />
+                <ListBox HorizontalAlignment="Stretch" Margin="6,64,6,6" Name="lstMetrics" SelectionMode="Extended"
+                         VerticalAlignment="Stretch" />
+                <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="6,35,0,0" Name="btnMetricsAdd"
+                        VerticalAlignment="Top" Width="75" Click="btnMetricsAdd_Click" />
+                <Button Content="Remove" Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnMetricsDel"
+                        VerticalAlignment="Top" Width="75" Click="btnMetricsDel_Click" />
               </Grid>
             </GroupBox>
           </Grid>

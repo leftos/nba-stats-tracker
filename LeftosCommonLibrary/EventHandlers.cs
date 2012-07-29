@@ -45,22 +45,16 @@ namespace LeftosCommonLibrary
                                                                                             {
                                                                                                 dataGrid.Focus();
                                                                                                 dataGrid.SelectedIndex =
-                                                                                                    dataGrid.Items.
-                                                                                                        IndexOf(
-                                                                                                            CollectionView
-                                                                                                                .
-                                                                                                                NewItemPlaceholder);
+                                                                                                    dataGrid.Items.IndexOf(
+                                                                                                        CollectionView.NewItemPlaceholder);
                                                                                                 dataGrid.CurrentCell =
-                                                                                                    new DataGridCellInfo
-                                                                                                        (CollectionView.
-                                                                                                             NewItemPlaceholder,
-                                                                                                         dataGrid.
-                                                                                                             Columns[0]);
+                                                                                                    new DataGridCellInfo(
+                                                                                                        CollectionView.NewItemPlaceholder,
+                                                                                                        dataGrid.Columns[0]);
 
                                                                                                 //dataGrid.BeginEdit();
                                                                                                 return null;
-                                                                                            }),
-                                                        DispatcherPriority.Background, new object[] {null});
+                                                                                            }), DispatcherPriority.Background, new object[] {null});
                 }
             }
         }

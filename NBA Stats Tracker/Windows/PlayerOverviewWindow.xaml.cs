@@ -47,8 +47,7 @@ namespace NBA_Stats_Tracker.Windows
         private int SelectedPlayerID = -1;
         private List<string> Teams;
 
-        private ObservableCollection<KeyValuePair<int, string>> _playersList =
-            new ObservableCollection<KeyValuePair<int, string>>();
+        private ObservableCollection<KeyValuePair<int, string>> _playersList = new ObservableCollection<KeyValuePair<int, string>>();
 
         private string _selectedPlayer;
         private bool changingTimeframe;
@@ -58,8 +57,7 @@ namespace NBA_Stats_Tracker.Windows
         private List<PlayerBoxScore> hthOppPBS;
         private List<PlayerBoxScore> hthOwnPBS;
 
-        private ObservableCollection<KeyValuePair<int, string>> oppPlayersList =
-            new ObservableCollection<KeyValuePair<int, string>>();
+        private ObservableCollection<KeyValuePair<int, string>> oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
 
         private ObservableCollection<PlayerBoxScore> pbsList;
 
@@ -112,7 +110,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private string GetCurTeamFromDisplayName(string p)
         {
-            if (p == "- Inactive -") return p;
+            if (p == "- Inactive -")
+                return p;
             foreach (int kvp in MainWindow.tst.Keys)
             {
                 if (MainWindow.tst[kvp].displayName == p)
@@ -146,7 +145,8 @@ namespace NBA_Stats_Tracker.Windows
             Teams = new List<string>();
             foreach (var kvp in teamOrder)
             {
-                if (!MainWindow.tst[kvp.Value].isHidden) Teams.Add(MainWindow.tst[kvp.Value].displayName);
+                if (!MainWindow.tst[kvp.Value].isHidden)
+                    Teams.Add(MainWindow.tst[kvp.Value].displayName);
             }
 
             Teams.Sort();
@@ -241,7 +241,8 @@ namespace NBA_Stats_Tracker.Windows
             dgvSplitStats.ItemsSource = null;
             dgvYearly.ItemsSource = null;
 
-            if (cmbTeam.SelectedIndex == -1) return;
+            if (cmbTeam.SelectedIndex == -1)
+                return;
 
             cmbPlayer.ItemsSource = null;
 
@@ -249,8 +250,7 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE \"" +
-                    GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) +
+                q = "select * from " + playersT + " where TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) +
                     "\" AND isActive LIKE \"True\"";
             }
             else
@@ -266,9 +266,8 @@ namespace NBA_Stats_Tracker.Windows
             foreach (DataRow r in res.Rows)
             {
                 PlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                              Tools.getString(r, "LastName") + ", " +
-                                                              Tools.getString(r, "FirstName") +
-                                                              " (" + Tools.getString(r, "Position1") + ")"));
+                                                              Tools.getString(r, "LastName") + ", " + Tools.getString(r, "FirstName") + " (" +
+                                                              Tools.getString(r, "Position1") + ")"));
                 var ps = new PlayerStats(r);
                 playersSameTeam.Add(ps.ID, ps);
             }
@@ -291,11 +290,10 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbPlayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbPlayer.SelectedIndex == -1) return;
+            if (cmbPlayer.SelectedIndex == -1)
+                return;
 
-            SelectedPlayerID =
-                ((KeyValuePair<int, string>)
-                 (((cmbPlayer)).SelectedItem)).Key;
+            SelectedPlayerID = ((KeyValuePair<int, string>) (((cmbPlayer)).SelectedItem)).Key;
 
             string q = "select * from " + playersT + " where ID = " + SelectedPlayerID.ToString();
 
@@ -324,13 +322,13 @@ namespace NBA_Stats_Tracker.Windows
         private void UpdateYearlyReport()
         {
             var psrList = new List<PlayerStatsRow>();
-            var psCareer =
-                new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
+            var psCareer = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
 
             for (int i = 1; i <= maxSeason; i++)
             {
                 string pT = "Players";
-                if (i != maxSeason) pT += "S" + i;
+                if (i != maxSeason)
+                    pT += "S" + i;
 
                 string q = "select * from " + pT + " where ID = " + SelectedPlayerID;
                 DataTable res = db.GetDataTable(q);
@@ -353,15 +351,13 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateOverviewAndBoxScores()
         {
-            TeamStats ts = new TeamStats("Team"),
-                      tsopp = new TeamStats("Opponents");
+            TeamStats ts = new TeamStats("Team"), tsopp = new TeamStats("Opponents");
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 grdOverview.DataContext = psr;
 
-                string q = "select * from " + playersT + " where Position1 LIKE \"" + psr.Position1 +
-                           "\" AND isActive LIKE \"True\"";
+                string q = "select * from " + playersT + " where Position1 LIKE \"" + psr.Position1 + "\" AND isActive LIKE \"True\"";
                 DataTable res = db.GetDataTable(q);
 
                 playersSamePosition = new Dictionary<int, PlayerStats>();
@@ -373,10 +369,8 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 rankingsPosition = new PlayerRankings(playersSamePosition);
 
-                q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
-                    + "where PlayerID = " + SelectedPlayerID.ToString() +
-                    " AND SeasonNum = " + curSeason
-                    + " ORDER BY Date DESC";
+                q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " + "where PlayerID = " +
+                    SelectedPlayerID.ToString() + " AND SeasonNum = " + curSeason + " ORDER BY Date DESC";
                 res = db.GetDataTable(q);
 
                 pbsList = new ObservableCollection<PlayerBoxScore>();
@@ -388,16 +382,13 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                string q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
-                           + "where PlayerID = " + SelectedPlayerID.ToString();
-                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                          dtpEnd.SelectedDate.GetValueOrDefault());
+                string q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " + "where PlayerID = " +
+                           SelectedPlayerID.ToString();
+                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                 q += " ORDER BY Date DESC";
                 DataTable res = db.GetDataTable(q);
 
-                psBetween =
-                    new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1,
-                                               psr.Position2));
+                psBetween = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
 
                 pbsList = new ObservableCollection<PlayerBoxScore>();
 
@@ -632,35 +623,34 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateSplitStats()
         {
-            string qr_home = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                           + "(PlayerResults.GameID = GameResults.GameID "
-                                           + "AND Team = T2Name) "
-                                           + "WHERE PlayerID = {0}", psr.ID);
-            string qr_away = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                           + "(PlayerResults.GameID = GameResults.GameID "
-                                           + "AND Team = T1Name) "
-                                           + "WHERE PlayerID = {0}", psr.ID);
-            string qr_wins = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                           + "(PlayerResults.GameID = GameResults.GameID) "
-                                           + "WHERE PlayerID = {0} "
-                                           +
-                                           "AND (((Team = T1Name) AND (T1PTS > T2PTS)) OR ((Team = T2Name) AND (T2PTS > T1PTS)))",
-                                           psr.ID);
-            string qr_losses = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                             + "(PlayerResults.GameID = GameResults.GameID) "
-                                             + "WHERE PlayerID = {0} "
-                                             +
-                                             "AND (((Team = T1Name) AND (T1PTS < T2PTS)) OR ((Team = T2Name) AND (T2PTS < T1PTS)))",
-                                             psr.ID);
-            string qr_season = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                             + "(PlayerResults.GameID = GameResults.GameID) "
-                                             + "WHERE PlayerID = {0} AND IsPlayoff LIKE \"False\"", psr.ID);
-            string qr_playoffs = String.Format("select * from PlayerResults INNER JOIN GameResults ON "
-                                               + "(PlayerResults.GameID = GameResults.GameID) "
-                                               + "WHERE PlayerID = {0} AND IsPlayoff LIKE \"True\"", psr.ID);
-            string qr_teams = String.Format("select Team from PlayerResults INNER JOIN GameResults ON " +
-                                            "(PlayerResults.GameID = GameResults.GameID) " +
-                                            " WHERE PlayerID = {0}", psr.ID);
+            string qr_home =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID " + "AND Team = T2Name) " +
+                    "WHERE PlayerID = {0}", psr.ID);
+            string qr_away =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID " + "AND Team = T1Name) " +
+                    "WHERE PlayerID = {0}", psr.ID);
+            string qr_wins =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    "WHERE PlayerID = {0} " + "AND (((Team = T1Name) AND (T1PTS > T2PTS)) OR ((Team = T2Name) AND (T2PTS > T1PTS)))", psr.ID);
+            string qr_losses =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    "WHERE PlayerID = {0} " + "AND (((Team = T1Name) AND (T1PTS < T2PTS)) OR ((Team = T2Name) AND (T2PTS < T1PTS)))", psr.ID);
+            string qr_season =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    "WHERE PlayerID = {0} AND IsPlayoff LIKE \"False\"", psr.ID);
+            string qr_playoffs =
+                String.Format(
+                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    "WHERE PlayerID = {0} AND IsPlayoff LIKE \"True\"", psr.ID);
+            string qr_teams =
+                String.Format(
+                    "select Team from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    " WHERE PlayerID = {0}", psr.ID);
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
@@ -674,11 +664,9 @@ namespace NBA_Stats_Tracker.Windows
                                                                   dtpEnd.SelectedDate.GetValueOrDefault());
                 qr_season = SQLiteDatabase.AddDateRangeToSQLQuery(qr_season, dtpStart.SelectedDate.GetValueOrDefault(),
                                                                   dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs,
-                                                                    dtpStart.SelectedDate.GetValueOrDefault(),
+                qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs, dtpStart.SelectedDate.GetValueOrDefault(),
                                                                     dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_teams = SQLiteDatabase.AddDateRangeToSQLQuery(qr_teams,
-                                                                 dtpStart.SelectedDate.GetValueOrDefault(),
+                qr_teams = SQLiteDatabase.AddDateRangeToSQLQuery(qr_teams, dtpStart.SelectedDate.GetValueOrDefault(),
                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
             }
             else
@@ -699,8 +687,7 @@ namespace NBA_Stats_Tracker.Windows
 
             //Home
             DataTable res = db.GetDataTable(qr_home);
-            var ps =
-                new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
+            var ps = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
 
             foreach (DataRow r in res.Rows)
             {
@@ -769,10 +756,10 @@ namespace NBA_Stats_Tracker.Windows
 
                 foreach (string team in teams)
                 {
-                    string q = String.Format("select * from PlayerResults INNER JOIN GameResults" +
-                                             " ON (PlayerResults.GameID = GameResults.GameID)" +
-                                             " WHERE PlayerID = {0} AND Team = \"{1}\"",
-                                             psr.ID, team);
+                    string q =
+                        String.Format(
+                            "select * from PlayerResults INNER JOIN GameResults" + " ON (PlayerResults.GameID = GameResults.GameID)" +
+                            " WHERE PlayerID = {0} AND Team = \"{1}\"", psr.ID, team);
                     if (rbStatsBetween.IsChecked.GetValueOrDefault())
                     {
                         q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
@@ -811,27 +798,22 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(dEnd.Year, dEnd.Month, 1))
                     {
-                        string s = String.Format("select * from PlayerResults " +
-                                                 "INNER JOIN GameResults " +
-                                                 "ON (PlayerResults.GameID = GameResults.GameID) " +
-                                                 "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}",
-                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dEnd),
-                                                 psr.ID);
+                        string s =
+                            String.Format(
+                                "select * from PlayerResults " + "INNER JOIN GameResults " + "ON (PlayerResults.GameID = GameResults.GameID) " +
+                                "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}", SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
+                                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd), psr.ID);
 
                         qrm.Add(s);
                         break;
                     }
                     else
                     {
-                        string s = String.Format("select * from PlayerResults " +
-                                                 "INNER JOIN GameResults " +
-                                                 "ON (PlayerResults.GameID = GameResults.GameID) " +
-                                                 "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}",
-                                                 SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                                                 SQLiteDatabase.ConvertDateTimeToSQLite(
-                                                     new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1).AddDays(-1)),
-                                                 psr.ID);
+                        string s =
+                            String.Format(
+                                "select * from PlayerResults " + "INNER JOIN GameResults " + "ON (PlayerResults.GameID = GameResults.GameID) " +
+                                "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}", SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
+                                SQLiteDatabase.ConvertDateTimeToSQLite(new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1).AddDays(-1)), psr.ID);
 
                         qrm.Add(s);
                         dCur = dCur.AddMonths(1);
@@ -850,8 +832,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
 
                     DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
-                    splitPSRs.Add(new PlayerStatsRow(ps, label.Year.ToString() + " " + String.Format("{0:MMMM}", label),
-                                                     "Month"));
+                    splitPSRs.Add(new PlayerStatsRow(ps, label.Year.ToString() + " " + String.Format("{0:MMMM}", label), "Month"));
                     i++;
                 }
             }
@@ -985,8 +966,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason,
-                                                     out MainWindow.tst, out MainWindow.tstopp,
+                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out MainWindow.tst, out MainWindow.tstopp,
                                                      out MainWindow.TeamOrder);
                 PopulateTeamsCombo();
             }
@@ -999,14 +979,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnSavePlayer_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbPlayer.SelectedIndex == -1) return;
+            if (cmbPlayer.SelectedIndex == -1)
+                return;
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
                 MessageBox.Show(
-                    "You can't edit partial stats. You can either edit the total stats (which are kept separately from box-scores"
-                    + ") or edit the box-scores themselves.", "NBA Stats Tracker", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                    "You can't edit partial stats. You can either edit the total stats (which are kept separately from box-scores" +
+                    ") or edit the box-scores themselves.", "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -1016,8 +996,8 @@ namespace NBA_Stats_Tracker.Windows
 
             SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason, true);
 
-            MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp,
-                                                             MainWindow.TeamOrder, curSeason, maxSeason);
+            MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder, curSeason,
+                                                             maxSeason);
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
@@ -1029,7 +1009,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private PlayerStats CreatePlayerStatsFromCurrent()
         {
-            if (cmbPosition2.SelectedItem == null) cmbPosition2.SelectedItem = " ";
+            if (cmbPosition2.SelectedItem == null)
+                cmbPosition2.SelectedItem = " ";
 
             string TeamF;
             if (chkIsActive.IsChecked.GetValueOrDefault() == false)
@@ -1048,47 +1029,55 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            var ps = new PlayerStats(
-                psr.ID, txtLastName.Text, txtFirstName.Text, cmbPosition1.SelectedItem.ToString(),
-                cmbPosition2.SelectedItem.ToString(), TeamF, psr.TeamS,
-                chkIsActive.IsChecked.GetValueOrDefault(), false, chkIsInjured.IsChecked.GetValueOrDefault(),
-                chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
-                dt_ov.Rows[0]);
+            var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text, cmbPosition1.SelectedItem.ToString(),
+                                     cmbPosition2.SelectedItem.ToString(), TeamF, psr.TeamS, chkIsActive.IsChecked.GetValueOrDefault(), false,
+                                     chkIsInjured.IsChecked.GetValueOrDefault(), chkIsAllStar.IsChecked.GetValueOrDefault(),
+                                     chkIsNBAChampion.IsChecked.GetValueOrDefault(), dt_ov.Rows[0]);
             return ps;
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == cmbTeam.Items.Count - 1) cmbTeam.SelectedIndex = 0;
-            else cmbTeam.SelectedIndex++;
+            if (cmbTeam.SelectedIndex == cmbTeam.Items.Count - 1)
+                cmbTeam.SelectedIndex = 0;
+            else
+                cmbTeam.SelectedIndex++;
         }
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == 0) cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
-            else cmbTeam.SelectedIndex--;
+            if (cmbTeam.SelectedIndex == 0)
+                cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
+            else
+                cmbTeam.SelectedIndex--;
         }
 
         private void btnNextPlayer_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbPlayer.SelectedIndex == cmbPlayer.Items.Count - 1) cmbPlayer.SelectedIndex = 0;
-            else cmbPlayer.SelectedIndex++;
+            if (cmbPlayer.SelectedIndex == cmbPlayer.Items.Count - 1)
+                cmbPlayer.SelectedIndex = 0;
+            else
+                cmbPlayer.SelectedIndex++;
         }
 
         private void btnPrevPlayer_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbPlayer.SelectedIndex == 0) cmbPlayer.SelectedIndex = cmbPlayer.Items.Count - 1;
-            else cmbPlayer.SelectedIndex--;
+            if (cmbPlayer.SelectedIndex == 0)
+                cmbPlayer.SelectedIndex = cmbPlayer.Items.Count - 1;
+            else
+                cmbPlayer.SelectedIndex--;
         }
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            if (!changingTimeframe) cmbSeasonNum_SelectionChanged(null, null);
+            if (!changingTimeframe)
+                cmbSeasonNum_SelectionChanged(null, null);
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            if (!changingTimeframe) cmbPlayer_SelectionChanged(null, null);
+            if (!changingTimeframe)
+                cmbPlayer_SelectionChanged(null, null);
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -1125,7 +1114,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbOppTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbOppTeam.SelectedIndex == -1) return;
+            if (cmbOppTeam.SelectedIndex == -1)
+                return;
 
             dgvHTH.ItemsSource = null;
             cmbOppPlayer.ItemsSource = null;
@@ -1134,8 +1124,7 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE \"" + cmbOppTeam.SelectedItem +
-                    "\" AND isActive LIKE \"True\"";
+                q = "select * from " + playersT + " where TeamFin LIKE \"" + cmbOppTeam.SelectedItem + "\" AND isActive LIKE \"True\"";
             }
             else
             {
@@ -1148,9 +1137,8 @@ namespace NBA_Stats_Tracker.Windows
             foreach (DataRow r in res.Rows)
             {
                 oppPlayersList.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"),
-                                                                 Tools.getString(r, "LastName") + ", " +
-                                                                 Tools.getString(r, "FirstName") +
-                                                                 " (" + Tools.getString(r, "Position1") + ")"));
+                                                                 Tools.getString(r, "LastName") + ", " + Tools.getString(r, "FirstName") + " (" +
+                                                                 Tools.getString(r, "Position1") + ")"));
             }
 
             cmbOppPlayer.ItemsSource = oppPlayersList;
@@ -1160,10 +1148,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             try
             {
-                if (cmbTeam.SelectedIndex == -1
-                    || cmbOppTeam.SelectedIndex == -1
-                    || cmbPlayer.SelectedIndex == -1
-                    || cmbOppPlayer.SelectedIndex == -1)
+                if (cmbTeam.SelectedIndex == -1 || cmbOppTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || cmbOppPlayer.SelectedIndex == -1)
                 {
                     dgvHTH.ItemsSource = null;
                     dgvHTHBoxScores.ItemsSource = null;
@@ -1186,7 +1171,8 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             DataTable res;
 
-            if (SelectedPlayerID == SelectedOppPlayerID) return;
+            if (SelectedPlayerID == SelectedOppPlayerID)
+                return;
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
@@ -1213,9 +1199,8 @@ namespace NBA_Stats_Tracker.Windows
                     oppPSR.Type = oppPSR.FirstName + " " + oppPSR.LastName;
                     psrList.Add(oppPSR);
 
-                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
-                        + "where PlayerID = " + SelectedOppPlayerID +
-                        " AND SeasonNum = " + curSeason;
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " + "where PlayerID = " +
+                        SelectedOppPlayerID + " AND SeasonNum = " + curSeason;
                     res = db.GetDataTable(q);
 
                     hthOppPBS = new List<PlayerBoxScore>();
@@ -1242,14 +1227,9 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     q =
                         String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
-                            "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " +
-                            "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} " +
-                            "AND SeasonNum = {2}) ORDER BY Date DESC",
-                            SelectedPlayerID, SelectedOppPlayerID, curSeason);
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} " +
+                            "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedPlayerID, SelectedOppPlayerID, curSeason);
                     res = db.GetDataTable(q);
 
                     var p = new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2);
@@ -1273,14 +1253,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     q =
                         String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
-                            "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " +
-                            "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} " +
-                            "AND SeasonNum = {2}) ORDER BY Date DESC",
-                            SelectedOppPlayerID, SelectedPlayerID, curSeason);
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} " +
+                            "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedOppPlayerID, SelectedPlayerID, curSeason);
                     res = db.GetDataTable(q);
 
                     ps = new PlayerStats(p);
@@ -1312,10 +1287,9 @@ namespace NBA_Stats_Tracker.Windows
 
                     var p = new Player(res.Rows[0]);
 
-                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) "
-                        + "where PlayerID = " + SelectedOppPlayerID.ToString();
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " + "where PlayerID = " +
+                        SelectedOppPlayerID.ToString();
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                     res = db.GetDataTable(q);
 
                     var psOppBetween = new PlayerStats(p);
@@ -1336,16 +1310,10 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     q =
                         String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
-                            "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " +
-                            "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} ",
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} ",
                             SelectedPlayerID, SelectedOppPlayerID);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q,
-                                                              dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
                     res = db.GetDataTable(q);
 
@@ -1370,16 +1338,10 @@ namespace NBA_Stats_Tracker.Windows
 
                     q =
                         String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " +
-                            "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " +
-                            "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} ",
+                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
+                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} ",
                             SelectedOppPlayerID, SelectedPlayerID);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q,
-                                                              dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
                     res = db.GetDataTable(q);
 
@@ -1473,7 +1435,8 @@ namespace NBA_Stats_Tracker.Windows
                         type = dict["Type"];
                     }
                     catch (Exception)
-                    { }
+                    {
+                    }
                     switch (type)
                     {
                         case "Stats":
@@ -1490,26 +1453,26 @@ namespace NBA_Stats_Tracker.Windows
 
         private void TryChangeRow(int row, Dictionary<string, string> dict)
         {
-            dt_ov.Rows[row].TryChangeValue(dict, "GP", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "GS", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "MINS", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "PTS", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "FG", typeof(UInt16), "-");
-            dt_ov.Rows[row].TryChangeValue(dict, "3PT", typeof(UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "GP", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "GS", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "MINS", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "PTS", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FG", typeof (UInt16), "-");
+            dt_ov.Rows[row].TryChangeValue(dict, "3PT", typeof (UInt16), "-");
             dt_ov.Rows[row].TryChangeValue(dict, "FT", typeof (UInt16), "-");
-            dt_ov.Rows[row].TryChangeValue(dict, "REB", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "OREB", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "DREB", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "AST", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "TO", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "STL", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "BLK", typeof(UInt16));
-            dt_ov.Rows[row].TryChangeValue(dict, "FOUL", typeof(UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "REB", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "OREB", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "DREB", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "AST", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "TO", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "STL", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "BLK", typeof (UInt16));
+            dt_ov.Rows[row].TryChangeValue(dict, "FOUL", typeof (UInt16));
         }
 
         private void CreateViewAndUpdateOverview()
         {
-            var dv_ov = new DataView(dt_ov) { AllowNew = false, AllowDelete = false };
+            var dv_ov = new DataView(dt_ov) {AllowNew = false, AllowDelete = false};
             dgvOverviewStats.DataContext = dv_ov;
         }
     }

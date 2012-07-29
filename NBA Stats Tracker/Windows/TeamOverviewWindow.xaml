@@ -115,6 +115,19 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="GmScE" SortMemberPath="GmScE" ClipboardContentBinding="{Binding GmScE}">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding GmScE, StringFormat=F2}">
+                      <TextBlock.ToolTip>
+                        <TextBlock
+Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
+TextWrapping="Wrap" MaxWidth="400" />
+                      </TextBlock.ToolTip>
+                    </TextBlock>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
               <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp" ClipboardContentBinding="{Binding TSp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
@@ -398,8 +411,8 @@ MaxWidth="400" />
               <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
             </DataGrid.Columns>
           </DataGrid>
-          <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True"
-                       Margin="533,11,0,0" Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
+          <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="533,11,0,0"
+                       Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
           <RadioButton Content="Detailed" Height="16" HorizontalAlignment="Left" Margin="600,11,0,0"
                        Name="rbBSDetailed" VerticalAlignment="Top" Checked="rbBSDetailed_Checked" />
         </Grid>
@@ -474,8 +487,9 @@ MaxWidth="400" />
               </Grid>
             </GroupBox>
           </Grid>
-                    <CheckBox Content="Hide Injured Players" Height="16" HorizontalAlignment="Left" Margin="12,11,0,0" Name="chkHTHHideInjured" VerticalAlignment="Top" Click="chkHTHHideInjured_Click" />
-                </Grid>
+          <CheckBox Content="Hide Injured Players" Height="16" HorizontalAlignment="Left" Margin="12,11,0,0"
+                    Name="chkHTHHideInjured" VerticalAlignment="Top" Click="chkHTHHideInjured_Click" />
+        </Grid>
       </TabItem>
       <TabItem Header="Yearly Report" Name="tabYearly">
         <Grid>
