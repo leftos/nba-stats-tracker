@@ -191,17 +191,6 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
-                if (checkForUpdatesSetting == 1)
-                {
-                    mnuOptionsCheckForUpdates.IsChecked = true;
-                    CheckForUpdates();
-                }
-                else
-                {
-                    mnuOptionsCheckForUpdates.IsChecked = false;
-                }
-
                 int importSetting = Misc.GetRegistrySetting("NBA2K12ImportMethod", 0);
                 if (importSetting == 0)
                 {
@@ -217,6 +206,44 @@ namespace NBA_Stats_Tracker.Windows
 
                 int CompatibilityCheck = Misc.GetRegistrySetting("CompatibilityCheck", 1);
                 mnuOptionsCompatibilityCheck.IsChecked = CompatibilityCheck == 1;
+
+                int TimesStarted = Misc.GetRegistrySetting("TimesStarted", -1);
+                if (TimesStarted == -1)
+                    Misc.SetRegistrySetting("TimesStarted", 1);
+                else if (TimesStarted <= 50)
+                {
+                    if (TimesStarted == 50)
+                    {
+                        MessageBoxResult r = MessageBox.Show(
+                            "Hey there! This is a friendly reminder from the creator of NBA Stats Tracker.\n\n" +
+                            "You seem to like using NBA Stats Tracker a lot, and I'm sure you enjoy the fact that it's free.\n" +
+                            "However, if you believe that I deserve your support and you want to help me to continue my studies,\n" +
+                            "as well as continue developing and supporting NBA Stats Tracker, you can always donate!\n\n" +
+                            "Even a small amount can help a lot!\n\n" + "Would you like to find out how you can donate?\n\n" +
+                            "Clicking Cancel will make sure this message never shows up again.", "NBA Stats Tracker - A friendly reminder",
+                            MessageBoxButton.YesNoCancel, MessageBoxImage.Information);
+                        if (r == MessageBoxResult.Yes)
+                        {
+                            mnuHelpDonate_Click(null, null);
+                        }
+                        else if (r == MessageBoxResult.No)
+                        {
+                            TimesStarted = -1;   
+                        }
+                    }
+                    Misc.SetRegistrySetting("TimesStarted", TimesStarted + 1);
+                }
+
+                int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
+                if (checkForUpdatesSetting == 1)
+                {
+                    mnuOptionsCheckForUpdates.IsChecked = true;
+                    CheckForUpdates();
+                }
+                else
+                {
+                    mnuOptionsCheckForUpdates.IsChecked = false;
+                }
             }
 
             //prepareImageCache();
@@ -1872,6 +1899,11 @@ namespace NBA_Stats_Tracker.Windows
             tst = teamStats;
             tstopp = oppStats;
             pst = playerStats;
+        }
+
+        private void mnuHelpDonate_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://students.ceid.upatras.gr/~aslanoglou/donate.html");
         }
     }
 }

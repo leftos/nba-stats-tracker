@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v0.12.2.1
+		- Addition: Added friendly reminder for a donation towards the development of NBA Stats Tracker after the tool is started 50 times
+
 	v0.12.2
 		- Addition: Added GmScE metric, as an adjusted measure of a player's Game Score over the minutes they've played
 		- Improvement: Player box scores in the Box Score window can now be sorted
