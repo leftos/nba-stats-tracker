@@ -374,7 +374,7 @@ namespace NBA_Stats_Tracker.Interop
 
         private static string askMode()
         {
-            var at = new ComboChoiceWindow(false);
+            var at = new ComboChoiceWindow(ComboChoiceWindow.Mode.ImportCompatibility);
             at.ShowDialog();
             return App.mode;
         }

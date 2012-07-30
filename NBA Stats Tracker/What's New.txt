@@ -1,7 +1,14 @@
 NBA Stats Tracker - Version History
 
-	v0.12.4.1
+	v0.13
+		- Addition: Teams can now be assigned to Divisions, and Divisions to Conferences
+		- Addition: League Overview can now be filtered by Conference or Division
 		- Improvement: Box Score window can be resized to show more information
+		- Addition: Added Keyboard Shortcuts for:
+			* Open Database (Ctrl-O)
+			* Save Current Season (Ctrl-S)
+			* Import from 2K12 Save (Ctrl-I)
+			* Export to 2K12 Save (Ctrl-E)
 
 	v0.12.4
 		- Improvement: League Overview's Best Starting 5 is now renamed to Ultimate Team, and includes a recommendation of 7 substitutes in addition to the best starting 5 of the league

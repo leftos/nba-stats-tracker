@@ -27,15 +27,22 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class ComboChoiceWindow
     {
-        private readonly bool _oneTeam;
-        private readonly bool _versus;
+        public enum Mode
+        {
+            OneTeam,
+            Versus,
+            ImportCompatibility,
+            Division
+        }
 
-        public ComboChoiceWindow(bool versus, int index = 0)
+        private Mode mode;
+
+        public ComboChoiceWindow(Mode mode, int index = 0)
         {
             InitializeComponent();
-            _versus = versus;
+            this.mode = mode;
 
-            if (!versus)
+            if (mode == Mode.ImportCompatibility)
             {
                 cmbTeams1.Items.Add("Mode 0");
                 cmbTeams1.Items.Add("Mode 1");
@@ -46,7 +53,7 @@ namespace NBA_Stats_Tracker.Windows
                 cmbTeams1.Items.Add("Mode 6");
                 cmbTeams2.Visibility = Visibility.Hidden;
             }
-            else
+            else if (mode == Mode.Versus)
             {
                 label1.Content = "Pick the two teams";
                 cmbTeams2.Visibility = Visibility.Visible;
@@ -56,7 +63,16 @@ namespace NBA_Stats_Tracker.Windows
                     cmbTeams2.Items.Add(kvp.Key);
                 }
             }
-
+            else if (mode == Mode.Division)
+            {
+                label1.Content = "Pick the new division for the team:";
+                cmbTeams2.Visibility = Visibility.Hidden;
+                foreach (var div in MainWindow.Divisions)
+                {
+                    var conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
+                    cmbTeams1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
+                }
+            }
             cmbTeams1.SelectedIndex = index;
             cmbTeams2.SelectedIndex = index != 0 ? 0 : 1;
         }
@@ -65,7 +81,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            _oneTeam = true;
+            mode = Mode.OneTeam;
 
             label1.Content = "Sign the player to which team?";
             cmbTeams1.ItemsSource = teams;
@@ -74,23 +90,24 @@ namespace NBA_Stats_Tracker.Windows
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            if (!_oneTeam)
+            if (mode == Mode.Versus)
             {
-                if (!_versus)
-                {
-                    App.mode = cmbTeams1.SelectedItem.ToString();
-                }
-                else
-                {
                     var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
                     vw.ShowDialog();
-                }
             }
-            else
+            else if (mode == Mode.ImportCompatibility)
+            {
+                App.mode = cmbTeams1.SelectedItem.ToString();
+            }
+            else if (mode == Mode.OneTeam)
             {
                 if (cmbTeams1.SelectedIndex == -1)
                     return;
                 PlayerOverviewWindow.askedTeam = cmbTeams1.SelectedItem.ToString();
+            }
+            else if (mode == Mode.Division)
+            {
+                MainWindow.input = cmbTeams1.SelectedItem.ToString();
             }
             Close();
         }

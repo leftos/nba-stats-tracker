@@ -74,6 +74,22 @@ namespace NBA_Stats_Tracker.Data
                        ref MainWindow.bshist, oldSeason, doNotLoadBoxScores: true);
         }
 
+        public static void SaveConferencesAndDivisions(string file)
+        {
+            SQLiteDatabase db = new SQLiteDatabase(file);
+            db.ClearTable("Conferences");
+            foreach (var conf in MainWindow.Conferences)
+            {
+                db.Insert("Conferences", new Dictionary<string, string> {{"ID", conf.ID.ToString()}, {"Name", conf.Name}});
+            }
+            db.ClearTable("Divisions");
+            foreach (var div in MainWindow.Divisions)
+            {
+                db.Insert("Divisions",
+                          new Dictionary<string, string> {{"ID", div.ID.ToString()}, {"Name", div.Name}, {"Conference", div.ConferenceID.ToString()}});
+            }
+        }
+
         public static void saveSeasonToDatabase()
         {
             saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
@@ -97,6 +113,8 @@ namespace NBA_Stats_Tracker.Data
             MainWindow.db = new SQLiteDatabase(file);
             if (!FileExists)
                 prepareNewDB(MainWindow.db, season, maxSeason);
+
+            SaveConferencesAndDivisions(file);
 
             SaveSeasonName(season);
 
@@ -319,6 +337,8 @@ namespace NBA_Stats_Tracker.Data
                                    {"Name", tstToSave[key].name},
                                    {"DisplayName", tstToSave[key].displayName},
                                    {"isHidden", tstToSave[key].isHidden.ToString()},
+                                   {"Division", tstToSave[key].division.ToString()},
+                                   {"Conference", tstToSave[key].conference.ToString()},
                                    {"WIN", tstToSave[key].winloss[0].ToString()},
                                    {"LOSS", tstToSave[key].winloss[1].ToString()},
                                    {"MINS", tstToSave[key].stats[t.MINS].ToString()},
@@ -348,6 +368,8 @@ namespace NBA_Stats_Tracker.Data
                                       {"Name", tstToSave[key].name},
                                       {"DisplayName", tstToSave[key].displayName},
                                       {"isHidden", tstToSave[key].isHidden.ToString()},
+                                   {"Division", tstToSave[key].division.ToString()},
+                                   {"Conference", tstToSave[key].conference.ToString()},
                                       {"WIN", tstToSave[key].pl_winloss[0].ToString()},
                                       {"LOSS", tstToSave[key].pl_winloss[1].ToString()},
                                       {"MINS", tstToSave[key].pl_stats[t.MINS].ToString()},
@@ -419,6 +441,8 @@ namespace NBA_Stats_Tracker.Data
                                    {"Name", tstoppToSave[key].name},
                                    {"DisplayName", tstoppToSave[key].displayName},
                                    {"isHidden", tstoppToSave[key].isHidden.ToString()},
+                                   {"Division", tstoppToSave[key].division.ToString()},
+                                   {"Conference", tstoppToSave[key].conference.ToString()},
                                    {"WIN", tstoppToSave[key].winloss[0].ToString()},
                                    {"LOSS", tstoppToSave[key].winloss[1].ToString()},
                                    {"MINS", tstoppToSave[key].stats[t.MINS].ToString()},
@@ -448,6 +472,8 @@ namespace NBA_Stats_Tracker.Data
                                       {"Name", tstoppToSave[key].name},
                                       {"DisplayName", tstoppToSave[key].displayName},
                                       {"isHidden", tstoppToSave[key].isHidden.ToString()},
+                                   {"Division", tstoppToSave[key].division.ToString()},
+                                   {"Conference", tstoppToSave[key].conference.ToString()},
                                       {"WIN", tstoppToSave[key].pl_winloss[0].ToString()},
                                       {"LOSS", tstoppToSave[key].pl_winloss[1].ToString()},
                                       {"MINS", tstoppToSave[key].pl_stats[t.MINS].ToString()},
@@ -624,7 +650,17 @@ namespace NBA_Stats_Tracker.Data
                     sqldb.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
                     sqldb.ExecuteNonQuery(qr);
-                    sqldb.Insert("SeasonNames", new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
+                    sqldb.Insert("SeasonNames", new Dictionary<string, string> { { "ID", curSeason.ToString() }, { "Name", curSeason.ToString() } });
+                    qr = "DROP TABLE IF EXISTS \"Divisions\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"Divisions\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT, \"Conference\" INTEGER)";
+                    sqldb.ExecuteNonQuery(qr);
+                    sqldb.Insert("Divisions", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" }, {"Conference", "0"} });
+                    qr = "DROP TABLE IF EXISTS \"Conferences\"";
+                    sqldb.ExecuteNonQuery(qr);
+                    qr = "CREATE TABLE \"Conferences\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
+                    sqldb.ExecuteNonQuery(qr);
+                    sqldb.Insert("Conferences", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" } });
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -643,25 +679,25 @@ namespace NBA_Stats_Tracker.Data
                 qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + teamsT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + pl_oppT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_oppT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + oppT + "\"";
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + oppT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
                 sqldb.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
@@ -734,12 +770,28 @@ namespace NBA_Stats_Tracker.Data
                 try
                 {
                     ts.displayName = r["DisplayName"].ToString();
-                    ts.isHidden = Tools.getBoolean(r, "isHidden");
                 }
                 catch (Exception)
                 {
                     ts.displayName = ts.name;
+                }
+
+                try
+                {
+                    ts.isHidden = Tools.getBoolean(r, "isHidden");
+                }
+                catch (Exception)
+                {
                     ts.isHidden = false;
+                }
+
+                try
+                {
+                    ts.division = Tools.getInt(r, "Division");
+                }
+                catch (Exception)
+                {
+                    ts.division = 0;
                 }
 
                 ts.ID = Convert.ToInt32(r["ID"].ToString());
@@ -818,15 +870,32 @@ namespace NBA_Stats_Tracker.Data
 
                 // For compatibility reasons, if properties added after v0.10.5.1 don't exist,
                 // we create them without error.
+
                 try
                 {
                     tsopp.displayName = r["DisplayName"].ToString();
-                    tsopp.isHidden = Tools.getBoolean(r, "isHidden");
                 }
                 catch (Exception)
                 {
                     tsopp.displayName = tsopp.name;
+                }
+
+                try
+                {
+                    tsopp.isHidden = Tools.getBoolean(r, "isHidden");
+                }
+                catch (Exception)
+                {
                     tsopp.isHidden = false;
+                }
+
+                try
+                {
+                    tsopp.division = Tools.getInt(r, "Division");
+                }
+                catch (Exception)
+                {
+                    tsopp.division = 0;
                 }
 
                 tsopp.offset = Convert.ToInt32(r["OFFSET"].ToString());
@@ -952,6 +1021,8 @@ namespace NBA_Stats_Tracker.Data
             if (_curSeason == 0)
                 _curSeason = maxSeason;
 
+            LoadDivisionsAndConferences(file);
+
             GetAllTeamStatsFromDatabase(file, _curSeason, out _tst, out _tstopp, out _TeamOrder);
 
             pst = GetPlayersFromDatabase(file, _tst, _tstopp, _TeamOrder, _curSeason, maxSeason);
@@ -971,6 +1042,43 @@ namespace NBA_Stats_Tracker.Data
             }
 
             MainWindow.loadingSeason = false;
+        }
+
+        public static void LoadDivisionsAndConferences(string file)
+        {
+            SQLiteDatabase db = new SQLiteDatabase(file);
+
+            /*
+            string q = "SELECT Divisions.ID As DivID, Conferences.ID As ConfID, Divisions.Name As DivName, " +
+            "Conferences.Name as ConfName, Divisions.Conference As DivConf FROM Divisions " +
+            "INNER JOIN Conferences ON Conference = Conferences.ID";
+            */
+            string q = "SELECT * FROM Divisions";
+            var res = db.GetDataTable(q);
+
+            MainWindow.Divisions.Clear();
+            foreach (DataRow row in res.Rows)
+            {
+                MainWindow.Divisions.Add(new Division
+                                             {
+                                                 ID = Tools.getInt(row, "ID"),
+                                                 Name = Tools.getString(row, "Name"),
+                                                 ConferenceID = Tools.getInt(row, "Conference")
+                                             });
+            }
+
+            q = "SELECT * FROM Conferences";
+            res = db.GetDataTable(q);
+            
+            MainWindow.Conferences.Clear();
+            foreach (DataRow row in res.Rows)
+            {
+                MainWindow.Conferences.Add(new Conference
+                                               {
+                                                   ID = Tools.getInt(row, "ID"),
+                                                   Name = Tools.getString(row, "Name")
+                                               });
+            }
         }
 
         /// <summary>
@@ -1072,6 +1180,41 @@ namespace NBA_Stats_Tracker.Data
                         {
                             mustSave = true;
                         }
+                        break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            #endregion
+
+            #region Players
+
+            qr = "SELECT * FROM sqlite_master WHERE name = \"Teams\"";
+            try
+            {
+                dt = db.GetDataTable(qr);
+                foreach (DataRow dr in dt.Rows)
+                {
+                    if (dr["name"].ToString() == "Teams")
+                    {
+                        if (!dr["sql"].ToString().Contains("\"Division\""))
+                        {
+                            mustSave = true;
+                            qr = "DROP TABLE IF EXISTS \"Divisions\"";
+                            db.ExecuteNonQuery(qr);
+                            qr = "CREATE TABLE \"Divisions\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT, \"Conference\" INTEGER)";
+                            db.ExecuteNonQuery(qr);
+                            db.Insert("Divisions", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" }, { "Conference", "0" } });
+                            qr = "DROP TABLE IF EXISTS \"Conferences\"";
+                            db.ExecuteNonQuery(qr);
+                            qr = "CREATE TABLE \"Conferences\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
+                            db.ExecuteNonQuery(qr);
+                            db.Insert("Conferences", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" } });
+                        }
+                        break;
                     }
                 }
             }

@@ -171,13 +171,14 @@ Special thanks
 	- Onisak, for his help with debugging
 	- Vl@d Zola Jr, for his invaluable help in making NST compatible with all NBA 2K12 saves
 	- albidnis, for his idea to export to CSV
-	- jrlocke, for being the first donator, and a generous one
+	- jrlocke, for being the first donator, a repeated and generous one
 	- zizoux, for his idea to inject real stats, which ended up being the Custom Leagues & Real NBA Stats features
 	- AreaOfEffect, for his help with debugging
 	- Tinifu Tuitama, for his donation
 	- koberulz, for his extensive suggestions and help with debugging
 	- nbagnome, for his live box score idea and his donation
 	- Lagoa, for his help with debugging
+	- intruda, for his donation
 	- Everyone at the NLSC community, for their continued support
 
 
@@ -201,7 +202,11 @@ Development Credits
 		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
 		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
 		Uses an Object DeepClone Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)
+		Uses Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
 	
 	
 Discussion/Support Thread
 	http://forums.nba-live.com/viewtopic.php?f=143&t=84106
+	
+Donations Page
+    http://students.ceid.upatras.gr/~aslanoglou/donate.html

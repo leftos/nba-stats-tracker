@@ -100,6 +100,9 @@
     <Compile Include="Windows\BoxScoreWindow.xaml.cs">
       <DependentUpon>BoxScoreWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ConferenceEditWindow.xaml.cs">
+      <DependentUpon>ConferenceEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\CopyableMessageWindow.xaml.cs">
       <DependentUpon>CopyableMessageWindow.xaml</DependentUpon>
     </Compile>
@@ -111,6 +114,9 @@
     </Compile>
     <Compile Include="Windows\LeagueOverviewWindow.xaml.cs">
       <DependentUpon>LeagueOverviewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ListWindow.xaml.cs">
+      <DependentUpon>ListWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LiveBoxScoreWindow.xaml.cs">
       <DependentUpon>LiveBoxScoreWindow.xaml</DependentUpon>
@@ -163,6 +169,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Windows\ConferenceEditWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\CopyableMessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -178,6 +188,10 @@
     <Page Include="Windows\LeagueOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\ListWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\LiveBoxScoreWindow.xaml">
       <SubType>Designer</SubType>

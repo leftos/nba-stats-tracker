@@ -31,6 +31,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
@@ -73,6 +74,8 @@ namespace NBA_Stats_Tracker.Windows
         public static string currentDB = "";
         public static string addInfo;
         private static int _curSeason;
+        public static List<Division> Divisions = new List<Division>();
+        public static List<Conference> Conferences = new List<Conference>(); 
 
         public static int curSeason
         {
@@ -128,6 +131,11 @@ namespace NBA_Stats_Tracker.Windows
         private double progress;
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
+
+        public static RoutedCommand cmndImport = new RoutedCommand();
+        public static RoutedCommand cmndOpen = new RoutedCommand();
+        public static RoutedCommand cmndSave = new RoutedCommand();
+        public static RoutedCommand cmndExport = new RoutedCommand();
 
         public MainWindow()
         {
@@ -245,6 +253,22 @@ namespace NBA_Stats_Tracker.Windows
                     mnuOptionsCheckForUpdates.IsChecked = false;
                 }
             }
+
+            #region Keyboard Shortcuts
+
+            cmndImport.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Control)); 
+            CommandBindings.Add(new CommandBinding(cmndImport, btnImport2K12_Click));
+
+            cmndExport.InputGestures.Add(new KeyGesture(Key.E, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(cmndExport, btnInject2K12_Click));
+
+            cmndOpen.InputGestures.Add(new KeyGesture(Key.O, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(cmndOpen, mnuFileOpenCustom_Click));
+
+            cmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(cmndSave, btnSaveTeamStats_Click));
+
+            #endregion
 
             //prepareImageCache();
         }
@@ -1904,6 +1928,12 @@ namespace NBA_Stats_Tracker.Windows
         private void mnuHelpDonate_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("http://students.ceid.upatras.gr/~aslanoglou/donate.html");
+        }
+
+        private void mnuMiscEditDivisions_Click(object sender, RoutedEventArgs e)
+        {
+            ListWindow lw = new ListWindow();
+            lw.ShowDialog();
         }
     }
 }

@@ -19,4 +19,17 @@ namespace NBA_Stats_Tracker.Data
         public int ID { get; set; }
         public string Name { get; set; }
     }
+
+    public class Division
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public int ConferenceID { get; set; }
+    }
+
+    public class Conference
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+    }
 }

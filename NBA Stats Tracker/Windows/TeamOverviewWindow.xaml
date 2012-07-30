@@ -563,9 +563,10 @@ Text="Remember to save the stats before you switch to another team or season, or
         <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,121,0,0" Name="textBlock2"
                    Text="* Always remember to save each team's stats before switching teams or else your changes could be lost."
                    TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
-        <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="0,64,0,0"
-                Name="btnChangeName" VerticalAlignment="Top" Width="249" Click="btnChangeName_Click" />
-      </Grid>
+        <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="33,64,162,0"
+                Name="btnChangeName" VerticalAlignment="Top" Width="120" Click="btnChangeName_Click" />
+                <Button Content="Change Division" Height="23" HorizontalAlignment="Center" Margin="162,64,33,0" Name="btnChangeDivision" VerticalAlignment="Top" Width="120" Click="btnChangeDivision_Click" />
+            </Grid>
     </GroupBox>
     <GroupBox HorizontalAlignment="Right" Margin="0,0,6,12" Name="groupBox2" Width="328" Header="Timeframe"
               Height="175" VerticalAlignment="Bottom">
@@ -589,5 +590,5 @@ Text="Remember to save the stats before you switch to another team or season, or
                   SelectedValuePath="Key" />
       </Grid>
     </GroupBox>
-  </Grid>
+    </Grid>
 </Window>

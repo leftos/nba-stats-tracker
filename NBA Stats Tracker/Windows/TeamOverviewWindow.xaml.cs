@@ -67,7 +67,7 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> pst;
         private int[][] rankings;
         private Dictionary<int, TeamStats> tst;
-        private Dictionary<int, TeamStats> tstopp;
+        private Dictionary<int, TeamStats> tstopp; 
 
         public TeamOverviewWindow()
         {
@@ -2544,6 +2544,37 @@ namespace NBA_Stats_Tracker.Windows
         private void chkHTHHideInjured_Click(object sender, RoutedEventArgs e)
         {
             cmbOppTeam_SelectionChanged(null, null);
+        }
+
+        private void btnChangeDivision_Click(object sender, RoutedEventArgs e)
+        {
+            int teamid = MainWindow.TeamOrder[curTeam];
+            int i = 0;
+            foreach (var div in MainWindow.Divisions)
+            {
+                if (tst[teamid].division == div.ID)
+                {
+                    break;
+                }
+                i++;
+            }
+            ComboChoiceWindow ccw = new ComboChoiceWindow(ComboChoiceWindow.Mode.Division, i);
+            ccw.ShowDialog();
+
+            var parts = MainWindow.input.Split(new string[] {": "}, 2, StringSplitOptions.None);
+            var myDiv = MainWindow.Divisions.Find(division => division.Name == parts[1]);
+
+            tst[teamid].division = myDiv.ID;
+            tstopp[teamid].division = myDiv.ID;
+
+            var dict = new Dictionary<string, string> { { "Division", tst[teamid].division.ToString() }, {"Conference", tst[teamid].conference.ToString()} };
+            db.Update(teamsT, dict, "Name LIKE \"" + curTeam + "\"");
+            db.Update(pl_teamsT, dict, "Name LIKE \"" + curTeam + "\"");
+            db.Update(oppT, dict, "Name LIKE \"" + curTeam + "\"");
+            db.Update(pl_oppT, dict, "Name LIKE \"" + curTeam + "\"");
+
+            MainWindow.tst = tst;
+            MainWindow.tstopp = tstopp;
         }
     }
 }

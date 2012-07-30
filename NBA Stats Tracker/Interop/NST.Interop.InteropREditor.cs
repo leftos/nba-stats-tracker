@@ -154,6 +154,8 @@ namespace NBA_Stats_Tracker.Interop
                 oldPST.Add(ps.Key, ps.Value.Clone());
             }
 
+            CreateDivisions();
+
             var activeTeamsIDs = new List<int>();
             var rosters = new Dictionary<int, List<int>>();
             foreach (var team in activeTeams)
@@ -192,6 +194,9 @@ namespace NBA_Stats_Tracker.Interop
                                                                        });
 
                 tst[id].ID = Convert.ToInt32(team["ID"]);
+                tst[id].division = Convert.ToInt32(team["Division"]);
+                tstopp[id].division = Convert.ToInt32(team["Division"]);
+
 
                 if (sStats != null)
                 {
@@ -537,6 +542,21 @@ namespace NBA_Stats_Tracker.Interop
             #endregion
 
             return 0;
+        }
+
+        private static void CreateDivisions()
+        {
+            MainWindow.Conferences.Clear();
+            MainWindow.Conferences.Add(new Conference {ID = 0, Name = "East"});
+            MainWindow.Conferences.Add(new Conference {ID = 1, Name = "West"});
+
+            MainWindow.Divisions.Clear();
+            MainWindow.Divisions.Add(new Division {ID = 0, Name = "Atlantic", ConferenceID = 0});
+            MainWindow.Divisions.Add(new Division {ID = 1, Name = "Central", ConferenceID = 0});
+            MainWindow.Divisions.Add(new Division {ID = 2, Name = "Southeast", ConferenceID = 0});
+            MainWindow.Divisions.Add(new Division {ID = 3, Name = "Southwest", ConferenceID = 1});
+            MainWindow.Divisions.Add(new Division {ID = 4, Name = "Northwest", ConferenceID = 1});
+            MainWindow.Divisions.Add(new Division {ID = 5, Name = "Pacific", ConferenceID = 1});
         }
 
         private static int CreateNewPlayer(ref Dictionary<int, PlayerStats> pst, Dictionary<string, string> player, int preferredID = -1)

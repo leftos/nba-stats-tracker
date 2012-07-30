@@ -172,4 +172,17 @@ namespace NBA_Stats_Tracker.Helper
         public double sum = 0;
         public int pInP = 0;
     }
+
+    public class ComboBoxItemWithEnabled
+    {
+        public string Item { get; set; }
+        public bool IsEnabled { get; set; }
+
+        public ComboBoxItemWithEnabled(string item, bool isEnabled = true)
+        {
+            Item = item;
+            IsEnabled = isEnabled;
+        }
+    }
+
 }

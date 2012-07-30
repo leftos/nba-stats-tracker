@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="League Overview" Height="451" Width="915"
         xmlns:scroll="clr-namespace:SoftwareArchitects.Windows.Controls;assembly=SoftwareArchitects.Windows.Controls.ScrollSynchronizer"
         WindowStartupLocation="CenterScreen" Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" Loaded="Window_Loaded"
-        Closing="Window_Closing">
+        Closing="Window_Closing" MinWidth="800" MinHeight="451">
   <Grid>
     <Grid Margin="0,0,0,25">
       <TabControl Margin="0,0,237,12" Name="tbcLeagueOverview" Padding="0"
@@ -1205,8 +1205,8 @@ TextWrapping="Wrap" MaxWidth="400" />
           </Grid>
         </TabItem>
       </TabControl>
-      <GroupBox Header="Timeframe" HorizontalAlignment="Right" Name="groupBox2" Width="225" Margin="0,12,6,14">
-        <Grid Margin="0,0,0,0">
+      <GroupBox Header="Timeframe" HorizontalAlignment="Right" Name="groupBox2" Width="225" Margin="0,12,6,77">
+        <Grid Margin="0">
           <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1"
                  VerticalAlignment="Top" />
           <RadioButton Content="All-Time - Season" Height="16" HorizontalAlignment="Left" IsChecked="True"
@@ -1224,9 +1224,22 @@ TextWrapping="Wrap" MaxWidth="400" />
           <ComboBox Height="23" HorizontalAlignment="Left" Margin="112,31,0,0" Name="cmbSeasonNum"
                     VerticalAlignment="Top" Width="94" SelectionChanged="cmbSeasonNum_SelectionChanged" DisplayMemberPath="Value"
                     SelectedValuePath="Key" />
-        </Grid>
+                    
+                </Grid>
       </GroupBox>
-    </Grid>
+            <GroupBox HorizontalAlignment="Right" Margin="0,316,6,14" Width="225" Header="Division/Conference">
+                <Grid>
+                    <ComboBox Height="23" HorizontalAlignment="Center" Margin="6" Name="cmbDivConf" VerticalAlignment="Center" Width="200" SelectionChanged="cmbDivConf_SelectionChanged">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ComboBoxItem}">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+
+                    </ComboBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
     <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,6" TextAlignment="Center"
                Name="txbStatus">
       Tabs are loaded on demand; some may take a few moments to load if you're keeping track of a lot of players.

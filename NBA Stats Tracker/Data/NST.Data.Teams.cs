@@ -18,6 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
@@ -282,6 +284,23 @@ namespace NBA_Stats_Tracker.Data
         public string name;
         public int offset;
 
+        public int division
+        {
+            get { return _division; }
+            set { 
+                _division = value;
+                try
+                {
+                    conference = MainWindow.Divisions.Find(division1 => division1.ID == value).ConferenceID;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        public int conference;
+
         public float[] pl_averages = new float[19];
         public int pl_offset;
         public uint[] pl_stats = new uint[18];
@@ -296,6 +315,7 @@ namespace NBA_Stats_Tracker.Data
         public uint[] stats = new uint[18];
 
         public uint[] winloss = new uint[2];
+        private int _division;
 
         public TeamStats()
         {
@@ -325,6 +345,8 @@ namespace NBA_Stats_Tracker.Data
                 pl_averages[i] = 0;
             }
             isHidden = false;
+            division = 0;
+            conference = 0;
         }
 
         public void calcAvg()
@@ -1254,6 +1276,63 @@ namespace NBA_Stats_Tracker.Data
             _tst[id2] = ts2;
             _tstopp[id1] = tsopp1;
             _tstopp[id2] = tsopp2;
+        }
+
+        public static void CheckForInvalidDivisions()
+        {
+            SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+            List<int> usedIDs = new List<int>();
+            db.GetDataTable("SELECT ID FROM Divisions").Rows.Cast<DataRow>().ToList().ForEach(row => usedIDs.Add(Tools.getInt(row, "ID")));
+
+            List<string> teamsChanged = new List<string>();
+
+            int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+            for (int i = maxSeason; i >= 1; i--)
+            {
+                string teamsT = "Teams";
+                string pl_teamsT = "PlayoffTeams";
+                string oppT = "Opponents";
+                string pl_oppT = "PlayoffOpponents";
+                if (i != maxSeason)
+                {
+                    string toAdd = "S" + i;
+                    teamsT += toAdd;
+                    pl_teamsT += toAdd;
+                    oppT += toAdd;
+                    pl_oppT += toAdd;
+                }
+
+                List<string> tables = new List<string> {teamsT, pl_teamsT, oppT, pl_oppT};
+                foreach (var table in tables)
+                {
+                    string q = "SELECT ID, Name, Division FROM " + table;
+                    var res = db.GetDataTable(q);
+
+                    foreach (DataRow r in res.Rows)
+                    {
+                        if (usedIDs.Contains(Tools.getInt(r, "Division")) == false)
+                        {
+                            db.Update(table, new Dictionary<string, string> {{"Division", MainWindow.Divisions.First().ID.ToString()}},
+                                      "ID = " + Tools.getString(r, "ID"));
+                            int teamid = MainWindow.TeamOrder[Tools.getString(r, "Name")];
+                            MainWindow.tst[teamid].division = MainWindow.Divisions.First().ID;
+                            if (teamsChanged.Contains(MainWindow.tst[teamid].displayName) == false)
+                                teamsChanged.Add(MainWindow.tst[teamid].displayName);
+                        }
+                    }
+                }
+            }
+
+            if (teamsChanged.Count > 0)
+            {
+                teamsChanged.Sort();
+                string s = "Some teams were in divisions that were deleted and have been reset to the " +
+                           MainWindow.Divisions.First().Name + " division.\n\n";
+                teamsChanged.ForEach(s1 => s += s1 + "\n");
+                s = s.TrimEnd(new char[] {'\n'});
+                SQLiteIO.saveSeasonToDatabase();
+                MessageBox.Show(s);
+            }
         }
     }
 
