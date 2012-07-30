@@ -1156,12 +1156,13 @@ TextWrapping="Wrap" MaxWidth="400" />
                        TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
           </Grid>
         </TabItem>
-                <TabItem Header="Best Starting 5" Name="tabStartingFive">
+                <TabItem Header="Ultimate Team" Name="tabStartingFive">
 
                     <Grid Margin="6" ShowGridLines="False">
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="45*"/>
+                            <RowDefinition Height="45*"/>
+                            <RowDefinition Height="15*"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Margin="0">
                             <Grid.ColumnDefinitions>
@@ -1190,6 +1191,9 @@ TextWrapping="Wrap" MaxWidth="400" />
                      TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="1"/>
                             <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPF" Text=""
                      TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="3"/>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <TextBlock Margin="6" Name="txbSubs" TextWrapping="Wrap" />
                         </Grid>
                     </Grid>
                 </TabItem>

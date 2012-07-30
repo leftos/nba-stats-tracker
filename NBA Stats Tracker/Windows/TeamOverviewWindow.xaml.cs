@@ -761,130 +761,16 @@ namespace NBA_Stats_Tracker.Windows
             }
             
             CalculateStarting5();
-
-            #region Old Starters Code
-
-            /*
-            try
-                {
-                    tempList = psrList.Where(row => (row.Position1 == "PG")).ToList();
-                    tempList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                    tempList.Reverse();
-                    firstChoiceIsInjured = false;
-                    i = 0;
-                    while (tempList[i].isInjured)
-                    {
-                        firstChoiceIsInjured = true;
-                        i++;
-                    }
-                    psr1 = tempList[i];
-                    usedIDs.Add(psr1.ID);
-                    text = psr1.GetBestStats(4);
-                    txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                         (firstChoiceIsInjured ? " (Due to injury)" : "") + "\n\n" + text;
-                }
-                catch (Exception)
-                {
-
-                }
-            try
-            {
-                tempList = psrList.Where(row => (row.Position1 == "SG")).ToList();
-                tempList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                tempList.Reverse();
-                firstChoiceIsInjured = false;
-                i = 0;
-                while (tempList[i].isInjured || usedIDs.Contains(tempList[i].ID))
-                {
-                    firstChoiceIsInjured = true;
-                    i++;
-                }
-                psr1 = tempList[i];
-                usedIDs.Add(psr1.ID);
-                text = psr1.GetBestStats(4);
-                txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                     (firstChoiceIsInjured ? " (Due to injury)" : "") + "\n\n" + text;
-            }
-            catch (Exception)
-            {
-                
-            }
-
-            try
-            {
-                tempList = psrList.Where(row => (row.Position1 == "SF")).ToList();
-                tempList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                tempList.Reverse();
-                firstChoiceIsInjured = false;
-                i = 0;
-                while (tempList[i].isInjured || usedIDs.Contains(tempList[i].ID))
-                {
-                    firstChoiceIsInjured = true;
-                    i++;
-                }
-                psr1 = tempList[i];
-                usedIDs.Add(psr1.ID);
-                text = psr1.GetBestStats(4);
-                txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                     (firstChoiceIsInjured ? " (Due to injury)" : "") + "\n\n" + text;
-            }
-            catch (Exception)
-            {
-                
-            }
-
-            try
-            {
-                tempList = psrList.Where(row => (row.Position1 == "PF")).ToList();
-                tempList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                tempList.Reverse();
-                firstChoiceIsInjured = false;
-                i = 0;
-                while (tempList[i].isInjured || usedIDs.Contains(tempList[i].ID))
-                {
-                    firstChoiceIsInjured = true;
-                    i++;
-                }
-                psr1 = tempList[i];
-                usedIDs.Add(psr1.ID);
-                text = psr1.GetBestStats(4);
-                txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                     (firstChoiceIsInjured ? " (Due to injury)" : "") + "\n\n" + text;
-            }
-            catch (Exception)
-            {
-                
-            }
-
-            try
-            {
-                tempList = psrList.Where(row => (row.Position1 == "C")).ToList();
-                tempList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                tempList.Reverse();
-                firstChoiceIsInjured = false;
-                i = 0;
-                while (tempList[i].isInjured || usedIDs.Contains(tempList[i].ID))
-                {
-                    firstChoiceIsInjured = true;
-                    i++;
-                }
-                psr1 = tempList[i];
-                usedIDs.Add(psr1.ID);
-                text = psr1.GetBestStats(4);
-                txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                    (firstChoiceIsInjured ? " (Due to injury)" : "") + "\n\n" + text;
-            }
-            catch (Exception)
-            {
-
-            }
-            */
-
-            #endregion
         }
 
         private void CalculateStarting5()
         {
+            txbStartingPG.Text = "";
+            txbStartingSG.Text = "";
+            txbStartingSF.Text = "";
+            txbStartingPF.Text = "";
+            txbStartingC.Text = "";
+
             string text;
             PlayerStatsRow psr1;
             List<PlayerStatsRow> tempList = new List<PlayerStatsRow>();
@@ -958,28 +844,62 @@ namespace NBA_Stats_Tracker.Windows
 
                                 permutations.Add(new StartingFivePermutation {idList = perm, pInP = _pInP, sum = _sum});
                             }
-            var bestPerm = permutations.Where(permutation => permutation.sum.Equals(max)).OrderByDescending(permutation => permutation.pInP).First();
-            bestPerm.idList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
 
-            psr1 = tempList[0];
-            text = psr1.GetBestStats(4);
-            txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + "\n\n" + text;
+            try
+            {
+                var bestPerm = permutations.Where(perm1 => perm1.sum.Equals(max)).OrderByDescending(perm2 => perm2.pInP).First();
+                bestPerm.idList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
+            }
+            catch (Exception)
+            {
+                return;
+            }
 
-            psr1 = tempList[1];
-            text = psr1.GetBestStats(4);
-            txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + "\n\n" + text;
+            try
+            {
+                psr1 = tempList[0];
+                text = psr1.GetBestStats(5);
+                txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            { }
 
-            psr1 = tempList[2];
-            text = psr1.GetBestStats(4);
-            txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + "\n\n" + text;
+            try
+            {
+                psr1 = tempList[1];
+                text = psr1.GetBestStats(5);
+                txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            { }
 
-            psr1 = tempList[3];
-            text = psr1.GetBestStats(4);
-            txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + "\n\n" + text;
+            try
+            {
+                psr1 = tempList[2];
+                text = psr1.GetBestStats(5);
+                txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            { }
 
-            psr1 = tempList[4];
-            text = psr1.GetBestStats(4);
-            txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + "\n\n" + text;
+            try
+            {
+                psr1 = tempList[3];
+                text = psr1.GetBestStats(5);
+                txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" +
+                                     text;
+            }
+            catch (Exception)
+            { }
+
+            try
+            {
+                psr1 = tempList[4];
+                text = psr1.GetBestStats(5);
+                txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            { }
         }
 
         private void UpdatePlayerAndMetricStats()

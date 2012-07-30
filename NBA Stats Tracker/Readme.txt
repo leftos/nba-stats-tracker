@@ -33,6 +33,8 @@ Features in a glance
 			Advanced player statistics that take into account multiple factors of the player, team and league performance.
 		Best Performers
 			The best players of each team with a summary of their most significant stats.
+		Recommended Starters
+			Find out which starting 5, with which players in which position, would maximize your team's performance.
 		Box Scores
 			A list of each team's games, with easy access to the Box Score window, which allows you to view the full team and player stats, as well as edit them.
 		Head-To-Head
@@ -48,6 +50,8 @@ Features in a glance
 			Similar to the team split stats, with the addition of stats split between the teams the player has played for in the timeframe; if the player was traded, you'll see stats before and after each trade.
 		Box Scores
 			A list of games the player has been recorded in, with their stats and shooting percentages.
+		Best Performances
+            A quick look at the player's best performances during the season or a timeframe of your choice.
 		Head-To-Head
 			Compare any two players stats and averages, either in games against the league, or each other's teams.
 		Yearly Report
@@ -60,6 +64,8 @@ Features in a glance
 			All the teams, all the averages, all of the regular season.
 		Playoff Stats
 			Similar to the team stats, but with playoff averages.
+		Team Metric Stats
+            Advanced team statistics that take into account multiple factors of the team's performance, as well as of its opponents and the league.
 		League Leaders
 			The league's leading players in each average, taking into account the NBA's rule for league leaders eligibility.
 		Player Stats
@@ -68,6 +74,8 @@ Features in a glance
 			Advanced player statistics that take into account multiple factors of the player, team and league performance.
 		Best Performers
 			The best players of the whole league with a summary of their most significant stats.
+		Ultimate Team
+            The best combination of players from all over the league for a full 12-player team.
 		Box Scores
 			Every box score saved in the specific timeframe.
 	Box Scores
