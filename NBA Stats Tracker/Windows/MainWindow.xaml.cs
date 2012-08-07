@@ -75,7 +75,9 @@ namespace NBA_Stats_Tracker.Windows
         public static string addInfo;
         private static int _curSeason;
         public static List<Division> Divisions = new List<Division>();
-        public static List<Conference> Conferences = new List<Conference>(); 
+        public static List<Conference> Conferences = new List<Conference>();
+
+        public static int gameLength = 48;
 
         public static int curSeason
         {
@@ -147,7 +149,11 @@ namespace NBA_Stats_Tracker.Windows
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
             //btnInject.Visibility = Visibility.Hidden;
+#if DEBUG
+            btnTest.Visibility = Visibility.Visible;
+#else
             btnTest.Visibility = Visibility.Hidden;
+#endif
 
             isCustom = true;
 
@@ -263,7 +269,7 @@ namespace NBA_Stats_Tracker.Windows
             CommandBindings.Add(new CommandBinding(cmndExport, btnInject2K12_Click));
 
             cmndOpen.InputGestures.Add(new KeyGesture(Key.O, ModifierKeys.Control));
-            CommandBindings.Add(new CommandBinding(cmndOpen, mnuFileOpenCustom_Click));
+            CommandBindings.Add(new CommandBinding(cmndOpen, mnuFileOpen_Click));
 
             cmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(cmndSave, btnSaveTeamStats_Click));
@@ -408,7 +414,7 @@ namespace NBA_Stats_Tracker.Windows
             updateStatus("All seasons saved successfully.");
         }
 
-        private void mnuFileOpenCustom_Click(object sender, RoutedEventArgs e)
+        private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
         {
             loadingSeason = true;
             tst = new Dictionary<int, TeamStats>();
@@ -436,9 +442,8 @@ namespace NBA_Stats_Tracker.Windows
             updateStatus(String.Format("{0} teams & {1} players loaded successfully!", tst.Count, pst.Count));
             currentDB = txtFile.Text;
             loadingSeason = false;
-            //txtFile.Text = "SQLite";
 
-            //MessageBox.Show(bshist.Count.ToString());
+            gameLength = SQLiteIO.GetSetting("Game Length", 48);
         }
 
         public static void ChangeSeason(int _curSeason)
@@ -510,11 +515,11 @@ namespace NBA_Stats_Tracker.Windows
                 if (!showMessage)
                 {
                     webClient.DownloadFileCompleted += Completed;
-                    webClient.DownloadFileAsync(new Uri("http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt"), AppDocsPath + @"nstversion.txt");
+                    webClient.DownloadFileAsync(new Uri("http://users.tellas.gr/~aslan16/nstversion.txt"), AppDocsPath + @"nstversion.txt");
                 }
                 else
                 {
-                    webClient.DownloadFile(new Uri("http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt"), AppDocsPath + @"nstversion.txt");
+                    webClient.DownloadFile(new Uri("http://users.tellas.gr/~aslan16/nstversion.txt"), AppDocsPath + @"nstversion.txt");
                     Completed(null, null);
                 }
             }
@@ -760,7 +765,12 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                var fbd = new FolderBrowserDialog {Description = "Select folder with REditor-exported CSVs", ShowNewFolderButton = false};
+                var fbd = new FolderBrowserDialog
+                              {
+                                  Description = "Select folder with REditor-exported CSVs", 
+                                  ShowNewFolderButton = false,
+                                  SelectedPath = Misc.GetRegistrySetting("LastExportDir", "")
+                              };
                 DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
                 if (dr != System.Windows.Forms.DialogResult.OK)
@@ -768,6 +778,8 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (fbd.SelectedPath == "")
                     return;
+
+                Misc.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
 
                 if (mnuOptionsCompatibilityCheck.IsChecked)
                 {
@@ -1330,6 +1342,26 @@ namespace NBA_Stats_Tracker.Windows
             var lbsw = new LiveBoxScoreWindow();
             lbsw.ShowDialog();
             */
+
+            RecalculateOpponentStats();
+        }
+
+        private static void RecalculateOpponentStats()
+        {
+            Dictionary<int, TeamStats> temptst = new Dictionary<int, TeamStats>();
+            foreach (int to in TeamOrder.Values)
+            {
+                temptst.Add(to, tst[to].DeepClone());
+            }
+
+            foreach (int key in tstopp.Keys)
+                tstopp[key].ResetStats("All");
+
+            foreach (BoxScoreEntry bse in bshist)
+            {
+                if (bse.bs.SeasonNum == _curSeason)
+                    TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref temptst, ref tstopp);
+            }
         }
 
         private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
@@ -1377,7 +1409,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnOpenCustom_Click(object sender, RoutedEventArgs e)
         {
-            mnuFileOpenCustom_Click(null, null);
+            mnuFileOpen_Click(null, null);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -1455,11 +1487,16 @@ namespace NBA_Stats_Tracker.Windows
 
             tst = new Dictionary<int, TeamStats>();
             tst[0] = new TeamStats("$$NewDB");
+            tstopp = new Dictionary<int, TeamStats>();
+            tstopp[0] = new TeamStats("$$NewDB");
             TeamOrder = new SortedDictionary<string, int>();
+            bshist = new List<BoxScoreEntry>();
 
             txtFile.Text = sfd.FileName;
             PopulateSeasonCombo();
-            MainWindow.ChangeSeason(1);
+            ChangeSeason(1);
+
+            SQLiteIO.SetSetting("Game Length", 48);
 
             //
             // tst = new TeamStats[2];
@@ -1767,7 +1804,7 @@ namespace NBA_Stats_Tracker.Windows
                         tst[key].ResetStats("All");
 
                     foreach (int key in tstopp.Keys)
-                        tst[key].ResetStats("All");
+                        tstopp[key].ResetStats("All");
                 }
             }
 
@@ -1927,13 +1964,49 @@ namespace NBA_Stats_Tracker.Windows
 
         private void mnuHelpDonate_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://students.ceid.upatras.gr/~aslanoglou/donate.html");
+            Process.Start("http://users.tellas.gr/~aslan16/donate.html");
         }
 
         private void mnuMiscEditDivisions_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrWhiteSpace(currentDB))
+                return;
+
             ListWindow lw = new ListWindow();
             lw.ShowDialog();
+        }
+
+        private void mnuMiscRecalculateOppStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.isTSTEmpty())
+                return;
+
+            RecalculateOpponentStats();
+
+            updateStatus("Opponent stats for the current season have been recalculated. You should save the current season now.");
+        }
+
+        private void mnuMiscEditGameLength_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.isTSTEmpty())
+                return;
+
+            InputBoxWindow ibw = new InputBoxWindow("Insert the length of each game in minutes, without overtime (e.g. 48):", gameLength.ToString());
+            if (ibw.ShowDialog() == true)
+            {
+                try
+                {
+                    gameLength = Convert.ToInt32(input);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            }
+
+            SQLiteIO.SetSetting("Game Length", gameLength);
+
+            updateStatus("Game Length saved. Database updated.");
         }
     }
 }

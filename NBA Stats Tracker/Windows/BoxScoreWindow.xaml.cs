@@ -1129,7 +1129,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway1.PlayerID];
-                text = pbsAway1.GetBestStats(4, ps.Position1);
+                text = pbsAway1.GetBestStats(5, ps.Position1);
                 txbAway1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
@@ -1145,7 +1145,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway2.PlayerID];
-                text = pbsAway2.GetBestStats(4, ps.Position1);
+                text = pbsAway2.GetBestStats(5, ps.Position1);
                 txbAway2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
@@ -1161,7 +1161,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsAway3.PlayerID];
-                text = pbsAway3.GetBestStats(4, ps.Position1);
+                text = pbsAway3.GetBestStats(5, ps.Position1);
                 txbAway3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
@@ -1177,7 +1177,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome1.PlayerID];
-                text = pbsHome1.GetBestStats(4, ps.Position1);
+                text = pbsHome1.GetBestStats(5, ps.Position1);
                 txbHome1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
@@ -1193,7 +1193,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome2.PlayerID];
-                text = pbsHome2.GetBestStats(4, ps.Position1);
+                text = pbsHome2.GetBestStats(5, ps.Position1);
                 txbHome2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
@@ -1209,7 +1209,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 ps = pst[pbsHome3.PlayerID];
-                text = pbsHome3.GetBestStats(4, ps.Position1);
+                text = pbsHome3.GetBestStats(5, ps.Position1);
                 txbHome3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
         }
@@ -1412,6 +1412,11 @@ namespace NBA_Stats_Tracker.Windows
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
+        }
+
+        private void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            LeftosCommonLibrary.EventHandlers.Any_ShowToolTip(sender, e);
         }
     }
 }

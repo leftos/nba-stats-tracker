@@ -485,7 +485,7 @@ namespace NBA_Stats_Tracker.Data
             {
             }
 
-            double Pace = 48*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(tstats[t.MINS])));
+            double Pace = MainWindow.gameLength*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(tstats[t.MINS])));
             metrics.Add("Pace", Pace);
 
             double ORTG = (tstats[t.PF]/Poss)*100;
@@ -953,6 +953,14 @@ namespace NBA_Stats_Tracker.Data
             AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, 1, 2);
             ts1 = _tst[1];
             ts2 = _tst[2];
+        }
+
+        public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst, ref Dictionary<int, TeamStats> _tstopp)
+        {
+            int id1 = MainWindow.TeamOrder[bsToAdd.Team1];
+            int id2 = MainWindow.TeamOrder[bsToAdd.Team2];
+
+            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, id1, id2);
         }
 
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst, ref Dictionary<int, TeamStats> _tstopp,

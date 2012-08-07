@@ -441,11 +441,11 @@ TextWrapping="Wrap" MaxWidth="400" />
                 <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
                 <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
                 <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
-                <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
+                                <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
+                                <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
                 <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
                 <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
-                <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
-                <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
+                                <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
                 <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
                 <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
@@ -457,11 +457,11 @@ TextWrapping="Wrap" MaxWidth="400" />
                 <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
                 <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
                 <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
-                <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
-                <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
-                <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
-                <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
-                <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                                <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                                <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                                <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                                <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                                <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
               </DataGrid.Columns>
             </DataGrid>
@@ -1227,7 +1227,7 @@ TextWrapping="Wrap" MaxWidth="400" />
                     
                 </Grid>
       </GroupBox>
-            <GroupBox HorizontalAlignment="Right" Margin="0,316,6,14" Width="225" Header="Division/Conference">
+            <GroupBox HorizontalAlignment="Right" Margin="0,0,6,14" Width="225" Header="Division/Conference" Height="57" VerticalAlignment="Bottom">
                 <Grid>
                     <ComboBox Height="23" HorizontalAlignment="Center" Margin="6" Name="cmbDivConf" VerticalAlignment="Center" Width="200" SelectionChanged="cmbDivConf_SelectionChanged">
                         <ComboBox.ItemContainerStyle>

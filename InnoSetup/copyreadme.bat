@@ -1,0 +1,1 @@
+copy "..\NBA Stats Tracker\bin\Release\Readme.txt" ..

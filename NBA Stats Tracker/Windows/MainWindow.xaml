@@ -9,13 +9,12 @@
                TextAlignment="Center" FontSize="16" FontWeight="Bold" Visibility="Hidden"></TextBlock>
     <Grid Name="mainGrid">
       <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top"
-               Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TabIndex="1"
-               TextChanged="txtFile_TextChanged" />
+               Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TextChanged="txtFile_TextChanged" IsTabStop="False" />
       <Menu Height="23" HorizontalAlignment="Stretch" Name="menu1" VerticalAlignment="Top">
         <MenuItem Header="_File">
           <MenuItem Header="_New Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
           <Separator />
-          <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpenCustom_Click" InputGestureText="Ctrl-O"/>
+          <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpen_Click" InputGestureText="Ctrl-O"/>
           <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" />
           <Separator />
           <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="mnuFileSaveAs_Click" />
@@ -54,7 +53,7 @@
           <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
                     Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
         </MenuItem>
-        <MenuItem Header="_Miscellaneous">
+        <MenuItem Header="_Tools">
           <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
           <MenuItem Header="_Rename Current Season..." Name="mnuMiscRenameCurrentSeason"
                     Click="mnuMiscRenameCurrentSeason_Click" />
@@ -71,8 +70,10 @@
           <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats" Click="mnuMiscResetTeamStats_Click" />
           <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
                     Click="mnuMiscResetPlayerStats_Click" />
+                    <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats" Click="mnuMiscRecalculateOppStats_Click" />
                     <Separator />
                     <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions" Click="mnuMiscEditDivisions_Click" />
+                    <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength" Click="mnuMiscEditGameLength_Click" />
                 </MenuItem>
         <MenuItem Header="_Help">
           <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
@@ -84,19 +85,19 @@
       <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnTest"
               VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
       <Button Content="Open Database" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0" Name="btnOpenCustom"
-              TabIndex="2" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
+              TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
       <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
         <Grid>
           <Button Content="Team Overview" Height="46" HorizontalAlignment="Center" Margin="6,9,6,0"
                   Name="btnTeamOverview" VerticalAlignment="Top" Width="160" FontSize="15" FontWeight="Bold"
-                  Click="btnTeamOverview_Click" IsEnabled="True" />
+                  Click="btnTeamOverview_Click" IsEnabled="True" TabIndex="2" />
           <Button Content="League Overview" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
                   IsEnabled="True" Margin="6,0,6,14" Name="btnLeagueOverview" Width="160" Click="btnLeagueOverview_Click" Height="52"
-                  VerticalAlignment="Bottom" />
+                  VerticalAlignment="Bottom" TabIndex="5" />
           <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center"
                   IsEnabled="True" Margin="6,59,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
-                  Click="btnPlayerOverview_Click" />
-          <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch" TabIndex="29"
+                  Click="btnPlayerOverview_Click" TabIndex="3" />
+          <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch" TabIndex="4"
                   VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
             <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Advanced Player Search
@@ -108,7 +109,7 @@
         <Grid>
           <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,69"
                   Name="btnSaveTeamStats" Width="156" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
-                  VerticalAlignment="Bottom">
+                  VerticalAlignment="Bottom" TabIndex="8">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Save Current Season
               <LineBreak />
@@ -119,14 +120,14 @@
                         </Button.ToolTip>
                     </Button>
           <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate"
-                  VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="29">
+                  VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="6">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Update with
               <LineBreak />
               Box Score
             </TextBlock>
           </Button>
-          <Button Height="46" HorizontalAlignment="Center" Margin="6,59,6,0" Name="btnAdd" TabIndex="29"
+          <Button Height="46" HorizontalAlignment="Center" Margin="6,59,6,0" Name="btnAdd" TabIndex="7"
                   VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Add
@@ -135,7 +136,7 @@
             </TextBlock>
           </Button>
           <Button FontSize="14" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True"
-                  Margin="6,0,6,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="156" Click="btnSaveAllSeasons_Click">
+                  Margin="6,0,6,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="156" Click="btnSaveAllSeasons_Click" TabIndex="9">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Save All Seasons
               <LineBreak />
@@ -147,7 +148,7 @@
       <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
         <Grid>
           <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12"
-                  VerticalAlignment="Top" Width="154" Click="btnImport2K12_Click" TabIndex="2">
+                  VerticalAlignment="Top" Width="154" Click="btnImport2K12_Click" TabIndex="10">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Import from
               <LineBreak />
@@ -158,7 +159,7 @@
                         </Button.ToolTip>
                     </Button>
           <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" Name="btnInject" VerticalAlignment="Top"
-                  Width="154" Click="btnInject2K12_Click" TabIndex="28">
+                  Width="154" Click="btnInject2K12_Click" TabIndex="11">
             <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
               Export to
               <LineBreak />
@@ -169,8 +170,8 @@
                         </Button.ToolTip>
                     </Button>
           <Button Content="Reset 2K Related Settings" HorizontalAlignment="Center" Margin="9,0,9,100"
-                  Name="btnEraseSettings" Width="154" Click="btnEraseSettings_Click" TabIndex="3" Height="23" VerticalAlignment="Bottom" />
-          <Button HorizontalAlignment="Center" Margin="9,0,9,42" Name="btnGrabNBAStats" TabIndex="28" Width="154"
+                  Name="btnEraseSettings" Width="154" Click="btnEraseSettings_Click" TabIndex="12" Height="23" VerticalAlignment="Bottom" />
+          <Button HorizontalAlignment="Center" Margin="9,0,9,42" Name="btnGrabNBAStats" TabIndex="13" Width="154"
                   Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
             <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Download
@@ -179,14 +180,14 @@
             </TextBlock>
           </Button>
           <Button Content="Download Box Score" Height="23" HorizontalAlignment="Center" Margin="9,0,9,14"
-                  Name="btnDownloadBoxScore" TabIndex="3" VerticalAlignment="Bottom" Width="154" Click="btnDownloadBoxScore_Click" />
+                  Name="btnDownloadBoxScore" TabIndex="14" VerticalAlignment="Bottom" Width="154" Click="btnDownloadBoxScore_Click" />
         </Grid>
       </GroupBox>
       <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"
                  VerticalAlignment="Top" TextAlignment="Right" Width="96" Padding="0" />
       <ComboBox Height="23" Margin="485,58,0,0" Name="cmbSeasonNum" ItemsSource="{Binding SeasonList}"
                 DisplayMemberPath="Value" SelectedValuePath="Key" VerticalAlignment="Top"
-                SelectionChanged="cmbSeasonNum_SelectionChanged" HorizontalAlignment="Left" Width="94" />
+                SelectionChanged="cmbSeasonNum_SelectionChanged" HorizontalAlignment="Left" Width="94" TabIndex="1" />
     </Grid>
     <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom">
       <StatusBarItem Name="status" Content="Ready" />

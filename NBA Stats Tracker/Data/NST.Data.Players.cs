@@ -345,8 +345,8 @@ namespace NBA_Stats_Tracker.Data
                           0.3*pstats[p.DREB] + pstats[p.STL] + 0.7*pstats[p.AST] + 0.7*pstats[p.BLK] - 0.4*pstats[p.FOUL] - pstats[p.TO];
             metrics.Add("GmSc", GmSc/pstats[p.GP]);
 
-            double GmScE = 30*(1/pstats[p.MINS])*GmSc;
-            metrics.Add("GmScE", GmScE/pstats[p.GP]);
+            double GmScE = 36*(1/pstats[p.MINS])*GmSc;
+            metrics.Add("GmScE", GmScE);
 
             if (!GmScOnly)
             {

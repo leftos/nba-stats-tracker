@@ -1,17 +1,8 @@
-0.12.4.0
+0.13.1.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
-- Improvement: League Overview's Best Starting 5 is now renamed to Ultimate Team, and includes a recommendation of 7 substitutes in addition to the best starting 5 of the league
-
-v0.12.3.1
-- Fix: Fixed a few bugs v0.12.3 that caused the tool to crash
-
-v0.12.3
-- Addition: Recommended Starters tab added to Team Overview
-- Addition: Best Starting 5 tab added to League Overview
-
-v0.12.2.1
-- Addition: Added friendly reminder for a donation towards the development of NBA Stats Tracker after the tool is started 50 times
-		
-v0.12.2
-- Addition: Added GmScE metric, as an adjusted measure of a player's Game Score over the minutes they've played
-- Improvement: Player box scores in the Box Score window can now be sorted
+- Addition: A game length different than 48 minutes can be set via the Tools menu
+- Fix: Team Pace Metric in now calculated on a Game Length basis, instead of assuming games are always 48 minutes long
+- Change: All screens showing best performers or performances now present the 5 most significant stats, instead of 4
+- Change: Multiple instances of NBA Stats Tracker are now allowed
+- Change: Miscellaneous menu was renamed to Tools menu
+- Improvement: Various minor interface improvements

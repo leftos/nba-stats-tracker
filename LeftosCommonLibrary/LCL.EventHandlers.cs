@@ -18,6 +18,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -72,6 +73,22 @@ namespace LeftosCommonLibrary
             if (e.Key == Key.Tab)
             {
                 _isTabPressed = false;
+            }
+        }
+
+        public static void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            //Get tooltip from sender.
+            var control = sender as Control;
+            if (control != null)
+            {
+                ToolTip tt = (ToolTip)control.ToolTip;
+                //Places the Tooltip under the control rather than at the mouse position
+                tt.PlacementTarget = (UIElement)sender;
+                tt.Placement = PlacementMode.Right;
+                tt.PlacementRectangle = new Rect(0, control.Height, 0, 0);
+                //Shows tooltip if KeyboardFocus is within.
+                tt.IsOpen = control.IsKeyboardFocusWithin;
             }
         }
     }

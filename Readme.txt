@@ -181,9 +181,8 @@ Special thanks
 	- Tinifu Tuitama, for his donation
 	- koberulz, for his extensive suggestions and help with debugging
 	- nbagnome, for his live box score idea and his donation
-	- Lagoa, for his suggestions and help with debugging
+	- Lagoa, for his help with debugging
 	- intruda, for his donation
-	- WBT99, for his extensive suggestions
 	- Everyone at the NLSC community, for their continued support
 
 

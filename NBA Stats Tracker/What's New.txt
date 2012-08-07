@@ -1,5 +1,23 @@
 NBA Stats Tracker - Version History
 
+    v0.13.1
+		- Addition: A game length different than 48 minutes can be set via the Tools menu
+        - Fix: Team Pace Metric in now calculated on a Game Length basis, instead of assuming games are always 48 minutes long
+		- Change: All screens showing best performers or performances now present the 5 most significant stats, instead of 4
+        - Change: Multiple instances of NBA Stats Tracker are now allowed
+		- Change: Miscellaneous menu was renamed to Tools menu
+		- Improvement: Various minor interface improvements
+
+    v0.13.0.2
+        - Fix: Game Score Efficiency wasn't being properly calculated in Player Stats for players with more than one game played
+		- Change: Game Score Efficiency is now calculated per 36 minutes played
+		- Improvement: Export to 2K12 Save feature now remembers last used directory
+
+    v0.13.0.1
+		- Known Issue Temporary Workaround: Opponent Team Stats seem to not be updated in some rare cases; until the bug can be tracked down and fixed, "Recalculate Opponent Team Stats" has been added to the Miscellaneous menu
+		- Fix: Fixed bug that caused box scores to remain after creating a new database
+        - Fix: Fixed some League Overview tabs not refreshing correctly after switching between division/conference filters
+        
 	v0.13
 		- Addition: Teams can now be assigned to Divisions, and Divisions to Conferences
 		- Addition: League Overview can now be filtered by Conference or Division

@@ -45,11 +45,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Crc32.cs" />
-    <Compile Include="CSV.cs" />
-    <Compile Include="EventHandlers.cs" />
-    <Compile Include="GenericExtensions.cs" />
-    <Compile Include="Tools.cs" />
+    <Compile Include="LCL.Crc32.cs" />
+    <Compile Include="LCL.CSV.cs" />
+    <Compile Include="LCL.EventHandlers.cs" />
+    <Compile Include="LCL.GenericExtensions.cs" />
+    <Compile Include="LCL.Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

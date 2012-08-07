@@ -104,6 +104,7 @@ namespace NBA_Stats_Tracker
         {
             // Get Reference to the current Process
             Process thisProc = Process.GetCurrentProcess();
+			/*
             // Check how many total processes have the same name as the current one
             if (Process.GetProcessesByName(thisProc.ProcessName).Length > 1)
             {
@@ -111,6 +112,7 @@ namespace NBA_Stats_Tracker
                 MessageBox.Show("Application is already running.");
                 Environment.Exit(-1);
             }
+			*/
 
             base.OnStartup(e);
 

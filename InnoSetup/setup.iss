@@ -223,6 +223,9 @@ winxpsp3_title=Windows XP Service Pack 3
 
 #expr SaveToFile(AddBackslash(SourcePath) + "Preprocessed"+MyAppSetupname+".iss")
 
+[PostCompile]
+Name: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\InnoSetup\copyreadme.bat"; Flags: cmdprompt redirectoutput
+
 [Code]
 function InitializeSetup(): Boolean;
 begin

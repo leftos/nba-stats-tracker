@@ -1424,6 +1424,11 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             reload = true;
+			lastShownTeamSeason = 0;
+			lastShownPlayerSeason = 0;
+			lastShownPlayoffSeason = 0;
+			lastShownLeadersSeason = 0;
+			lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
     }

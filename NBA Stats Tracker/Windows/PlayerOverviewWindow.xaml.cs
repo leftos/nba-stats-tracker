@@ -593,27 +593,27 @@ namespace NBA_Stats_Tracker.Windows
                 templist.Reverse();
 
                 PlayerBoxScore psr1 = templist[0];
-                string text = psr1.GetBestStats(4, psr.Position1);
+                string text = psr1.GetBestStats(5, psr.Position1);
                 txbGame1.Text = "1: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[1];
-                text = psr1.GetBestStats(4, psr.Position1);
+                text = psr1.GetBestStats(5, psr.Position1);
                 txbGame2.Text = "2: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[2];
-                text = psr1.GetBestStats(4, psr.Position1);
+                text = psr1.GetBestStats(5, psr.Position1);
                 txbGame3.Text = "3: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[3];
-                text = psr1.GetBestStats(4, psr.Position1);
+                text = psr1.GetBestStats(5, psr.Position1);
                 txbGame4.Text = "4: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[4];
-                text = psr1.GetBestStats(4, psr.Position1);
+                text = psr1.GetBestStats(5, psr.Position1);
                 txbGame5.Text = "5: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[5];
-                text = psr1.GetBestStats(4, psr.Position1);
+                text = psr1.GetBestStats(5, psr.Position1);
                 txbGame6.Text = "6: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
             }
             catch (Exception)

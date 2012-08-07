@@ -46,6 +46,7 @@ namespace NBA_Stats_Tracker.Data
                 return false;
             }
             saveAllSeasons(file);
+            SetSetting(file, "Game Length", MainWindow.gameLength);
             File.Delete(oldDB);
             return true;
         }
@@ -736,6 +737,48 @@ namespace NBA_Stats_Tracker.Data
             {
                 return 1;
             }
+        }
+
+        public static void SetSetting<T>(string setting, T value)
+        {
+            SetSetting<T>(MainWindow.currentDB, setting, value);
+        }
+
+        public static void SetSetting<T>(string file, string setting, T value)
+        {
+            var db = new SQLiteDatabase(file);
+
+            string val = value.ToString();
+            string q = "select * from Misc where Setting LIKE \"" + setting + "\"";
+
+            int rowCount = db.GetDataTable(q).Rows.Count;
+
+            if (rowCount == 1)
+            {
+                db.Update("Misc", new Dictionary<string, string> {{"Value", val}}, "Setting LIKE \"" + setting + "\"");
+            }
+            else
+            {
+                db.Insert("Misc", new Dictionary<string, string> {{"Setting", setting}, {"Value", val}});
+            }
+        }
+
+        public static T GetSetting<T>(string setting, T defaultValue)
+        {
+            return GetSetting<T>(MainWindow.currentDB, setting, defaultValue);
+        }
+
+        public static T GetSetting<T>(string file, string setting, T defaultValue)
+        {
+            var db = new SQLiteDatabase(file);
+
+            string q = "select Value from Misc where Setting LIKE \"" + setting + "\"";
+            string value = db.ExecuteScalar(q);
+
+            if (String.IsNullOrEmpty(value))
+                return defaultValue;
+
+            return (T) Convert.ChangeType(value, typeof (T));
         }
 
         public static void GetTeamStatsFromDatabase(string file, string team, int season, out TeamStats ts, out TeamStats tsopp)

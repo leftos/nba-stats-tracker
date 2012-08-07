@@ -129,11 +129,19 @@
           <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="478,257,0,0" Name="btnOK" TabIndex="30"
                   VerticalAlignment="Top" Width="75" Click="btnOK_Click" FontWeight="Bold" />
           <Label Content="MINS" HorizontalAlignment="Left" Margin="600,66,0,0" Name="label32" VerticalAlignment="Top" />
-          <TextBox Height="23" HorizontalAlignment="Left" Margin="600,95,0,0" Name="txtMINS1" TabIndex="14"
-                   VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged" />
-          <Label Content="MINS" HorizontalAlignment="Left" Margin="600,175,0,0" Name="label33" VerticalAlignment="Top" />
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="600,95,0,0" Name="txtMINS1" TabIndex="14"
+                   VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged" IsKeyboardFocusedChanged="Any_ShowToolTip">
+                        <TextBox.ToolTip>
+                            <ToolTip>You should enter the game length, not the total minutes played by all players (e.g. 48, not 240)</ToolTip>
+                        </TextBox.ToolTip>
+                    </TextBox>
+                    <Label Content="MINS" HorizontalAlignment="Left" Margin="600,175,0,0" Name="label33" VerticalAlignment="Top" />
           <TextBox Height="23" HorizontalAlignment="Left" Margin="600,204,0,0" Name="txtMINS2" TabIndex="29"
-                   VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged" />
+                   VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged" IsKeyboardFocusedChanged="Any_ShowToolTip">
+                        <TextBox.ToolTip>
+                            <ToolTip>You should enter the game length, not the total minutes played by all players (e.g. 48, not 240)</ToolTip>
+                        </TextBox.ToolTip>
+                    </TextBox>
           <Button Content="Paste" Height="23" HorizontalAlignment="Left" Margin="478,257,0,0" Name="btnPaste"
                   TabIndex="30" VerticalAlignment="Top" Width="75" Visibility="Collapsed" Click="btnPaste_Click" />
           <Button Content="Tools" Height="23" HorizontalAlignment="Left" Margin="368,257,0,0" Name="btnTools"

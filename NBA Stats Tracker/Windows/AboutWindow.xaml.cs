@@ -48,7 +48,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnDonate_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://students.ceid.upatras.gr/~aslanoglou/donate.html");
+            Process.Start("http://users.tellas.gr/~aslan16/donate.html");
         }
 
         private void btnWebsite_Click(object sender, RoutedEventArgs e)
