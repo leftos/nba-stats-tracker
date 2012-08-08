@@ -30,12 +30,18 @@
               <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
               <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
               <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
-              <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
-              <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
-              <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
-              <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
-              <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
-              <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
+                            <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
+                            <DataGridTextColumn Binding="{Binding FGMPG, StringFormat=F1}" Header="FGM/G" />
+                            <DataGridTextColumn Binding="{Binding FGAPG, StringFormat=F1}" Header="FGA/G" />
+                            <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
+                            <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
+                            <DataGridTextColumn Binding="{Binding TPMPG, StringFormat=F1}" Header="3PM/G" />
+                            <DataGridTextColumn Binding="{Binding TPAPG, StringFormat=F1}" Header="3PA/G" />
+                            <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
+                            <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
+                            <DataGridTextColumn Binding="{Binding FTMPG, StringFormat=F1}" Header="FTM/G" />
+                            <DataGridTextColumn Binding="{Binding FTAPG, StringFormat=F1}" Header="FTA/G" />
+                            <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
               <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
               <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
               <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
@@ -439,20 +445,28 @@ MaxWidth="400" />
             <TabItem Header="Box Scores" Name="tabBoxScores">
         <Grid VerticalAlignment="Stretch">
           <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True" Name="dgvBoxScores"
-                    VerticalAlignment="Stretch" Margin="6,34,6,0" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                    AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True">
+                    VerticalAlignment="Stretch" Margin="6,6,6,0" MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
+                    AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True" Sorting="dgvBoxScores_Sorting">
             <DataGrid.Columns>
               <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
               <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent" />
               <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location" />
-              <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
-            </DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
+                            <DataGridTextColumn Binding="{Binding DisplayGmSc}" Header="GmSc" />
+                            <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
+                            <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
+                            <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
+                            <DataGridTextColumn Binding="{Binding DisplayREB}" Header="REB" />
+                            <DataGridTextColumn Binding="{Binding DisplayAST}" Header="AST" />
+                            <DataGridTextColumn Binding="{Binding DisplayBLK}" Header="BLK" />
+                            <DataGridTextColumn Binding="{Binding DisplaySTL}" Header="STL" />
+                            <DataGridTextColumn Binding="{Binding DisplayTO}" Header="TO" />
+                            <DataGridTextColumn Binding="{Binding DisplayOREB}" Header="OREB" />
+                            <DataGridTextColumn Binding="{Binding DisplayFOUL}" Header="FOUL" />
+                
+                        </DataGrid.Columns>
           </DataGrid>
-          <RadioButton Content="Simple" Height="16" HorizontalAlignment="Left" IsChecked="True" Margin="533,11,0,0"
-                       Name="rbBSSimple" VerticalAlignment="Top" Checked="rbBSSimple_Checked" />
-          <RadioButton Content="Detailed" Height="16" HorizontalAlignment="Left" Margin="600,11,0,0"
-                       Name="rbBSDetailed" VerticalAlignment="Top" Checked="rbBSDetailed_Checked" />
-        </Grid>
+                </Grid>
       </TabItem>
       <TabItem Header="Head-To-Head" Name="tabHTH">
         <Grid VerticalAlignment="Stretch">

@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using LeftosCommonLibrary;
+using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
@@ -305,12 +306,12 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayersAway.ItemsSource = pbsAwayList;
             dgvPlayersHome.ItemsSource = pbsHomeList;
 
-            dgvPlayersAway.RowEditEnding += LeftosCommonLibrary.EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
-            dgvPlayersAway.PreviewKeyDown += LeftosCommonLibrary.EventHandlers.Any_PreviewKeyDown_CheckTab;
-            dgvPlayersAway.PreviewKeyUp += LeftosCommonLibrary.EventHandlers.Any_PreviewKeyUp_CheckTab;
-            dgvPlayersHome.RowEditEnding += LeftosCommonLibrary.EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
-            dgvPlayersHome.PreviewKeyDown += LeftosCommonLibrary.EventHandlers.Any_PreviewKeyDown_CheckTab;
-            dgvPlayersHome.PreviewKeyUp += LeftosCommonLibrary.EventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvPlayersAway.RowEditEnding += LeftosCommonLibrary.GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersAway.PreviewKeyDown += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersAway.PreviewKeyUp += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvPlayersHome.RowEditEnding += LeftosCommonLibrary.GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersHome.PreviewKeyDown += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersHome.PreviewKeyUp += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
 
             dgvPlayersAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayersHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -1416,7 +1417,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
         {
-            LeftosCommonLibrary.EventHandlers.Any_ShowToolTip(sender, e);
+            LeftosCommonLibrary.GenericEventHandlers.Any_ShowToolTip(sender, e);
         }
     }
 }

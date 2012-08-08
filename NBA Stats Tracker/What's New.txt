@@ -1,5 +1,18 @@
 NBA Stats Tracker - Version History
 
+	v0.13.2
+		- Addition: Added FGM/G, FGA/G, 3PM/G, 3PA/G, FTM/G and FTA/G averages to Player Stats in Team Overview, League Overview and Advanced Player Search
+		- Addition: Added TS%, 3PR, PythW, PythL metrics to Team Metric Stats in League Overview
+		- Addition: A season length different than 82 games can be set via the Tools menu (used in Pythagorean metric calculations)
+		- Fix: Box Score Window's player metric stats can now be copied to clipboard correctly
+		- Addition: Team Overview's Box Scores tab now features more information regarding the team's performance in each game
+
+	v0.13.1.2
+		- Fix: Fixed bugs regarding Live Box Score and Box Score player stats lists
+
+	v0.13.1.1
+		- Fix: Fixed bug since v0.12.2 that wouldn't allow user to insert new rows in Player Stats tabs in the Update with Box Score window
+
     v0.13.1
 		- Addition: A game length different than 48 minutes can be set via the Tools menu
         - Fix: Team Pace Metric in now calculated on a Game Length basis, instead of assuming games are always 48 minutes long

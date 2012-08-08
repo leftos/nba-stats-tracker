@@ -81,7 +81,6 @@
     <Compile Include="Helper\NST.Helper.Misc.cs" />
     <Compile Include="Helper\NST.Helper.EventHandlers.cs" />
     <Compile Include="Helper\NST.Helper.WindowsForms.cs" />
-    <Compile Include="Helper\NST.Helper.SortableBindingList.cs" />
     <Compile Include="Interop\NST.Interop.InteropREditor.cs" />
     <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
     <Compile Include="Interop\NST.Interop.InteropBR.cs" />

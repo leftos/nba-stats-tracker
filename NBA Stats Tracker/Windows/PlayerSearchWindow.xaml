@@ -124,14 +124,20 @@
               <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
               <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
               <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
-              <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
-              <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
-              <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
-              <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
-              <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
-              <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
-              <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
-              <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
+                            <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
+                            <DataGridTextColumn Binding="{Binding FGMPG, StringFormat=F1}" Header="FGM/G" />
+                            <DataGridTextColumn Binding="{Binding FGAPG, StringFormat=F1}" Header="FGA/G" />
+                            <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
+                            <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
+                            <DataGridTextColumn Binding="{Binding TPMPG, StringFormat=F1}" Header="3PM/G" />
+                            <DataGridTextColumn Binding="{Binding TPAPG, StringFormat=F1}" Header="3PA/G" />
+                            <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
+                            <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
+                            <DataGridTextColumn Binding="{Binding FTMPG, StringFormat=F1}" Header="FTM/G" />
+                            <DataGridTextColumn Binding="{Binding FTAPG, StringFormat=F1}" Header="FTA/G" />
+                            <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
+                            <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
+                            <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
               <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
               <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
               <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
@@ -195,7 +201,20 @@ TextWrapping="Wrap" MaxWidth="400" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp" ClipboardContentBinding="{Binding TSp}">
+                            <DataGridTemplateColumn Header="GmScE" SortMemberPath="GmScE" ClipboardContentBinding="{Binding GmScE}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding GmScE, StringFormat=F2}">
+                      <TextBlock.ToolTip>
+                        <TextBlock
+Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
+TextWrapping="Wrap" MaxWidth="400" />
+                      </TextBlock.ToolTip>
+                    </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp" ClipboardContentBinding="{Binding TSp}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding TSp, StringFormat=F3}">

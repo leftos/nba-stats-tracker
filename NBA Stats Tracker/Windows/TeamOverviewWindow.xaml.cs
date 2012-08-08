@@ -2576,5 +2576,10 @@ namespace NBA_Stats_Tracker.Windows
             MainWindow.tst = tst;
             MainWindow.tstopp = tstopp;
         }
+
+        private void dgvBoxScores_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            StatColumn_Sorting(sender, e);
+        }
     }
 }

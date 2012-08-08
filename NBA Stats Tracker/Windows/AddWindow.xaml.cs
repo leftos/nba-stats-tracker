@@ -56,9 +56,9 @@ namespace NBA_Stats_Tracker.Windows
             pos2Column.ItemsSource = Positions2;
             dgvAddPlayers.ItemsSource = Players;
 
-            dgvAddPlayers.RowEditEnding += EventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
-            dgvAddPlayers.PreviewKeyDown += EventHandlers.Any_PreviewKeyDown_CheckTab;
-            dgvAddPlayers.PreviewKeyUp += EventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvAddPlayers.RowEditEnding += GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvAddPlayers.PreviewKeyDown += GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvAddPlayers.PreviewKeyUp += GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
         }
 
         private ObservableCollection<Player> Players { get; set; }

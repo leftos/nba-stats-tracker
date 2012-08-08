@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
+using LeftosCommonLibrary.BeTimvwFramework;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
@@ -78,6 +79,7 @@ namespace NBA_Stats_Tracker.Windows
         public static List<Conference> Conferences = new List<Conference>();
 
         public static int gameLength = 48;
+        public static int seasonLength = 82;
 
         public static int curSeason
         {
@@ -444,6 +446,7 @@ namespace NBA_Stats_Tracker.Windows
             loadingSeason = false;
 
             gameLength = SQLiteIO.GetSetting("Game Length", 48);
+            seasonLength = SQLiteIO.GetSetting("Season Length", 82);
         }
 
         public static void ChangeSeason(int _curSeason)
@@ -1497,6 +1500,7 @@ namespace NBA_Stats_Tracker.Windows
             ChangeSeason(1);
 
             SQLiteIO.SetSetting("Game Length", 48);
+            SQLiteIO.SetSetting("Season Length", 82);
 
             //
             // tst = new TeamStats[2];
@@ -2007,6 +2011,29 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.SetSetting("Game Length", gameLength);
 
             updateStatus("Game Length saved. Database updated.");
+        }
+
+        private void mnuMiscEditSeasonLength_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.isTSTEmpty())
+                return;
+
+            InputBoxWindow ibw = new InputBoxWindow("Insert the length of each game in minutes, without overtime (e.g. 48):", seasonLength.ToString());
+            if (ibw.ShowDialog() == true)
+            {
+                try
+                {
+                    seasonLength = Convert.ToInt32(input);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            }
+
+            SQLiteIO.SetSetting("Season Length", seasonLength);
+
+            updateStatus("Season Length saved. Database updated.");
         }
     }
 }

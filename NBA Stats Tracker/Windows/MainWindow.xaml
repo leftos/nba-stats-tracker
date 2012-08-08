@@ -74,6 +74,7 @@
                     <Separator />
                     <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions" Click="mnuMiscEditDivisions_Click" />
                     <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength" Click="mnuMiscEditGameLength_Click" />
+                    <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength" Click="mnuMiscEditSeasonLength_Click" />
                 </MenuItem>
         <MenuItem Header="_Help">
           <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />

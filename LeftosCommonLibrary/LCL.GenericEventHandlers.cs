@@ -27,7 +27,7 @@ using System.Windows.Threading;
 
 namespace LeftosCommonLibrary
 {
-    public static class EventHandlers
+    public static class GenericEventHandlers
     {
         private static bool _isTabPressed;
 

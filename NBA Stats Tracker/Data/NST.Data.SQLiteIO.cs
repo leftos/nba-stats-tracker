@@ -47,6 +47,7 @@ namespace NBA_Stats_Tracker.Data
             }
             saveAllSeasons(file);
             SetSetting(file, "Game Length", MainWindow.gameLength);
+            SetSetting(file, "Season Length", MainWindow.seasonLength);
             File.Delete(oldDB);
             return true;
         }

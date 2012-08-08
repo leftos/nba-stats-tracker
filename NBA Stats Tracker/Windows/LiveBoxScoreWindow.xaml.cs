@@ -8,8 +8,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
+using LeftosCommonLibrary;
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -308,13 +310,15 @@ namespace NBA_Stats_Tracker.Windows
             var bse = new BoxScoreEntry(bs) {pbsList = new List<PlayerBoxScore>()};
             foreach (LivePlayerBoxScore lpbs in pbsAwayList)
             {
-                lpbs.Team = bs.Team1;
-                bse.pbsList.Add(lpbs);
+                PlayerBoxScore pbs = new PlayerBoxScore(lpbs);
+                pbs.Team = bs.Team1;
+                bse.pbsList.Add(pbs);
             }
             foreach (LivePlayerBoxScore lpbs in pbsHomeList)
             {
-                lpbs.Team = bs.Team2;
-                bse.pbsList.Add(lpbs);
+                PlayerBoxScore pbs = new PlayerBoxScore(lpbs);
+                pbs.Team = bs.Team2;
+                bse.pbsList.Add(pbs);
             }
 
             bse.Team1Display = cmbTeam1.SelectedItem.ToString();

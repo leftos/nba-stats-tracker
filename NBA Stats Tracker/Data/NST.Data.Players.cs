@@ -617,6 +617,7 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    [Serializable]
     public class PlayerBoxScore : INotifyPropertyChanged
     {
         private UInt16 _FGA;
@@ -791,6 +792,44 @@ namespace NBA_Stats_Tracker.Data
             FOUL = FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
         }
 
+        public PlayerBoxScore(LivePlayerBoxScore lpbs)
+        {
+            PlayerID = lpbs.PlayerID;
+            Name = lpbs.Name;
+            Team = lpbs.Team;
+            TeamPTS = lpbs.TeamPTS;
+            OppTeam = lpbs.OppTeam;
+            OppTeamPTS = lpbs.OppTeamPTS;
+            isStarter = lpbs.isStarter;
+            playedInjured = lpbs.playedInjured;
+            isOut = lpbs.isOut;
+            GmSc = lpbs.GmSc;
+            GmScE = lpbs.GmScE;
+            MINS = lpbs.MINS;
+            PTS = lpbs.PTS;
+            FGM = lpbs.FGM;
+            FGA = lpbs.FGA;
+            FGp = lpbs.FGp;
+            TPM = lpbs.TPM;
+            TPA = lpbs.TPA;
+            TPp = lpbs.TPp;
+            FTM = lpbs.FTM;
+            FTA = lpbs.FTA;
+            FTp = lpbs.FTp;
+            REB = lpbs.REB;
+            OREB = lpbs.OREB;
+            DREB = lpbs.DREB;
+            STL = lpbs.STL;
+            TOS = lpbs.TOS;
+            BLK = lpbs.BLK;
+            AST = lpbs.AST;
+            FOUL = lpbs.FOUL;
+
+            Result = lpbs.Result;
+            Date = lpbs.Date;
+            GameID = lpbs.GameID;
+        }
+
         public DateTime RealDate { get; set; }
 
         public int PlayerID { get; set; }
@@ -905,6 +944,7 @@ namespace NBA_Stats_Tracker.Data
 
         #region INotifyPropertyChanged Members
 
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
@@ -1140,6 +1180,7 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    [Serializable]
     public class LivePlayerBoxScore : PlayerBoxScore
     {
         private ushort _OREB;
@@ -1271,11 +1312,17 @@ namespace NBA_Stats_Tracker.Data
             MINS = ps.stats[p.MINS];
             PTS = ps.stats[p.PTS];
             FGM = ps.stats[p.FGM];
+            FGMPG = ((float)FGM/GP);
             FGA = ps.stats[p.FGA];
+            FGAPG = ((float)FGA / GP);
             TPM = ps.stats[p.TPM];
+            TPMPG = ((float)TPM / GP);
             TPA = ps.stats[p.TPA];
+            TPAPG = (uint) ((double) TPA/GP);
             FTM = ps.stats[p.FTM];
+            FTMPG = ((float)FTM / GP);
             FTA = ps.stats[p.FTA];
+            FTAPG = ((float)FTA / GP);
             OREB = ps.stats[p.OREB];
             DREB = ps.stats[p.DREB];
             REB = (UInt16) (OREB + DREB);
@@ -1400,6 +1447,13 @@ namespace NBA_Stats_Tracker.Data
         public float BPG { get; set; }
         public float APG { get; set; }
         public float FPG { get; set; }
+
+        public float FGMPG { get; set; }
+        public float FGAPG { get; set; }
+        public float TPMPG { get; set; }
+        public float TPAPG { get; set; }
+        public float FTMPG { get; set; }
+        public float FTAPG { get; set; }
 
         public double EFF { get; set; }
         public double GmSc { get; set; }

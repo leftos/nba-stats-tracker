@@ -45,9 +45,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeTimvwFramework\BTF.PropertyComparer.cs" />
+    <Compile Include="BeTimvwFramework\BTF.SortableBindingList.cs" />
     <Compile Include="LCL.Crc32.cs" />
     <Compile Include="LCL.CSV.cs" />
-    <Compile Include="LCL.EventHandlers.cs" />
+    <Compile Include="LCL.GenericEventHandlers.cs" />
     <Compile Include="LCL.GenericExtensions.cs" />
     <Compile Include="LCL.Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

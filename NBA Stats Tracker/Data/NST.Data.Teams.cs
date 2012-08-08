@@ -189,6 +189,17 @@ namespace NBA_Stats_Tracker.Data
         public string DisplayOpponent { get; set; }
         public string DisplayResult { get; set; }
         public string DisplayLocation { get; set; }
+        public float FGp { get; set; }
+        public float TPp { get; set; }
+        public float FTp { get; set; }
+        public ushort DisplayREB { get; set; }
+        public ushort DisplayOREB { get; set; }
+        public ushort DisplayAST { get; set; }
+        public ushort DisplayTO { get; set; }
+        public ushort DisplayBLK { get; set; }
+        public ushort DisplaySTL { get; set; }
+        public ushort DisplayFOUL { get; set; }
+        public double DisplayGmSc { get; set; }
 
         public void Prepare(string team)
         {
@@ -205,6 +216,23 @@ namespace NBA_Stats_Tracker.Data
                 {
                     DisplayResult = "L ";
                 }
+                FGp = (float) FGM1/FGA1;
+                TPp = (float) TPM1/TPA1;
+                FTp = (float) FTM1/FTA1;
+                DisplayREB = REB1;
+                DisplayOREB = OREB1;
+                DisplayAST = AST1;
+                DisplayTO = TO1;
+                DisplayBLK = BLK1;
+                DisplaySTL = STL1;
+                DisplayFOUL = FOUL1;
+
+                TeamStats temp = new TeamStats();
+                TeamStats tempopp = new TeamStats();
+                TeamStats.AddTeamStatsFromBoxScore(this, ref temp, ref tempopp);
+                temp.CalcMetrics(tempopp);
+
+                DisplayGmSc = temp.metrics["GmSc"];
             }
             else
             {
@@ -219,6 +247,23 @@ namespace NBA_Stats_Tracker.Data
                 {
                     DisplayResult = "L ";
                 }
+                FGp = (float)FGM2 / FGA2;
+                TPp = (float)TPM2 / TPA2;
+                FTp = (float)FTM2 / FTA2;
+                DisplayREB = REB2;
+                DisplayOREB = OREB2;
+                DisplayAST = AST2;
+                DisplayTO = TO2;
+                DisplayBLK = BLK2;
+                DisplaySTL = STL2;
+                DisplayFOUL = FOUL2;
+
+                TeamStats temp = new TeamStats();
+                TeamStats tempopp = new TeamStats();
+                TeamStats.AddTeamStatsFromBoxScore(this, ref tempopp, ref temp);
+                temp.CalcMetrics(tempopp);
+
+                DisplayGmSc = temp.metrics["GmSc"];
             }
             DisplayResult += PTS1 + "-" + PTS2;
         }
@@ -500,7 +545,7 @@ namespace NBA_Stats_Tracker.Data
             double DREBp = 100*tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
             metrics.Add("DREB%", DREBp);
 
-            double EFGp = 100*(tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
+            double EFGp = (tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
             metrics.Add("EFG%", EFGp);
 
             double EFFd = ORTG - DRTG;
@@ -517,6 +562,22 @@ namespace NBA_Stats_Tracker.Data
 
             double PWp = (((averages[t.PPG] - averages[t.PAPG])*2.7) + 41)/82;
             metrics.Add("PW%", PWp);
+
+            double TSp = tstats[t.PF] / (2 * (tstats[t.FGA] + 0.44 * tstats[t.FTA]));
+            metrics.Add("TS%", TSp);
+
+            double TPR = tstats[t.TPA]/tstats[t.FGA];
+            metrics.Add("3PR", TPR);
+
+            double PythW = MainWindow.seasonLength*(Math.Pow(tstats[t.PF], 14))/(Math.Pow(tstats[t.PF], 14) + Math.Pow(tstats[t.PA], 14));
+            metrics.Add("PythW", PythW);
+
+            double PythL = MainWindow.seasonLength - PythW;
+            metrics.Add("PythL", PythL); 
+            
+            double GmSc = tstats[t.PF] + 0.4 * tstats[t.FGM] - 0.7 * tstats[t.FGA] - 0.4 * (tstats[t.FTA] - tstats[t.FTM]) + 0.7 * tstats[t.OREB] +
+                           0.3 * tstats[t.DREB] + tstats[t.STL] + 0.7 * tstats[t.AST] + 0.7 * tstats[t.BLK] - 0.4 * tstats[t.FOUL] - tstats[t.TO];
+            metrics.Add("GmSc", GmSc / getGames());
         }
 
         private static double GetPossMetric(double[] tstats, double[] toppstats)
@@ -1361,6 +1422,10 @@ namespace NBA_Stats_Tracker.Data
             OREBp = ts.metrics["OREB%"];
             FTR = ts.metrics["FTR"];
             PWp = ts.metrics["PW%"];
+            TSp = ts.metrics["TS%"];
+            TPR = ts.metrics["3PR"];
+            PythW = ts.metrics["PythW"];
+            PythL = ts.metrics["PythL"];
         }
 
         public string Name { get; set; }
@@ -1368,7 +1433,11 @@ namespace NBA_Stats_Tracker.Data
         public double DRTG { get; set; }
         public double EFFd { get; set; }
         public double PWp { get; set; }
+        public double PythW { get; set; }
+        public double PythL { get; set; }
+        public double TSp { get; set; }
         public double EFGp { get; set; }
+        public double TPR { get; set; }
         public double DREBp { get; set; }
         public double OREBp { get; set; }
         public double ASTp { get; set; }
