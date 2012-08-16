@@ -67,35 +67,7 @@ namespace NBA_Stats_Tracker.Helper
             return bi;
         }
 
-        public static void SetRegistrySetting(string setting, int value)
-        {
-            RegistryKey rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null)
-                        throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
-                    if (rk == null)
-                        throw new Exception();
-                }
-
-                rk.SetValue(setting, value);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't save changed setting.");
-            }
-        }
-
-        public static void SetRegistrySetting(string setting, string value)
+        public static void SetRegistrySetting<T>(string setting, T value)
         {
             RegistryKey rk = Registry.CurrentUser;
             try

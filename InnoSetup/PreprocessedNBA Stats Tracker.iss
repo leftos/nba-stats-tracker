@@ -1,5 +1,18 @@
 ; BEGIN ISPPBUILTINS.ISS
+
+
 ; END ISPPBUILTINS.ISS
+
+
+
+
+
+
+
+
+
+
+
 [Setup]
 AppName=NBA Stats Tracker
 AppVersion=
@@ -13,7 +26,7 @@ AppPublisher=Lefteris Aslanoglou
 ;AppUpdatesURL=http://...
 OutputBaseFilename=[Leftos] NBA Stats Tracker  
 DefaultGroupName=NBA Stats Tracker
-DefaultDirName={pf}\NBA Stats Tracker
+DefaultDirName={pf32}\NBA Stats Tracker
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe
 UninstallDisplayName=NBA Stats Tracker
 Uninstallable=true
@@ -27,18 +40,21 @@ UsePreviousAppDir=yes
 LanguageDetectionMethod=uilanguage
 InternalCompressLevel=ultra
 SolidCompression=yes
-Compression=lzma/ultra
+Compression=lzma2/ultra
 MinVersion=0,5.01
 PrivilegesRequired=admin
 ArchitecturesAllowed=x86 x64 ia64
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppSupportURL=http://forums.nba-live.com/viewtopic.php?f=143&t=84110
 AppUpdatesURL=http://forums.nba-live.com/viewtopic.php?f=143&t=84110
+
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
 [Files]
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -56,54 +72,78 @@ Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats 
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: createallsubdirs recursesubdirs
+
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"
 Name: "{group}\{cm:UninstallProgram,NBA Stats Tracker}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"; Tasks: quicklaunchicon
+
 [Run]
 Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; Flags: nowait postinstall runascurrentuser skipifsilent; Description: "{cm:LaunchProgram,NBA Stats Tracker}"
+
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
+
 [Registry]
 Root: "HKCU"; Subkey: "Software\Lefteris Aslanoglou\NBA Stats Tracker"; Flags: uninsdeletekey
+
 [Dirs]
 Name: "{app}\Images"
+
 [Files]
 Source: "scripts\isxdl\isxdl.dll"; Flags: dontcopy
+
 [Code]
 procedure isxdl_AddFile(URL, Filename: PAnsiChar);
 external 'isxdl_AddFile@files:isxdl.dll stdcall';
+
 function isxdl_DownloadFiles(hWnd: Integer): Integer;
 external 'isxdl_DownloadFiles@files:isxdl.dll stdcall';
+
 function isxdl_SetOption(Option, Value: PAnsiChar): Integer;
 external 'isxdl_SetOption@files:isxdl.dll stdcall';
+
 [CustomMessages]
 DependenciesDir=MyProgramDependencies
+
 en.depdownload_msg=The following applications are required before setup can continue:%n%n%1%nDownload and install now?
 ;de.depdownload_msg=Die folgenden Programme werden benötigt bevor das Setup fortfahren kann:%n%n%1%nJetzt downloaden und installieren?
+
 en.depdownload_admin=An Administrator account is required installing these dependencies.%nPlease run this setup again using 'Run as Administrator' or install the following dependencies manually:%n%n%1%nClose this message and press Cancel to exit setup.
 ;;de.depdownload_admin=
+
 en.previousinstall_admin=This setup was previously run as Administrator. A non-administrator is not allowed to update in the selected location.%n%nPlease run this setup again using 'Run as Administrator'.%nClose this message and press Cancel to exit setup.
 ;;de.previousinstall_admin=
+
 en.depdownload_memo_title=Download dependencies
 ;de.depdownload_memo_title=Abhängigkeiten downloaden
+
 en.depinstall_memo_title=Install dependencies
 ;de.depinstall_memo_title=Abhängigkeiten installieren
+
 en.depinstall_title=Installing dependencies
 ;de.depinstall_title=Installiere Abhängigkeiten
+
 en.depinstall_description=Please wait while Setup installs dependencies on your computer.
 ;de.depinstall_description=Warten Sie bitte während Abhängigkeiten auf Ihrem Computer installiert wird.
+
 en.depinstall_status=Installing %1...
 ;de.depinstall_status=Installiere %1...
+
 en.depinstall_missing=%1 must be installed before setup can continue. Please install %1 and run Setup again.
 ;de.depinstall_missing=%1 muss installiert werden bevor das Setup fortfahren kann. Bitte installieren Sie %1 und starten Sie das Setup erneut.
+
 en.depinstall_error=An error occured while installing the dependencies. Please restart the computer and run the setup again or install the following dependencies manually:%n
 ;de.depinstall_error=Ein Fehler ist während der Installation der Abghängigkeiten aufgetreten. Bitte starten Sie den Computer neu und führen Sie das Setup erneut aus oder installieren Sie die folgenden Abhängigkeiten per Hand:%n
+
 en.isxdl_langfile=
 ;de.isxdl_langfile=german2.ini
+
+
 [Files]
 ;Source: "scripts\isxdl\german2.ini"; Flags: dontcopy
+
 [Code]
 type
 	TProduct = record
@@ -114,25 +154,32 @@ type
 		MustRebootAfter : Boolean;
         RequestRestart : Boolean;
 	end;
+	
 var
 	installMemo, downloadMemo, downloadMessage: string;
 	products: array of TProduct;
 	DependencyPage: TOutputProgressWizardPage;
+
 	rebootRequired : boolean;
 	rebootMessage : string;
+  
 procedure AddProduct(FileName, Parameters, Title, Size, URL: string; InstallClean : Boolean; MustRebootAfter : Boolean);
 var
 	path: string;
 	i: Integer;
 begin
 	installMemo := installMemo + '%1' + Title + #13;
+	
 	path := ExpandConstant('{src}{\}') + CustomMessage('DependenciesDir') + '\' + FileName;
 	if not FileExists(path) then begin
 		path := ExpandConstant('{tmp}{\}') + FileName;
+		
 		isxdl_AddFile(URL, path);
+		
 		downloadMemo := downloadMemo + '%1' + Title + #13;
 		downloadMessage := downloadMessage + '    ' + Title + ' (' + Size + ')' + #13;
 	end;
+	
 	i := GetArrayLength(products);
 	SetArrayLength(products, i + 1);
 	products[i].File := path;
@@ -142,10 +189,12 @@ begin
 	products[i].MustRebootAfter := MustRebootAfter;
 	products[i].RequestRestart := false;
 end;
+
 function GetProductcount: integer;
 begin
     Result := GetArrayLength(products);
 end;
+
 function SmartExec(prod : TProduct; var ResultCode : Integer) : Boolean;
 begin
     if (UpperCase(Copy(prod.File,Length(prod.File)-2,3)) <> 'EXE') then begin
@@ -158,6 +207,7 @@ begin
         ResultCode := 0;
     end;
 end;
+
 function PendingReboot : Boolean;
 var	Names: String;
 begin
@@ -170,23 +220,28 @@ begin
 	  Result := false;
   end;		
 end;
+
 function InstallProducts: Boolean;
 var
 	ResultCode, i, productCount, finishCount: Integer;
 begin
 	Result := true;
 	productCount := GetArrayLength(products);
+		
 	if productCount > 0 then begin
 		DependencyPage := CreateOutputProgressPage(CustomMessage('depinstall_title'), CustomMessage('depinstall_description'));
 		DependencyPage.Show;
+		
 		for i := 0 to productCount - 1 do begin
 		    if ((products[i].InstallClean) and PendingReboot)  then begin
 		        rebootRequired := true;
 		        rebootmessage := products[i].Title;
 		        exit;
 		    end;
+		  
 		    DependencyPage.SetText(FmtMessage(CustomMessage('depinstall_status'), [products[i].Title]), '');
 		    DependencyPage.SetProgress(i, productCount);
+			
             if SmartExec(products[i], ResultCode) then begin
 				if ResultCode = 0 then
 					finishCount := finishCount + 1;
@@ -204,13 +259,17 @@ begin
 				break;
 			end;
 	    end;
+		
 		for i := 0 to productCount - finishCount - 1 do begin
 			products[i] := products[i+finishCount];
 		end;
 		SetArrayLength(products, productCount - finishCount);
+		
 		DependencyPage.Hide;
 	end;
 end;
+
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
 	i: Integer;
@@ -218,9 +277,11 @@ var
 begin
 	if not InstallProducts() then begin
 		s := CustomMessage('depinstall_error');
+		
 		for i := 0 to GetArrayLength(products) - 1 do begin
 			s := s + #13 + '    ' + products[i].Title;
 		end;
+		
 		Result := s;
 	end
   else if (rebootrequired) then
@@ -231,6 +292,8 @@ begin
                            'InstallBootstrap', ExpandConstant('{srcexe}'));
 	end;
 end;
+
+
 function NeedRestart : Boolean;
 var i: integer;
 begin
@@ -238,6 +301,7 @@ begin
 	for i := 0 to GetArrayLength(products) - 1 do
         result := result or products[i].RequestRestart;
 end;
+
 function UpdateReadyMemo(Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo, MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
 var
 	s: string;
@@ -246,16 +310,23 @@ begin
 		s := s + CustomMessage('depdownload_memo_title') + ':' + NewLine + FmtMessage(downloadMemo, [Space]) + NewLine;
 	if installMemo <> '' then
 		s := s + CustomMessage('depinstall_memo_title') + ':' + NewLine + FmtMessage(installMemo, [Space]) + NewLine;
+
 	s := s + MemoDirInfo + NewLine + NewLine + MemoGroupInfo
+	
 	if MemoTasksInfo <> '' then
 		s := s + NewLine + NewLine + MemoTasksInfo;
+
 	Result := s
 end;
+
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var pf: string;
 begin
 	Result := true;
+
     if (CurPageID = wpWelcome) and (not IsAdminLoggedOn()) and Result then begin
+   
         if (Wizardform.PrevAppDir <> '') then begin
             pf := ExpandConstant('{pf}');
             if Copy(Wizardform.PrevAppDir,1,Length(pf)) = pf then begin
@@ -269,11 +340,13 @@ begin
         Result := false;
     end;
 	if CurPageID = wpReady then begin
+
 		if downloadMemo <> '' then begin
 			if ActiveLanguage() <> 'en' then begin
 				ExtractTemporaryFile(CustomMessage('isxdl_langfile'));
 				isxdl_SetOption('language', ExpandConstant('{tmp}{\}') + CustomMessage('isxdl_langfile'));
 			end;
+			
 			if SuppressibleMsgBox(FmtMessage(CustomMessage('depdownload_msg'), [downloadMessage]), mbConfirmation, MB_YESNO, IDYES) = IDNO then
 				Result := false
 			else if isxdl_DownloadFiles(StrToInt(ExpandConstant('{wizardhwnd}'))) = 0 then
@@ -281,42 +354,52 @@ begin
 		end;
 	end;
 end;
+
 function IsX64: Boolean;
 begin
 	Result := Is64BitInstallMode and (ProcessorArchitecture = paX64);
 end;
+
 function IsIA64: Boolean;
 begin
 	Result := Is64BitInstallMode and (ProcessorArchitecture = paIA64);
 end;
+
 function GetURL(x86, x64, ia64: String): String;
 begin
 	if IsX64() and (x64 <> '') then
 		Result := x64;
 	if IsIA64() and (ia64 <> '') then
 		Result := ia64;
+	
 	if Result = '' then
 		Result := x86;
 end;
+
 [Code]
 var
 	WindowsVersion: TWindowsVersion;
+	
 procedure initwinversion();
 begin
 	GetWindowsVersionEx(WindowsVersion);
 end;
+
 function exactwinversion(MajorVersion, MinorVersion: integer): boolean;
 begin
 	Result := (WindowsVersion.Major = MajorVersion) and (WindowsVersion.Minor = MinorVersion);
 end;
+
 function minwinversion(MajorVersion, MinorVersion: integer): boolean;
 begin
 	Result := (WindowsVersion.Major > MajorVersion) or ((WindowsVersion.Major = MajorVersion) and (WindowsVersion.Minor >= MinorVersion));
 end;
+
 function maxwinversion(MajorVersion, MinorVersion: integer): boolean;
 begin
 	Result := (WindowsVersion.Major < MajorVersion) or ((WindowsVersion.Major = MajorVersion) and (WindowsVersion.Minor <= MinorVersion));
 end;
+
 function exactwinspversion(MajorVersion, MinorVersion, SpVersion: integer): boolean;
 begin
 	if exactwinversion(MajorVersion, MinorVersion) then
@@ -324,6 +407,7 @@ begin
 	else
 		Result := true;
 end;
+
 function minwinspversion(MajorVersion, MinorVersion, SpVersion: integer): boolean;
 begin
 	if exactwinversion(MajorVersion, MinorVersion) then
@@ -331,6 +415,7 @@ begin
 	else
 		Result := true;
 end;
+
 function maxwinspversion(MajorVersion, MinorVersion, SpVersion: integer): boolean;
 begin
 	if exactwinversion(MajorVersion, MinorVersion) then
@@ -345,10 +430,13 @@ var
 begin
 	version := IntToStr(word(VersionMS shr 16));
 	version := version + '.' + IntToStr(word(VersionMS and not $ffff0000));
+	
 	version := version + '.' + IntToStr(word(VersionLS shr 16));
 	version := version + '.' + IntToStr(word(VersionLS and not $ffff0000));
+	
 	Result := version;
 end;
+
 function fileversion(file: string): string;
 var
 	versionMS, versionLS: cardinal;
@@ -358,13 +446,20 @@ begin
 	else
 		Result := '0';
 end;
+
+
+
 [CustomMessages]
 msi45win60_title=Windows Installer 4.5 for Windows Vista & Windows 7
 msi45win52_title=Windows Installer 4.5 for Server 2003
 msi45win51_title=Windows Installer 4.5 for Windows XP
+
 msi45win60_size=1.7 MB
 msi45win52_size=3.0 MB
 msi45win51_size=3.2 MB
+
+
+
 [Code]
 const
 	msi45win60_url = 'http://download.microsoft.com/download/2/6/1/261fca42-22c0-4f91-9451-0e0f2e08356d/Windows6.0-KB942288-v2-x86.msu';
@@ -391,14 +486,23 @@ begin
 			CustomMessage('msi45win51_size'),
 			msi45win51_url,false,false);
 end;
+
+
+
+
+
 [CustomMessages]
 dotnetfx40full_title=.NET 4.0 Full Framework
+
 dotnetfx40full_size=3 MB - 197 MB
 en.dotnetfx40full_lcid=''
 ;de.dotnetfx40full_lcid='/lcid 1031 '
+
+
 [Code]
 const
 	dotnetfx40full_url = 'http://download.microsoft.com/download/1/B/E/1BE39E79-7E39-46A3-96FF-047F95396215/dotNetFx40_Full_setup.exe';
+
 function dotnetfx40full(checkOnly : boolean) : boolean;
 var
 	version: cardinal;
@@ -415,16 +519,21 @@ begin
     			dotnetfx40full_url,false,false);
     end;
 end;
+
 [CustomMessages]
 vc2010x86_title=MS Visual C++ 2010 Redistributable package (x86)
 vc2010x64_title=MS Visual C++ 2010 Redistributable package (x64)
+
 en.vc2010x86_size=4.8 MB
 en.vc2010x64_size=5.5 MB
 en.vc2010_lcid=''
+
+
 [Code]
 const
     vc2010x86_url = 'http://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe';
     vc2010x64_url = 'http://download.microsoft.com/download/3/2/2/3224B87F-CFA0-4E70-BDA3-3DE650EFEBA5/vcredist_x64.exe';
+
 procedure vc2010();
 var
 	version: cardinal;
@@ -449,7 +558,10 @@ begin
     			vc2010x64_url,false,false);
     end;
 end;
+
+
 [CustomMessages]
 win2000sp3_title=Windows 2000 Service Pack 3
 winxpsp2_title=Windows XP Service Pack 2
 winxpsp3_title=Windows XP Service Pack 3
+

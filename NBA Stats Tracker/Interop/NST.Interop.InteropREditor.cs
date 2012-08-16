@@ -76,18 +76,8 @@ namespace NBA_Stats_Tracker.Interop
             List<Dictionary<string, string>> teamStats;
             List<Dictionary<string, string>> playerStats;
 
-            try
-            {
-                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
-                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
-                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
-                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
+            if (PopulateREditorDictionaryLists(folder, out teams, out players, out teamStats, out playerStats) == -1)
                 return -1;
-            }
 
             #region Import Teams & Team Stats
 
@@ -712,18 +702,8 @@ namespace NBA_Stats_Tracker.Interop
             List<Dictionary<string, string>> players;
             List<Dictionary<string, string>> teamStats;
             List<Dictionary<string, string>> playerStats;
-            try
-            {
-                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
-                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
-                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
-                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
+            if (PopulateREditorDictionaryLists(folder, out teams, out players, out teamStats, out playerStats) == -1)
                 return -1;
-            }
 
             foreach (int key in tst.Keys)
             {
@@ -872,6 +852,28 @@ namespace NBA_Stats_Tracker.Interop
                 CSV.CSVFromDictionaryList(playerStats, path);
             }
 
+            return 0;
+        }
+
+        private static int PopulateREditorDictionaryLists(string folder, out List<Dictionary<string, string>> teams, out List<Dictionary<string, string>> players, out List<Dictionary<string, string>> teamStats,
+                                                          out List<Dictionary<string, string>> playerStats)
+        {
+            try
+            {
+                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
+                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
+                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
+                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+                teams = null;
+                players = null;
+                teamStats = null;
+                playerStats = null;
+                return -1;
+            }
             return 0;
         }
     }

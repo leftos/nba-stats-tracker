@@ -89,16 +89,16 @@
               TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
       <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
         <Grid>
-          <Button Content="Team Overview" Height="46" HorizontalAlignment="Center" Margin="6,9,6,0"
+          <Button Content="Team Overview" Height="52" HorizontalAlignment="Center" Margin="6,9,6,0"
                   Name="btnTeamOverview" VerticalAlignment="Top" Width="160" FontSize="15" FontWeight="Bold"
                   Click="btnTeamOverview_Click" IsEnabled="True" TabIndex="2" />
           <Button Content="League Overview" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
                   IsEnabled="True" Margin="6,0,6,14" Name="btnLeagueOverview" Width="160" Click="btnLeagueOverview_Click" Height="52"
                   VerticalAlignment="Bottom" TabIndex="5" />
           <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center"
-                  IsEnabled="True" Margin="6,59,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
+                  IsEnabled="True" Margin="6,65,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
                   Click="btnPlayerOverview_Click" TabIndex="3" />
-          <Button Height="28" HorizontalAlignment="Center" Margin="6,115,6,0" Name="btnPlayerSearch" TabIndex="4"
+          <Button Height="28" HorizontalAlignment="Center" Margin="6,122,6,0" Name="btnPlayerSearch" TabIndex="4"
                   VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
             <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
               Advanced Player Search
