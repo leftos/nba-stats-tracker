@@ -581,7 +581,7 @@ namespace NBA_Stats_Tracker.Interop
         private static BoxScoreEntry PrepareBoxScore(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST,
                                                      Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int t1, int t2)
         {
-            bool isPlayoff = (tst[t1].getPlayoffGames() > 0)
+            bool isPlayoff = (tst[t1].getPlayoffGames() > 0);
             var bs = new TeamBoxScore
                          {
                              isPlayoff = isPlayoff,
