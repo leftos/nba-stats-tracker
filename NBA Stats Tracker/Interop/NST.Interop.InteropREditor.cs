@@ -581,41 +581,14 @@ namespace NBA_Stats_Tracker.Interop
         private static BoxScoreEntry PrepareBoxScore(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST,
                                                      Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int t1, int t2)
         {
+            bool isPlayoff = (tst[t1].getPlayoffGames() > 0)
             var bs = new TeamBoxScore
                          {
-                             isPlayoff = (tst[t1].getPlayoffGames() > 0),
+                             isPlayoff = isPlayoff,
                              Team1 = tst[t1].name,
-                             PTS1 = getDiff(tst, oldTST, t1, t.PF),
-                             AST1 = getDiff(tst, oldTST, t1, t.AST),
-                             REB1 = (ushort) ((tst[t1].stats[t.OREB] + tst[t1].stats[t.DREB]) - (oldTST[t1].stats[t.OREB] + oldTST[t1].stats[t.DREB])),
-                             STL1 = getDiff(tst, oldTST, t1, t.STL),
-                             BLK1 = getDiff(tst, oldTST, t1, t.BLK),
-                             TO1 = getDiff(tst, oldTST, t1, t.TO),
-                             FGM1 = getDiff(tst, oldTST, t1, t.FGM),
-                             FGA1 = getDiff(tst, oldTST, t1, t.FGA),
-                             TPM1 = getDiff(tst, oldTST, t1, t.TPM),
-                             TPA1 = getDiff(tst, oldTST, t1, t.TPA),
-                             FTM1 = getDiff(tst, oldTST, t1, t.FTM),
-                             FTA1 = getDiff(tst, oldTST, t1, t.FTA),
-                             OREB1 = getDiff(tst, oldTST, t1, t.OREB),
-                             FOUL1 = getDiff(tst, oldTST, t1, t.FOUL),
-                             MINS1 = getDiff(tst, oldTST, t1, t.MINS),
+                             MINS1 = getDiff(tst, oldTST, t1, t.MINS, isPlayoff),
                              Team2 = tst[t2].name,
-                             PTS2 = getDiff(tst, oldTST, t2, t.PF),
-                             AST2 = getDiff(tst, oldTST, t2, t.AST),
-                             REB2 = (ushort) ((tst[t2].stats[t.OREB] + tst[t2].stats[t.DREB]) - (oldTST[t2].stats[t.OREB] + oldTST[t2].stats[t.DREB])),
-                             STL2 = getDiff(tst, oldTST, t2, t.STL),
-                             BLK2 = getDiff(tst, oldTST, t2, t.BLK),
-                             TO2 = getDiff(tst, oldTST, t2, t.TO),
-                             FGM2 = getDiff(tst, oldTST, t2, t.FGM),
-                             FGA2 = getDiff(tst, oldTST, t2, t.FGA),
-                             TPM2 = getDiff(tst, oldTST, t2, t.TPM),
-                             TPA2 = getDiff(tst, oldTST, t2, t.TPA),
-                             FTM2 = getDiff(tst, oldTST, t2, t.FTM),
-                             FTA2 = getDiff(tst, oldTST, t2, t.FTA),
-                             OREB2 = getDiff(tst, oldTST, t2, t.OREB),
-                             FOUL2 = getDiff(tst, oldTST, t2, t.FOUL),
-                             MINS2 = getDiff(tst, oldTST, t2, t.MINS)
+                             MINS2 = getDiff(tst, oldTST, t2, t.MINS, isPlayoff)
                          };
 
 
@@ -680,9 +653,11 @@ namespace NBA_Stats_Tracker.Interop
             return bse;
         }
 
-        private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int team, int stat)
+        private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int team, int stat, bool isPlayoff = false)
         {
-            return (ushort) (tst[team].stats[stat] - oldTST[team].stats[stat]);
+            return !isPlayoff
+                       ? (ushort) (tst[team].stats[stat] - oldTST[team].stats[stat])
+                       : (ushort) (tst[team].pl_stats[stat] - oldTST[team].pl_stats[stat]);
         }
 
         private static ushort getDiff(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> oldPST, int ID, int stat)
