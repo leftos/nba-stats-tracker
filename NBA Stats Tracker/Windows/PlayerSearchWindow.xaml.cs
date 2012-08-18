@@ -30,8 +30,8 @@ using Ciloci.Flee;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
-using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
 #endregion
 
@@ -43,70 +43,70 @@ namespace NBA_Stats_Tracker.Windows
     public partial class PlayerSearchWindow
     {
         private readonly List<string> Averages = new List<string>
-                                                     {
-                                                         "PPG",
-                                                         "FG%",
-                                                         "FGeff",
-                                                         "3P%",
-                                                         "3Peff",
-                                                         "FT%",
-                                                         "FTeff",
-                                                         "RPG",
-                                                         "ORPG",
-                                                         "APG",
-                                                         "SPG",
-                                                         "BPG",
-                                                         "TPG",
-                                                         "FPG"
-                                                     };
+                                                 {
+                                                     "PPG",
+                                                     "FG%",
+                                                     "FGeff",
+                                                     "3P%",
+                                                     "3Peff",
+                                                     "FT%",
+                                                     "FTeff",
+                                                     "RPG",
+                                                     "ORPG",
+                                                     "APG",
+                                                     "SPG",
+                                                     "BPG",
+                                                     "TPG",
+                                                     "FPG"
+                                                 };
 
         private readonly List<string> Metrics = new List<string>
-                                                    {
-                                                        "PER",
-                                                        "EFF",
-                                                        "GmSc",
-                                                        "TS%",
-                                                        "PPR",
-                                                        "OREB%",
-                                                        "DREB%",
-                                                        "AST%",
-                                                        "STL%",
-                                                        "BLK%",
-                                                        "TO%",
-                                                        "USG%",
-                                                        "PTSR",
-                                                        "REBR",
-                                                        "OREBR",
-                                                        "ASTR",
-                                                        "BLKR",
-                                                        "STLR",
-                                                        "TOR",
-                                                        "FTR"
-                                                    };
+                                                {
+                                                    "PER",
+                                                    "EFF",
+                                                    "GmSc",
+                                                    "TS%",
+                                                    "PPR",
+                                                    "OREB%",
+                                                    "DREB%",
+                                                    "AST%",
+                                                    "STL%",
+                                                    "BLK%",
+                                                    "TO%",
+                                                    "USG%",
+                                                    "PTSR",
+                                                    "REBR",
+                                                    "OREBR",
+                                                    "ASTR",
+                                                    "BLKR",
+                                                    "STLR",
+                                                    "TOR",
+                                                    "FTR"
+                                                };
 
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
 
         private readonly List<string> Totals = new List<string>
-                                                   {
-                                                       "GP",
-                                                       "GS",
-                                                       "PTS",
-                                                       "FGM",
-                                                       "FGA",
-                                                       "3PM",
-                                                       "3PA",
-                                                       "FTM",
-                                                       "FTA",
-                                                       "REB",
-                                                       "OREB",
-                                                       "AST",
-                                                       "STL",
-                                                       "BLK",
-                                                       "TO",
-                                                       "FOUL"
-                                                   };
+                                               {
+                                                   "GP",
+                                                   "GS",
+                                                   "PTS",
+                                                   "FGM",
+                                                   "FGA",
+                                                   "3PM",
+                                                   "3PA",
+                                                   "FTM",
+                                                   "FTA",
+                                                   "REB",
+                                                   "OREB",
+                                                   "AST",
+                                                   "STL",
+                                                   "BLK",
+                                                   "TO",
+                                                   "FOUL"
+                                               };
 
         private readonly string folder = App.AppDocsPath + @"\Search Filters";
 
@@ -191,7 +191,8 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.LoadSeason();
 
             List<string> teams =
-                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
+                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).
+                    ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -285,8 +286,8 @@ namespace NBA_Stats_Tracker.Windows
                 where += "isNBAChampion LIKE \"False\" AND ";
             }
 
-            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) && chkIsActive.IsChecked.GetValueOrDefault() &&
-                cmbTeam.SelectedItem.ToString() != "- Any -")
+            if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
+                chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
             {
                 where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
             }
@@ -441,23 +442,24 @@ namespace NBA_Stats_Tracker.Windows
             var ps = new PlayerStats(psr);
             bool keep = true;
             Parallel.ForEach(lstMetrics.Items.Cast<string>(), (item, loopState) =>
+                                                              {
+                                                                  string[] parts = item.Split(' ');
+                                                                  //double val = Convert.ToDouble(parts[2]);
+                                                                  var context = new ExpressionContext();
+                                                                  if (!double.IsNaN(ps.metrics[parts[0]]))
                                                                   {
-                                                                      string[] parts = item.Split(' ');
-                                                                      //double val = Convert.ToDouble(parts[2]);
-                                                                      var context = new ExpressionContext();
-                                                                      if (!double.IsNaN(ps.metrics[parts[0]]))
-                                                                      {
-                                                                          IGenericExpression<bool> ige =
-                                                                              context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
-                                                                          keep = ige.Evaluate();
-                                                                      }
-                                                                      else
-                                                                      {
-                                                                          keep = false;
-                                                                      }
-                                                                      if (!keep)
-                                                                          loopState.Stop();
-                                                                  });
+                                                                      IGenericExpression<bool> ige =
+                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
+                                                                                                       parts[2]);
+                                                                      keep = ige.Evaluate();
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                      keep = false;
+                                                                  }
+                                                                  if (!keep)
+                                                                      loopState.Stop();
+                                                              });
             return keep;
         }
 
@@ -618,7 +620,7 @@ namespace NBA_Stats_Tracker.Windows
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new OpenFileDialog
-                          {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
+                      {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
 
             sfd.ShowDialog();
 
@@ -785,7 +787,7 @@ namespace NBA_Stats_Tracker.Windows
                 Directory.CreateDirectory(folder);
 
             var sfd = new SaveFileDialog
-                          {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
+                      {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
 
             sfd.ShowDialog();
 

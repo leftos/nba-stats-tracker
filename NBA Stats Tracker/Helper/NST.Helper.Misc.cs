@@ -15,8 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
@@ -141,20 +139,19 @@ namespace NBA_Stats_Tracker.Helper
     public class StartingFivePermutation
     {
         public List<int> idList = new List<int>();
-        public double sum = 0;
         public int pInP = 0;
+        public double sum = 0;
     }
 
     public class ComboBoxItemWithEnabled
     {
-        public string Item { get; set; }
-        public bool IsEnabled { get; set; }
-
         public ComboBoxItemWithEnabled(string item, bool isEnabled = true)
         {
             Item = item;
             IsEnabled = isEnabled;
         }
-    }
 
+        public string Item { get; set; }
+        public bool IsEnabled { get; set; }
+    }
 }

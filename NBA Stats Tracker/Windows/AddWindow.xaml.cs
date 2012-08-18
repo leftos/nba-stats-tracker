@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
@@ -73,7 +72,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 List<string> lines = Tools.SplitLinesToList(txtTeams.Text, false);
                 MainWindow.addInfo = "";
-                foreach (var line in lines)
+                foreach (string line in lines)
                 {
                     MainWindow.addInfo += line + "\n";
                 }

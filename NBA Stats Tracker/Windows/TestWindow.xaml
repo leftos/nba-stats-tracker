@@ -1,8 +1,8 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.TestWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="TestWindow" Height="407" Width="736">
-  <Grid>
-    <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding Path=.}" Height="344" HorizontalAlignment="Left"
-              Margin="12,12,0,0" Name="dataGrid1" VerticalAlignment="Top" Width="690" />
-  </Grid>
+    <Grid>
+        <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding Path=.}" Height="344" HorizontalAlignment="Left"
+                  Margin="12,12,0,0" Name="dataGrid1" VerticalAlignment="Top" Width="690" />
+    </Grid>
 </Window>

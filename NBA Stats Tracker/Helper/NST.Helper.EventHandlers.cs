@@ -61,10 +61,11 @@ namespace NBA_Stats_Tracker.Helper
 
         public static void StatColumn_Sorting(DataGridSortingEventArgs e)
         {
-            List<string> namesNotToSortDescendingFirst = new List<string>{"Player", "Last Name", "First Name", "Team"};
+            var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team"};
             if (e.Column.SortDirection == null)
             {
-                if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false) e.Column.SortDirection = ListSortDirection.Ascending;
+                if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false)
+                    e.Column.SortDirection = ListSortDirection.Ascending;
             }
         }
 
@@ -88,8 +89,8 @@ namespace NBA_Stats_Tracker.Helper
 
             for (int i = 0; i < pbsList.Count; i++)
             {
-                var cur = pbsList[i];
-                var name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                PlayerBoxScore cur = pbsList[i];
+                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
                 if (!PlayersList.Contains(player))
@@ -121,8 +122,8 @@ namespace NBA_Stats_Tracker.Helper
 
             for (int i = 0; i < pbsList.Count; i++)
             {
-                var cur = pbsList[i];
-                var name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                LivePlayerBoxScore cur = pbsList[i];
+                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
                 if (!PlayersList.Contains(player))

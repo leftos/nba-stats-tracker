@@ -4,194 +4,214 @@
         Title="NBA Stats Tracker BETA - Lefteris &quot;Leftos&quot; Aslanoglou" Height="415" Width="610"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded" Closed="Window_Closed">
-  <Grid>
-    <TextBlock Name="txbWait" Text="Please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"
-               TextAlignment="Center" FontSize="16" FontWeight="Bold" Visibility="Hidden"></TextBlock>
-    <Grid Name="mainGrid">
-      <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top"
-               Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TextChanged="txtFile_TextChanged" IsTabStop="False" />
-      <Menu Height="23" HorizontalAlignment="Stretch" Name="menu1" VerticalAlignment="Top">
-        <MenuItem Header="_File">
-          <MenuItem Header="_New Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
-          <Separator />
-          <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpen_Click" InputGestureText="Ctrl-O"/>
-          <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats" Click="mnuFileGetRealStats_Click" />
-          <Separator />
-          <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="mnuFileSaveAs_Click" />
-          <Separator />
-          <MenuItem Header="_Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats" Click="btnLoadUpdate_Click" />
-          <Separator />
-          <MenuItem Header="_Exit" Name="mnuExit" Click="mnuExit_Click" />
-        </MenuItem>
-        <MenuItem Header="_History" Visibility="Collapsed">
-          <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
-        </MenuItem>
-        <MenuItem Header="_Compare To" Visibility="Collapsed">
-          <MenuItem Header="_Another team in the same file" Name="mnuCompareSameFile" />
-          <MenuItem Header="The _same team in another file" Name="mnuCompareOtherFile"
-                    Click="btnCompareOtherFile_Click" />
-          <MenuItem Header="The _real NBA team" Name="mnuCompareRealTeam" Click="btnCompareToReal_Click" />
-          <Separator />
-          <MenuItem Header="_Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
-        </MenuItem>
-        <MenuItem Header="_Export (TSV)">
-          <MenuItem Header="_League Stats to TSV" Name="mnuExportLeague" Click="btnLeagueTSV_Click" />
-        </MenuItem>
-        <MenuItem Header="_Options">
-          <MenuItem Header="_NBA 2K12 Options">
-            <MenuItem Header="_Import/Export Method">
-              <MenuItem Header="_REditor" Name="mnuOptionsImportREditor" IsCheckable="True"
-                        Click="mnuOptionsImportREditor_Click" />
-              <MenuItem Header="_Old Season 1 Workaround" Name="mnuOptionsImportOld" IsCheckable="True"
-                        Click="mnuOptionsImportOld_Click" />
-            </MenuItem>
-            <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly" IsCheckable="True"
-                      Click="mnuOptionsExportTeamsOnly_Click" />
-            <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck" IsCheckable="True"
-                      Click="mnuOptionsCompatibilityCheck_Click" />
-          </MenuItem>
-          <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
-                    Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
-        </MenuItem>
-        <MenuItem Header="_Tools">
-          <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason" Click="mnuMiscStartNewSeason_Click" />
-          <MenuItem Header="_Rename Current Season..." Name="mnuMiscRenameCurrentSeason"
-                    Click="mnuMiscRenameCurrentSeason_Click" />
-          <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
-                    Click="mnuMiscEnableTeams_Click" />
-          <MenuItem Header="E_nable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
-                    Click="mnuMiscEnablePlayers_Click" />
-          <Separator />
-          <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores" Click="mnuMiscImportBoxScores_Click" />
-          <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores" Click="mnuMiscDeleteBoxScores_Click" />
-          <Separator />
-          <MenuItem Header="_Live Box Score..." Name="mnuMiscLiveBoxScore" Click="mnuMiscLiveBoxScore_Click" />
-          <Separator />
-          <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats" Click="mnuMiscResetTeamStats_Click" />
-          <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
-                    Click="mnuMiscResetPlayerStats_Click" />
-                    <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats" Click="mnuMiscRecalculateOppStats_Click" />
+    <Grid>
+        <TextBlock Name="txbWait" Text="Please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"
+                   TextAlignment="Center" FontSize="16" FontWeight="Bold" Visibility="Hidden"></TextBlock>
+        <Grid Name="mainGrid">
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top"
+                     Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1" TextChanged="txtFile_TextChanged"
+                     IsTabStop="False" />
+            <Menu Height="23" HorizontalAlignment="Stretch" Name="menu1" VerticalAlignment="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
                     <Separator />
-                    <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions" Click="mnuMiscEditDivisions_Click" />
-                    <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength" Click="mnuMiscEditGameLength_Click" />
-                    <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength" Click="mnuMiscEditSeasonLength_Click" />
+                    <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="mnuFileOpen_Click"
+                              InputGestureText="Ctrl-O" />
+                    <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats"
+                              Click="mnuFileGetRealStats_Click" />
+                    <Separator />
+                    <MenuItem Header="_Save Database As..." Name="mnuFileSaveTeamStats" Click="mnuFileSaveAs_Click" />
+                    <Separator />
+                    <MenuItem Header="_Update with Box Score..." Name="mnuFileLoadAndUpdateTeamStats"
+                              Click="btnLoadUpdate_Click" />
+                    <Separator />
+                    <MenuItem Header="_Exit" Name="mnuExit" Click="mnuExit_Click" />
                 </MenuItem>
-        <MenuItem Header="_Help">
-          <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
-          <Separator />
+                <MenuItem Header="_History" Visibility="Collapsed">
+                    <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
+                </MenuItem>
+                <MenuItem Header="_Compare To" Visibility="Collapsed">
+                    <MenuItem Header="_Another team in the same file" Name="mnuCompareSameFile" />
+                    <MenuItem Header="The _same team in another file" Name="mnuCompareOtherFile"
+                              Click="btnCompareOtherFile_Click" />
+                    <MenuItem Header="The _real NBA team" Name="mnuCompareRealTeam" Click="btnCompareToReal_Click" />
+                    <Separator />
+                    <MenuItem Header="_Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
+                </MenuItem>
+                <MenuItem Header="_Export (TSV)">
+                    <MenuItem Header="_League Stats to TSV" Name="mnuExportLeague" Click="btnLeagueTSV_Click" />
+                </MenuItem>
+                <MenuItem Header="_Options">
+                    <MenuItem Header="_NBA 2K12 Options">
+                        <MenuItem Header="_Import/Export Method">
+                            <MenuItem Header="_REditor" Name="mnuOptionsImportREditor" IsCheckable="True"
+                                      Click="mnuOptionsImportREditor_Click" />
+                            <MenuItem Header="_Old Season 1 Workaround" Name="mnuOptionsImportOld" IsCheckable="True"
+                                      Click="mnuOptionsImportOld_Click" />
+                        </MenuItem>
+                        <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly"
+                                  IsCheckable="True" Click="mnuOptionsExportTeamsOnly_Click" />
+                        <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck"
+                                  IsCheckable="True" Click="mnuOptionsCompatibilityCheck_Click" />
+                    </MenuItem>
+                    <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
+                              Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
+                </MenuItem>
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason"
+                              Click="mnuMiscStartNewSeason_Click" />
+                    <MenuItem Header="_Rename Current Season..." Name="mnuMiscRenameCurrentSeason"
+                              Click="mnuMiscRenameCurrentSeason_Click" />
+                    <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
+                              Click="mnuMiscEnableTeams_Click" />
+                    <MenuItem Header="E_nable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
+                              Click="mnuMiscEnablePlayers_Click" />
+                    <Separator />
+                    <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores"
+                              Click="mnuMiscImportBoxScores_Click" />
+                    <MenuItem Header="_Delete Box Scores..." Name="mnuMiscDeleteBoxScores"
+                              Click="mnuMiscDeleteBoxScores_Click" />
+                    <Separator />
+                    <MenuItem Header="_Live Box Score..." Name="mnuMiscLiveBoxScore" Click="mnuMiscLiveBoxScore_Click" />
+                    <Separator />
+                    <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats"
+                              Click="mnuMiscResetTeamStats_Click" />
+                    <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
+                              Click="mnuMiscResetPlayerStats_Click" />
+                    <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats"
+                              Click="mnuMiscRecalculateOppStats_Click" />
+                    <Separator />
+                    <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions"
+                              Click="mnuMiscEditDivisions_Click" />
+                    <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength"
+                              Click="mnuMiscEditGameLength_Click" />
+                    <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength"
+                              Click="mnuMiscEditSeasonLength_Click" />
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
+                    <Separator />
                     <MenuItem Header="_Donate" Name="mnuHelpDonate" Click="mnuHelpDonate_Click" />
                     <MenuItem Header="_About" Name="mnuHelpAbout" Click="mnuHelpAbout_Click" />
-        </MenuItem>
-      </Menu>
-      <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnTest"
-              VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
-      <Button Content="Open Database" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0" Name="btnOpenCustom"
-              TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
-      <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
-        <Grid>
-          <Button Content="Team Overview" Height="52" HorizontalAlignment="Center" Margin="6,9,6,0"
-                  Name="btnTeamOverview" VerticalAlignment="Top" Width="160" FontSize="15" FontWeight="Bold"
-                  Click="btnTeamOverview_Click" IsEnabled="True" TabIndex="2" />
-          <Button Content="League Overview" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
-                  IsEnabled="True" Margin="6,0,6,14" Name="btnLeagueOverview" Width="160" Click="btnLeagueOverview_Click" Height="52"
-                  VerticalAlignment="Bottom" TabIndex="5" />
-          <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52" HorizontalAlignment="Center"
-                  IsEnabled="True" Margin="6,65,6,0" Name="btnPlayerOverview" VerticalAlignment="Top" Width="160"
-                  Click="btnPlayerOverview_Click" TabIndex="3" />
-          <Button Height="28" HorizontalAlignment="Center" Margin="6,122,6,0" Name="btnPlayerSearch" TabIndex="4"
-                  VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
-            <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
-              Advanced Player Search
-            </TextBlock>
-          </Button>
-        </Grid>
-      </GroupBox>
-      <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
-        <Grid>
-          <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,69"
-                  Name="btnSaveTeamStats" Width="156" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
-                  VerticalAlignment="Bottom" TabIndex="8">
-            <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
-              Save Current Season
-              <LineBreak />
-              to Database
-            </TextBlock>
-                        <Button.ToolTip>
-                            <TextBlock>The keyboard shortcut for this is Ctrl-S</TextBlock>
-                        </Button.ToolTip>
+                </MenuItem>
+            </Menu>
+            <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnTest"
+                    VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
+            <Button Content="Open Database" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0"
+                    Name="btnOpenCustom" TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
+            <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
+                <Grid>
+                    <Button Content="Team Overview" Height="52" HorizontalAlignment="Center" Margin="6,9,6,0"
+                            Name="btnTeamOverview" VerticalAlignment="Top" Width="160" FontSize="15" FontWeight="Bold"
+                            Click="btnTeamOverview_Click" IsEnabled="True" TabIndex="2" />
+                    <Button Content="League Overview" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
+                            IsEnabled="True" Margin="6,0,6,14" Name="btnLeagueOverview" Width="160" Click="btnLeagueOverview_Click" Height="52"
+                            VerticalAlignment="Bottom" TabIndex="5" />
+                    <Button Content="Player Overview" FontSize="15" FontWeight="Bold" Height="52"
+                            HorizontalAlignment="Center" IsEnabled="True" Margin="6,65,6,0" Name="btnPlayerOverview" VerticalAlignment="Top"
+                            Width="160" Click="btnPlayerOverview_Click" TabIndex="3" />
+                    <Button Height="28" HorizontalAlignment="Center" Margin="6,122,6,0" Name="btnPlayerSearch"
+                            TabIndex="4" VerticalAlignment="Top" Width="160" Click="btnPlayerSearch_Click">
+                        <TextBlock FontSize="12" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
+                            Advanced Player Search
+                        </TextBlock>
                     </Button>
-          <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate"
-                  VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="6">
-            <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
-              Update with
-              <LineBreak />
-              Box Score
-            </TextBlock>
-          </Button>
-          <Button Height="46" HorizontalAlignment="Center" Margin="6,59,6,0" Name="btnAdd" TabIndex="7"
-                  VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
-            <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
-              Add
-              <LineBreak />
-              Teams/Players
-            </TextBlock>
-          </Button>
-          <Button FontSize="14" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True"
-                  Margin="6,0,6,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="156" Click="btnSaveAllSeasons_Click" TabIndex="9">
-            <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
-              Save All Seasons
-              <LineBreak />
-              to Database
-            </TextBlock>
-          </Button>
-        </Grid>
-      </GroupBox>
-      <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3" Width="185">
-        <Grid>
-          <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12"
-                  VerticalAlignment="Top" Width="154" Click="btnImport2K12_Click" TabIndex="10">
-            <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
-              Import from
-              <LineBreak />
-              2K12 Save
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
+                <Grid>
+                    <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,69"
+                            Name="btnSaveTeamStats" Width="156" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
+                            VerticalAlignment="Bottom" TabIndex="8">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
+                            Save Current Season
+                            <LineBreak />
+                            to Database
                         </TextBlock>
                         <Button.ToolTip>
-                            <TextBlock>The keyboard shortcut for this is Ctrl-I</TextBlock>
+                            <TextBlock>
+                                The keyboard shortcut for this is Ctrl-S
+                            </TextBlock>
                         </Button.ToolTip>
                     </Button>
-          <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" Name="btnInject" VerticalAlignment="Top"
-                  Width="154" Click="btnInject2K12_Click" TabIndex="11">
-            <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
-              Export to
-              <LineBreak />
-              2K12 Save
+                    <Button Height="46" HorizontalAlignment="Center" Margin="6,9,6,0" Name="btnLoadUpdate"
+                            VerticalAlignment="Top" Width="156" Click="btnLoadUpdate_Click" TabIndex="6">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
+                            Update with
+                            <LineBreak />
+                            Box Score
+                        </TextBlock>
+                    </Button>
+                    <Button Height="46" HorizontalAlignment="Center" Margin="6,59,6,0" Name="btnAdd" TabIndex="7"
+                            VerticalAlignment="Top" Width="156" Click="btnAdd_Click">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
+                            Add
+                            <LineBreak />
+                            Teams/Players
+                        </TextBlock>
+                    </Button>
+                    <Button FontSize="14" FontWeight="Bold" Height="52" HorizontalAlignment="Center" IsEnabled="True"
+                            Margin="6,0,6,13" Name="btnSaveAllSeasons" VerticalAlignment="Bottom" Width="156" Click="btnSaveAllSeasons_Click"
+                            TabIndex="9">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
+                            Save All Seasons
+                            <LineBreak />
+                            to Database
+                        </TextBlock>
+                    </Button>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Import/Export" HorizontalAlignment="Left" Margin="394,91,0,32" Name="groupBox3"
+                      Width="185">
+                <Grid>
+                    <Button Height="46" HorizontalAlignment="Center" Margin="9,8,9,0" Name="btnImport2K12"
+                            VerticalAlignment="Top" Width="154" Click="btnImport2K12_Click" TabIndex="10">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
+                            Import from
+                            <LineBreak />
+                            2K12 Save
                         </TextBlock>
                         <Button.ToolTip>
-                            <TextBlock>The keyboard shortcut for this is Ctrl-E</TextBlock>
+                            <TextBlock>
+                                The keyboard shortcut for this is Ctrl-I
+                            </TextBlock>
                         </Button.ToolTip>
                     </Button>
-          <Button Content="Reset 2K Related Settings" HorizontalAlignment="Center" Margin="9,0,9,100"
-                  Name="btnEraseSettings" Width="154" Click="btnEraseSettings_Click" TabIndex="12" Height="23" VerticalAlignment="Bottom" />
-          <Button HorizontalAlignment="Center" Margin="9,0,9,42" Name="btnGrabNBAStats" TabIndex="13" Width="154"
-                  Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
-            <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
-              Download
-              <LineBreak />
-              NBA Stats
-            </TextBlock>
-          </Button>
-          <Button Content="Download Box Score" Height="23" HorizontalAlignment="Center" Margin="9,0,9,14"
-                  Name="btnDownloadBoxScore" TabIndex="14" VerticalAlignment="Bottom" Width="154" Click="btnDownloadBoxScore_Click" />
+                    <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" Name="btnInject"
+                            VerticalAlignment="Top" Width="154" Click="btnInject2K12_Click" TabIndex="11">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
+                            Export to
+                            <LineBreak />
+                            2K12 Save
+                        </TextBlock>
+                        <Button.ToolTip>
+                            <TextBlock>
+                                The keyboard shortcut for this is Ctrl-E
+                            </TextBlock>
+                        </Button.ToolTip>
+                    </Button>
+                    <Button Content="Reset 2K Related Settings" HorizontalAlignment="Center" Margin="9,0,9,100"
+                            Name="btnEraseSettings" Width="154" Click="btnEraseSettings_Click" TabIndex="12" Height="23" VerticalAlignment="Bottom" />
+                    <Button HorizontalAlignment="Center" Margin="9,0,9,42" Name="btnGrabNBAStats" TabIndex="13"
+                            Width="154" Height="46" VerticalAlignment="Bottom" Click="btnGrabNBAStats_Click">
+                        <TextBlock FontSize="14" FontWeight="Bold" TextAlignment="Center" TextWrapping="Wrap">
+                            Download
+                            <LineBreak />
+                            NBA Stats
+                        </TextBlock>
+                    </Button>
+                    <Button Content="Download Box Score" Height="23" HorizontalAlignment="Center" Margin="9,0,9,14"
+                            Name="btnDownloadBoxScore" TabIndex="14" VerticalAlignment="Bottom" Width="154" Click="btnDownloadBoxScore_Click" />
+                </Grid>
+            </GroupBox>
+            <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"
+                       VerticalAlignment="Top" TextAlignment="Right" Width="96" Padding="0" />
+            <ComboBox Height="23" Margin="485,58,0,0" Name="cmbSeasonNum" ItemsSource="{Binding SeasonList}"
+                      DisplayMemberPath="Value" SelectedValuePath="Key" VerticalAlignment="Top"
+                      SelectionChanged="cmbSeasonNum_SelectionChanged" HorizontalAlignment="Left" Width="94" TabIndex="1" />
         </Grid>
-      </GroupBox>
-      <TextBlock HorizontalAlignment="Left" Margin="383,63,0,0" Name="txbCurSeason" Text="Current Season"
-                 VerticalAlignment="Top" TextAlignment="Right" Width="96" Padding="0" />
-      <ComboBox Height="23" Margin="485,58,0,0" Name="cmbSeasonNum" ItemsSource="{Binding SeasonList}"
-                DisplayMemberPath="Value" SelectedValuePath="Key" VerticalAlignment="Top"
-                SelectionChanged="cmbSeasonNum_SelectionChanged" HorizontalAlignment="Left" Width="94" TabIndex="1" />
+        <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom">
+            <StatusBarItem Name="status" Content="Ready" />
+        </StatusBar>
     </Grid>
-    <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom">
-      <StatusBarItem Name="status" Content="Ready" />
-    </StatusBar>
-  </Grid>
 </Window>

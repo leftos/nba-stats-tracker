@@ -43,19 +43,20 @@ namespace LeftosCommonLibrary
                     Window parentWindow = Window.GetWindow(dataGrid);
                     Debug.Assert(parentWindow != null, "parentWindow != null");
                     parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-                                                                                            {
-                                                                                                dataGrid.Focus();
-                                                                                                dataGrid.SelectedIndex =
-                                                                                                    dataGrid.Items.IndexOf(
-                                                                                                        CollectionView.NewItemPlaceholder);
-                                                                                                dataGrid.CurrentCell =
-                                                                                                    new DataGridCellInfo(
-                                                                                                        CollectionView.NewItemPlaceholder,
-                                                                                                        dataGrid.Columns[0]);
+                                                                                        {
+                                                                                            dataGrid.Focus();
+                                                                                            dataGrid.SelectedIndex =
+                                                                                                dataGrid.Items.IndexOf(
+                                                                                                    CollectionView.NewItemPlaceholder);
+                                                                                            dataGrid.CurrentCell =
+                                                                                                new DataGridCellInfo(
+                                                                                                    CollectionView.NewItemPlaceholder,
+                                                                                                    dataGrid.Columns[0]);
 
-                                                                                                //dataGrid.BeginEdit();
-                                                                                                return null;
-                                                                                            }), DispatcherPriority.Background, new object[] {null});
+                                                                                            //dataGrid.BeginEdit();
+                                                                                            return null;
+                                                                                        }), DispatcherPriority.Background,
+                                                        new object[] {null});
                 }
             }
         }
@@ -82,9 +83,9 @@ namespace LeftosCommonLibrary
             var control = sender as Control;
             if (control != null)
             {
-                ToolTip tt = (ToolTip)control.ToolTip;
+                var tt = (ToolTip) control.ToolTip;
                 //Places the Tooltip under the control rather than at the mouse position
-                tt.PlacementTarget = (UIElement)sender;
+                tt.PlacementTarget = (UIElement) sender;
                 tt.Placement = PlacementMode.Right;
                 tt.PlacementRectangle = new Rect(0, control.Height, 0, 0);
                 //Shows tooltip if KeyboardFocus is within.

@@ -17,8 +17,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using LumenWorks.Framework.IO.Csv;
 
@@ -32,7 +32,7 @@ namespace LeftosCommonLibrary
         private const string ESCAPED_QUOTE = "\"\"";
         private static readonly char[] CHARACTERS_THAT_MUST_BE_QUOTED = {',', '"', '\n', ' '};
 
-        private static readonly char listSeparator = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
+        private static readonly char listSeparator = CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
 
         public static List<Dictionary<string, string>> DictionaryListFromCSV(string path)
         {
@@ -75,11 +75,11 @@ namespace LeftosCommonLibrary
             var sw = new StreamWriter(path);
             string str = "";
 
-            Dictionary<string, string> columns = new Dictionary<string, string>();
+            var columns = new Dictionary<string, string>();
 
             foreach (var kvp in dList[0])
             {
-                var oldColumn = kvp.Key;
+                string oldColumn = kvp.Key;
                 string newColumn;
                 if (!kvp.Key.StartsWith("Column"))
                     newColumn = kvp.Key + listSeparator;

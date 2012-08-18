@@ -117,7 +117,7 @@ namespace NBA_Stats_Tracker.Interop
                 string record = recordHN.InnerText;
 
                 recordparts = record.Split('-');
-                recordparts[0] = recordparts[0].TrimStart(new char[] {' '});
+                recordparts[0] = recordparts[0].TrimStart(new[] {' '});
                 recordparts[1] = recordparts[1].Split(',')[0];
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
@@ -227,7 +227,8 @@ namespace NBA_Stats_Tracker.Interop
                     try
                     {
                         if (
-                            !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" || cur.Attributes["id"].Value == "misc"))
+                            !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" ||
+                              cur.Attributes["id"].Value == "misc"))
                             continue;
                     }
                     catch (Exception)
@@ -319,7 +320,8 @@ namespace NBA_Stats_Tracker.Interop
             tsopp.calcAvg();
         }
 
-        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
+        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst,
+                                                        ref Dictionary<int, TeamStats> tstopp)
         {
             DataTable dt = ds.Tables["team"];
             DataTable dtopp = ds.Tables["opponent"];
@@ -454,8 +456,8 @@ namespace NBA_Stats_Tracker.Interop
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
                 var ps =
-                    new PlayerStats(new Player(pstnames.Count, team, r["Player"].ToString().Split(' ')[1], r["Player"].ToString().Split(' ')[0],
-                                               Position1, Position2));
+                    new PlayerStats(new Player(pstnames.Count, team, r["Player"].ToString().Split(' ')[1],
+                                               r["Player"].ToString().Split(' ')[0], Position1, Position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
             }

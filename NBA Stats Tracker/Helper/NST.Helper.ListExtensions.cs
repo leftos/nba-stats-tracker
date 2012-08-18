@@ -43,8 +43,8 @@ namespace NBA_Stats_Tracker.Helper
         private static void sort<T>(this BindingList<T> bl, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
         {
             //Extract items and sort separately
-            List<T> sortList = new List<T>();
-            foreach (var item in bl)
+            var sortList = new List<T>();
+            foreach (T item in bl)
             {
                 sortList.Add(item);
             }
@@ -90,8 +90,8 @@ namespace NBA_Stats_Tracker.Helper
         private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
         {
             //Extract items and sort separately
-            List<T> sortList = new List<T>();
-            foreach (var item in oc)
+            var sortList = new List<T>();
+            foreach (T item in oc)
             {
                 sortList.Add(item);
             }

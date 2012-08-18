@@ -17,6 +17,7 @@
 
 using System.Collections.Generic;
 using System.Windows;
+using NBA_Stats_Tracker.Data;
 
 #endregion
 
@@ -27,6 +28,8 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class ComboChoiceWindow
     {
+        #region Mode enum
+
         public enum Mode
         {
             OneTeam,
@@ -35,7 +38,9 @@ namespace NBA_Stats_Tracker.Windows
             Division
         }
 
-        private Mode mode;
+        #endregion
+
+        private readonly Mode mode;
 
         public ComboChoiceWindow(Mode mode, int index = 0)
         {
@@ -67,9 +72,9 @@ namespace NBA_Stats_Tracker.Windows
             {
                 label1.Content = "Pick the new division for the team:";
                 cmbTeams2.Visibility = Visibility.Hidden;
-                foreach (var div in MainWindow.Divisions)
+                foreach (Division div in MainWindow.Divisions)
                 {
-                    var conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
+                    Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
                     cmbTeams1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
                 }
             }
@@ -92,8 +97,8 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (mode == Mode.Versus)
             {
-                    var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
-                    vw.ShowDialog();
+                var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
+                vw.ShowDialog();
             }
             else if (mode == Mode.ImportCompatibility)
             {

@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -108,7 +107,7 @@ namespace SQLite_Database
             using (cnn = new SQLiteConnection(dbConnection))
             {
                 cnn.Open();
-                var sqLiteTransaction = cnn.BeginTransaction();
+                SQLiteTransaction sqLiteTransaction = cnn.BeginTransaction();
                 SQLiteCommand mycommand;
                 using (mycommand = new SQLiteCommand(cnn))
                 {
@@ -192,11 +191,11 @@ namespace SQLite_Database
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (var transaction = cnn.BeginTransaction())
+                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
                     {
                         for (int i = 0; i < dataList.Count; i++)
                         {
-                            var data = dataList[i];
+                            Dictionary<string, string> data = dataList[i];
                             String columns = "";
                             String values = "";
                             if (data.Count >= 1)
@@ -287,11 +286,11 @@ namespace SQLite_Database
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (var transaction = cnn.BeginTransaction())
+                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
                     {
                         for (int i = 0; i < dataList.Count; i++)
                         {
-                            var data = dataList[i];
+                            Dictionary<string, string> data = dataList[i];
                             String columns = "";
                             String values = "";
                             foreach (var val in data)

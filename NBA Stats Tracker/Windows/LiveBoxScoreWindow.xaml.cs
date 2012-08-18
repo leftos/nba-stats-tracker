@@ -11,7 +11,6 @@ using System.Windows.Media;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
-using LeftosCommonLibrary;
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -234,8 +233,8 @@ namespace NBA_Stats_Tracker.Windows
                 FOUL += pbs.FOUL;
             }
 
-            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", PTS, REB, OREB, AST,
-                                        BLK, STL, TOS, FOUL);
+            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", PTS, REB,
+                                        OREB, AST, BLK, STL, TOS, FOUL);
 
             return resp;
         }
@@ -243,32 +242,32 @@ namespace NBA_Stats_Tracker.Windows
         private BoxScoreEntry calculateBoxScoreEntry()
         {
             var bs = new TeamBoxScore
-                         {
-                             REB1 = 0,
-                             AST1 = 0,
-                             STL1 = 0,
-                             TO1 = 0,
-                             BLK1 = 0,
-                             FGM1 = 0,
-                             TPM1 = 0,
-                             FTM1 = 0,
-                             OREB1 = 0,
-                             FOUL1 = 0,
-                             PTS1 = 0,
-                             MINS1 = (ushort) MainWindow.gameLength,
-                             REB2 = 0,
-                             AST2 = 0,
-                             STL2 = 0,
-                             TO2 = 0,
-                             BLK2 = 0,
-                             FGM2 = 0,
-                             TPM2 = 0,
-                             FTM2 = 0,
-                             OREB2 = 0,
-                             FOUL2 = 0,
-                             PTS2 = 0,
-                             MINS2 = (ushort) MainWindow.gameLength
-                         };
+                     {
+                         REB1 = 0,
+                         AST1 = 0,
+                         STL1 = 0,
+                         TO1 = 0,
+                         BLK1 = 0,
+                         FGM1 = 0,
+                         TPM1 = 0,
+                         FTM1 = 0,
+                         OREB1 = 0,
+                         FOUL1 = 0,
+                         PTS1 = 0,
+                         MINS1 = (ushort) MainWindow.gameLength,
+                         REB2 = 0,
+                         AST2 = 0,
+                         STL2 = 0,
+                         TO2 = 0,
+                         BLK2 = 0,
+                         FGM2 = 0,
+                         TPM2 = 0,
+                         FTM2 = 0,
+                         OREB2 = 0,
+                         FOUL2 = 0,
+                         PTS2 = 0,
+                         MINS2 = (ushort) MainWindow.gameLength
+                     };
 
             foreach (LivePlayerBoxScore pbs in pbsAwayList)
             {
@@ -310,13 +309,13 @@ namespace NBA_Stats_Tracker.Windows
             var bse = new BoxScoreEntry(bs) {pbsList = new List<PlayerBoxScore>()};
             foreach (LivePlayerBoxScore lpbs in pbsAwayList)
             {
-                PlayerBoxScore pbs = new PlayerBoxScore(lpbs);
+                var pbs = new PlayerBoxScore(lpbs);
                 pbs.Team = bs.Team1;
                 bse.pbsList.Add(pbs);
             }
             foreach (LivePlayerBoxScore lpbs in pbsHomeList)
             {
-                PlayerBoxScore pbs = new PlayerBoxScore(lpbs);
+                var pbs = new PlayerBoxScore(lpbs);
                 pbs.Team = bs.Team2;
                 bse.pbsList.Add(pbs);
             }

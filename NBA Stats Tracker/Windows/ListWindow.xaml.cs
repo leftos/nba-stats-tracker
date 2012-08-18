@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using SQLite_Database;
 
@@ -41,13 +31,13 @@ namespace NBA_Stats_Tracker.Windows
             if (lstData.SelectedIndex == -1)
                 return;
 
-            Conference conf = (Conference) lstData.SelectedItem;
+            var conf = (Conference) lstData.SelectedItem;
             ShowEditConferenceWindow(conf);
         }
 
         private void ShowEditConferenceWindow(Conference conf)
         {
-            ConferenceEditWindow cew = new ConferenceEditWindow(conf);
+            var cew = new ConferenceEditWindow(conf);
             cew.ShowDialog();
 
             if (mustUpdate)
@@ -64,33 +54,29 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow("Enter the name for the new conference:");
+            var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                var name = MainWindow.input.Replace(':', '-');
+                string name = MainWindow.input.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
                     return;
                 }
-                List<int> usedIDs = new List<int>();
+                var usedIDs = new List<int>();
                 MainWindow.Conferences.ForEach(conference => usedIDs.Add(conference.ID));
                 int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
 
-                MainWindow.Conferences.Add(new Conference
-                                               {
-                                                   ID = i,
-                                                   Name = name
-                                               });
+                MainWindow.Conferences.Add(new Conference {ID = i, Name = name});
 
-                SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
-                db.Insert("Conferences", new Dictionary<string, string> { { "ID", i.ToString() }, { "Name", name } });
+                var db = new SQLiteDatabase(MainWindow.currentDB);
+                db.Insert("Conferences", new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", name}});
                 lstData.ItemsSource = null;
                 lstData.ItemsSource = MainWindow.Conferences;
 
-                Conference confToEdit = new Conference();
+                var confToEdit = new Conference();
                 foreach (Conference item in lstData.Items)
                 {
                     if (item.Name == name)
@@ -109,13 +95,13 @@ namespace NBA_Stats_Tracker.Windows
             if (lstData.SelectedIndex == -1)
                 return;
 
-            Conference conf = (Conference) lstData.SelectedItem;
+            var conf = (Conference) lstData.SelectedItem;
             MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
                                                  MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (r == MessageBoxResult.No)
                 return;
 
-            SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
+            var db = new SQLiteDatabase(MainWindow.currentDB);
 
             MainWindow.Conferences.Remove(conf);
             db.Delete("Conferences", "ID = " + conf.ID);
@@ -124,19 +110,10 @@ namespace NBA_Stats_Tracker.Windows
 
             if (MainWindow.Conferences.Count == 0)
             {
-                MainWindow.Conferences.Add(new Conference
-                                               {
-                                                   ID = 0,
-                                                   Name = "League"
-                                               });
-                db.Insert("Conferences", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" } });
-                MainWindow.Divisions.Add(new Division
-                                             {
-                                                 ID = 0,
-                                                 Name = "League",
-                                                 ConferenceID = 0
-                                             });
-                db.Insert("Divisions", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" }, {"Conference", "0"} });
+                MainWindow.Conferences.Add(new Conference {ID = 0, Name = "League"});
+                db.Insert("Conferences", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}});
+                MainWindow.Divisions.Add(new Division {ID = 0, Name = "League", ConferenceID = 0});
+                db.Insert("Divisions", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}, {"Conference", "0"}});
             }
             lstData.ItemsSource = null;
             lstData.ItemsSource = MainWindow.Conferences;

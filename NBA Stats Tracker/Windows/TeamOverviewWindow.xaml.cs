@@ -28,10 +28,6 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
-using DataGrid = System.Windows.Controls.DataGrid;
-using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using MessageBox = System.Windows.MessageBox;
 
 #endregion
 
@@ -62,13 +58,13 @@ namespace NBA_Stats_Tracker.Windows
         private DataTable dt_yea;
         private DataView dv_hth;
         private int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private ObservableCollection<PlayerStatsRow> pl_psrList;
         private int[][] pl_rankings;
         private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
         private int[][] rankings;
         private Dictionary<int, TeamStats> tst;
         private Dictionary<int, TeamStats> tstopp;
-        private ObservableCollection<PlayerStatsRow> pl_psrList;
 
         public TeamOverviewWindow()
         {
@@ -82,7 +78,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void PopulateTeamsCombo()
         {
-            List<string> teams = (from kvp in MainWindow.TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
+            List<string> teams =
+                (from kvp in MainWindow.TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
 
@@ -130,8 +127,8 @@ namespace NBA_Stats_Tracker.Windows
                 curts = tst[i];
                 curtsopp = tstopp[i];
 
-                String q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \"" + curTeam + "\")) AND SeasonNum = " +
-                           curSeason + " ORDER BY Date DESC";
+                String q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \"" + curTeam +
+                           "\")) AND SeasonNum = " + curSeason + " ORDER BY Date DESC";
                 DataTable res = db.GetDataTable(q);
                 dt_bs_res = res;
 
@@ -148,8 +145,8 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     String q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \"" + curTeam +
                                "\")) AND ((Date >= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(dtpStart.SelectedDate.GetValueOrDefault()) +
-                               "\") AND (Date <= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) + "\"))" +
-                               " ORDER BY Date DESC";
+                               "\") AND (Date <= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(dtpEnd.SelectedDate.GetValueOrDefault()) +
+                               "\"))" + " ORDER BY Date DESC";
                     DataTable res = db.GetDataTable(q);
                     dt_bs_res = res;
 
@@ -463,18 +460,20 @@ namespace NBA_Stats_Tracker.Windows
             string qr_away = String.Format("select * from GameResults where (T1Name LIKE \"{0}\")", curTeam);
             string qr_wins =
                 String.Format(
-                    "select * from GameResults where " + "((T1Name LIKE \"{0}\" AND T1PTS > T2PTS) " + "OR (T2Name LIKE \"{0}\" AND T2PTS > T1PTS))",
-                    curTeam);
+                    "select * from GameResults where " + "((T1Name LIKE \"{0}\" AND T1PTS > T2PTS) " +
+                    "OR (T2Name LIKE \"{0}\" AND T2PTS > T1PTS))", curTeam);
             string qr_losses =
                 String.Format(
-                    "select * from GameResults where " + "((T1Name LIKE \"{0}\" AND T1PTS < T2PTS) " + "OR (T2Name LIKE \"{0}\" AND T2PTS < T1PTS))",
-                    curTeam);
+                    "select * from GameResults where " + "((T1Name LIKE \"{0}\" AND T1PTS < T2PTS) " +
+                    "OR (T2Name LIKE \"{0}\" AND T2PTS < T1PTS))", curTeam);
             string qr_season =
-                String.Format("select * from GameResults where " + "(T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") " + "AND IsPlayoff LIKE \"False\"",
-                              curTeam);
+                String.Format(
+                    "select * from GameResults where " + "(T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") " + "AND IsPlayoff LIKE \"False\"",
+                    curTeam);
             string qr_playoffs =
-                String.Format("select * from GameResults where " + "(T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") " + "AND IsPlayoff LIKE \"True\"",
-                              curTeam);
+                String.Format(
+                    "select * from GameResults where " + "(T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") " + "AND IsPlayoff LIKE \"True\"",
+                    curTeam);
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
@@ -730,38 +729,38 @@ namespace NBA_Stats_Tracker.Windows
 
                 psr1 = templist[0];
                 text = psr1.GetBestStats(5);
-                txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" + (psr1.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
+                                  (psr1.isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + ")" + (psr2.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + ")" +
+                                  (psr2.isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + ")" + (psr3.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + ")" +
+                                  (psr3.isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + ")" + (psr4.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + ")" +
+                                  (psr4.isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + ")" + (psr5.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + ")" +
+                                  (psr5.isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + ")" + (psr6.isInjured ? " (Injured)" : "") +
-                                  "\n\n" + text;
+                txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + ")" +
+                                  (psr6.isInjured ? " (Injured)" : "") + "\n\n" + text;
             }
             catch (Exception)
             {
             }
-            
+
             CalculateStarting5();
         }
 
@@ -775,24 +774,29 @@ namespace NBA_Stats_Tracker.Windows
 
             string text;
             PlayerStatsRow psr1;
-            List<PlayerStatsRow> tempList = new List<PlayerStatsRow>();
+            var tempList = new List<PlayerStatsRow>();
 
-            var PGList = psrList.Where(row => (row.Position1 == "PG" || row.Position2 == "PG") && row.isInjured == false).ToList();
+            List<PlayerStatsRow> PGList =
+                psrList.Where(row => (row.Position1 == "PG" || row.Position2 == "PG") && row.isInjured == false).ToList();
             PGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             PGList.Reverse();
-            var SGList = psrList.Where(row => (row.Position1 == "SG" || row.Position2 == "SG") && row.isInjured == false).ToList();
+            List<PlayerStatsRow> SGList =
+                psrList.Where(row => (row.Position1 == "SG" || row.Position2 == "SG") && row.isInjured == false).ToList();
             SGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             SGList.Reverse();
-            var SFList = psrList.Where(row => (row.Position1 == "SF" || row.Position2 == "SF") && row.isInjured == false).ToList();
+            List<PlayerStatsRow> SFList =
+                psrList.Where(row => (row.Position1 == "SF" || row.Position2 == "SF") && row.isInjured == false).ToList();
             SFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             SFList.Reverse();
-            var PFList = psrList.Where(row => (row.Position1 == "PF" || row.Position2 == "PF") && row.isInjured == false).ToList();
+            List<PlayerStatsRow> PFList =
+                psrList.Where(row => (row.Position1 == "PF" || row.Position2 == "PF") && row.isInjured == false).ToList();
             PFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             PFList.Reverse();
-            var CList = psrList.Where(row => (row.Position1 == "C" || row.Position2 == "C") && row.isInjured == false).ToList();
+            List<PlayerStatsRow> CList =
+                psrList.Where(row => (row.Position1 == "C" || row.Position2 == "C") && row.isInjured == false).ToList();
             CList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             CList.Reverse();
-            List<StartingFivePermutation> permutations = new List<StartingFivePermutation>();
+            var permutations = new List<StartingFivePermutation>();
 
             double max = Double.MinValue;
             for (int i1 = 0; i1 < PGList.Count; i1++)
@@ -802,7 +806,7 @@ namespace NBA_Stats_Tracker.Windows
                             for (int i5 = 0; i5 < CList.Count; i5++)
                             {
                                 double _sum = 0;
-                                var _pInP = 0;
+                                int _pInP = 0;
                                 var perm = new List<int>();
                                 perm.Add(PGList[i1].ID);
                                 _sum += PGList[i1].GmSc;
@@ -849,7 +853,8 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                var bestPerm = permutations.Where(perm1 => perm1.sum.Equals(max)).OrderByDescending(perm2 => perm2.pInP).First();
+                StartingFivePermutation bestPerm =
+                    permutations.Where(perm1 => perm1.sum.Equals(max)).OrderByDescending(perm2 => perm2.pInP).First();
                 bestPerm.idList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
             }
             catch (Exception)
@@ -864,7 +869,8 @@ namespace NBA_Stats_Tracker.Windows
                 txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
             }
             catch (Exception)
-            { }
+            {
+            }
 
             try
             {
@@ -873,7 +879,8 @@ namespace NBA_Stats_Tracker.Windows
                 txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
             }
             catch (Exception)
-            { }
+            {
+            }
 
             try
             {
@@ -882,17 +889,18 @@ namespace NBA_Stats_Tracker.Windows
                 txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
             }
             catch (Exception)
-            { }
+            {
+            }
 
             try
             {
                 psr1 = tempList[3];
                 text = psr1.GetBestStats(5);
-                txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" +
-                                     text;
+                txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
             }
             catch (Exception)
-            { }
+            {
+            }
 
             try
             {
@@ -901,7 +909,8 @@ namespace NBA_Stats_Tracker.Windows
                 txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
             }
             catch (Exception)
-            { }
+            {
+            }
         }
 
         private void UpdatePlayerAndMetricStats()
@@ -925,7 +934,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 foreach (DataRow r in res.Rows)
                 {
-                    var id = Tools.getInt(r, "ID");
+                    int id = Tools.getInt(r, "ID");
                     PlayerStats ps = pst[id];
                     psrList.Add(new PlayerStatsRow(ps));
 
@@ -948,15 +957,16 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     var psBetween = new PlayerStats(new Player(r));
 
-                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " + "where PlayerID = " +
-                        r["ID"];
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
+                        "where PlayerID = " + r["ID"];
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
                     q += " ORDER BY Date DESC";
                     DataTable res2 = db.GetDataTable(q);
 
                     foreach (DataRow r2 in res2.Rows)
                     {
-                        var isPlayoff = Tools.getBoolean(r2, "isPlayoff");
+                        bool isPlayoff = Tools.getBoolean(r2, "isPlayoff");
                         var pbs = new PlayerBoxScore(r2);
                         psBetween.AddBoxScore(pbs, isPlayoff);
                     }
@@ -1083,7 +1093,8 @@ namespace NBA_Stats_Tracker.Windows
         {
             try
             {
-                string msg = TeamStats.TeamAveragesAndRankings(GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()), tst, MainWindow.TeamOrder);
+                string msg = TeamStats.TeamAveragesAndRankings(GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()), tst,
+                                                               MainWindow.TeamOrder);
                 if (msg != "")
                 {
                     var cw = new CopyableMessageWindow(msg, GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()), TextAlignment.Center);
@@ -1231,8 +1242,8 @@ namespace NBA_Stats_Tracker.Windows
             Dictionary<int, PlayerStats> playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);
-            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder, ref MainWindow.pt, ref MainWindow.bshist,
-                                _curSeason: curSeason, doNotLoadBoxScores: true);
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+                                ref MainWindow.bshist, _curSeason: curSeason, doNotLoadBoxScores: true);
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -1484,8 +1495,8 @@ namespace NBA_Stats_Tracker.Windows
                     q =
                         String.Format(
                             "select * from GameResults " + "where ((((T1Name LIKE \"{0}\") AND (T2Name LIKE \"{1}\")) " + "OR " +
-                            "((T1Name LIKE \"{1}\") AND (T2Name LIKE \"{0}\"))) AND SeasonNum = {2}) ORDER BY Date DESC;", cmbTeam.SelectedItem,
-                            cmbOppTeam.SelectedItem, curSeason);
+                            "((T1Name LIKE \"{1}\") AND (T2Name LIKE \"{0}\"))) AND SeasonNum = {2}) ORDER BY Date DESC;",
+                            cmbTeam.SelectedItem, cmbOppTeam.SelectedItem, curSeason);
 
                     res = db.GetDataTable(q);
                     AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
@@ -1664,114 +1675,118 @@ namespace NBA_Stats_Tracker.Windows
             dgvHTHBoxScores.DataContext = dv_hth_bs;
 
             List<PlayerStatsRow> guards = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+                                                             {
+                                                                 if (psr.Position1.EndsWith("G"))
                                                                  {
-                                                                     if (psr.Position1.EndsWith("G"))
-                                                                     {
-                                                                         if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                                             return true;
+                                                                     if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                                         return true;
 
-                                                                         return (!psr.isInjured);
-                                                                     }
-                                                                     return false;
-                                                                 }).ToList();
+                                                                     return (!psr.isInjured);
+                                                                 }
+                                                                 return false;
+                                                             }).ToList();
             guards.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             guards.Reverse();
 
             List<PlayerStatsRow> fors = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+                                                           {
+                                                               if (psr.Position1.EndsWith("F"))
                                                                {
-                                                                   if (psr.Position1.EndsWith("F"))
-                                                                   {
-                                                                       if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                                           return true;
+                                                                   if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                                       return true;
 
-                                                                       return (!psr.isInjured);
-                                                                   }
-                                                                   return false;
-                                                               }).ToList();
+                                                                   return (!psr.isInjured);
+                                                               }
+                                                               return false;
+                                                           }).ToList();
             fors.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             fors.Reverse();
 
             List<PlayerStatsRow> centers = teamPMSRList.Where(delegate(PlayerStatsRow psr)
+                                                              {
+                                                                  if (psr.Position1.EndsWith("C"))
                                                                   {
-                                                                      if (psr.Position1.EndsWith("C"))
-                                                                      {
-                                                                          if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                                              return true;
+                                                                      if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                                          return true;
 
-                                                                          return (!psr.isInjured);
-                                                                      }
-                                                                      return false;
-                                                                  }).ToList();
+                                                                      return (!psr.isInjured);
+                                                                  }
+                                                                  return false;
+                                                              }).ToList();
             centers.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             centers.Reverse();
 
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" +
+                                text;
 
                 text = fors[0].GetBestStats(5);
                 txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") +
+                                "\n\n" + text;
             }
             catch
             {
             }
 
             guards = oppPMSRList.Where(delegate(PlayerStatsRow psr)
+                                       {
+                                           if (psr.Position1.EndsWith("G"))
                                            {
-                                               if (psr.Position1.EndsWith("G"))
-                                               {
-                                                   if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                       return true;
+                                               if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                   return true;
 
-                                                   return (!psr.isInjured);
-                                               }
-                                               return false;
-                                           }).ToList();
+                                               return (!psr.isInjured);
+                                           }
+                                           return false;
+                                       }).ToList();
             guards.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             guards.Reverse();
 
             fors = oppPMSRList.Where(delegate(PlayerStatsRow psr)
+                                     {
+                                         if (psr.Position1.EndsWith("F"))
                                          {
-                                             if (psr.Position1.EndsWith("F"))
-                                             {
-                                                 if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                     return true;
+                                             if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                 return true;
 
-                                                 return (!psr.isInjured);
-                                             }
-                                             return false;
-                                         }).ToList();
+                                             return (!psr.isInjured);
+                                         }
+                                         return false;
+                                     }).ToList();
             fors.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             fors.Reverse();
 
             centers = oppPMSRList.Where(delegate(PlayerStatsRow psr)
+                                        {
+                                            if (psr.Position1.EndsWith("C"))
                                             {
-                                                if (psr.Position1.EndsWith("C"))
-                                                {
-                                                    if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
-                                                        return true;
+                                                if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
+                                                    return true;
 
-                                                    return (!psr.isInjured);
-                                                }
-                                                return false;
-                                            }).ToList();
+                                                return (!psr.isInjured);
+                                            }
+                                            return false;
+                                        }).ToList();
             centers.Sort((pmsr1, pmsr2) => (pmsr1.GmSc.CompareTo(pmsr2.GmSc)));
             centers.Reverse();
 
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbOpp1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbOpp1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" +
+                               text;
 
                 text = fors[0].GetBestStats(5);
                 txbOpp2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 text = centers[0].GetBestStats(5);
-                txbOpp3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbOpp3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") +
+                               "\n\n" + text;
             }
             catch
             {
@@ -2456,7 +2471,7 @@ namespace NBA_Stats_Tracker.Windows
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
-                var dictList = CSV.DictionaryListFromTSV(lines);
+                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
                 foreach (var dict in dictList)
                 {
@@ -2520,7 +2535,7 @@ namespace NBA_Stats_Tracker.Windows
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
-                var dictList = CSV.DictionaryListFromTSV(lines);
+                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
                 foreach (var dict in dictList)
                 {
@@ -2537,7 +2552,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     for (int i = 0; i < psrList.Count; i++)
                     {
-                        var psr = psrList[i];
+                        PlayerStatsRow psr = psrList[i];
                         if (psr.ID == ID)
                         {
                             TryChangePSR(ref psr, dict);
@@ -2584,7 +2599,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             int teamid = MainWindow.TeamOrder[curTeam];
             int i = 0;
-            foreach (var div in MainWindow.Divisions)
+            foreach (Division div in MainWindow.Divisions)
             {
                 if (tst[teamid].division == div.ID)
                 {
@@ -2592,16 +2607,17 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 i++;
             }
-            ComboChoiceWindow ccw = new ComboChoiceWindow(ComboChoiceWindow.Mode.Division, i);
+            var ccw = new ComboChoiceWindow(ComboChoiceWindow.Mode.Division, i);
             ccw.ShowDialog();
 
-            var parts = MainWindow.input.Split(new string[] {": "}, 2, StringSplitOptions.None);
-            var myDiv = MainWindow.Divisions.Find(division => division.Name == parts[1]);
+            string[] parts = MainWindow.input.Split(new[] {": "}, 2, StringSplitOptions.None);
+            Division myDiv = MainWindow.Divisions.Find(division => division.Name == parts[1]);
 
             tst[teamid].division = myDiv.ID;
             tstopp[teamid].division = myDiv.ID;
 
-            var dict = new Dictionary<string, string> { { "Division", tst[teamid].division.ToString() }, {"Conference", tst[teamid].conference.ToString()} };
+            var dict = new Dictionary<string, string>
+                       {{"Division", tst[teamid].division.ToString()}, {"Conference", tst[teamid].conference.ToString()}};
             db.Update(teamsT, dict, "Name LIKE \"" + curTeam + "\"");
             db.Update(pl_teamsT, dict, "Name LIKE \"" + curTeam + "\"");
             db.Update(oppT, dict, "Name LIKE \"" + curTeam + "\"");

@@ -61,7 +61,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var val = Convert.ChangeType(dict[key], type);
+                object val = Convert.ChangeType(dict[key], type);
                 row[key] = val.ToString();
             }
             catch (FormatException)
@@ -78,7 +78,7 @@ namespace LeftosCommonLibrary
             {
                 string s = dict[key];
                 string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
-                foreach (var part in parts)
+                foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
@@ -112,7 +112,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var val = Convert.ChangeType(dict[key], type);
+                object val = Convert.ChangeType(dict[key], type);
                 return (T) Convert.ChangeType(val, typeof (T));
             }
             catch (InvalidCastException)
@@ -131,7 +131,7 @@ namespace LeftosCommonLibrary
             {
                 string s = dict[key];
                 string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
-                foreach (var part in parts)
+                foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }

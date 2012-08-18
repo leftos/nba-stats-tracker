@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +28,6 @@ using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
-using EventHandlers = NBA_Stats_Tracker.Helper.EventHandlers;
 
 #endregion
 
@@ -56,6 +54,7 @@ namespace NBA_Stats_Tracker.Windows
         private static TeamBoxScore _curTeamBoxScore;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private readonly bool onImport;
         private List<string> Teams;
         private int curSeason;
         private Brush defaultBackground;
@@ -66,7 +65,6 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         private Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         private Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
-        private bool onImport;
 
         public BoxScoreWindow(Mode _curmode = Mode.Update)
         {
@@ -306,12 +304,12 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayersAway.ItemsSource = pbsAwayList;
             dgvPlayersHome.ItemsSource = pbsHomeList;
 
-            dgvPlayersAway.RowEditEnding += LeftosCommonLibrary.GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
-            dgvPlayersAway.PreviewKeyDown += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
-            dgvPlayersAway.PreviewKeyUp += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
-            dgvPlayersHome.RowEditEnding += LeftosCommonLibrary.GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
-            dgvPlayersHome.PreviewKeyDown += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
-            dgvPlayersHome.PreviewKeyUp += LeftosCommonLibrary.GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvPlayersAway.RowEditEnding += GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersAway.PreviewKeyDown += GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersAway.PreviewKeyUp += GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
+            dgvPlayersHome.RowEditEnding += GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
+            dgvPlayersHome.PreviewKeyDown += GenericEventHandlers.Any_PreviewKeyDown_CheckTab;
+            dgvPlayersHome.PreviewKeyUp += GenericEventHandlers.Any_PreviewKeyUp_CheckTab;
 
             dgvPlayersAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayersHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -401,12 +399,14 @@ namespace NBA_Stats_Tracker.Windows
                 bool addIt = true;
                 if (cmbTeam1.SelectedItem != null)
                 {
-                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB, Misc.GetCurTeamFromDisplayName(tst, cmbTeam1.SelectedItem.ToString()), i))
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
+                                                       Misc.GetCurTeamFromDisplayName(tst, cmbTeam1.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (cmbTeam2.SelectedItem != null)
                 {
-                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB, Misc.GetCurTeamFromDisplayName(tst, cmbTeam2.SelectedItem.ToString()), i))
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
+                                                       Misc.GetCurTeamFromDisplayName(tst, cmbTeam2.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (addIt)
@@ -497,7 +497,8 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (MainWindow.bs.MINS1 <= 0)
                 {
-                    MessageBox.Show("You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
+                    MessageBox.Show(
+                        "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
                     throw (new Exception());
                 }
 
@@ -835,20 +836,20 @@ namespace NBA_Stats_Tracker.Windows
                 string data1 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1, MainWindow.bs.REB1 - MainWindow.bs.OREB1,
-                        MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1, MainWindow.bs.TO1, MainWindow.bs.FGM1, MainWindow.bs.FGA1,
-                        MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1, MainWindow.bs.TPM1, MainWindow.bs.TPA1,
-                        MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1, MainWindow.bs.FTM1, MainWindow.bs.FTA1,
-                        MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1, MainWindow.bs.FOUL1, MainWindow.bs.MINS1);
+                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1,
+                        MainWindow.bs.REB1 - MainWindow.bs.OREB1, MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1,
+                        MainWindow.bs.TO1, MainWindow.bs.FGM1, MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1,
+                        MainWindow.bs.TPM1, MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1, MainWindow.bs.FTM1,
+                        MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1, MainWindow.bs.FOUL1, MainWindow.bs.MINS1);
 
                 string data2 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2, MainWindow.bs.REB2 - MainWindow.bs.OREB2,
-                        MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2, MainWindow.bs.TO2, MainWindow.bs.FGM2, MainWindow.bs.FGA2,
-                        MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2, MainWindow.bs.TPM2, MainWindow.bs.TPA2,
-                        MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2, MainWindow.bs.FTM2, MainWindow.bs.FTA2,
-                        MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2, MainWindow.bs.FOUL2, MainWindow.bs.MINS2);
+                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2,
+                        MainWindow.bs.REB2 - MainWindow.bs.OREB2, MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2,
+                        MainWindow.bs.TO2, MainWindow.bs.FGM2, MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2,
+                        MainWindow.bs.TPM2, MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2, MainWindow.bs.FTM2,
+                        MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2, MainWindow.bs.FOUL2, MainWindow.bs.MINS2);
 
                 dgvPlayersAway.SelectAllCells();
                 ApplicationCommands.Copy.Execute(null, dgvPlayersAway);
@@ -1235,7 +1236,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var pmsrList = new List<PlayerStatsRow>();
 
-            var pbsList = team == 1 ? pbsAwayList : pbsHomeList;
+            SortableBindingList<PlayerBoxScore> pbsList = team == 1 ? pbsAwayList : pbsHomeList;
 
             foreach (PlayerBoxScore pbs in pbsList)
             {
@@ -1270,7 +1271,7 @@ namespace NBA_Stats_Tracker.Windows
             int found = 0;
             for (int i = 0; i < lines.Length; i++)
             {
-                var line = lines[i];
+                string line = lines[i];
                 string team = "";
                 if (line.StartsWith("\t") && !(lines[i + 1].StartsWith("\t")))
                 {
@@ -1290,12 +1291,12 @@ namespace NBA_Stats_Tracker.Windows
                 if (found == 2)
                     break;
             }
-            var dictList = CSV.DictionaryListFromTSV(lines);
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
             int status = 0;
             for (int j = 0; j < dictList.Count; j++)
             {
-                var dict = dictList[j];
+                Dictionary<string, string> dict = dictList[j];
                 string name;
                 try
                 {
@@ -1309,7 +1310,8 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 if (name == "" &&
-                    (dictList[j + 1]["Player"] == cmbTeam1.SelectedItem.ToString() || dictList[j + 1]["Player"] == cmbTeam2.SelectedItem.ToString()))
+                    (dictList[j + 1]["Player"] == cmbTeam1.SelectedItem.ToString() ||
+                     dictList[j + 1]["Player"] == cmbTeam2.SelectedItem.ToString()))
                 {
                     status++;
                     continue;
@@ -1324,11 +1326,11 @@ namespace NBA_Stats_Tracker.Windows
                             try
                             {
                                 pbsAwayList.Remove(pbsAwayList.Single(delegate(PlayerBoxScore pbs)
-                                                                          {
-                                                                              if (PlayersListAway[i].Key == pbs.PlayerID)
-                                                                                  return true;
-                                                                              return false;
-                                                                          }));
+                                                                      {
+                                                                          if (PlayersListAway[i].Key == pbs.PlayerID)
+                                                                              return true;
+                                                                          return false;
+                                                                      }));
                             }
                             catch (Exception)
                             {
@@ -1367,11 +1369,11 @@ namespace NBA_Stats_Tracker.Windows
                             try
                             {
                                 pbsHomeList.Remove(pbsHomeList.Single(delegate(PlayerBoxScore pbs)
-                                                                          {
-                                                                              if (PlayersListHome[i].Key == pbs.PlayerID)
-                                                                                  return true;
-                                                                              return false;
-                                                                          }));
+                                                                      {
+                                                                          if (PlayersListHome[i].Key == pbs.PlayerID)
+                                                                              return true;
+                                                                          return false;
+                                                                      }));
                             }
                             catch (Exception)
                             {
@@ -1417,7 +1419,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
         {
-            LeftosCommonLibrary.GenericEventHandlers.Any_ShowToolTip(sender, e);
+            GenericEventHandlers.Any_ShowToolTip(sender, e);
         }
     }
 }
