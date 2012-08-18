@@ -113,8 +113,12 @@ namespace NBA_Stats_Tracker.Interop
                 HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
                 HtmlNode infoboxp = infoboxps[3];
                 HtmlNode infoboxpstrong = infoboxp.NextSibling;
-                string record = infoboxpstrong.InnerText;
+                HtmlNode recordHN = infoboxpstrong.NextSibling;
+                string record = recordHN.InnerText;
+
                 recordparts = record.Split('-');
+                recordparts[0] = recordparts[0].TrimStart(new char[] {' '});
+                recordparts[1] = recordparts[1].Split(',')[0];
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
                 foreach (HtmlNode cur in tables)
@@ -487,23 +491,23 @@ namespace NBA_Stats_Tracker.Interop
                 foreach (DataRow r in dt.Rows)
                 {
                     string name = r["Player"].ToString();
-                    pstnames[name].stats[p.GP] += Tools.getUInt16(r, "G");
-                    //pstnames[name].stats[p.GS] += NSTHelper.getUShort(r, "GS");
-                    pstnames[name].stats[p.MINS] += Tools.getUInt16(r, "MP");
-                    pstnames[name].stats[p.FGM] += Tools.getUInt16(r, "FG");
-                    pstnames[name].stats[p.FGA] += Tools.getUInt16(r, "FGA");
-                    pstnames[name].stats[p.TPM] += Tools.getUInt16(r, "3P");
-                    pstnames[name].stats[p.TPA] += Tools.getUInt16(r, "3PA");
-                    pstnames[name].stats[p.FTM] += Tools.getUInt16(r, "FT");
-                    pstnames[name].stats[p.FTA] += Tools.getUInt16(r, "FTA");
-                    pstnames[name].stats[p.OREB] += Tools.getUInt16(r, "ORB");
-                    pstnames[name].stats[p.DREB] += (ushort) (Tools.getUInt16(r, "TRB") - Tools.getUInt16(r, "ORB"));
-                    pstnames[name].stats[p.AST] += Tools.getUInt16(r, "AST");
-                    pstnames[name].stats[p.STL] += Tools.getUInt16(r, "STL");
-                    pstnames[name].stats[p.BLK] += Tools.getUInt16(r, "BLK");
-                    pstnames[name].stats[p.TO] += Tools.getUInt16(r, "TOV");
-                    pstnames[name].stats[p.FOUL] += Tools.getUInt16(r, "PF");
-                    pstnames[name].stats[p.PTS] += Tools.getUInt16(r, "PTS");
+                    pstnames[name].pl_stats[p.GP] += Tools.getUInt16(r, "G");
+                    //pstnames[name].pl_stats[p.GS] += NSTHelper.getUShort(r, "GS");
+                    pstnames[name].pl_stats[p.MINS] += Tools.getUInt16(r, "MP");
+                    pstnames[name].pl_stats[p.FGM] += Tools.getUInt16(r, "FG");
+                    pstnames[name].pl_stats[p.FGA] += Tools.getUInt16(r, "FGA");
+                    pstnames[name].pl_stats[p.TPM] += Tools.getUInt16(r, "3P");
+                    pstnames[name].pl_stats[p.TPA] += Tools.getUInt16(r, "3PA");
+                    pstnames[name].pl_stats[p.FTM] += Tools.getUInt16(r, "FT");
+                    pstnames[name].pl_stats[p.FTA] += Tools.getUInt16(r, "FTA");
+                    pstnames[name].pl_stats[p.OREB] += Tools.getUInt16(r, "ORB");
+                    pstnames[name].pl_stats[p.DREB] += (ushort) (Tools.getUInt16(r, "TRB") - Tools.getUInt16(r, "ORB"));
+                    pstnames[name].pl_stats[p.AST] += Tools.getUInt16(r, "AST");
+                    pstnames[name].pl_stats[p.STL] += Tools.getUInt16(r, "STL");
+                    pstnames[name].pl_stats[p.BLK] += Tools.getUInt16(r, "BLK");
+                    pstnames[name].pl_stats[p.TO] += Tools.getUInt16(r, "TOV");
+                    pstnames[name].pl_stats[p.FOUL] += Tools.getUInt16(r, "PF");
+                    pstnames[name].pl_stats[p.PTS] += Tools.getUInt16(r, "PTS");
 
                     pstnames[name].CalcAvg();
                 }

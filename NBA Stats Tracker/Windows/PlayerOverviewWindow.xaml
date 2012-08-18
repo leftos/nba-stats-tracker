@@ -40,7 +40,7 @@
                     IsChecked="{Binding isNBAChampion}" Name="chkIsNBAChampion" VerticalAlignment="Top" />
           <DataGrid Margin="0,66,0,0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True"
                     FrozenColumnCount="1" ItemsSource="{Binding Path=.}" Name="dgvOverviewStats"
-                    PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" />
+                    PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" CanUserSortColumns="False" />
           <ComboBox Height="23" Margin="495,8,0,0" Width="40" HorizontalAlignment="Left" Name="cmbPosition1"
                     VerticalAlignment="Top" />
           <Label Margin="439,8,0,0" Content="Position" HorizontalAlignment="Left" Name="label5" VerticalAlignment="Top" />
@@ -158,7 +158,7 @@
           <Button Height="23" Margin="456,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left" Name="btnNextOpp"
                   VerticalAlignment="Top" />
           <RadioButton Height="16" Margin="0,11,95,0" Checked="rbHTHStatsAnyone_Checked" Content="Anyone"
-                       IsChecked="True" Name="rbHTHStatsAnyone" VerticalAlignment="Top" HorizontalAlignment="Right" Width="51" />
+                       IsChecked="True" Name="rbHTHStatsAnyone" VerticalAlignment="Top" HorizontalAlignment="Right" Width="62" />
           <RadioButton Height="16" Margin="0,11,10,0" Checked="rbHTHStatsEachOther_Checked" Content="Each Other"
                        HorizontalAlignment="Right" Name="rbHTHStatsEachOther" VerticalAlignment="Top" />
           <ComboBox Height="23" Margin="44,6,0,0" Width="153" HorizontalAlignment="Left" Name="cmbOppTeam"
@@ -330,7 +330,7 @@ Text="Remember to save the stats before you switch to another team or season, or
         <TextBlock Height="31" Margin="6,119,0,0" Width="304" HorizontalAlignment="Left" Name="textBlock1"
                    Text="* Availability of stats between dates depends on whether there are box-scores saved for this player."
                    TextWrapping="Wrap" VerticalAlignment="Top" />
-        <ComboBox Height="23" Margin="116,31,0,0" Width="94" HorizontalAlignment="Left" Name="cmbSeasonNum"
+        <ComboBox Height="23" Margin="121,31,0,0" Width="94" HorizontalAlignment="Left" Name="cmbSeasonNum"
                   SelectionChanged="cmbSeasonNum_SelectionChanged" VerticalAlignment="Top" DisplayMemberPath="Value"
                   SelectedValuePath="Key" />
       </Grid>

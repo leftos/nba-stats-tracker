@@ -542,27 +542,36 @@ namespace NBA_Stats_Tracker.Data
             var _db = new SQLiteDatabase(file);
 
             string playersT = "Players";
+            string pl_playersT = "PlayoffPlayers";
 
             if (season != maxSeason)
             {
                 playersT += "S" + season.ToString();
+                pl_playersT += "S" + season.ToString();
             }
 
             if (!partialUpdate)
+            {
                 MainWindow.db.ClearTable(playersT);
+                MainWindow.db.ClearTable(pl_playersT);
+            }
             string q = "select ID from " + playersT + ";";
             DataTable res = MainWindow.db.GetDataTable(q);
 
             //var idList = (from DataRow dr in res.Rows select Convert.ToInt32(dr["ID"].ToString())).ToList();
 
-            var sqlinsert = new List<Dictionary<string, string>>(500);
+            var sqlinsert = new List<Dictionary<string, string>>();
+            var pl_sqlinsert = new List<Dictionary<string, string>>();
             int i = 0;
 
             foreach (var kvp in playerStats)
             {
                 PlayerStats ps = kvp.Value;
                 if (partialUpdate)
+                {
                     _db.Delete(playersT, "ID = " + ps.ID);
+                    _db.Delete(pl_playersT, "ID = " + ps.ID);
+                }
                 var dict = new Dictionary<string, string>
                                {
                                    {"ID", ps.ID.ToString()},
@@ -595,34 +604,37 @@ namespace NBA_Stats_Tracker.Data
                                    {"isAllStar", ps.isAllStar.ToString()},
                                    {"isNBAChampion", ps.isNBAChampion.ToString()}
                                };
-
+                var pl_dict = new Dictionary<string, string>
+                               {
+                                   {"ID", ps.ID.ToString()},
+                                   {"GP", ps.pl_stats[p.GP].ToString()},
+                                   {"GS", ps.pl_stats[p.GS].ToString()},
+                                   {"MINS", ps.pl_stats[p.MINS].ToString()},
+                                   {"PTS", ps.pl_stats[p.PTS].ToString()},
+                                   {"FGM", ps.pl_stats[p.FGM].ToString()},
+                                   {"FGA", ps.pl_stats[p.FGA].ToString()},
+                                   {"TPM", ps.pl_stats[p.TPM].ToString()},
+                                   {"TPA", ps.pl_stats[p.TPA].ToString()},
+                                   {"FTM", ps.pl_stats[p.FTM].ToString()},
+                                   {"FTA", ps.pl_stats[p.FTA].ToString()},
+                                   {"OREB", ps.pl_stats[p.OREB].ToString()},
+                                   {"DREB", ps.pl_stats[p.DREB].ToString()},
+                                   {"STL", ps.pl_stats[p.STL].ToString()},
+                                   {"TOS", ps.pl_stats[p.TO].ToString()},
+                                   {"BLK", ps.pl_stats[p.BLK].ToString()},
+                                   {"AST", ps.pl_stats[p.AST].ToString()},
+                                   {"FOUL", ps.pl_stats[p.FOUL].ToString()}
+                               };
+                
                 sqlinsert.Add(dict);
+                pl_sqlinsert.Add(pl_dict);
                 i++;
-
-                /*
-                if (idList.Contains(ps.ID))
-                {
-                    dict.Remove("ID");
-                    _db.Update(playersT, dict, "ID = " + ps.ID.ToString());
-                }
-                else
-                {
-                    _db.Insert(playersT, dict);
-                }
-                */
-                /*
-                if (i == 500)
-                {
-                    _db.InsertMany(playersT, sqlinsert);
-                    i = 0;
-                    sqlinsert.Clear();
-                }
-                */
             }
 
             if (i > 0)
             {
                 _db.InsertManyTransaction(playersT, sqlinsert);
+                _db.InsertManyTransaction(pl_playersT, pl_sqlinsert);
             }
         }
 
@@ -669,6 +681,7 @@ namespace NBA_Stats_Tracker.Data
                 string oppT = "Opponents";
                 string pl_oppT = "PlayoffOpponents";
                 string playersT = "Players";
+                string pl_playersT = "PlayoffPlayers";
                 if (curSeason != maxSeason)
                 {
                     string s = "S" + curSeason.ToString();
@@ -677,6 +690,7 @@ namespace NBA_Stats_Tracker.Data
                     oppT += s;
                     pl_oppT += s;
                     playersT += s;
+                    pl_playersT += s;
                 }
                 qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
                 sqldb.ExecuteNonQuery(qr);
@@ -706,6 +720,12 @@ namespace NBA_Stats_Tracker.Data
                 sqldb.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + playersT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"isHidden\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
+                sqldb.ExecuteNonQuery(qr);
+
+                qr = "DROP TABLE IF EXISTS \"" + pl_playersT + "\"";
+                sqldb.ExecuteNonQuery(qr);
+                qr = "CREATE TABLE \"" + pl_playersT +
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL)";
                 sqldb.ExecuteNonQuery(qr);
             }
             catch
@@ -1234,7 +1254,21 @@ namespace NBA_Stats_Tracker.Data
 
             #endregion
 
-            #region Players
+            #region Playoff Players
+
+            qr = "SELECT * FROM PlayoffPlayers";
+            try
+            {
+                dt = db.GetDataTable(qr);
+            }
+            catch (Exception)
+            {
+                mustSave = true;
+            }
+
+            #endregion
+
+            #region Divisions and Conferences
 
             qr = "SELECT * FROM sqlite_master WHERE name = \"Teams\"";
             try
@@ -1354,6 +1388,8 @@ namespace NBA_Stats_Tracker.Data
         {
             string q;
 
+            var _db = new SQLiteDatabase(file);
+
             if (curSeason == maxSeason)
             {
                 q = "select * from Players;";
@@ -1362,13 +1398,36 @@ namespace NBA_Stats_Tracker.Data
             {
                 q = "select * from PlayersS" + curSeason.ToString() + ";";
             }
-
-            var _db = new SQLiteDatabase(file);
             DataTable res = _db.GetDataTable(q);
 
             Dictionary<int, PlayerStats> _pst = (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r)).ToDictionary(ps => ps.ID);
-
             PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
+
+            if (curSeason == maxSeason)
+            {
+                q = "select * from PlayoffPlayers;";
+            }
+            else
+            {
+                q = "select * from PlayoffPlayersS" + curSeason.ToString() + ";";
+            }
+            
+            try
+            {
+                res = _db.GetDataTable(q);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLowerInvariant().Contains("no such table")) return _pst;
+            }
+
+            foreach (DataRow r in res.Rows)
+            {
+                int id = Tools.getInt(r, "ID");
+                _pst[id].UpdatePlayoffStats(r);
+            }
+
+            PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder, playoffs: true);
 
             return _pst;
         }

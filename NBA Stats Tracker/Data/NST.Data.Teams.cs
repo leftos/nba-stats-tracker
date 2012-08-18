@@ -321,10 +321,10 @@ namespace NBA_Stats_Tracker.Data
         /// 17: Weff, 18: PD
         /// </summary>
         public float[] averages = new float[19];
+        public Dictionary<string, double> metrics = new Dictionary<string, double>();
 
         public string displayName;
         public bool isHidden;
-        public Dictionary<string, double> metrics = new Dictionary<string, double>();
 
         public string name;
         public int offset;
@@ -350,6 +350,7 @@ namespace NBA_Stats_Tracker.Data
         public int pl_offset;
         public uint[] pl_stats = new uint[18];
         public uint[] pl_winloss = new uint[2];
+        public Dictionary<string, double> pl_metrics = new Dictionary<string, double>();
 
         /// <summary>
         /// Stats for each team.
@@ -448,7 +449,7 @@ namespace NBA_Stats_Tracker.Data
             {
                 ls.AddTeamStats(tst[i], statRange);
             }
-            ls.CalcMetrics(ls);
+            ls.CalcMetrics(ls, (statRange == "Playoffs"));
 
             ls.winloss[0] /= teamCount;
             ls.winloss[1] /= teamCount;
@@ -460,21 +461,11 @@ namespace NBA_Stats_Tracker.Data
             return ls;
         }
 
-        public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp)
+        public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, bool playoffs = false)
         {
-            var temp = new Dictionary<int, TeamStats>();
-            var tempopp = new Dictionary<int, TeamStats>();
-            uint teamCount = CountTeams(tst, "All");
-
             for (int i = 0; i < tst.Count; i++)
             {
-                temp[i] = new TeamStats();
-                temp[i].AddTeamStats(tst[i], "All");
-                tempopp[i] = new TeamStats();
-                tempopp[i].AddTeamStats(tstopp[i], "All");
-
-                temp[i].CalcMetrics(tempopp[i]);
-                tst[i].metrics = new Dictionary<string, double>(temp[i].metrics);
+                tst[i].CalcMetrics(tstopp[i], playoffs);
             }
         }
 
@@ -501,83 +492,97 @@ namespace NBA_Stats_Tracker.Data
             return (teamCount != 0) ? teamCount : 1;
         }
 
-        public void CalcMetrics(TeamStats tsopp)
+        public void CalcMetrics(TeamStats tsopp, bool playoffs = false)
         {
-            metrics = new Dictionary<string, double>();
+            var temp_metrics = new Dictionary<string, double>();
 
             var tstats = new double[stats.Length];
             for (int i = 0; i < stats.Length; i++)
             {
-                tstats[i] = stats[i];
+                if (!playoffs) tstats[i] = stats[i];
+                else tstats[i] = pl_stats[i];
             }
 
             var toppstats = new double[tsopp.stats.Length];
             for (int i = 0; i < tsopp.stats.Length; i++)
             {
-                toppstats[i] = stats[i];
+                if (!playoffs) toppstats[i] = tsopp.stats[i];
+                else toppstats[i] = tsopp.pl_stats[i];
             }
 
+            uint games = (!playoffs) ? getGames() : getPlayoffGames();
+
             double Poss = GetPossMetric(tstats, toppstats);
-            metrics.Add("Poss", Poss);
-            metrics.Add("PossPG", Poss/getGames());
+            temp_metrics.Add("Poss", Poss);
+            temp_metrics.Add("PossPG", Poss/games);
 
             Poss = GetPossMetric(toppstats, tstats);
+
+            var toppmetrics = (!playoffs)
+                                  ? tsopp.metrics
+                                  : tsopp.pl_metrics;
             try
             {
-                tsopp.metrics.Add("Poss", Poss);
+                toppmetrics.Add("Poss", Poss);
             }
             catch
             {
             }
 
-            double Pace = MainWindow.gameLength*((metrics["Poss"] + tsopp.metrics["Poss"])/(2*(tstats[t.MINS])));
-            metrics.Add("Pace", Pace);
+            double Pace = MainWindow.gameLength*((temp_metrics["Poss"] + toppmetrics["Poss"])/(2*(tstats[t.MINS])));
+            temp_metrics.Add("Pace", Pace);
 
-            double ORTG = (tstats[t.PF]/Poss)*100;
-            metrics.Add("ORTG", ORTG);
+            double ORTG = (tstats[t.PF]/temp_metrics["Poss"])*100;
+            temp_metrics.Add("ORTG", ORTG);
 
-            double DRTG = (tstats[t.PA]/Poss)*100;
-            metrics.Add("DRTG", DRTG);
+            double DRTG = (tstats[t.PA]/temp_metrics["Poss"])*100;
+            temp_metrics.Add("DRTG", DRTG);
 
             double ASTp = 100*(tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
-            metrics.Add("AST%", ASTp);
+            temp_metrics.Add("AST%", ASTp);
 
             double DREBp = 100*tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
-            metrics.Add("DREB%", DREBp);
+            temp_metrics.Add("DREB%", DREBp);
 
             double EFGp = (tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
-            metrics.Add("EFG%", EFGp);
+            temp_metrics.Add("EFG%", EFGp);
 
             double EFFd = ORTG - DRTG;
-            metrics.Add("EFFd", EFFd);
+            temp_metrics.Add("EFFd", EFFd);
 
             double TOR = tstats[t.TO]/(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]);
-            metrics.Add("TOR", TOR);
+            temp_metrics.Add("TOR", TOR);
 
             double OREBp = 100*tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
-            metrics.Add("OREB%", OREBp);
+            temp_metrics.Add("OREB%", OREBp);
 
             double FTR = tstats[t.FTM]/tstats[t.FGA];
-            metrics.Add("FTR", FTR);
+            temp_metrics.Add("FTR", FTR);
 
-            double PWp = (((averages[t.PPG] - averages[t.PAPG])*2.7) + 41)/82;
-            metrics.Add("PW%", PWp);
+            var taverages = (!playoffs) ? averages : pl_averages;
+
+            double PWp = (((taverages[t.PPG] - taverages[t.PAPG])*2.7) + 41)/82;
+            temp_metrics.Add("PW%", PWp);
 
             double TSp = tstats[t.PF] / (2 * (tstats[t.FGA] + 0.44 * tstats[t.FTA]));
-            metrics.Add("TS%", TSp);
+            temp_metrics.Add("TS%", TSp);
 
             double TPR = tstats[t.TPA]/tstats[t.FGA];
-            metrics.Add("3PR", TPR);
+            temp_metrics.Add("3PR", TPR);
 
             double PythW = MainWindow.seasonLength*(Math.Pow(tstats[t.PF], 14))/(Math.Pow(tstats[t.PF], 14) + Math.Pow(tstats[t.PA], 14));
-            metrics.Add("PythW", PythW);
+            temp_metrics.Add("PythW", PythW);
 
             double PythL = MainWindow.seasonLength - PythW;
-            metrics.Add("PythL", PythL); 
+            temp_metrics.Add("PythL", PythL); 
             
             double GmSc = tstats[t.PF] + 0.4 * tstats[t.FGM] - 0.7 * tstats[t.FGA] - 0.4 * (tstats[t.FTA] - tstats[t.FTM]) + 0.7 * tstats[t.OREB] +
                            0.3 * tstats[t.DREB] + tstats[t.STL] + 0.7 * tstats[t.AST] + 0.7 * tstats[t.BLK] - 0.4 * tstats[t.FOUL] - tstats[t.TO];
-            metrics.Add("GmSc", GmSc / getGames());
+            temp_metrics.Add("GmSc", GmSc / games);
+
+
+            if (!playoffs) metrics = new Dictionary<string, double>(temp_metrics);
+            else pl_metrics = new Dictionary<string, double>(temp_metrics);
         }
 
         private static double GetPossMetric(double[] tstats, double[] toppstats)
@@ -1407,25 +1412,47 @@ namespace NBA_Stats_Tracker.Data
 
     public class TeamMetricStatsRow
     {
-        public TeamMetricStatsRow(TeamStats ts)
+        public TeamMetricStatsRow(TeamStats ts, bool playoffs = false)
         {
             Name = ts.displayName;
-            Poss = ts.metrics["PossPG"];
-            Pace = ts.metrics["Pace"];
-            ORTG = ts.metrics["ORTG"];
-            DRTG = ts.metrics["DRTG"];
-            ASTp = ts.metrics["AST%"];
-            DREBp = ts.metrics["DREB%"];
-            EFGp = ts.metrics["EFG%"];
-            EFFd = ts.metrics["EFFd"];
-            TOR = ts.metrics["TOR"];
-            OREBp = ts.metrics["OREB%"];
-            FTR = ts.metrics["FTR"];
-            PWp = ts.metrics["PW%"];
-            TSp = ts.metrics["TS%"];
-            TPR = ts.metrics["3PR"];
-            PythW = ts.metrics["PythW"];
-            PythL = ts.metrics["PythL"];
+            if (!playoffs)
+            {
+                Poss = ts.metrics["PossPG"];
+                Pace = ts.metrics["Pace"];
+                ORTG = ts.metrics["ORTG"];
+                DRTG = ts.metrics["DRTG"];
+                ASTp = ts.metrics["AST%"];
+                DREBp = ts.metrics["DREB%"];
+                EFGp = ts.metrics["EFG%"];
+                EFFd = ts.metrics["EFFd"];
+                TOR = ts.metrics["TOR"];
+                OREBp = ts.metrics["OREB%"];
+                FTR = ts.metrics["FTR"];
+                PWp = ts.metrics["PW%"];
+                TSp = ts.metrics["TS%"];
+                TPR = ts.metrics["3PR"];
+                PythW = ts.metrics["PythW"];
+                PythL = ts.metrics["PythL"];
+            }
+            else
+            {
+                Poss = ts.pl_metrics["PossPG"];
+                Pace = ts.pl_metrics["Pace"];
+                ORTG = ts.pl_metrics["ORTG"];
+                DRTG = ts.pl_metrics["DRTG"];
+                ASTp = ts.pl_metrics["AST%"];
+                DREBp = ts.pl_metrics["DREB%"];
+                EFGp = ts.pl_metrics["EFG%"];
+                EFFd = ts.pl_metrics["EFFd"];
+                TOR = ts.pl_metrics["TOR"];
+                OREBp = ts.pl_metrics["OREB%"];
+                FTR = ts.pl_metrics["FTR"];
+                PWp = ts.pl_metrics["PW%"];
+                TSp = ts.pl_metrics["TS%"];
+                TPR = ts.pl_metrics["3PR"];
+                PythW = ts.pl_metrics["PythW"];
+                PythL = ts.pl_metrics["PythL"];
+            }
         }
 
         public string Name { get; set; }

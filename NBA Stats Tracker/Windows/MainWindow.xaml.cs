@@ -232,8 +232,8 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         MessageBoxResult r = MessageBox.Show(
                             "Hey there! This is a friendly reminder from the creator of NBA Stats Tracker.\n\n" +
-                            "You seem to like using NBA Stats Tracker a lot, and I'm sure you enjoy the fact that it's free.\n" +
-                            "However, if you believe that I deserve your support and you want to help me to continue my studies,\n" +
+                            "You seem to like using NBA Stats Tracker a lot, and I'm sure you enjoy the fact that it's free. " +
+                            "However, if you believe that I deserve your support and you want to help me to continue my studies, " +
                             "as well as continue developing and supporting NBA Stats Tracker, you can always donate!\n\n" +
                             "Even a small amount can help a lot!\n\n" + "Would you like to find out how you can donate?\n\n" +
                             "Clicking Cancel will make sure this message never shows up again.", "NBA Stats Tracker - A friendly reminder",
@@ -490,7 +490,7 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     if (pbs.PlayerID == -1)
                         continue;
-                    pst[pbs.PlayerID].AddBoxScore(pbs);
+                    pst[pbs.PlayerID].AddBoxScore(pbs, bs.isPlayoff);
                 }
             }
 
@@ -1014,8 +1014,10 @@ namespace NBA_Stats_Tracker.Windows
                                                       tst = realtst;
                                                       tstopp = realtstopp;
                                                       pst = realpst;
+                                                      if (curSeason == 0) curSeason = 1;
                                                       SQLiteIO.saveSeasonToDatabase(file, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(file));
                                                       txtFile.Text = file;
+                                                      PopulateSeasonCombo(file);
                                                       SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist,
                                                                           _curSeason: curSeason);
 

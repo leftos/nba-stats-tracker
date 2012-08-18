@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v0.14
+		- Addition: Playoff Stats for Players are now handled separately from Season Stats; multiple tabs have been added to all the tool's windows to present those stats and analyze them separately
+		- Fix: Fixed crash when returning from Player Overview to Team Overview, after viewing a player via double-clicking them in the Player Stats tab
+		- Fix: Fixed bug in stats handling from Basketball-Reference.com
+		- Fix: Fixed League Leaders tab in League Overview
+
 	v0.13.2
 		- Addition: Added FGM/G, FGA/G, 3PM/G, 3PA/G, FTM/G and FTA/G averages to Player Stats in Team Overview, League Overview and Advanced Player Search
 		- Addition: Added TS%, 3PR, PythW, PythL metrics to Team Metric Stats in League Overview

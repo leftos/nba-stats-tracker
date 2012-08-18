@@ -204,10 +204,15 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayerStats.ItemsSource = null;
 
             string playersT = "Players";
+            string pl_playersT = "PlayoffPlayers";
             if (curSeason != maxSeason)
+            {
                 playersT += "S" + curSeason;
+                pl_playersT += "S" + curSeason;
+            }
 
             string q = "select * from " + playersT;
+            string pl_q = "select * from " + pl_playersT;
 
             string where = " WHERE ";
             if (!String.IsNullOrWhiteSpace(txtLastName.Text))
@@ -366,9 +371,11 @@ namespace NBA_Stats_Tracker.Windows
 
             var db = new SQLiteDatabase(MainWindow.currentDB);
             DataTable res;
+            //DataTable pl_res;
             try
             {
                 res = db.GetDataTable(q + where);
+                //pl_res = db.GetDataTable(pl_q + where);
             }
             catch (Exception ex)
             {
@@ -376,17 +383,23 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            var psr = new List<PlayerStatsRow>();
+            var psrList = new List<PlayerStatsRow>();
+            var pl_psrList = new List<PlayerStatsRow>();
             foreach (DataRow dr in res.Rows)
             {
                 int id = Tools.getInt(dr, "ID");
-                psr.Add(new PlayerStatsRow(MainWindow.pst[id]));
+                psrList.Add(new PlayerStatsRow(MainWindow.pst[id]));
+                pl_psrList.Add(new PlayerStatsRow(MainWindow.pst[id], true));
             }
 
-            ICollectionView psrView = CollectionViewSource.GetDefaultView(psr);
+            ICollectionView psrView = CollectionViewSource.GetDefaultView(psrList);
             psrView.Filter = Filter;
 
+            ICollectionView pl_psrView = CollectionViewSource.GetDefaultView(pl_psrList);
+            pl_psrView.Filter = Filter;
+
             dgvPlayerStats.ItemsSource = psrView;
+            dgvPlayoffStats.ItemsSource = pl_psrView;
 
             string sortColumn;
             foreach (string item in lstMetrics.Items.Cast<string>())
@@ -394,6 +407,7 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (string item in lstAvg.Items.Cast<string>())
             {
@@ -401,6 +415,7 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (string item in lstTotals.Items.Cast<string>())
             {
@@ -408,10 +423,14 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("TO", "TOS");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
 
             if (psrView.SortDescriptions.Count == 0)
+            {
                 psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+                pl_psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+            }
 
             tbcPlayerSearch.SelectedItem = tabResults;
         }
@@ -426,9 +445,16 @@ namespace NBA_Stats_Tracker.Windows
                                                                       string[] parts = item.Split(' ');
                                                                       //double val = Convert.ToDouble(parts[2]);
                                                                       var context = new ExpressionContext();
-                                                                      IGenericExpression<bool> ige =
-                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
-                                                                      keep = ige.Evaluate();
+                                                                      if (!double.IsNaN(ps.metrics[parts[0]]))
+                                                                      {
+                                                                          IGenericExpression<bool> ige =
+                                                                              context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] + parts[2]);
+                                                                          keep = ige.Evaluate();
+                                                                      }
+                                                                      else
+                                                                      {
+                                                                          keep = false;
+                                                                      }
                                                                       if (!keep)
                                                                           loopState.Stop();
                                                                   });

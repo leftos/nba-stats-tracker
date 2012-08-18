@@ -67,7 +67,8 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> pst;
         private int[][] rankings;
         private Dictionary<int, TeamStats> tst;
-        private Dictionary<int, TeamStats> tstopp; 
+        private Dictionary<int, TeamStats> tstopp;
+        private ObservableCollection<PlayerStatsRow> pl_psrList;
 
         public TeamOverviewWindow()
         {
@@ -160,6 +161,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     AddToTeamStatsFromSQLBoxScores(res, ref curts, ref curtsopp);
                     curts.CalcMetrics(curtsopp);
+                    curts.CalcMetrics(curtsopp, true);
                 }
             }
 
@@ -905,26 +907,40 @@ namespace NBA_Stats_Tracker.Windows
         private void UpdatePlayerAndMetricStats()
         {
             string playersT = "Players";
+            string pl_playersT = "PlayoffPlayers";
             if (curSeason != maxSeason)
+            {
                 playersT += "S" + curSeason;
+                pl_playersT += "S" + curSeason;
+            }
 
             string q = "select * from " + playersT + " where TeamFin LIKE \"" + curTeam + "\"";
             q += " AND isHidden LIKE \"False\"";
             DataTable res = db.GetDataTable(q);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
+            pl_psrList = new ObservableCollection<PlayerStatsRow>();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 foreach (DataRow r in res.Rows)
                 {
-                    PlayerStats ps = pst[Convert.ToInt32(r["ID"].ToString())];
+                    var id = Tools.getInt(r, "ID");
+                    PlayerStats ps = pst[id];
                     psrList.Add(new PlayerStatsRow(ps));
+
+                    string q2 = "select * from " + pl_playersT + " where ID = " + id;
+                    DataTable pl_res = db.GetDataTable(q2);
+                    ps.UpdatePlayoffStats(pl_res.Rows[0]);
+                    pl_psrList.Add(new PlayerStatsRow(ps, true));
                 }
 
                 dgvMetricStatsPERColumn.Visibility = Visibility.Visible;
                 dgvMetricStatsEFFColumn.Visibility = Visibility.Visible;
                 dgvMetricStatsPPRColumn.Visibility = Visibility.Visible;
+                dgvPlayoffMetricStatsPERColumn.Visibility = Visibility.Visible;
+                dgvPlayoffMetricStatsEFFColumn.Visibility = Visibility.Visible;
+                dgvPlayoffMetricStatsPPRColumn.Visibility = Visibility.Visible;
             }
             else
             {
@@ -940,28 +956,44 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r2 in res2.Rows)
                     {
+                        var isPlayoff = Tools.getBoolean(r2, "isPlayoff");
                         var pbs = new PlayerBoxScore(r2);
-                        psBetween.AddBoxScore(pbs);
+                        psBetween.AddBoxScore(pbs, isPlayoff);
                     }
                     var curTSAll = new TeamStats(curTeam);
-                    curTSAll.AddTeamStats(curts, "All");
+                    curTSAll.AddTeamStats(curts, "Season");
                     var curTSOppAll = new TeamStats(curTeam);
-                    curTSOppAll.AddTeamStats(curtsopp, "All");
+                    curTSOppAll.AddTeamStats(curtsopp, "Season");
                     curTSAll.CalcMetrics(curTSOppAll);
                     psBetween.CalcMetrics(curTSAll, curTSOppAll, new TeamStats("$$Empty"));
 
                     psrList.Add(new PlayerStatsRow(psBetween));
 
+                    curTSAll = new TeamStats(curTeam);
+                    curTSAll.AddTeamStats(curts, "Playoffs");
+                    curTSOppAll = new TeamStats(curTeam);
+                    curTSOppAll.AddTeamStats(curtsopp, "Playoffs");
+                    curTSAll.CalcMetrics(curTSOppAll);
+                    psBetween.CalcMetrics(curTSAll, curTSOppAll, new TeamStats("$$Empty"), playoffs: true);
+
+                    pl_psrList.Add(new PlayerStatsRow(psBetween));
+
                     dgvMetricStatsPERColumn.Visibility = Visibility.Collapsed;
                     dgvMetricStatsEFFColumn.Visibility = Visibility.Collapsed;
                     dgvMetricStatsPPRColumn.Visibility = Visibility.Collapsed;
+                    dgvPlayoffMetricStatsPERColumn.Visibility = Visibility.Collapsed;
+                    dgvPlayoffMetricStatsEFFColumn.Visibility = Visibility.Collapsed;
+                    dgvPlayoffMetricStatsPPRColumn.Visibility = Visibility.Collapsed;
                 }
             }
 
             psrList.Sort(delegate(PlayerStatsRow row1, PlayerStatsRow row2) { return String.Compare(row1.LastName, row2.LastName); });
+            pl_psrList.Sort(delegate(PlayerStatsRow row1, PlayerStatsRow row2) { return String.Compare(row1.LastName, row2.LastName); });
 
             dgvPlayerStats.ItemsSource = psrList;
             dgvMetricStats.ItemsSource = psrList;
+            dgvPlayerPlayoffStats.ItemsSource = pl_psrList;
+            dgvPlayoffMetricStats.ItemsSource = pl_psrList;
         }
 
         private void UpdateHeadToHead()
@@ -2352,7 +2384,9 @@ namespace NBA_Stats_Tracker.Windows
                 var pow = new PlayerOverviewWindow(curTeam, playerID);
                 pow.ShowDialog();
 
-                UpdatePlayerAndMetricStats();
+                int curIndex = cmbTeam.SelectedIndex;
+                cmbTeam.SelectedIndex = -1;
+                cmbTeam.SelectedIndex = curIndex;
             }
         }
 

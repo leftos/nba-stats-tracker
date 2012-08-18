@@ -1244,7 +1244,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 PlayerStats ps = pst[pbs.PlayerID].Clone();
                 ps.ResetStats();
-                ps.AddBoxScore(pbs);
+                ps.AddBoxScore(pbs, bs.isPlayoff);
                 ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
                 pmsrList.Add(new PlayerStatsRow(ps));
             }
