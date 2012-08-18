@@ -2389,16 +2389,10 @@ namespace NBA_Stats_Tracker.Windows
             MainWindow.ChangeSeason(curSeason);
         }
 
-        private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (dgvPlayerStats.SelectedCells.Count > 0)
+            if (EventHandlers.AnyPlayerDataGrid_MouseDoubleClick(sender, e))
             {
-                var row = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
-                int playerID = row.ID;
-
-                var pow = new PlayerOverviewWindow(curTeam, playerID);
-                pow.ShowDialog();
-
                 int curIndex = cmbTeam.SelectedIndex;
                 cmbTeam.SelectedIndex = -1;
                 cmbTeam.SelectedIndex = curIndex;

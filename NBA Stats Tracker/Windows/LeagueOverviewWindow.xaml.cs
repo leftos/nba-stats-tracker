@@ -55,9 +55,9 @@ namespace NBA_Stats_Tracker.Windows
         private readonly DataTable dt_pts;
         private readonly DataTable dt_ts;
         private bool changingTimeframe;
-/*
-        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
-*/
+        /*
+                private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        */
         private int curSeason = MainWindow.curSeason;
         private string filterDescription;
         private TeamFilter filterType;
@@ -1399,28 +1399,9 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
-        private void dgvTeamStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void AnyTeamDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (dgvTeamStats.SelectedCells.Count > 0)
-            {
-                var row = (DataRowView) dgvTeamStats.SelectedItems[0];
-                string team = row["Name"].ToString();
-
-                var tow = new TeamOverviewWindow(team);
-                tow.ShowDialog();
-            }
-        }
-
-        private void dgvPlayoffStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (dgvPlayoffStats.SelectedCells.Count > 0)
-            {
-                var row = (DataRowView) dgvPlayoffStats.SelectedItems[0];
-                string team = row["Name"].ToString();
-
-                var tow = new TeamOverviewWindow(team);
-                tow.ShowDialog();
-            }
+            EventHandlers.AnyTeamDataGrid_MouseDoubleClick(sender, e);
         }
 
         private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
@@ -1470,26 +1451,9 @@ namespace NBA_Stats_Tracker.Windows
             return newpsr;
         }
 
-        private void dgvPlayerStats_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (dgvPlayerStats.SelectedCells.Count > 0)
-            {
-                var psr = (PlayerStatsRow) dgvPlayerStats.SelectedItems[0];
-
-                var pow = new PlayerOverviewWindow(psr.TeamF, psr.ID);
-                pow.ShowDialog();
-            }
-        }
-
-        private void dgvLeaders_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (dgvLeaders.SelectedCells.Count > 0)
-            {
-                var psr = (PlayerStatsRow) dgvLeaders.SelectedItems[0];
-
-                var pow = new PlayerOverviewWindow(psr.TeamF, psr.ID);
-                pow.ShowDialog();
-            }
+            EventHandlers.AnyPlayerDataGrid_MouseDoubleClick(sender, e);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -1721,5 +1685,6 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         #endregion
+
     }
 }

@@ -1,21 +1,6 @@
-0.13.2.0
+0.14.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
-- Addition: Added FGM/G, FGA/G, 3PM/G, 3PA/G, FTM/G and FTA/G averages to Player Stats in Team Overview, League Overview and Advanced Player Search
-- Addition: Added TS%, 3PR, PythW, PythL metrics to Team Metric Stats in League Overview
-- Addition: A season length different than 82 games can be set via the Tools menu (used in Pythagorean metric calculations)
-- Fix: Box Score Window's player metric stats can now be copied to clipboard correctly
-- Addition: Team Overview's Box Scores tab now features more information regarding the team's performance in each game
-
-v0.13.1.2
-- Fix: Fixed bugs regarding Live Box Score and Box Score player stats lists
-
-v0.13.1.1
-- Fix: Fixed bug since v0.12.2 that wouldn't allow user to insert new rows in Player Stats tabs in the Update with Box Score window
-
-v0.13.1
-- Addition: A game length different than 48 minutes can be set via the Tools menu
-- Fix: Team Pace Metric in now calculated on a Game Length basis, instead of assuming games are always 48 minutes long
-- Change: All screens showing best performers or performances now present the 5 most significant stats, instead of 4
-- Change: Multiple instances of NBA Stats Tracker are now allowed
-- Change: Miscellaneous menu was renamed to Tools menu
-- Improvement: Various minor interface improvements
+- Addition: Playoff Stats for Players are now handled separately from Season Stats; multiple tabs have been added to all the tool's windows to present those stats and analyze them separately
+- Fix: Fixed crash when returning from Player Overview to Team Overview, after viewing a player via double-clicking them in the Player Stats tab
+- Fix: Fixed bug in stats handling from Basketball-Reference.com
+- Fix: Fixed League Leaders tab in League Overview

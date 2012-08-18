@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Input;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Windows;
@@ -29,6 +30,34 @@ namespace NBA_Stats_Tracker.Helper
 {
     public static class EventHandlers
     {
+        public static bool AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid s = sender as DataGrid;
+            if (s.SelectedCells.Count > 0)
+            {
+                var psr = (PlayerStatsRow)s.SelectedItems[0];
+
+                var pow = new PlayerOverviewWindow(psr.TeamF, psr.ID);
+                pow.ShowDialog();
+
+                return true;
+            }
+            return false;
+        }
+
+        public static void AnyTeamDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid s = sender as DataGrid;
+            if (s.SelectedCells.Count > 0)
+            {
+                var row = (DataRowView) s.SelectedItems[0];
+                string team = row["Name"].ToString();
+
+                var tow = new TeamOverviewWindow(team);
+                tow.ShowDialog();
+            }
+        }
+
         public static void PercentageColumn_CopyingCellClipboardContent(DataGridCellClipboardEventArgs e)
         {
             try
