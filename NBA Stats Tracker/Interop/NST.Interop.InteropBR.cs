@@ -50,9 +50,13 @@ namespace NBA_Stats_Tracker.Interop
                     {
                         continue;
                     }
-                    HtmlNode h1 = cur.SelectSingleNode("h1");
+                    var h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
                     string name = h1.InnerText;
-                    parts = name.Split(new[] {"at", ", "}, StringSplitOptions.None);
+                    parts = name.Split(new[] {" at ", " Box Score, ", ", "}, 4, StringSplitOptions.None);
+                    for (int i = 0; i< parts.Count();i++)
+                    {
+                        parts[i] = parts[i].Replace("\n", "");
+                    }
                 }
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");

@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v0.14.1.1
+		- Fix: Download Box Score was broken due to change in Basketball-Reference.com's code
+
 	v0.14.1
 		- Improvement: All tabs with lists of players or teams can now show the corresponding Player/Team Overview screen via double-click
 

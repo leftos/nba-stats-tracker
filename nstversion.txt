@@ -1,5 +1,8 @@
-0.14.0.0
+0.14.1.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+- Improvement: All tabs with lists of players or teams can now show the corresponding Player/Team Overview screen via double-click
+
+v0.14
 - Addition: Playoff Stats for Players are now handled separately from Season Stats; multiple tabs have been added to all the tool's windows to present those stats and analyze them separately
 - Fix: Fixed crash when returning from Player Overview to Team Overview, after viewing a player via double-clicking them in the Player Stats tab
 - Fix: Fixed bug in stats handling from Basketball-Reference.com
