@@ -32,4 +32,11 @@ namespace NBA_Stats_Tracker.Data
         public int ID { get; set; }
         public string Name { get; set; }
     }
+
+    public enum Span
+    {
+        Season,
+        Playoffs,
+        SeasonAndPlayoffs
+    }
 }

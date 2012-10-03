@@ -796,13 +796,54 @@ namespace NBA_Stats_Tracker.Data
             return text;
         }
 
-        public static string TeamScoutingReport(int[][] rating, int teamID, string teamName)
+        public float getWinningPercentage(Span span)
         {
-            //public const int PPG = 0, PAPG = 1, FGp = 2, FGeff = 3, TPp = 4, TPeff = 5,
-            //FTp = 6, FTeff = 7, RPG = 8, ORPG = 9, DRPG = 10, SPG = 11, BPG = 12,
-            //TPG = 13, APG = 14, FPG = 15, Wp = 16, Weff = 17;
-            string msg = String.Format("{0}, the {1}", teamName, rating[teamID][17]);
-            switch (rating[teamID][17])
+            if (span == Span.Season)
+            {
+                return winloss[0]/getGames();
+            }
+            else if (span == Span.Playoffs)
+            {
+                return pl_winloss[0]/getGames();
+            }
+            else
+            {
+                return (winloss[0] + pl_winloss[0])/(getGames() + getPlayoffGames());
+            }
+        }
+
+        public string ScoutingReport(Dictionary<int, TeamStats> tst)
+        {
+            int[][] rating = CalculateTeamRankings(tst);
+            int teamCount = tst.Count;
+            int divpos = 0;
+            int confpos = 0;
+
+            var divTeams = tst.Where(pair => pair.Value.division == division).ToList();
+            divTeams.Sort((t1, t2) => t1.Value.getWinningPercentage(Span.Season).CompareTo(t2.Value.getWinningPercentage(Span.Season)));
+            divTeams.Reverse();
+            for (int i = 0; i < divTeams.Count; i++)
+            {
+                if (divTeams[i].Value.ID == ID)
+                {
+                    divpos = i + 1;
+                    break;
+                }
+            }
+            var confTeams = tst.Where(pair => pair.Value.conference == conference).ToList();
+            confTeams.Sort((t1, t2) => t1.Value.getWinningPercentage(Span.Season).CompareTo(t2.Value.getWinningPercentage(Span.Season)));
+            confTeams.Reverse();
+            for (int i = 0; i < confTeams.Count; i++)
+            {
+                if (confTeams[i].Value.ID == ID)
+                {
+                    confpos = i + 1;
+                    break;
+                }
+            }
+
+            string msg = String.Format("{0}, the {1}", displayName, rating[ID][17]);
+            switch (rating[ID][17])
             {
                 case 1:
                 case 21:
@@ -820,11 +861,22 @@ namespace NBA_Stats_Tracker.Data
                     msg += "th";
                     break;
             }
-            msg += " strongest team in the league right now, after having played " + rating[teamID][19].ToString() + " games.\n\n";
 
-            if ((rating[teamID][3] <= 5) && (rating[teamID][5] <= 5))
+            int topThird = teamCount/3;
+            int secondThird = teamCount/3*2;
+            int topHalf = teamCount/2;
+
+            msg += " strongest team in the league right now, after having played " + rating[ID][19].ToString() + " games. Their record is " +
+                   "currently at " + winloss[0] + "-" + winloss[1];
+
+            if (MainWindow.Divisions.Count > 1) 
+                msg += ", putting them at #" + divpos + " in their division and at #" + confpos + " in their conference";
+
+            msg += ".\n\n";
+
+            if ((rating[ID][3] <= 5) && (rating[ID][5] <= 5))
             {
-                if (rating[teamID][7] <= 5)
+                if (rating[ID][7] <= 5)
                 {
                     msg += "This team just can't be beaten offensively. One of the strongest in the league in all aspects.";
                 }
@@ -834,21 +886,21 @@ namespace NBA_Stats_Tracker.Data
                            "efficiency in both 2 and 3 pointers.";
                 }
             }
-            else if ((rating[teamID][3] <= 10) && (rating[teamID][5] <= 10))
+            else if ((rating[ID][3] <= topThird) && (rating[ID][5] <= topThird))
             {
-                if (rating[teamID][7] <= 10)
+                if (rating[ID][7] <= topThird)
                 {
-                    msg += "Top 10 in the league in everything offense, and they're one to worry about.";
+                    msg += "Top third of the league in everything offense, and they're one to worry about.";
                 }
                 else
                 {
                     msg += "Although their free throwing is not on par with their other offensive qualities, you can't relax " +
-                           "when playing against them. Top 10 in field goals and 3 pointers.";
+                           "when playing against them. Top third of the league in field goals and 3 pointers.";
                 }
             }
-            else if ((rating[teamID][3] <= 20) && (rating[teamID][5] <= 20))
+            else if ((rating[ID][3] <= secondThird) && (rating[ID][5] <= secondThird))
             {
-                if (rating[teamID][7] <= 10)
+                if (rating[ID][7] <= topThird)
                 {
                     msg += "Although an average offensive team (they can't seem to remain consistent from both inside and " +
                            "outside the arc), they can get back at you with their efficiency from the line.";
@@ -860,7 +912,7 @@ namespace NBA_Stats_Tracker.Data
             }
             else
             {
-                if (rating[teamID][7] <= 10)
+                if (rating[ID][7] <= topThird)
                 {
                     msg += "They aren't consistent from the floor, but still manage to get to the line enough times and " +
                            "be good enough to make a difference.";
@@ -873,139 +925,154 @@ namespace NBA_Stats_Tracker.Data
             }
             msg += "\n\n";
 
-            if (rating[teamID][3] <= 5)
+            if (rating[ID][3] <= 5)
                 msg += "Top scoring team, one of the top 5 in field goal efficiency.";
-            else if (rating[teamID][3] <= 10)
-                msg += "You'll have to worry about their scoring efficiency, as they're one of the Top 10 in the league.";
-            else if (rating[teamID][3] <= 20)
+            else if (rating[ID][3] <= topThird)
+                msg += "You'll have to worry about their scoring efficiency, as they're in the top third of the league.";
+            else if (rating[ID][3] <= secondThird)
                 msg += "Scoring is not their virtue, but they're not that bad either.";
-            else if (rating[teamID][3] <= 30)
+            else if (rating[ID][3] <= teamCount)
                 msg += "You won't have to worry about their scoring, one of the least 10 efficient in the league.";
 
-            int comp = rating[teamID][t.FGeff] - rating[teamID][t.FGp];
-            if (comp < -15)
+            int comp = rating[ID][t.FGeff] - rating[ID][t.FGp];
+            if (comp < -topHalf)
                 msg += "\nThey score more baskets than their FG% would have you guess, but they need to work on getting more consistent.";
-            else if (comp > 15)
+            else if (comp > topHalf)
                 msg +=
                     "\nThey can be dangerous whenever they shoot the ball. Their offense just doesn't get them enough chances to shoot it, though.";
 
+            msg += String.Format(" (#{0} in FG%: {1:F3} - #{2} in FGeff: {3:F2})", rating[ID][t.FGp], averages[t.FGp], rating[ID][t.FGeff],
+                                 averages[t.FGeff]);
             msg += "\n";
 
-            if (rating[teamID][5] <= 5)
+            if (rating[ID][5] <= 5)
                 msg += "You'll need to always have an eye on the perimeter. They can turn a game around with their 3 pointers. " +
                        "They score well, they score a lot.";
-            else if (rating[teamID][5] <= 10)
-                msg += "Their 3pt shooting is bad news. They're in the top 10, and you can't relax playing against them.";
-            else if (rating[teamID][5] <= 20)
+            else if (rating[ID][5] <= topThird)
+                msg += "Their 3pt shooting is bad news. They're in the top third of the league, and you can't relax playing against them.";
+            else if (rating[ID][5] <= secondThird)
                 msg += "Not much to say about their 3pt shooting. Average, but it is there.";
-            else if (rating[teamID][5] <= 30)
+            else if (rating[ID][5] <= teamCount)
                 msg += "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
 
-            comp = rating[teamID][t.TPeff] - rating[teamID][t.TPp];
-            if (comp < -15)
+            comp = rating[ID][t.TPeff] - rating[ID][t.TPp];
+            if (comp < -topHalf)
                 msg += "\nThey'll get enough 3 pointers to go down each night, but not on a good enough percentage for that amount.";
-            else if (comp > 15)
+            else if (comp > topHalf)
                 msg += "\nWith their accuracy from the 3PT line, you'd think they'd shoot more of those.";
 
+            msg += String.Format(" (#{0} in 3P%: {1:F3} - #{2} in 3Peff: {3:F2})", rating[ID][t.TPp], averages[t.TPp], rating[ID][t.TPeff],
+                                 averages[t.TPeff]);
             msg += "\n";
 
-            if (rating[teamID][7] <= 5)
+            if (rating[ID][7] <= 5)
                 msg += "They tend to attack the lanes hard, getting to the line and making the most of it. They're one of the best " +
                        "teams in the league at it.";
-            else if (rating[teamID][7] <= 10)
+            else if (rating[ID][7] <= topThird)
                 msg +=
-                    "One of the best teams in the league at getting to the line. They get enough free throws to punish the opposing team every night. Top 10.";
-            else if (rating[teamID][7] <= 20)
+                    "One of the best teams in the league at getting to the line. They get enough free throws to punish the opposing team every night. Top third of the league.";
+            else if (rating[ID][7] <= secondThird)
                 msg +=
                     "Average free throw efficiency, you don't have to worry about sending them to the line; at least as much as other aspects of their game.";
-            else if (rating[teamID][7] <= 30)
-                if (rating[teamID][t.FTp] < 15)
+            else if (rating[ID][7] <= teamCount)
+                if (rating[ID][t.FTp] < topHalf)
                     msg +=
                         "A team that you'll enjoy playing hard and aggressively against on defense. They don't know how to get to the line.";
                 else
                     msg +=
                         "A team that doesn't know how to get to the line, or how to score from there. You don't have to worry about freebies against them.";
 
-            comp = rating[teamID][t.FTeff] - rating[teamID][t.FTp];
-            if (comp < -15)
+            msg += String.Format(" (#{0} in FT%: {1:F3} - #{2} in FTeff: {3:F2})", rating[ID][t.FTp], averages[t.FTp], rating[ID][t.FTeff],
+                                 averages[t.FTeff]);
+            comp = rating[ID][t.FTeff] - rating[ID][t.FTp];
+            if (comp < -topHalf)
                 msg +=
                     "\nAlthough they get to the line a lot and make some free throws, they have to put up a lot to actually get that amount each night.";
-            else if (comp > 15)
+            else if (comp > topHalf)
                 msg += "\nThey're lethal when shooting free throws, but they need to play harder and get there more often.";
 
             msg += "\n";
 
-            if (rating[teamID][14] <= 15)
+            if (rating[ID][14] <= topHalf)
                 msg +=
                     "They know how to find the open man, and they get their offense going by getting it around the perimeter until a clean shot is there.";
-            else if ((rating[teamID][14] > 15) && (rating[teamID][3] < 10))
+            else if ((rating[ID][14] > topHalf) && (rating[ID][3] < topThird))
                 msg +=
                     "A team that prefers to run its offense through its core players in isolation. Not very good in assists, but they know how to get the job " +
                     "done more times than not.";
             else
                 msg +=
                     "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
-
+            
+            msg += String.Format(" (#{0} in APG: {1:F2})", rating[ID][t.APG], averages[t.APG]);
             msg += "\n\n";
 
-            if (31 - rating[teamID][t.PAPG] <= 5)
+            if (31 - rating[ID][t.PAPG] <= 5)
                 msg += "Don't expect to get your score high against them. An elite defensive team, top 5 in points against them each night.";
-            else if (31 - rating[teamID][t.PAPG] <= 10)
+            else if (31 - rating[ID][t.PAPG] <= topThird)
                 msg += "One of the better defensive teams out there, limiting their opponents to low scores night in, night out.";
-            else if (31 - rating[teamID][t.PAPG] <= 20)
+            else if (31 - rating[ID][t.PAPG] <= secondThird)
                 msg += "Average defensively, not much to show for it, but they're no blow-outs.";
-            else if (31 - rating[teamID][t.PAPG] <= 30)
+            else if (31 - rating[ID][t.PAPG] <= teamCount)
                 msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
 
+            msg += String.Format(" (#{0} in PAPG: {1:F2})", tst.Count + 1 - rating[ID][t.PAPG], averages[t.PAPG]);
             msg += "\n\n";
 
-            if ((rating[teamID][9] <= 10) && (rating[teamID][11] <= 10) && (rating[teamID][12] <= 10))
+            if ((rating[ID][9] <= topThird) && (rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
                 msg +=
                     "Hustle is their middle name. They attack the offensive glass, they block, they steal. Don't even dare to blink or get complacent.\n\n";
-            else if ((rating[teamID][9] >= 20) && (rating[teamID][11] >= 20) && (rating[teamID][12] >= 20))
+            else if ((rating[ID][9] >= secondThird) && (rating[ID][11] >= secondThird) && (rating[ID][12] >= secondThird))
                 msg += "This team just doesn't know what hustle means. You'll be doing circles around them if you're careful.\n\n";
 
-            if (rating[teamID][8] <= 5)
+            if (rating[ID][8] <= 5)
                 msg += "Sensational rebounding team, everybody jumps for the ball, no missed shot is left loose.";
-            else if (rating[teamID][8] <= 10)
-                msg += "You can't ignore their rebounding ability, they work together and are in the top 10 in rebounding.";
-            else if (rating[teamID][8] <= 20)
+            else if (rating[ID][8] <= topThird)
+                msg += "You can't ignore their rebounding ability, they work together and are in the top third of the league in rebounding.";
+            else if (rating[ID][8] <= secondThird)
                 msg += "They crash the boards as much as the next guy, but they won't give up any freebies.";
-            else if (rating[teamID][8] <= 30)
+            else if (rating[ID][8] <= teamCount)
                 msg +=
                     "Second chance points? One of their biggest fears. Low low LOW rebounding numbers; just jump for the ball and you'll keep your score high.";
 
             msg += " ";
 
-            if ((rating[teamID][9] <= 10) && (rating[teamID][10] <= 10))
+            if ((rating[ID][9] <= topThird) && (rating[ID][10] <= topThird))
                 msg +=
                     "The work they put on rebounding on both sides of the court is commendable. Both offensive and defensive rebounds, their bread and butter.";
 
+            msg += String.Format(" (#{0} in RPG: {1:F2}, #{2} in ORPG: {3:F2}, #{4} in DRPG: {5:F2})", rating[ID][t.RPG], averages[t.RPG], rating[ID][t.ORPG], 
+                averages[t.ORPG], rating[ID][t.DRPG], averages[t.DRPG]);
             msg += "\n\n";
 
-            if ((rating[teamID][11] <= 10) && (rating[teamID][12] <= 10))
+            if ((rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
                 msg +=
-                    "A team that knows how to play defense. They're one of the best in steals and blocks, and they make you work hard on offense.\n";
-            else if (rating[teamID][11] <= 10)
+                    "A team that knows how to play defense. They're one of the best in steals and blocks, and they make you work hard on offense.";
+            else if (rating[ID][11] <= topThird)
                 msg +=
-                    "Be careful dribbling and passing. They won't be much trouble once you shoot the ball, but the trouble is getting there. Great in steals.\n";
-            else if (rating[teamID][12] <= 10)
+                    "Be careful dribbling and passing. They won't be much trouble once you shoot the ball, but the trouble is getting there. Great in steals.";
+            else if (rating[ID][12] <= topThird)
                 msg +=
-                    "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.\n";
+                    "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.";
+            else
+                msg +=
+                    "Nothing too significant as far as blocks and steals go.";
+            msg += String.Format(" (#{0} in SPG: {1:F2}, #{2} in BPG: {3:F2})\n", rating[ID][t.SPG], averages[t.SPG], rating[ID][t.BPG], averages[t.BPG]);
 
-            if ((rating[teamID][13] <= 10) && (rating[teamID][15] <= 10))
+            if ((rating[ID][13] <= topThird) && (rating[ID][15] <= topThird))
                 msg +=
                     "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
-            else if (rating[teamID][13] < 10)
+            else if (rating[ID][13] < topThird)
                 msg +=
                     "Not good ball handlers, and that's being polite. Bottom 10 in turnovers, they have work to do until they get their offense going.";
-            else if (rating[teamID][15] < 10)
+            else if (rating[ID][15] < topThird)
                 msg += "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
             else
                 msg +=
                     "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw " +
                     "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the " +
                     "one you expected.";
+            msg += String.Format(" (#{0} in TPG: {1:F2}, #{2} in FPG: {3:F2})", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG], tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
 
             return msg;
         }

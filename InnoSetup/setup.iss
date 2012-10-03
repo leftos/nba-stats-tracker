@@ -104,7 +104,7 @@ Source: "{#CompiledPath}\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "{#CompiledPath}\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: createallsubdirs recursesubdirs
+Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"

@@ -188,7 +188,8 @@
                             VerticalAlignment="Top" Width="75" PreviewMouseLeftButtonDown="btnTools_PreviewMouseLeftButtonDown">
                         <Button.ContextMenu>
                             <ContextMenu Name="cxmTools">
-                                <MenuItem Header="Calculate" Click="btnCalculateTeams_Click" />
+                                <MenuItem Header="Replace Team Stats with Accumulated Player Stats" Click="btnCalculateTeams_Click" />
+                                <MenuItem Header="Check if Team Stats and Player Stats match" Click="btnCompareTeamAndPlayerStats_Click" />
                                 <MenuItem Header="Copy" Click="btnCopy_Click" />
                                 <MenuItem Header="Paste" Click="btnPaste_Click" />
                             </ContextMenu>

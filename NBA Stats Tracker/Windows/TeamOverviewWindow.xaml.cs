@@ -1276,10 +1276,9 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            int[][] rating = TeamStats.CalculateTeamRankings(tst);
-            if (rating.Length != 1)
+            if (tst.Count > 1)
             {
-                string msg = TeamStats.TeamScoutingReport(rating, id, GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
+                string msg = tst[id].ScoutingReport(tst);
                 var cw = new CopyableMessageWindow(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }

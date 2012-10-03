@@ -115,10 +115,8 @@ namespace NBA_Stats_Tracker.Interop
 
                 HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//div[@id='info_box']");
                 HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
-                HtmlNode infoboxp = infoboxps[3];
-                HtmlNode infoboxpstrong = infoboxp.NextSibling;
-                HtmlNode recordHN = infoboxpstrong.NextSibling;
-                string record = recordHN.InnerText;
+                HtmlNode infoboxp = infoboxps[1].NextSibling.NextSibling;
+                string record = infoboxp.InnerText;
 
                 recordparts = record.Split('-');
                 recordparts[0] = recordparts[0].TrimStart(new[] {' '});

@@ -1,5 +1,15 @@
 NBA Stats Tracker - Version History
 
+	v1.0
+		- Addition: Player Scouting Reports now available in Player Overview
+		- Improvement: Team Scouting Reports will now adjust their comments based on the amount of teams in the league, instead of assuming there's 30 teams
+
+	v0.14.3
+		- Addition: Added Performance Graphs in Player Overview
+
+	v0.14.2
+		- Addition: Added new checks when verifying a Box Score's data
+
 	v0.14.1.1
 		- Fix: Download Box Score was broken due to change in Basketball-Reference.com's code
 

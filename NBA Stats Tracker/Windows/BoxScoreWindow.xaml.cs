@@ -497,9 +497,8 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (MainWindow.bs.MINS1 <= 0)
                 {
-                    MessageBox.Show(
+                    throwErrorWithMessage(
                         "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
-                    throw (new Exception());
                 }
 
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
@@ -515,38 +514,32 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
                 {
-                    MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
                 if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
                 {
-                    MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
                 if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
                 {
-                    MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
 
                 MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
                 MainWindow.bs.FTA1 = Convert.ToUInt16(txtFTA1.Text);
                 if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
                 {
-                    MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
                 MainWindow.bs.OREB1 = Convert.ToUInt16(txtOFF1.Text);
                 if (MainWindow.bs.OREB1 > MainWindow.bs.REB1)
                 {
-                    MessageBox.Show("The OFF stat can't be higher than the REB stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
                 if (MainWindow.bs.FGA1 < MainWindow.bs.TPA1)
                 {
-                    MessageBox.Show("The 3PA stat can't be higher than the FGA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
                 MainWindow.bs.FOUL1 = Convert.ToUInt16(txtPF1.Text);
@@ -563,42 +556,71 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
                 {
-                    MessageBox.Show("The FGM stat can't be higher than the FGA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
                 if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
                 {
-                    MessageBox.Show("The 3PM stat can't be higher than the 3PA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
                 if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
                 {
-                    MessageBox.Show("The 3PM stat can't be higher than the FGM stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
                 if (MainWindow.bs.FGA2 < MainWindow.bs.TPA2)
                 {
-                    MessageBox.Show("The 3PA stat can't be higher than the FGA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
                 MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
                 MainWindow.bs.FTA2 = Convert.ToUInt16(txtFTA2.Text);
                 if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
                 {
-                    MessageBox.Show("The FTM stat can't be higher than the FTA stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
                 MainWindow.bs.OREB2 = Convert.ToUInt16(txtOFF2.Text);
 
                 if (MainWindow.bs.OREB2 > MainWindow.bs.REB2)
                 {
-                    MessageBox.Show("The OFF stat can't be higher than the REB stat.");
-                    throw (new Exception());
+                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
 
                 MainWindow.bs.FOUL2 = Convert.ToUInt16(txtPF2.Text);
+
+                #region Additional Box Score Checks
+                if (MainWindow.bs.AST1 > MainWindow.bs.FGM1 || MainWindow.bs.AST2 > MainWindow.bs.FGM2)
+                {
+                    throwErrorWithMessage("The AST stat can't be higher than the FGM stat.");
+                }
+
+                if (MainWindow.bs.BLK1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 || MainWindow.bs.BLK2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                {
+                    throwErrorWithMessage("The BLK stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
+                }
+
+                if (MainWindow.bs.REB1 - MainWindow.bs.OREB1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 || MainWindow.bs.REB2 - MainWindow.bs.OREB2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                {
+                    throwErrorWithMessage("The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
+                }
+
+                if (MainWindow.bs.OREB1 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1 || MainWindow.bs.OREB2 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2)
+                {
+                    throwErrorWithMessage("The OREB stat cant' be higher than the missed FGA (i.e. FGA - FGM).");
+                }
+
+                if (MainWindow.bs.STL1 > MainWindow.bs.TO2 || MainWindow.bs.STL2 > MainWindow.bs.TO1)
+                {
+                    throwErrorWithMessage("The STL stat for one team can't be higher than the other team's TO.");
+                }
+
+                // TODO: Need to handle the possibility of technical fouls somehow.
+                /*
+                if (MainWindow.bs.FGA1 > MainWindow.bs.FOUL2 * 3 || MainWindow.bs.FGA2 > MainWindow.bs.FOUL1 * 3)
+                {
+                    throwErrorWithMessage("The FTA stat for one team can't be more than 3 times the other team's FOUL stat.");
+                }
+                */
+                #endregion
 
                 MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
 
@@ -715,6 +737,12 @@ namespace NBA_Stats_Tracker.Windows
                 MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
                 MainWindow.bs.done = false;
             }
+        }
+
+        private void throwErrorWithMessage(string msg)
+        {
+            MessageBox.Show(msg, "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
+            throw (new Exception(msg));
         }
 
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1420,6 +1448,212 @@ namespace NBA_Stats_Tracker.Windows
         private void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
         {
             GenericEventHandlers.Any_ShowToolTip(sender, e);
+        }
+
+        private void btnCompareTeamAndPlayerStats_Click(object sender, RoutedEventArgs e)
+        {
+            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
+
+            foreach (PlayerBoxScore pbs in pbsAwayList)
+            {
+                REB += pbs.REB;
+                AST += pbs.AST;
+                STL += pbs.STL;
+                TOS += pbs.TOS;
+                BLK += pbs.BLK;
+                FGM += pbs.FGM;
+                FGA += pbs.FGA;
+                TPM += pbs.TPM;
+                TPA += pbs.TPA;
+                FTM += pbs.FTM;
+                FTA += pbs.FTA;
+                OREB += pbs.OREB;
+                FOUL += pbs.FOUL;
+            }
+
+            string team = cmbTeam1.SelectedItem.ToString();
+
+            if (txtREB1.Text != REB.ToString())
+            {
+                comparisonError("REB", team);
+                return;
+            }
+            if (txtAST1.Text != AST.ToString())
+            {
+                comparisonError("AST", team);
+                return;
+            }
+
+            if (txtSTL1.Text != STL.ToString())
+            {
+                comparisonError("STL", team);
+                return;
+            }
+
+            if (txtBLK1.Text != BLK.ToString())
+            {
+                comparisonError("BLK", team);
+                return;
+            }
+
+            if (txtTO1.Text != TOS.ToString())
+            {
+                comparisonError("TO", team);
+                return;
+            }
+
+            if (txtFGM1.Text != FGM.ToString())
+            {
+                comparisonError("FGM", team);
+                return;
+            }
+
+            if (txtFGA1.Text != FGA.ToString())
+            {
+                comparisonError("FGA", team);
+                return;
+            }
+
+            if (txt3PM1.Text != TPM.ToString())
+            {
+                comparisonError("3PM", team);
+                return;
+            }
+
+            if (txt3PA1.Text != TPA.ToString())
+            {
+                comparisonError("3PA", team);
+                return;
+            }
+
+            if (txtFTM1.Text != FTM.ToString())
+            {
+                comparisonError("FTM", team);
+                return;
+            }
+
+            if (txtFTA1.Text != FTA.ToString())
+            {
+                comparisonError("FTA", team);
+                return;
+            }
+
+            if (txtOFF1.Text != OREB.ToString())
+            {
+                comparisonError("OREB", team);
+                return;
+            }
+
+            if (txtPF1.Text != FOUL.ToString())
+            {
+                comparisonError("FOUL", team);
+                return;
+            }
+
+            REB = 0; AST = 0; STL = 0; TOS = 0; BLK = 0; FGM = 0; FGA = 0; TPM = 0; TPA = 0; FTM = 0; FTA = 0; OREB = 0; FOUL = 0;
+
+            foreach (PlayerBoxScore pbs in pbsHomeList)
+            {
+                REB += pbs.REB;
+                AST += pbs.AST;
+                STL += pbs.STL;
+                TOS += pbs.TOS;
+                BLK += pbs.BLK;
+                FGM += pbs.FGM;
+                FGA += pbs.FGA;
+                TPM += pbs.TPM;
+                TPA += pbs.TPA;
+                FTM += pbs.FTM;
+                FTA += pbs.FTA;
+                OREB += pbs.OREB;
+                FOUL += pbs.FOUL;
+            }
+
+            team = cmbTeam2.SelectedItem.ToString();
+
+            if (txtREB2.Text != REB.ToString())
+            {
+                comparisonError("REB", team);
+                return;
+            }
+            if (txtAST2.Text != AST.ToString())
+            {
+                comparisonError("AST", team);
+                return;
+            }
+
+            if (txtSTL2.Text != STL.ToString())
+            {
+                comparisonError("STL", team);
+                return;
+            }
+
+            if (txtBLK2.Text != BLK.ToString())
+            {
+                comparisonError("BLK", team);
+                return;
+            }
+
+            if (txtTO2.Text != TOS.ToString())
+            {
+                comparisonError("TO", team);
+                return;
+            }
+
+            if (txtFGM2.Text != FGM.ToString())
+            {
+                comparisonError("FGM", team);
+                return;
+            }
+
+            if (txtFGA2.Text != FGA.ToString())
+            {
+                comparisonError("FGA", team);
+                return;
+            }
+
+            if (txt3PM2.Text != TPM.ToString())
+            {
+                comparisonError("3PM", team);
+                return;
+            }
+
+            if (txt3PA2.Text != TPA.ToString())
+            {
+                comparisonError("3PA", team);
+                return;
+            }
+
+            if (txtFTM2.Text != FTM.ToString())
+            {
+                comparisonError("FTM", team);
+                return;
+            }
+
+            if (txtFTA2.Text != FTA.ToString())
+            {
+                comparisonError("FTA", team);
+                return;
+            }
+
+            if (txtOFF2.Text != OREB.ToString())
+            {
+                comparisonError("OREB", team);
+                return;
+            }
+
+            if (txtPF2.Text != FOUL.ToString())
+            {
+                comparisonError("FOUL", team);
+                return;
+            }
+
+            MessageBox.Show("All team and player stats add up!");
+        }
+
+        private void comparisonError(string stat, string team)
+        {
+            MessageBox.Show("The accumulated " + stat + " stat for the " + team + "'s players doesn't match the stat entered for the team.");
         }
     }
 }

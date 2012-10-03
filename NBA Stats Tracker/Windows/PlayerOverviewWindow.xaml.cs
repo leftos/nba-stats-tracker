@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -30,6 +31,7 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
 using SQLite_Database;
+using Swordfish.WPF.Charts;
 
 #endregion
 
@@ -208,6 +210,10 @@ namespace NBA_Stats_Tracker.Windows
             dgvYearly.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
             GetActivePlayers();
+            PopulateGraphStatCombo();
+
+            PlayerStats.CalculateAllMetrics(ref MainWindow.pst, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder);
+            PlayerStats.CalculateAllMetrics(ref MainWindow.pst, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder, playoffs: true);
         }
 
         private void GetActivePlayers()
@@ -319,12 +325,15 @@ namespace NBA_Stats_Tracker.Windows
                 cmbTeam_SelectionChanged(null, null); // Reload this team's players
                 return;
             }
-
+            /*
             string q2 = "select * from " + pl_playersT + " where ID = " + SelectedPlayerID.ToString();
             DataTable pl_res = db.GetDataTable(q2);
 
             psr = new PlayerStatsRow(new PlayerStats(res.Rows[0]));
             pl_psr = new PlayerStatsRow(new PlayerStats(pl_res.Rows[0], true), true);
+            */
+            psr = new PlayerStatsRow(MainWindow.pst[SelectedPlayerID]);
+            pl_psr = new PlayerStatsRow(MainWindow.pst[SelectedPlayerID], true);
 
             UpdateOverviewAndBoxScores();
 
@@ -336,6 +345,9 @@ namespace NBA_Stats_Tracker.Windows
             //{
             cmbOppPlayer_SelectionChanged(null, null);
             //}
+
+            if (cmbGraphStat.SelectedIndex == -1)
+                cmbGraphStat.SelectedIndex = 0;
         }
 
         private void UpdateYearlyReport()
@@ -504,7 +516,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (psr.isActive)
                 {
-                    int id = Convert.ToInt32(SelectedPlayerID);
+                    int id = SelectedPlayerID;
 
                     dr = dt_ov.NewRow();
 
@@ -761,6 +773,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dgvBoxScores.ItemsSource = pbsList;
             UpdateBest();
+            cmbGraphStat_SelectionChanged(null, null);
 
             #endregion
         }
@@ -1175,7 +1188,10 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Player Scouting Reports coming soon!");
+            if (cmbPlayer.SelectedIndex == -1)
+                return;
+
+            psr.ScoutingReport(MainWindow.pst, rankingsActive, rankingsTeam, rankingsPosition, pbsList.ToList(), txbGame1.Text);
         }
 
         private void btnSavePlayer_Click(object sender, RoutedEventArgs e)
@@ -1681,6 +1697,86 @@ namespace NBA_Stats_Tracker.Windows
         {
             var dv_ov = new DataView(dt_ov) {AllowNew = false, AllowDelete = false};
             dgvOverviewStats.DataContext = dv_ov;
+        }
+
+        private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || pbsList.Count < 1)
+                return;
+
+            ChartPrimitive cp = new ChartPrimitive();
+            double i = 0;
+
+            string propToGet = cmbGraphStat.SelectedItem.ToString();
+            propToGet = propToGet.Replace('3', 'T');
+            propToGet = propToGet.Replace('%', 'p');
+
+            double sum = 0;
+            double games = 0;
+
+            foreach (var pbs in pbsList)
+            {
+                i++;
+                double value =
+                    Convert.ToDouble(typeof (PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
+                if (!double.IsNaN(value))
+                {
+                    if (propToGet.Contains("p"))
+                        value = Convert.ToDouble(Convert.ToInt32(value*1000)) / 1000;
+                    cp.AddPoint(i, value);
+                    games++;
+                    sum += value;
+                }
+            }
+            cp.Label = cmbGraphStat.SelectedItem.ToString();
+            cp.ShowInLegend = false;
+            chart.Primitives.Clear();
+            if (cp.Points.Count > 0)
+            {
+                double average = sum / games;
+                ChartPrimitive cpavg = new ChartPrimitive();
+                for (int j = 1; j <= i; j++)
+                {
+                    cpavg.AddPoint(j, average);
+                }
+                cpavg.Color = System.Windows.Media.Color.FromRgb(0, 0, 100);
+                cpavg.Dashed = true;
+                cpavg.ShowInLegend = false;
+                chart.Primitives.Add(cpavg);
+                chart.Primitives.Add(cp);
+            }
+            chart.RedrawPlotLines();
+            ChartPrimitive cp2 = new ChartPrimitive();
+            cp2.AddPoint(1, 0);
+            cp2.AddPoint(i, 1);
+            chart.Primitives.Add(cp2);
+            chart.ResetPanAndZoom();
+        }
+
+        private void PopulateGraphStatCombo()
+        {
+            List<string> stats = new List<string>
+                                 {
+                                     "GmSc", "GmScE", "PTS", "FGM", "FGA", "FG%", "3PM", "3PA", "3P%", "FTM", "FTA", "FT%", "REB", "OREB", "DREB", "AST", "BLK", "STL", "TO", "FOUL"
+                                 };
+
+            stats.ForEach(s => cmbGraphStat.Items.Add(s));
+        }
+
+        private void btnPrevStat_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == 0)
+                cmbGraphStat.SelectedIndex = cmbGraphStat.Items.Count - 1;
+            else
+                cmbGraphStat.SelectedIndex--;
+        }
+
+        private void btnNextStat_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == cmbGraphStat.Items.Count - 1)
+                cmbGraphStat.SelectedIndex = 0;
+            else
+                cmbGraphStat.SelectedIndex++;
         }
     }
 }
