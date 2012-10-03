@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using NBA_Stats_Tracker.Interop;
@@ -48,6 +49,9 @@ namespace NBA_Stats_Tracker
             {
                 var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
+                f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker");
+                f.WriteLine("Version " + Assembly.GetExecutingAssembly().GetName().Version);
+                f.WriteLine();
                 f.Write(e.Exception.ToString());
                 f.WriteLine();
                 f.WriteLine();
@@ -79,6 +83,8 @@ namespace NBA_Stats_Tracker
                 //StreamWriter f = new StreamWriter(NBA_2K12_Keep_My_Mod.MainWindow.SaveRootPath + @"\errorlog.txt");
                 var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
 
+                f.WriteLine("Forced Exception Error Report for NBA Stats Tracker");
+                f.WriteLine("Version " + Assembly.GetExecutingAssembly().GetName().Version);
                 f.WriteLine("Additional: " + additional);
                 f.WriteLine();
                 f.Write(e.ToString());
