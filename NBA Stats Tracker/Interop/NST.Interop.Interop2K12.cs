@@ -32,8 +32,22 @@ using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker.Interop
 {
+    /// <summary>
+    /// Implements methods for importing and exporting NBA 2K12 saves using BinaryReader and BinaryWriter.
+    /// This method of interoperability has multiple issues regarding the team order detection and only worked for the first season, 
+    /// so it's preferable to use <see cref="InteropREditor"/> instead.
+    /// </summary>
     public static class Interop2K12
     {
+        /// <summary>
+        /// Gets the stats from an NBA 2K12 save.
+        /// </summary>
+        /// <param name="fn">The path to the save.</param>
+        /// <param name="tst">The resulting team stats dictionary.</param>
+        /// <param name="tstopp">The resulting opposing team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="pt">The playoff tree.</param>
+        /// <param name="havePT">if set to <c>true</c>, the pre-existing PlayoffTree will be used.</param>
         public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                                 ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt, bool havePT = false)
         {
@@ -190,6 +204,13 @@ namespace NBA_Stats_Tracker.Interop
             */
         }
 
+        /// <summary>
+        /// Calculates the decimal offsets for each team inside the save file.
+        /// </summary>
+        /// <param name="fn">The path to the save file.</param>
+        /// <param name="_teamStats">The team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="pt">The playoff tree.</param>
         public static void prepareOffsets(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
                                           ref PlayoffTree pt)
         {
@@ -235,6 +256,14 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
+        /// <summary>
+        /// Checks if the specified save file is in the playoffs, by checking if all teams have played the required number of games.
+        /// </summary>
+        /// <param name="fn">The path to the save file.</param>
+        /// <param name="_teamStats">The team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="pt">The playoff tree.</param>
+        /// <returns></returns>
         private static int checkIfIntoPlayoffs(string fn, Dictionary<int, TeamStats> _teamStats, ref SortedDictionary<string, int> TeamOrder,
                                                ref PlayoffTree pt)
         {
@@ -274,7 +303,7 @@ namespace NBA_Stats_Tracker.Interop
             }
             if (gamesInSeason == -1)
             {
-                gamesInSeason = askGamesInSeason(gamesInSeason);
+                gamesInSeason = askGamesInSeason();
 
                 mode = askMode();
 
@@ -372,6 +401,10 @@ namespace NBA_Stats_Tracker.Interop
             return 0;
         }
 
+        /// <summary>
+        /// Asks the user which compatibility mode to use.
+        /// </summary>
+        /// <returns></returns>
         private static string askMode()
         {
             var at = new ComboChoiceWindow(ComboChoiceWindow.Mode.ImportCompatibility);
@@ -379,6 +412,14 @@ namespace NBA_Stats_Tracker.Interop
             return App.mode;
         }
 
+        /// <summary>
+        /// Saves the settings for the specified NBA 2K12 save.
+        /// </summary>
+        /// <param name="fn">The save file path.</param>
+        /// <param name="gamesInSeason">The games in season.</param>
+        /// <param name="ptFile">The playoff tree file.</param>
+        /// <param name="mode">The compatibility mode.</param>
+        /// <param name="SettingsFile">The settings file path.</param>
         private static void saveSettingsForFile(string fn, int gamesInSeason, string ptFile, string mode, string SettingsFile)
         {
             using (var sw2 = new StreamWriter(SettingsFile, false))
@@ -387,6 +428,13 @@ namespace NBA_Stats_Tracker.Interop
             }
         }
 
+        /// <summary>
+        /// Exports the stats from the current database to the NBA 2K12 save file.
+        /// </summary>
+        /// <param name="fn">The save file path.</param>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="pt">The playoff tree.</param>
         public static void updateSavegame(string fn, Dictionary<int, TeamStats> tst, SortedDictionary<string, int> TeamOrder, PlayoffTree pt)
         {
             using (FileStream openRead = File.OpenRead(fn))
@@ -460,6 +508,11 @@ namespace NBA_Stats_Tracker.Interop
             File.Delete(App.AppTempPath + Tools.getSafeFilename(fn));
         }
 
+        /// <summary>
+        /// Sets the team order (team name & ID pairs).
+        /// </summary>
+        /// <param name="modeToSet">The compatibility mode to use.</param>
+        /// <returns></returns>
         public static SortedDictionary<string, int> setTeamOrder(string modeToSet)
         {
             SortedDictionary<string, int> TeamOrder;
@@ -736,8 +789,14 @@ namespace NBA_Stats_Tracker.Interop
             return TeamOrder;
         }
 
-        private static int askGamesInSeason(int gamesInSeason)
+        /// <summary>
+        /// Asks the user how many games are in a season for the current save file being loaded.
+        /// </summary>
+        /// <param name="gamesInSeason">The games in season.</param>
+        /// <returns></returns>
+        private static int askGamesInSeason()
         {
+            int gamesInSeason = 82;
             MessageBoxResult r =
                 MessageBox.Show("How many games does each season have in this save?\n\n82 Games: Yes\n58 Games: No\n29 Games: Cancel", "",
                                 MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -746,22 +805,33 @@ namespace NBA_Stats_Tracker.Interop
             else if (r == MessageBoxResult.No)
                 gamesInSeason = 58;
             else if (r == MessageBoxResult.Cancel)
-                gamesInSeason = 28;
+                gamesInSeason = 29;
             return gamesInSeason;
         }
     }
 
+    /// <summary>
+    /// Implements the Playoff Tree structure, containing the 16 teams participating in the playoffs.
+    /// </summary>
     [Serializable]
     public class PlayoffTree : ISerializable
     {
         public readonly string[] teams = new string[16];
         public bool done;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayoffTree" /> class.
+        /// </summary>
         public PlayoffTree()
         {
             teams[0] = "Invalid";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayoffTree" /> class. Used for serialization.
+        /// </summary>
+        /// <param name="info">The info.</param>
+        /// <param name="ctxt">The CTXT.</param>
         protected PlayoffTree(SerializationInfo info, StreamingContext ctxt)
         {
             teams = (string[]) info.GetValue("teams", typeof (string[]));

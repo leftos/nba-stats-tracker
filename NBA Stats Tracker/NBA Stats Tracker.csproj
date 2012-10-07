@@ -79,7 +79,7 @@
     <Compile Include="Data\NST.Data.SQLiteIO.cs" />
     <Compile Include="Data\NST.Data.Players.cs" />
     <Compile Include="Data\NST.Data.Teams.cs" />
-    <Compile Include="Data\NST.Data.Season.cs" />
+    <Compile Include="Data\NST.Data.Misc.cs" />
     <Compile Include="Helper\NST.Helper.ListExtensions.cs" />
     <Compile Include="Helper\NST.Helper.Misc.cs" />
     <Compile Include="Helper\NST.Helper.EventHandlers.cs" />

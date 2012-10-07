@@ -136,7 +136,7 @@
                   CurrentCellChanged="dataGrid_CurrentCellChanged" MouseMove="DataGrid_MouseMove" Drop="DataGrid_Drop">
             <DataGrid.Columns>
                 <DataGridComboBoxColumn x:Name="colPlayerHome"
-                                        CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" DisplayMemberPath="Value" Header="Player"
+                                        CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" DisplayMemberPath="Value" Header="Player"
                                         SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                 <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" Visibility="Collapsed" />
                 <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />

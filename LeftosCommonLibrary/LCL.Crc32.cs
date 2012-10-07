@@ -18,12 +18,17 @@
 #region Using Directives
 
 using System;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 #endregion
 
 namespace LeftosCommonLibrary
 {
+    /// <summary>
+    /// Provides methods to calculate CRC32 (32-bit cyclic redundancy check) hashes of byte arrays.
+    /// </summary>
     public sealed class Crc32 : HashAlgorithm
     {
         private const UInt32 DefaultPolynomial = 0xedb88320;
@@ -34,6 +39,9 @@ namespace LeftosCommonLibrary
         private readonly UInt32[] table;
         private UInt32 hash;
 
+        /// <summary>
+        /// Default constructor for the Crc32 class, using the default polynomial and seed.
+        /// </summary>
         public Crc32()
         {
             table = InitializeTable(DefaultPolynomial);
@@ -41,6 +49,11 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
+        /// <summary>
+        /// Constructor for the Crc32 class, with user-set polynomial and seed.
+        /// </summary>
+        /// <param name="polynomial">The polynomial used to initialize the table.</param>
+        /// <param name="seed">The seed used to calculate the hash.</param>
         public Crc32(UInt32 polynomial, UInt32 seed)
         {
             table = InitializeTable(polynomial);
@@ -48,6 +61,9 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
+        /// <summary>
+        /// Overriden property; returns 32 because of the 32-bit implementation.
+        /// </summary>
         public override int HashSize
         {
             get { return 32; }
@@ -122,6 +138,45 @@ namespace LeftosCommonLibrary
         private byte[] UInt32ToBigEndianBytes(UInt32 x)
         {
             return new[] {(byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff)};
+        }
+
+        /// <summary>
+        /// Calculates the CRC32 of a specified file.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <param name="ignoreFirst4Bytes">Whether to ignore the first 4 bytes of the file; should be used when the those bytes are the CRC itself.</param>
+        /// <returns>A hex string representation of the CRC32 hash.</returns>
+        public static String CalculateCRC(string path, bool ignoreFirst4Bytes = false)
+        {
+            Crc32 crc32 = new Crc32();
+            String hash = String.Empty;
+
+            byte[] file;
+            if (!ignoreFirst4Bytes)
+            {
+                file = File.ReadAllBytes(path);
+            }
+            else
+            {
+                file = File.ReadAllBytes(path).Skip(4).ToArray();
+            }
+            return CalculateCRC(file);
+        }
+
+        /// <summary>
+        /// Calculates the CRC32 of a specified byte array.
+        /// </summary>
+        /// <param name="file">The byte array of which to calculate the CRC32 hash.</param>
+        /// <returns>A hex string representation of the CRC32 hash.</returns>
+        public static String CalculateCRC(byte[] file)
+        {
+            Crc32 crc32 = new Crc32();
+            String hash = String.Empty;
+
+            foreach (byte b in crc32.ComputeHash(file))
+                hash += b.ToString("x2").ToLower();
+
+            return hash;
         }
     }
 }

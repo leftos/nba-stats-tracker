@@ -30,30 +30,42 @@ namespace LeftosCommonLibrary
 {
     public static class Tools
     {
-        public static string getExtension(string fn)
+        /// <summary>
+        /// Gets the extension of a specified file.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>The extension of the file.</returns>
+        public static string getExtension(string path)
         {
-            string[] parts = fn.Split('.');
-            return parts[parts.Length - 1];
+            return Path.GetExtension(path);
         }
 
+        /// <summary>
+        /// Gets the filename part of a path to a file.
+        /// </summary>
+        /// <param name="f">The path to the file.</param>
+        /// <returns>The safe filename of the file.</returns>
         public static string getSafeFilename(string f)
         {
-            string[] parts = f.Split('\\');
-            string curName = parts[parts.Length - 1];
-            return curName;
+            return Path.GetFileName(f);
         }
 
+        /// <summary>
+        /// Gets the CRC32 of a specified file.
+        /// </summary>
+        /// <param name="filename">The path to the file.</param>
+        /// <returns>The hex representation of the CRC32 of the file.</returns>
         public static String getCRC(string filename)
         {
-            String hash = String.Empty;
-
-            using (var crc32 = new Crc32())
-            using (FileStream fs = File.Open(filename, FileMode.Open))
-                hash = crc32.ComputeHash(fs).Aggregate(hash, (current, b) => current + b.ToString("x2").ToLower());
-
-            return hash;
+            return Crc32.CalculateCRC(filename);
         }
 
+        /// <summary>
+        /// Reverses the byte order of (part of) an array of bytes.
+        /// </summary>
+        /// <param name="original">The original.</param>
+        /// <param name="length">The amount of bytes that should be reversed and returned, counting from the start of the array.</param>
+        /// <returns>The reversed byte array.</returns>
         public static byte[] ReverseByteOrder(byte[] original, int length)
         {
             var newArr = new byte[length];
@@ -64,6 +76,11 @@ namespace LeftosCommonLibrary
             return newArr;
         }
 
+        /// <summary>
+        /// Converts a hex representation string to a byte array of corresponding values.
+        /// </summary>
+        /// <param name="hex">The hex representation.</param>
+        /// <returns>The corresponding byte array.</returns>
         public static byte[] StringToByteArray(String hex)
         {
             int NumberChars = hex.Length;
@@ -73,6 +90,11 @@ namespace LeftosCommonLibrary
             return bytes;
         }
 
+        /// <summary>
+        /// Gets the MD5 hash of a string.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <returns>The MD5 hash.</returns>
         public static string GetMD5(string s)
         {
             //Declarations
@@ -90,6 +112,13 @@ namespace LeftosCommonLibrary
             return BitConverter.ToString(encodedBytes);
         }
 
+        /// <summary>
+        /// Gets a cell of a WPF DataGrid at the specified row and column.
+        /// </summary>
+        /// <param name="dataGrid">The data grid.</param>
+        /// <param name="row">The row.</param>
+        /// <param name="col">The column.</param>
+        /// <returns></returns>
         public static DataGridCell GetCell(DataGrid dataGrid, int row, int col)
         {
             var dataRowView = dataGrid.Items[row] as DataRowView;
@@ -99,16 +128,34 @@ namespace LeftosCommonLibrary
             return null;
         }
 
+        /// <summary>
+        /// Gets an unsigned 16-bit integer from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
         public static UInt16 getUInt16(DataRow r, string ColumnName)
         {
             return Convert.ToUInt16(r[ColumnName].ToString());
         }
 
+        /// <summary>
+        /// Gets a signed 32-bit integer from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
         public static int getInt(DataRow r, string ColumnName)
         {
             return Convert.ToInt32(r[ColumnName].ToString());
         }
 
+        /// <summary>
+        /// Gets a boolean from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
         public static Boolean getBoolean(DataRow r, string ColumnName)
         {
             string s = r[ColumnName].ToString();
@@ -116,16 +163,33 @@ namespace LeftosCommonLibrary
             return Convert.ToBoolean(s);
         }
 
+        /// <summary>
+        /// Gets a string from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
         public static string getString(DataRow r, string ColumnName)
         {
             return r[ColumnName].ToString();
         }
 
+        /// <summary>
+        /// Splits a multi-line string to an array of its lines.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <returns></returns>
         public static string[] SplitLinesToArray(string text)
         {
             return text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Splits a multi-line string to a list of its lines.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="keepDuplicates">if set to <c>true</c> [keep duplicates].</param>
+        /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
             string[] arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);

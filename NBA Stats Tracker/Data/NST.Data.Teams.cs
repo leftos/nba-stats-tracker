@@ -28,14 +28,24 @@ using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Data
 {
+    /// <summary>
+    /// Contains all the information for the teams' performances in a game.
+    /// </summary>
     public class TeamBoxScore
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        /// </summary>
         public TeamBoxScore()
         {
             id = -1;
             bshistid = -1;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        /// </summary>
+        /// <param name="r">The SQLite query result row which contains the required information.</param>
         public TeamBoxScore(DataRow r)
         {
             id = Convert.ToInt32(r["GameID"].ToString());
@@ -77,7 +87,12 @@ namespace NBA_Stats_Tracker.Data
             MINS2 = Convert.ToUInt16(r["T2MINS"].ToString());
         }
 
-        public TeamBoxScore(DataSet ds, string[] parts)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        /// </summary>
+        /// <param name="ds">The Basketball-Reference.com dataset resulting from the parsing.</param>
+        /// <param name="dateParts">The parts of the date string.</param>
+        public TeamBoxScore(DataSet ds, string[] dateParts)
         {
             DataTable away = ds.Tables[0];
             DataTable home = ds.Tables[1];
@@ -85,12 +100,12 @@ namespace NBA_Stats_Tracker.Data
             int done = 0;
             foreach (var team in MainWindow.TeamOrder)
             {
-                if (parts[0].Contains(team.Key))
+                if (dateParts[0].Contains(team.Key))
                 {
                     Team1 = team.Key;
                     done++;
                 }
-                if (parts[1].Contains(team.Key))
+                if (dateParts[1].Contains(team.Key))
                 {
                     Team2 = team.Key;
                     done++;
@@ -104,7 +119,7 @@ namespace NBA_Stats_Tracker.Data
                 Team2 = "$$Invalid";
                 return;
             }
-            string date = parts[2].Trim() + ", " + parts[3].Trim();
+            string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             gamedate = Convert.ToDateTime(date);
 
             id = SQLiteIO.GetFreeID(MainWindow.currentDB, "GameResults", "GameID");
@@ -201,7 +216,11 @@ namespace NBA_Stats_Tracker.Data
         public ushort DisplayFOUL { get; set; }
         public double DisplayGmSc { get; set; }
 
-        public void Prepare(string team)
+        /// <summary>
+        /// Prepares the presentation fields of the class.
+        /// </summary>
+        /// <param name="team">The team.</param>
+        public void PrepareForDisplay(string team)
         {
             if (team == Team1)
             {
@@ -269,6 +288,9 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// A list of constant pseudonyms for specific entries in the teams' stats arrays.
+    /// </summary>
     public static class t
     {
         public const int MINS = 0,
@@ -309,6 +331,9 @@ namespace NBA_Stats_Tracker.Data
                          PD = 18;
     }
 
+    /// <summary>
+    /// A container for all of a team's information, stats, averages and metrics handled by the program.
+    /// </summary>
     [Serializable]
     public class TeamStats
     {
@@ -348,11 +373,18 @@ namespace NBA_Stats_Tracker.Data
 
         public uint[] winloss = new uint[2];
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamStats" /> class.
+        /// </summary>
         public TeamStats()
         {
             prepareEmpty();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamStats" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
         public TeamStats(string name) : this()
         {
             this.name = name;
@@ -375,6 +407,9 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Prepares an empty TeamStats instance.
+        /// </summary>
         private void prepareEmpty()
         {
             winloss[0] = Convert.ToByte(0);
@@ -396,6 +431,9 @@ namespace NBA_Stats_Tracker.Data
             conference = 0;
         }
 
+        /// <summary>
+        /// Calculates the averages of a team's stats.
+        /// </summary>
         public void calcAvg()
         {
             uint games = winloss[0] + winloss[1];
@@ -442,7 +480,13 @@ namespace NBA_Stats_Tracker.Data
             pl_averages[t.PD] = pl_averages[t.PPG] - pl_averages[t.PAPG];
         }
 
-        public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, string statRange)
+        /// <summary>
+        /// Calculates the league averages.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="statRange">The stat range.</param>
+        /// <returns></returns>
+        public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, Span statRange)
         {
             var ls = new TeamStats("League");
             uint teamCount = CountTeams(tst, statRange);
@@ -450,7 +494,7 @@ namespace NBA_Stats_Tracker.Data
             {
                 ls.AddTeamStats(tst[i], statRange);
             }
-            ls.CalcMetrics(ls, (statRange == "Playoffs"));
+            ls.CalcMetrics(ls, (statRange == Span.Playoffs));
 
             ls.winloss[0] /= teamCount;
             ls.winloss[1] /= teamCount;
@@ -462,6 +506,12 @@ namespace NBA_Stats_Tracker.Data
             return ls;
         }
 
+        /// <summary>
+        /// Calculates the team metrics for all the teams.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="tstopp">The opposing team stats dictionary.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the metric stats will be calculated for the playoff performances of the teams.</param>
         public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, bool playoffs = false)
         {
             for (int i = 0; i < tst.Count; i++)
@@ -470,11 +520,17 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        private static uint CountTeams(Dictionary<int, TeamStats> tst, string statRange)
+        /// <summary>
+        /// Counts the teams having more than one game in a specific time-span of the league's calendar.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="statRange">The stat range.</param>
+        /// <returns></returns>
+        private static uint CountTeams(Dictionary<int, TeamStats> tst, Span statRange)
         {
             uint teamCount = 0;
 
-            if (statRange != "Playoffs")
+            if (statRange != Span.Playoffs)
             {
                 for (int i = 0; i < tst.Count; i++)
                 {
@@ -493,6 +549,11 @@ namespace NBA_Stats_Tracker.Data
             return (teamCount != 0) ? teamCount : 1;
         }
 
+        /// <summary>
+        /// Calculates the metric stats for this team.
+        /// </summary>
+        /// <param name="tsopp">The opposing team stats.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the metrics will be calculated based on the team's playoff performances.</param>
         public void CalcMetrics(TeamStats tsopp, bool playoffs = false)
         {
             var temp_metrics = new Dictionary<string, double>();
@@ -590,6 +651,12 @@ namespace NBA_Stats_Tracker.Data
                 pl_metrics = new Dictionary<string, double>(temp_metrics);
         }
 
+        /// <summary>
+        /// Calculates the Possessions metric.
+        /// </summary>
+        /// <param name="tstats">The team stats.</param>
+        /// <param name="toppstats">The opposing team stats.</param>
+        /// <returns></returns>
         private static double GetPossMetric(double[] tstats, double[] toppstats)
         {
             double Poss = 0.5*
@@ -601,23 +668,37 @@ namespace NBA_Stats_Tracker.Data
             return Poss;
         }
 
+        /// <summary>
+        /// Gets the amount of games played by the team.
+        /// </summary>
+        /// <returns></returns>
         internal uint getGames()
         {
             uint games = winloss[0] + winloss[1];
             return games;
         }
 
+        /// <summary>
+        /// Gets the amount of playoff games played by the team.
+        /// </summary>
+        /// <returns></returns>
         internal uint getPlayoffGames()
         {
             uint pl_games = pl_winloss[0] + pl_winloss[1];
             return pl_games;
         }
 
-        public void AddTeamStats(TeamStats ts, string mode)
+        /// <summary>
+        /// Adds the team stats from a TeamStats instance to the current stats.
+        /// </summary>
+        /// <param name="ts">The team stats to add.</param>
+        /// <param name="mode">The time-span.</param>
+        /// <exception cref="System.Exception">Team Add Stats called with invalid parameter.</exception>
+        public void AddTeamStats(TeamStats ts, Span mode)
         {
             switch (mode)
             {
-                case "Season":
+                case Span.Season:
                 {
                     winloss[0] += ts.winloss[0];
                     winloss[1] += ts.winloss[1];
@@ -630,7 +711,7 @@ namespace NBA_Stats_Tracker.Data
                     calcAvg();
                     break;
                 }
-                case "Playoffs":
+                case Span.Playoffs:
                 {
                     pl_winloss[0] += ts.pl_winloss[0];
                     pl_winloss[1] += ts.pl_winloss[1];
@@ -643,7 +724,7 @@ namespace NBA_Stats_Tracker.Data
                     calcAvg();
                     break;
                 }
-                case "All":
+                case Span.SeasonAndPlayoffs:
                 {
                     winloss[0] += ts.winloss[0];
                     winloss[1] += ts.winloss[1];
@@ -671,11 +752,16 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public void ResetStats(string mode)
+        /// <summary>
+        /// Resets the stats.
+        /// </summary>
+        /// <param name="mode">The time-span.</param>
+        /// <exception cref="System.Exception">Team Reset Stats called with invalid parameter.</exception>
+        public void ResetStats(Span mode)
         {
             switch (mode)
             {
-                case "Season":
+                case Span.Season:
                 {
                     winloss[0] = 0;
                     winloss[1] = 0;
@@ -688,7 +774,7 @@ namespace NBA_Stats_Tracker.Data
                     calcAvg();
                     break;
                 }
-                case "Playoffs":
+                case Span.Playoffs:
                 {
                     pl_winloss[0] = 0;
                     pl_winloss[1] = 0;
@@ -701,7 +787,7 @@ namespace NBA_Stats_Tracker.Data
                     calcAvg();
                     break;
                 }
-                case "All":
+                case Span.SeasonAndPlayoffs:
                 {
                     winloss[0] = 0;
                     winloss[1] = 0;
@@ -729,6 +815,12 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Calculates the team rankings for each stat.
+        /// </summary>
+        /// <param name="_teamStats">The team stats dictionary.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the rankings will be calculated based on the teams' playoff performances.</param>
+        /// <returns></returns>
         public static int[][] CalculateTeamRankings(Dictionary<int, TeamStats> _teamStats, bool playoffs = false)
         {
             int len = _teamStats.Count;
@@ -768,6 +860,13 @@ namespace NBA_Stats_Tracker.Data
             return rating;
         }
 
+        /// <summary>
+        /// Presents the team's averages and rankings in a well-formatted multi-line string.
+        /// </summary>
+        /// <param name="teamName">Name of the team.</param>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <returns></returns>
         public static string TeamAveragesAndRankings(string teamName, Dictionary<int, TeamStats> tst,
                                                      SortedDictionary<string, int> TeamOrder)
         {
@@ -796,6 +895,11 @@ namespace NBA_Stats_Tracker.Data
             return text;
         }
 
+        /// <summary>
+        /// Gets the winning percentage.
+        /// </summary>
+        /// <param name="span">The span.</param>
+        /// <returns></returns>
         public float getWinningPercentage(Span span)
         {
             if (span == Span.Season)
@@ -812,6 +916,11 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Returns a well-formatted multi-line string presenting a scouting report for the team in natural language.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <returns></returns>
         public string ScoutingReport(Dictionary<int, TeamStats> tst)
         {
             int[][] rating = CalculateTeamRankings(tst);
@@ -1077,6 +1186,15 @@ namespace NBA_Stats_Tracker.Data
             return msg;
         }
 
+        /// <summary>
+        /// Determines whether the team is hidden for the current season.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="name">The name of the team.</param>
+        /// <param name="season">The season ID.</param>
+        /// <returns>
+        ///   <c>true</c> if the team is hidden; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsTeamHiddenInSeason(string file, string name, int season)
         {
             var db = new SQLiteDatabase(file);
@@ -1091,6 +1209,12 @@ namespace NBA_Stats_Tracker.Data
             return isHidden;
         }
 
+        /// <summary>
+        /// Adds the team stats from a box score.
+        /// </summary>
+        /// <param name="bsToAdd">The box score to add.</param>
+        /// <param name="ts1">The first team's team stats.</param>
+        /// <param name="ts2">The second team's team stats.</param>
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2)
         {
             var _tst = new Dictionary<int, TeamStats> {{1, ts1}, {2, ts2}};
@@ -1100,6 +1224,12 @@ namespace NBA_Stats_Tracker.Data
             ts2 = _tst[2];
         }
 
+        /// <summary>
+        /// Adds the team stats from a box score.
+        /// </summary>
+        /// <param name="bsToAdd">The box score to add.</param>
+        /// <param name="_tst">The team stats dictionary.</param>
+        /// <param name="_tstopp">The opposing team stats dictionary.</param>
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
                                                     ref Dictionary<int, TeamStats> _tstopp)
         {
@@ -1109,6 +1239,14 @@ namespace NBA_Stats_Tracker.Data
             AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, id1, id2);
         }
 
+        /// <summary>
+        /// Adds the team stats from a box score.
+        /// </summary>
+        /// <param name="bsToAdd">The box score to add.</param>
+        /// <param name="_tst">The team stats dictionary.</param>
+        /// <param name="_tstopp">The opposing team stats dictionary.</param>
+        /// <param name="id1">The away team's ID.</param>
+        /// <param name="id2">The home team's ID.</param>
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
                                                     ref Dictionary<int, TeamStats> _tstopp, int id1, int id2)
         {
@@ -1432,6 +1570,9 @@ namespace NBA_Stats_Tracker.Data
             _tstopp[id2] = tsopp2;
         }
 
+        /// <summary>
+        /// Checks for teams in divisions that don't exist anymore, and reassings them to the first available division.
+        /// </summary>
         public static void CheckForInvalidDivisions()
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);
@@ -1490,8 +1631,16 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// Provides a presentation interface for a team's metric stats.
+    /// </summary>
     public class TeamMetricStatsRow
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamMetricStatsRow" /> class.
+        /// </summary>
+        /// <param name="ts">The team's stats.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the row will present playoffs metric stats.</param>
         public TeamMetricStatsRow(TeamStats ts, bool playoffs = false)
         {
             Name = ts.displayName;
@@ -1554,10 +1703,17 @@ namespace NBA_Stats_Tracker.Data
         public double Pace { get; set; }
     }
 
+    /// <summary>
+    /// Used to determine the team ranking for each stat.
+    /// </summary>
     public class TeamRankings
     {
         public int[][] rankings;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamRankings" /> class.
+        /// </summary>
+        /// <param name="_tst">The team stats dictionary containing all team stats.</param>
         public TeamRankings(Dictionary<int, TeamStats> _tst)
         {
             rankings = new int[_tst.Count][];

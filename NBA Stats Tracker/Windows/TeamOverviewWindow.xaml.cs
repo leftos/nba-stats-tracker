@@ -135,7 +135,7 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (DataRow r in res.Rows)
                 {
                     var bsr = new TeamBoxScore(r);
-                    bsr.Prepare(curTeam);
+                    bsr.PrepareForDisplay(curTeam);
                     bsrList.Add(bsr);
                 }
             }
@@ -153,7 +153,7 @@ namespace NBA_Stats_Tracker.Windows
                     foreach (DataRow r in res.Rows)
                     {
                         var bsr = new TeamBoxScore(r);
-                        bsr.Prepare(curTeam);
+                        bsr.PrepareForDisplay(curTeam);
                         bsrList.Add(bsr);
                     }
                     AddToTeamStatsFromSQLBoxScores(res, ref curts, ref curtsopp);
@@ -848,13 +848,13 @@ namespace NBA_Stats_Tracker.Windows
                                 if (_sum > max)
                                     max = _sum;
 
-                                permutations.Add(new StartingFivePermutation {idList = perm, pInP = _pInP, sum = _sum});
+                                permutations.Add(new StartingFivePermutation {idList = perm, PlayersInPrimaryPosition = _pInP, Sum = _sum});
                             }
 
             try
             {
                 StartingFivePermutation bestPerm =
-                    permutations.Where(perm1 => perm1.sum.Equals(max)).OrderByDescending(perm2 => perm2.pInP).First();
+                    permutations.Where(perm1 => perm1.Sum.Equals(max)).OrderByDescending(perm2 => perm2.PlayersInPrimaryPosition).First();
                 bestPerm.idList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
             }
             catch (Exception)
@@ -971,18 +971,18 @@ namespace NBA_Stats_Tracker.Windows
                         psBetween.AddBoxScore(pbs, isPlayoff);
                     }
                     var curTSAll = new TeamStats(curTeam);
-                    curTSAll.AddTeamStats(curts, "Season");
+                    curTSAll.AddTeamStats(curts, Span.Season);
                     var curTSOppAll = new TeamStats(curTeam);
-                    curTSOppAll.AddTeamStats(curtsopp, "Season");
+                    curTSOppAll.AddTeamStats(curtsopp, Span.Season);
                     curTSAll.CalcMetrics(curTSOppAll);
                     psBetween.CalcMetrics(curTSAll, curTSOppAll, new TeamStats("$$Empty"));
 
                     psrList.Add(new PlayerStatsRow(psBetween));
 
                     curTSAll = new TeamStats(curTeam);
-                    curTSAll.AddTeamStats(curts, "Playoffs");
+                    curTSAll.AddTeamStats(curts, Span.Playoffs);
                     curTSOppAll = new TeamStats(curTeam);
-                    curTSOppAll.AddTeamStats(curtsopp, "Playoffs");
+                    curTSOppAll.AddTeamStats(curtsopp, Span.Playoffs);
                     curTSAll.CalcMetrics(curTSOppAll);
                     psBetween.CalcMetrics(curTSAll, curTSOppAll, new TeamStats("$$Empty"), playoffs: true);
 
@@ -1024,9 +1024,9 @@ namespace NBA_Stats_Tracker.Windows
             var tsAllSeasons = new TeamStats("All Seasons");
             var tsAllPlayoffs = new TeamStats("All Playoffs");
             var tsAll = new TeamStats("All Games");
-            tsAllSeasons.AddTeamStats(ts, "Season");
-            tsAllPlayoffs.AddTeamStats(ts, "Playoffs");
-            tsAll.AddTeamStats(ts, "All");
+            tsAllSeasons.AddTeamStats(ts, Span.Season);
+            tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
+            tsAll.AddTeamStats(ts, Span.SeasonAndPlayoffs);
 
             DataRow drcur = dt_yea.NewRow();
             DataRow drcur_pl = dt_yea.NewRow();
@@ -1055,9 +1055,9 @@ namespace NBA_Stats_Tracker.Windows
                         dt_yea.Rows.Add(dr3_pl);
                     }
 
-                    tsAllSeasons.AddTeamStats(ts, "Season");
-                    tsAllPlayoffs.AddTeamStats(ts, "Playoffs");
-                    tsAll.AddTeamStats(ts, "All");
+                    tsAllSeasons.AddTeamStats(ts, Span.Season);
+                    tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
+                    tsAll.AddTeamStats(ts,Span.SeasonAndPlayoffs);
                 }
                 else
                 {
@@ -1242,7 +1242,7 @@ namespace NBA_Stats_Tracker.Windows
             Dictionary<int, PlayerStats> playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);
-            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+            SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                 ref MainWindow.bshist, _curSeason: curSeason, doNotLoadBoxScores: true);
 
             int temp = cmbTeam.SelectedIndex;
@@ -1572,8 +1572,8 @@ namespace NBA_Stats_Tracker.Windows
             //ts.CalcMetrics(tsopp);
             //tsopp.CalcMetrics(ts);
             var ls = new TeamStats();
-            ls.AddTeamStats(ts, "All");
-            ls.AddTeamStats(tsopp, "All");
+            ls.AddTeamStats(ts, Span.SeasonAndPlayoffs);
+            ls.AddTeamStats(tsopp, Span.SeasonAndPlayoffs);
             List<int> keys = partialPST.Keys.ToList();
             List<PlayerStatsRow> teamPMSRList = new List<PlayerStatsRow>(), oppPMSRList = new List<PlayerStatsRow>();
             foreach (int key in keys)
@@ -2365,7 +2365,7 @@ namespace NBA_Stats_Tracker.Windows
                     pl_oppT += s;
                 }
 
-                SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+                SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
                                     ref MainWindow.bshist, _curSeason: curSeason);
                 MainWindow.CopySeasonToMainWindow(tst, tstopp, pst);
                 PopulateTeamsCombo();

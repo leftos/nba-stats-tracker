@@ -27,10 +27,21 @@ using System.Windows.Threading;
 
 namespace LeftosCommonLibrary
 {
+    /// <summary>
+    /// Implements event handlers that improve the behavior WPF controls.
+    /// </summary>
     public static class GenericEventHandlers
     {
         private static bool _isTabPressed;
 
+
+        /// <summary>
+        /// When added to the RowEditEnding event of a WPF DataGrid, if the user presses Tab while on the last cell of a row, the focus 
+        /// is switched to the first cell of the next row, instead of another control altogether.
+        /// <see cref="Any_PreviewKeyDown_CheckTab" /> and <see cref="Any_PreviewKeyUp_CheckTab" /> should also be added as event handlers to the control.
+        /// </summary>
+        /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised..</param>
+        /// <param name="e">The <see cref="DataGridRowEditEndingEventArgs" /> instance containing the event data.</param>
         public static void WPFDataGrid_RowEditEnding_GoToNewRowOnTab(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (_isTabPressed && e.EditAction == DataGridEditAction.Commit)
@@ -61,6 +72,11 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// When added to the PreviewKeyDown event of any control, it checks whether the key pressed was Tab.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
         public static void Any_PreviewKeyDown_CheckTab(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -69,6 +85,11 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// When added to the PreviewKeyUp event of any control, it checks whether the key pressed was Tab.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
         public static void Any_PreviewKeyUp_CheckTab(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -77,6 +98,11 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Handles the ShowToolTip event of any control, placing and showing a tooltip under the control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.</param>
         public static void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
         {
             //Get tooltip from sender.

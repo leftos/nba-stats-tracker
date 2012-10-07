@@ -21,6 +21,9 @@ using IWin32Window = System.Windows.Forms.IWin32Window;
 
 namespace NBA_Stats_Tracker.Helper
 {
+    /// <summary>
+    /// Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.
+    /// </summary>
     public static class WindowsForms
     {
         public static IWin32Window GetIWin32Window(this Visual visual)

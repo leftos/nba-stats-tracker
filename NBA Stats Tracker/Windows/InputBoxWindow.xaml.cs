@@ -22,10 +22,14 @@ using System.Windows;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Implements a general-purpose Input-box Window.
     /// </summary>
     public partial class InputBoxWindow
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputBoxWindow" /> class.
+        /// </summary>
+        /// <param name="message">The prompt to display.</param>
         public InputBoxWindow(string message)
         {
             InitializeComponent();
@@ -35,6 +39,11 @@ namespace NBA_Stats_Tracker.Windows
             txtInput.Focus();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputBoxWindow" /> class.
+        /// </summary>
+        /// <param name="message">The prompt to display.</param>
+        /// <param name="defaultValue">The default value.</param>
         public InputBoxWindow(string message, string defaultValue) : this(message)
         {
             txtInput.Text = defaultValue;

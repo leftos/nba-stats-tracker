@@ -23,13 +23,23 @@ using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker.Helper
 {
+    /// <summary>
+    /// Implements miscellaneous helper methods used all over NBA Stats Tracker.
+    /// </summary>
     public static class Misc
     {
-        public static string GetCurTeamFromDisplayName(Dictionary<int, TeamStats> teamStats, string p)
+        /// <summary>
+        /// Finds a team's name based on its displayName.
+        /// </summary>
+        /// <param name="teamStats">The team stats dictionary..</param>
+        /// <param name="displayName">The display name.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Requested team that is hidden.</exception>
+        public static string GetCurTeamFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
         {
             for (int i = 0; i < MainWindow.tst.Count; i++)
             {
-                if (teamStats[i].displayName == p)
+                if (teamStats[i].displayName == displayName)
                 {
                     if (teamStats[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
@@ -37,24 +47,34 @@ namespace NBA_Stats_Tracker.Helper
                     return teamStats[i].name;
                 }
             }
-            throw new Exception("Team not found: " + p);
+            throw new Exception("Team not found: " + displayName);
         }
 
-        public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStatses, string p)
+        /// <summary>
+        /// Finds a team's display name from its name.
+        /// </summary>
+        /// <param name="teamStats">The team stats dictionary.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <exception cref="System.Exception">Requested team that is hidden.</exception>
+        public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStats, string displayName)
         {
-            for (int i = 0; i < teamStatses.Count; i++)
+            for (int i = 0; i < teamStats.Count; i++)
             {
-                if (teamStatses[i].name == p)
+                if (teamStats[i].name == displayName)
                 {
-                    if (teamStatses[i].isHidden)
+                    if (teamStats[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
 
-                    return teamStatses[i].displayName;
+                    return teamStats[i].displayName;
                 }
             }
-            throw new Exception("Team not found: " + p);
+            throw new Exception("Team not found: " + displayName);
         }
 
+        /// <summary>
+        /// Loads an image into a BitmapImage object.
+        /// </summary>
+        /// <param name="path">The path to the image file.</param>
         public static BitmapImage LoadImage(string path)
         {
             var bi = new BitmapImage();
@@ -65,6 +85,13 @@ namespace NBA_Stats_Tracker.Helper
             return bi;
         }
 
+        /// <summary>
+        /// Saves a setting into the Windows registry.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="setting">The setting.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.Exception"></exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
             RegistryKey rk = Registry.CurrentUser;
@@ -93,6 +120,13 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Gets a setting from the Windows registry.
+        /// </summary>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static int GetRegistrySetting(string setting, int defaultValue)
         {
             RegistryKey rk = Registry.CurrentUser;
@@ -114,6 +148,13 @@ namespace NBA_Stats_Tracker.Helper
             return settingValue;
         }
 
+        /// <summary>
+        /// Gets a setting from the Windows registry.
+        /// </summary>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static string GetRegistrySetting(string setting, string defaultValue)
         {
             RegistryKey rk = Registry.CurrentUser;
@@ -136,13 +177,20 @@ namespace NBA_Stats_Tracker.Helper
         }
     }
 
+    /// <summary>
+    /// Implements a list of five players. Used in determining the best starting five in a specific scope.
+    /// </summary>
     public class StartingFivePermutation
     {
-        public List<int> idList = new List<int>();
-        public int pInP = 0;
-        public double sum = 0;
+        public List<int> idList = new List<int>(5);
+        public int PlayersInPrimaryPosition = 0;
+        public double Sum = 0;
     }
 
+    /// <summary>
+    /// Implements a generic combo-box item with an IsEnabled property. 
+    /// Used to create items in combo-boxes that can't be selected (e.g. group headers).
+    /// </summary>
     public class ComboBoxItemWithEnabled
     {
         public ComboBoxItemWithEnabled(string item, bool isEnabled = true)

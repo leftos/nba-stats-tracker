@@ -27,7 +27,7 @@ using NBA_Stats_Tracker.Data;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for addW.xaml
+    /// Used for adding Teams and Players to the database.
     /// </summary>
     public partial class AddWindow
     {

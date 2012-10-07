@@ -21,16 +21,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Data
 {
+    /// <summary>
+    /// Implements all SQLite-related input/output methods.
+    /// </summary>
     internal static class SQLiteIO
     {
         private static bool upgrading;
 
+        /// <summary>
+        /// Saves the database to a new file.
+        /// </summary>
+        /// <param name="file">The file to save to.</param>
+        /// <returns><c>true</c> if the operation succeeded, <c>false</c> otherwise.</returns>
         public static bool SaveDatabaseAs(string file)
         {
             string oldDB = MainWindow.currentDB + ".tmp";
@@ -52,6 +59,10 @@ namespace NBA_Stats_Tracker.Data
             return true;
         }
 
+        /// <summary>
+        /// Saves all seasons to the specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
         public static void saveAllSeasons(string file)
         {
             string oldDB = MainWindow.currentDB;
@@ -66,16 +77,19 @@ namespace NBA_Stats_Tracker.Data
             {
                 if (i != oldSeason)
                 {
-                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                               ref MainWindow.pt, ref MainWindow.bshist, _curSeason: i, doNotLoadBoxScores: true);
+                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.bshist, _curSeason: i, doNotLoadBoxScores: true);
                     saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason,
                                          doNotSaveBoxScores: true);
                 }
             }
-            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.pt,
+            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
                        ref MainWindow.bshist, oldSeason, doNotLoadBoxScores: true);
         }
 
+        /// <summary>
+        /// Saves the conferences and divisions to a specified database.
+        /// </summary>
+        /// <param name="file">The database.</param>
         public static void SaveConferencesAndDivisions(string file)
         {
             var db = new SQLiteDatabase(file);
@@ -93,12 +107,26 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Saves the season to the current database.
+        /// </summary>
         public static void saveSeasonToDatabase()
         {
             saveSeasonToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason,
                                  getMaxSeason(MainWindow.currentDB));
         }
 
+        /// <summary>
+        /// Saves the season to a specified database.
+        /// </summary>
+        /// <param name="file">The database.</param>
+        /// <param name="tstToSave">The TeamStats dictionary to save.</param>
+        /// <param name="tstoppToSave">The opposing TeamStats dictionary to save.</param>
+        /// <param name="pstToSave">The PlayerStats dictionary to save.</param>
+        /// <param name="season">The season ID.</param>
+        /// <param name="maxSeason">The max season ID.</param>
+        /// <param name="doNotSaveBoxScores">if set to <c>true</c>, will not save box scores.</param>
+        /// <param name="partialUpdate">if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current data).</param>
         public static void saveSeasonToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave,
                                                 Dictionary<int, PlayerStats> pstToSave, int season, int maxSeason,
                                                 bool doNotSaveBoxScores = false, bool partialUpdate = false)
@@ -270,6 +298,11 @@ namespace NBA_Stats_Tracker.Data
             //}
         }
 
+        /// <summary>
+        /// Saves the name of the season.
+        /// </summary>
+        /// <param name="season">The season.</param>
+        /// <exception cref="System.Exception">Raised if the specified season ID doesn't correspond to a season existing in the database.</exception>
         public static void SaveSeasonName(int season)
         {
             var dict = new Dictionary<string, string> {{"ID", season.ToString()}};
@@ -293,6 +326,14 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Saves the teams to a specified database.
+        /// </summary>
+        /// <param name="file">The database.</param>
+        /// <param name="tstToSave">The TeamStats dictionary to save.</param>
+        /// <param name="tstoppToSave">The opposing TeamStats dictionary to save.</param>
+        /// <param name="season">The season ID.</param>
+        /// <param name="maxSeason">The max season ID.</param>
         private static void SaveTeamsToDatabase(string file, Dictionary<int, TeamStats> tstToSave, Dictionary<int, TeamStats> tstoppToSave,
                                                 int season, int maxSeason)
         {
@@ -537,6 +578,14 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Saves the players to a specified database.
+        /// </summary>
+        /// <param name="file">The database.</param>
+        /// <param name="playerStats">The player stats.</param>
+        /// <param name="season">The season ID.</param>
+        /// <param name="maxSeason">The max season ID.</param>
+        /// <param name="partialUpdate">if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current data).</param>
         public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason,
                                                  bool partialUpdate = false)
         {
@@ -639,7 +688,14 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
-        public static void prepareNewDB(SQLiteDatabase sqldb, int curSeason, int maxSeason, bool onlyNewSeason = false)
+        /// <summary>
+        /// Prepares a new DB, or adds a new season to a pre-existing database.
+        /// </summary>
+        /// <param name="db">The database.</param>
+        /// <param name="curSeason">The current season ID.</param>
+        /// <param name="maxSeason">The max season ID.</param>
+        /// <param name="onlyNewSeason">if set to <c>true</c>, a new season will be added to a pre-existing database.</param>
+        public static void prepareNewDB(SQLiteDatabase db, int curSeason, int maxSeason, bool onlyNewSeason = false)
         {
             try
             {
@@ -648,35 +704,35 @@ namespace NBA_Stats_Tracker.Data
                 if (!onlyNewSeason)
                 {
                     qr = "DROP TABLE IF EXISTS \"GameResults\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr =
                         "CREATE TABLE \"GameResults\" (\"GameID\" INTEGER PRIMARY KEY  NOT NULL ,\"T1Name\" TEXT NOT NULL ,\"T2Name\" TEXT NOT NULL ,\"Date\" DATE NOT NULL ,\"SeasonNum\" INTEGER NOT NULL ,\"IsPlayoff\" TEXT NOT NULL  DEFAULT ('FALSE') ,\"T1PTS\" INTEGER NOT NULL ,\"T1REB\" INTEGER NOT NULL ,\"T1AST\" INTEGER NOT NULL ,\"T1STL\" INTEGER NOT NULL ,\"T1BLK\" INTEGER NOT NULL ,\"T1TOS\" INTEGER NOT NULL ,\"T1FGM\" INTEGER NOT NULL ,\"T1FGA\" INTEGER NOT NULL ,\"T13PM\" INTEGER NOT NULL ,\"T13PA\" INTEGER NOT NULL ,\"T1FTM\" INTEGER NOT NULL ,\"T1FTA\" INTEGER NOT NULL ,\"T1OREB\" INTEGER NOT NULL ,\"T1FOUL\" INTEGER NOT NULL,\"T1MINS\" INTEGER NOT NULL ,\"T2PTS\" INTEGER NOT NULL ,\"T2REB\" INTEGER NOT NULL ,\"T2AST\" INTEGER NOT NULL ,\"T2STL\" INTEGER NOT NULL ,\"T2BLK\" INTEGER NOT NULL ,\"T2TOS\" INTEGER NOT NULL ,\"T2FGM\" INTEGER NOT NULL ,\"T2FGA\" INTEGER NOT NULL ,\"T23PM\" INTEGER NOT NULL ,\"T23PA\" INTEGER NOT NULL ,\"T2FTM\" INTEGER NOT NULL ,\"T2FTA\" INTEGER NOT NULL ,\"T2OREB\" INTEGER NOT NULL ,\"T2FOUL\" INTEGER NOT NULL,\"T2MINS\" INTEGER NOT NULL, \"HASH\" TEXT )";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"PlayerResults\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr =
                         "CREATE TABLE \"PlayerResults\" (\"GameID\" INTEGER NOT NULL ,\"PlayerID\" INTEGER NOT NULL ,\"Team\" TEXT NOT NULL ,\"isStarter\" TEXT, \"playedInjured\" TEXT, \"isOut\" TEXT, \"MINS\" INTEGER NOT NULL  DEFAULT (0), \"PTS\" INTEGER NOT NULL ,\"REB\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL  DEFAULT (0), PRIMARY KEY (\"GameID\", \"PlayerID\") )";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"Misc\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"Misc\" (\"Setting\" TEXT PRIMARY KEY,\"Value\" TEXT)";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "DROP TABLE IF EXISTS \"SeasonNames\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"SeasonNames\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
-                    sqldb.ExecuteNonQuery(qr);
-                    sqldb.Insert("SeasonNames",
+                    db.ExecuteNonQuery(qr);
+                    db.Insert("SeasonNames",
                                  new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", curSeason.ToString()}});
                     qr = "DROP TABLE IF EXISTS \"Divisions\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"Divisions\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT, \"Conference\" INTEGER)";
-                    sqldb.ExecuteNonQuery(qr);
-                    sqldb.Insert("Divisions", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}, {"Conference", "0"}});
+                    db.ExecuteNonQuery(qr);
+                    db.Insert("Divisions", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}, {"Conference", "0"}});
                     qr = "DROP TABLE IF EXISTS \"Conferences\"";
-                    sqldb.ExecuteNonQuery(qr);
+                    db.ExecuteNonQuery(qr);
                     qr = "CREATE TABLE \"Conferences\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL , \"Name\" TEXT)";
-                    sqldb.ExecuteNonQuery(qr);
-                    sqldb.Insert("Conferences", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}});
+                    db.ExecuteNonQuery(qr);
+                    db.Insert("Conferences", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}});
                 }
                 string teamsT = "Teams";
                 string pl_teamsT = "PlayoffTeams";
@@ -695,52 +751,58 @@ namespace NBA_Stats_Tracker.Data
                     pl_playersT += s;
                 }
                 qr = "DROP TABLE IF EXISTS \"" + pl_teamsT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_teamsT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + teamsT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + teamsT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + pl_oppT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_oppT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + oppT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + oppT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"Name\" TEXT NOT NULL ,\"DisplayName\" TEXT NOT NULL,\"isHidden\" TEXT NOT NULL, \"Division\" INTEGER, \"Conference\" INTEGER, \"WIN\" INTEGER NOT NULL ,\"LOSS\" INTEGER NOT NULL ,\"MINS\" INTEGER, \"PF\" INTEGER NOT NULL ,\"PA\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"OFFSET\" INTEGER)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + playersT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"isHidden\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + pl_playersT + "\"";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + pl_playersT +
                      "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL)";
-                sqldb.ExecuteNonQuery(qr);
+                db.ExecuteNonQuery(qr);
             }
             catch
             {
             }
         }
 
+        /// <summary>
+        /// Gets the max season ID in a database.
+        /// </summary>
+        /// <param name="file">The database.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">The database requested doesn't exist.</exception>
         public static int getMaxSeason(string file)
         {
             try
             {
                 if (!File.Exists(file))
-                    throw (new Exception());
+                    throw (new Exception("The database requested doesn't exist."));
 
                 var _db = new SQLiteDatabase(file);
 
@@ -762,11 +824,24 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Sets a setting value in the current database.
+        /// </summary>
+        /// <typeparam name="T">The type of value to save.</typeparam>
+        /// <param name="setting">The setting.</param>
+        /// <param name="value">The value.</param>
         public static void SetSetting<T>(string setting, T value)
         {
             SetSetting(MainWindow.currentDB, setting, value);
         }
 
+        /// <summary>
+        /// Sets a setting value in the specified database.
+        /// </summary>
+        /// <typeparam name="T">The type of value to save.</typeparam>
+        /// <param name="file">The file.</param>
+        /// <param name="setting">The setting.</param>
+        /// <param name="value">The value.</param>
         public static void SetSetting<T>(string file, string setting, T value)
         {
             var db = new SQLiteDatabase(file);
@@ -786,11 +861,26 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Gets a setting value from the current database.
+        /// </summary>
+        /// <typeparam name="T">The type of value to get.</typeparam>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
         public static T GetSetting<T>(string setting, T defaultValue)
         {
             return GetSetting(MainWindow.currentDB, setting, defaultValue);
         }
 
+        /// <summary>
+        /// Gets a setting value from the specified database.
+        /// </summary>
+        /// <typeparam name="T">The type of value to get.</typeparam>
+        /// <param name="file">The file.</param>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
         public static T GetSetting<T>(string file, string setting, T defaultValue)
         {
             var db = new SQLiteDatabase(file);
@@ -804,6 +894,14 @@ namespace NBA_Stats_Tracker.Data
             return (T) Convert.ChangeType(value, typeof (T));
         }
 
+        /// <summary>
+        /// Gets the team stats from a specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="team">The team.</param>
+        /// <param name="season">The season.</param>
+        /// <param name="ts">The resulting team stats.</param>
+        /// <param name="tsopp">The resulting opposing team stats.</param>
         public static void GetTeamStatsFromDatabase(string file, string team, int season, out TeamStats ts, out TeamStats tsopp)
         {
             var _db = new SQLiteDatabase(file);
@@ -1021,6 +1119,14 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Gets all team stats from the specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="season">The season.</param>
+        /// <param name="_tst">The resulting team stats dictionary.</param>
+        /// <param name="_tstopp">The resulting opposing team stats dictionary.</param>
+        /// <param name="TeamOrder">The resulting team order.</param>
         public static void GetAllTeamStatsFromDatabase(string file, int season, out Dictionary<int, TeamStats> _tst,
                                                        out Dictionary<int, TeamStats> _tstopp, out SortedDictionary<string, int> TeamOrder)
         {
@@ -1066,13 +1172,22 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         public static void LoadSeason()
         {
-            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                       ref MainWindow.pt, ref MainWindow.bshist, _curSeason: MainWindow.curSeason, doNotLoadBoxScores: true);
+            LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.bshist, _curSeason: MainWindow.curSeason, doNotLoadBoxScores: true);
         }
 
+        /// <summary>
+        /// Loads a specific season from the specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="_tst">The resulting team stats dictionary.</param>
+        /// <param name="_tstopp">The resulting opposing team stats dictionary.</param>
+        /// <param name="pst">The resulting player stats dictionary.</param>
+        /// <param name="_TeamOrder">The resulting team order.</param>
+        /// <param name="_bshist">The box score history container.</param>
+        /// <param name="_curSeason">The current season ID.</param>
+        /// <param name="doNotLoadBoxScores">if set to <c>true</c>, box scores will not be parsed.</param>
         public static void LoadSeason(string file, out Dictionary<int, TeamStats> _tst, out Dictionary<int, TeamStats> _tstopp,
-                                      out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> _TeamOrder,
-                                      ref PlayoffTree _pt, ref IList<BoxScoreEntry> _bshist, int _curSeason = 0,
+                                      out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> _TeamOrder, ref IList<BoxScoreEntry> _bshist, int _curSeason = 0,
                                       bool doNotLoadBoxScores = false)
         {
             MainWindow.loadingSeason = true;
@@ -1111,6 +1226,10 @@ namespace NBA_Stats_Tracker.Data
             MainWindow.loadingSeason = false;
         }
 
+        /// <summary>
+        /// Loads the divisions and conferences.
+        /// </summary>
+        /// <param name="file">The file.</param>
         public static void LoadDivisionsAndConferences(string file)
         {
             var db = new SQLiteDatabase(file);
@@ -1304,6 +1423,11 @@ namespace NBA_Stats_Tracker.Data
             return mustSave;
         }
 
+        /// <summary>
+        /// Gets all box scores from the specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns></returns>
         public static IList<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file)
         {
             int maxSeason = getMaxSeason(file);
@@ -1323,6 +1447,13 @@ namespace NBA_Stats_Tracker.Data
             return bshist;
         }
 
+        /// <summary>
+        /// Gets the season's box scores from the specified database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="curSeason">The current season ID.</param>
+        /// <param name="maxSeason">The max season ID.</param>
+        /// <returns></returns>
         public static IList<BoxScoreEntry> GetSeasonBoxScoresFromDatabase(string file, int curSeason, int maxSeason)
         {
             var _db = new SQLiteDatabase(file);
@@ -1381,6 +1512,16 @@ namespace NBA_Stats_Tracker.Data
             return _bshist;
         }
 
+        /// <summary>
+        /// Gets the players from database.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="_tst">The team stats dictionary.</param>
+        /// <param name="_tstopp">The opposing team stats dictionary.</param>
+        /// <param name="_TeamOrder">The team order.</param>
+        /// <param name="curSeason">The current season ID.</param>
+        /// <param name="maxSeason">The maximum season ID.</param>
+        /// <returns></returns>
         public static Dictionary<int, PlayerStats> GetPlayersFromDatabase(string file, Dictionary<int, TeamStats> _tst,
                                                                           Dictionary<int, TeamStats> _tstopp,
                                                                           SortedDictionary<string, int> _TeamOrder, int curSeason,
@@ -1433,6 +1574,12 @@ namespace NBA_Stats_Tracker.Data
             return _pst;
         }
 
+        /// <summary>
+        /// Determines whether the TeamStats dictionary is empty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the TeamStats dictionary is empty; otherwise, <c>false</c>.
+        /// </returns>
         public static bool isTSTEmpty()
         {
             if (String.IsNullOrWhiteSpace(MainWindow.currentDB))
@@ -1459,6 +1606,11 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Gets the max player ID.
+        /// </summary>
+        /// <param name="dbFile">The db file.</param>
+        /// <returns></returns>
         public static int GetMaxPlayerID(string dbFile)
         {
             var db = new SQLiteDatabase(dbFile);
@@ -1491,6 +1643,12 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Gets a free player result ID.
+        /// </summary>
+        /// <param name="dbFile">The db file.</param>
+        /// <param name="used">Additional player result IDs to assume used.</param>
+        /// <returns></returns>
         private static int GetFreePlayerResultID(string dbFile, List<int> used)
         {
             var db = new SQLiteDatabase(dbFile);
@@ -1517,6 +1675,13 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Gets the first free ID from the specified table.
+        /// </summary>
+        /// <param name="dbFile">The db file.</param>
+        /// <param name="table">The table.</param>
+        /// <param name="columnName">Name of the column; "ID" by default.</param>
+        /// <returns></returns>
         public static int GetFreeID(string dbFile, string table, string columnName = "ID")
         {
             var db = new SQLiteDatabase(dbFile);
@@ -1536,7 +1701,7 @@ namespace NBA_Stats_Tracker.Data
         }
 
         /// <summary>
-        /// Saves teams to the current database using current MainWindow.tst and MainWindow.tstopp
+        /// Saves the current team stats dictionaries to the current database.
         /// </summary>
         public static void SaveTeamsToDatabase()
         {

@@ -24,12 +24,15 @@ using NBA_Stats_Tracker.Data;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for askTeam.xaml
+    /// Implements a multi-function combo-box choice window.
     /// </summary>
     public partial class ComboChoiceWindow
     {
         #region Mode enum
 
+        /// <summary>
+        /// Used to determine what choices the window should offer, and its functions
+        /// </summary>
         public enum Mode
         {
             OneTeam,
@@ -42,6 +45,11 @@ namespace NBA_Stats_Tracker.Windows
 
         private readonly Mode mode;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
+        /// </summary>
+        /// <param name="mode">The Mode enum instance which determines what choices should be offered.</param>
+        /// <param name="index">The default choice.</param>
         public ComboChoiceWindow(Mode mode, int index = 0)
         {
             InitializeComponent();
@@ -82,6 +90,11 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeams2.SelectedIndex = index != 0 ? 0 : 1;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
+        /// Used for when a player is set to active while previously inactive.
+        /// </summary>
+        /// <param name="teams">The available teams to sign the player to.</param>
         public ComboChoiceWindow(IEnumerable<string> teams)
         {
             InitializeComponent();
@@ -93,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeams2.Visibility = Visibility.Hidden;
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             if (mode == Mode.Versus)
             {

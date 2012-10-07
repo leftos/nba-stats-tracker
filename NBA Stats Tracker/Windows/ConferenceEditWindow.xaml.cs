@@ -10,9 +10,9 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for ConferenceEditWindow.xaml
+    /// Used to edit a conference and its divisions.
     /// </summary>
-    public partial class ConferenceEditWindow : Window
+    public partial class ConferenceEditWindow
     {
         private readonly Conference curConf;
 
@@ -21,6 +21,10 @@ namespace NBA_Stats_Tracker.Windows
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConferenceEditWindow" /> class.
+        /// </summary>
+        /// <param name="conf">The conference to be edited.</param>
         public ConferenceEditWindow(Conference conf) : this()
         {
             curConf = conf;
@@ -37,6 +41,13 @@ namespace NBA_Stats_Tracker.Windows
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnOK control.
+        /// The conference is renamed, the divisions are deleted and recreated, and if any teams are left in division IDs that no longer exist, 
+        /// they get reassigned.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);

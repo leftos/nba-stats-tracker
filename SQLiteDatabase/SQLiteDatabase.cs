@@ -36,7 +36,7 @@ namespace SQLite_Database
         private readonly String dbConnection;
 
         /// <summary>
-        ///     Default Constructor for SQLiteDatabase Class.
+        ///     Default Constructor for SQLiteDatabase Class. Connects to the "D:\test.sqlite" database file.
         /// </summary>
         public SQLiteDatabase()
         {
@@ -394,11 +394,24 @@ namespace SQLite_Database
             }
         }
 
+        /// <summary>
+        /// Converts a DateTime object into an SQLite-compatible date string.
+        /// </summary>
+        /// <param name="dt">The DateTime object.</param>
+        /// <returns></returns>
         public static string ConvertDateTimeToSQLite(DateTime dt)
         {
             return String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt);
         }
 
+        /// <summary>
+        /// Adds a date range to an SQL query.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="dStart">The starting date.</param>
+        /// <param name="dEnd">The ending.</param>
+        /// <param name="addWhere">if set to <c>true</c> add WHERE to the query.</param>
+        /// <returns></returns>
         public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
         {
             if (query.EndsWith(";"))

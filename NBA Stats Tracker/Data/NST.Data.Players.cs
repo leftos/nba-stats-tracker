@@ -29,6 +29,9 @@ using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker.Data
 {
+    /// <summary>
+    /// A list of constant pseudonyms for specific entries in the players' stats arrays.
+    /// </summary>
     public static class p
     {
         public const int GP = 0,
@@ -70,6 +73,9 @@ namespace NBA_Stats_Tracker.Data
     // Unlike TeamStats which was designed before REditor implemented such stats,
     // PlayerStats were made according to REditor's standards, to make life 
     // easier when importing/exporting from REditor's CSV
+    /// <summary>
+    /// A container for all of a player's information, stats, averages and metrics handled by the program.
+    /// </summary>
     [Serializable]
     public class PlayerStats
     {
@@ -92,10 +98,17 @@ namespace NBA_Stats_Tracker.Data
         public uint[] pl_stats = new uint[17];
         public uint[] stats = new uint[17];
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
         public PlayerStats() : this(new Player())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
+        /// <param name="player">A Player instance containing the information to initialize with.</param>
         public PlayerStats(Player player)
         {
             ID = player.ID;
@@ -131,6 +144,11 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
+        /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the row is assumed to contain playoff stats.</param>
         public PlayerStats(DataRow dataRow, bool playoffs = false)
         {
             ID = Tools.getInt(dataRow, "ID");
@@ -205,6 +223,23 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
+        /// <param name="ID">The ID.</param>
+        /// <param name="LastName">The last name.</param>
+        /// <param name="FirstName">The first name.</param>
+        /// <param name="Position1">The primary position.</param>
+        /// <param name="Position2">The secondary position.</param>
+        /// <param name="TeamF">The team the player is currently with.</param>
+        /// <param name="TeamS">The team the player started the season with.</param>
+        /// <param name="isActive">if set to <c>true</c> the player is currently active (i.e. signed with a team).</param>
+        /// <param name="isHidden">if set to <c>true</c> the player is hidden for this season.</param>
+        /// <param name="isInjured">if set to <c>true</c> the player is injured.</param>
+        /// <param name="isAllStar">if set to <c>true</c> is an All-Star this season.</param>
+        /// <param name="isNBAChampion">if set to <c>true</c> is a champion this season.</param>
+        /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
+        /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
         public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, string TeamF, string TeamS,
                            bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow,
                            bool playoffs = false)
@@ -293,6 +328,11 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
+        /// <param name="playerStatsRow">The player stats row.</param>
+        /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
         public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false)
         {
             LastName = playerStatsRow.LastName;
@@ -401,6 +441,10 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Updates the playoff stats.
+        /// </summary>
+        /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(DataRow dataRow)
         {
             pl_stats[p.GP] = Tools.getUInt16(dataRow, "GP");
@@ -424,6 +468,10 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg(true);
         }
 
+        /// <summary>
+        /// Calculates the averages of a player's stats.
+        /// </summary>
+        /// <param name="playoffsOnly">if set to <c>true</c>, only the playoff averages will be calculated.</param>
         public void CalcAvg(bool playoffsOnly = false)
         {
             if (!playoffsOnly)
@@ -674,6 +722,11 @@ namespace NBA_Stats_Tracker.Data
                 pl_metrics = new Dictionary<string, double>(temp_metrics);
         }
 
+        /// <summary>
+        /// Calculates the PER.
+        /// </summary>
+        /// <param name="lg_aPER">The league average PER.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the PER is calculated for the player's playoff stats.</param>
         public void CalcPER(double lg_aPER, bool playoffs = false)
         {
             try
@@ -692,6 +745,12 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Adds a player's box score to their stats.
+        /// </summary>
+        /// <param name="pbs">The Player Box Score.</param>
+        /// <param name="isPlayoff">if set to <c>true</c>, the stats are added to the playoff stats.</param>
+        /// <exception cref="System.Exception">Occurs when the player IDs from the stats and box score do not match.</exception>
         public void AddBoxScore(PlayerBoxScore pbs, bool isPlayoff = false)
         {
             if (ID != pbs.PlayerID)
@@ -749,6 +808,11 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Adds the player stats from a PlayerStats instance to the current stats.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="addBothToSeasonStats">if set to <c>true</c>, both season and playoff stats will be added to the season stats.</param>
         public void AddPlayerStats(PlayerStats ps, bool addBothToSeasonStats = false)
         {
             if (!addBothToSeasonStats)
@@ -779,6 +843,9 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Resets the stats.
+        /// </summary>
         public void ResetStats()
         {
             for (int i = 0; i < stats.Length; i++)
@@ -794,6 +861,12 @@ namespace NBA_Stats_Tracker.Data
             CalcAvg();
         }
 
+        /// <summary>
+        /// Calculates the league averages.
+        /// </summary>
+        /// <param name="playerStats">The player stats.</param>
+        /// <param name="teamStats">The team stats.</param>
+        /// <returns></returns>
         public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
         {
             var lps = new PlayerStats(new Player(-1, "", "League", "Averages", " ", " "));
@@ -805,8 +878,8 @@ namespace NBA_Stats_Tracker.Data
             var ls = new TeamStats("League");
             for (int i = 0; i < teamStats.Count; i++)
             {
-                ls.AddTeamStats(teamStats[i], "Season");
-                ls.AddTeamStats(teamStats[i], "Playoffs");
+                ls.AddTeamStats(teamStats[i], Span.Season);
+                ls.AddTeamStats(teamStats[i], Span.Playoffs);
             }
             ls.CalcMetrics(ls);
             ls.CalcMetrics(ls, true);
@@ -823,6 +896,15 @@ namespace NBA_Stats_Tracker.Data
             return lps;
         }
 
+        /// <summary>
+        /// Calculates all metrics.
+        /// </summary>
+        /// <param name="playerStats">The player stats.</param>
+        /// <param name="teamStats">The team stats.</param>
+        /// <param name="oppStats">The opposing team stats.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="leagueOv">set to <c>true</c> if calling from the LeagueOverview window.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the metrics will be calculated for the playoff stats.</param>
         public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats,
                                                Dictionary<int, TeamStats> oppStats, SortedDictionary<string, int> TeamOrder,
                                                bool leagueOv = false, bool playoffs = false)
@@ -834,12 +916,12 @@ namespace NBA_Stats_Tracker.Data
             {
                 if (!playoffs)
                 {
-                    ls.AddTeamStats(teamStats[i], "Season");
+                    ls.AddTeamStats(teamStats[i], Span.Season);
                     teamStats[i].CalcMetrics(oppStats[i]);
                 }
                 else
                 {
-                    ls.AddTeamStats(teamStats[i], "Playoffs");
+                    ls.AddTeamStats(teamStats[i], Span.Playoffs);
                     teamStats[i].CalcMetrics(oppStats[i], true);
                 }
             }
@@ -895,6 +977,9 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// Contains all the information of a player's performance in a game.
+    /// </summary>
     [Serializable]
     public class PlayerBoxScore : INotifyPropertyChanged
     {
@@ -905,6 +990,10 @@ namespace NBA_Stats_Tracker.Data
         private UInt16 _TPA;
         protected UInt16 _TPM;
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        /// </summary>
         public PlayerBoxScore()
         {
             PlayerID = -1;
@@ -915,6 +1004,10 @@ namespace NBA_Stats_Tracker.Data
             ResetStats();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        /// </summary>
+        /// <param name="r">The DataRow containing the player's box score.</param>
         public PlayerBoxScore(DataRow r)
         {
             PlayerID = Tools.getInt(r, "PlayerID");
@@ -986,6 +1079,14 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        /// </summary>
+        /// <param name="brRow">The Basketball-Reference.com row containing the player's box score.</param>
+        /// <param name="team">The team.</param>
+        /// <param name="gameID">The game ID.</param>
+        /// <param name="starter">if set to <c>true</c>, the player is a starter.</param>
+        /// <param name="playerStats">The player stats.</param>
         public PlayerBoxScore(DataRow brRow, string team, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
         {
             string[] nameParts = brRow[0].ToString().Split(new[] {' '}, 2);
@@ -1046,6 +1147,12 @@ namespace NBA_Stats_Tracker.Data
             FTp = (float) FTM/FTA;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        /// </summary>
+        /// <param name="dict">The dictionary containing the player box score.</param>
+        /// <param name="playerID">The player ID.</param>
+        /// <param name="team">The team.</param>
         public PlayerBoxScore(Dictionary<string, string> dict, int playerID, string team)
         {
             PlayerID = playerID;
@@ -1070,6 +1177,11 @@ namespace NBA_Stats_Tracker.Data
             FOUL = FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class. 
+        /// Used to cast a LivePlayerBoxScore to a PlayerBoxScore which can be saved to the database.
+        /// </summary>
+        /// <param name="lpbs">The LivePlayerBoxScore instance containing the player's box score.</param>
         public PlayerBoxScore(LivePlayerBoxScore lpbs)
         {
             PlayerID = lpbs.PlayerID;
@@ -1227,6 +1339,11 @@ namespace NBA_Stats_Tracker.Data
 
         #endregion
 
+        /// <summary>
+        /// Calculates the metrics of a player's performance.
+        /// </summary>
+        /// <param name="gameID">The game ID.</param>
+        /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
         private void CalcMetrics(int gameID, DataRow r)
         {
             var bs = new TeamBoxScore(r);
@@ -1251,11 +1368,20 @@ namespace NBA_Stats_Tracker.Data
             GmScE = ps.metrics["GmScE"];
         }
 
+        /// <summary>
+        /// Calculates the points scored.
+        /// </summary>
         protected void CalculatePoints()
         {
             PTS = (ushort) ((_FGM - _TPM)*2 + _TPM*3 + _FTM);
         }
 
+        /// <summary>
+        /// Gets the best stats of a player's performance.
+        /// </summary>
+        /// <param name="count">The count of stats to return.</param>
+        /// <param name="position">The player's primary position.</param>
+        /// <returns></returns>
         public string GetBestStats(int count, string position)
         {
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
@@ -1426,6 +1552,9 @@ namespace NBA_Stats_Tracker.Data
             return s;
         }
 
+        /// <summary>
+        /// Resets the stats.
+        /// </summary>
         public void ResetStats()
         {
             MINS = 0;
@@ -1458,6 +1587,9 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// Used to keep live track of a player's performance. Extends PlayerBoxScore.
+    /// </summary>
     [Serializable]
     public class LivePlayerBoxScore : PlayerBoxScore
     {
@@ -1505,6 +1637,9 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// Used to determine the player ranking for each stat.
+    /// </summary>
     public class PlayerRankings
     {
         public int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
@@ -1512,6 +1647,11 @@ namespace NBA_Stats_Tracker.Data
         public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerRankings" /> class, and calculates the rankings.
+        /// </summary>
+        /// <param name="pst">The PlayerStats dictionary, containing all player information.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the rankings will take only playoff performances into account.</param>
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
             foreach (var kvp in pst)
@@ -1547,12 +1687,27 @@ namespace NBA_Stats_Tracker.Data
         }
     }
 
+    /// <summary>
+    /// Contains the basic information required to initially create a player.
+    /// </summary>
     public class Player
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Player" /> class.
+        /// </summary>
         public Player()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Player" /> class.
+        /// </summary>
+        /// <param name="ID">The ID.</param>
+        /// <param name="Team">The team.</param>
+        /// <param name="LastName">The last name.</param>
+        /// <param name="FirstName">The first name.</param>
+        /// <param name="Position1">The primary position.</param>
+        /// <param name="Position2">The secondary position.</param>
         public Player(int ID, string Team, string LastName, string FirstName, string Position1, string Position2)
         {
             this.ID = ID;
@@ -1563,6 +1718,10 @@ namespace NBA_Stats_Tracker.Data
             this.Position2 = Position2;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Player" /> class.
+        /// </summary>
+        /// <param name="dataRow">The data row containing the player information.</param>
         public Player(DataRow dataRow)
         {
             ID = Tools.getInt(dataRow, "ID");
@@ -1582,9 +1741,17 @@ namespace NBA_Stats_Tracker.Data
         public bool AddToAll { get; set; }
     }
 
+    /// <summary>
+    /// Implements an easily bindable interface to a player's stats.
+    /// </summary>
     public class PlayerStatsRow
     {
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcMetrics = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false)
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -1768,11 +1935,24 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
         public PlayerStatsRow(PlayerStats ps, string type, bool playoffs = false) : this(ps, playoffs)
         {
             Type = type;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
         public PlayerStatsRow(PlayerStats ps, string type, string group, bool playoffs = false) : this(ps, type, playoffs)
         {
             Type = type;
@@ -1869,6 +2049,11 @@ namespace NBA_Stats_Tracker.Data
 
         #endregion
 
+        /// <summary>
+        /// Gets the best stats.
+        /// </summary>
+        /// <param name="count">The count of stats to return.</param>
+        /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
         public string GetBestStats(int count)
         {
             string position = Position1;
@@ -2040,6 +2225,11 @@ namespace NBA_Stats_Tracker.Data
             return s;
         }
 
+        /// <summary>
+        /// Gets a list (dictionary) of the best stats.
+        /// </summary>
+        /// <param name="count">The count of stats to return.</param>
+        /// <returns>A list (dictionary) of the best stats' names and values</returns>
         public Dictionary<string, string> GetBestStatsList(int count)
         {
             var statList = new Dictionary<string, string>();
@@ -2053,6 +2243,15 @@ namespace NBA_Stats_Tracker.Data
             return statList;
         }
 
+        /// <summary>
+        /// Shows a scouting report for the player in natural language.
+        /// </summary>
+        /// <param name="pst">The PlayerStats dictionary containing all the player information.</param>
+        /// <param name="rankingsActive">The rankings of currently active players.</param>
+        /// <param name="rankingsTeam">The rankings of the players in the same team.</param>
+        /// <param name="rankingsPosition">The rankings of the players in the same position.</param>
+        /// <param name="pbsList">The list of the player's available box scores.</param>
+        /// <param name="bestGame">The well-formatted string from the player's best game.</param>
         public void ScoutingReport(Dictionary<int, PlayerStats> pst, PlayerRankings rankingsActive, PlayerRankings rankingsTeam, PlayerRankings rankingsPosition,
             List<PlayerBoxScore> pbsList, string bestGame)
         {

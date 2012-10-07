@@ -68,6 +68,8 @@ namespace NBA_Stats_Tracker
             MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
                             NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
+            Process.Start(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+
             // Prevent default unhandled exception processing
             e.Handled = true;
 

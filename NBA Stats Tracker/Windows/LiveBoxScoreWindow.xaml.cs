@@ -15,9 +15,9 @@ using NBA_Stats_Tracker.Helper;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for LiveBoxScoreWindow.xaml
+    /// Allows the user to keep track of the box scores of a live game.
     /// </summary>
-    public partial class LiveBoxScoreWindow : Window
+    public partial class LiveBoxScoreWindow
     {
         private readonly Brush defaultBackground;
         private readonly string playersT;
@@ -26,6 +26,9 @@ namespace NBA_Stats_Tracker.Windows
         private SortableBindingList<LivePlayerBoxScore> pbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
         private DataRowView rowBeingEdited;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LiveBoxScoreWindow" /> class.
+        /// </summary>
         public LiveBoxScoreWindow()
         {
             InitializeComponent();
@@ -45,27 +48,43 @@ namespace NBA_Stats_Tracker.Windows
         private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
 
+        /// <summary>
+        /// Handles the CopyingCellClipboardContent event of the colPlayerAway control.
+        /// Uses a custom CopyingCellClipboardContent event handler that replaces the Player ID with the player's name.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.</param>
         private void colPlayerAway_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
             EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListAway);
         }
 
+        /// <summary>
+        /// Handles the CopyingCellClipboardContent event of the colPlayerHome control.
+        /// Uses a custom CopyingCellClipboardContent event handler that replaces the Player ID with the player's name.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.</param>
         private void colPlayerHome_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
             EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListHome);
         }
 
-        private void PercentageColumn_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
-        {
-            EventHandlers.PercentageColumn_CopyingCellClipboardContent(e);
-        }
-
+        /// <summary>
+        /// Handles the SelectionChanged event of the cmbTeam1 control.
+        /// Checks if the same team is selected for both home and away, and updates the corresponding DataGrid.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
             UpdateDataGrid(1);
         }
 
+        /// <summary>
+        /// Checks if the same team is selected for both home and away, and changes the combo-box background accordingly.
+        /// </summary>
         private void checkIfSameTeams()
         {
             string Team1, Team2;
@@ -91,6 +110,10 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeam2.Background = defaultBackground;
         }
 
+        /// <summary>
+        /// Updates the data grid for the specified team, filling it with all the team's players.
+        /// </summary>
+        /// <param name="team">1 for the away team; anything else for the home team.</param>
         private void UpdateDataGrid(int team)
         {
             SortableBindingList<LivePlayerBoxScore> pbsList;
@@ -137,6 +160,9 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Populates the teams combo.
+        /// </summary>
         private void PopulateTeamsCombo()
         {
             Teams = new List<string>();
@@ -152,12 +178,24 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeam2.ItemsSource = Teams;
         }
 
+        /// <summary>
+        /// Handles the CellEditEnding event of the dataGrid control.
+        /// Used to force the immediate update of other data-bound data in the row.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridCellEditEndingEventArgs" /> instance containing the event data.</param>
         private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var rowView = e.Row.Item as DataRowView;
             rowBeingEdited = rowView;
         }
 
+        /// <summary>
+        /// Handles the CurrentCellChanged event of the dataGrid control.
+        /// Used to force the immediate update of other data-bound data in the row.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void dataGrid_CurrentCellChanged(object sender, EventArgs e)
         {
             if (rowBeingEdited != null)
@@ -166,18 +204,30 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the SelectionChanged event of the cmbTeam2 control.
+        /// Checks if the same team is selected for both home and away, and updates the corresponding DataGrid.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
             UpdateDataGrid(2);
         }
 
+        /// <summary>
+        /// Calculates the away team's stats by accumulating the player box scores.
+        /// </summary>
         private void calculateAwayTeam()
         {
             txbAwayStats.Text = calculateTeam(pbsAwayList);
             compareScores();
         }
 
+        /// <summary>
+        /// Compares the two team's scores, makes the leading team's stats bold.
+        /// </summary>
         private void compareScores()
         {
             int awayScore;
@@ -208,12 +258,20 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Calculates the home team's stats by accumulating the player box scores.
+        /// </summary>
         private void calculateHomeTeam()
         {
             txbHomeStats.Text = calculateTeam(pbsHomeList);
             compareScores();
         }
 
+        /// <summary>
+        /// Calculates the team's stats by accumulating the player box scores.
+        /// </summary>
+        /// <param name="pbsList">The team's LivePlayerBoxScore instances list.</param>
+        /// <returns>A well-formatted string displaying all the calculated stats for the team.</returns>
         private string calculateTeam(IEnumerable<LivePlayerBoxScore> pbsList)
         {
             int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, TPM = 0, FTM = 0, OREB = 0, FOUL = 0, PTS = 0;
@@ -239,6 +297,10 @@ namespace NBA_Stats_Tracker.Windows
             return resp;
         }
 
+        /// <summary>
+        /// Calculates the box score entry in order to transfer the stats to the Box Score Window for further editing and saving.
+        /// </summary>
+        /// <returns></returns>
         private BoxScoreEntry calculateBoxScoreEntry()
         {
             var bs = new TeamBoxScore
@@ -326,6 +388,12 @@ namespace NBA_Stats_Tracker.Windows
             return bse;
         }
 
+        /// <summary>
+        /// Handles the SourceUpdated event of the IntegerUpDown control.
+        /// Recalculates both teams' stats each time a stat is updated.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataTransferEventArgs" /> instance containing the event data.</param>
         private void IntegerUpDown_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             calculateAwayTeam();
@@ -338,6 +406,12 @@ namespace NBA_Stats_Tracker.Windows
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnCopy control. 
+        /// Copies all the data into a box score entry and views it in the Box Score Window for further editing and saving.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 || cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
@@ -353,6 +427,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private LivePlayerBoxScore _targetPerson;
 
+        /// <summary>
+        /// Handles the MouseMove event of the DataGrid control.
+        /// Implements row rearranging functionality via drag-and-drop. Handles the drag event.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
         private void DataGrid_MouseMove(object sender, MouseEventArgs e)
         {
             BindingList<LivePlayerBoxScore> pbsList = sender == dgvPlayersAway ? pbsAwayList : pbsHomeList;
@@ -388,6 +468,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the CheckDropTarget event of the DataGrid control.
+        /// Isn't currently used since this window only has DataGrid controls containing LivePlayerBoxScore objects.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
         private void DataGrid_CheckDropTarget(object sender, DragEventArgs e)
         {
             var row = FindVisualParent<DataGridRow>(e.OriginalSource as UIElement);
@@ -400,6 +486,12 @@ namespace NBA_Stats_Tracker.Windows
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Handles the Drop event of the DataGrid control.
+        /// Implements row rearranging functionality via drag-and-drop. Handles the drop event.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs" /> instance containing the event data.</param>
         private void DataGrid_Drop(object sender, DragEventArgs e)
         {
             e.Effects = DragDropEffects.None;
@@ -417,6 +509,13 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Finds the visual parent of the specified UI element. 
+        /// Used to determine the DataGrid that was the destination of the drop event during drag-and-drop.
+        /// </summary>
+        /// <typeparam name="UIE">The type of the UI element.</typeparam>
+        /// <param name="element">The UI element.</param>
+        /// <returns></returns>
         private static UIE FindVisualParent<UIE>(UIElement element) where UIE : UIElement
         {
             UIElement parent = element;

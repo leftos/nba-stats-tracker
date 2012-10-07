@@ -8,12 +8,15 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for ListWindow.xaml
+    /// Implements a multi-purpose single list window with add & remove buttons.
     /// </summary>
-    public partial class ListWindow : Window
+    public partial class ListWindow
     {
         public static bool mustUpdate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListWindow" /> class.
+        /// </summary>
         public ListWindow()
         {
             InitializeComponent();
@@ -26,6 +29,12 @@ namespace NBA_Stats_Tracker.Windows
             Title = "Edit Conferences";
         }
 
+        /// <summary>
+        /// Handles the MouseDoubleClick event of the lstData control.
+        /// When editing conferences, it displays the Edit Conference Window for the selected conference.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
         private void lstData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lstData.SelectedIndex == -1)
@@ -35,6 +44,10 @@ namespace NBA_Stats_Tracker.Windows
             ShowEditConferenceWindow(conf);
         }
 
+        /// <summary>
+        /// Shows the edit conference window, and reloads the conferences the window is closed, if required.
+        /// </summary>
+        /// <param name="conf">The conf.</param>
         private void ShowEditConferenceWindow(Conference conf)
         {
             var cew = new ConferenceEditWindow(conf);
@@ -52,6 +65,12 @@ namespace NBA_Stats_Tracker.Windows
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnAdd control.
+        /// Allows the user to add a new item.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
@@ -90,6 +109,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnRemove control.
+        /// Allows the user to remove an item.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             if (lstData.SelectedIndex == -1)

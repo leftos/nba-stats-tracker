@@ -29,8 +29,19 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace LeftosCommonLibrary
 {
+
+    /// <summary>
+    /// Implements generic extension methods.
+    /// </summary>
     public static class GenericExtensions
     {
+        /// <summary>
+        /// Tries to the change the value of a variable using the value of a specified dictionary entry.
+        /// </summary>
+        /// <typeparam name="T">The type of the variable.</typeparam>
+        /// <param name="variable">The variable.</param>
+        /// <param name="dict">The dict.</param>
+        /// <param name="key">The key.</param>
         public static void TryChangeValue<T>(this T variable, Dictionary<string, string> dict, string key)
         {
             try
@@ -46,6 +57,12 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry.
+        /// </summary>
+        /// <param name="row">The row.</param>
+        /// <param name="dict">The dictionary containing the value we're trying to set.</param>
+        /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
         public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key)
         {
             try
@@ -57,6 +74,13 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry, after converting it to the specified <see cref="type"/>.
+        /// </summary>
+        /// <param name="row">The DataRow containing the entry of which we want to try and change the value</param>
+        /// <param name="dict">The dictionary containing the value we're trying to set.</param>
+        /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
+        /// <param name="type">The type to convert to.</param>
         public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key, Type type)
         {
             try
@@ -72,6 +96,15 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry.
+        /// Operation will succeed only if all parts of the dictionary entry, after the latter is split at each <see cref="splitCharacter" />, can be converted into the specified <see cref="type"/>.
+        /// </summary>
+        /// <param name="row">The DataRow containing the entry of which we want to try and change the value.</param>
+        /// <param name="dict">The dictionary containing the value we're trying to set.</param>
+        /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
+        /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
+        /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
         public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key, Type type, string splitCharacter)
         {
             try
@@ -92,6 +125,16 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the set the value of a variable using a user-specified dictionary entry.
+        /// </summary>
+        /// <typeparam name="T">The type of the variable.</typeparam>
+        /// <param name="variable">The variable.</param>
+        /// <param name="dict">The dictionary.</param>
+        /// <param name="key">The dictionary key.</param>
+        /// <returns>The value that the variable should be set to if the operation succeeds. 
+        /// If the cast is invalid, it returns the default value of the type. 
+        /// If the key isn't found, it returns the original value of the variable.</returns>
         public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key)
         {
             try
@@ -108,6 +151,17 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the set the value of a variable using a user-specified dictionary entry, after converting it to the specified <see cref="type"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the variable.</typeparam>
+        /// <param name="variable">The variable.</param>
+        /// <param name="dict">The dictionary.</param>
+        /// <param name="key">The dictionary key.</param>
+        /// <param name="type">The type.</param>
+        /// <returns>The value that the variable should be set to if the operation succeeds. 
+        /// If the cast is invalid, it returns the default value of the type. 
+        /// If the key isn't found, it returns the original value of the variable.</returns>
         public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type)
         {
             try
@@ -125,6 +179,19 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Tries to the set the value of a variable by using the corresponding value of a dictionary entry.
+        /// Operation will succeed only if all parts of the dictionary entry, after the latter is split at each <see cref="splitCharacter" />, can be converted into the specified <see cref="type" />.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="variable">The variable.</param>
+        /// <param name="dict">The dictionary containing the value we're trying to set.</param>
+        /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
+        /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
+        /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
+        /// <returns>The value that the variable should be set to if the operation succeeds. 
+        /// If the cast is invalid, it returns the default value of the type. 
+        /// If the key isn't found, it returns the original value of the variable.</returns>
         public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter)
         {
             try
@@ -147,11 +214,28 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Creates a deep-cloned copy of an object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="original">The original object.</param>
+        /// <param name="args">The arguments to pass to the constructor of the new object.</param>
+        /// <returns>The copy of the object.</returns>
         public static T DeepClone<T>(this T original, params Object[] args)
         {
             return original.DeepClone(new Dictionary<object, object>(), args);
         }
 
+        /// <summary>
+        /// Creates a deep-cloned copy of an object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="original">The original object.</param>
+        /// <param name="copies">A dictionary containing the copies of the object.</param>
+        /// <param name="args">The arguments to pass to the constructor of the new object.</param>
+        /// <returns>
+        /// The copy of the object.
+        /// </returns>
         private static T DeepClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
         {
             T result;
@@ -259,6 +343,12 @@ namespace LeftosCommonLibrary
             return false;
         }
 
+        /// <summary>
+        /// Creates a deep-cloned copy of an object using serialization.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="RealObject">The original object.</param>
+        /// <returns>The deep-cloned copy of the object.</returns>
         public static T Clone<T>(this T RealObject)
         {
             using (Stream objectStream = new MemoryStream())

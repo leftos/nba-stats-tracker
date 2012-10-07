@@ -25,8 +25,15 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace NBA_Stats_Tracker.Interop
 {
+    /// <summary>
+    /// Implements import and export methods for interoperability with REDitor. 
+    /// This is the safest and most complete way to import and export stats from NBA 2K save files.
+    /// </summary>
     public static class InteropREditor
     {
+        /// <summary>
+        /// Implements the Positions enum used by 2K12 save files.
+        /// </summary>
         private static readonly Dictionary<string, string> Positions = new Dictionary<string, string>
                                                                        {
                                                                            {"0", "PG"},
@@ -41,6 +48,11 @@ namespace NBA_Stats_Tracker.Interop
         public static List<int> pickedTeams;
         private static Dictionary<int, PlayerStats> _pst;
 
+        /// <summary>
+        /// Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
+        /// </summary>
+        /// <param name="activeTeams">The active teams.</param>
+        /// <param name="folder">The default import/export folder.</param>
         public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
         {
             string s1 = "Folder$$" + folder + "\n";
@@ -67,6 +79,16 @@ namespace NBA_Stats_Tracker.Interop
             sw.Close();
         }
 
+        /// <summary>
+        /// Imports all team (and optionally) player stats from an REDitor-exported set of CSV files.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="tstopp">The opposing team stats dictionary.</param>
+        /// <param name="TeamOrder">The team order.</param>
+        /// <param name="pst">The player stats dictionary.</param>
+        /// <param name="folder">The folder containing the exported CSV files.</param>
+        /// <param name="teamsOnly">if set to <c>true</c>, only team stats will be imported.</param>
+        /// <returns></returns>
         public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                     ref SortedDictionary<string, int> TeamOrder, ref Dictionary<int, PlayerStats> pst, string folder,
                                     bool teamsOnly = false)
@@ -538,6 +560,9 @@ namespace NBA_Stats_Tracker.Interop
             return 0;
         }
 
+        /// <summary>
+        /// Creates the NBA divisions and conferences.
+        /// </summary>
         private static void CreateDivisions()
         {
             MainWindow.Conferences.Clear();
@@ -553,6 +578,13 @@ namespace NBA_Stats_Tracker.Interop
             MainWindow.Divisions.Add(new Division {ID = 5, Name = "Pacific", ConferenceID = 1});
         }
 
+        /// <summary>
+        /// Creates a new player and adds them to the player stats dictionary.
+        /// </summary>
+        /// <param name="pst">The player stats dictionary.</param>
+        /// <param name="player">The dictionary containing the player information.</param>
+        /// <param name="preferredID">The preferred ID.</param>
+        /// <returns></returns>
         private static int CreateNewPlayer(ref Dictionary<int, PlayerStats> pst, Dictionary<string, string> player, int preferredID = -1)
         {
             int playerID;
@@ -584,6 +616,16 @@ namespace NBA_Stats_Tracker.Interop
             return playerID;
         }
 
+        /// <summary>
+        /// Calculates the box score by comparing the participating team's current and previous team and player stats.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="oldTST">The old team stats dictionary.</param>
+        /// <param name="pst">The player stats dictionary.</param>
+        /// <param name="oldPST">The old player stats dictionary.</param>
+        /// <param name="t1">The away team ID.</param>
+        /// <param name="t2">The home team ID.</param>
+        /// <returns></returns>
         private static BoxScoreEntry PrepareBoxScore(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST,
                                                      Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int t1, int t2)
         {
@@ -659,24 +701,59 @@ namespace NBA_Stats_Tracker.Interop
             return bse;
         }
 
-        private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int team, int stat,
+        /// <summary>
+        /// Gets the difference of a team's stat's value between the current and previous stats.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="oldTST">The old team stats dictionary.</param>
+        /// <param name="teamID">The team ID.</param>
+        /// <param name="stat">The stat.</param>
+        /// <param name="isPlayoff">if set to <c>true</c>, the difference will be calculated based on the playoff stats.</param>
+        /// <returns></returns>
+        private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int teamID, int stat,
                                       bool isPlayoff = false)
         {
             return !isPlayoff
-                       ? (ushort) (tst[team].stats[stat] - oldTST[team].stats[stat])
-                       : (ushort) (tst[team].pl_stats[stat] - oldTST[team].pl_stats[stat]);
+                       ? (ushort) (tst[teamID].stats[stat] - oldTST[teamID].stats[stat])
+                       : (ushort) (tst[teamID].pl_stats[stat] - oldTST[teamID].pl_stats[stat]);
         }
 
-        private static ushort getDiff(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> oldPST, int ID, int stat)
+        /// <summary>
+        /// Gets the difference of a player's stat's value between the current and previous stats.
+        /// </summary>
+        /// <param name="pst">The player stats dictionary.</param>
+        /// <param name="oldPST">The old player stats dictionary.</param>
+        /// <param name="ID">The player's ID.</param>
+        /// <param name="stat">The stat.</param>
+        /// <returns></returns>
+        private static ushort getDiff(Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int ID, int stat, bool isPlayoff = false)
         {
-            return (ushort) (pst[ID].stats[stat] - oldPST[ID].stats[stat]);
+            return getDiff(pst[ID], oldPST[ID], stat, isPlayoff);
         }
 
-        private static ushort getDiff(PlayerStats newPS, PlayerStats oldPS, int stat)
+        /// <summary>
+        /// Gets the difference of a player's stat's value between the current and previous stats.
+        /// </summary>
+        /// <param name="newPS">The new player stats instance.</param>
+        /// <param name="oldPS">The old player stats instance.</param>
+        /// <param name="stat">The stat.</param>
+        /// <returns></returns>
+        private static ushort getDiff(PlayerStats newPS, PlayerStats oldPS, int stat, bool isPlayoff = false)
         {
-            return (ushort) (newPS.stats[stat] - oldPS.stats[stat]);
+            return !isPlayoff
+                       ? (ushort)(newPS.stats[stat] - oldPS.stats[stat])
+                       : (ushort)(newPS.pl_stats[stat] - oldPS.pl_stats[stat]);
         }
 
+        /// <summary>
+        /// Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into REDitor.
+        /// </summary>
+        /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="tstopp">The opposing team stats dictionary.</param>
+        /// <param name="pst">The player stats dictionary.</param>
+        /// <param name="folder">The folder.</param>
+        /// <param name="teamsOnly">if set to <c>true</c>, only the teams' stats will be exported.</param>
+        /// <returns></returns>
         public static int ExportAll(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, Dictionary<int, PlayerStats> pst,
                                     string folder, bool teamsOnly = false)
         {
@@ -837,6 +914,16 @@ namespace NBA_Stats_Tracker.Interop
             return 0;
         }
 
+        /// <summary>
+        /// Populates the REDitor dictionary lists by importing the CSV data into them. 
+        /// Each dictionary has Setting-Value pairs, where Setting is the column header, and Value is the corresponding value of that particular record.
+        /// </summary>
+        /// <param name="folder">The folder containing the REDitor-exported CSV files.</param>
+        /// <param name="teams">The resulting teams information dictionary list.</param>
+        /// <param name="players">The resulting players information dictionary list.</param>
+        /// <param name="teamStats">The resulting team stats dictionary list.</param>
+        /// <param name="playerStats">The resulting player stats dictionary list.</param>
+        /// <returns></returns>
         private static int PopulateREditorDictionaryLists(string folder, out List<Dictionary<string, string>> teams,
                                                           out List<Dictionary<string, string>> players,
                                                           out List<Dictionary<string, string>> teamStats,

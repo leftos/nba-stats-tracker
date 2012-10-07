@@ -28,8 +28,17 @@ using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Helper
 {
+    /// <summary>
+    /// Implements Event Handlers used by multiple controls from all over NBA Stats Tracker.
+    /// </summary>
     public static class EventHandlers
     {
+        /// <summary>
+        /// Handles the MouseDoubleClick event of any WPF DataGrid control containing PlayerStatsRow entries.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <returns></returns>
         public static bool AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGrid s = sender as DataGrid;
@@ -45,6 +54,11 @@ namespace NBA_Stats_Tracker.Helper
             return false;
         }
 
+        /// <summary>
+        /// Handles the MouseDoubleClick event of any WPF DataGrid control containing team information.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
         public static void AnyTeamDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGrid s = sender as DataGrid;
@@ -58,6 +72,10 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Formats the data being copied to the clipboard. Used for columns containing percentage data.
+        /// </summary>
+        /// <param name="e">The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.</param>
         public static void PercentageColumn_CopyingCellClipboardContent(DataGridCellClipboardEventArgs e)
         {
             try
@@ -69,6 +87,12 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Substitutes the Player ID value with the Player's name before copying the data to the clipboard. 
+        /// Used for data-bound columns containing player selection combo-boxes.
+        /// </summary>
+        /// <param name="e">The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.</param>
+        /// <param name="PlayersList">The players list.</param>
         public static void PlayerColumn_CopyingCellClipboardContent(DataGridCellClipboardEventArgs e,
                                                                     IEnumerable<KeyValuePair<int, string>> PlayersList)
         {
@@ -88,6 +112,10 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Sorts the column in descending order first, if it's not already sorted. Used for columns containing stats.
+        /// </summary>
+        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
         public static void StatColumn_Sorting(DataGridSortingEventArgs e)
         {
             var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team"};
@@ -98,6 +126,14 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Updates the box score data grid.
+        /// </summary>
+        /// <param name="TeamName">Name of the team.</param>
+        /// <param name="PlayersList">The players list.</param>
+        /// <param name="pbsList">The player box score list.</param>
+        /// <param name="playersT">The players' SQLite table name.</param>
+        /// <param name="loading">if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.</param>
         public static void UpdateBoxScoreDataGrid(string TeamName, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
                                                   ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
         {
@@ -131,6 +167,14 @@ namespace NBA_Stats_Tracker.Helper
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
         }
 
+        /// <summary>
+        /// Updates the live box score data grid.
+        /// </summary>
+        /// <param name="TeamName">Name of the team.</param>
+        /// <param name="PlayersList">The players list.</param>
+        /// <param name="pbsList">The player box score list.</param>
+        /// <param name="playersT">The players' SQLite table name.</param>
+        /// <param name="loading">if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.</param>
         public static void UpdateBoxScoreDataGrid(string TeamName, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
                                                   ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
         {
@@ -172,6 +216,17 @@ namespace NBA_Stats_Tracker.Helper
             }
         }
 
+        /// <summary>
+        /// Calculates the score.
+        /// </summary>
+        /// <param name="fgm">The FGM.</param>
+        /// <param name="fga">The FGA.</param>
+        /// <param name="tpm">The 3PM.</param>
+        /// <param name="tpa">The 3PA.</param>
+        /// <param name="ftm">The FTM.</param>
+        /// <param name="fta">The FTA.</param>
+        /// <param name="PTS">The PTS.</param>
+        /// <param name="percentages">The percentages.</param>
         public static void calculateScore(int fgm, int? fga, int tpm, int? tpa, int ftm, int? fta, out int PTS, out string percentages)
         {
             try

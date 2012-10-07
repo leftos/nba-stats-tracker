@@ -41,27 +41,27 @@
                     <Label Content="FGM" HorizontalAlignment="Left" Margin="264,66,0,0" Name="label8"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="264,95,0,0" Name="txtFGM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="7" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore1" />
+                             VerticalAlignment="Top" Width="36" TabIndex="7" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
                     <Label Content="FGA" HorizontalAlignment="Left" Margin="306,66,0,0" Name="label9"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="306,95,0,0" Name="txtFGA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="8" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore1" />
+                             VerticalAlignment="Top" Width="36" TabIndex="8" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
                     <Label Content="3PM" HorizontalAlignment="Left" Margin="348,66,0,0" Name="label10"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="348,95,0,0" Name="txt3PM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="9" TextChanged="calculateScore1" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="9" TextChanged="calculateScoreAway" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="3PA" HorizontalAlignment="Left" Margin="390,66,0,0" Name="label11"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="390,95,0,0" Name="txt3PA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="10" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore1" />
+                             VerticalAlignment="Top" Width="36" TabIndex="10" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
                     <Label Content="FTM" HorizontalAlignment="Left" Margin="432,66,0,0" Name="label12"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="432,95,0,0" Name="txtFTM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="11" TextChanged="calculateScore1" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="11" TextChanged="calculateScoreAway" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FTA" HorizontalAlignment="Left" Margin="474,66,0,0" Name="label13"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="474,95,0,0" Name="txtFTA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="12" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore1" />
+                             VerticalAlignment="Top" Width="36" TabIndex="12" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
                     <Label Content="OREB" HorizontalAlignment="Left" Margin="516,66,0,0" Name="label14"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="516,95,0,0" Name="txtOFF1"
@@ -96,27 +96,27 @@
                     <Label Content="FGM" HorizontalAlignment="Left" Margin="264,175,0,0" Name="label21"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="264,204,0,0" Name="txtFGM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="22" TextChanged="calculateScore2" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="22" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FGA" HorizontalAlignment="Left" Margin="306,175,0,0" Name="label22"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="306,204,0,0" Name="txtFGA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="23" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore2" />
+                             VerticalAlignment="Top" Width="36" TabIndex="23" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
                     <Label Content="3PM" HorizontalAlignment="Left" Margin="348,175,0,0" Name="label23"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="348,204,0,0" Name="txt3PM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="24" TextChanged="calculateScore2" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="24" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="3PA" HorizontalAlignment="Left" Margin="390,175,0,0" Name="label24"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="390,204,0,0" Name="txt3PA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="25" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore2" />
+                             VerticalAlignment="Top" Width="36" TabIndex="25" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
                     <Label Content="FTM" HorizontalAlignment="Left" Margin="432,175,0,0" Name="label25"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="432,204,0,0" Name="txtFTM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="26" TextChanged="calculateScore2" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="26" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FTA" HorizontalAlignment="Left" Margin="474,175,0,0" Name="label26"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="474,204,0,0" Name="txtFTA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="27" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScore2" />
+                             VerticalAlignment="Top" Width="36" TabIndex="27" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
                     <Label Content="FOUL" HorizontalAlignment="Left" Margin="558,66,0,0" Name="label27"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="558,95,0,0" Name="txtPF1"

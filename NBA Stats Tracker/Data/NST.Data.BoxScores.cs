@@ -22,18 +22,31 @@ using System.Collections.Generic;
 
 namespace NBA_Stats_Tracker.Data
 {
+    /// <summary>
+    /// A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.
+    /// </summary>
     public class BoxScoreEntry
     {
         public DateTime date;
         public bool mustUpdate;
         public List<PlayerBoxScore> pbsList;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
+        /// </summary>
+        /// <param name="bs">The TeamBoxScore to initialize with.</param>
         public BoxScoreEntry(TeamBoxScore bs)
         {
             this.bs = bs;
             date = DateTime.Now;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
+        /// </summary>
+        /// <param name="bs">The TeamBoxScore to initialize with.</param>
+        /// <param name="date">The date of the game.</param>
+        /// <param name="pbsList">The PlayerBoxScore list.</param>
         public BoxScoreEntry(TeamBoxScore bs, DateTime date, List<PlayerBoxScore> pbsList)
         {
             this.bs = bs;

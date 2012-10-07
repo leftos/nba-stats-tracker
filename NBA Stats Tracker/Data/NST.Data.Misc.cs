@@ -14,12 +14,9 @@
 
 namespace NBA_Stats_Tracker.Data
 {
-    public class Season
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-    }
-
+    /// <summary>
+    /// Basic division information.
+    /// </summary>
     public class Division
     {
         public int ID { get; set; }
@@ -27,12 +24,18 @@ namespace NBA_Stats_Tracker.Data
         public int ConferenceID { get; set; }
     }
 
+    /// <summary>
+    /// Basic conference information.
+    /// </summary>
     public class Conference
     {
         public int ID { get; set; }
         public string Name { get; set; }
     }
 
+    /// <summary>
+    /// Used to differentiate between available time-spans for stats.
+    /// </summary>
     public enum Span
     {
         Season,

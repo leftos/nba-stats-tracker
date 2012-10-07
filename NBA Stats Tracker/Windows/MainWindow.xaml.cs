@@ -437,7 +437,7 @@ namespace NBA_Stats_Tracker.Windows
 
             PopulateSeasonCombo(ofd.FileName);
 
-            SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
+            SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
             //tst = getCustomStats("", ref teamOrder, ref curPT, ref bshist);
 
             txtFile.Text = ofd.FileName;
@@ -479,7 +479,7 @@ namespace NBA_Stats_Tracker.Windows
             int id1 = TeamOrder[bs.Team1];
             int id2 = TeamOrder[bs.Team2];
 
-            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist, _curSeason: bs.SeasonNum);
+            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref bshist, _curSeason: bs.SeasonNum);
 
             List<PlayerBoxScore> list = pbsLists.SelectMany(pbsList => pbsList).ToList();
 
@@ -904,7 +904,7 @@ namespace NBA_Stats_Tracker.Windows
                                 "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
+                            SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
                             txtFile.Text = file;
                             return;
                         }
@@ -1022,7 +1022,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                                 SQLiteIO.getMaxSeason(file));
                                                   txtFile.Text = file;
                                                   PopulateSeasonCombo(file);
-                                                  SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist,
+                                                  SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist,
                                                                       _curSeason: curSeason);
 
                                                   txbWait.Visibility = Visibility.Hidden;
@@ -1201,7 +1201,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (ofd1.FileName == "")
                     return;
 
-                SQLiteIO.LoadSeason(ofd1.FileName, out tst, out tstopp, out pst, out TeamOrder, ref pt, ref bshist);
+                SQLiteIO.LoadSeason(ofd1.FileName, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
                 //cmbTeam1.SelectedIndex = 0;
             }
 
@@ -1225,7 +1225,7 @@ namespace NBA_Stats_Tracker.Windows
             IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
             Dictionary<int, TeamStats> oldTST;
             Dictionary<int, TeamStats> oldTSTopp;
-            SQLiteIO.LoadSeason(ofd.FileName, out oldTST, out oldTSTopp, out pst, out oldTeamOrder, ref oldPT, ref oldbshist);
+            SQLiteIO.LoadSeason(ofd.FileName, out oldTST, out oldTSTopp, out pst, out oldTeamOrder, ref oldbshist);
 
             var curR = new TeamRankings(tst);
             var oldR = new TeamRankings(oldTST);
@@ -1371,7 +1371,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             foreach (int key in tstopp.Keys)
-                tstopp[key].ResetStats("All");
+                tstopp[key].ResetStats(Span.SeasonAndPlayoffs);
 
             foreach (BoxScoreEntry bse in bshist)
             {
@@ -1821,10 +1821,10 @@ namespace NBA_Stats_Tracker.Windows
                 if (r == MessageBoxResult.Yes)
                 {
                     foreach (int key in tst.Keys)
-                        tst[key].ResetStats("All");
+                        tst[key].ResetStats(Span.SeasonAndPlayoffs);
 
                     foreach (int key in tstopp.Keys)
-                        tstopp[key].ResetStats("All");
+                        tstopp[key].ResetStats(Span.SeasonAndPlayoffs);
                 }
             }
 
