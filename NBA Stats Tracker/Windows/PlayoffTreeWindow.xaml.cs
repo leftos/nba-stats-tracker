@@ -28,7 +28,7 @@ using NBA_Stats_Tracker.Interop;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Used by the binary editing method of NBA 2K import/export in order to determine the order of the teams in the playoffs tree.
     /// </summary>
     public partial class PlayoffTreeWindow
     {
@@ -36,6 +36,9 @@ namespace NBA_Stats_Tracker.Windows
         private readonly PlayoffTree myPT;
         private bool valid = true;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayoffTreeWindow" /> class.
+        /// </summary>
         public PlayoffTreeWindow()
         {
             InitializeComponent();
@@ -90,6 +93,11 @@ namespace NBA_Stats_Tracker.Windows
             myPT.done = false;
         }
 
+        /// <summary>
+        /// Checks if any of the teams in the Western Conference are the same.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void checkIfSameTeamsWest(object sender, SelectionChangedEventArgs e)
         {
             var tree = new string[8];
@@ -168,6 +176,11 @@ namespace NBA_Stats_Tracker.Windows
             Close();
         }
 
+        /// <summary>
+        /// Checks if any of the teams in the Eastern Conference are the same.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void checkIfSameTeamsEast(object sender, SelectionChangedEventArgs e)
         {
             var tree = new string[8];
@@ -226,6 +239,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Closed event of the Window control.
+        /// Copies the local playoff tree instance to the application-wide one when the window's closed.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Window_Closed(object sender, EventArgs e)
         {
             App.tempPT = myPT;

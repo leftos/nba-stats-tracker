@@ -98,7 +98,7 @@
             <Button Content="Test" Height="23" HorizontalAlignment="Left" Margin="149,58,0,0" Name="btnTest"
                     VerticalAlignment="Top" Width="75" Click="btnTest_Click" />
             <Button Content="Open Database" Height="23" HorizontalAlignment="Left" Margin="12,58,0,0"
-                    Name="btnOpenCustom" TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpenCustom_Click" />
+                    x:Name="btnOpen" TabIndex="0" VerticalAlignment="Top" Width="131" Click="btnOpen_Click" />
             <GroupBox Header="Analysis" HorizontalAlignment="Left" Margin="12,90,0,33" Name="groupBox1" Width="185">
                 <Grid>
                     <Button Content="Team Overview" Height="52" HorizontalAlignment="Center" Margin="6,9,6,0"
@@ -121,7 +121,7 @@
             <GroupBox Header="Update" HorizontalAlignment="Left" Margin="203,90,0,33" Name="groupBox2" Width="185">
                 <Grid>
                     <Button FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="6,0,6,69"
-                            Name="btnSaveTeamStats" Width="156" Click="btnSaveTeamStats_Click" IsEnabled="True" Height="52"
+                            x:Name="btnSaveCurrentSeason" Width="156" Click="btnSaveCurrentSeason_Click" IsEnabled="True" Height="52"
                             VerticalAlignment="Bottom" TabIndex="8">
                         <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
                             Save Current Season
@@ -177,8 +177,8 @@
                             </TextBlock>
                         </Button.ToolTip>
                     </Button>
-                    <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" Name="btnInject"
-                            VerticalAlignment="Top" Width="154" Click="btnInject2K12_Click" TabIndex="11">
+                    <Button Height="46" HorizontalAlignment="Center" Margin="9,58,9,0" x:Name="btnExport2K12"
+                            VerticalAlignment="Top" Width="154" Click="btnExport2K12_Click" TabIndex="11">
                         <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
                             Export to
                             <LineBreak />

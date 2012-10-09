@@ -34,7 +34,7 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for TeamOverviewWindow.xaml
+    /// Shows team information and stats.
     /// </summary>
     public partial class TeamOverviewWindow
     {
@@ -66,11 +66,18 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, TeamStats> tst;
         private Dictionary<int, TeamStats> tstopp;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
+        /// </summary>
         public TeamOverviewWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
+        /// </summary>
+        /// <param name="team">The team to switch to when the window finishes loading.</param>
         public TeamOverviewWindow(string team) : this()
         {
             teamToLoad = team;

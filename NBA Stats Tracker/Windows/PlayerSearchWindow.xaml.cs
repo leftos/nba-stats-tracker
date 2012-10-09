@@ -38,7 +38,7 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for PlayerSearchWindow.xaml
+    /// Allows the user to search for players fulfilling any combination of user-specified criteria.
     /// </summary>
     public partial class PlayerSearchWindow
     {
@@ -113,6 +113,10 @@ namespace NBA_Stats_Tracker.Windows
         private readonly int maxSeason;
         private int curSeason;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerSearchWindow" /> class.
+        /// Prepares the window by populating all the combo-boxes.
+        /// </summary>
         public PlayerSearchWindow()
         {
             InitializeComponent();
@@ -149,30 +153,43 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
         }
 
-        private string GetCurTeamFromDisplayName(string p)
+        /// <summary>
+        /// Finds a team's name by its displayName.
+        /// </summary>
+        /// <param name="displayName">The display name.</param>
+        /// <returns></returns>
+        private string GetCurTeamFromDisplayName(string displayName)
         {
             foreach (int kvp in MainWindow.tst.Keys)
             {
-                if (MainWindow.tst[kvp].displayName == p)
+                if (MainWindow.tst[kvp].displayName == displayName)
                 {
                     return MainWindow.tst[kvp].name;
                 }
             }
-            return "$$TEAMNOTFOUND: " + p;
+            return "$$TEAMNOTFOUND: " + displayName;
         }
 
-        private string GetDisplayNameFromTeam(string p)
+        /// <summary>
+        /// Finds a team's displayName by its name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        private string GetDisplayNameFromTeam(string name)
         {
             foreach (int kvp in MainWindow.tst.Keys)
             {
-                if (MainWindow.tst[kvp].name == p)
+                if (MainWindow.tst[kvp].name == name)
                 {
                     return MainWindow.tst[kvp].displayName;
                 }
             }
-            return "$$TEAMNOTFOUND: " + p;
+            return "$$TEAMNOTFOUND: " + name;
         }
 
+        /// <summary>
+        /// Populates the season combo.
+        /// </summary>
         private void PopulateSeasonCombo()
         {
             cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
@@ -180,6 +197,12 @@ namespace NBA_Stats_Tracker.Windows
             cmbSeasonNum.SelectedValue = curSeason;
         }
 
+        /// <summary>
+        /// Handles the SelectionChanged event of the cmbSeasonNum control.
+        /// Loads all the team and player information for the newly selected season, and refreshes the teams combo-box.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
@@ -200,6 +223,12 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeam.ItemsSource = teams;
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnSearch control.
+        /// Implements the searching algorithm by accumulating the criteria and filtering the available players based on those criteria.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             dgvPlayerStats.ItemsSource = null;
@@ -436,6 +465,11 @@ namespace NBA_Stats_Tracker.Windows
             tbcPlayerSearch.SelectedItem = tabResults;
         }
 
+        /// <summary>
+        /// Used to filter the PlayerStatsRow results based on any user-specified metric stats criteria.
+        /// </summary>
+        /// <param name="o">The o.</param>
+        /// <returns></returns>
         private bool Filter(object o)
         {
             var psr = (PlayerStatsRow) o;
@@ -463,6 +497,11 @@ namespace NBA_Stats_Tracker.Windows
             return keep;
         }
 
+        /// <summary>
+        /// Handles the LoadingRow event of the dg control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridRowEventArgs" /> instance containing the event data.</param>
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
@@ -472,12 +511,24 @@ namespace NBA_Stats_Tracker.Windows
         {
         }
 
+        /// <summary>
+        /// Handles the SelectionChanged event of the cmbTeam control.
+        /// Switches the IsActive criterion to true if a team is selected.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbTeam.SelectedIndex != -1)
                 chkIsActive.IsChecked = true;
         }
 
+        /// <summary>
+        /// Handles the Click event of the chkIsActive control.
+        /// Switches the currently selected team to the "Any" option if the IsActive criterion is set to true; otherwise, resets the teams combo-box to no selection.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void chkIsActive_Click(object sender, RoutedEventArgs e)
         {
             if (chkIsActive.IsChecked.GetValueOrDefault())
@@ -486,6 +537,12 @@ namespace NBA_Stats_Tracker.Windows
                 cmbTeam.SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnTotalsAdd control.
+        /// Adds a total stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnTotalsAdd_Click(object sender, RoutedEventArgs e)
         {
             if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtTotalsVal.Text))
@@ -505,6 +562,12 @@ namespace NBA_Stats_Tracker.Windows
             txtTotalsVal.Text = "";
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnTotalsDel control.
+        /// Deletes a total stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnTotalsDel_Click(object sender, RoutedEventArgs e)
         {
             if (lstTotals.SelectedIndex == -1)
@@ -528,6 +591,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnAvgAdd control.
+        /// Adds an average stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnAvgAdd_Click(object sender, RoutedEventArgs e)
         {
             if (cmbAvgPar.SelectedIndex == -1 || cmbAvgOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtAvgVal.Text))
@@ -547,6 +616,12 @@ namespace NBA_Stats_Tracker.Windows
             txtAvgVal.Text = "";
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnAvgDel control.
+        /// Deletes an average stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnAvgDel_Click(object sender, RoutedEventArgs e)
         {
             if (lstAvg.SelectedIndex == -1)
@@ -570,6 +645,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnMetricsAdd control.
+        /// Adds a metric stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnMetricsAdd_Click(object sender, RoutedEventArgs e)
         {
             if (cmbMetricsPar.SelectedIndex == -1 || cmbMetricsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtMetricsVal.Text))
@@ -589,6 +670,12 @@ namespace NBA_Stats_Tracker.Windows
             txtMetricsVal.Text = "";
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnMetricsDel control.
+        /// Deletes a metric stats filter.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnMetricsDel_Click(object sender, RoutedEventArgs e)
         {
             if (lstMetrics.SelectedIndex == -1)
@@ -612,11 +699,23 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Sorting event of the dgvPlayerStats control.
+        /// Uses a custom Sorting event handler that sorts a stat in descending order, if it's not sorted already.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
         private void dgvPlayerStats_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnLoadFilters control.
+        /// Loads the filters from a previously saved filters file.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new OpenFileDialog
@@ -751,6 +850,12 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnSaveFilters control.
+        /// Saves the current filters to a file.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnSaveFilters_Click(object sender, RoutedEventArgs e)
         {
             string s = "";

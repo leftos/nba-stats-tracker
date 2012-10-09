@@ -520,8 +520,7 @@ namespace NBA_Stats_Tracker.Interop
             switch (modeToSet)
             {
                 default:
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 9},
@@ -556,8 +555,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 1":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 2},
@@ -592,8 +590,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 6":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 8},
@@ -628,8 +625,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 2":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 8},
@@ -664,8 +660,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 3":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 7},
@@ -700,8 +695,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 4":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 7},
@@ -736,8 +730,7 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 5":
-                    TeamOrder = new SortedDictionary<string, int>
-                                {
+                    TeamOrder = new SortedDictionary<string, int> {
                                     {"76ers", 13},
                                     {"Bobcats", 10},
                                     {"Bucks", 0},
@@ -807,6 +800,31 @@ namespace NBA_Stats_Tracker.Interop
             else if (r == MessageBoxResult.Cancel)
                 gamesInSeason = 29;
             return gamesInSeason;
+        }
+
+        public static void checkForRedundantSettings()
+        {
+            string[] stgFiles = Directory.GetFiles(MainWindow.AppDocsPath, "*.cfg");
+            if (Directory.Exists(MainWindow.SavesPath))
+            {
+                foreach (string file in stgFiles)
+                {
+                    string realfile = file.Substring(0, file.Length - 4);
+                    if (File.Exists(MainWindow.SavesPath + Tools.getSafeFilename(realfile)) == false)
+                        File.Delete(file);
+                }
+            }
+
+            string[] bshFiles = Directory.GetFiles(MainWindow.AppDocsPath, "*.bsh");
+            if (Directory.Exists(MainWindow.SavesPath))
+            {
+                foreach (string file in bshFiles)
+                {
+                    string realfile = file.Substring(0, file.Length - 4);
+                    if (File.Exists(MainWindow.SavesPath + Tools.getSafeFilename(realfile)) == false)
+                        File.Delete(file);
+                }
+            }
         }
     }
 
