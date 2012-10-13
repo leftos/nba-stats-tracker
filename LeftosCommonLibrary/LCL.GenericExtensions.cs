@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -50,7 +51,11 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                variable = default(T);
+                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value {1}", key, dict[key], DateTime.Now));
+            }
+            catch (FormatException)
+            {
+                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value {1}", key, dict[key], DateTime.Now));
             }
             catch (KeyNotFoundException)
             {
@@ -135,7 +140,7 @@ namespace LeftosCommonLibrary
         /// <returns>The value that the variable should be set to if the operation succeeds. 
         /// If the cast is invalid, it returns the default value of the type. 
         /// If the key isn't found, it returns the original value of the variable.</returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key)
+        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, bool onErrorRemain = false)
         {
             try
             {
@@ -150,7 +155,15 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                return default(T);
+                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
+            catch (FormatException)
+            {
+                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
             }
             catch (KeyNotFoundException)
             {
@@ -169,7 +182,7 @@ namespace LeftosCommonLibrary
         /// <returns>The value that the variable should be set to if the operation succeeds. 
         /// If the cast is invalid, it returns the default value of the type. 
         /// If the key isn't found, it returns the original value of the variable.</returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type)
+        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, bool onErrorRemain = false)
         {
             try
             {
@@ -178,7 +191,15 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                return default(T);
+                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
+            catch (FormatException)
+            {
+                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
             }
             catch (KeyNotFoundException)
             {
@@ -199,7 +220,7 @@ namespace LeftosCommonLibrary
         /// <returns>The value that the variable should be set to if the operation succeeds. 
         /// If the cast is invalid, it returns the default value of the type. 
         /// If the key isn't found, it returns the original value of the variable.</returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter)
+        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter, bool onErrorRemain = false)
         {
             try
             {
@@ -213,7 +234,15 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                return default(T);
+                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
+            catch (FormatException)
+            {
+                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
             }
             catch (KeyNotFoundException)
             {
