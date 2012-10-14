@@ -258,7 +258,7 @@
                                             <TextBlock Text="{Binding FTR, StringFormat=F3}">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
-                                                        Text="Free Throw Rate; a measure of a player's ability to get to the line and score." TextWrapping="Wrap"
+                                                        Text="Free Throw Rate; a measure of a team's ability to get to the line and score." TextWrapping="Wrap"
                                                         MaxWidth="400" />
                                                 </TextBlock.ToolTip>
                                             </TextBlock>

@@ -1046,8 +1046,40 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         ps.AddBoxScore(new PlayerBoxScore(r));
                     }
-                    splitPSRs.Add(new PlayerStatsRow(ps, team, "Team Played For"));
+                    splitPSRs.Add(new PlayerStatsRow(ps, "with " + team, "Team Played For"));
                 }
+            }
+
+            #endregion
+
+            #region Opponents
+
+            foreach (var oppTeam in teamOrder.Keys)
+            {
+                string q =
+                    String.Format(
+                        "select * from PlayerResults INNER JOIN GameResults" +
+                        " ON (PlayerResults.GameID = GameResults.GameID)" +
+                        " WHERE PlayerID = {0} AND ((T1Name LIKE Team AND T2Name LIKE '{1}') OR (T1Name LIKE Team AND T2Name LIKE '{1}'))",
+                        psr.ID, oppTeam);
+                if (rbStatsBetween.IsChecked.GetValueOrDefault())
+                {
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                              dtpEnd.SelectedDate.GetValueOrDefault());
+                }
+                else
+                {
+                    string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
+                    q += s;
+                }
+                res = db.GetDataTable(q);
+                ps.ResetStats();
+
+                foreach (DataRow r in res.Rows)
+                {
+                    ps.AddBoxScore(new PlayerBoxScore(r));
+                }
+                splitPSRs.Add(new PlayerStatsRow(ps, "vs. " + oppTeam, "Team Played Against"));
             }
 
             #endregion

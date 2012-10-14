@@ -582,6 +582,37 @@ namespace NBA_Stats_Tracker.Windows
             CreateDataRowFromTeamStats(ts, ref dr, "Playoffs");
             dt_ss.Rows.Add(dr);
 
+            #region Per Opponent
+            dr = dt_ss.NewRow();
+            dr["Type"] = " ";
+            dt_ss.Rows.Add(dr);
+
+            foreach (var oppTeam in MainWindow.TeamOrder.Keys)
+            {
+                ts = new TeamStats(curTeam);
+                tsopp = new TeamStats(oppTeam);
+
+                string q =
+                    String.Format(
+                        "SELECT * FROM GameResults WHERE ((T1Name LIKE '{1}' AND T2Name LIKE '{0}') OR (T2Name LIKE '{1}' AND T1Name LIKE '{0}'))",
+                        oppTeam, curTeam);
+                if (rbStatsBetween.IsChecked.GetValueOrDefault())
+                {
+                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
+                                                                dtpEnd.SelectedDate.GetValueOrDefault());
+                }
+                else
+                {
+                    q += " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
+                }
+                res2 = db.GetDataTable(q);
+                AddToTeamStatsFromSQLBoxScores(res2, ref ts, ref tsopp);
+                dr = dt_ss.NewRow();
+                CreateDataRowFromTeamStats(ts, ref dr, "vs. " + oppTeam);
+                dt_ss.Rows.Add(dr);
+            }
+            #endregion
+
             #region Monthly split stats
 
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
