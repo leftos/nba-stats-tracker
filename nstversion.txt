@@ -1,3 +1,8 @@
+v0.14.5.0
+- Addition: Team & Player Split Stats now include stats per opponent
+- Fix: Projected Winning Percentage now takes season length into account
+- Change: Pythagorean Wins and Losses now use an exponent of 16.5 as suggested by John Hollinger
+
 v0.14.4
 - Addition: Player Scouting Reports now available in Player Overview
 - Improvement: Team Scouting Reports will now adjust their comments based on the amount of teams in the league, instead of assuming there's 30 teams

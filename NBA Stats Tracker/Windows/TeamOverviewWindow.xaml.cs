@@ -589,6 +589,8 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (var oppTeam in MainWindow.TeamOrder.Keys)
             {
+                if (oppTeam == curTeam) continue;
+
                 ts = new TeamStats(curTeam);
                 tsopp = new TeamStats(oppTeam);
 

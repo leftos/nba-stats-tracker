@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v0.14.6
+		- Addition: Added Age and Years Pro fields to players
+		- Addition: Player Search results will now show primary & secondary position, as well as age
+		- Fix: Per Opponent split stats for teams now don't show a row for stats against the team itself
+
 	v0.14.5
 		- Addition: Team & Player Split Stats now include stats per opponent
 		- Fix: Projected Winning Percentage now takes season length into account
