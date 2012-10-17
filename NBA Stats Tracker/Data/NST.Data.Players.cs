@@ -1803,7 +1803,7 @@ namespace NBA_Stats_Tracker.Data
                 TPM = ps.stats[p.TPM];
                 TPMPG = ((float) TPM/GP);
                 TPA = ps.stats[p.TPA];
-                TPAPG = (uint) ((double) TPA/GP);
+                TPAPG = ((float) TPA/GP);
                 FTM = ps.stats[p.FTM];
                 FTMPG = ((float) FTM/GP);
                 FTA = ps.stats[p.FTA];

@@ -381,7 +381,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
                 {
-                    cmbDivConf.IsEnabled = false;
+                    //cmbDivConf.IsEnabled = false;
                     bool doIt = false;
                     if (lastShownBoxSeason != curSeason)
                         doIt = true;
@@ -758,33 +758,27 @@ namespace NBA_Stats_Tracker.Windows
 
                 PlayerStatsRow psr1 = templist[0];
                 string text = psr1.GetBestStats(5);
-                txbPlPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer1.Text = string.Format("1: {0} {1} ({2} - {3})\n\n{4}", psr1.FirstName, psr1.LastName, psr1.Position1, psr1.TeamFDisplay, text);
 
                 PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                txbPlPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer2.Text = string.Format("2: {0} {1} ({2} - {3})\n\n{4}", psr2.FirstName, psr2.LastName, psr2.Position1, psr2.TeamFDisplay, text);
 
                 PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                txbPlPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer3.Text = string.Format("3: {0} {1} ({2} - {3})\n\n{4}", psr3.FirstName, psr3.LastName, psr3.Position1, psr3.TeamFDisplay, text);
 
                 PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                txbPlPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer4.Text = string.Format("4: {0} {1} ({2} - {3})\n\n{4}", psr4.FirstName, psr4.LastName, psr4.Position1, psr4.TeamFDisplay, text);
 
                 PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                txbPlPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer5.Text = string.Format("5: {0} {1} ({2} - {3})\n\n{4}", psr5.FirstName, psr5.LastName, psr5.Position1, psr5.TeamFDisplay, text);
 
                 PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                txbPlPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay +
-                                    ")\n\n" + text;
+                txbPlPlayer6.Text = string.Format("6: {0} {1} ({2} - {3})\n\n{4}", psr6.FirstName, psr6.LastName, psr6.Position1, psr6.TeamFDisplay, text);
             }
             catch (Exception)
             {
@@ -1108,6 +1102,11 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (DataRow dr in res.Rows)
             {
+                if (!InCurrentFilter(dr["T1Name"].ToString()) && !InCurrentFilter(dr["T2Name"].ToString()))
+                {
+                    continue;
+                }
+
                 DataRow r = dt_bs.NewRow();
 
                 try

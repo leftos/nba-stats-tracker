@@ -4,6 +4,9 @@ NBA Stats Tracker - Version History
 		- Addition: Added Age and Years Pro fields to players
 		- Addition: Player Search results will now show primary & secondary position, as well as age
 		- Fix: Per Opponent split stats for teams now don't show a row for stats against the team itself
+		- Improvement: Improved interface margins so that the program shows the required rows in tables better in Windows 7
+		- Improvement: Box Scores in League Overview can now be limited by division or conference
+		- Fix: 3PA/G stats are now calculated correctly
 
 	v0.14.5
 		- Addition: Team & Player Split Stats now include stats per opponent
