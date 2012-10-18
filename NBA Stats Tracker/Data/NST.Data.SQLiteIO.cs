@@ -630,7 +630,7 @@ namespace NBA_Stats_Tracker.Data
                                {"Position1", ps.Position1},
                                {"Position2", ps.Position2},
                                {"isActive", ps.isActive.ToString()},
-                               {"Age", ps.Age.ToString()},
+                               {"YearOfBirth", ps.YearOfBirth.ToString()},
                                {"YearsPro", ps.YearsPro.ToString()},
                                {"isHidden", ps.isHidden.ToString()},
                                {"isInjured", ps.isInjured.ToString()},
@@ -779,7 +779,7 @@ namespace NBA_Stats_Tracker.Data
                 qr = "DROP TABLE IF EXISTS \"" + playersT + "\"";
                 db.ExecuteNonQuery(qr);
                 qr = "CREATE TABLE \"" + playersT +
-                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"Age\" INTEGER,\"YearsPro\" INTEGER, \"isHidden\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
+                     "\" (\"ID\" INTEGER PRIMARY KEY  NOT NULL ,\"LastName\" TEXT NOT NULL ,\"FirstName\" TEXT NOT NULL ,\"Position1\" TEXT,\"Position2\" TEXT,\"isActive\" TEXT,\"YearOfBirth\" INTEGER,\"YearsPro\" INTEGER, \"isHidden\" TEXT,\"isInjured\" TEXT,\"TeamFin\" TEXT,\"TeamSta\" TEXT,\"GP\" INTEGER,\"GS\" INTEGER,\"MINS\" INTEGER NOT NULL  DEFAULT (0) ,\"PTS\" INTEGER NOT NULL ,\"FGM\" INTEGER NOT NULL ,\"FGA\" INTEGER NOT NULL ,\"TPM\" INTEGER NOT NULL ,\"TPA\" INTEGER NOT NULL ,\"FTM\" INTEGER NOT NULL ,\"FTA\" INTEGER NOT NULL ,\"OREB\" INTEGER NOT NULL ,\"DREB\" INTEGER NOT NULL ,\"STL\" INTEGER NOT NULL ,\"TOS\" INTEGER NOT NULL ,\"BLK\" INTEGER NOT NULL ,\"AST\" INTEGER NOT NULL ,\"FOUL\" INTEGER NOT NULL ,\"isAllStar\" TEXT,\"isNBAChampion\" TEXT)";
                 db.ExecuteNonQuery(qr);
 
                 qr = "DROP TABLE IF EXISTS \"" + pl_playersT + "\"";
@@ -1364,9 +1364,21 @@ namespace NBA_Stats_Tracker.Data
                         {
                             mustSave = true;
                         }
-                        else if (!dr["sql"].ToString().Contains("\"Age\""))
+                        else if (!dr["sql"].ToString().Contains("\"YearOfBirth\""))
                         {
                             mustSave = true;
+                            if (dr["sql"].ToString().Contains("\"Age\""))
+                            {
+                                InputBoxWindow ibw =
+                                    new InputBoxWindow(
+                                        "NBA Stats Tracker has replaced the 'Age' field for players with 'Year of Birth'. " +
+                                        "Please enter the year by which all players' year of birth should be calculated.",
+                                        DateTime.Now.Year.ToString());
+                                if (ibw.ShowDialog() == false)
+                                {
+                                    MainWindow.input = DateTime.Now.Year.ToString();
+                                }
+                            }
                         }
                         break;
                     }

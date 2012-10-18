@@ -84,7 +84,7 @@ namespace NBA_Stats_Tracker.Data
         public string LastName;
         public string Position1;
         public string Position2;
-        public int Age;
+        public int YearOfBirth;
         public int YearsPro;
         public string TeamF;
         public string TeamS = "";
@@ -118,7 +118,7 @@ namespace NBA_Stats_Tracker.Data
             FirstName = player.FirstName;
             Position1 = player.Position;
             Position2 = player.Position2;
-            Age = 0;
+            YearOfBirth = 0;
             YearsPro = 0;
             TeamF = player.Team;
             isActive = true;
@@ -180,18 +180,32 @@ namespace NBA_Stats_Tracker.Data
                 {
                     isHidden = false;
                 }
-
-                // Backwards compatibility with databases that didn't have the fields
+                
                 try
                 {
-                    Age = Tools.getInt(dataRow, "Age");
-                    YearsPro = Tools.getInt(dataRow, "YearsPro");
+                    YearOfBirth = Tools.getInt(dataRow, "YearOfBirth");
                 }
                 catch
                 {
-                    Age = 0;
+                    try
+                    {
+                        YearOfBirth = Convert.ToInt32(MainWindow.input) - Tools.getInt(dataRow, "Age");
+                    }
+                    catch
+                    {
+                        YearOfBirth = 0;
+                    }
+                }
+
+                try
+                {
+                    YearsPro = Tools.getInt(dataRow, "YearsPro");
+                }
+                catch (Exception)
+                {
                     YearsPro = 0;
                 }
+                //
 
                 isInjured = Tools.getBoolean(dataRow, "isInjured");
                 isAllStar = Tools.getBoolean(dataRow, "isAllStar");
@@ -256,7 +270,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="isNBAChampion">if set to <c>true</c> is a champion this season.</param>
         /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
         /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
-        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, int Age, int YearsPro, string TeamF, string TeamS,
+        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, int YearOfBirth, int YearsPro, string TeamF, string TeamS,
                            bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow,
                            bool playoffs = false)
         {
@@ -267,7 +281,7 @@ namespace NBA_Stats_Tracker.Data
             this.Position2 = Position2;
             this.TeamF = TeamF;
             this.TeamS = TeamS;
-            this.Age = Age;
+            this.YearOfBirth = YearOfBirth;
             this.YearsPro = YearsPro;
             this.isActive = isActive;
             this.isHidden = isHidden;
@@ -451,7 +465,7 @@ namespace NBA_Stats_Tracker.Data
             Position2 = playerStatsRow.Position2;
             TeamF = playerStatsRow.TeamF;
             TeamS = playerStatsRow.TeamS;
-            Age = playerStatsRow.Age;
+            YearOfBirth = playerStatsRow.YearOfBirth;
             YearsPro = playerStatsRow.YearsPro;
             isActive = playerStatsRow.isActive;
             isHidden = playerStatsRow.isHidden;
@@ -1787,7 +1801,7 @@ namespace NBA_Stats_Tracker.Data
             isAllStar = ps.isAllStar;
             isInjured = ps.isInjured;
             isNBAChampion = ps.isNBAChampion;
-            Age = ps.Age;
+            YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
 
             if (!playoffs)
@@ -2058,7 +2072,7 @@ namespace NBA_Stats_Tracker.Data
         public bool isInjured { get; set; }
         public bool isNBAChampion { get; set; }
 
-        public int Age { get; set; }
+        public int YearOfBirth { get; set; }
         public int YearsPro { get; set; }
 
         public string Type { get; set; }
@@ -2282,7 +2296,7 @@ namespace NBA_Stats_Tracker.Data
             List<PlayerBoxScore> pbsList, string bestGame)
         {
             string s = "";
-            s += String.Format("{0} {1} is a {3} years old {2} ", FirstName, LastName, Position1, Age);
+            s += String.Format("{0} {1}, born in {3}, is a {2} ", FirstName, LastName, Position1, YearOfBirth);
             if (Position2 != " ")
                 s += String.Format("(alternatively {0})", Position2);
             s += ", ";

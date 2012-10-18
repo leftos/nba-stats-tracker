@@ -111,11 +111,11 @@
                             Name="btnLoadFilters" VerticalAlignment="Bottom" Width="75" Grid.Row="2" Click="btnLoadFilters_Click" />
                     <Button Content="Save Filters" Grid.Row="2" Height="23" HorizontalAlignment="Left"
                             Margin="93,0,0,6" Name="btnSaveFilters" VerticalAlignment="Bottom" Width="75" Click="btnSaveFilters_Click" />
-                    <ComboBox Height="23" HorizontalAlignment="Left" Margin="79,67,0,0" x:Name="cmbAgeOp"
+                    <ComboBox Height="23" HorizontalAlignment="Left" Margin="79,67,0,0" x:Name="cmbYOBOp"
                     	VerticalAlignment="Top" Width="41" />
-                    <Label Content="Age" HorizontalAlignment="Left" Margin="43,66,0,0"
+                    <Label Content="Year of Birth" HorizontalAlignment="Left" Margin="4,66,0,0"
                     	VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="125,67,0,0" x:Name="txtAgeVal"
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="125,67,0,0" x:Name="txtYOBVal"
                     	VerticalAlignment="Top" Width="38" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="233,67,0,0" x:Name="cmbYearsProOp"
                     	VerticalAlignment="Top" Width="41" />
@@ -137,7 +137,7 @@
                             <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
                             <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                             <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
-                            <DataGridTextColumn Binding="{Binding Age}" Header="Age" />
+                            <DataGridTextColumn Binding="{Binding YearOfBirth}" Header="Birth Year" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                             <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                             <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />

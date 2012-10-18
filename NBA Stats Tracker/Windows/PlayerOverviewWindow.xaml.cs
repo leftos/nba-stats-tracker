@@ -1357,7 +1357,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text, cmbPosition1.SelectedItem.ToString(),
-                                     cmbPosition2.SelectedItem.ToString(), Convert.ToInt32(txtAge.Text),
+                                     cmbPosition2.SelectedItem.ToString(), Convert.ToInt32(txtYearOfBirth.Text),
                                      Convert.ToInt32(txtYearsPro.Text), TeamF, psr.TeamS,
                                      chkIsActive.IsChecked.GetValueOrDefault(),
                                      false, chkIsInjured.IsChecked.GetValueOrDefault(),

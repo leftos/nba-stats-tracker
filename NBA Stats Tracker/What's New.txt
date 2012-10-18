@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v0.14.6.1
+		- Change: Changed Players' Age field to Year of Birth
+
 	v0.14.6
 		- Addition: Added Age and Years Pro fields to players
 		- Addition: Player Search results will now show primary & secondary position, as well as age
