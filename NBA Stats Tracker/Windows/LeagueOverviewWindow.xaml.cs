@@ -140,18 +140,18 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void PopulateDivisionCombo()
         {
-            var list = new List<ComboBoxItemWithEnabled>();
-            list.Add(new ComboBoxItemWithEnabled("Whole League"));
-            list.Add(new ComboBoxItemWithEnabled("-- Conferences --", false));
+            var list = new List<ComboBoxItemWithIsEnabled>();
+            list.Add(new ComboBoxItemWithIsEnabled("Whole League"));
+            list.Add(new ComboBoxItemWithIsEnabled("-- Conferences --", false));
             foreach (Conference conf in MainWindow.Conferences)
             {
-                list.Add(new ComboBoxItemWithEnabled(conf.Name));
+                list.Add(new ComboBoxItemWithIsEnabled(conf.Name));
             }
-            list.Add(new ComboBoxItemWithEnabled("-- Divisions --", false));
+            list.Add(new ComboBoxItemWithIsEnabled("-- Divisions --", false));
             foreach (Division div in MainWindow.Divisions)
             {
                 Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
-                list.Add(new ComboBoxItemWithEnabled(String.Format("{0}: {1}", conf.Name, div.Name)));
+                list.Add(new ComboBoxItemWithIsEnabled(String.Format("{0}: {1}", conf.Name, div.Name)));
             }
             cmbDivConf.DisplayMemberPath = "Item";
             //cmbDivConf.SelectedValuePath = "Item";
@@ -1739,7 +1739,7 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbDivConf.SelectedIndex == -1)
                 return;
 
-            var cur = (ComboBoxItemWithEnabled) cmbDivConf.SelectedItem;
+            var cur = (ComboBoxItemWithIsEnabled) cmbDivConf.SelectedItem;
             string name = cur.Item;
             string[] parts = name.Split(new[] {": "}, 2, StringSplitOptions.None);
             if (parts.Length == 1)

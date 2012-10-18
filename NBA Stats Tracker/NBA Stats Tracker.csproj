@@ -144,9 +144,6 @@
     <Compile Include="Windows\TrendsWindow.xaml.cs">
       <DependentUpon>TrendsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\VersusWindow.xaml.cs">
-      <DependentUpon>VersusWindow.xaml</DependentUpon>
-    </Compile>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -224,10 +221,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\TrendsWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\VersusWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
