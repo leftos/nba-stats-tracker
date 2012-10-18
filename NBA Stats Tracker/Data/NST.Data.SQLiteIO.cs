@@ -1371,7 +1371,7 @@ namespace NBA_Stats_Tracker.Data
                             {
                                 InputBoxWindow ibw =
                                     new InputBoxWindow(
-                                        "NBA Stats Tracker has replaced the 'Age' field for players with 'Year of Birth'. " +
+                                        "NBA Stats Tracker has replaced the 'Age' field for players with 'Year of Birth'.\n" +
                                         "Please enter the year by which all players' year of birth should be calculated.",
                                         DateTime.Now.Year.ToString());
                                 if (ibw.ShowDialog() == false)
