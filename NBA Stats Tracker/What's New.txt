@@ -1,4 +1,9 @@
 NBA Stats Tracker - Version History
+	
+	v1.0
+		- Note: Milestone release, comes as my thesis is finally complete
+		- Improvement: Minor improvements to the User Interface
+		- Improvement: Removed obsolete elements from source code
 
 	v0.14.6.1
 		- Change: Changed Players' Age field to Year of Birth
