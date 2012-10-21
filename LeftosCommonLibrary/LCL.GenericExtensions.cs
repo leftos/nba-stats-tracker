@@ -139,6 +139,11 @@ namespace LeftosCommonLibrary
         {
             try
             {
+                var baseType = typeof (T).BaseType;
+                if (baseType != null && baseType.Name == "Enum")
+                {
+                    return (T) Enum.Parse(typeof (T), dict[key]);
+                }
                 return (T) Convert.ChangeType(dict[key], typeof (T));
             }
             catch (InvalidCastException)

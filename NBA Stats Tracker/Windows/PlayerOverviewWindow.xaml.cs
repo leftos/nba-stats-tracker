@@ -1982,5 +1982,61 @@ namespace NBA_Stats_Tracker.Windows
             else
                 cmbGraphStat.SelectedIndex++;
         }
+
+        /// <summary>
+        /// Handles the Click event of the btnPrevOppTeam control.
+        /// Switches to the previous opposing team.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void btnPrevOppTeam_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbOppTeam.SelectedIndex == 0)
+                cmbOppTeam.SelectedIndex = cmbOppTeam.Items.Count - 1;
+            else
+                cmbOppTeam.SelectedIndex--;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnNextOppTeam control.
+        /// Switches to the next opposing team.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void btnNextOppTeam_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbOppTeam.SelectedIndex == cmbOppTeam.Items.Count - 1)
+                cmbOppTeam.SelectedIndex = 0;
+            else
+                cmbOppTeam.SelectedIndex++;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnPrevOppPlayer control.
+        /// Switches to the previous opposing player.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void btnPrevOppPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbOppPlayer.SelectedIndex == 0)
+                cmbOppPlayer.SelectedIndex = cmbOppPlayer.Items.Count - 1;
+            else
+                cmbOppPlayer.SelectedIndex--;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnNextOppPlayer control.
+        /// Switches to the next opposing player.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void btnNextOppPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbOppPlayer.SelectedIndex == cmbOppPlayer.Items.Count - 1)
+                cmbOppPlayer.SelectedIndex = 0;
+            else
+                cmbOppPlayer.SelectedIndex++;
+        }
     }
 }

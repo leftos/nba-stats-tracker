@@ -41,10 +41,14 @@ namespace NBA_Stats_Tracker
         public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainWindow.AppTempPath;
         public static string mode = "";
 
+        /// <summary>
+        /// Handles the DispatcherUnhandledException event of the App control.
+        /// Makes sure that any unhandled exceptions produce an error report that includes a stack trace.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.</param>
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            // Add code to output the exception details to a message box/event log/log file,   etc.
-            // Be sure to include details about any inner exceptions
             try
             {
                 var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
@@ -76,13 +80,15 @@ namespace NBA_Stats_Tracker
             Environment.Exit(-1);
         }
 
+        /// <summary>
+        /// Forces a critical error to happen and produces an error-report which includes the stack trace.
+        /// </summary>
+        /// <param name="e">The e.</param>
+        /// <param name="additional">The additional.</param>
         public static void errorReport(Exception e, string additional = "")
         {
-            // Add code to output the exception details to a message box/event log/log file,   etc.
-            // Be sure to include details about any inner exceptions
             try
             {
-                //StreamWriter f = new StreamWriter(NBA_2K12_Keep_My_Mod.MainWindow.SaveRootPath + @"\errorlog.txt");
                 var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
 
                 f.WriteLine("Forced Exception Error Report for NBA Stats Tracker");
@@ -108,11 +114,16 @@ namespace NBA_Stats_Tracker
             Environment.Exit(-1);
         }
 
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Application.Startup" /> event.
+        /// Checks if the program is called with the -realnbaonly argument, which makes the program download the latest NBA stats and exit.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
+            /*
             // Get Reference to the current Process
             Process thisProc = Process.GetCurrentProcess();
-            /*
             // Check how many total processes have the same name as the current one
             if (Process.GetProcessesByName(thisProc.ProcessName).Length > 1)
             {

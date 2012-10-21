@@ -25,7 +25,8 @@ using NBA_Stats_Tracker.Data;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for VersusWindow.xaml
+    /// OBSOLETE:
+    /// Used to show a quick comparison of the basic stats of two teams.
     /// </summary>
     public partial class VersusWindow
     {

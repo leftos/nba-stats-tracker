@@ -160,9 +160,9 @@
     						HorizontalAlignment="Left" ItemsSource="{Binding PlayersList}" x:Name="cmbOppPlayer" SelectedValuePath="Key"
     						SelectionChanged="cmbOppPlayer_SelectionChanged" VerticalAlignment="Top" />
                         <Button Height="23" Margin="268,6,0,0" Width="24" Content="&lt;" HorizontalAlignment="Left"
-    						x:Name="btnPrevOpp" VerticalAlignment="Top" />
+    						x:Name="btnPrevOppPlayer" VerticalAlignment="Top" Click="btnPrevOppPlayer_Click" />
                         <Button Height="23" Margin="456,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left"
-    						x:Name="btnNextOpp" VerticalAlignment="Top" />
+    						x:Name="btnNextOppPlayer" VerticalAlignment="Top" Click="btnNextOppPlayer_Click" />
                         <RadioButton Height="16" Margin="0,11,95,0" Checked="rbHTHStatsAnyone_Checked" Content="Anyone"
     						IsChecked="True" x:Name="rbHTHStatsAnyone" VerticalAlignment="Top" HorizontalAlignment="Right" Width="62" />
                         <RadioButton Height="16" Margin="0,11,10,0" Checked="rbHTHStatsEachOther_Checked"
@@ -170,9 +170,9 @@
                         <ComboBox Height="23" Margin="44,6,0,0" Width="153" HorizontalAlignment="Left" x:Name="cmbOppTeam"
     						SelectionChanged="cmbOppTeam_SelectionChanged" VerticalAlignment="Top" />
                         <Button Height="23" Margin="15,6,0,0" Width="24" Content="&lt;" HorizontalAlignment="Left"
-    						x:Name="button1" VerticalAlignment="Top" />
+    						x:Name="btnPrevOppTeam" VerticalAlignment="Top" Click="btnPrevOppTeam_Click" />
                         <Button Height="23" Margin="203,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left"
-    						x:Name="button2" VerticalAlignment="Top" />
+    						x:Name="btnNextOppTeam" VerticalAlignment="Top" Click="btnNextOppTeam_Click" />
                         <DataGrid Height="78" Margin="0,37,0,0" AlternatingRowBackground="#FFE5E5E5"
     						AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1" IsReadOnly="True"
     						x:Name="dgvHTH" VerticalAlignment="Top">

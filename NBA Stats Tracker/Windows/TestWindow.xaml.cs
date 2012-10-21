@@ -22,7 +22,7 @@ using System.Data;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for TestWindow.xaml
+    /// Used to debug and try out new features before rolling them out to release.
     /// </summary>
     public partial class TestWindow
     {

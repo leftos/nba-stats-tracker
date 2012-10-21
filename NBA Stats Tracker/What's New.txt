@@ -3,7 +3,8 @@ NBA Stats Tracker - Version History
 	v1.0
 		- Addition: Player Scouting Reports now available in Player Overview
 		- Improvement: Team Scouting Reports will now adjust their comments based on the amount of teams in the league, instead of assuming there's 30 teams
-		- Fix: Users should now only be able to paste player stats if the timeframe is set to All-Time.
+		- Fix: Users should now only be able to paste player stats if the timeframe is set to All-Time
+		- Fix: Player Overview opposing team and player switchers should work now
 
 	v0.14.3
 		- Addition: Added Performance Graphs in Player Overview
