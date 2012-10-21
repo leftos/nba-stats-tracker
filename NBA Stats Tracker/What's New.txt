@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 	
+	v1.0.0.1
+		- Fix: Minor miscellaneous bugs fixed
+
 	v1.0
 		- Note: Milestone release, comes as my thesis is finally complete
 		- Improvement: Minor improvements to the User Interface

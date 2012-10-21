@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="About NBA Stats Tracker" Height="330" Width="492"
         ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Grid>
-        <Label Content="NBA Stats Tracker PRE-RELEASE" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1"
+        <Label Content="NBA Stats Tracker" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1"
                VerticalAlignment="Top" />
         <Label Content="lblVersion" Height="28" HorizontalAlignment="Left" Margin="12,29,0,0" Name="lblVersion"
                VerticalAlignment="Top" x:FieldModifier="private" />
