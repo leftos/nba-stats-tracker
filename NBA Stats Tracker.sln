@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBA Stats Tracker", "NBA Stats Tracker\NBA Stats Tracker.csproj", "{FF743E0C-5018-4BE6-AE6F-2703F1CEE2D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeftosCommonLibrary", "LeftosCommonLibrary\LeftosCommonLibrary.csproj", "{256B004F-E641-4F18-AEAC-FC2BF437C9B5}"

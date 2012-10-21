@@ -203,7 +203,7 @@ Development Credits
 		Uses a CRC32 Class Library by Damien Guard (http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net)
 		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
-		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
+		Uses the LumenWorks Framework for CSV reading/writing (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
 		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
 		Uses an Object DeepCloning Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)

@@ -1,6 +1,27 @@
 NBA Stats Tracker - Version History
-
+	
 	v1.0
+		- Note: Milestone release, comes as my thesis is finally complete
+		- Improvement: Minor improvements to the User Interface
+		- Improvement: Removed obsolete elements from source code
+
+	v0.14.6.1
+		- Change: Changed Players' Age field to Year of Birth
+
+	v0.14.6
+		- Addition: Added Age and Years Pro fields to players
+		- Addition: Player Search results will now show primary & secondary position, as well as age
+		- Fix: Per Opponent split stats for teams now don't show a row for stats against the team itself
+		- Improvement: Improved interface margins so that the program shows the required rows in tables better in Windows 7
+		- Improvement: Box Scores in League Overview can now be limited by division or conference
+		- Fix: 3PA/G stats are now calculated correctly
+
+	v0.14.5
+		- Addition: Team & Player Split Stats now include stats per opponent
+		- Fix: Projected Winning Percentage now takes season length into account
+		- Change: Pythagorean Wins and Losses now use an exponent of 16.5 as suggested by John Hollinger
+
+	v0.14.4
 		- Addition: Player Scouting Reports now available in Player Overview
 		- Improvement: Team Scouting Reports will now adjust their comments based on the amount of teams in the league, instead of assuming there's 30 teams
 		- Fix: Users should now only be able to paste player stats if the timeframe is set to All-Time

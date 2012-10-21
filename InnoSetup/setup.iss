@@ -45,7 +45,7 @@
 #define MyAppSetupName 'NBA Stats Tracker'
 #define MyAppVersion ''
 #define MyAppVerInfo ''
-#define CompiledPath 'E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release'
+#define CompiledPath 'C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release'
 [Setup]
 AppName={#MyAppSetupName}
 AppVersion={#MyAppVersion}
@@ -104,6 +104,7 @@ Source: "{#CompiledPath}\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "{#CompiledPath}\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#CompiledPath}\Swordfish.WPF.Charts.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]

@@ -191,9 +191,9 @@ namespace NBA_Stats_Tracker.Helper
     /// Implements a generic combo-box item with an IsEnabled property. 
     /// Used to create items in combo-boxes that can't be selected (e.g. group headers).
     /// </summary>
-    public class ComboBoxItemWithEnabled
+    public class ComboBoxItemWithIsEnabled
     {
-        public ComboBoxItemWithEnabled(string item, bool isEnabled = true)
+        public ComboBoxItemWithIsEnabled(string item, bool isEnabled = true)
         {
             Item = item;
             IsEnabled = isEnabled;

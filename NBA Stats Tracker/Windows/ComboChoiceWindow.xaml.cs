@@ -108,12 +108,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (mode == Mode.Versus)
-            {
-                var vw = new VersusWindow(cmbTeams1.SelectedItem.ToString(), cmbTeams2.SelectedItem.ToString(), MainWindow.tst);
-                vw.ShowDialog();
-            }
-            else if (mode == Mode.ImportCompatibility)
+            if (mode == Mode.ImportCompatibility)
             {
                 App.mode = cmbTeams1.SelectedItem.ToString();
             }

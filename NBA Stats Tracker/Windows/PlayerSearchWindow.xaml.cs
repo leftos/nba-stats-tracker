@@ -131,6 +131,14 @@ namespace NBA_Stats_Tracker.Windows
             cmbPosition2.ItemsSource = Positions;
             cmbPosition2.SelectedIndex = 0;
 
+            cmbYOBOp.ItemsSource = NumericOptions;
+            cmbYOBOp.SelectedIndex = 3;
+            txtYOBVal.Text = "0";
+
+            cmbYearsProOp.ItemsSource = NumericOptions;
+            cmbYearsProOp.SelectedIndex = 3;
+            txtYearsProVal.Text = "0";
+
             curSeason = MainWindow.curSeason;
             PopulateSeasonCombo();
             maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
@@ -320,6 +328,9 @@ namespace NBA_Stats_Tracker.Windows
             {
                 where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
             }
+
+            where += string.Format("YearOfBirth {0} {1} AND ", cmbYOBOp.SelectedItem, txtYOBVal.Text);
+            where += string.Format("YearsPro {0} {1} AND ", cmbYearsProOp.SelectedItem, txtYearsProVal.Text);
 
             foreach (string item in lstTotals.Items.Cast<string>())
             {
@@ -762,6 +773,16 @@ namespace NBA_Stats_Tracker.Windows
                         cmbPosition2.SelectedItem = parts[2];
                         break;
 
+                    case "YearOfBirth":
+                        cmbYOBOp.SelectedItem = parts[1];
+                        txtYOBVal.Text = parts[2];
+                        break;
+
+                    case "YearsPro":
+                        cmbYearsProOp.SelectedItem = parts[1];
+                        txtYearsProVal.Text = parts[2];
+                        break;
+
                     case "Active":
                         try
                         {
@@ -862,6 +883,8 @@ namespace NBA_Stats_Tracker.Windows
             s += String.Format("LastName\t{0}\t{1}\n", cmbLastNameSetting.SelectedItem, txtLastName.Text);
             s += String.Format("FirstName\t{0}\t{1}\n", cmbFirstNameSetting.SelectedItem, txtFirstName.Text);
             s += String.Format("Position\t{0}\t{1}\n", cmbPosition1.SelectedItem, cmbPosition2.SelectedItem);
+            s += String.Format("YearOfBirth\t{0}\t{1}\n", cmbYOBOp.SelectedItem, txtYOBVal.Text);
+            s += String.Format("YearsPro\t{0}\t{1}\n", cmbYearsProOp.SelectedItem, txtYearsProVal.Text);
             s += String.Format("Active\t{0}\n", chkIsActive.IsChecked.ToString());
             s += String.Format("Injured\t{0}\n", chkIsInjured.IsChecked.ToString());
             s += String.Format("AllStar\t{0}\n", chkIsAllStar.IsChecked.ToString());

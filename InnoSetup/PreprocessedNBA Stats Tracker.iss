@@ -56,22 +56,23 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\What's New.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\What's New.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Swordfish.WPF.Charts.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"

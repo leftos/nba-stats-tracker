@@ -578,11 +578,11 @@ namespace NBA_Stats_Tracker.Data
 
             uint games = (!playoffs) ? getGames() : getPlayoffGames();
 
-            double Poss = GetPossMetric(tstats, toppstats);
+            double Poss = CalcPossMetric(tstats, toppstats);
             temp_metrics.Add("Poss", Poss);
             temp_metrics.Add("PossPG", Poss/games);
 
-            Poss = GetPossMetric(toppstats, tstats);
+            Poss = CalcPossMetric(toppstats, tstats);
 
             Dictionary<string, double> toppmetrics = (!playoffs) ? tsopp.metrics : tsopp.pl_metrics;
             try
@@ -625,7 +625,8 @@ namespace NBA_Stats_Tracker.Data
 
             float[] taverages = (!playoffs) ? averages : pl_averages;
 
-            double PWp = (((taverages[t.PPG] - taverages[t.PAPG])*2.7) + 41)/82;
+            double PWp = (((taverages[t.PPG] - taverages[t.PAPG])*2.7) +
+                         ((double) MainWindow.seasonLength/2))/MainWindow.seasonLength;
             temp_metrics.Add("PW%", PWp);
 
             double TSp = tstats[t.PF]/(2*(tstats[t.FGA] + 0.44*tstats[t.FTA]));
@@ -634,7 +635,7 @@ namespace NBA_Stats_Tracker.Data
             double TPR = tstats[t.TPA]/tstats[t.FGA];
             temp_metrics.Add("3PR", TPR);
 
-            double PythW = MainWindow.seasonLength*(Math.Pow(tstats[t.PF], 14))/(Math.Pow(tstats[t.PF], 14) + Math.Pow(tstats[t.PA], 14));
+            double PythW = MainWindow.seasonLength*(Math.Pow(tstats[t.PF], 16.5))/(Math.Pow(tstats[t.PF], 16.5) + Math.Pow(tstats[t.PA], 16.5));
             temp_metrics.Add("PythW", PythW);
 
             double PythL = MainWindow.seasonLength - PythW;
@@ -657,7 +658,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="tstats">The team stats.</param>
         /// <param name="toppstats">The opposing team stats.</param>
         /// <returns></returns>
-        private static double GetPossMetric(double[] tstats, double[] toppstats)
+        private static double CalcPossMetric(double[] tstats, double[] toppstats)
         {
             double Poss = 0.5*
                           ((tstats[t.FGA] + 0.4*tstats[t.FTA] -

@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            lblMessage.Content = message;
+            lblMessage.Text = message;
 
             txtInput.Focus();
         }

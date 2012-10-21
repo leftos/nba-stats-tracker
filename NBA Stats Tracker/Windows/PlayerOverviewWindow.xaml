@@ -54,6 +54,14 @@
     						VerticalAlignment="Top" />
                         <Label Margin="544,8,0,0" Content="2nd Position" HorizontalAlignment="Left" x:Name="label6"
     						VerticalAlignment="Top" />
+                        <Label Margin="377,36,0,0" Content="Year of Birth" HorizontalAlignment="Left"
+                        	VerticalAlignment="Top" />
+                        <TextBox Height="23" Margin="0,38,188,0" Width="35" HorizontalAlignment="Right" x:Name="txtYearOfBirth"
+                        	Text="{Binding YearOfBirth}" VerticalAlignment="Top" />
+                        <Label Margin="504,36,0,0" Content="Years Pro" HorizontalAlignment="Left"
+                        	VerticalAlignment="Top" />
+                        <TextBox Height="23" Margin="0,38,74,0" Width="35" HorizontalAlignment="Right" x:Name="txtYearsPro"
+                        	Text="{Binding YearsPro}" VerticalAlignment="Top" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Split Stats" x:Name="tabSplitStats">
