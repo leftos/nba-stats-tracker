@@ -242,17 +242,6 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     Misc.SetRegistrySetting("TimesStarted", TimesStarted + 1);
                 }
-
-                int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
-                if (checkForUpdatesSetting == 1)
-                {
-                    mnuOptionsCheckForUpdates.IsChecked = true;
-                    CheckForUpdates();
-                }
-                else
-                {
-                    mnuOptionsCheckForUpdates.IsChecked = false;
-                }
             }
 
             #region Keyboard Shortcuts
@@ -532,7 +521,7 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 var webClient = new WebClient();
-                string updateUri = "http://users.tellas.gr/~aslan16/nstversion.txt";
+                string updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
                 if (!showMessage)
                 {
                     webClient.DownloadFileCompleted += CheckForUpdatesCompleted;
@@ -583,7 +572,7 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         for (int j = 2; j < updateInfo.Length; j++)
                         {
-                            changelog += "\n" + updateInfo[j];
+                            changelog += "\n" + updateInfo[j].Replace('\t', ' ');
                         }
                     }
                     catch
@@ -1493,7 +1482,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             foreach (int key in tstopp.Keys)
-                tstopp[key].ResetStats(Span.SeasonAndPlayoffs);
+                tstopp[key].ResetStats(Span.SeasonAndPlayoffsToSeason);
 
             foreach (BoxScoreEntry bse in bshist)
             {
@@ -1585,6 +1574,22 @@ namespace NBA_Stats_Tracker.Windows
             dispatcherTimer.Tick += dispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
             //dispatcherTimer.Start();
+
+            int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
+            if (checkForUpdatesSetting == 1)
+            {
+                mnuOptionsCheckForUpdates.IsChecked = true;
+                BackgroundWorker w = new BackgroundWorker();
+                w.DoWork += delegate(object o, DoWorkEventArgs args)
+                {
+                    CheckForUpdates();
+                };
+                w.RunWorkerAsync();
+            }
+            else
+            {
+                mnuOptionsCheckForUpdates.IsChecked = false;
+            }
         }
 
         /// <summary>
@@ -2070,10 +2075,10 @@ namespace NBA_Stats_Tracker.Windows
                 if (r == MessageBoxResult.Yes)
                 {
                     foreach (int key in tst.Keys)
-                        tst[key].ResetStats(Span.SeasonAndPlayoffs);
+                        tst[key].ResetStats(Span.SeasonAndPlayoffsToSeason);
 
                     foreach (int key in tstopp.Keys)
-                        tstopp[key].ResetStats(Span.SeasonAndPlayoffs);
+                        tstopp[key].ResetStats(Span.SeasonAndPlayoffsToSeason);
                 }
             }
 

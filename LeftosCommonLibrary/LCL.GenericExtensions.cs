@@ -165,6 +165,12 @@ namespace LeftosCommonLibrary
                 if (onErrorRemain) return variable;
                 else return default(T);
             }
+            catch (ArgumentException)
+            {
+                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
             catch (KeyNotFoundException)
             {
                 return variable;
@@ -198,6 +204,12 @@ namespace LeftosCommonLibrary
             catch (FormatException)
             {
                 Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
+            catch (ArgumentException)
+            {
+                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
                 if (onErrorRemain) return variable;
                 else return default(T);
             }
@@ -241,6 +253,12 @@ namespace LeftosCommonLibrary
             catch (FormatException)
             {
                 Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                if (onErrorRemain) return variable;
+                else return default(T);
+            }
+            catch (ArgumentException)
+            {
+                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
                 if (onErrorRemain) return variable;
                 else return default(T);
             }

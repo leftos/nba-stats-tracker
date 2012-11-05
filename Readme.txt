@@ -158,16 +158,12 @@ Additional Features
 		This feature allows you to automatically grab the real league's team stats, player stats and box scores, and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
 		
 
-Known Issues
-	- Opponent stats seem to not be updated in some rare occurences. This bug hasn't been tracked down yet, but a temporary workaround exists as the "Recalculate Opponent Team Stats" feature in the Miscellaneous menu. If you find a certain procedure that reproduces the bug, please contact me using the link at the bottom of this Readme file.
-
-
 Disclaimer
-	The tool is still in beta. I've tested it in my environment, on my Association files and it seems to work perfectly. If you encounter any problems, you'll find a backup of your Association in the Saves folder. Keep one thing in mind however... 
+	When using the tool to update your NBA 2K saves, keep one thing in mind... 
 	
-					ALWAYS KEEP BACKUPS OF YOUR SAVES!
+					ALWAYS KEEP BACKUPS OF YOUR NBA 2K SAVES!
 					
-	I won't take any responsibility if this tool messes up your Saves. You've been warned.
+	I won't take any responsibility if this tool messes up your saves. You've been warned.
 	
 	
 Special thanks
@@ -188,7 +184,7 @@ Special thanks
 
 
 Development Credits
-	All development for NBA Stats Tracker was done by myself, Lefteris Aslanoglou, as the implementation of my thesis "Application Development for Basketball Statistical Analysis in Natural Language" under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou.
+	All development for NBA Stats Tracker was done by myself, Lefteris Aslanoglou, unless otherwise explicitly stated, as the implementation of my thesis "Application Development for Basketball Statistical Analysis in Natural Language" under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou.
 
 	This software uses, with permission (whether implicit or explicit), the following binary implementations, class libraries and code examples:
 		Uses the SQLite database engine (http://www.sqlite.org/)
@@ -203,7 +199,7 @@ Development Credits
 		Uses a CRC32 Class Library by Damien Guard (http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net)
 		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
-		Uses the LumenWorks Framework for CSV reading/writing (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
+		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
 		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
 		Uses an Object DeepCloning Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)

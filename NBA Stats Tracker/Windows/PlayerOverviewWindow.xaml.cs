@@ -1291,7 +1291,23 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbPlayer.SelectedIndex == -1)
                 return;
 
-            psr.ScoutingReport(MainWindow.pst, rankingsActive, rankingsTeam, rankingsPosition, pbsList.ToList(), txbGame1.Text);
+            var temppst = new Dictionary<int, PlayerStats>();
+            foreach (var kvp in MainWindow.pst)
+            {
+                int i = kvp.Key;
+                temppst.Add(i, kvp.Value.DeepClone());
+                temppst[i].ResetStats();
+                temppst[i].AddPlayerStats(MainWindow.pst[i], true);
+            }
+
+            var cumRankingsActive =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value));
+            var cumRankingsPosition =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value));
+            var cumRankingsTeam =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.TeamF == psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
+
+            new PlayerStatsRow(temppst[psr.ID]).ScoutingReport(MainWindow.pst, cumRankingsActive, cumRankingsTeam, cumRankingsPosition, pbsList.ToList(), txbGame1.Text);
         }
 
         /// <summary>
@@ -1356,8 +1372,8 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text, cmbPosition1.SelectedItem.ToString(),
-                                     cmbPosition2.SelectedItem.ToString(), Convert.ToInt32(txtYearOfBirth.Text),
+            var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text, (Position) Enum.Parse(typeof(Position),cmbPosition1.SelectedItem.ToString()),
+                                     (Position) Enum.Parse(typeof(Position),cmbPosition2.SelectedItem.ToString()), Convert.ToInt32(txtYearOfBirth.Text),
                                      Convert.ToInt32(txtYearsPro.Text), TeamF, psr.TeamS,
                                      chkIsActive.IsChecked.GetValueOrDefault(),
                                      false, chkIsInjured.IsChecked.GetValueOrDefault(),

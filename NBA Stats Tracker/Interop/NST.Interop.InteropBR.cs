@@ -462,42 +462,43 @@ namespace NBA_Stats_Tracker.Interop
 
             foreach (DataRow r in dt.Rows)
             {
-                string Position1, Position2;
+                Position Position1;
+                Position Position2;
                 switch (r["Pos"].ToString())
                 {
                     case "C":
-                        Position1 = "C";
-                        Position2 = " ";
+                        Position1 = Position.C;
+                        Position2 = Position.None;
                         break;
 
                     case "G":
-                        Position1 = "PG";
-                        Position2 = "SG";
+                        Position1 = Position.PG;
+                        Position2 = Position.SG;
                         break;
 
                     case "F":
-                        Position1 = "SF";
-                        Position2 = "PF";
+                        Position1 = Position.SF;
+                        Position2 = Position.PF;
                         break;
 
                     case "G-F":
-                        Position1 = "SG";
-                        Position2 = "SF";
+                        Position1 = Position.SG;
+                        Position2 = Position.SF;
                         break;
 
                     case "F-G":
-                        Position1 = "SF";
-                        Position2 = "SG";
+                        Position1 = Position.SF;
+                        Position2 = Position.SG;
                         break;
 
                     case "F-C":
-                        Position1 = "PF";
-                        Position2 = "C";
+                        Position1 = Position.PF;
+                        Position2 = Position.C;
                         break;
 
                     case "C-F":
-                        Position1 = "C";
-                        Position2 = "PF";
+                        Position1 = Position.C;
+                        Position2 = Position.PF;
                         break;
 
                     default:

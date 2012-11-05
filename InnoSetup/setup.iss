@@ -45,7 +45,7 @@
 #define MyAppSetupName 'NBA Stats Tracker'
 #define MyAppVersion ''
 #define MyAppVerInfo ''
-#define CompiledPath 'C:\Users\Leftos\Documents\Visual Studio 2012\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release'
+#define CompiledPath 'E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release'
 [Setup]
 AppName={#MyAppSetupName}
 AppVersion={#MyAppVersion}
@@ -73,7 +73,7 @@ UsePreviousAppDir=yes
 LanguageDetectionMethod=uilanguage
 InternalCompressLevel=ultra
 SolidCompression=yes
-Compression=lzma2/ultra
+Compression=lzma/ultra
 MinVersion=0,5.01
 PrivilegesRequired=admin
 ArchitecturesAllowed=x86 x64 ia64
@@ -89,22 +89,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#CompiledPath}\Ciloci.Flee.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\HtmlAgilityPack.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\LeftosCommonLibrary.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\LumenWorks.Framework.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\NBA Stats Tracker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\NBA Stats Tracker.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#CompiledPath}\*"; DestDir: "{app}"; Flags: ignoreversion; Excludes: "*.vshost.*,*.xml,*.pdb"
 Source: "{#CompiledPath}\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\What's New.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\SoftwareArchitects.Windows.Controls.ScrollSynchronizer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\SQLiteDatabase.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#CompiledPath}\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\WPFToolkit.Extended.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\Swordfish.WPF.Charts.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
@@ -225,7 +213,6 @@ winxpsp3_title=Windows XP Service Pack 3
 #expr SaveToFile(AddBackslash(SourcePath) + "Preprocessed"+MyAppSetupname+".iss")
 
 [PostCompile]
-Name: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\InnoSetup\copyreadme.bat"; Flags: cmdprompt redirectoutput
 
 [Code]
 function InitializeSetup(): Boolean;

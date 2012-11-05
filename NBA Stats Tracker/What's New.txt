@@ -1,5 +1,13 @@
 NBA Stats Tracker - Version History
+
+	v1.0.1
+		- Addition: Scouting Reports now summarize the best areas of each team/player according to their rankings in the league
+		- Fix: Scouting Reports now take into account both season and playoff stats
+		- Fix: Rankings now do not take into account players that haven't played a game yet
 	
+	v1.0.0.2
+		- Fix: Fixed startup delay if user had "Check for Updates" enabled
+
 	v1.0.0.1
 		- Fix: Minor miscellaneous bugs fixed
 

@@ -1184,6 +1184,73 @@ namespace NBA_Stats_Tracker.Data
                     "one you expected.";
             msg += String.Format(" (#{0} in TPG: {1:F2}, #{2} in FPG: {3:F2})", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG], tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
 
+            msg += "\n\n";
+
+            msg += "In summary, their best areas are ";
+            var dict = new Dictionary<int, int>();
+            for (int k = 0; k < rating[ID].Length;k++)
+            {
+                dict.Add(k, rating[ID][k]);
+            }
+            dict[t.FPG] = tst.Count + 1 - dict[t.FPG];
+            dict[t.TPG] = tst.Count + 1 - dict[t.TPG];
+            dict[t.PAPG] = tst.Count + 1 - dict[t.PAPG];
+            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            int m = 0;
+            int j = 5;
+            while (true)
+            {
+                if (m == j)
+                    break;
+                switch (strengths[m])
+                {
+                    case t.APG:
+                        msg += String.Format("assists (#{0}, {1:F1}), ", rating[ID][t.APG], averages[t.APG]);
+                        break;
+                    case t.BPG:
+                        msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][t.BPG], averages[t.BPG]);
+                        break;
+                    case t.DRPG:
+                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][t.DRPG], averages[t.DRPG]);
+                        break;
+                    case t.FGeff:
+                        msg += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.FGeff], (double)stats[t.FGM]/getGames(), averages[t.FGp]);
+                        break;
+                    case t.FPG:
+                        msg += String.Format("fouls (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
+                        break;
+                    case t.FTeff:
+                        msg += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.FTeff], (double)stats[t.FTM] / getGames(), averages[t.FTp]);
+                        break;
+                    case t.ORPG:
+                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][t.ORPG], averages[t.ORPG]);
+                        break;
+                    case t.PAPG:
+                        msg += String.Format("points allowed per game (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.PAPG], averages[t.PAPG]);
+                        break;
+                    case t.PPG:
+                        msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][t.PPG], averages[t.PPG]);
+                        break;
+                    case t.RPG:
+                        msg += String.Format("rebounds (#{0}, {1:F1}), ", rating[ID][t.RPG], averages[t.RPG]);
+                        break;
+                    case t.SPG:
+                        msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][t.SPG], averages[t.SPG]);
+                        break;
+                    case t.TPG:
+                        msg += String.Format("turnovers (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG]);
+                        break;
+                    case t.TPeff:
+                        msg += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.TPeff], (double)stats[t.TPM] / getGames(), averages[t.TPp]);
+                        break;
+                    default:
+                        j++;
+                        break;
+                }
+                m++;
+            }
+            msg = msg.TrimEnd(new char[] {' ', ','});
+            msg += ".";
             return msg;
         }
 

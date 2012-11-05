@@ -485,7 +485,7 @@ namespace NBA_Stats_Tracker.Interop
                 }
             }
 
-            byte[] crc = Tools.ReverseByteOrder(Tools.StringToByteArray(Tools.getCRC(App.AppTempPath + Tools.getSafeFilename(fn))), 4);
+            byte[] crc = Tools.ReverseByteOrder(Tools.HexStringToByteArray(Tools.getCRC(App.AppTempPath + Tools.getSafeFilename(fn))), 4);
 
             File.Delete(fn + ".bak");
 

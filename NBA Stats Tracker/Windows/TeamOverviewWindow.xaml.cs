@@ -724,6 +724,7 @@ namespace NBA_Stats_Tracker.Windows
                 dgvSplit.DataContext = null;
                 dgvPlayerStats.ItemsSource = null;
                 dgvMetricStats.ItemsSource = null;
+                dgvTeamRoster.ItemsSource = null;
 
                 if (cmbTeam.SelectedIndex == -1)
                     return;
@@ -866,23 +867,23 @@ namespace NBA_Stats_Tracker.Windows
             var tempList = new List<PlayerStatsRow>();
 
             List<PlayerStatsRow> PGList =
-                psrList.Where(row => (row.Position1 == "PG" || row.Position2 == "PG") && row.isInjured == false).ToList();
+                psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG") && row.isInjured == false).ToList();
             PGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             PGList.Reverse();
             List<PlayerStatsRow> SGList =
-                psrList.Where(row => (row.Position1 == "SG" || row.Position2 == "SG") && row.isInjured == false).ToList();
+                psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG") && row.isInjured == false).ToList();
             SGList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             SGList.Reverse();
             List<PlayerStatsRow> SFList =
-                psrList.Where(row => (row.Position1 == "SF" || row.Position2 == "SF") && row.isInjured == false).ToList();
+                psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF") && row.isInjured == false).ToList();
             SFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             SFList.Reverse();
             List<PlayerStatsRow> PFList =
-                psrList.Where(row => (row.Position1 == "PF" || row.Position2 == "PF") && row.isInjured == false).ToList();
+                psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF") && row.isInjured == false).ToList();
             PFList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             PFList.Reverse();
             List<PlayerStatsRow> CList =
-                psrList.Where(row => (row.Position1 == "C" || row.Position2 == "C") && row.isInjured == false).ToList();
+                psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C") && row.isInjured == false).ToList();
             CList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             CList.Reverse();
             var permutations = new List<StartingFivePermutation>();
@@ -899,7 +900,7 @@ namespace NBA_Stats_Tracker.Windows
                                 var perm = new List<int>();
                                 perm.Add(PGList[i1].ID);
                                 _sum += PGList[i1].GmSc;
-                                if (PGList[i1].Position1 == "PG")
+                                if (PGList[i1].Position1.ToString() == "PG")
                                     _pInP++;
                                 if (perm.Contains(SGList[i2].ID))
                                 {
@@ -907,7 +908,7 @@ namespace NBA_Stats_Tracker.Windows
                                 }
                                 perm.Add(SGList[i2].ID);
                                 _sum += SGList[i2].GmSc;
-                                if (SGList[i2].Position1 == "SG")
+                                if (SGList[i2].Position1.ToString() == "SG")
                                     _pInP++;
                                 if (perm.Contains(SFList[i3].ID))
                                 {
@@ -915,7 +916,7 @@ namespace NBA_Stats_Tracker.Windows
                                 }
                                 perm.Add(SFList[i3].ID);
                                 _sum += SFList[i3].GmSc;
-                                if (SFList[i3].Position1 == "SF")
+                                if (SFList[i3].Position1.ToString() == "SF")
                                     _pInP++;
                                 if (perm.Contains(PFList[i4].ID))
                                 {
@@ -923,7 +924,7 @@ namespace NBA_Stats_Tracker.Windows
                                 }
                                 perm.Add(PFList[i4].ID);
                                 _sum += PFList[i4].GmSc;
-                                if (PFList[i4].Position1 == "PF")
+                                if (PFList[i4].Position1.ToString() == "PF")
                                     _pInP++;
                                 if (perm.Contains(CList[i5].ID))
                                 {
@@ -931,7 +932,7 @@ namespace NBA_Stats_Tracker.Windows
                                 }
                                 perm.Add(CList[i5].ID);
                                 _sum += CList[i5].GmSc;
-                                if (CList[i5].Position1 == "C")
+                                if (CList[i5].Position1.ToString() == "C")
                                     _pInP++;
 
                                 if (_sum > max)
@@ -1094,6 +1095,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dgvPlayerStats.ItemsSource = psrList;
             dgvMetricStats.ItemsSource = psrList;
+            dgvTeamRoster.ItemsSource = psrList;
             dgvPlayerPlayoffStats.ItemsSource = pl_psrList;
             dgvPlayoffMetricStats.ItemsSource = pl_psrList;
         }
@@ -1405,9 +1407,18 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            if (tst.Count > 1)
+            var temptst = new Dictionary<int, TeamStats>();
+            foreach (var kvp in tst)
             {
-                string msg = tst[id].ScoutingReport(tst);
+                int i = kvp.Key;
+                temptst.Add(i, tst[i].DeepClone());
+                temptst[i].ResetStats(Span.SeasonAndPlayoffs);
+                temptst[i].AddTeamStats(tst[i], Span.SeasonAndPlayoffs);
+            }
+
+            if (temptst.Count > 1)
+            {
+                string msg = temptst[id].ScoutingReport(temptst);
                 var cw = new CopyableMessageWindow(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
@@ -1852,7 +1863,7 @@ namespace NBA_Stats_Tracker.Windows
 
             List<PlayerStatsRow> guards = teamPMSRList.Where(delegate(PlayerStatsRow psr)
                                                              {
-                                                                 if (psr.Position1.EndsWith("G"))
+                                                                 if (psr.Position1.ToString().EndsWith("G"))
                                                                  {
                                                                      if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                          return true;
@@ -1866,7 +1877,7 @@ namespace NBA_Stats_Tracker.Windows
 
             List<PlayerStatsRow> fors = teamPMSRList.Where(delegate(PlayerStatsRow psr)
                                                            {
-                                                               if (psr.Position1.EndsWith("F"))
+                                                               if (psr.Position1.ToString().EndsWith("F"))
                                                                {
                                                                    if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                        return true;
@@ -1880,7 +1891,7 @@ namespace NBA_Stats_Tracker.Windows
 
             List<PlayerStatsRow> centers = teamPMSRList.Where(delegate(PlayerStatsRow psr)
                                                               {
-                                                                  if (psr.Position1.EndsWith("C"))
+                                                                  if (psr.Position1.ToString().EndsWith("C"))
                                                                   {
                                                                       if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                           return true;
@@ -1911,7 +1922,7 @@ namespace NBA_Stats_Tracker.Windows
 
             guards = oppPMSRList.Where(delegate(PlayerStatsRow psr)
                                        {
-                                           if (psr.Position1.EndsWith("G"))
+                                           if (psr.Position1.ToString().EndsWith("G"))
                                            {
                                                if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                    return true;
@@ -1925,7 +1936,7 @@ namespace NBA_Stats_Tracker.Windows
 
             fors = oppPMSRList.Where(delegate(PlayerStatsRow psr)
                                      {
-                                         if (psr.Position1.EndsWith("F"))
+                                         if (psr.Position1.ToString().EndsWith("F"))
                                          {
                                              if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                  return true;
@@ -1939,7 +1950,7 @@ namespace NBA_Stats_Tracker.Windows
 
             centers = oppPMSRList.Where(delegate(PlayerStatsRow psr)
                                         {
-                                            if (psr.Position1.EndsWith("C"))
+                                            if (psr.Position1.ToString().EndsWith("C"))
                                             {
                                                 if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                     return true;

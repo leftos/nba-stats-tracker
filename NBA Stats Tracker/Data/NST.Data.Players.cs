@@ -82,8 +82,8 @@ namespace NBA_Stats_Tracker.Data
         public string FirstName;
         public int ID;
         public string LastName;
-        public string Position1;
-        public string Position2;
+        public Position Position1;
+        public Position Position2;
         public int YearOfBirth;
         public int YearsPro;
         public string TeamF;
@@ -161,12 +161,16 @@ namespace NBA_Stats_Tracker.Data
             {
                 LastName = Tools.getString(dataRow, "LastName");
                 FirstName = Tools.getString(dataRow, "FirstName");
-                Position1 = Tools.getString(dataRow, "Position1");
-                if (String.IsNullOrEmpty(Position1))
-                    Position1 = " ";
-                Position2 = Tools.getString(dataRow, "Position2");
-                if (String.IsNullOrEmpty(Position2))
-                    Position2 = " ";
+                string p1 = Tools.getString(dataRow, "Position1");
+                if (String.IsNullOrWhiteSpace(p1))
+                    Position1 = Position.None;
+                else
+                    Position1 = (Position) Enum.Parse(typeof (Position), p1);
+                string p2 = Tools.getString(dataRow, "Position2");
+                if (String.IsNullOrWhiteSpace(p2))
+                    Position2 = Position.None;
+                else
+                    Position2 = (Position)Enum.Parse(typeof(Position), p2);
                 TeamF = Tools.getString(dataRow, "TeamFin");
                 TeamS = Tools.getString(dataRow, "TeamSta");
                 isActive = Tools.getBoolean(dataRow, "isActive");
@@ -270,7 +274,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="isNBAChampion">if set to <c>true</c> is a champion this season.</param>
         /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
         /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
-        public PlayerStats(int ID, string LastName, string FirstName, string Position1, string Position2, int YearOfBirth, int YearsPro, string TeamF, string TeamS,
+        public PlayerStats(int ID, string LastName, string FirstName, Position Position1, Position Position2, int YearOfBirth, int YearsPro, string TeamF, string TeamS,
                            bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion, DataRow dataRow,
                            bool playoffs = false)
         {
@@ -904,7 +908,7 @@ namespace NBA_Stats_Tracker.Data
         /// <returns></returns>
         public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
         {
-            var lps = new PlayerStats(new Player(-1, "", "League", "Averages", " ", " "));
+            var lps = new PlayerStats(new Player(-1, "", "League", "Averages", Position.None, Position.None));
             foreach (int key in playerStats.Keys)
             {
                 lps.AddPlayerStats(playerStats[key]);
@@ -1417,14 +1421,14 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="count">The count of stats to return.</param>
         /// <param name="position">The player's primary position.</param>
         /// <returns></returns>
-        public string GetBestStats(int count, string position)
+        public string GetBestStats(int count, Position position)
         {
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
             var statsn = new Dictionary<string, double>();
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            if (position.EndsWith("G"))
+            if (position.ToString().EndsWith("G"))
             {
                 fgfactor = 0.4871;
                 tpfactor = 0.39302;
@@ -1437,7 +1441,7 @@ namespace NBA_Stats_Tracker.Data
                 ptsfactor = 17.16;
                 ftrfactor = 0.271417;
             }
-            else if (position.EndsWith("F"))
+            else if (position.ToString().EndsWith("F"))
             {
                 fgfactor = 0.52792;
                 tpfactor = 0.38034;
@@ -1450,7 +1454,7 @@ namespace NBA_Stats_Tracker.Data
                 ptsfactor = 17.731;
                 ftrfactor = 0.307167;
             }
-            else if (position.EndsWith("C"))
+            else if (position.ToString().EndsWith("C"))
             {
                 fgfactor = 0.52862;
                 tpfactor = 0.23014;
@@ -1677,7 +1681,7 @@ namespace NBA_Stats_Tracker.Data
     /// </summary>
     public class PlayerRankings
     {
-        public int avgcount = (new PlayerStats(new Player(-1, "", "", "", "", ""))).averages.Length;
+        public int avgcount = (new PlayerStats(new Player(-1, "", "", "", Position.None, Position.None))).averages.Length;
 
         public Dictionary<int, int[]> list = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> rankings = new Dictionary<int, int[]>();
@@ -1689,7 +1693,8 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="playoffs">if set to <c>true</c>, the rankings will take only playoff performances into account.</param>
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
-            foreach (var kvp in pst)
+            var validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0);
+            foreach (var kvp in validPlayers)
             {
                 rankings.Add(kvp.Key, new int[avgcount]);
             }
@@ -1697,19 +1702,29 @@ namespace NBA_Stats_Tracker.Data
             {
                 Dictionary<int, float> averages;
                 if (!playoffs)
-                    averages = pst.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
+                    averages = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
                 else
-                    averages = pst.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.pl_averages[j]);
+                    averages = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.pl_averages[j]);
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                tempList.Reverse();
+                if (j != p.FPG && j != p.TPG)
+                    tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
                 {
                     rankings[kvp.Key][j] = k;
                     k++;
+                }
+            }
+            int plCount = pst.Count;
+            foreach (var kvp in pst.Where(ps => ps.Value.stats[p.GP] == 0))
+            {
+                rankings.Add(kvp.Key, new int[avgcount]);
+                for (int i = 0; i < avgcount ; i++)
+                {
+                    rankings[kvp.Key][i] = plCount;
                 }
             }
 
@@ -1743,7 +1758,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="FirstName">The first name.</param>
         /// <param name="Position1">The primary position.</param>
         /// <param name="Position2">The secondary position.</param>
-        public Player(int ID, string Team, string LastName, string FirstName, string Position1, string Position2)
+        public Player(int ID, string Team, string LastName, string FirstName, Position Position1, Position Position2)
         {
             this.ID = ID;
             this.Team = Team;
@@ -1763,16 +1778,24 @@ namespace NBA_Stats_Tracker.Data
             Team = Tools.getString(dataRow, "TeamFin");
             LastName = Tools.getString(dataRow, "LastName");
             FirstName = Tools.getString(dataRow, "FirstName");
-            Position = Tools.getString(dataRow, "Position1");
-            Position2 = Tools.getString(dataRow, "Position2");
+            string p1 = Tools.getString(dataRow, "Position1");
+            if (String.IsNullOrWhiteSpace(p1))
+                Position = Position.None;
+            else
+                Position = (Position)Enum.Parse(typeof(Position), p1);
+            string p2 = Tools.getString(dataRow, "Position2");
+            if (String.IsNullOrWhiteSpace(p2))
+                Position = Position.None;
+            else
+                Position = (Position)Enum.Parse(typeof(Position), p2);
         }
 
         public int ID { get; set; }
         public string Team { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public string Position { get; set; }
-        public string Position2 { get; set; }
+        public Position Position { get; set; }
+        public Position Position2 { get; set; }
         public bool AddToAll { get; set; }
     }
 
@@ -2061,8 +2084,8 @@ namespace NBA_Stats_Tracker.Data
         public int ID { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public string Position1 { get; set; }
-        public string Position2 { get; set; }
+        public Position Position1 { get; set; }
+        public Position Position2 { get; set; }
         public string TeamF { get; set; }
         public string TeamFDisplay { get; set; }
         public string TeamS { get; set; }
@@ -2096,13 +2119,13 @@ namespace NBA_Stats_Tracker.Data
         /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
         public string GetBestStats(int count)
         {
-            string position = Position1;
+            Position position = Position1;
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
             var statsn = new Dictionary<string, double>();
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            if (position.EndsWith("G"))
+            if (position.ToString().EndsWith("G"))
             {
                 fgfactor = 0.4871;
                 tpfactor = 0.39302;
@@ -2115,7 +2138,7 @@ namespace NBA_Stats_Tracker.Data
                 ptsfactor = 17.16;
                 ftrfactor = 0.271417;
             }
-            else if (position.EndsWith("F"))
+            else if (position.ToString().EndsWith("F"))
             {
                 fgfactor = 0.52792;
                 tpfactor = 0.38034;
@@ -2128,7 +2151,7 @@ namespace NBA_Stats_Tracker.Data
                 ptsfactor = 17.731;
                 ftrfactor = 0.307167;
             }
-            else if (position.EndsWith("C"))
+            else if (position.ToString().EndsWith("C"))
             {
                 fgfactor = 0.52862;
                 tpfactor = 0.23014;
@@ -2297,7 +2320,7 @@ namespace NBA_Stats_Tracker.Data
         {
             string s = "";
             s += String.Format("{0} {1}, born in {3}, is a {2} ", FirstName, LastName, Position1, YearOfBirth);
-            if (Position2 != " ")
+            if (Position2 != Position.None)
                 s += String.Format("(alternatively {0})", Position2);
             s += ", ";
 
@@ -2527,8 +2550,81 @@ namespace NBA_Stats_Tracker.Data
                 s += String.Format("He's been averaging a Game Score of {0:F2}. ", GmSc);
             }
 
+            s += "\n\nAccording to his rankings in the league, his best areas are ";
+            var dict = new Dictionary<int, int>();
+            for (int k = 0; k < rankingsActive.list[ID].Length; k++)
+            {
+                dict.Add(k, rankingsActive.list[ID][k]);
+            }
+            dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
+            dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
+            dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
+            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            int m = 0;
+            int j = 3;
+            while (true)
+            {
+                if (m == j)
+                    break;
+                switch (strengths[m])
+                {
+                    case p.APG:
+                        s += String.Format("assists (#{0}, {1:F1}), ", rankingsActive.list[ID][p.APG], APG);
+                        break;
+                    case p.BPG:
+                        s += String.Format("blocks (#{0}, {1:F1}), ", rankingsActive.list[ID][p.BPG], BPG);
+                        break;
+                    case p.DRPG:
+                        s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsActive.list[ID][p.DRPG], DRPG);
+                        break;
+                    case p.FGeff:
+                        s += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.list[ID][p.FGeff], (double)FGM/GP, FGp);
+                        break;
+                    case p.FPG:
+                        s += String.Format("fouls (#{0}, {1:F1}), ", rankingsActive.list[ID][p.FPG], FPG);
+                        break;
+                    case p.FTeff:
+                        s += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.list[ID][p.FTeff], (double)FTM / GP, FTp);
+                        break;
+                    case p.ORPG:
+                        s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsActive.list[ID][p.ORPG], ORPG);
+                        break;
+                    case p.PPG:
+                        s += String.Format("scoring (#{0}, {1:F1}), ", rankingsActive.list[ID][p.PPG], PPG);
+                        break;
+                    case p.RPG:
+                        s += String.Format("rebounds (#{0}, {1:F1}), ", rankingsActive.list[ID][p.RPG], RPG);
+                        break;
+                    case p.SPG:
+                        s += String.Format("steals (#{0}, {1:F1}), ", rankingsActive.list[ID][p.SPG], SPG);
+                        break;
+                    case p.TPG:
+                        s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsActive.list[ID][p.TPG], TPG);
+                        break;
+                    case p.TPeff:
+                        s += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.list[ID][p.TPeff], (double)TPM / GP, TPp);
+                        break;
+                    default:
+                        j++;
+                        break;
+                }
+                m++;
+            }
+            s = s.TrimEnd(new char[] { ' ', ',' });
+            s += ".";
+
             var cmw = new CopyableMessageWindow(s, String.Format("{0} {1}'s Scouting Report", FirstName, LastName), TextAlignment.Left);
             cmw.ShowDialog();
         }
+    }
+
+    public enum Position
+    {
+        PG,
+        SG,
+        SF,
+        PF,
+        C,
+        None
     }
 }

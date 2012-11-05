@@ -45,8 +45,8 @@ namespace NBA_Stats_Tracker.Windows
                 Teams.Add(kvp.Key);
             }
 
-            Positions = new ObservableCollection<string> {" ", "PG", "SG", "SF", "PF", "C"};
-            var Positions2 = new ObservableCollection<string> {" ", "PG", "SG", "SF", "PF", "C"};
+            Positions = new ObservableCollection<string> {"None", "PG", "SG", "SF", "PF", "C"};
+            var Positions2 = new ObservableCollection<string> {"None", "PG", "SG", "SF", "PF", "C"};
 
             Players = new ObservableCollection<Player>();
 
@@ -87,10 +87,6 @@ namespace NBA_Stats_Tracker.Windows
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;
                     }
-                    if (string.IsNullOrEmpty(p.Position))
-                        p.Position = " ";
-                    if (string.IsNullOrEmpty(p.Position2))
-                        p.Position2 = " ";
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p));
                 }

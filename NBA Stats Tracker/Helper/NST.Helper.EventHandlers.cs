@@ -119,7 +119,7 @@ namespace NBA_Stats_Tracker.Helper
         public static void StatColumn_Sorting(DataGridSortingEventArgs e)
         {
             var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team"};
-            if (e.Column.SortDirection == null)
+            if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
             {
                 if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false)
                     e.Column.SortDirection = ListSortDirection.Ascending;

@@ -19,6 +19,24 @@
                               FrozenColumnCount="1" IsReadOnly="True" />
                 </Grid>
             </TabItem>
+            <TabItem Header="Roster" Name="tabTeamRoster">
+                <Grid VerticalAlignment="Stretch">
+                    <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                              Name="dgvTeamRoster" VerticalAlignment="Stretch" MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick"
+                              FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" Sorting="StatColumn_Sorting">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
+                            <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                            <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
+                            <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
+                            <DataGridCheckBoxColumn Binding="{Binding IsInjured}" Header="Injured" />
+                            <DataGridTextColumn Binding="{Binding YearsPro}" Header="Years Pro" />
+                            <DataGridTextColumn Binding="{Binding YearOfBirth}" Header="Year of Birth" />
+                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" Visibility="Collapsed" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
             <TabItem Header="Player Stats" Name="tabPlayerStats">
                 <Grid VerticalAlignment="Stretch">
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"

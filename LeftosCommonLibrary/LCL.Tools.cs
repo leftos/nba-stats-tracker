@@ -81,13 +81,19 @@ namespace LeftosCommonLibrary
         /// </summary>
         /// <param name="hex">The hex representation.</param>
         /// <returns>The corresponding byte array.</returns>
-        public static byte[] StringToByteArray(String hex)
+        public static byte[] HexStringToByteArray(String hex)
         {
             int NumberChars = hex.Length;
             var bytes = new byte[NumberChars/2];
             for (int i = 0; i < NumberChars; i += 2)
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
+        }
+
+        public static string ByteArrayToHexString(byte[] ba)
+        {
+            string hex = BitConverter.ToString(ba);
+            return hex.Replace("-", "");
         }
 
         /// <summary>

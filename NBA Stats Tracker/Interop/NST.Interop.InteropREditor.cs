@@ -41,7 +41,7 @@ namespace NBA_Stats_Tracker.Interop
                                                                            {"2", "SF"},
                                                                            {"3", "PF"},
                                                                            {"4", "C"},
-                                                                           {"5", " "}
+                                                                           {"5", "None"}
                                                                        };
 
         public static List<int> teamsThatPlayedAGame;
@@ -610,8 +610,8 @@ namespace NBA_Stats_Tracker.Interop
                                         ID = Convert.ToInt32(player["ID"]),
                                         FirstName = player["First_Name"],
                                         LastName = player["Last_Name"],
-                                        Position = Positions[player["Pos"]],
-                                        Position2 = Positions[player["SecondPos"]]
+                                        Position = (Position) Enum.Parse(typeof (Position),Positions[player["Pos"]]),
+                                        Position2 = (Position) Enum.Parse(typeof (Position),Positions[player["SecondPos"]])
                                     }));
             return playerID;
         }
