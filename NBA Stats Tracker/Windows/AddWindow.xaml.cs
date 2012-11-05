@@ -44,15 +44,10 @@ namespace NBA_Stats_Tracker.Windows
             {
                 Teams.Add(kvp.Key);
             }
-
-            Positions = new ObservableCollection<string> {"None", "PG", "SG", "SF", "PF", "C"};
-            var Positions2 = new ObservableCollection<string> {"None", "PG", "SG", "SF", "PF", "C"};
-
+            
             Players = new ObservableCollection<Player>();
 
             teamColumn.ItemsSource = Teams;
-            posColumn.ItemsSource = Positions;
-            pos2Column.ItemsSource = Positions2;
             dgvAddPlayers.ItemsSource = Players;
 
             dgvAddPlayers.RowEditEnding += GenericEventHandlers.WPFDataGrid_RowEditEnding_GoToNewRowOnTab;
@@ -62,7 +57,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private ObservableCollection<Player> Players { get; set; }
         private ObservableCollection<string> Teams { get; set; }
-        private ObservableCollection<string> Positions { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {

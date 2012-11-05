@@ -1,6 +1,15 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.AddWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Add Teams/Players" Height="373" Width="480"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data"
+        Title="Add Teams/Players" Height="373" Width="480"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="PositionsList" MethodName="GetValues"
+                            ObjectType="{x:Type Data:Position}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Data:Position" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
     <Grid>
         <TabControl HorizontalAlignment="Stretch" Name="tbcAdd" VerticalAlignment="Stretch" Margin="0,0,0,40">
             <TabItem Header="Teams" Name="tabTeams">
@@ -20,10 +29,10 @@
                             <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
                             <DataGridComboBoxColumn x:Name="teamColumn" Header="Team"
                                                     SelectedItemBinding="{Binding Team}" />
-                            <DataGridComboBoxColumn x:Name="posColumn" Header="Position"
-                                                    SelectedItemBinding="{Binding Position}" />
-                            <DataGridComboBoxColumn x:Name="pos2Column" Header="2nd Position"
-                                                    SelectedItemBinding="{Binding Position2}" />
+                            <DataGridComboBoxColumn Header="Position1"
+                                                    SelectedValueBinding="{Binding Position1, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource PositionsList}}" />
+                            <DataGridComboBoxColumn Header="Position2"
+                                                    SelectedValueBinding="{Binding Position2, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource PositionsList}}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

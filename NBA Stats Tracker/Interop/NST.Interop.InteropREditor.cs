@@ -610,7 +610,7 @@ namespace NBA_Stats_Tracker.Interop
                                         ID = Convert.ToInt32(player["ID"]),
                                         FirstName = player["First_Name"],
                                         LastName = player["Last_Name"],
-                                        Position = (Position) Enum.Parse(typeof (Position),Positions[player["Pos"]]),
+                                        Position1 = (Position) Enum.Parse(typeof (Position),Positions[player["Pos"]]),
                                         Position2 = (Position) Enum.Parse(typeof (Position),Positions[player["SecondPos"]])
                                     }));
             return playerID;

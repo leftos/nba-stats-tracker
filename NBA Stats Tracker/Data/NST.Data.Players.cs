@@ -116,7 +116,7 @@ namespace NBA_Stats_Tracker.Data
             ID = player.ID;
             LastName = player.LastName;
             FirstName = player.FirstName;
-            Position1 = player.Position;
+            Position1 = player.Position1;
             Position2 = player.Position2;
             YearOfBirth = 0;
             YearsPro = 0;
@@ -1764,7 +1764,7 @@ namespace NBA_Stats_Tracker.Data
             this.Team = Team;
             this.LastName = LastName;
             this.FirstName = FirstName;
-            Position = Position1;
+            this.Position1 = Position1;
             this.Position2 = Position2;
         }
 
@@ -1780,21 +1780,21 @@ namespace NBA_Stats_Tracker.Data
             FirstName = Tools.getString(dataRow, "FirstName");
             string p1 = Tools.getString(dataRow, "Position1");
             if (String.IsNullOrWhiteSpace(p1))
-                Position = Position.None;
+                Position1 = Position.None;
             else
-                Position = (Position)Enum.Parse(typeof(Position), p1);
+                Position1 = (Position)Enum.Parse(typeof(Position), p1);
             string p2 = Tools.getString(dataRow, "Position2");
             if (String.IsNullOrWhiteSpace(p2))
-                Position = Position.None;
+                Position1 = Position.None;
             else
-                Position = (Position)Enum.Parse(typeof(Position), p2);
+                Position1 = (Position)Enum.Parse(typeof(Position), p2);
         }
 
         public int ID { get; set; }
         public string Team { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public Position Position { get; set; }
+        public Position Position1 { get; set; }
         public Position Position2 { get; set; }
         public bool AddToAll { get; set; }
     }
