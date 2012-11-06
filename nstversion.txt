@@ -1,6 +1,4 @@
-1.0.1.0
+1.0.2.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-		- Addition: Scouting Reports now summarize the best areas of each team/player according to their rankings in the league
-		- Fix: Scouting Reports now take into account both season and playoff stats
-		- Fix: Rankings now do not take into account players that haven't played a game yet
+		- Addition: Team Scouting Reports now include the basic team roster

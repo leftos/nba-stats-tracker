@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -921,9 +922,43 @@ namespace NBA_Stats_Tracker.Data
         /// Returns a well-formatted multi-line string presenting a scouting report for the team in natural language.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
+        /// <param name="psrList"> </param>
         /// <returns></returns>
-        public string ScoutingReport(Dictionary<int, TeamStats> tst)
+        public string ScoutingReport(Dictionary<int, TeamStats> tst, ObservableCollection<PlayerStatsRow> psrList)
         {
+            var pgList = psrList.Where(ps => ps.Position1 == Position.PG).ToList();
+            pgList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps1.GmSc));
+            pgList.Reverse();
+            var sgList = psrList.Where(ps => ps.Position1 == Position.SG).ToList();
+            sgList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
+            sgList.Reverse();
+            var sfList = psrList.Where(ps => ps.Position1 == Position.SF).ToList();
+            sfList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
+            sfList.Reverse();
+            var pfList = psrList.Where(ps => ps.Position1 == Position.PF).ToList();
+            pfList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
+            pfList.Reverse();
+            var cList = psrList.Where(ps => ps.Position1 == Position.C).ToList();
+            cList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
+            cList.Reverse();
+
+            var roster = "Team Roster\n";
+            roster += "\nPG: ";
+            pgList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
+            roster = roster.Remove(roster.Length - 2);
+            roster += "\nSG: ";
+            sgList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
+            roster = roster.Remove(roster.Length - 2);
+            roster += "\nSF: ";
+            sfList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
+            roster = roster.Remove(roster.Length - 2);
+            roster += "\nPF: ";
+            pfList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
+            roster = roster.Remove(roster.Length - 2);
+            roster += "\nC: ";
+            cList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
+            roster = roster.Remove(roster.Length - 2);
+
             int[][] rating = CalculateTeamRankings(tst);
             int teamCount = tst.Count;
             int divpos = 0;
@@ -952,7 +987,8 @@ namespace NBA_Stats_Tracker.Data
                 }
             }
 
-            string msg = String.Format("{0}, the {1}", displayName, rating[ID][17]);
+            string msg = roster + "\n\n===================================================\n\n";
+            msg += String.Format("{0}, the {1}", displayName, rating[ID][17]);
             switch (rating[ID][17])
             {
                 case 1:
@@ -1114,7 +1150,7 @@ namespace NBA_Stats_Tracker.Data
                 msg +=
                     "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
             
-            msg += String.Format(" (#{0} in APG: {1:F2})", rating[ID][t.APG], averages[t.APG]);
+            msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][t.APG], averages[t.APG]);
             msg += "\n\n";
 
             if (31 - rating[ID][t.PAPG] <= 5)
@@ -1126,7 +1162,7 @@ namespace NBA_Stats_Tracker.Data
             else if (31 - rating[ID][t.PAPG] <= teamCount)
                 msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
 
-            msg += String.Format(" (#{0} in PAPG: {1:F2})", tst.Count + 1 - rating[ID][t.PAPG], averages[t.PAPG]);
+            msg += String.Format(" (#{0} in PAPG: {1:F1})", tst.Count + 1 - rating[ID][t.PAPG], averages[t.PAPG]);
             msg += "\n\n";
 
             if ((rating[ID][9] <= topThird) && (rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -1151,7 +1187,7 @@ namespace NBA_Stats_Tracker.Data
                 msg +=
                     "The work they put on rebounding on both sides of the court is commendable. Both offensive and defensive rebounds, their bread and butter.";
 
-            msg += String.Format(" (#{0} in RPG: {1:F2}, #{2} in ORPG: {3:F2}, #{4} in DRPG: {5:F2})", rating[ID][t.RPG], averages[t.RPG], rating[ID][t.ORPG], 
+            msg += String.Format(" (#{0} in RPG: {1:F1}, #{2} in ORPG: {3:F1}, #{4} in DRPG: {5:F1})", rating[ID][t.RPG], averages[t.RPG], rating[ID][t.ORPG], 
                 averages[t.ORPG], rating[ID][t.DRPG], averages[t.DRPG]);
             msg += "\n\n";
 
@@ -1167,7 +1203,7 @@ namespace NBA_Stats_Tracker.Data
             else
                 msg +=
                     "Nothing too significant as far as blocks and steals go.";
-            msg += String.Format(" (#{0} in SPG: {1:F2}, #{2} in BPG: {3:F2})\n", rating[ID][t.SPG], averages[t.SPG], rating[ID][t.BPG], averages[t.BPG]);
+            msg += String.Format(" (#{0} in SPG: {1:F1}, #{2} in BPG: {3:F1})\n", rating[ID][t.SPG], averages[t.SPG], rating[ID][t.BPG], averages[t.BPG]);
 
             if ((rating[ID][13] <= topThird) && (rating[ID][15] <= topThird))
                 msg +=
@@ -1182,7 +1218,7 @@ namespace NBA_Stats_Tracker.Data
                     "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw " +
                     "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the " +
                     "one you expected.";
-            msg += String.Format(" (#{0} in TPG: {1:F2}, #{2} in FPG: {3:F2})", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG], tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
+            msg += String.Format(" (#{0} in TPG: {1:F1}, #{2} in FPG: {3:F1})", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG], tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
 
             msg += "\n\n";
 

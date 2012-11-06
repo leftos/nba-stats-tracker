@@ -1418,7 +1418,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (temptst.Count > 1)
             {
-                string msg = temptst[id].ScoutingReport(temptst);
+                string msg = temptst[id].ScoutingReport(temptst, psrList);
                 var cw = new CopyableMessageWindow(msg, "Scouting Report", TextAlignment.Left);
                 cw.ShowDialog();
             }
