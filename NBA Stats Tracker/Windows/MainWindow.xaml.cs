@@ -992,7 +992,7 @@ namespace NBA_Stats_Tracker.Windows
                                      {"Lakers", "LAL"},
                                      {"Magic", "ORL"},
                                      {"Mavericks", "DAL"},
-                                     {"Nets", "NJN"},
+                                     {"Nets", "BRK"},
                                      {"Nuggets", "DEN"},
                                      {"Pacers", "IND"},
                                      {"Pistons", "DET"},
@@ -1028,7 +1028,8 @@ namespace NBA_Stats_Tracker.Windows
                                       }
                                       worker1.ReportProgress(1);
                                   }
-                                  InteropBR.AddPlayoffTeamStats(ref realtst, ref realtstopp);
+                                  // TODO: Re-enable once Playoffs start
+                                  //InteropBR.AddPlayoffTeamStats(ref realtst, ref realtstopp);
                               };
 
             worker1.ProgressChanged += delegate

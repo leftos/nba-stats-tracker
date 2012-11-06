@@ -128,7 +128,7 @@ namespace NBA_Stats_Tracker.Interop
                 var htmlweb = new HtmlWeb();
                 HtmlDocument doc = htmlweb.Load(url);
 
-                HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//div[@id='info_box']");
+                HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//*[@id='info_box']");
                 HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
                 HtmlNode infoboxp = infoboxps[1].NextSibling.NextSibling;
                 string record = infoboxp.InnerText;
@@ -630,10 +630,10 @@ namespace NBA_Stats_Tracker.Interop
                                            out Dictionary<int, PlayerStats> pst)
         {
             string[] recordparts;
-            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2012.html", out recordparts);
+            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
             TeamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
-            ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2012.html");
+            ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");
             PlayerStatsFromDataSet(ds, teamAbbr.Key, out pst);
         }
 
@@ -655,13 +655,13 @@ namespace NBA_Stats_Tracker.Interop
         }
 
         /// <summary>
-        /// Adds the playoff team stats to th current database.
+        /// Adds the playoff team stats to the current database.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstopp">The opposing team stats dictionary.</param>
         public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
         {
-            DataSet ds = GetPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2012.html");
+            DataSet ds = GetPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
             PlayoffTeamStatsFromDataSet(ds, ref tst, ref tstopp);
         }
     }

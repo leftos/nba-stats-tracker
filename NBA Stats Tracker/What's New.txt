@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.0.2.1
+		- Change: Download NBA Stats now downloads stats for the 2012-13 season
+
 	v1.0.2
 		- Addition: Team Scouting Reports now include the basic team roster
 
