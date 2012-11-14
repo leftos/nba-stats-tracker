@@ -146,6 +146,17 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
+        /// Gets an unsigned 32-bit integer from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
+        public static UInt32 getUInt32(DataRow r, string ColumnName)
+        {
+            return Convert.ToUInt32(r[ColumnName].ToString());
+        }
+
+        /// <summary>
         /// Gets a signed 32-bit integer from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>

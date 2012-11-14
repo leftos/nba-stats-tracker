@@ -189,7 +189,7 @@ namespace NBA_Stats_Tracker.Interop
 
             foreach (int key in _teamStats.Keys)
             {
-                _teamStats[key].calcAvg();
+                _teamStats[key].CalcAvg();
             }
 
             tst = new Dictionary<int, TeamStats>(_teamStats);

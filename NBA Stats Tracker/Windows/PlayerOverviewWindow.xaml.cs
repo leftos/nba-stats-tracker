@@ -86,6 +86,11 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
+            Height = Misc.GetRegistrySetting("PlayerOvHeight", (int)Height);
+            Width = Misc.GetRegistrySetting("PlayerOvWidth", (int)Width);
+            Top = Misc.GetRegistrySetting("PlayerOvY", (int)Top);
+            Left = Misc.GetRegistrySetting("PlayerOvX", (int)Left);
+
             prepareWindow();
         }
 
@@ -402,6 +407,22 @@ namespace NBA_Stats_Tracker.Windows
         {
             var psrList = new List<PlayerStatsRow>();
             var psCareer = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
+
+            string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + psr.ID + " ORDER BY \"SOrder\"";
+            DataTable dt = db.GetDataTable(qr);
+            foreach (DataRow dr in dt.Rows)
+            {
+                PlayerStats ps = new PlayerStats();
+                bool isPlayoff = Tools.getBoolean(dr, "isPlayoff");
+                ps.GetStatsFromDataRow(dr, isPlayoff);
+                ps.TeamF = Tools.getString(dr, "TeamFin");
+                ps.TeamS = Tools.getString(dr, "TeamSta");
+                psrList.Add(new PlayerStatsRow(ps,
+                                               isPlayoff
+                                                   ? "Playoffs " + Tools.getString(dr, "SeasonName")
+                                                   : "Season " + Tools.getString(dr, "SeasonName"), isPlayoff));
+                psCareer.AddPlayerStats(ps);
+            }
 
             for (int i = 1; i <= maxSeason; i++)
             {
@@ -2088,6 +2109,23 @@ namespace NBA_Stats_Tracker.Windows
                 cmbOppPlayer.SelectedIndex = 0;
             else
                 cmbOppPlayer.SelectedIndex++;
+        }
+
+        private void Window_Closing_1(object sender, CancelEventArgs e)
+        {
+            Misc.SetRegistrySetting("PlayerOvHeight", Height);
+            Misc.SetRegistrySetting("PlayerOvWidth", Width);
+            Misc.SetRegistrySetting("PlayerOvX", Left);
+            Misc.SetRegistrySetting("PlayerOvY", Top);
+        }
+
+        private void btnAddPastStats_Click(object sender, RoutedEventArgs e)
+        {
+            AddStatsWindow adw = new AddStatsWindow(false, psr.ID);
+            if (adw.ShowDialog() == true)
+            {
+                UpdateYearlyReport();
+            }
         }
     }
 }

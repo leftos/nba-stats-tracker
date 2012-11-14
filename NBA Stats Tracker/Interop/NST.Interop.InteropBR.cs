@@ -333,7 +333,7 @@ namespace NBA_Stats_Tracker.Interop
             ts.stats[t.PF] = Tools.getUInt16(tr, "PTS");
             ts.stats[t.PA] = Tools.getUInt16(toppr, "PTS");
 
-            ts.calcAvg();
+            ts.CalcAvg();
 
             tsopp.stats[t.MINS] = (ushort) (Tools.getUInt16(toppr, "MP")/5);
             tsopp.stats[t.FGM] = Tools.getUInt16(toppr, "FG");
@@ -352,7 +352,7 @@ namespace NBA_Stats_Tracker.Interop
             tsopp.stats[t.PF] = Tools.getUInt16(toppr, "PTS");
             tsopp.stats[t.PA] = Tools.getUInt16(tr, "PTS");
 
-            tsopp.calcAvg();
+            tsopp.CalcAvg();
         }
 
         /// <summary>

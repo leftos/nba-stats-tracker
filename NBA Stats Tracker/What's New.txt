@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.1
+		- Addition: Added option to add team/player stats for seasons before the ones contained in the database, meant for the Yearly Report tabs
+
 	v1.0.2.1
 		- Change: Download NBA Stats now downloads stats for the 2012-13 season
 

@@ -72,6 +72,11 @@ namespace NBA_Stats_Tracker.Windows
         public TeamOverviewWindow()
         {
             InitializeComponent();
+
+            Height = Misc.GetRegistrySetting("TeamOvHeight", (int) Height);
+            Width = Misc.GetRegistrySetting("TeamOvWidth", (int) Width);
+            Top = Misc.GetRegistrySetting("TeamOvY", (int) Top);
+            Left = Misc.GetRegistrySetting("TeamOvX", (int) Left);
         }
 
         /// <summary>
@@ -218,7 +223,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dr = dt_ov.NewRow();
 
-            curts.calcAvg(); // Just to be sure...
+            curts.CalcAvg(); // Just to be sure...
 
             dr["Type"] = "Averages";
             //dr["Games"] = curts.getGames();
@@ -301,7 +306,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dr2 = dt_ov.NewRow();
 
-            curtsopp.calcAvg(); // Just to be sure...
+            curtsopp.CalcAvg(); // Just to be sure...
 
             dr2["Type"] = "Opp Avg";
             dr2["Wins (W%)"] = String.Format("{0:F3}", curtsopp.averages[t.Wp]);
@@ -326,7 +331,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dt_ov.Rows.Add(dr2);
 
-            curtsopp.calcAvg();
+            curtsopp.CalcAvg();
 
             #endregion
 
@@ -439,7 +444,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dr2 = dt_ov.NewRow();
 
-            curtsopp.calcAvg(); // Just to be sure...
+            curtsopp.CalcAvg(); // Just to be sure...
 
             dr2["Type"] = "Opp Pl Avg";
             dr2["Wins (W%)"] = String.Format("{0:F3}", curtsopp.pl_averages[t.Wp]);
@@ -464,7 +469,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dt_ov.Rows.Add(dr2);
 
-            curtsopp.calcAvg();
+            curtsopp.CalcAvg();
 
             #endregion
 
@@ -1113,7 +1118,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void UpdateYearlyStats()
         {
-            #region Prepare Yearly Stats
+            dt_yea.Clear();
 
             string currentDB = MainWindow.currentDB;
             curSeason = MainWindow.curSeason;
@@ -1138,6 +1143,31 @@ namespace NBA_Stats_Tracker.Windows
                 CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + curSeason.ToString(), true);
                 playedInPlayoffs = true;
             }
+
+            //
+            string qr = string.Format(@"SELECT * FROM PastTeamStats WHERE TeamID = {0} ORDER BY ""SOrder""", ts.ID);
+            DataTable dt = db.GetDataTable(qr);
+            foreach (DataRow dr in dt.Rows)
+            {
+                DataRow dr4 = dt_yea.NewRow();
+                ts = new TeamStats();
+                if (Tools.getBoolean(dr, "isPlayoff"))
+                {
+                    SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, true);
+                    CreateDataRowFromTeamStats(ts, ref dr4, "Playoffs " + Tools.getString(dr, "SeasonName"), true);
+                    tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
+                    tsAll.AddTeamStats(ts, Span.Playoffs);
+                }
+                else
+                {
+                    SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, false);
+                    CreateDataRowFromTeamStats(ts, ref dr4, "Season " + Tools.getString(dr, "SeasonName"), false);
+                    tsAllSeasons.AddTeamStats(ts, Span.Season);
+                    tsAll.AddTeamStats(ts, Span.Season);
+                }
+                dt_yea.Rows.Add(dr4);
+            }
+            //
 
             for (int j = 1; j <= maxSeason; j++)
             {
@@ -1185,8 +1215,6 @@ namespace NBA_Stats_Tracker.Windows
             var dv_yea = new DataView(dt_yea) {AllowNew = false, AllowEdit = false};
 
             dgvYearly.DataContext = dv_yea;
-
-            #endregion
         }
 
         /// <summary>
@@ -1291,7 +1319,7 @@ namespace NBA_Stats_Tracker.Windows
             tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(6, 20));
             tst[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(6, 21));
 
-            tst[id].calcAvg();
+            tst[id].CalcAvg();
 
 
             // Opponents
@@ -1349,13 +1377,13 @@ namespace NBA_Stats_Tracker.Windows
             tstopp[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(9, 20));
             tstopp[id].pl_stats[t.MINS] = Convert.ToUInt16(myCell(9, 21));
 
-            tstopp[id].calcAvg();
+            tstopp[id].CalcAvg();
 
             Dictionary<int, PlayerStats> playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);
             SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
-                                ref MainWindow.bshist, _curSeason: curSeason, doNotLoadBoxScores: true);
+                                ref MainWindow.bshist, curSeason, doNotLoadBoxScores: true);
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -1656,10 +1684,10 @@ namespace NBA_Stats_Tracker.Windows
                     doPartial = false;
 
                     ts = tst[iown];
-                    ts.calcAvg();
+                    ts.CalcAvg();
 
                     tsopp = tst[iopp];
-                    tsopp.calcAvg();
+                    tsopp.CalcAvg();
 
                     /*
                     i = -1;
@@ -2445,8 +2473,8 @@ namespace NBA_Stats_Tracker.Windows
                 tsopp.pl_winloss[0] = ts.pl_winloss[1];
             }
 
-            ts.calcAvg();
-            tsopp.calcAvg();
+            ts.CalcAvg();
+            tsopp.CalcAvg();
         }
 
         /// <summary>
@@ -2588,7 +2616,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
-                                    ref MainWindow.bshist, _curSeason: curSeason);
+                                    ref MainWindow.bshist, curSeason);
                 MainWindow.CopySeasonToMainWindow(tst, tstopp, pst);
                 PopulateTeamsCombo();
 
@@ -2661,6 +2689,11 @@ namespace NBA_Stats_Tracker.Windows
             MainWindow.tst = tst;
             MainWindow.tstopp = tstopp;
             MainWindow.pst = pst;
+
+            Misc.SetRegistrySetting("TeamOvHeight", Height);
+            Misc.SetRegistrySetting("TeamOvWidth", Width);
+            Misc.SetRegistrySetting("TeamOvX", Left);
+            Misc.SetRegistrySetting("TeamOvY", Top);
         }
 
         /// <summary>
@@ -2915,6 +2948,15 @@ namespace NBA_Stats_Tracker.Windows
         private void dgvBoxScores_Sorting(object sender, DataGridSortingEventArgs e)
         {
             StatColumn_Sorting(sender, e);
+        }
+
+        private void btnAddPastStats_Click(object sender, RoutedEventArgs e)
+        {
+            AddStatsWindow adw = new AddStatsWindow(true, MainWindow.TeamOrder[curTeam]);
+            if (adw.ShowDialog() == true)
+            {
+                UpdateYearlyStats();
+            }
         }
     }
 }

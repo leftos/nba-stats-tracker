@@ -12,6 +12,8 @@
 
 #endregion
 
+using System;
+
 namespace NBA_Stats_Tracker.Data
 {
     /// <summary>

@@ -4,7 +4,7 @@
         xmlns:sw="clr-namespace:Swordfish.WPF.Charts;assembly=Swordfish.WPF.Charts" 
         Height="557" Width="698"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" MinWidth="698" Title="Player Overview"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Closing="Window_Closing_1">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
@@ -242,7 +242,7 @@
                     <Grid>
                         <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" CanUserAddRows="True"
     						CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch" x:Name="dgvYearly"
-    						VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting">
+    						VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting" Margin="0,0,0,38">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                     <GroupStyle.Panel>
@@ -254,6 +254,8 @@
                             </DataGrid.GroupStyle>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
+                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team at End" />
+                                <DataGridTextColumn Binding="{Binding TeamS}" Header="Team at Start" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
@@ -288,9 +290,11 @@
                                 <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
                                 <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
-                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" Visibility="Collapsed" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        <Button Content="Add Past Stats" Height="23" HorizontalAlignment="Right"
+                        	Margin="0,0,10,10" x:Name="btnAddPastStats" VerticalAlignment="Bottom" Width="143" Click="btnAddPastStats_Click" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Performance Graph" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">

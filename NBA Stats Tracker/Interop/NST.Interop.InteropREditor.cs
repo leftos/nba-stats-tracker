@@ -262,7 +262,7 @@ namespace NBA_Stats_Tracker.Interop
                     }
                 }
 
-                tst[id].calcAvg();
+                tst[id].CalcAvg();
 
                 rosters[id] = new List<int>
                               {

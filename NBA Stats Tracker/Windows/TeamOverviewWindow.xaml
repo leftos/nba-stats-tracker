@@ -965,9 +965,11 @@
             </TabItem>
             <TabItem Header="Yearly Report" Name="tabYearly">
                 <Grid>
-                    <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                    <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,38"
                               ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch" AlternatingRowBackground="#FFE5E5E5"
                               FrozenColumnCount="1" IsReadOnly="True" Sorting="StatColumn_Sorting" />
+                    <Button Content="Add Past Stats" Height="23" HorizontalAlignment="Right"
+                    	Margin="0,0,6,10" x:Name="btnAddPastStats" VerticalAlignment="Bottom" Width="143" Click="btnAddPastStats_Click" />
                 </Grid>
             </TabItem>
         </TabControl>

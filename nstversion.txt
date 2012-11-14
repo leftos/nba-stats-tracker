@@ -1,4 +1,4 @@
-1.0.2.0
+1.1.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
 
-		- Addition: Team Scouting Reports now include the basic team roster
+		- Addition: Added option to add team/player stats for seasons before the ones contained in the database, meant for the Yearly Report tabs

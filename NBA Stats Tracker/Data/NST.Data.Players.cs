@@ -170,7 +170,7 @@ namespace NBA_Stats_Tracker.Data
                 if (String.IsNullOrWhiteSpace(p2))
                     Position2 = Position.None;
                 else
-                    Position2 = (Position)Enum.Parse(typeof(Position), p2);
+                    Position2 = (Position) Enum.Parse(typeof (Position), p2);
                 TeamF = Tools.getString(dataRow, "TeamFin");
                 TeamS = Tools.getString(dataRow, "TeamSta");
                 isActive = Tools.getBoolean(dataRow, "isActive");
@@ -184,7 +184,7 @@ namespace NBA_Stats_Tracker.Data
                 {
                     isHidden = false;
                 }
-                
+
                 try
                 {
                     YearOfBirth = Tools.getInt(dataRow, "YearOfBirth");
@@ -214,7 +214,15 @@ namespace NBA_Stats_Tracker.Data
                 isInjured = Tools.getBoolean(dataRow, "isInjured");
                 isAllStar = Tools.getBoolean(dataRow, "isAllStar");
                 isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
+            }
 
+            GetStatsFromDataRow(dataRow, playoffs);
+        }
+
+        public void GetStatsFromDataRow(DataRow dataRow, bool isPlayoff)
+        {
+            if (!isPlayoff)
+            {
                 stats[p.GP] = Tools.getUInt16(dataRow, "GP");
                 stats[p.GS] = Tools.getUInt16(dataRow, "GS");
                 stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");

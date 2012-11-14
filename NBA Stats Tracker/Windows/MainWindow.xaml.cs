@@ -480,7 +480,7 @@ namespace NBA_Stats_Tracker.Windows
             int id1 = TeamOrder[bs.Team1];
             int id2 = TeamOrder[bs.Team2];
 
-            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref bshist, _curSeason: bs.SeasonNum);
+            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref bshist, bs.SeasonNum);
 
             List<PlayerBoxScore> list = pbsLists.SelectMany(pbsList => pbsList).ToList();
 
@@ -1069,8 +1069,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                                 SQLiteIO.getMaxSeason(file));
                                                   txtFile.Text = file;
                                                   PopulateSeasonCombo(file);
-                                                  SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist,
-                                                                      _curSeason: curSeason);
+                                                  SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist, curSeason);
 
                                                   txbWait.Visibility = Visibility.Hidden;
                                                   mainGrid.Visibility = Visibility.Visible;
@@ -1832,7 +1831,7 @@ namespace NBA_Stats_Tracker.Windows
                         ts.winloss[1] = 0;
                         ts.pl_winloss[0] = 0;
                         ts.pl_winloss[1] = 0;
-                        ts.calcAvg();
+                        ts.CalcAvg();
                         tst[key] = ts;
                     }
 
@@ -1848,7 +1847,7 @@ namespace NBA_Stats_Tracker.Windows
                         ts.winloss[1] = 0;
                         ts.pl_winloss[0] = 0;
                         ts.pl_winloss[1] = 0;
-                        ts.calcAvg();
+                        ts.CalcAvg();
                         tstopp[key] = ts;
                     }
 

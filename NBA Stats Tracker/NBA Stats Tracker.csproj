@@ -80,6 +80,7 @@
     <Compile Include="Data\NST.Data.Players.cs" />
     <Compile Include="Data\NST.Data.Teams.cs" />
     <Compile Include="Data\NST.Data.Misc.cs" />
+    <Compile Include="Data\NST.Data.PastStats.cs" />
     <Compile Include="Helper\NST.Helper.ListExtensions.cs" />
     <Compile Include="Helper\NST.Helper.Misc.cs" />
     <Compile Include="Helper\NST.Helper.EventHandlers.cs" />
@@ -89,6 +90,9 @@
     <Compile Include="Interop\NST.Interop.InteropBR.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\AddStatsWindow.xaml.cs">
+      <DependentUpon>AddStatsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\AddWindow.xaml.cs">
       <DependentUpon>AddWindow.xaml</DependentUpon>
@@ -151,6 +155,10 @@
     <Page Include="Windows\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\AddStatsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\AddWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

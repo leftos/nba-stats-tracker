@@ -435,7 +435,7 @@ namespace NBA_Stats_Tracker.Data
         /// <summary>
         /// Calculates the averages of a team's stats.
         /// </summary>
-        public void calcAvg()
+        public void CalcAvg()
         {
             uint games = winloss[0] + winloss[1];
             uint pl_games = pl_winloss[0] + pl_winloss[1];
@@ -710,7 +710,7 @@ namespace NBA_Stats_Tracker.Data
                         stats[i] += ts.stats[i];
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 case Span.Playoffs:
@@ -723,7 +723,7 @@ namespace NBA_Stats_Tracker.Data
                         pl_stats[i] += ts.pl_stats[i];
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 case Span.SeasonAndPlayoffs:
@@ -744,7 +744,7 @@ namespace NBA_Stats_Tracker.Data
                         stats[i] += ts.pl_stats[i];
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 default:
@@ -773,7 +773,7 @@ namespace NBA_Stats_Tracker.Data
                         stats[i] = 0;
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 case Span.Playoffs:
@@ -786,7 +786,7 @@ namespace NBA_Stats_Tracker.Data
                         pl_stats[i] = 0;
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 case Span.SeasonAndPlayoffs:
@@ -807,7 +807,7 @@ namespace NBA_Stats_Tracker.Data
                         pl_stats[i] = 0;
                     }
 
-                    calcAvg();
+                    CalcAvg();
                     break;
                 }
                 default:
@@ -1663,10 +1663,10 @@ namespace NBA_Stats_Tracker.Data
                 tsopp1.pl_stats[t.FOUL] += bsToAdd.FOUL2;
             }
 
-            ts1.calcAvg();
-            ts2.calcAvg();
-            tsopp1.calcAvg();
-            tsopp2.calcAvg();
+            ts1.CalcAvg();
+            ts2.CalcAvg();
+            tsopp1.CalcAvg();
+            tsopp2.CalcAvg();
 
             _tst[id1] = ts1;
             _tst[id2] = ts2;

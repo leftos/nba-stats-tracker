@@ -79,6 +79,11 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
+            Height = Misc.GetRegistrySetting("LeagueOvHeight", (int)Height);
+            Width = Misc.GetRegistrySetting("LeagueOvWidth", (int)Width);
+            Top = Misc.GetRegistrySetting("LeagueOvY", (int)Top);
+            Left = Misc.GetRegistrySetting("LeagueOvX", (int)Left);
+
             #region Prepare DataTables
 
             dt_ts = new DataTable();
@@ -1475,7 +1480,7 @@ namespace NBA_Stats_Tracker.Windows
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
             SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
-                                ref MainWindow.bshist, _curSeason: curSeason);
+                                ref MainWindow.bshist, curSeason);
             MainWindow.CopySeasonToMainWindow(_tst, _tstopp, _pst);
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
@@ -1617,6 +1622,11 @@ namespace NBA_Stats_Tracker.Windows
             lastShownPlayoffSeason = 0;
             lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
+
+            Misc.SetRegistrySetting("LeagueOvHeight", Height);
+            Misc.SetRegistrySetting("LeagueOvWidth", Width);
+            Misc.SetRegistrySetting("LeagueOvX", Left);
+            Misc.SetRegistrySetting("LeagueOvY", Top);
         }
 
         /// <summary>
