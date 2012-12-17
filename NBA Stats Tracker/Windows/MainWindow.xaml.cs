@@ -185,7 +185,14 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                SavesPath = rk.GetValue("Saves").ToString();
+                try
+                {
+                    SavesPath = rk.GetValue("Saves").ToString();
+                }
+                catch (Exception)
+                {
+                    SavesPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\2K Sports\NBA 2K12\Saves\";
+                }
             }
 
             Interop2K12.checkForRedundantSettings();

@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.1.0.1
+		- Fix: Fixed startup crash if the NBA 2K12 registry key existed but was missing some values
+
 	v1.1
 		- Addition: Added option to add team/player stats for seasons before the ones contained in the database, meant for the Yearly Report tabs
 
