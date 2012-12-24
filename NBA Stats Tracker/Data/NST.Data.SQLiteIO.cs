@@ -2303,8 +2303,8 @@ namespace NBA_Stats_Tracker.Data
             }
             #endregion
 
-            TeamRankings teamRankings = new TeamRankings(tst);
-            PlayerRankings playerRankings = new PlayerRankings(pst);
+            teamRankings = new TeamRankings(tst);
+            playerRankings = new PlayerRankings(pst);
         }
 
         private static void FindTeamByName(string teamName, DateTime startDate, DateTime endDate, out TeamStats ts, out TeamStats tsopp, out int lastInSeason)
