@@ -97,6 +97,9 @@
     <Compile Include="Windows\AddWindow.xaml.cs">
       <DependentUpon>AddWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\AdvancedStatCalculatorWindow.xaml.cs">
+      <DependentUpon>AdvancedStatCalculatorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ComboChoiceWindow.xaml.cs">
       <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
     </Compile>
@@ -163,6 +166,10 @@
     <Page Include="Windows\AddWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\AdvancedStatCalculatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ComboChoiceWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

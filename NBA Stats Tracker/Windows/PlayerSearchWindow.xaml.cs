@@ -201,8 +201,10 @@ namespace NBA_Stats_Tracker.Windows
         private void PopulateSeasonCombo()
         {
             cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
+            cmbTFSeason.ItemsSource = MainWindow.SeasonList;
 
             cmbSeasonNum.SelectedValue = curSeason;
+            cmbTFSeason.SelectedValue = curSeason;
         }
 
         /// <summary>
@@ -867,6 +869,27 @@ namespace NBA_Stats_Tracker.Windows
                             lstMetrics.Items.Add(line);
                         }
                         break;
+
+                    case "TF":
+                        if (parts[1].ToLowerInvariant() == "true")
+                        {
+                            dtpStart.SelectedDate = Convert.ToDateTime(parts[2]);
+                            dtpEnd.SelectedDate = Convert.ToDateTime(parts[3]);
+                            rbStatsBetween.IsChecked = true;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                cmbTFSeason.SelectedItem = parts[2];
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Season could not be selected while loading search filter.");
+                            }
+                            rbStatsAllTime.IsChecked = true;
+                        }
+                        break;
                 }
             }
         }
@@ -910,6 +933,10 @@ namespace NBA_Stats_Tracker.Windows
                 s += item + "\n";
             }
             s += "MetricsEND\n";
+            bool isBetween = rbStatsBetween.IsChecked.GetValueOrDefault();
+            s += String.Format("TF\t{0}\t{1}\t{2}", isBetween.ToString(),
+                               isBetween ? dtpStart.SelectedDate.GetValueOrDefault().ToString() : cmbTFSeason.SelectedItem.ToString(),
+                               isBetween ? dtpEnd.SelectedDate.GetValueOrDefault().ToString() : "");
 
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
@@ -923,6 +950,31 @@ namespace NBA_Stats_Tracker.Windows
                 return;
 
             File.WriteAllText(sfd.FileName, s);
+        }
+
+        private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+            {
+                dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
+            }
+            rbStatsBetween.IsChecked = true;
+        }
+
+        private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
+            {
+                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
+            }
+            rbStatsBetween.IsChecked = true;
+        }
+
+        private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
+        {
+            if (dtpEnd.SelectedDate == null) dtpEnd.SelectedDate = DateTime.Today;
+            if (dtpStart.SelectedDate == null)
+                dtpStart.SelectedDate = dtpEnd.SelectedDate.Value.Subtract(new TimeSpan(30, 0, 0, 0));
         }
     }
 }

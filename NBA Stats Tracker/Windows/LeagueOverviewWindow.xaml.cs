@@ -519,7 +519,7 @@ namespace NBA_Stats_Tracker.Windows
                                           var tsopp2 = new TeamStats(curTeam);
                                           foreach (DataRow r in res.Rows)
                                           {
-                                              TeamOverviewWindow.AddToTeamStatsFromSQLBoxScore(r, ref ts2, ref tsopp2);
+                                              TeamStats.AddToTeamStatsFromSQLBoxScore(r, ref ts2, ref tsopp2);
                                           }
                                           partialTST[teamID] = ts2;
                                           partialOppTST[teamID] = tsopp2;
@@ -1200,7 +1200,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
-                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
+                    TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key), true);
                     ts.CalcMetrics(tsopp, true);
                     partialTST[i] = ts;
@@ -1298,7 +1298,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     ts = new TeamStats(kvp.Key);
                     tsopp = new TeamStats();
-                    TeamOverviewWindow.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
+                    TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
                     TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key));
                     ts.CalcMetrics(tsopp);
                     partialTST[i] = ts;

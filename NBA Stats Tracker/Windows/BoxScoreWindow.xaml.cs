@@ -308,6 +308,7 @@ namespace NBA_Stats_Tracker.Windows
                 PlayersListAway = PlayersList;
                 pbsAwayList = pbsList;
                 dgvPlayersAway.ItemsSource = pbsAwayList;
+                dgvPlayersAway.CanUserAddRows = false;
             }
             else
             {
@@ -315,6 +316,7 @@ namespace NBA_Stats_Tracker.Windows
                 PlayersListHome = PlayersList;
                 pbsHomeList = pbsList;
                 dgvPlayersHome.ItemsSource = pbsHomeList;
+                dgvPlayersHome.CanUserAddRows = false;
             }
         }
 

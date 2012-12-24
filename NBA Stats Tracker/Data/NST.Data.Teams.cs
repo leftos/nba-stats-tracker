@@ -1319,11 +1319,11 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="bsToAdd">The box score to add.</param>
         /// <param name="ts1">The first team's team stats.</param>
         /// <param name="ts2">The second team's team stats.</param>
-        public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2)
+        public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref TeamStats ts1, ref TeamStats ts2, bool ignorePlayoffFlag = false)
         {
             var _tst = new Dictionary<int, TeamStats> {{1, ts1}, {2, ts2}};
             var _tstopp = new Dictionary<int, TeamStats> {{1, new TeamStats()}, {2, new TeamStats()}};
-            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, 1, 2);
+            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, 1, 2, ignorePlayoffFlag);
             ts1 = _tst[1];
             ts2 = _tst[2];
         }
@@ -1352,13 +1352,13 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="id1">The away team's ID.</param>
         /// <param name="id2">The home team's ID.</param>
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
-                                                    ref Dictionary<int, TeamStats> _tstopp, int id1, int id2)
+                                                    ref Dictionary<int, TeamStats> _tstopp, int id1, int id2, bool ignorePlayoffFlag = false)
         {
             TeamStats ts1 = _tst[id1];
             TeamStats ts2 = _tst[id2];
             TeamStats tsopp1 = _tstopp[id1];
             TeamStats tsopp2 = _tstopp[id2];
-            if (!bsToAdd.isPlayoff)
+            if (!bsToAdd.isPlayoff || ignorePlayoffFlag)
             {
                 // Add win & loss
                 if (bsToAdd.PTS1 > bsToAdd.PTS2)
@@ -1732,6 +1732,234 @@ namespace NBA_Stats_Tracker.Data
                 SQLiteIO.saveSeasonToDatabase();
                 MessageBox.Show(s);
             }
+        }
+
+        /// <summary>
+        /// Adds one or more box scores resulting from an SQLite query to a TeamStats instance.
+        /// </summary>
+        /// <param name="res">The result of the query containing the box score records.</param>
+        /// <param name="ts">The TeamStats instance to be modified.</param>
+        /// <param name="tsopp">The opposing TeamStats instance to be modified..</param>
+        public static void AddToTeamStatsFromSQLBoxScores(DataTable res, ref TeamStats ts, ref TeamStats tsopp)
+        {
+            foreach (DataRow r in res.Rows)
+            {
+                AddToTeamStatsFromSQLBoxScore(r, ref ts, ref tsopp);
+            }
+        }
+
+        /// <summary>
+        /// Adds a box score resulting from an SQLite query to a TeamStats instance.
+        /// </summary>
+        /// <param name="r">The result of the query containing the box score record.</param>
+        /// <param name="ts">The TeamStats instance to be modified.</param>
+        /// <param name="tsopp">The opposing TeamStats instance to be modified.</param>
+        public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
+        {
+            bool playoffs = Tools.getBoolean(r, "isPlayoff");
+            if (!playoffs)
+            {
+                int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
+                int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
+                if (r["T1Name"].ToString().Equals(ts.name))
+                {
+                    if (t1pts > t2pts)
+                        ts.winloss[0]++;
+                    else
+                        ts.winloss[1]++;
+                    tsopp.stats[t.MINS] = ts.stats[t.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.stats[t.PA] = ts.stats[t.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.stats[t.PF] = ts.stats[t.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
+
+                    ts.stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.stats[t.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.stats[t.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.stats[t.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.stats[t.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    ts.stats[t.DREB] += (ushort) (T1reb - T1oreb);
+                    ts.stats[t.OREB] += T1oreb;
+
+                    ts.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    ts.stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    ts.stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
+
+                    tsopp.stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.stats[t.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.stats[t.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.stats[t.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.stats[t.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    tsopp.stats[t.DREB] += (ushort) (T2reb - T2oreb);
+                    tsopp.stats[t.OREB] += T2oreb;
+
+                    tsopp.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    tsopp.stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    tsopp.stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
+                }
+                else
+                {
+                    if (t2pts > t1pts)
+                        ts.winloss[0]++;
+                    else
+                        ts.winloss[1]++;
+                    tsopp.stats[t.MINS] = ts.stats[t.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.stats[t.PA] = ts.stats[t.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.stats[t.PF] = ts.stats[t.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
+
+                    ts.stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.stats[t.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.stats[t.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.stats[t.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.stats[t.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    ts.stats[t.DREB] += (ushort) (T2reb - T2oreb);
+                    ts.stats[t.OREB] += T2oreb;
+
+                    ts.stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    ts.stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    ts.stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
+
+                    tsopp.stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.stats[t.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.stats[t.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.stats[t.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.stats[t.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    tsopp.stats[t.DREB] += (ushort) (T1reb - T1oreb);
+                    tsopp.stats[t.OREB] += T1oreb;
+
+                    tsopp.stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    tsopp.stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    tsopp.stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
+                }
+
+                tsopp.winloss[1] = ts.winloss[0];
+                tsopp.winloss[0] = ts.winloss[1];
+            }
+            else
+            {
+                int t1pts = Convert.ToInt32(r["T1PTS"].ToString());
+                int t2pts = Convert.ToInt32(r["T2PTS"].ToString());
+                if (r["T1Name"].ToString().Equals(ts.name))
+                {
+                    if (t1pts > t2pts)
+                        ts.pl_winloss[0]++;
+                    else
+                        ts.pl_winloss[1]++;
+                    tsopp.pl_stats[t.MINS] = ts.pl_stats[t.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.pl_stats[t.PA] = ts.pl_stats[t.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.pl_stats[t.PF] = ts.pl_stats[t.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
+
+                    ts.pl_stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.pl_stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.pl_stats[t.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.pl_stats[t.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.pl_stats[t.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.pl_stats[t.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    ts.pl_stats[t.DREB] += (ushort) (T1reb - T1oreb);
+                    ts.pl_stats[t.OREB] += T1oreb;
+
+                    ts.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.pl_stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.pl_stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    ts.pl_stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    ts.pl_stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
+
+                    tsopp.pl_stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.pl_stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.pl_stats[t.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.pl_stats[t.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.pl_stats[t.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.pl_stats[t.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    tsopp.pl_stats[t.DREB] += (ushort) (T2reb - T2oreb);
+                    tsopp.pl_stats[t.OREB] += T2oreb;
+
+                    tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.pl_stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.pl_stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    tsopp.pl_stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    tsopp.pl_stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
+                }
+                else
+                {
+                    if (t2pts > t1pts)
+                        ts.pl_winloss[0]++;
+                    else
+                        ts.pl_winloss[1]++;
+                    tsopp.pl_stats[t.MINS] = ts.pl_stats[t.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.pl_stats[t.PA] = ts.pl_stats[t.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.pl_stats[t.PF] = ts.pl_stats[t.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
+
+                    ts.pl_stats[t.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.pl_stats[t.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.pl_stats[t.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.pl_stats[t.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.pl_stats[t.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.pl_stats[t.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+
+                    UInt16 T2reb = Convert.ToUInt16(r["T2REB"].ToString());
+                    UInt16 T2oreb = Convert.ToUInt16(r["T2OREB"].ToString());
+                    ts.pl_stats[t.DREB] += (ushort) (T2reb - T2oreb);
+                    ts.pl_stats[t.OREB] += T2oreb;
+
+                    ts.pl_stats[t.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.pl_stats[t.TO] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.pl_stats[t.BLK] += Tools.getUInt16(r, "T2BLK");
+                    ts.pl_stats[t.AST] += Tools.getUInt16(r, "T2AST");
+                    ts.pl_stats[t.FOUL] += Tools.getUInt16(r, "T2FOUL");
+
+                    tsopp.pl_stats[t.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.pl_stats[t.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.pl_stats[t.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.pl_stats[t.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.pl_stats[t.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.pl_stats[t.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+
+                    UInt16 T1reb = Convert.ToUInt16(r["T1REB"].ToString());
+                    UInt16 T1oreb = Convert.ToUInt16(r["T1OREB"].ToString());
+                    tsopp.pl_stats[t.DREB] += (ushort) (T1reb - T1oreb);
+                    tsopp.pl_stats[t.OREB] += T1oreb;
+
+                    tsopp.pl_stats[t.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.pl_stats[t.TO] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.pl_stats[t.BLK] += Tools.getUInt16(r, "T1BLK");
+                    tsopp.pl_stats[t.AST] += Tools.getUInt16(r, "T1AST");
+                    tsopp.pl_stats[t.FOUL] += Tools.getUInt16(r, "T1FOUL");
+                }
+
+                tsopp.pl_winloss[1] = ts.pl_winloss[0];
+                tsopp.pl_winloss[0] = ts.pl_winloss[1];
+            }
+
+            ts.CalcAvg();
+            tsopp.CalcAvg();
         }
     }
 

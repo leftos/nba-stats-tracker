@@ -150,6 +150,11 @@ namespace NBA_Stats_Tracker.Helper
             {
                 var ps = new PlayerStats(r);
                 PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+                if (!loading)
+                {
+                    var pbs = new PlayerBoxScore {PlayerID = ps.ID, Team = TeamName};
+                    pbsList.Add(pbs);
+                }
             }
 
             for (int i = 0; i < pbsList.Count; i++)

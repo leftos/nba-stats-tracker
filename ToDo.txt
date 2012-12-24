@@ -3,3 +3,4 @@
 - League Notables
 - Player Height/Weight
 - Recommended ratings
+- Don't calculate DNP-CD stats into averages

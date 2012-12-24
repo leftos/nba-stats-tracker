@@ -67,10 +67,15 @@ namespace NBA_Stats_Tracker.Windows
 
         public static Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         public static Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
-        private static Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
-        public static TeamBoxScore bs;
         public static IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
+        public static Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
+        public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
+        public static TeamRankings TeamRankings;
+        public static PlayerRankings PlayerRankings;
+
+        private static Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
+        public static TeamBoxScore bs;
         public static PlayoffTree pt;
         public static string currentDB = "";
         public static string addInfo;
@@ -2418,6 +2423,11 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.SetSetting("Season Length", seasonLength);
 
             updateStatus("Season Length saved. Database updated.");
+        }
+
+        private void btnAdvStatCalc_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

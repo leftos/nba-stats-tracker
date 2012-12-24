@@ -519,7 +519,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 pbsList = new ObservableCollection<PlayerBoxScore>();
 
-                TeamOverviewWindow.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
+                TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
 
                 foreach (DataRow r in res.Rows)
                 {

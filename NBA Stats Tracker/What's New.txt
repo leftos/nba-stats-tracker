@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.2
+		- Change: When using "Update with Box Score", the team tables are automatically populated with all current players of each team
+		- Removal: Export (TSV) menu was removed as it has long been obsolete
+
 	v1.1.0.1
 		- Fix: Fixed startup crash if the NBA 2K12 registry key existed but was missing some values
 

@@ -1713,6 +1713,111 @@ namespace NBA_Stats_Tracker.Data
             return _bshist;
         }
 
+        public static IList<BoxScoreEntry> GetTimeframedBoxScoresFromDatabase(string file, DateTime startDate, DateTime endDate)
+        {
+            var _db = new SQLiteDatabase(file);
+
+            string q = "select * from GameResults";
+            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            DataTable res2 = _db.GetDataTable(q);
+            var DisplayNames = GetTimeframedDisplayNames(file, startDate, endDate);
+
+            IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
+            Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
+            {
+                var bs = new TeamBoxScore(r);
+
+                var bse = new BoxScoreEntry(bs)
+                {
+                    date = bs.gamedate,
+                    Team1Display = DisplayNames[bs.Team1],
+                    Team2Display = DisplayNames[bs.Team2]
+                };
+
+                string q2 = "select * from PlayerResults WHERE GameID = " + bs.id.ToString();
+                DataTable res3 = _db.GetDataTable(q2);
+                bse.pbsList = new List<PlayerBoxScore>(res3.Rows.Count);
+
+                Parallel.ForEach(res3.Rows.Cast<DataRow>(),
+                                 r3 => bse.pbsList.Add(new PlayerBoxScore(r3)));
+
+                _bshist.Add(bse);
+            });
+            return _bshist;
+        }
+
+        private static Dictionary<string, string> GetAllDisplayNames(string file)
+        {
+            var DisplayNames = new Dictionary<string, string>();
+
+            var maxSeason = getMaxSeason(file);
+            for (int i = maxSeason; i >= 0; i--)
+            {
+                GetSeasonDisplayNames(file, i, ref DisplayNames);
+            }
+            return DisplayNames;
+        }
+
+        private static Dictionary<string, string> GetTimeframedDisplayNames(string file, DateTime startDate, DateTime endDate)
+        {
+            var DisplayNames = new Dictionary<string, string>();
+
+            var seasons = GetSeasonsInTimeframe(startDate, endDate);
+
+            foreach (var i in seasons)
+            {
+                GetSeasonDisplayNames(file, i, ref DisplayNames);
+            }
+            return DisplayNames;
+        }
+
+        private static List<int> GetSeasonsInTimeframe(DateTime startDate, DateTime endDate)
+        {
+            string q = "SELECT SeasonNum FROM GameResults";
+            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            q += " GROUP BY SeasonNum";
+            List<int> seasons = new List<int>();
+            MainWindow.db.GetDataTable(q).Rows.Cast<DataRow>().ToList().ForEach(row => seasons.Add(Tools.getInt(row, "SeasonNum")));
+            seasons.Sort();
+            seasons.Reverse();
+            return seasons;
+        }
+
+        private static void GetSeasonDisplayNames(string file, int curSeason, ref Dictionary<string, string> DisplayNames)
+        {
+            string teamsT = "Teams";
+            if (curSeason != getMaxSeason(file))
+                teamsT += "S" + curSeason;
+            string q;
+
+            DisplayNames = new Dictionary<string, string>();
+            SQLiteDatabase _db = new SQLiteDatabase(file);
+
+            DataTable res;
+            try
+            {
+                q = "select Name, DisplayName from " + teamsT;
+                res = _db.GetDataTable(q);
+
+                foreach (DataRow r in res.Rows)
+                {
+                    if (!DisplayNames.Keys.Contains(r["Name"].ToString()))
+                        DisplayNames.Add(r["Name"].ToString(), r["DisplayName"].ToString());
+                }
+            }
+            catch
+            {
+                q = "select Name from " + teamsT;
+                res = _db.GetDataTable(q);
+
+                foreach (DataRow r in res.Rows)
+                {
+                    if (!DisplayNames.Keys.Contains(r["Name"].ToString()))
+                        DisplayNames.Add(r["Name"].ToString(), r["Name"].ToString());
+                }
+            }
+        }
+
         /// <summary>
         /// Gets the players from database.
         /// </summary>
@@ -1911,6 +2016,332 @@ namespace NBA_Stats_Tracker.Data
         {
             SaveTeamsToDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.curSeason,
                                 getMaxSeason(MainWindow.currentDB));
+        }
+
+        public static void PopulateAll(Timeframe tf, out Dictionary<int, TeamStats> tst, out Dictionary<int, TeamStats> tstopp,
+                                       out SortedDictionary<string, int> TeamOrder, out Dictionary<int, PlayerStats> pst,
+                                       out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+                                       out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats,
+                                       out IList<BoxScoreEntry> bshist, out TeamRankings teamRankings, out PlayerRankings playerRankings)
+        {
+            tst = new Dictionary<int, TeamStats>();
+            tstopp = new Dictionary<int, TeamStats>();
+            TeamOrder = new SortedDictionary<string, int>();
+            pst = new Dictionary<int, PlayerStats>();
+            splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
+            splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
+            bshist = new List<BoxScoreEntry>();
+            int curSeason = MainWindow.curSeason;
+            int maxSeason = getMaxSeason(MainWindow.currentDB);
+            var db = MainWindow.db;
+
+            string q;
+            DataTable res;
+
+            #region Prepare Teams & Players Dictionaries
+
+            if (!tf.isBetween)
+            {
+                GetAllTeamStatsFromDatabase(MainWindow.currentDB, tf.SeasonNum, out tst, out tstopp, out TeamOrder);
+                pst = GetPlayersFromDatabase(MainWindow.currentDB, tst, tstopp, TeamOrder, curSeason, maxSeason);
+            }
+            else
+            {
+                q = "SELECT T1Name FROM GameResults GROUP BY T1Name";
+                res = db.GetDataTable(q);
+                foreach (DataRow dr in res.Rows)
+                {
+                    int teamID;
+                    try
+                    {
+                        teamID = TeamOrder.Values.Max() + 1;
+                    }
+                    catch
+                    {
+                        teamID = 0;
+                    }
+                    var teamName = dr["T1Name"].ToString();
+                    TeamOrder.Add(teamName, teamID);
+
+                    TeamStats ts;
+                    TeamStats tsopp;
+                    int lastInSeason;
+                    FindTeamByName(teamName, tf.StartDate, tf.EndDate, out ts, out tsopp, out lastInSeason);
+
+                    tst.Add(teamID, new TeamStats {ID = teamID, name = teamName, displayName = ts.displayName});
+                    tstopp.Add(teamID, new TeamStats {ID = teamID, name = teamName + "Opp", displayName = ts.displayName});
+                }
+
+                q = "SELECT T2Name FROM GameResults GROUP BY T2Name";
+                res = db.GetDataTable(q);
+                foreach (DataRow dr in res.Rows)
+                {
+                    if (!TeamOrder.Keys.Contains(Tools.getString(dr, "T2Name")))
+                    {
+                        int teamID;
+                        try
+                        {
+                            teamID = TeamOrder.Values.Max() + 1;
+                        }
+                        catch
+                        {
+                            teamID = 0;
+                        }
+                        var teamName = dr["T2Name"].ToString();
+                        TeamOrder.Add(teamName, teamID);
+
+                        TeamStats ts;
+                        TeamStats tsopp;
+                        int lastInSeason;
+                        FindTeamByName(teamName, tf.StartDate, tf.EndDate, out ts, out tsopp, out lastInSeason);
+
+                        tst.Add(teamID, new TeamStats {ID = teamID, name = teamName, displayName = ts.displayName});
+                        tstopp.Add(teamID, new TeamStats {ID = teamID, name = teamName + "Opp", displayName = ts.displayName});
+                    }
+                }
+
+                var seasons = GetSeasonsInTimeframe(tf.StartDate, tf.EndDate);
+
+                foreach (var i in seasons)
+                {
+                    q = "SELECT * FROM Players" + AddSuffix(i, maxSeason);
+                    res = db.GetDataTable(q);
+                    foreach (DataRow dr in res.Rows)
+                    {
+                        var playerID = Tools.getInt(dr, "ID");
+                        if (!pst.Keys.Contains(playerID))
+                        {
+                            pst.Add(playerID, new PlayerStats(dr));
+                            pst[playerID].ResetStats();
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Prepare Split Dictionaries
+
+            Dictionary<string, string> DisplayNames;
+            if (tf.isBetween)
+            {
+                DisplayNames = GetTimeframedDisplayNames(MainWindow.currentDB, tf.StartDate, tf.EndDate);
+            }
+            else
+            {
+                DisplayNames = new Dictionary<string, string>();
+                GetSeasonDisplayNames(MainWindow.currentDB, curSeason, ref DisplayNames);
+            }
+
+            foreach (int id in TeamOrder.Values)
+            {
+                splitTeamStats.Add(id, new Dictionary<string, TeamStats>());
+                splitTeamStats[id].Add("Wins", new TeamStats());
+                splitTeamStats[id].Add("Losses", new TeamStats());
+                splitTeamStats[id].Add("Home", new TeamStats());
+                splitTeamStats[id].Add("Away", new TeamStats());
+                splitTeamStats[id].Add("Season", new TeamStats());
+                splitTeamStats[id].Add("Playoffs", new TeamStats());
+                foreach (var pair in TeamOrder)
+                {
+                    if (pair.Value != id)
+                    {
+                        splitTeamStats[id].Add("vs " + DisplayNames[pair.Key], new TeamStats());
+                    }
+                }
+                if (tf.isBetween)
+                {
+                    DateTime dCur = tf.StartDate;
+
+                    while (true)
+                    {
+                        if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
+                        {
+                            splitTeamStats[id].Add(dCur.Year + " " + dCur.Month, new TeamStats());
+                            break;
+                        }
+                        else
+                        {
+                            splitTeamStats[id].Add(dCur.Year + " " + dCur.Month, new TeamStats());
+                            dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
+                        }
+                    }
+                }
+            }
+
+            foreach (int id in pst.Keys)
+            {
+                splitPlayerStats.Add(id, new Dictionary<string, PlayerStats>());
+                splitPlayerStats[id].Add("Wins", new PlayerStats());
+                splitPlayerStats[id].Add("Losses", new PlayerStats());
+                splitPlayerStats[id].Add("Home", new PlayerStats());
+                splitPlayerStats[id].Add("Away", new PlayerStats());
+                splitPlayerStats[id].Add("Season", new PlayerStats());
+                splitPlayerStats[id].Add("Playoffs", new PlayerStats());
+                foreach (var pair in TeamOrder)
+                {
+                    splitPlayerStats[id].Add("vs " + DisplayNames[pair.Key], new PlayerStats());
+                }
+                if (tf.isBetween)
+                {
+                    DateTime dCur = tf.StartDate;
+
+                    while (true)
+                    {
+                        if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
+                        {
+                            splitPlayerStats[id].Add(dCur.Year + " " + dCur.Month, new PlayerStats());
+                            break;
+                        }
+                        else
+                        {
+                            splitPlayerStats[id].Add(dCur.Year + " " + dCur.Month, new PlayerStats());
+                            dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Box Scores
+            if (!tf.isBetween)
+            {
+                bshist = GetSeasonBoxScoresFromDatabase(MainWindow.currentDB, MainWindow.curSeason, maxSeason);
+            }
+            else
+            {
+                bshist = GetTimeframedBoxScoresFromDatabase(MainWindow.currentDB, tf.StartDate, tf.EndDate);
+            }
+
+            if (tf.isBetween)
+            {
+                foreach (var bse in bshist)
+                {
+                    TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref tst, ref tstopp, TeamOrder[bse.bs.Team1], TeamOrder[bse.bs.Team2]);
+
+                    foreach (var pbs in bse.pbsList)
+                    {
+                        PlayerStats ps = pst.Single(pair => pair.Value.ID == pbs.PlayerID).Value;
+                        ps.AddBoxScore(pbs, bse.bs.isPlayoff);
+                    }
+                }
+                TeamStats.CalculateAllMetrics(ref tst, tstopp);
+                TeamStats.CalculateAllMetrics(ref tst, tstopp, playoffs: true);
+                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder);
+                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder, playoffs: true);
+            }
+
+            foreach (var bse in bshist)
+            {
+                var team1 = bse.bs.Team1;
+                var team2 = bse.bs.Team2;
+                var t1ID = TeamOrder[team1];
+                var t2ID = TeamOrder[team2];
+                var bs = bse.bs;
+                var tsH = splitTeamStats[t2ID]["Home"];
+                var tsA = splitTeamStats[t1ID]["Away"];
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsA, ref tsH, true);
+                var tsOH = splitTeamStats[t2ID]["vs " + DisplayNames[team1]];
+                var tsOA = splitTeamStats[t1ID]["vs " + DisplayNames[team2]];
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsOH, ref tsOA, true);
+                var tsDH = splitTeamStats[t2ID][bs.gamedate.Year + " " + bs.gamedate.Month];
+                var tsDA = splitTeamStats[t1ID][bs.gamedate.Year + " " + bs.gamedate.Month];
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsDA, ref tsDH, true);
+                if (bs.PTS1 > bs.PTS2)
+                {
+                    var ts2 = splitTeamStats[t2ID]["Losses"];
+                    var ts1 = splitTeamStats[t1ID]["Wins"];
+                    TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
+
+                    foreach (var pbs in bse.pbsList)
+                    {
+                        if (pbs.Team == team1)
+                        {
+                           splitPlayerStats[pbs.PlayerID]["Wins"].AddBoxScore(pbs);
+                        }
+                        else
+                        {
+                            splitPlayerStats[pbs.PlayerID]["Losses"].AddBoxScore(pbs);
+                        }
+                    }
+                }
+                else
+                {
+                    var ts1 = splitTeamStats[t1ID]["Losses"];
+                    var ts2 = splitTeamStats[t2ID]["Wins"];
+                    TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
+
+                    foreach (var pbs in bse.pbsList)
+                    {
+                        if (pbs.Team == team1)
+                        {
+                            splitPlayerStats[pbs.PlayerID]["Losses"].AddBoxScore(pbs);
+                        }
+                        else
+                        {
+                            splitPlayerStats[pbs.PlayerID]["Wins"].AddBoxScore(pbs);
+                        }
+                    }
+                }
+                foreach (var pbs in bse.pbsList)
+                {
+                    if (pbs.Team == team1)
+                    {
+                        splitPlayerStats[pbs.PlayerID]["Away"].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[team2]].AddBoxScore(pbs);
+                    }
+                    else
+                    {
+                        splitPlayerStats[pbs.PlayerID]["Home"].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[team1]].AddBoxScore(pbs);
+                    }
+                    splitPlayerStats[pbs.PlayerID][bs.isPlayoff ? "Playoffs" : "Season"].AddBoxScore(pbs);
+
+                    splitPlayerStats[pbs.PlayerID][bs.gamedate.Year + " " + bs.gamedate.Month].AddBoxScore(pbs);
+                }
+            }
+            #endregion
+
+            TeamRankings teamRankings = new TeamRankings(tst);
+            PlayerRankings playerRankings = new PlayerRankings(pst);
+        }
+
+        private static void FindTeamByName(string teamName, DateTime startDate, DateTime endDate, out TeamStats ts, out TeamStats tsopp, out int lastInSeason)
+        {
+            int maxSeason = getMaxSeason(MainWindow.currentDB);
+
+            string q = "SELECT SeasonNum FROM GameResults";
+            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            q += " GROUP BY SeasonNum";
+            DataTable res = MainWindow.db.GetDataTable(q);
+            var rows = res.Rows.Cast<DataRow>().OrderByDescending(row => row["SeasonNum"]).ToList();
+            
+            foreach (DataRow r in rows)
+            {
+                int curSeason = Tools.getInt(r, "SeasonNum");
+                q = "SELECT * FROM Teams" + AddSuffix(curSeason, maxSeason);
+                DataTable res2 = MainWindow.db.GetDataTable(q);
+                var rows2 = res2.Rows.Cast<DataRow>().ToList();
+                try
+                {
+                    DataRow dr = rows2.Single(row => row["Name"] == teamName);
+                    GetTeamStatsFromDatabase(MainWindow.currentDB, teamName, curSeason, out ts, out tsopp);
+                    lastInSeason = curSeason;
+                    return;
+                }
+                catch (Exception)
+                {
+                }
+            }
+            ts = null;
+            tsopp = null;
+            lastInSeason = 0;
+        }
+
+        public static string AddSuffix(int curSeason, int maxSeason)
+        {
+            return (curSeason != maxSeason ? "S" + curSeason : "");
         }
     }
 }
