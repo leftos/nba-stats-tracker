@@ -68,11 +68,14 @@ namespace NBA_Stats_Tracker.Windows
         public static Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         public static Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
-        public static IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
+        public static List<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
         public static Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
         public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
-        public static TeamRankings TeamRankings;
+        public static int[][] TeamRankings;
+        public static int[][] PlayoffTeamRankings;
         public static PlayerRankings PlayerRankings;
+        public static PlayerRankings PlayoffPlayerRankings;
+        public static Timeframe tf = new Timeframe(0);
 
         private static Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
         public static TeamBoxScore bs;
@@ -100,8 +103,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         /// Teams participating in the Western Conference of the NBA. Used to filter teams in the Playoff Tree window.
         /// </summary>
-        public static readonly List<string> West = new List<string>
-                                                   {
+        public static readonly List<string> West = new List<string> {
                                                        "Thunder",
                                                        "Spurs",
                                                        "Trail Blazers",
@@ -291,6 +293,14 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
+        public static Dictionary<string, string> DisplayNames;
+        public static string teamsT;
+        public static string pl_teamsT;
+        public static string oppT;
+        public static string pl_oppT;
+        public static string playersT;
+        public static string pl_playersT;
+
         /// <summary>
         /// TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program
         /// </summary>
@@ -434,16 +444,16 @@ namespace NBA_Stats_Tracker.Windows
 
             if (ofd.FileName == "")
                 return;
-
+            
             PopulateSeasonCombo(ofd.FileName);
 
-            SQLiteIO.LoadSeason(ofd.FileName, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
-            //tst = getCustomStats("", ref teamOrder, ref curPT, ref bshist);
+            txtFile.Text = ofd.FileName;
+            currentDB = txtFile.Text;
+            SQLiteIO.LoadSeason();
 
             txtFile.Text = ofd.FileName;
 
             updateStatus(String.Format("{0} teams & {1} players loaded successfully!", tst.Count, pst.Count));
-            currentDB = txtFile.Text;
             loadingSeason = false;
 
             gameLength = SQLiteIO.GetSetting("Game Length", 48);
@@ -458,6 +468,13 @@ namespace NBA_Stats_Tracker.Windows
         {
             MainWindow.curSeason = curSeason;
             mwInstance.cmbSeasonNum.SelectedValue = MainWindow.curSeason.ToString();
+            int maxSeason = SQLiteIO.getMaxSeason(currentDB);
+            teamsT = "Teams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
+            pl_teamsT = "PlayoffTeams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
+            oppT = "Opponents" + SQLiteIO.AddSuffix(curSeason, maxSeason);
+            pl_oppT = "PlayoffOpponents" + SQLiteIO.AddSuffix(curSeason, maxSeason);
+            playersT = "Players" + SQLiteIO.AddSuffix(curSeason, maxSeason);
+            pl_playersT = "PlayoffPlayers" + SQLiteIO.AddSuffix(curSeason, maxSeason);
         }
 
         /// <summary>
@@ -492,7 +509,7 @@ namespace NBA_Stats_Tracker.Windows
             int id1 = TeamOrder[bs.Team1];
             int id2 = TeamOrder[bs.Team2];
 
-            SQLiteIO.LoadSeason(currentDB, out tst, out tstopp, out pst, out TeamOrder, ref bshist, bs.SeasonNum);
+            SQLiteIO.LoadSeason(bs.SeasonNum);
 
             List<PlayerBoxScore> list = pbsLists.SelectMany(pbsList => pbsList).ToList();
 
@@ -962,7 +979,7 @@ namespace NBA_Stats_Tracker.Windows
                                 "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
+                            SQLiteIO.LoadSeason(file);
                             txtFile.Text = file;
                             return;
                         }
@@ -985,8 +1002,7 @@ namespace NBA_Stats_Tracker.Windows
 
             //MessageBox.Show("Please wait after pressing OK, this could take a few minutes.");
 
-            var TeamNamesShort = new Dictionary<string, string>
-                                 {
+            var TeamNamesShort = new Dictionary<string, string> {
                                      {"76ers", "PHI"},
                                      {"Bobcats", "CHA"},
                                      {"Bucks", "MIL"},
@@ -1081,7 +1097,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                                 SQLiteIO.getMaxSeason(file));
                                                   txtFile.Text = file;
                                                   PopulateSeasonCombo(file);
-                                                  SQLiteIO.LoadSeason(file, out tst, out tstopp, out pst, out TeamOrder, ref bshist, curSeason);
+                                                  SQLiteIO.LoadSeason(file, curSeason);
 
                                                   txbWait.Visibility = Visibility.Hidden;
                                                   mainGrid.Visibility = Visibility.Visible;
@@ -1279,150 +1295,14 @@ namespace NBA_Stats_Tracker.Windows
                 return;
 
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
-            //if (!loadingSeason) SQLiteIO.LoadSeason();
-        }
 
-        // TODO: Implement Trends again sometime
-        /// <summary>
-        /// OBSOLETE:
-        /// Handles the Click event of the btnTrends control.
-        /// Displays Trends about the changes in the team stats between two different databases.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void btnTrends_Click(object sender, RoutedEventArgs e)
-        {
-            var ofd1 = new OpenFileDialog();
-            if (txtFile.Text == "")
-            {
-                ofd1.Title = "Select the TST file that has the current team stats...";
-                ofd1.Filter = "Team Stats files (*.tst)|*.tst";
-                ofd1.InitialDirectory = AppDocsPath;
-                ofd1.ShowDialog();
-
-                if (ofd1.FileName == "")
-                    return;
-
-                SQLiteIO.LoadSeason(ofd1.FileName, out tst, out tstopp, out pst, out TeamOrder, ref bshist);
-                //cmbTeam1.SelectedIndex = 0;
-            }
-
-            var ofd = new OpenFileDialog
-                      {
-                          Title = "Select the TST file that has the team stats you want to compare to...",
-                          Filter = "Team Stats files (*.tst)|*.tst",
-                          InitialDirectory = AppDocsPath
-                      };
-            ofd.ShowDialog();
-
-            if (ofd.FileName == "")
+            if (curSeason == tf.SeasonNum && !tf.isBetween)
                 return;
 
-            //string team = cmbTeam1.SelectedItem.ToString();
-
-            Dictionary<int, TeamStats> curTST = tst;
-
-            SortedDictionary<string, int> oldTeamOrder;
-            var oldPT = new PlayoffTree();
-            IList<BoxScoreEntry> oldbshist = new List<BoxScoreEntry>();
-            Dictionary<int, TeamStats> oldTST;
-            Dictionary<int, TeamStats> oldTSTopp;
-            SQLiteIO.LoadSeason(ofd.FileName, out oldTST, out oldTSTopp, out pst, out oldTeamOrder, ref oldbshist);
-
-            var curR = new TeamRankings(tst);
-            var oldR = new TeamRankings(oldTST);
-            int[][] diffrnk = calculateDifferenceRanking(curR, oldR);
-            float[][] diffavg = calculateDifferenceAverage(curTST, oldTST);
-
-            int maxi = 0;
-            int mini = 0;
-            for (int i = 1; i < 30; i++)
-            {
-                if (diffavg[i][0] > diffavg[maxi][0])
-                    maxi = i;
-                if (diffavg[i][0] < diffavg[mini][0])
-                    mini = i;
-            }
-
-            string team1 = tst[maxi].name;
-            string str =
-                String.Format(
-                    diffrnk[maxi][0] > 0
-                        ? "Most improved in {7}, the {0}. They were #{1} ({4:F1}), climbing {3} places they are now at #{2} ({5:F1}), a {6:F1} {7} difference!"
-                        : "Most improved in {7}, the {0}. They were #{1} ({4:F1}) and they are now at #{2} ({5:F1}), a {6:F1} {7} difference!",
-                    tst[maxi].name, oldR.rankings[maxi][0], curR.rankings[maxi][0], diffrnk[maxi][0], oldTST[maxi].averages[0],
-                    tst[maxi].averages[0], diffavg[maxi][0], "PPG");
-            str += " ";
-            str +=
-                String.Format(
-                    "Taking this improvement apart, their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
-                    oldTST[maxi].averages[t.FGp], tst[maxi].averages[t.FGp], oldTST[maxi].averages[t.TPp], tst[maxi].averages[t.TPp],
-                    tst[maxi].averages[t.FTp], oldTST[maxi].averages[t.FTp]);
-
-            if (curR.rankings[maxi][t.FGeff] <= 5)
-            {
-                str += " ";
-                if (oldR.rankings[maxi][t.FGeff] > 20)
-                    str +=
-                        "Huge leap in Field Goal efficiency. Back then they were on of the worst teams on the offensive end, now in the Top 5.";
-                else if (oldR.rankings[maxi][t.FGeff] > 10)
-                    str +=
-                        "An average offensive team turned great. From the middle of the pack, they are now in Top 5 in Field Goal efficiency.";
-                else if (oldR.rankings[maxi][t.FGeff] > 5)
-                    str += "They were already hot, and they're just getting better. Moving on up from Top 10 in FGeff, to Top 5.";
-                else
-                    str +=
-                        "They just know how to stay hot at the offensive end. Still in the Top 5 of the most efficient teams from the floor.";
-            }
-            if (curR.rankings[maxi][t.FTeff] <= 5)
-                str += " They're not afraid of contact, and they know how to make the most from the line. Top 5 in Free Throw efficiency.";
-            if (diffavg[maxi][t.APG] > 0)
-                str +=
-                    String.Format(
-                        " They are getting better at finding the open man with a timely pass. {0:F1} improvement in assists per game.",
-                        diffavg[maxi][t.APG]);
-            if (diffavg[maxi][t.RPG] > 0)
-                str += String.Format(" Their additional rebounds have helped as well.");
-            if (diffavg[maxi][t.TPG] < 0)
-                str += String.Format(" Also taking better care of the ball, making {0:F1} less turnovers per game.", -diffavg[maxi][t.TPG]);
-
-            ///////////////////////////
-            str += "$";
-            ///////////////////////////
-
-            string team2 = tst[mini].name;
-            if (diffrnk[mini][0] < 0)
-            {
-                str +=
-                    String.Format(
-                        "On the other end, the {0} have lost some of their scoring power. They were #{1} ({4:F1}), dropping {3} places they are now at #{2} ({5:F1}).",
-                        tst[mini].name, oldR.rankings[mini][0], curR.rankings[mini][0], -diffrnk[mini][0], oldTST[mini].averages[0],
-                        tst[mini].averages[0]);
-            }
-            else
-            {
-                str +=
-                    String.Format(
-                        "On the other end, the {0} have lost some of their scoring power. They were #{1} ({4:F1}) and are now in #{2} ({5:F1}). Guess even that {6:F1} PPG drop wasn't enough to knock them down!",
-                        tst[mini].name, oldR.rankings[mini][0], curR.rankings[mini][0], -diffrnk[mini][0], oldTST[mini].averages[0],
-                        tst[mini].averages[0], -diffavg[mini][0]);
-            }
-            str += " ";
-            str +=
-                String.Format(
-                    "So why has this happened? Their FG% went from {0:F3} to {1:F3}, 3P% was {2:F3} and now is {3:F3}, and FT% is now at {4:F3}, having been at {5:F3}.",
-                    oldTST[mini].averages[t.FGp], tst[mini].averages[t.FGp], oldTST[mini].averages[t.TPp], tst[mini].averages[t.TPp],
-                    tst[mini].averages[t.FTp], oldTST[mini].averages[t.FTp]);
-            if (diffavg[mini][t.TPG] > 0)
-                str +=
-                    String.Format(
-                        " You can't score as many points when you commit turnovers; they've seen them increase by {0:F1} per game.",
-                        diffavg[mini][t.TPG]);
-
-            var tw = new TrendsWindow(str, team1, team2);
-            tw.ShowDialog();
+            tf = new Timeframe(curSeason);
+            if (!loadingSeason) 
+                UpdateAllData();
         }
-
         /// <summary>
         /// Calculates the difference in a team's stats rankings between two TeamRankings instances.
         /// </summary>
@@ -1673,7 +1553,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             dispatcherTimer_Tick(null, null);
-            var low = new LeagueOverviewWindow(tst, tstopp, pst);
+            var low = new LeagueOverviewWindow();
             low.ShowDialog();
         }
 
@@ -1938,7 +1818,7 @@ namespace NBA_Stats_Tracker.Windows
             int maxSeason = SQLiteIO.getMaxSeason(file);
             for (int i = 1; i <= maxSeason; i++)
             {
-                IList<BoxScoreEntry> newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason);
+                List<BoxScoreEntry> newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason);
 
                 foreach (BoxScoreEntry newbse in newBShist)
                 {
@@ -2428,6 +2308,12 @@ namespace NBA_Stats_Tracker.Windows
         private void btnAdvStatCalc_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        public static void UpdateAllData()
+        {
+            SQLiteIO.PopulateAll(tf, out tst, out tstopp, out TeamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bshist,
+                                 out TeamRankings, out PlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings, out DisplayNames);
         }
     }
 }

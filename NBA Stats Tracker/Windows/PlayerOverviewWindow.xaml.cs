@@ -61,7 +61,6 @@ namespace NBA_Stats_Tracker.Windows
         private ObservableCollection<KeyValuePair<int, string>> oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
 
         private ObservableCollection<PlayerBoxScore> pbsList;
-        private string pl_playersT = "PlayoffPlayers";
         private PlayerStatsRow pl_psr;
         private PlayerRankings pl_rankingsActive;
         private PlayerRankings pl_rankingsPosition;
@@ -70,7 +69,8 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> playersActive;
         private Dictionary<int, PlayerStats> playersSamePosition;
         private Dictionary<int, PlayerStats> playersSameTeam;
-        private string playersT = "Players";
+        private string playersT = MainWindow.playersT;
+        private string pl_playersT = MainWindow.pl_playersT;
         private PlayerStats psBetween;
         private PlayerStatsRow psr;
         private PlayerRankings rankingsActive;
@@ -86,10 +86,10 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            Height = Misc.GetRegistrySetting("PlayerOvHeight", (int)Height);
-            Width = Misc.GetRegistrySetting("PlayerOvWidth", (int)Width);
-            Top = Misc.GetRegistrySetting("PlayerOvY", (int)Top);
-            Left = Misc.GetRegistrySetting("PlayerOvX", (int)Left);
+            Height = Misc.GetRegistrySetting("PlayerOvHeight", (int) Height);
+            Width = Misc.GetRegistrySetting("PlayerOvWidth", (int) Width);
+            Top = Misc.GetRegistrySetting("PlayerOvY", (int) Top);
+            Left = Misc.GetRegistrySetting("PlayerOvX", (int) Left);
 
             prepareWindow();
         }
@@ -229,10 +229,19 @@ namespace NBA_Stats_Tracker.Windows
             dt_ov.Columns.Add("BLK");
             dt_ov.Columns.Add("FOUL");
 
-            dtpStart.SelectedDate = DateTime.Now.AddMonths(-1).AddDays(1);
-            dtpEnd.SelectedDate = DateTime.Now;
-
-            rbStatsAllTime.IsChecked = true;
+            changingTimeframe = true;
+            dtpEnd.SelectedDate = MainWindow.tf.EndDate;
+            dtpStart.SelectedDate = MainWindow.tf.StartDate;
+            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.tf.SeasonNum);
+            if (MainWindow.tf.isBetween)
+            {
+                rbStatsBetween.IsChecked = true;
+            }
+            else
+            {
+                rbStatsAllTime.IsChecked = true;
+            }
+            changingTimeframe = false;
 
             dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTH.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -243,9 +252,6 @@ namespace NBA_Stats_Tracker.Windows
 
             GetActivePlayers();
             PopulateGraphStatCombo();
-
-            PlayerStats.CalculateAllMetrics(ref MainWindow.pst, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder);
-            PlayerStats.CalculateAllMetrics(ref MainWindow.pst, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder, playoffs: true);
         }
 
         /// <summary>
@@ -367,6 +373,8 @@ namespace NBA_Stats_Tracker.Windows
 
             SelectedPlayerID = ((KeyValuePair<int, string>) (((cmbPlayer)).SelectedItem)).Key;
 
+            pbsList = new ObservableCollection<PlayerBoxScore>();
+
             string q = "select * from " + playersT + " where ID = " + SelectedPlayerID.ToString();
             DataTable res = db.GetDataTable(q);
 
@@ -471,71 +479,30 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void UpdateOverviewAndBoxScores()
         {
-            var ts = new TeamStats("Team");
+            var ts = MainWindow.tst[MainWindow.TeamOrder[psr.TeamF]];
             var tsopp = new TeamStats("Opponents");
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            grdOverview.DataContext = psr;
+
+            playersSamePosition =
+                MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1 && ps.Value.isActive)
+                          .ToDictionary(ps => ps.Value.ID, ps => ps.Value);
+
+            rankingsPosition = new PlayerRankings(playersSamePosition);
+            pl_rankingsPosition = new PlayerRankings(playersSamePosition, true);
+
+            foreach (var bse in MainWindow.bshist.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == psr.ID && !pbs.isOut))
+                      .ToList())
             {
-                grdOverview.DataContext = psr;
-
-                playersSamePosition = new Dictionary<int, PlayerStats>();
-
-                string q = "select * from " + playersT + " where Position1 LIKE \"" + psr.Position1 + "\" AND isActive LIKE \"True\"";
-                DataTable res = db.GetDataTable(q);
-
-                foreach (DataRow r in res.Rows)
-                {
-                    string q2 = "select * from " + pl_playersT + " where ID = " + Tools.getInt(r, "ID");
-                    DataTable pl_res = db.GetDataTable(q2);
-
-                    var ps = new PlayerStats(r);
-                    playersSamePosition.Add(ps.ID, ps);
-                    playersSamePosition[ps.ID].UpdatePlayoffStats(pl_res.Rows[0]);
-                }
-                rankingsPosition = new PlayerRankings(playersSamePosition);
-                pl_rankingsPosition = new PlayerRankings(playersSamePosition, true);
-
-                q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
-                    "where PlayerID = " + SelectedPlayerID.ToString() + " AND SeasonNum = " + curSeason + " ORDER BY Date DESC";
-                res = db.GetDataTable(q);
-
-                pbsList = new ObservableCollection<PlayerBoxScore>();
-                foreach (DataRow r in res.Rows)
-                {
-                    var pbs = new PlayerBoxScore(r);
-                    pbsList.Add(pbs);
-                }
-            }
-            else
-            {
-                string q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
-                           "where PlayerID = " + SelectedPlayerID.ToString();
-                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                          dtpEnd.SelectedDate.GetValueOrDefault());
-                q += " ORDER BY Date DESC";
-                DataTable res = db.GetDataTable(q);
-
-                psBetween = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
-
-                pbsList = new ObservableCollection<PlayerBoxScore>();
-
-                TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
-
-                foreach (DataRow r in res.Rows)
-                {
-                    bool isPlayoff = Tools.getBoolean(r, "isPlayoff");
-                    var pbs = new PlayerBoxScore(r);
-                    pbsList.Add(pbs);
-
-                    psBetween.AddBoxScore(pbs, isPlayoff);
-                }
-
-                psr = new PlayerStatsRow(psBetween);
-                pl_psr = new PlayerStatsRow(psBetween, true);
+                PlayerBoxScore pbs = new PlayerBoxScore();
+                pbs = bse.pbsList.Single(pbs1 => pbs1.PlayerID == psr.ID);
+                pbs.AddInfoFromTeamBoxScore(bse.bs);
+                pbs.CalcMetrics(bse.bs);
+                pbsList.Add(pbs);
             }
 
-            cmbPosition1.SelectedItem = psr.Position1;
-            cmbPosition2.SelectedItem = psr.Position2;
+            cmbPosition1.SelectedItem = psr.Position1.ToString();
+            cmbPosition2.SelectedItem = psr.Position2.ToString();
 
             dt_ov.Clear();
 
@@ -584,81 +551,76 @@ namespace NBA_Stats_Tracker.Windows
 
             #region Rankings
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            if (psr.isActive)
             {
-                if (psr.isActive)
-                {
-                    int id = SelectedPlayerID;
+                int id = SelectedPlayerID;
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "Rankings";
-                    dr["MINS"] = String.Format("{0}", rankingsActive.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", rankingsActive.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", rankingsActive.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", rankingsActive.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", rankingsActive.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", rankingsActive.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", rankingsActive.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", rankingsActive.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", rankingsActive.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", rankingsActive.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", rankingsActive.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsActive.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", rankingsActive.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", rankingsActive.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", rankingsActive.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", rankingsActive.list[id][p.FPG]);
+                dr["Type"] = "Rankings";
+                dr["MINS"] = String.Format("{0}", rankingsActive.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsActive.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsActive.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsActive.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsActive.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsActive.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsActive.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsActive.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsActive.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsActive.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsActive.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsActive.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsActive.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsActive.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsActive.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsActive.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
+                dt_ov.Rows.Add(dr);
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "In-team Rankings";
-                    dr["MINS"] = String.Format("{0}", rankingsTeam.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", rankingsTeam.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", rankingsTeam.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", rankingsTeam.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", rankingsTeam.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", rankingsTeam.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", rankingsTeam.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", rankingsTeam.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", rankingsTeam.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", rankingsTeam.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", rankingsTeam.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsTeam.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", rankingsTeam.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", rankingsTeam.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", rankingsTeam.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", rankingsTeam.list[id][p.FPG]);
+                dr["Type"] = "In-team Rankings";
+                dr["MINS"] = String.Format("{0}", rankingsTeam.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsTeam.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsTeam.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsTeam.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsTeam.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsTeam.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsTeam.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsTeam.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsTeam.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsTeam.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsTeam.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsTeam.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsTeam.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsTeam.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsTeam.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsTeam.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
+                dt_ov.Rows.Add(dr);
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "Position Rankings";
-                    dr["MINS"] = String.Format("{0}", rankingsPosition.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", rankingsPosition.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", rankingsPosition.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", rankingsPosition.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", rankingsPosition.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", rankingsPosition.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", rankingsPosition.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", rankingsPosition.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", rankingsPosition.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", rankingsPosition.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", rankingsPosition.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", rankingsPosition.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", rankingsPosition.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", rankingsPosition.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", rankingsPosition.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", rankingsPosition.list[id][p.FPG]);
+                dr["Type"] = "Position Rankings";
+                dr["MINS"] = String.Format("{0}", rankingsPosition.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsPosition.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsPosition.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsPosition.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsPosition.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsPosition.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsPosition.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsPosition.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsPosition.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsPosition.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsPosition.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsPosition.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsPosition.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsPosition.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsPosition.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsPosition.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
-                }
-            }
-            else
-            {
+                dt_ov.Rows.Add(dr);
+
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Team Avg";
@@ -736,81 +698,76 @@ namespace NBA_Stats_Tracker.Windows
 
             #region Rankings
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            if (psr.isActive)
             {
-                if (psr.isActive)
-                {
-                    int id = Convert.ToInt32(SelectedPlayerID);
+                int id = Convert.ToInt32(SelectedPlayerID);
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "Pl Rank";
-                    dr["MINS"] = String.Format("{0}", pl_rankingsActive.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", pl_rankingsActive.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", pl_rankingsActive.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", pl_rankingsActive.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", pl_rankingsActive.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", pl_rankingsActive.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", pl_rankingsActive.list[id][p.FPG]);
+                dr["Type"] = "Pl Rank";
+                dr["MINS"] = String.Format("{0}", pl_rankingsActive.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsActive.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsActive.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsActive.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsActive.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsActive.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsActive.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
+                dt_ov.Rows.Add(dr);
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "Pl In-Team";
-                    dr["MINS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", pl_rankingsTeam.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", pl_rankingsTeam.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FPG]);
+                dr["Type"] = "Pl In-Team";
+                dr["MINS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsTeam.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsTeam.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
+                dt_ov.Rows.Add(dr);
 
-                    dr = dt_ov.NewRow();
+                dr = dt_ov.NewRow();
 
-                    dr["Type"] = "Pl Position";
-                    dr["MINS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.MPG]);
-                    dr["PTS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.PPG]);
-                    dr["FG"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGp]);
-                    dr["FGeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGeff]);
-                    dr["3PT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPp]);
-                    dr["3Peff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPeff]);
-                    dr["FT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTp]);
-                    dr["FTeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTeff]);
-                    dr["REB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.RPG]);
-                    dr["OREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.ORPG]);
-                    dr["DREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.DRPG]);
-                    dr["AST"] = String.Format("{0}", pl_rankingsPosition.list[id][t.PAPG]);
-                    dr["TO"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPG]);
-                    dr["STL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.SPG]);
-                    dr["BLK"] = String.Format("{0}", pl_rankingsPosition.list[id][p.BPG]);
-                    dr["FOUL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FPG]);
+                dr["Type"] = "Pl Position";
+                dr["MINS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsPosition.list[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsPosition.list[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FPG]);
 
-                    dt_ov.Rows.Add(dr);
-                }
-            }
-            else
-            {
+                dt_ov.Rows.Add(dr);
+
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Pl Team Avg";
@@ -912,253 +869,49 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void UpdateSplitStats()
         {
-            string qr_home =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID " +
-                    "AND Team = T2Name) " + "WHERE PlayerID = {0}", psr.ID);
-            string qr_away =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID " +
-                    "AND Team = T1Name) " + "WHERE PlayerID = {0}", psr.ID);
-            string qr_wins =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
-                    "WHERE PlayerID = {0} " + "AND (((Team = T1Name) AND (T1PTS > T2PTS)) OR ((Team = T2Name) AND (T2PTS > T1PTS)))", psr.ID);
-            string qr_losses =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
-                    "WHERE PlayerID = {0} " + "AND (((Team = T1Name) AND (T1PTS < T2PTS)) OR ((Team = T2Name) AND (T2PTS < T1PTS)))", psr.ID);
-            string qr_season =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
-                    "WHERE PlayerID = {0} AND IsPlayoff LIKE \"False\"", psr.ID);
-            string qr_playoffs =
-                String.Format(
-                    "select * from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
-                    "WHERE PlayerID = {0} AND IsPlayoff LIKE \"True\"", psr.ID);
-            string qr_teams =
-                String.Format(
-                    "select Team from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
-                    " WHERE PlayerID = {0}", psr.ID);
-
-            if (rbStatsBetween.IsChecked.GetValueOrDefault())
-            {
-                qr_home = SQLiteDatabase.AddDateRangeToSQLQuery(qr_home, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_away = SQLiteDatabase.AddDateRangeToSQLQuery(qr_away, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_wins = SQLiteDatabase.AddDateRangeToSQLQuery(qr_wins, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_losses = SQLiteDatabase.AddDateRangeToSQLQuery(qr_losses, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_season = SQLiteDatabase.AddDateRangeToSQLQuery(qr_season, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_playoffs = SQLiteDatabase.AddDateRangeToSQLQuery(qr_playoffs, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                    dtpEnd.SelectedDate.GetValueOrDefault());
-                qr_teams = SQLiteDatabase.AddDateRangeToSQLQuery(qr_teams, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                 dtpEnd.SelectedDate.GetValueOrDefault());
-            }
-            else
-            {
-                string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
-                qr_home += s;
-                qr_away += s;
-                qr_wins += s;
-                qr_losses += s;
-                qr_season += s;
-                qr_playoffs += s;
-                qr_teams += s;
-            }
-
-            qr_teams += " GROUP BY Team";
-
             splitPSRs = new ObservableCollection<PlayerStatsRow>();
-
+            var split = MainWindow.splitPlayerStats;
             //Home
-            DataTable res = db.GetDataTable(qr_home);
-            var ps = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Home"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Home"], "Home"));
 
             //Away
-            res = db.GetDataTable(qr_away);
-            ps.ResetStats();
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Away"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Away"], "Away"));
 
             //Wins
-            res = db.GetDataTable(qr_wins);
-            ps.ResetStats();
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Wins", "Result"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Wins"], "Wins", "Result"));
 
             //Losses
-            res = db.GetDataTable(qr_losses);
-            ps.ResetStats();
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Losses", "Result"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Losses"], "Losses", "Result"));
 
             //Season
-            res = db.GetDataTable(qr_season);
-            ps.ResetStats();
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Season", "Part of Season"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Season"], "Season", "Part of Season"));
 
             //Playoffs
-            res = db.GetDataTable(qr_playoffs);
-            ps.ResetStats();
-
-            foreach (DataRow r in res.Rows)
-            {
-                ps.AddBoxScore(new PlayerBoxScore(r));
-            }
-            splitPSRs.Add(new PlayerStatsRow(ps, "Playoffs", "Part of Season"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Playoffs"], "Playoffs", "Part of Season"));
 
             #region Each Team Played In Stats
 
-            res = db.GetDataTable(qr_teams);
-
-            if (res.Rows.Count > 1)
+            foreach (var ss in split[psr.ID].Where(pair => pair.Key.StartsWith("with ")))
             {
-                var teams = new List<string>(res.Rows.Count);
-                teams.AddRange(from DataRow r in res.Rows select r["Team"].ToString());
-
-                foreach (string team in teams)
-                {
-                    string q =
-                        String.Format(
-                            "select * from PlayerResults INNER JOIN GameResults" + " ON (PlayerResults.GameID = GameResults.GameID)" +
-                            " WHERE PlayerID = {0} AND Team = \"{1}\"", psr.ID, team);
-                    if (rbStatsBetween.IsChecked.GetValueOrDefault())
-                    {
-                        q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                                  dtpEnd.SelectedDate.GetValueOrDefault());
-                    }
-                    else
-                    {
-                        string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
-                        q += s;
-                    }
-                    res = db.GetDataTable(q);
-
-                    ps.ResetStats();
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        ps.AddBoxScore(new PlayerBoxScore(r));
-                    }
-                    splitPSRs.Add(new PlayerStatsRow(ps, "with " + team, "Team Played For"));
-                }
+                splitPSRs.Add(new PlayerStatsRow(split[psr.ID][ss.Key], ss.Key, "Team Played For"));
             }
 
             #endregion
 
             #region Opponents
 
-            foreach (var oppTeam in teamOrder.Keys)
+            foreach (var ss in split[psr.ID].Where(pair => pair.Key.StartsWith("vs ")))
             {
-                string q =
-                    String.Format(
-                        "select * from PlayerResults INNER JOIN GameResults" +
-                        " ON (PlayerResults.GameID = GameResults.GameID)" +
-                        " WHERE PlayerID = {0} AND ((T1Name LIKE Team AND T2Name LIKE '{1}') OR (T1Name LIKE Team AND T2Name LIKE '{1}'))",
-                        psr.ID, oppTeam);
-                if (rbStatsBetween.IsChecked.GetValueOrDefault())
-                {
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
-                }
-                else
-                {
-                    string s = " AND SeasonNum = " + cmbSeasonNum.SelectedValue;
-                    q += s;
-                }
-                res = db.GetDataTable(q);
-                ps.ResetStats();
-
-                foreach (DataRow r in res.Rows)
-                {
-                    ps.AddBoxScore(new PlayerBoxScore(r));
-                }
-                splitPSRs.Add(new PlayerStatsRow(ps, "vs. " + oppTeam, "Team Played Against"));
+                splitPSRs.Add(new PlayerStatsRow(split[psr.ID][ss.Key], ss.Key, "Team Played Against"));
             }
 
             #endregion
 
             #region Monthly Split Stats
 
-            if (rbStatsBetween.IsChecked.GetValueOrDefault())
+            foreach (var ss in split[psr.ID].Where(pair => pair.Key.StartsWith("M ")))
             {
-                DateTime dStart = dtpStart.SelectedDate.GetValueOrDefault();
-                DateTime dEnd = dtpEnd.SelectedDate.GetValueOrDefault();
-
-                DateTime dCur = dStart;
-                var qrm = new List<string>();
-
-                while (true)
-                {
-                    if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(dEnd.Year, dEnd.Month, 1))
-                    {
-                        string s =
-                            String.Format(
-                                "select * from PlayerResults " + "INNER JOIN GameResults " +
-                                "ON (PlayerResults.GameID = GameResults.GameID) " +
-                                "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}", SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                                SQLiteDatabase.ConvertDateTimeToSQLite(dEnd), psr.ID);
-
-                        qrm.Add(s);
-                        break;
-                    }
-                    else
-                    {
-                        string s =
-                            String.Format(
-                                "select * from PlayerResults " + "INNER JOIN GameResults " +
-                                "ON (PlayerResults.GameID = GameResults.GameID) " +
-                                "WHERE (Date >= '{0}' AND Date <= '{1}') AND PlayerID = {2}", SQLiteDatabase.ConvertDateTimeToSQLite(dCur),
-                                SQLiteDatabase.ConvertDateTimeToSQLite(new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1).AddDays(-1)),
-                                psr.ID);
-
-                        qrm.Add(s);
-                        dCur = dCur.AddMonths(1);
-                    }
-                }
-
-                int i = 0;
-                foreach (string q in qrm)
-                {
-                    ps.ResetStats();
-                    res = db.GetDataTable(q);
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        ps.AddBoxScore(new PlayerBoxScore(r));
-                    }
-
-                    DateTime label = new DateTime(dStart.Year, dStart.Month, 1).AddMonths(i);
-                    splitPSRs.Add(new PlayerStatsRow(ps, label.Year.ToString() + " " + String.Format("{0:MMMM}", label), "Month"));
-                    i++;
-                }
+                splitPSRs.Add(new PlayerStatsRow(split[psr.ID][ss.Key], ss.Key.Substring(2), "Monthly"));
             }
 
             #endregion
@@ -1177,127 +930,129 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            changingTimeframe = true;
-            rbStatsAllTime.IsChecked = true;
-            changingTimeframe = false;
-
-            try
+            if (!changingTimeframe)
             {
-                curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
-            }
-            catch (Exception)
-            {
-                return;
-            }
+                changingTimeframe = true;
+                rbStatsAllTime.IsChecked = true;
+                changingTimeframe = false;
 
-            MainWindow.ChangeSeason(curSeason);
-
-            if (curSeason != maxSeason)
-            {
-                playersT += "S" + curSeason;
-                pl_playersT += "S" + curSeason;
-            }
-
-            if (cmbPlayer.SelectedIndex != -1)
-            {
-                PlayerStats ps = CreatePlayerStatsFromCurrent();
-
-                SQLiteIO.LoadSeason();
-
-                teamOrder = MainWindow.TeamOrder;
-
-                GetActivePlayers();
-
-                PopulateTeamsCombo();
-
-                string q = "select * from " + playersT + " where ID = " + ps.ID;
-                q += " AND isHidden LIKE \"False\"";
-                DataTable res = db.GetDataTable(q);
-
-                if (res.Rows.Count > 0)
+                try
                 {
-                    bool nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                    string newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
-                    cmbTeam.SelectedIndex = -1;
-                    if (nowActive)
+                    curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+
+                if (!(MainWindow.tf.SeasonNum == curSeason && !MainWindow.tf.isBetween))
+                {
+                    MainWindow.tf = new Timeframe(curSeason);
+                    MainWindow.UpdateAllData();
+                }
+
+                MainWindow.ChangeSeason(curSeason);
+
+                playersT = MainWindow.playersT;
+                pl_playersT = MainWindow.pl_playersT;
+
+                if (cmbPlayer.SelectedIndex != -1)
+                {
+                    PlayerStats ps = CreatePlayerStatsFromCurrent();
+
+                    teamOrder = MainWindow.TeamOrder;
+
+                    GetActivePlayers();
+
+                    PopulateTeamsCombo();
+
+                    string q = "select * from " + playersT + " where ID = " + ps.ID;
+                    q += " AND isHidden LIKE \"False\"";
+                    DataTable res = db.GetDataTable(q);
+
+                    if (res.Rows.Count > 0)
                     {
-                        if (newTeam != "")
+                        bool nowActive = Tools.getBoolean(res.Rows[0], "isActive");
+                        string newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                        cmbTeam.SelectedIndex = -1;
+                        if (nowActive)
                         {
-                            try
+                            if (newTeam != "")
                             {
-                                cmbTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                try
+                                {
+                                    cmbTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                }
+                                catch (Exception)
+                                {
+                                    cmbTeam.SelectedIndex = -1;
+                                    cmbPlayer.SelectedIndex = -1;
+                                    return;
+                                }
                             }
-                            catch (Exception)
+                        }
+                        else
+                        {
+                            cmbTeam.SelectedItem = "- Inactive -";
+                        }
+                        cmbPlayer.SelectedIndex = -1;
+                        cmbPlayer.SelectedValue = ps.ID;
+
+                        if (cmbOppPlayer.SelectedIndex != -1)
+                        {
+                            SelectedOppPlayerID = ((KeyValuePair<int, string>) (((cmbOppPlayer)).SelectedItem)).Key;
+
+                            q = "select * from " + playersT + " where ID = " + SelectedOppPlayerID;
+                            q += " AND isHidden LIKE \"False\"";
+                            res = db.GetDataTable(q);
+
+                            if (res.Rows.Count > 0)
                             {
-                                cmbTeam.SelectedIndex = -1;
-                                cmbPlayer.SelectedIndex = -1;
-                                return;
+                                nowActive = Tools.getBoolean(res.Rows[0], "isActive");
+                                newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                                cmbOppTeam.SelectedIndex = -1;
+                                if (nowActive)
+                                {
+                                    if (newTeam != "")
+                                    {
+                                        try
+                                        {
+                                            cmbOppTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                        }
+                                        catch (Exception)
+                                        {
+                                            cmbOppTeam.SelectedIndex = -1;
+                                            cmbOppPlayer.SelectedIndex = -1;
+                                            return;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    cmbOppTeam.SelectedItem = "- Inactive -";
+                                }
+                                cmbOppPlayer.SelectedIndex = -1;
+                                cmbOppPlayer.SelectedValue = SelectedOppPlayerID;
+                            }
+                            else
+                            {
+                                cmbOppTeam.SelectedIndex = -1;
+                                cmbOppPlayer.SelectedIndex = -1;
                             }
                         }
                     }
                     else
                     {
-                        cmbTeam.SelectedItem = "- Inactive -";
-                    }
-                    cmbPlayer.SelectedIndex = -1;
-                    cmbPlayer.SelectedValue = ps.ID;
-
-                    if (cmbOppPlayer.SelectedIndex != -1)
-                    {
-                        SelectedOppPlayerID = ((KeyValuePair<int, string>) (((cmbOppPlayer)).SelectedItem)).Key;
-
-                        q = "select * from " + playersT + " where ID = " + SelectedOppPlayerID;
-                        q += " AND isHidden LIKE \"False\"";
-                        res = db.GetDataTable(q);
-
-                        if (res.Rows.Count > 0)
-                        {
-                            nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                            newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
-                            cmbOppTeam.SelectedIndex = -1;
-                            if (nowActive)
-                            {
-                                if (newTeam != "")
-                                {
-                                    try
-                                    {
-                                        cmbOppTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
-                                    }
-                                    catch (Exception)
-                                    {
-                                        cmbOppTeam.SelectedIndex = -1;
-                                        cmbOppPlayer.SelectedIndex = -1;
-                                        return;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                cmbOppTeam.SelectedItem = "- Inactive -";
-                            }
-                            cmbOppPlayer.SelectedIndex = -1;
-                            cmbOppPlayer.SelectedValue = SelectedOppPlayerID;
-                        }
-                        else
-                        {
-                            cmbOppTeam.SelectedIndex = -1;
-                            cmbOppPlayer.SelectedIndex = -1;
-                        }
+                        cmbTeam.SelectedIndex = -1;
+                        cmbPlayer.SelectedIndex = -1;
+                        cmbOppTeam.SelectedIndex = -1;
+                        cmbOppPlayer.SelectedIndex = -1;
                     }
                 }
                 else
                 {
-                    cmbTeam.SelectedIndex = -1;
-                    cmbPlayer.SelectedIndex = -1;
-                    cmbOppTeam.SelectedIndex = -1;
-                    cmbOppPlayer.SelectedIndex = -1;
+                    PopulateTeamsCombo();
                 }
-            }
-            else
-            {
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out MainWindow.tst, out MainWindow.tstopp,
-                                                     out MainWindow.TeamOrder);
-                PopulateTeamsCombo();
             }
         }
 
@@ -1321,14 +1076,14 @@ namespace NBA_Stats_Tracker.Windows
                 temppst[i].AddPlayerStats(MainWindow.pst[i], true);
             }
 
-            var cumRankingsActive =
-                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value));
+            var cumRankingsActive = new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value));
             var cumRankingsPosition =
                 new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value));
             var cumRankingsTeam =
                 new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.TeamF == psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
 
-            new PlayerStatsRow(temppst[psr.ID]).ScoutingReport(MainWindow.pst, cumRankingsActive, cumRankingsTeam, cumRankingsPosition, pbsList.ToList(), txbGame1.Text);
+            new PlayerStatsRow(temppst[psr.ID]).ScoutingReport(MainWindow.pst, cumRankingsActive, cumRankingsTeam, cumRankingsPosition,
+                                                               pbsList.ToList(), txbGame1.Text);
         }
 
         /// <summary>
@@ -1393,13 +1148,13 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text, (Position) Enum.Parse(typeof(Position),cmbPosition1.SelectedItem.ToString()),
-                                     (Position) Enum.Parse(typeof(Position),cmbPosition2.SelectedItem.ToString()), Convert.ToInt32(txtYearOfBirth.Text),
-                                     Convert.ToInt32(txtYearsPro.Text), TeamF, psr.TeamS,
-                                     chkIsActive.IsChecked.GetValueOrDefault(),
-                                     false, chkIsInjured.IsChecked.GetValueOrDefault(),
-                                     chkIsAllStar.IsChecked.GetValueOrDefault(),
-                                     chkIsNBAChampion.IsChecked.GetValueOrDefault(), dt_ov.Rows[0]);
+            var ps = new PlayerStats(psr.ID, txtLastName.Text, txtFirstName.Text,
+                                     (Position) Enum.Parse(typeof (Position), cmbPosition1.SelectedItem.ToString()),
+                                     (Position) Enum.Parse(typeof (Position), cmbPosition2.SelectedItem.ToString()),
+                                     Convert.ToInt32(txtYearOfBirth.Text), Convert.ToInt32(txtYearsPro.Text), TeamF, psr.TeamS,
+                                     chkIsActive.IsChecked.GetValueOrDefault(), false, chkIsInjured.IsChecked.GetValueOrDefault(),
+                                     chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
+                                     dt_ov.Rows[0]);
             return ps;
         }
 
@@ -1468,7 +1223,11 @@ namespace NBA_Stats_Tracker.Windows
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
+            {
+                MainWindow.tf = new Timeframe(curSeason);
+                MainWindow.UpdateAllData();
                 cmbSeasonNum_SelectionChanged(null, null);
+            }
         }
 
         /// <summary>
@@ -1480,7 +1239,11 @@ namespace NBA_Stats_Tracker.Windows
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
+            {
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
                 cmbPlayer_SelectionChanged(null, null);
+            }
         }
 
         /// <summary>
@@ -1498,6 +1261,8 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
                 }
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
                 rbStatsBetween.IsChecked = true;
                 changingTimeframe = false;
 
@@ -1520,6 +1285,8 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
                 }
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
                 rbStatsBetween.IsChecked = true;
                 changingTimeframe = false;
 
@@ -1628,7 +1395,7 @@ namespace NBA_Stats_Tracker.Windows
                     psrList.Add(oppPSR);
 
                     q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
-                        "where PlayerID = " + SelectedOppPlayerID + " AND SeasonNum = " + curSeason;
+                        "where PlayerID = " + SelectedOppPlayerID + " AND SeasonNum = " + curSeason + " AND isOut = \"False\"";
                     res = db.GetDataTable(q);
 
                     hthOppPBS = new List<PlayerBoxScore>();
@@ -1656,8 +1423,8 @@ namespace NBA_Stats_Tracker.Windows
                     q =
                         String.Format(
                             "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} " + "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedPlayerID, SelectedOppPlayerID,
+                            "WHERE PlayerID = {0} AND isOut = \"False\"" + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} AND isOut = \"False\"" + "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedPlayerID, SelectedOppPlayerID,
                             curSeason);
                     res = db.GetDataTable(q);
 
@@ -1683,8 +1450,8 @@ namespace NBA_Stats_Tracker.Windows
                     q =
                         String.Format(
                             "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} " + "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedOppPlayerID, SelectedPlayerID,
+                            "WHERE PlayerID = {0} AND isOut = \"False\" " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} AND isOut = \"False\" " + "AND SeasonNum = {2}) ORDER BY Date DESC", SelectedOppPlayerID, SelectedPlayerID,
                             curSeason);
                     res = db.GetDataTable(q);
 
@@ -1718,7 +1485,7 @@ namespace NBA_Stats_Tracker.Windows
                     var p = new Player(res.Rows[0]);
 
                     q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
-                        "where PlayerID = " + SelectedOppPlayerID.ToString();
+                        "where PlayerID = " + SelectedOppPlayerID.ToString() + " AND isOut = \"False\"";
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
                     res = db.GetDataTable(q);
@@ -1742,8 +1509,8 @@ namespace NBA_Stats_Tracker.Windows
                     q =
                         String.Format(
                             "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} ", SelectedPlayerID, SelectedOppPlayerID);
+                            "WHERE PlayerID = {0} AND isOut = \"False\"" + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} AND isOut = \"False\"", SelectedPlayerID, SelectedOppPlayerID);
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
@@ -1771,8 +1538,8 @@ namespace NBA_Stats_Tracker.Windows
                     q =
                         String.Format(
                             "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
-                            "WHERE PlayerID = {1} ", SelectedOppPlayerID, SelectedPlayerID);
+                            "WHERE PlayerID = {0} AND isOut = \"False\" " + "AND PlayerResults.GameID IN " + "(SELECT GameID FROM PlayerResults " +
+                            "WHERE PlayerID = {1} AND isOut = \"False\" ", SelectedOppPlayerID, SelectedPlayerID);
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
@@ -1790,7 +1557,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            hthAllPBS.Sort((pbs1, pbs2) => String.CompareOrdinal(pbs1.Date, pbs2.Date));
+            hthAllPBS.Sort((pbs1, pbs2) => pbs1.RealDate.CompareTo(pbs2.RealDate));
             hthAllPBS.Reverse();
 
             dgvHTH.ItemsSource = psrList;
@@ -1978,12 +1745,11 @@ namespace NBA_Stats_Tracker.Windows
             foreach (var pbs in pbsList)
             {
                 i++;
-                double value =
-                    Convert.ToDouble(typeof (PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
+                double value = Convert.ToDouble(typeof (PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
                 if (!double.IsNaN(value))
                 {
                     if (propToGet.Contains("p"))
-                        value = Convert.ToDouble(Convert.ToInt32(value*1000)) / 1000;
+                        value = Convert.ToDouble(Convert.ToInt32(value*1000))/1000;
                     cp.AddPoint(i, value);
                     games++;
                     sum += value;
@@ -1994,7 +1760,7 @@ namespace NBA_Stats_Tracker.Windows
             chart.Primitives.Clear();
             if (cp.Points.Count > 0)
             {
-                double average = sum / games;
+                double average = sum/games;
                 ChartPrimitive cpavg = new ChartPrimitive();
                 for (int j = 1; j <= i; j++)
                 {
@@ -2021,7 +1787,26 @@ namespace NBA_Stats_Tracker.Windows
         {
             List<string> stats = new List<string>
                                  {
-                                     "GmSc", "GmScE", "PTS", "FGM", "FGA", "FG%", "3PM", "3PA", "3P%", "FTM", "FTA", "FT%", "REB", "OREB", "DREB", "AST", "BLK", "STL", "TO", "FOUL"
+                                     "GmSc",
+                                     "GmScE",
+                                     "PTS",
+                                     "FGM",
+                                     "FGA",
+                                     "FG%",
+                                     "3PM",
+                                     "3PA",
+                                     "3P%",
+                                     "FTM",
+                                     "FTA",
+                                     "FT%",
+                                     "REB",
+                                     "OREB",
+                                     "DREB",
+                                     "AST",
+                                     "BLK",
+                                     "STL",
+                                     "TO",
+                                     "FOUL"
                                  };
 
             stats.ForEach(s => cmbGraphStat.Items.Add(s));

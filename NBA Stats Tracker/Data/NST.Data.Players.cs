@@ -1119,7 +1119,7 @@ namespace NBA_Stats_Tracker.Data
                 Date = Tools.getString(r, "Date").Split(' ')[0];
                 RealDate = Convert.ToDateTime(Date);
 
-                CalcMetrics(GameID, r);
+                CalcMetrics(r);
             }
             catch (Exception)
             {
@@ -1267,6 +1267,17 @@ namespace NBA_Stats_Tracker.Data
             GameID = lpbs.GameID;
         }
 
+        public void AddInfoFromTeamBoxScore(TeamBoxScore bs)
+        {
+            bs.PrepareForDisplay(Team);
+            Result = bs.DisplayResult;
+            TeamPTS = Team == bs.Team1 ? bs.PTS1 : bs.PTS2;
+            OppTeam = Team == bs.Team1 ? bs.Team2 : bs.Team1;
+            OppTeamPTS = Team == bs.Team1 ? bs.PTS2 : bs.PTS1;
+            Date = bs.gamedate.ToString().Split(' ')[0];
+            RealDate = bs.gamedate;
+        }
+
         public DateTime RealDate { get; set; }
 
         public int PlayerID { get; set; }
@@ -1389,9 +1400,8 @@ namespace NBA_Stats_Tracker.Data
         /// <summary>
         /// Calculates the metrics of a player's performance.
         /// </summary>
-        /// <param name="gameID">The game ID.</param>
         /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
-        private void CalcMetrics(int gameID, DataRow r)
+        public void CalcMetrics(DataRow r)
         {
             var bs = new TeamBoxScore(r);
 
@@ -1400,6 +1410,33 @@ namespace NBA_Stats_Tracker.Data
 
             string Team1 = Tools.getString(r, "T1Name");
             string Team2 = Tools.getString(r, "T2Name");
+
+            if (Team == Team1)
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            else
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+
+            var ps = new PlayerStats();
+            ps.ID = PlayerID;
+            ps.AddBoxScore(this, bs.isPlayoff);
+            ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"), GmScOnly: true);
+
+            GmSc = ps.metrics["GmSc"];
+            GmScE = ps.metrics["GmScE"];
+        }
+
+        /// <summary>
+        /// Calculates the metrics of a player's performance.
+        /// </summary>
+        /// <param name="gameID">The game ID.</param>
+        /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
+        public void CalcMetrics(TeamBoxScore bs)
+        {
+            var ts = new TeamStats(Team);
+            var tsopp = new TeamStats(OppTeam);
+
+            string Team1 = bs.Team1;
+            string Team2 = bs.Team2;
 
             if (Team == Team1)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);

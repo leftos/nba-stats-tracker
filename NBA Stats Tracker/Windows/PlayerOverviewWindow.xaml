@@ -352,7 +352,7 @@
                 <Label Height="24" Margin="6,6,0,0" Content="Show Stats from" HorizontalAlignment="Left" x:Name="label1"
                        VerticalAlignment="Top" />
                 <RadioButton Height="16" Margin="6,35,0,0" Checked="rbStatsAllTime_Checked"
-                             Content="All-Time - Season " HorizontalAlignment="Left" IsChecked="True" x:Name="rbStatsAllTime" VerticalAlignment="Top" />
+                             Content="All-Time - Season " HorizontalAlignment="Left" x:Name="rbStatsAllTime" VerticalAlignment="Top" />
                 <RadioButton Height="16" Margin="6,57,0,0" Checked="rbStatsBetween_Checked" Content="Between*"
                              HorizontalAlignment="Left" x:Name="rbStatsBetween" VerticalAlignment="Top" />
                 <DatePicker Height="25" Margin="23,79,0,0" Width="115" HorizontalAlignment="Left" x:Name="dtpStart"

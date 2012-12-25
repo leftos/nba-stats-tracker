@@ -41,6 +41,7 @@ namespace NBA_Stats_Tracker.Windows
         private static Dictionary<int, PlayerStats> _pst;
         private static Dictionary<int, TeamStats> _tst, partialTST;
         private static Dictionary<int, TeamStats> _tstopp, partialOppTST;
+        private static List<BoxScoreEntry> _bshist; 
         private static int lastShownPlayerSeason;
         private static int lastShownLeadersSeason;
         private static int lastShownTeamSeason;
@@ -72,10 +73,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         /// Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
         /// </summary>
-        /// <param name="tst">The team stats dictionary.</param>
-        /// <param name="tstopp">The opposing team stats dictionary.</param>
-        /// <param name="pst">The player stats dictionary.</param>
-        public LeagueOverviewWindow(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, Dictionary<int, PlayerStats> pst)
+        public LeagueOverviewWindow()
         {
             InitializeComponent();
 
@@ -113,17 +111,23 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
-            _tst = tst;
-            _tstopp = tstopp;
-            _pst = new Dictionary<int, PlayerStats>(pst);
+            LinkInternalsToMainWindow();
 
             PopulateSeasonCombo();
             PopulateDivisionCombo();
 
             changingTimeframe = true;
-            dtpEnd.SelectedDate = DateTime.Today;
-            dtpStart.SelectedDate = DateTime.Today.AddMonths(-1).AddDays(1);
-            rbStatsAllTime.IsChecked = true;
+            dtpEnd.SelectedDate = MainWindow.tf.EndDate;
+            dtpStart.SelectedDate = MainWindow.tf.StartDate;
+            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.tf.SeasonNum);
+            if (MainWindow.tf.isBetween)
+            {
+                rbStatsBetween.IsChecked = true;
+            }
+            else
+            {
+                rbStatsAllTime.IsChecked = true;
+            }
             cmbDivConf.SelectedIndex = 0;
             changingTimeframe = false;
 
@@ -260,6 +264,9 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
                 }
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
+                LinkInternalsToMainWindow();
                 rbStatsBetween.IsChecked = true;
                 reload = true;
                 lastShownTeamSeason = 0;
@@ -287,6 +294,9 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
                 }
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
+                LinkInternalsToMainWindow();
                 rbStatsBetween.IsChecked = true;
                 reload = true;
                 lastShownTeamSeason = 0;
@@ -459,144 +469,43 @@ namespace NBA_Stats_Tracker.Windows
                                   pl_pmsrList = new List<PlayerStatsRow>();
                                   pl_lpmsr = new List<PlayerStatsRow>();
 
-                                  if (alltime)
-                                  {
-                                      playerCount = _pst.Count;
-                                      foreach (var kvp in _pst)
-                                      {
-                                          if (kvp.Value.isHidden)
-                                              continue;
-                                          var psr = new PlayerStatsRow(kvp.Value);
-                                          var pl_psr = new PlayerStatsRow(kvp.Value, true);
+                                    playerCount = _pst.Count;
+                                    foreach (var kvp in _pst)
+                                    {
+                                        if (kvp.Value.isHidden)
+                                            continue;
+                                        var psr = new PlayerStatsRow(kvp.Value);
+                                        var pl_psr = new PlayerStatsRow(kvp.Value, true);
 
-                                          if (psr.isActive)
-                                          {
-                                              if (!InCurrentFilter(_tst[MainWindow.TeamOrder[psr.TeamF]]))
-                                                  continue;
-                                              psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
-                                              pl_psr.TeamFDisplay = psr.TeamFDisplay;
+                                        if (psr.isActive)
+                                        {
+                                            if (!InCurrentFilter(_tst[MainWindow.TeamOrder[psr.TeamF]]))
+                                                continue;
+                                            psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                                            pl_psr.TeamFDisplay = psr.TeamFDisplay;
 
-                                              var pmsr = new PlayerStatsRow(kvp.Value) {TeamFDisplay = psr.TeamFDisplay};
-                                              var pl_pmsr = new PlayerStatsRow(kvp.Value, true) {TeamFDisplay = psr.TeamFDisplay};
-                                              pmsrList.Add(pmsr);
-                                              pl_pmsrList.Add(pl_pmsr);
-                                          }
-                                          else
-                                          {
-                                              if (filterType != TeamFilter.League)
-                                                  continue;
+                                            var pmsr = new PlayerStatsRow(kvp.Value) {TeamFDisplay = psr.TeamFDisplay};
+                                            var pl_pmsr = new PlayerStatsRow(kvp.Value, true) {TeamFDisplay = psr.TeamFDisplay};
+                                            pmsrList.Add(pmsr);
+                                            pl_pmsrList.Add(pl_pmsr);
+                                        }
+                                        else
+                                        {
+                                            if (filterType != TeamFilter.League)
+                                                continue;
 
-                                              psr.TeamFDisplay = "- Inactive -";
-                                              pl_psr.TeamFDisplay = psr.TeamFDisplay;
-                                          }
-                                          psrList.Add(psr);
-                                          pl_psrList.Add(pl_psr);
-                                          worker1.ReportProgress(1);
-                                      }
-                                      PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
-                                      lpsr.Add(new PlayerStatsRow(leagueAverages));
-                                      lpmsr.Add(new PlayerStatsRow(leagueAverages));
-                                      pl_lpsr.Add(new PlayerStatsRow(leagueAverages, true));
-                                      pl_lpmsr.Add(new PlayerStatsRow(leagueAverages, true));
-                                  }
-                                  else
-                                  {
-                                      partialTST = new Dictionary<int, TeamStats>();
-                                      partialOppTST = new Dictionary<int, TeamStats>();
-                                      // Prepare Teams
-                                      foreach (var kvp in MainWindow.TeamOrder)
-                                      {
-                                          string curTeam = kvp.Key;
-                                          int teamID = MainWindow.TeamOrder[curTeam];
-
-                                          q = "select * from GameResults where ((T1Name LIKE \"" + curTeam + "\") OR (T2Name LIKE \"" +
-                                              curTeam + "\")) AND ((Date >= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(startDate) +
-                                              "\") AND (Date <= \"" + SQLiteDatabase.ConvertDateTimeToSQLite(endDate) +
-                                              "\")) ORDER BY Date DESC";
-                                          res = db.GetDataTable(q);
-
-                                          var ts2 = new TeamStats(curTeam);
-                                          var tsopp2 = new TeamStats(curTeam);
-                                          foreach (DataRow r in res.Rows)
-                                          {
-                                              TeamStats.AddToTeamStatsFromSQLBoxScore(r, ref ts2, ref tsopp2);
-                                          }
-                                          partialTST[teamID] = ts2;
-                                          partialOppTST[teamID] = tsopp2;
-                                      }
-
-                                      // Prepare Players
-                                      q =
-                                          "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID)";
-                                      q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate);
-                                      res = db.GetDataTable(q);
-
-                                      var pstBetween = new Dictionary<int, PlayerStats>();
-
-                                      foreach (DataRow r in res.Rows)
-                                      {
-                                          bool isPlayoff = Tools.getBoolean(r, "isPlayoff");
-                                          var pbs = new PlayerBoxScore(r);
-                                          if (pstBetween.ContainsKey(pbs.PlayerID))
-                                          {
-                                              pstBetween[pbs.PlayerID].AddBoxScore(pbs, isPlayoff);
-                                          }
-                                          else
-                                          {
-                                              string q2 = "select * from Players where ID = " + pbs.PlayerID;
-                                              DataTable res2 = db.GetDataTable(q2);
-
-                                              var p = new Player(res2.Rows[0]);
-
-                                              var ps = new PlayerStats(p);
-                                              ps.AddBoxScore(pbs, isPlayoff);
-                                              pstBetween.Add(pbs.PlayerID, ps);
-                                          }
-                                      }
-
-                                      PlayerStats.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST, MainWindow.TeamOrder, true);
-                                      PlayerStats.CalculateAllMetrics(ref pstBetween, partialTST, partialOppTST, MainWindow.TeamOrder, true,
-                                                                      true);
-
-                                      playerCount = pstBetween.Count;
-                                      foreach (var kvp in pstBetween)
-                                      {
-                                          var psr = new PlayerStatsRow(kvp.Value);
-                                          var pl_psr = new PlayerStatsRow(kvp.Value, true);
-                                          if (psr.isActive)
-                                          {
-                                              if (!InCurrentFilter(_tst[MainWindow.TeamOrder[psr.TeamF]]))
-                                                  continue;
-
-                                              psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
-                                              pl_psr.TeamFDisplay = psr.TeamFDisplay;
-
-                                              var pmsr = new PlayerStatsRow(kvp.Value)
-                                                         {TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName};
-                                              var pl_pmsr = new PlayerStatsRow(kvp.Value, true) {TeamFDisplay = pmsr.TeamFDisplay};
-                                              pmsrList.Add(pmsr);
-                                              pl_pmsrList.Add(pl_pmsr);
-                                          }
-                                          else
-                                          {
-                                              if (filterType != TeamFilter.League)
-                                                  continue;
-
-                                              psr.TeamFDisplay = "- Inactive -";
-                                              pl_psr.TeamFDisplay = psr.TeamFDisplay;
-                                          }
-                                          psrList.Add(psr);
-                                          pl_psrList.Add(psr);
-                                          worker1.ReportProgress(1);
-                                      }
-                                      var psrIDs = new List<int>();
-                                      psrList.ForEach(row => psrIDs.Add(row.ID));
-                                      PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(pstBetween, partialTST);
-                                      lpsr.Add(new PlayerStatsRow(leagueAverages));
-                                      lpmsr.Add(new PlayerStatsRow(leagueAverages));
-                                      pl_lpsr.Add(new PlayerStatsRow(leagueAverages));
-                                      pl_lpmsr.Add(new PlayerStatsRow(leagueAverages));
-                                  }
+                                            psr.TeamFDisplay = "- Inactive -";
+                                            pl_psr.TeamFDisplay = psr.TeamFDisplay;
+                                        }
+                                        psrList.Add(psr);
+                                        pl_psrList.Add(pl_psr);
+                                        worker1.ReportProgress(1);
+                                    }
+                                    PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
+                                    lpsr.Add(new PlayerStatsRow(leagueAverages));
+                                    lpmsr.Add(new PlayerStatsRow(leagueAverages));
+                                    pl_lpsr.Add(new PlayerStatsRow(leagueAverages, true));
+                                    pl_lpmsr.Add(new PlayerStatsRow(leagueAverages, true));
 
                                   psrList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
                                   psrList.Reverse();
@@ -612,8 +521,6 @@ namespace NBA_Stats_Tracker.Windows
 
                                   if (leaders)
                                   {
-                                      if (allTime)
-                                      {
                                           foreach (PlayerStatsRow psr in psrList)
                                           {
                                               if (psr.isActive)
@@ -624,20 +531,6 @@ namespace NBA_Stats_Tracker.Windows
                                               if (psr.isActive)
                                                   pl_leadersList.Add(ConvertToLeagueLeader(psr, _tst, true));
                                           }
-                                      }
-                                      else
-                                      {
-                                          foreach (PlayerStatsRow psr in psrList)
-                                          {
-                                              if (psr.isActive)
-                                                  leadersList.Add(ConvertToLeagueLeader(psr, partialTST));
-                                          }
-                                          foreach (PlayerStatsRow psr in pl_psrList)
-                                          {
-                                              if (psr.isActive)
-                                                  pl_leadersList.Add(ConvertToLeagueLeader(psr, partialTST, true));
-                                          }
-                                      }
                                   }
                               };
 
@@ -1090,24 +983,9 @@ namespace NBA_Stats_Tracker.Windows
         {
             dt_bs.Clear();
 
-            q = "select * from GameResults";
-
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            foreach (BoxScoreEntry bse in _bshist)
             {
-                q += " where SeasonNum = " + cmbSeasonNum.SelectedValue;
-            }
-            else
-            {
-                q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                          dtpEnd.SelectedDate.GetValueOrDefault(), true);
-            }
-            q += " ORDER BY Date DESC";
-
-            res = db.GetDataTable(q);
-
-            foreach (DataRow dr in res.Rows)
-            {
-                if (!InCurrentFilter(dr["T1Name"].ToString()) && !InCurrentFilter(dr["T2Name"].ToString()))
+                if (!InCurrentFilter(bse.bs.Team1) && !InCurrentFilter(bse.bs.Team2))
                 {
                     continue;
                 }
@@ -1116,12 +994,12 @@ namespace NBA_Stats_Tracker.Windows
 
                 try
                 {
-                    r["Date"] = dr["Date"].ToString().Split(' ')[0];
-                    r["Away"] = GetDisplayNameFromTeam(dr["T1Name"].ToString());
-                    r["AS"] = Convert.ToInt32(dr["T1PTS"].ToString());
-                    r["Home"] = GetDisplayNameFromTeam(dr["T2Name"].ToString());
-                    r["HS"] = Convert.ToInt32(dr["T2PTS"].ToString());
-                    r["GameID"] = dr["GameID"].ToString();
+                    r["Date"] = bse.bs.gamedate.ToString().Split(' ')[0];
+                    r["Away"] = GetDisplayNameFromTeam(bse.bs.Team1);
+                    r["AS"] = Convert.ToInt32(bse.bs.PTS1);
+                    r["Home"] = GetDisplayNameFromTeam(bse.bs.Team2);
+                    r["HS"] = Convert.ToInt32(bse.bs.PTS2);
+                    r["GameID"] = bse.bs.id;
                 }
                 catch (Exception e)
                 {
@@ -1150,70 +1028,25 @@ namespace NBA_Stats_Tracker.Windows
 
             var ls = new TeamStats("League");
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            foreach (int key in _tst.Keys)
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp, out MainWindow.TeamOrder);
+                if (_tst[key].isHidden)
+                    continue;
+                if (_tst[key].getPlayoffGames() == 0)
+                    continue;
+                if (!InCurrentFilter(_tst[key]))
+                    continue;
 
-                TeamStats.CalculateAllMetrics(ref _tst, _tstopp, true);
+                DataRow r = dt_pts.NewRow();
 
-                foreach (int key in _tst.Keys)
-                {
-                    if (_tst[key].isHidden)
-                        continue;
-                    if (_tst[key].getPlayoffGames() == 0)
-                        continue;
-                    if (!InCurrentFilter(_tst[key]))
-                        continue;
+                TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name), true);
 
-                    DataRow r = dt_pts.NewRow();
+                dt_pts.Rows.Add(r);
 
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name), true);
-
-                    dt_pts.Rows.Add(r);
-
-                    tmsrList.Add(new TeamMetricStatsRow(_tst[key], true));
-                }
-
-                ls = TeamStats.CalculateLeagueAverages(_tst, Span.Playoffs);
+                tmsrList.Add(new TeamMetricStatsRow(_tst[key], true));
             }
-            else
-            {
-                partialTST = new Dictionary<int, TeamStats>();
-                partialOppTST = new Dictionary<int, TeamStats>();
 
-                int i = 0;
-                foreach (var kvp in MainWindow.TeamOrder)
-                {
-                    if (!InCurrentFilter(kvp.Key))
-                        continue;
-
-                    q =
-                        String.Format(
-                            "select * from GameResults where ((T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") AND IsPlayoff LIKE \"True\");",
-                            kvp.Key);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
-
-                    res = db.GetDataTable(q);
-
-                    DataRow r = dt_pts.NewRow();
-
-                    ts = new TeamStats(kvp.Key);
-                    tsopp = new TeamStats();
-                    TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key), true);
-                    ts.CalcMetrics(tsopp, true);
-                    partialTST[i] = ts;
-                    partialOppTST[i] = tsopp;
-
-                    tmsrList.Add(new TeamMetricStatsRow(ts, true));
-
-                    dt_pts.Rows.Add(r);
-                    i++;
-                }
-
-                ls = TeamStats.CalculateLeagueAverages(partialTST, Span.Playoffs);
-            }
+            ls = TeamStats.CalculateLeagueAverages(_tst, Span.Playoffs);
 
             DataRow r2 = dt_lpts.NewRow();
 
@@ -1249,71 +1082,24 @@ namespace NBA_Stats_Tracker.Windows
             dt_lts.Clear();
             dt_ts.Clear();
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            foreach (int key in _tst.Keys)
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out _tst, out _tstopp, out MainWindow.TeamOrder);
+                if (_tst[key].isHidden)
+                    continue;
 
-                TeamStats.CalculateAllMetrics(ref _tst, _tstopp);
+                if (!InCurrentFilter(_tst[key]))
+                    continue;
 
-                foreach (int key in _tst.Keys)
-                {
-                    if (_tst[key].isHidden)
-                        continue;
+                DataRow r = dt_ts.NewRow();
 
-                    if (!InCurrentFilter(_tst[key]))
-                        continue;
+                TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name));
 
-                    DataRow r = dt_ts.NewRow();
+                dt_ts.Rows.Add(r);
 
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(_tst[key], ref r, GetDisplayNameFromTeam(_tst[key].name));
-
-                    dt_ts.Rows.Add(r);
-
-                    tmsrList.Add(new TeamMetricStatsRow(_tst[key]));
-                }
-
-                ls = TeamStats.CalculateLeagueAverages(_tst, Span.Season);
+                tmsrList.Add(new TeamMetricStatsRow(_tst[key]));
             }
-            else
-            {
-                var partialTST = new Dictionary<int, TeamStats>();
-                var partialOppTST = new Dictionary<int, TeamStats>();
 
-                int i = 0;
-                foreach (var kvp in MainWindow.TeamOrder)
-                {
-                    if (!InCurrentFilter(kvp.Key))
-                        continue;
-
-                    q =
-                        String.Format(
-                            "select * from GameResults where ((T1Name LIKE \"{0}\" OR T2Name LIKE \"{0}\") AND IsPlayoff LIKE \"False\");",
-                            kvp.Key);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
-
-                    res = db.GetDataTable(q);
-
-                    DataRow r = dt_ts.NewRow();
-
-                    ts = new TeamStats(kvp.Key);
-                    tsopp = new TeamStats();
-                    TeamStats.AddToTeamStatsFromSQLBoxScores(res, ref ts, ref tsopp);
-                    TeamOverviewWindow.CreateDataRowFromTeamStats(ts, ref r, GetDisplayNameFromTeam(kvp.Key));
-                    ts.CalcMetrics(tsopp);
-                    partialTST[i] = ts;
-                    partialOppTST[i] = tsopp;
-
-                    tmsrList.Add(new TeamMetricStatsRow(ts));
-
-                    dt_ts.Rows.Add(r);
-
-                    i++;
-                }
-                TeamStats.CalculateAllMetrics(ref partialTST, partialOppTST);
-
-                ls = TeamStats.CalculateLeagueAverages(partialTST, Span.Season);
-            }
+            ls = TeamStats.CalculateLeagueAverages(_tst, Span.Season);
 
             DataRow r2 = dt_lts.NewRow();
 
@@ -1426,6 +1212,9 @@ namespace NBA_Stats_Tracker.Windows
             if (!changingTimeframe)
             {
                 reload = true;
+                MainWindow.tf = new Timeframe(curSeason);
+                MainWindow.UpdateAllData();
+                LinkInternalsToMainWindow();
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
                 lastShownPlayoffSeason = 0;
@@ -1446,6 +1235,9 @@ namespace NBA_Stats_Tracker.Windows
             if (!changingTimeframe)
             {
                 reload = true;
+                MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+                MainWindow.UpdateAllData();
+                LinkInternalsToMainWindow();
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
                 lastShownPlayoffSeason = 0;
@@ -1479,15 +1271,25 @@ namespace NBA_Stats_Tracker.Windows
 
             curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
-            SQLiteIO.LoadSeason(MainWindow.currentDB, out _tst, out _tstopp, out _pst, out MainWindow.TeamOrder,
-                                ref MainWindow.bshist, curSeason);
-            MainWindow.CopySeasonToMainWindow(_tst, _tstopp, _pst);
+            if (curSeason == MainWindow.tf.SeasonNum && !MainWindow.tf.isBetween)
+                return;
+
+            SQLiteIO.LoadSeason(MainWindow.currentDB, curSeason);
+            LinkInternalsToMainWindow();
 
             if (rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
                 reload = true;
                 tbcLeagueOverview_SelectionChanged(null, null);
             }
+        }
+
+        private void LinkInternalsToMainWindow()
+        {
+            _tst = MainWindow.tst;
+            _tstopp = MainWindow.tstopp;
+            _pst = MainWindow.pst;
+            _bshist = MainWindow.bshist;
         }
 
         /// <summary>

@@ -211,8 +211,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dtpGameDate.SelectedDate = bs.gamedate;
             curSeason = bs.SeasonNum;
-            SortedDictionary<string, int> TeamOrder;
-            SQLiteIO.GetAllTeamStatsFromDatabase(MainWindow.currentDB, curSeason, out tst, out tstopp, out TeamOrder);
+            LinkInternalsToMainWindow();
             chkIsPlayoff.IsChecked = bs.isPlayoff;
 
             calculateScoreAway();
@@ -265,6 +264,16 @@ namespace NBA_Stats_Tracker.Windows
 
             loading = false;
         }
+
+        private void LinkInternalsToMainWindow()
+        {
+            tst = MainWindow.tst;
+            tstopp = MainWindow.tstopp;
+            pst = MainWindow.pst;
+            TeamOrder = MainWindow.TeamOrder;
+        }
+
+        protected SortedDictionary<string, int> TeamOrder;
 
         /// <summary>
         /// Updates the player box score data grid for the specified team.
@@ -1020,9 +1029,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (!onImport)
             {
-                SQLiteIO.LoadSeason(MainWindow.currentDB, out tst, out tstopp, out pst, out MainWindow.TeamOrder,
-                                    ref MainWindow.bshist, curSeason, doNotLoadBoxScores: true);
-                MainWindow.CopySeasonToMainWindow(tst, tstopp, pst);
+                SQLiteIO.LoadSeason(MainWindow.currentDB, curSeason, doNotLoadBoxScores: true);
 
                 playersT = "Players";
 

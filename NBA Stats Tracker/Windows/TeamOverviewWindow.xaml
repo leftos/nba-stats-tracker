@@ -1013,7 +1013,7 @@
                 <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1"
                        VerticalAlignment="Top" />
                 <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left" Margin="6,35,0,0"
-                             Name="rbStatsAllTime" VerticalAlignment="Top" IsChecked="True" Checked="rbStatsAllTime_Checked" />
+                             Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
                 <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0"
                              Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
                 <DatePicker Height="25" HorizontalAlignment="Left" Margin="23,79,0,0" Name="dtpStart"

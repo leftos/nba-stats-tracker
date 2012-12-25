@@ -77,14 +77,12 @@ namespace NBA_Stats_Tracker.Data
             {
                 if (i != oldSeason)
                 {
-                    LoadSeason(oldDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                               ref MainWindow.bshist, curSeason: i, doNotLoadBoxScores: true);
+                    LoadSeason(oldDB, i, doNotLoadBoxScores: true);
                     saveSeasonToDatabase(file, MainWindow.tst, MainWindow.tstopp, MainWindow.pst, MainWindow.curSeason, maxSeason,
                                          doNotSaveBoxScores: true);
                 }
             }
-            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.bshist,
-                       oldSeason, doNotLoadBoxScores: true);
+            LoadSeason(file, oldSeason, doNotLoadBoxScores: true);
         }
 
         /// <summary>
@@ -1340,10 +1338,23 @@ namespace NBA_Stats_Tracker.Data
         /// <summary>
         /// Default implementation of LoadSeason; calls LoadSeason to update MainWindow data
         /// </summary>
-        public static void LoadSeason()
+        public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
             LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                       ref MainWindow.bshist, curSeason: MainWindow.curSeason, doNotLoadBoxScores: true);
+                       ref MainWindow.bshist, out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.TeamRankings,
+                       out MainWindow.PlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
+                       out MainWindow.DisplayNames, season == 0 ? MainWindow.curSeason : season, doNotLoadBoxScores);
+        }
+
+        /// <summary>
+        /// Default implementation of LoadSeason; calls LoadSeason to update MainWindow data
+        /// </summary>
+        public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
+        {
+            LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
+                       ref MainWindow.bshist, out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.TeamRankings,
+                       out MainWindow.PlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
+                       out MainWindow.DisplayNames, season == 0 ? MainWindow.curSeason : season, doNotLoadBoxScores);
         }
 
         /// <summary>
@@ -1359,7 +1370,11 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="doNotLoadBoxScores">if set to <c>true</c>, box scores will not be parsed.</param>
         public static void LoadSeason(string file, out Dictionary<int, TeamStats> tst, out Dictionary<int, TeamStats> tstopp,
                                       out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> teamOrder,
-                                      ref IList<BoxScoreEntry> bshist, int curSeason = 0, bool doNotLoadBoxScores = false)
+                                      ref List<BoxScoreEntry> bshist, out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+                                      out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out int[][] teamRankings,
+                                      out PlayerRankings playerRankings, out int[][] playoffTeamRankings,
+                                      out PlayerRankings playoffPlayerRankings, out Dictionary<string, string> displayNames,
+            int curSeason = 0, bool doNotLoadBoxScores = false)
         {
             MainWindow.loadingSeason = true;
 
@@ -1372,16 +1387,27 @@ namespace NBA_Stats_Tracker.Data
             int maxSeason = getMaxSeason(file);
 
             if (curSeason == 0)
+            {
                 curSeason = maxSeason;
+                if (MainWindow.tf.SeasonNum == 0)
+                {
+                    MainWindow.tf.SeasonNum = maxSeason;
+                }
+            }
 
             LoadDivisionsAndConferences(file);
 
+            /*
             GetAllTeamStatsFromDatabase(file, curSeason, out tst, out tstopp, out teamOrder);
 
             pst = GetPlayersFromDatabase(file, tst, tstopp, teamOrder, curSeason, maxSeason);
 
             if (!doNotLoadBoxScores)
                 bshist = GetSeasonBoxScoresFromDatabase(file, curSeason, maxSeason);
+            */
+            MainWindow.tf.SeasonNum = curSeason;
+            PopulateAll(MainWindow.tf, out tst, out tstopp, out teamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bshist,
+                        out teamRankings, out playerRankings, out playoffTeamRankings, out playoffPlayerRankings, out displayNames);
 
             MainWindow.currentDB = file;
 
@@ -1629,15 +1655,15 @@ namespace NBA_Stats_Tracker.Data
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static IList<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file)
+        public static List<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file)
         {
             int maxSeason = getMaxSeason(file);
 
-            IList<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
+            List<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
 
             for (int i = maxSeason; i >= 1; i--)
             {
-                IList<BoxScoreEntry> temp = GetSeasonBoxScoresFromDatabase(MainWindow.currentDB, i, maxSeason);
+                List<BoxScoreEntry> temp = GetSeasonBoxScoresFromDatabase(MainWindow.currentDB, i, maxSeason);
 
                 foreach (BoxScoreEntry bse in temp)
                 {
@@ -1655,7 +1681,7 @@ namespace NBA_Stats_Tracker.Data
         /// <param name="curSeason">The current season ID.</param>
         /// <param name="maxSeason">The max season ID.</param>
         /// <returns></returns>
-        public static IList<BoxScoreEntry> GetSeasonBoxScoresFromDatabase(string file, int curSeason, int maxSeason)
+        public static List<BoxScoreEntry> GetSeasonBoxScoresFromDatabase(string file, int curSeason, int maxSeason)
         {
             var _db = new SQLiteDatabase(file);
 
@@ -1689,7 +1715,7 @@ namespace NBA_Stats_Tracker.Data
                 }
             }
 
-            IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
+            List<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
             Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
                                                         {
                                                             var bs = new TeamBoxScore(r);
@@ -1713,16 +1739,16 @@ namespace NBA_Stats_Tracker.Data
             return _bshist;
         }
 
-        public static IList<BoxScoreEntry> GetTimeframedBoxScoresFromDatabase(string file, DateTime startDate, DateTime endDate)
+        public static List<BoxScoreEntry> GetTimeframedBoxScoresFromDatabase(string file, DateTime startDate, DateTime endDate)
         {
             var _db = new SQLiteDatabase(file);
 
             string q = "select * from GameResults";
-            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
             DataTable res2 = _db.GetDataTable(q);
             var DisplayNames = GetTimeframedDisplayNames(file, startDate, endDate);
 
-            IList<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
+            List<BoxScoreEntry> _bshist = new List<BoxScoreEntry>(res2.Rows.Count);
             Parallel.ForEach(res2.Rows.Cast<DataRow>(), r =>
             {
                 var bs = new TeamBoxScore(r);
@@ -1774,7 +1800,7 @@ namespace NBA_Stats_Tracker.Data
         private static List<int> GetSeasonsInTimeframe(DateTime startDate, DateTime endDate)
         {
             string q = "SELECT SeasonNum FROM GameResults";
-            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
             q += " GROUP BY SeasonNum";
             List<int> seasons = new List<int>();
             MainWindow.db.GetDataTable(q).Rows.Cast<DataRow>().ToList().ForEach(row => seasons.Add(Tools.getInt(row, "SeasonNum")));
@@ -2022,7 +2048,8 @@ namespace NBA_Stats_Tracker.Data
                                        out SortedDictionary<string, int> TeamOrder, out Dictionary<int, PlayerStats> pst,
                                        out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
                                        out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats,
-                                       out IList<BoxScoreEntry> bshist, out TeamRankings teamRankings, out PlayerRankings playerRankings)
+                                       out List<BoxScoreEntry> bshist, out int[][] teamRankings, out PlayerRankings playerRankings,
+                                       out int[][] playoffTeamRankings, out PlayerRankings playoffPlayerRankings, out Dictionary<string, string> DisplayNames)
         {
             tst = new Dictionary<int, TeamStats>();
             tstopp = new Dictionary<int, TeamStats>();
@@ -2031,7 +2058,7 @@ namespace NBA_Stats_Tracker.Data
             splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
             splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
             bshist = new List<BoxScoreEntry>();
-            int curSeason = MainWindow.curSeason;
+            int curSeason = tf.SeasonNum;
             int maxSeason = getMaxSeason(MainWindow.currentDB);
             var db = MainWindow.db;
 
@@ -2040,70 +2067,37 @@ namespace NBA_Stats_Tracker.Data
 
             #region Prepare Teams & Players Dictionaries
 
+            DisplayNames = new Dictionary<string, string>();
+
             if (!tf.isBetween)
             {
                 GetAllTeamStatsFromDatabase(MainWindow.currentDB, tf.SeasonNum, out tst, out tstopp, out TeamOrder);
+                foreach (var ts in tst)
+                {
+                    DisplayNames.Add(ts.Value.name, ts.Value.displayName);
+                }
                 pst = GetPlayersFromDatabase(MainWindow.currentDB, tst, tstopp, TeamOrder, curSeason, maxSeason);
             }
             else
             {
-                q = "SELECT T1Name FROM GameResults GROUP BY T1Name";
-                res = db.GetDataTable(q);
-                foreach (DataRow dr in res.Rows)
-                {
-                    int teamID;
-                    try
-                    {
-                        teamID = TeamOrder.Values.Max() + 1;
-                    }
-                    catch
-                    {
-                        teamID = 0;
-                    }
-                    var teamName = dr["T1Name"].ToString();
-                    TeamOrder.Add(teamName, teamID);
-
-                    TeamStats ts;
-                    TeamStats tsopp;
-                    int lastInSeason;
-                    FindTeamByName(teamName, tf.StartDate, tf.EndDate, out ts, out tsopp, out lastInSeason);
-
-                    tst.Add(teamID, new TeamStats {ID = teamID, name = teamName, displayName = ts.displayName});
-                    tstopp.Add(teamID, new TeamStats {ID = teamID, name = teamName + "Opp", displayName = ts.displayName});
-                }
-
-                q = "SELECT T2Name FROM GameResults GROUP BY T2Name";
-                res = db.GetDataTable(q);
-                foreach (DataRow dr in res.Rows)
-                {
-                    if (!TeamOrder.Keys.Contains(Tools.getString(dr, "T2Name")))
-                    {
-                        int teamID;
-                        try
-                        {
-                            teamID = TeamOrder.Values.Max() + 1;
-                        }
-                        catch
-                        {
-                            teamID = 0;
-                        }
-                        var teamName = dr["T2Name"].ToString();
-                        TeamOrder.Add(teamName, teamID);
-
-                        TeamStats ts;
-                        TeamStats tsopp;
-                        int lastInSeason;
-                        FindTeamByName(teamName, tf.StartDate, tf.EndDate, out ts, out tsopp, out lastInSeason);
-
-                        tst.Add(teamID, new TeamStats {ID = teamID, name = teamName, displayName = ts.displayName});
-                        tstopp.Add(teamID, new TeamStats {ID = teamID, name = teamName + "Opp", displayName = ts.displayName});
-                    }
-                }
-
                 var seasons = GetSeasonsInTimeframe(tf.StartDate, tf.EndDate);
 
                 foreach (var i in seasons)
                 {
+                    q = "SELECT * FROM Teams" + AddSuffix(i, maxSeason);
+                    res = db.GetDataTable(q);
+                    foreach (DataRow dr in res.Rows)
+                    {
+                        var teamID = Tools.getInt(dr, "ID");
+                        if (!tst.Keys.Contains(teamID))
+                        {
+                            tst.Add(teamID, new TeamStats{ID = teamID, name = Tools.getString(dr, "Name"), displayName = Tools.getString(dr, "DisplayName")});
+                            tstopp.Add(teamID, new TeamStats { ID = teamID, name = Tools.getString(dr, "Name"), displayName = Tools.getString(dr, "DisplayName") });
+                            TeamOrder.Add(Tools.getString(dr, "Name"), teamID);
+                            DisplayNames.Add(Tools.getString(dr, "Name"), Tools.getString(dr, "DisplayName"));
+                        }
+                    }
+
                     q = "SELECT * FROM Players" + AddSuffix(i, maxSeason);
                     res = db.GetDataTable(q);
                     foreach (DataRow dr in res.Rows)
@@ -2121,18 +2115,7 @@ namespace NBA_Stats_Tracker.Data
             #endregion
 
             #region Prepare Split Dictionaries
-
-            Dictionary<string, string> DisplayNames;
-            if (tf.isBetween)
-            {
-                DisplayNames = GetTimeframedDisplayNames(MainWindow.currentDB, tf.StartDate, tf.EndDate);
-            }
-            else
-            {
-                DisplayNames = new Dictionary<string, string>();
-                GetSeasonDisplayNames(MainWindow.currentDB, curSeason, ref DisplayNames);
-            }
-
+            
             foreach (int id in TeamOrder.Values)
             {
                 splitTeamStats.Add(id, new Dictionary<string, TeamStats>());
@@ -2149,22 +2132,25 @@ namespace NBA_Stats_Tracker.Data
                         splitTeamStats[id].Add("vs " + DisplayNames[pair.Key], new TeamStats());
                     }
                 }
-                if (tf.isBetween)
+                if (!tf.isBetween)
                 {
-                    DateTime dCur = tf.StartDate;
-
-                    while (true)
+                    string q2 = "SELECT Date FROM GameResults WHERE SeasonNum = " + tf.SeasonNum + " GROUP BY Date ORDER BY Date ASC";
+                    var dataTable = db.GetDataTable(q2);
+                    tf.StartDate = Convert.ToDateTime(dataTable.Rows[0][0].ToString());
+                    tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());
+                }
+                DateTime dCur = tf.StartDate;
+                while (true)
+                {
+                    if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                     {
-                        if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
-                        {
-                            splitTeamStats[id].Add(dCur.Year + " " + dCur.Month, new TeamStats());
-                            break;
-                        }
-                        else
-                        {
-                            splitTeamStats[id].Add(dCur.Year + " " + dCur.Month, new TeamStats());
-                            dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
-                        }
+                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month, new TeamStats());
+                        break;
+                    }
+                    else
+                    {
+                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month, new TeamStats());
+                        dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
             }
@@ -2172,32 +2158,50 @@ namespace NBA_Stats_Tracker.Data
             foreach (int id in pst.Keys)
             {
                 splitPlayerStats.Add(id, new Dictionary<string, PlayerStats>());
-                splitPlayerStats[id].Add("Wins", new PlayerStats());
-                splitPlayerStats[id].Add("Losses", new PlayerStats());
-                splitPlayerStats[id].Add("Home", new PlayerStats());
-                splitPlayerStats[id].Add("Away", new PlayerStats());
-                splitPlayerStats[id].Add("Season", new PlayerStats());
-                splitPlayerStats[id].Add("Playoffs", new PlayerStats());
-                foreach (var pair in TeamOrder)
-                {
-                    splitPlayerStats[id].Add("vs " + DisplayNames[pair.Key], new PlayerStats());
-                }
+                splitPlayerStats[id].Add("Wins", new PlayerStats{ID = id});
+                splitPlayerStats[id].Add("Losses", new PlayerStats{ID = id});
+                splitPlayerStats[id].Add("Home", new PlayerStats{ID = id});
+                splitPlayerStats[id].Add("Away", new PlayerStats{ID = id});
+                splitPlayerStats[id].Add("Season", new PlayerStats{ID = id});
+                splitPlayerStats[id].Add("Playoffs", new PlayerStats{ID = id});
+
+                string qr_teams =
+                String.Format(
+                    "select Team from PlayerResults INNER JOIN GameResults ON " + "(PlayerResults.GameID = GameResults.GameID) " +
+                    " WHERE PlayerID = {0}", id);
                 if (tf.isBetween)
                 {
-                    DateTime dCur = tf.StartDate;
+                    qr_teams = SQLiteDatabase.AddDateRangeToSQLQuery(qr_teams, tf.StartDate, tf.EndDate);
+                }
+                else
+                {
+                    string s = " AND SeasonNum = " + tf.SeasonNum;
+                    qr_teams += s;
+                }
+                qr_teams += " GROUP BY Team";
+                res = db.GetDataTable(qr_teams);
+                foreach (DataRow r in res.Rows)
+                {
+                    splitPlayerStats[id].Add("with " + DisplayNames[Tools.getString(r, "Team")], new PlayerStats{ID = id});
+                }
+                
+                foreach (var pair in TeamOrder)
+                {
+                    splitPlayerStats[id].Add("vs " + DisplayNames[pair.Key], new PlayerStats{ID = id});
+                }
+                DateTime dCur = tf.StartDate;
 
-                    while (true)
+                while (true)
+                {
+                    if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                     {
-                        if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
-                        {
-                            splitPlayerStats[id].Add(dCur.Year + " " + dCur.Month, new PlayerStats());
-                            break;
-                        }
-                        else
-                        {
-                            splitPlayerStats[id].Add(dCur.Year + " " + dCur.Month, new PlayerStats());
-                            dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
-                        }
+                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month, new PlayerStats{ID = id});
+                        break;
+                    }
+                    else
+                    {
+                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month, new PlayerStats{ID = id});
+                        dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
             }
@@ -2205,14 +2209,18 @@ namespace NBA_Stats_Tracker.Data
             #endregion
 
             #region Box Scores
+
             if (!tf.isBetween)
             {
-                bshist = GetSeasonBoxScoresFromDatabase(MainWindow.currentDB, MainWindow.curSeason, maxSeason);
+                bshist = GetSeasonBoxScoresFromDatabase(MainWindow.currentDB, tf.SeasonNum, maxSeason);
             }
             else
             {
                 bshist = GetTimeframedBoxScoresFromDatabase(MainWindow.currentDB, tf.StartDate, tf.EndDate);
             }
+
+            bshist.Sort((bse1, bse2) => bse1.bs.gamedate.CompareTo(bse2.bs.gamedate));
+            bshist.Reverse();
 
             if (tf.isBetween)
             {
@@ -2245,9 +2253,21 @@ namespace NBA_Stats_Tracker.Data
                 var tsOH = splitTeamStats[t2ID]["vs " + DisplayNames[team1]];
                 var tsOA = splitTeamStats[t1ID]["vs " + DisplayNames[team2]];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsOH, ref tsOA, true);
-                var tsDH = splitTeamStats[t2ID][bs.gamedate.Year + " " + bs.gamedate.Month];
-                var tsDA = splitTeamStats[t1ID][bs.gamedate.Year + " " + bs.gamedate.Month];
+                var tsDH = splitTeamStats[t2ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month];
+                var tsDA = splitTeamStats[t1ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsDA, ref tsDH, true);
+                if (!bse.bs.isPlayoff)
+                {
+                    var tsSH = splitTeamStats[t2ID]["Season"];
+                    var tsSA = splitTeamStats[t1ID]["Season"];
+                    TeamStats.AddTeamStatsFromBoxScore(bs, ref tsSA, ref tsSH, true);
+                }
+                else
+                {
+                    var tsSH = splitTeamStats[t2ID]["Playoffs"];
+                    var tsSA = splitTeamStats[t1ID]["Playoffs"];
+                    TeamStats.AddTeamStatsFromBoxScore(bs, ref tsSA, ref tsSH, true);
+                }
                 if (bs.PTS1 > bs.PTS2)
                 {
                     var ts2 = splitTeamStats[t2ID]["Losses"];
@@ -2258,7 +2278,7 @@ namespace NBA_Stats_Tracker.Data
                     {
                         if (pbs.Team == team1)
                         {
-                           splitPlayerStats[pbs.PlayerID]["Wins"].AddBoxScore(pbs);
+                            splitPlayerStats[pbs.PlayerID]["Wins"].AddBoxScore(pbs);
                         }
                         else
                         {
@@ -2290,21 +2310,26 @@ namespace NBA_Stats_Tracker.Data
                     {
                         splitPlayerStats[pbs.PlayerID]["Away"].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[team2]].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID]["with " + DisplayNames[team1]].AddBoxScore(pbs);
                     }
                     else
                     {
                         splitPlayerStats[pbs.PlayerID]["Home"].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[team1]].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID]["with " + DisplayNames[team2]].AddBoxScore(pbs);
                     }
                     splitPlayerStats[pbs.PlayerID][bs.isPlayoff ? "Playoffs" : "Season"].AddBoxScore(pbs);
 
-                    splitPlayerStats[pbs.PlayerID][bs.gamedate.Year + " " + bs.gamedate.Month].AddBoxScore(pbs);
+                    splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month].AddBoxScore(pbs);
                 }
             }
+
             #endregion
 
-            teamRankings = new TeamRankings(tst);
+            teamRankings = TeamStats.CalculateTeamRankings(tst);
+            playoffTeamRankings = TeamStats.CalculateTeamRankings(tst, true);
             playerRankings = new PlayerRankings(pst);
+            playoffPlayerRankings = new PlayerRankings(pst, true);
         }
 
         private static void FindTeamByName(string teamName, DateTime startDate, DateTime endDate, out TeamStats ts, out TeamStats tsopp, out int lastInSeason)
@@ -2312,7 +2337,7 @@ namespace NBA_Stats_Tracker.Data
             int maxSeason = getMaxSeason(MainWindow.currentDB);
 
             string q = "SELECT SeasonNum FROM GameResults";
-            SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
+            q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
             q += " GROUP BY SeasonNum";
             DataTable res = MainWindow.db.GetDataTable(q);
             var rows = res.Rows.Cast<DataRow>().OrderByDescending(row => row["SeasonNum"]).ToList();
@@ -2325,7 +2350,7 @@ namespace NBA_Stats_Tracker.Data
                 var rows2 = res2.Rows.Cast<DataRow>().ToList();
                 try
                 {
-                    DataRow dr = rows2.Single(row => row["Name"] == teamName);
+                    rows2.Single(row => row["Name"].ToString() == teamName);
                     GetTeamStatsFromDatabase(MainWindow.currentDB, teamName, curSeason, out ts, out tsopp);
                     lastInSeason = curSeason;
                     return;

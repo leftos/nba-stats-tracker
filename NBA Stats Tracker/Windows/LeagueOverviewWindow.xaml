@@ -2729,7 +2729,7 @@
                 <Grid Margin="0">
                     <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0"
                            Name="label1" VerticalAlignment="Top" />
-                    <RadioButton Content="All-Time - Season" Height="16" HorizontalAlignment="Left" IsChecked="True"
+                    <RadioButton Content="All-Time - Season" Height="16" HorizontalAlignment="Left"
                                  Margin="6,35,0,0" Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" GroupName="Timeframe" />
                     <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="6,57,0,0"
                                  Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" GroupName="Timeframe" />

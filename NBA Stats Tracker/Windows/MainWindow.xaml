@@ -30,17 +30,6 @@
                 <MenuItem Header="_History" Visibility="Collapsed">
                     <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
                 </MenuItem>
-                <MenuItem Header="_Compare To" Visibility="Collapsed">
-                    <MenuItem Header="_Another team in the same file" Name="mnuCompareSameFile" />
-                    <MenuItem Header="The _same team in another file" Name="mnuCompareOtherFile"
-                              Click="btnCompareOtherFile_Click" />
-                    <MenuItem Header="The _real NBA team" Name="mnuCompareRealTeam" Click="btnCompareToReal_Click" />
-                    <Separator />
-                    <MenuItem Header="_Trends" Name="mnuCompareTrends" Click="btnTrends_Click" />
-                </MenuItem>
-                <MenuItem Header="_Export (TSV)" Visibility="Collapsed">
-                    <MenuItem Header="_League Stats to TSV" Name="mnuExportLeague" Click="btnLeagueTSV_Click" />
-                </MenuItem>
                 <MenuItem Header="_Options">
                     <MenuItem Header="_NBA 2K12 Options">
                         <MenuItem Header="_Import/Export Method">

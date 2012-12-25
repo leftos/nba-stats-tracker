@@ -112,6 +112,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private readonly int maxSeason;
         private int curSeason;
+        private bool changingTimeframe;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerSearchWindow" /> class.
@@ -215,22 +216,34 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbSeasonNum.SelectedIndex == -1)
-                return;
+            if (!changingTimeframe)
+            {
+                changingTimeframe = true;
+                if (cmbSeasonNum.SelectedIndex == -1)
+                    return;
 
-            curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
 
-            MainWindow.curSeason = curSeason;
-            SQLiteIO.LoadSeason();
+                curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
-            List<string> teams =
-                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).
-                    ToList();
+                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                {
+                    MainWindow.tf = new Timeframe(curSeason);
+                    MainWindow.ChangeSeason(curSeason);
+                    SQLiteIO.LoadSeason();
+                }
 
-            teams.Sort();
-            teams.Insert(0, "- Any -");
+                List<string> teams =
+                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
+                        .ToList();
 
-            cmbTeam.ItemsSource = teams;
+                teams.Sort();
+                teams.Insert(0, "- Any -");
+
+                cmbTeam.ItemsSource = teams;
+                cmbTeam_SelectionChanged(sender, null);
+                changingTimeframe = false;
+            }
         }
 
         /// <summary>
@@ -242,197 +255,81 @@ namespace NBA_Stats_Tracker.Windows
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             dgvPlayerStats.ItemsSource = null;
+            var pst = MainWindow.pst;
+            IEnumerable<KeyValuePair<int, PlayerStats>> filteredPST = pst.AsEnumerable();
 
-            string playersT = "Players";
-            string pl_playersT = "PlayoffPlayers";
-            if (curSeason != maxSeason)
-            {
-                playersT += "S" + curSeason;
-                pl_playersT += "S" + curSeason;
-            }
-
-            string q = "select * from " + playersT;
-            string pl_q = "select * from " + pl_playersT;
-
-            string where = " WHERE ";
             if (!String.IsNullOrWhiteSpace(txtLastName.Text))
             {
-                if (cmbLastNameSetting.SelectedItem.ToString() == "Contains")
-                {
-                    where += "LastName LIKE \"%" + txtLastName.Text + "%\" AND ";
-                }
-                else
-                {
-                    where += "LastName LIKE \"" + txtLastName.Text + "\" AND ";
-                }
+                filteredPST = cmbLastNameSetting.SelectedItem.ToString() == "Contains"
+                                  ? filteredPST.Where(pair => pair.Value.LastName.Contains(txtLastName.Text))
+                                  : filteredPST.Where(pair => pair.Value.LastName == txtLastName.Text);
             }
 
             if (!String.IsNullOrWhiteSpace(txtFirstName.Text))
             {
-                if (cmbFirstNameSetting.SelectedItem.ToString() == "Contains")
-                {
-                    where += "FirstName LIKE \"%" + txtFirstName.Text + "%\" AND ";
-                }
-                else
-                {
-                    where += "FirstName LIKE \"" + txtFirstName.Text + "\" AND ";
-                }
+                filteredPST = cmbFirstNameSetting.SelectedItem.ToString() == "Contains"
+                                  ? filteredPST.Where(pair => pair.Value.FirstName.Contains(txtFirstName.Text))
+                                  : filteredPST.Where(pair => pair.Value.FirstName == txtFirstName.Text);
             }
 
             if (cmbPosition1.SelectedIndex != -1 && cmbPosition1.SelectedItem.ToString() != "Any")
             {
-                where += "Position1 LIKE \"" + cmbPosition1.SelectedItem + "\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.Position1.ToString() == cmbPosition1.SelectedItem.ToString());
             }
 
             if (cmbPosition2.SelectedIndex != -1 && cmbPosition2.SelectedItem.ToString() != "Any")
             {
-                where += "Position2 LIKE \"" + cmbPosition2.SelectedItem + "\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.Position2.ToString() == cmbPosition2.SelectedItem.ToString());
             }
 
             if (chkIsActive.IsChecked.GetValueOrDefault())
             {
-                where += "isActive LIKE \"True\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.isActive);
             }
             else if (chkIsActive.IsChecked != null)
             {
-                where += "isActive LIKE \"False\" AND ";
+                filteredPST = filteredPST.Where(pair => !pair.Value.isActive);
             }
 
             if (chkIsInjured.IsChecked.GetValueOrDefault())
             {
-                where += "isInjured LIKE \"True\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.isInjured);
             }
             else if (chkIsInjured.IsChecked != null)
             {
-                where += "isInjured LIKE \"False\" AND ";
+                filteredPST = filteredPST.Where(pair => !pair.Value.isInjured);
             }
 
             if (chkIsAllStar.IsChecked.GetValueOrDefault())
             {
-                where += "isAllStar LIKE \"True\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.isAllStar);
             }
             else if (chkIsAllStar.IsChecked != null)
             {
-                where += "isAllStar LIKE \"False\" AND ";
+                filteredPST = filteredPST.Where(pair => !pair.Value.isAllStar);
             }
 
             if (chkIsChampion.IsChecked.GetValueOrDefault())
             {
-                where += "isNBAChampion LIKE \"True\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.isNBAChampion);
             }
             else if (chkIsChampion.IsChecked != null)
             {
-                where += "isNBAChampion LIKE \"False\" AND ";
-            }
-
+                filteredPST = filteredPST.Where(pair => !pair.Value.isNBAChampion);
+            } 
+            
             if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
-                chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
+                 chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
             {
-                where += "TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) + "\" AND ";
+                filteredPST = filteredPST.Where(pair => pair.Value.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
             }
-
-            where += string.Format("YearOfBirth {0} {1} AND ", cmbYOBOp.SelectedItem, txtYOBVal.Text);
-            where += string.Format("YearsPro {0} {1} AND ", cmbYearsProOp.SelectedItem, txtYearsProVal.Text);
-
-            foreach (string item in lstTotals.Items.Cast<string>())
-            {
-                string filter = item;
-                filter = filter.Replace(" REB ", " (OREB+DREB) ");
-                filter = filter.Replace("3P", "TP");
-                filter = filter.Replace(" TO ", " TOS ");
-
-                where += filter + " AND ";
-            }
-
-            foreach (string item in lstAvg.Items.Cast<string>())
-            {
-                string filter = item;
-                string[] parts = filter.Split(' ');
-                switch (parts[0])
-                {
-                    case "PPG":
-                        filter = filter.Replace("PPG", "cast(PTS as REAL)/GP");
-                        break;
-
-                    case "FG%":
-                        filter = filter.Replace("FG%", "cast(FGM as REAL)/FGA");
-                        break;
-
-                    case "FGeff":
-                        filter = filter.Replace("FGeff", "(cast(FGM as REAL)/FGA)*FGM/GP");
-                        break;
-
-                    case "3P%":
-                        filter = filter.Replace("3P%", "cast(TPM as REAL)/TPA");
-                        break;
-
-                    case "3Peff":
-                        filter = filter.Replace("3Peff", "(cast(TPM as REAL)/TPA)*TPM/GP");
-                        break;
-
-                    case "FT%":
-                        filter = filter.Replace("FT%", "cast(FTM as REAL)/FTA");
-                        break;
-
-                    case "FTeff":
-                        filter = filter.Replace("FTeff", "(cast(FTM as REAL)/FTA)*FTM/GP");
-                        break;
-
-                    case "ORPG":
-                        filter = filter.Replace("ORPG", "cast(OREB as REAL)/GP");
-                        break;
-
-                    case "RPG":
-                        filter = filter.Replace("RPG", "cast((OREB+DREB) as REAL)/GP");
-                        break;
-
-                    case "BPG":
-                        filter = filter.Replace("BPG", "cast(BLK as REAL)/GP");
-                        break;
-
-                    case "APG":
-                        filter = filter.Replace("APG", "cast(AST as REAL)/GP");
-                        break;
-
-                    case "SPG":
-                        filter = filter.Replace("SPG", "cast(STL as REAL)/GP");
-                        break;
-
-                    case "TPG":
-                        filter = filter.Replace("TPG", "cast(TOS as REAL)/GP");
-                        break;
-
-                    case "FPG":
-                        filter = filter.Replace("FPG", "cast(FOUL as REAL)/GP");
-                        break;
-                }
-
-                where += filter + " AND ";
-            }
-
-            where = where.Remove(where.Length - 4);
-
-            var db = new SQLiteDatabase(MainWindow.currentDB);
-            DataTable res;
-            //DataTable pl_res;
-            try
-            {
-                res = db.GetDataTable(q + where);
-                //pl_res = db.GetDataTable(pl_q + where);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Invalid query.\n\n" + ex.Message);
-                return;
-            }
-
+            
             var psrList = new List<PlayerStatsRow>();
             var pl_psrList = new List<PlayerStatsRow>();
-            foreach (DataRow dr in res.Rows)
+            foreach (var ps in filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value).Values)
             {
-                int id = Tools.getInt(dr, "ID");
-                psrList.Add(new PlayerStatsRow(MainWindow.pst[id]));
-                pl_psrList.Add(new PlayerStatsRow(MainWindow.pst[id], true));
+                psrList.Add(new PlayerStatsRow(ps));
+                pl_psrList.Add(new PlayerStatsRow(ps, true));
             }
 
             ICollectionView psrView = CollectionViewSource.GetDefaultView(psrList);
@@ -488,16 +385,65 @@ namespace NBA_Stats_Tracker.Windows
             var psr = (PlayerStatsRow) o;
             var ps = new PlayerStats(psr);
             bool keep = true;
+            var context = new ExpressionContext();
+            IGenericExpression<bool> ige = context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
+            if (ige.Evaluate() == false)
+                return false;
+            context = new ExpressionContext();
+            ige = context.CompileGeneric<bool>(psr.YearOfBirth.ToString() + cmbYOBOp.SelectedItem + txtYOBVal.Text);
+            if (ige.Evaluate() == false)
+                return false;
+
+            Parallel.ForEach(lstTotals.Items.Cast<string>(), (item, loopState) =>
+                                                             {
+                                                                 string[] parts = item.Split(' ');
+                                                                 parts[0] = parts[0].Replace("3P", "TP");
+                                                                 parts[0] = parts[0].Replace("TO", "TOS");
+                                                                 context = new ExpressionContext();
+                                                                 ige = context.CompileGeneric<bool>(
+                                                                     psr.GetType().GetProperty(parts[0]).GetValue(psr, null) + parts[1] +
+                                                                     parts[2]);
+                                                                 keep = ige.Evaluate();
+                                                                 if (!keep)
+                                                                     loopState.Stop();
+                                                             });
+
+            if (!keep)
+                return keep;
+
+            Parallel.ForEach(lstAvg.Items.Cast<string>(), (item, loopState) =>
+                                                          {
+                                                              string[] parts = item.Split(' ');
+                                                              parts[0] = parts[0].Replace("3P", "TP");
+                                                              parts[0] = parts[0].Replace("%", "p");
+                                                              context = new ExpressionContext();
+                                                              var value = psr.GetType().GetProperty(parts[0]).GetValue(psr, null);
+                                                              if (!Double.IsNaN(Convert.ToDouble(value)))
+                                                              {
+                                                                  ige = context.CompileGeneric<bool>(value + parts[1] + parts[2]);
+                                                                  keep = ige.Evaluate();
+                                                              }
+                                                              else
+                                                              {
+                                                                  keep = false;
+                                                              }
+                                                              if (!keep)
+                                                                  loopState.Stop();
+                                                          });
+
+            if (!keep)
+                return keep;
+
             Parallel.ForEach(lstMetrics.Items.Cast<string>(), (item, loopState) =>
                                                               {
                                                                   string[] parts = item.Split(' ');
+                                                                  parts[0] = parts[0].Replace("%", "p");
                                                                   //double val = Convert.ToDouble(parts[2]);
-                                                                  var context = new ExpressionContext();
+                                                                  context = new ExpressionContext();
                                                                   if (!double.IsNaN(ps.metrics[parts[0]]))
                                                                   {
-                                                                      IGenericExpression<bool> ige =
-                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
-                                                                                                       parts[2]);
+                                                                      ige = context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
+                                                                                                         parts[2]);
                                                                       keep = ige.Evaluate();
                                                                   }
                                                                   else
@@ -954,27 +900,114 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (changingTimeframe)
+                return;
+            changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
+            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
+            changingTimeframe = false;
+            MainWindow.UpdateAllData();
+            cmbTeam_SelectionChanged(sender, null);
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (changingTimeframe)
+                return;
+            changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
+            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
+            changingTimeframe = false;
+            MainWindow.UpdateAllData();
+            cmbTeam_SelectionChanged(sender, null);
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            if (dtpEnd.SelectedDate == null) dtpEnd.SelectedDate = DateTime.Today;
-            if (dtpStart.SelectedDate == null)
-                dtpStart.SelectedDate = dtpEnd.SelectedDate.Value.Subtract(new TimeSpan(30, 0, 0, 0));
+            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            if (!changingTimeframe)
+            {
+                MainWindow.UpdateAllData();
+                List<string> teams =
+                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
+                        .ToList();
+
+                teams.Sort();
+                teams.Insert(0, "- Any -");
+
+                cmbTeam.ItemsSource = teams;
+                cmbTeam_SelectionChanged(sender, null);
+            }
+        }
+
+        private void cmbTFSeason_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!changingTimeframe)
+            {
+                changingTimeframe = true;
+                if (cmbTFSeason.SelectedIndex == -1)
+                    return;
+
+                cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
+                rbStatsAllTime.IsChecked = true;
+
+                curSeason = ((KeyValuePair<int, string>)(((cmbTFSeason)).SelectedItem)).Key;
+
+                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                {
+                    MainWindow.tf = new Timeframe(curSeason);
+                    MainWindow.ChangeSeason(curSeason);
+                    SQLiteIO.LoadSeason();
+                }
+
+                List<string> teams =
+                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
+                        .ToList();
+
+                teams.Sort();
+                teams.Insert(0, "- Any -");
+
+                cmbTeam.ItemsSource = teams;
+                cmbTeam_SelectionChanged(sender, null);
+                changingTimeframe = false;
+            }
+        }
+
+        private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
+        {
+            MainWindow.tf = new Timeframe(curSeason);
+            if (!changingTimeframe)
+            {
+                MainWindow.UpdateAllData();
+                cmbSeasonNum_SelectionChanged(null, null);
+            }
+        }
+
+        private void Window_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            changingTimeframe = true;
+            dtpEnd.SelectedDate = MainWindow.tf.EndDate;
+            dtpStart.SelectedDate = MainWindow.tf.StartDate;
+            PopulateSeasonCombo();
+            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.tf.SeasonNum);
+            cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
+            if (MainWindow.tf.isBetween)
+            {
+                rbStatsBetween.IsChecked = true;
+            }
+            else
+            {
+                rbStatsAllTime.IsChecked = true;
+            }
+            changingTimeframe = false;
         }
     }
 }

@@ -1,6 +1,8 @@
 NBA Stats Tracker - Version History
 
 	v1.2
+		- Improvement: Huge rework of underlying code regarding grabbing data from database; NBA Stats Tracker should be now much more responsive and faster in every feature, as well as allow for additional information (e.g. rankings when using date timeframe)
+		- Change: Last timeframe used now persists between different analysis features
 		- Change: When using "Update with Box Score", the team tables are automatically populated with all current players of each team
 		- Removal: Export (TSV) menu was removed as it has long been obsolete
 
