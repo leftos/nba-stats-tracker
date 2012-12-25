@@ -80,6 +80,12 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
+            if (MainWindow.tf.isBetween)
+            {
+                MainWindow.tf = new Timeframe(MainWindow.tf.SeasonNum);
+                MainWindow.UpdateAllData();
+            }
+
             cbHistory.Visibility = Visibility.Hidden;
 
             _curMode = curMode;

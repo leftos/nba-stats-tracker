@@ -208,7 +208,7 @@
                                                     CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Header="Starter" Binding="{Binding isStarter}" />
                             <DataGridCheckBoxColumn Header="Injured" Binding="{Binding playedInjured}" />
-                            <DataGridCheckBoxColumn Header="Out" Binding="{Binding isOut}" />
+                            <DataGridCheckBoxColumn Header="DNP" Binding="{Binding isOut}" />
                             <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
                             <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
@@ -559,7 +559,7 @@
                                                     CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />
                             <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
-                            <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="Out" />
+                            <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="DNP" />
                             <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
                             <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding REB}" Header="REB" />

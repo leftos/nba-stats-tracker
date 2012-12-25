@@ -23,12 +23,6 @@
                                   FrozenColumnCount="1" AutoGenerateColumns="True" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=.}"
                                   Margin="6" Name="dgvTeamStats" VerticalAlignment="Stretch" MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick"
                                   IsReadOnly="True" Sorting="StatColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated">
-                            <!--
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Copy" Click="ContextMenuCopy_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
                         </DataGrid>
                         <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True" FrozenColumnCount="1"
                                   HorizontalAlignment="Stretch" IsReadOnly="True" ItemsSource="{Binding Path=.}" Margin="6,0,6,6"

@@ -1020,8 +1020,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void PreparePlayoffStats()
         {
-            var tmsrList = new List<TeamMetricStatsRow>();
-            var lssr = new List<TeamMetricStatsRow>();
+            var tmsrList = new List<TeamStatsRow>();
+            var lssr = new List<TeamStatsRow>();
 
             dt_pts.Clear();
             dt_lpts.Clear();
@@ -1043,7 +1043,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 dt_pts.Rows.Add(r);
 
-                tmsrList.Add(new TeamMetricStatsRow(_tst[key], true));
+                tmsrList.Add(new TeamStatsRow(_tst[key], true));
             }
 
             ls = TeamStats.CalculateLeagueAverages(_tst, Span.Playoffs);
@@ -1058,7 +1058,7 @@ namespace NBA_Stats_Tracker.Windows
             var dv_pts = new DataView(dt_pts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};
             var dv_lpts = new DataView(dt_lpts) {AllowNew = false, AllowEdit = false};
 
-            lssr.Add(new TeamMetricStatsRow(ls, true));
+            lssr.Add(new TeamStatsRow(ls, true));
 
             dgvPlayoffStats.DataContext = dv_pts;
             dgvLeaguePlayoffStats.DataContext = dv_lpts;
@@ -1074,8 +1074,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void PrepareTeamStats()
         {
-            var tmsrList = new List<TeamMetricStatsRow>();
-            var lssr = new List<TeamMetricStatsRow>();
+            var tmsrList = new List<TeamStatsRow>();
+            var lssr = new List<TeamStatsRow>();
 
             var ls = new TeamStats("League");
 
@@ -1096,7 +1096,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 dt_ts.Rows.Add(r);
 
-                tmsrList.Add(new TeamMetricStatsRow(_tst[key]));
+                tmsrList.Add(new TeamStatsRow(_tst[key]));
             }
 
             ls = TeamStats.CalculateLeagueAverages(_tst, Span.Season);
@@ -1107,7 +1107,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dt_lts.Rows.Add(r2);
 
-            lssr.Add(new TeamMetricStatsRow(ls));
+            lssr.Add(new TeamStatsRow(ls));
 
             // DataTable's ready, set DataView and fill DataGrid
             var dv_ts = new DataView(dt_ts) {AllowNew = false, AllowEdit = false, Sort = "Weff DESC"};

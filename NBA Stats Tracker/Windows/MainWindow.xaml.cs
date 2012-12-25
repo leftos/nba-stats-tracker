@@ -1517,16 +1517,14 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
-            if (isCustom)
+            if (tf.isBetween)
             {
-                SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
-                txtFile.Text = currentDB;
-                mwInstance.updateStatus("File saved successfully. Season " + curSeason.ToString() + " updated.");
+                tf = new Timeframe(curSeason);
+                UpdateAllData();
             }
-            else
-            {
-                mnuFileSaveAs_Click(null, null);
-            }
+            SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
+            txtFile.Text = currentDB;
+            mwInstance.updateStatus("File saved successfully. Season " + curSeason.ToString() + " updated.");
         }
 
         /// <summary>
@@ -2307,7 +2305,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAdvStatCalc_Click(object sender, RoutedEventArgs e)
         {
-
+            AdvancedStatCalculatorWindow ascw = new AdvancedStatCalculatorWindow();
+            ascw.ShowDialog();
         }
 
         public static void UpdateAllData()

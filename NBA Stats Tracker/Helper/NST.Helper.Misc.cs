@@ -54,13 +54,13 @@ namespace NBA_Stats_Tracker.Helper
         /// Finds a team's display name from its name.
         /// </summary>
         /// <param name="teamStats">The team stats dictionary.</param>
-        /// <param name="displayName">The display name.</param>
+        /// <param name="name">The display name.</param>
         /// <exception cref="System.Exception">Requested team that is hidden.</exception>
-        public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStats, string displayName)
+        public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStats, string name)
         {
             for (int i = 0; i < teamStats.Count; i++)
             {
-                if (teamStats[i].name == displayName)
+                if (teamStats[i].name == name)
                 {
                     if (teamStats[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
@@ -68,7 +68,7 @@ namespace NBA_Stats_Tracker.Helper
                     return teamStats[i].displayName;
                 }
             }
-            throw new Exception("Team not found: " + displayName);
+            throw new Exception("Team not found: " + name);
         }
 
         /// <summary>

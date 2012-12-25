@@ -911,7 +911,7 @@ namespace NBA_Stats_Tracker.Windows
             rbStatsBetween.IsChecked = true;
             changingTimeframe = false;
             MainWindow.UpdateAllData();
-            cmbTeam_SelectionChanged(sender, null);
+            PopulateTeamsCombo();
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -927,7 +927,7 @@ namespace NBA_Stats_Tracker.Windows
             rbStatsBetween.IsChecked = true;
             changingTimeframe = false;
             MainWindow.UpdateAllData();
-            cmbTeam_SelectionChanged(sender, null);
+            PopulateTeamsCombo();
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
@@ -936,16 +936,20 @@ namespace NBA_Stats_Tracker.Windows
             if (!changingTimeframe)
             {
                 MainWindow.UpdateAllData();
-                List<string> teams =
-                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
-                        .ToList();
-
-                teams.Sort();
-                teams.Insert(0, "- Any -");
-
-                cmbTeam.ItemsSource = teams;
-                cmbTeam_SelectionChanged(sender, null);
+                PopulateTeamsCombo();
             }
+        }
+
+        private void PopulateTeamsCombo()
+        {
+            List<string> teams =
+                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
+
+            teams.Sort();
+            teams.Insert(0, "- Any -");
+
+            cmbTeam.ItemsSource = teams;
+            cmbTeam_SelectionChanged(null, null);
         }
 
         private void cmbTFSeason_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -968,15 +972,7 @@ namespace NBA_Stats_Tracker.Windows
                     SQLiteIO.LoadSeason();
                 }
 
-                List<string> teams =
-                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
-                        .ToList();
-
-                teams.Sort();
-                teams.Insert(0, "- Any -");
-
-                cmbTeam.ItemsSource = teams;
-                cmbTeam_SelectionChanged(sender, null);
+                PopulateTeamsCombo();
                 changingTimeframe = false;
             }
         }

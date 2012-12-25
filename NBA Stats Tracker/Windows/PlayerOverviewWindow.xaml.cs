@@ -312,35 +312,32 @@ namespace NBA_Stats_Tracker.Windows
             cmbPlayer.ItemsSource = null;
 
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
-            string q;
+            playersSameTeam = new Dictionary<int, PlayerStats>();
             if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE \"" + GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) +
-                    "\" AND isActive LIKE \"True\"";
+                var list = MainWindow.pst.Values.Where(
+                    ps => ps.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.isHidden && ps.isActive)
+                          .ToList();
+                list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
+                list.ForEach(delegate(PlayerStats ps)
+                             {
+                                 PlayersList.Add(new KeyValuePair<int, string>(ps.ID,
+                                                                               String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName,
+                                                                                             ps.Position1.ToString())));
+                                 playersSameTeam.Add(ps.ID, ps);
+                             });
             }
             else
             {
-                q = "select * from " + playersT + " where isActive LIKE \"False\"";
-            }
-            q += " AND isHidden LIKE \"False\"";
-            q += " ORDER BY LastName ASC";
-            DataTable res = db.GetDataTable(q);
-
-            playersSameTeam = new Dictionary<int, PlayerStats>();
-
-            foreach (DataRow r in res.Rows)
-            {
-                int id = Tools.getInt(r, "ID");
-                PlayersList.Add(new KeyValuePair<int, string>(id,
-                                                              Tools.getString(r, "LastName") + ", " + Tools.getString(r, "FirstName") + " (" +
-                                                              Tools.getString(r, "Position1") + ")"));
-
-                string q2 = "select * from " + pl_playersT + " where ID = " + id;
-                DataTable pl_res = db.GetDataTable(q2);
-
-                var ps = new PlayerStats(r);
-                playersSameTeam.Add(ps.ID, ps);
-                playersSameTeam[ps.ID].UpdatePlayoffStats(pl_res.Rows[0]);
+                var list = MainWindow.pst.Values.Where(ps => !ps.isHidden && !ps.isActive).ToList();
+                list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
+                list.ForEach(delegate(PlayerStats ps)
+                {
+                    PlayersList.Add(new KeyValuePair<int, string>(ps.ID,
+                                                                  String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName,
+                                                                                ps.Position1.ToString())));
+                    playersSameTeam.Add(ps.ID, ps);
+                });
             }
             rankingsTeam = new PlayerRankings(playersSameTeam);
             pl_rankingsTeam = new PlayerRankings(playersSameTeam, true);

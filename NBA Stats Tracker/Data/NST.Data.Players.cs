@@ -649,31 +649,7 @@ namespace NBA_Stats_Tracker.Data
                               (pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]));
                 temp_metrics.Add("USG%", USGp);
 
-                // Rates, stat per 36 minutes played
-                double PTSR = (pstats[p.PTS]/pstats[p.MINS])*36;
-                temp_metrics.Add("PTSR", PTSR);
-
-                double REBR = (pREB/pstats[p.MINS])*36;
-                temp_metrics.Add("REBR", REBR);
-
-                double OREBR = (pstats[p.OREB]/pstats[p.MINS])*36;
-                temp_metrics.Add("OREBR", OREBR);
-
-                double ASTR = (pstats[p.AST]/pstats[p.MINS])*36;
-                temp_metrics.Add("ASTR", ASTR);
-
-                double BLKR = (pstats[p.BLK]/pstats[p.MINS])*36;
-                temp_metrics.Add("BLKR", BLKR);
-
-                double STLR = (pstats[p.STL]/pstats[p.MINS])*36;
-                temp_metrics.Add("STLR", STLR);
-
-                double TOR = (pstats[p.TO]/pstats[p.MINS])*36;
-                temp_metrics.Add("TOR", TOR);
-
-                double FTR = (pstats[p.FTM]/pstats[p.FGA]);
-                temp_metrics.Add("FTR", FTR);
-                //
+                CalculateRates(pstats, ref temp_metrics);
                 // PER preparations
                 double lREB = lstats[t.OREB] + lstats[t.DREB];
                 double factor = (2/3) - (0.5*(lstats[t.AST]/lstats[t.FGM]))/(2*(lstats[t.FGM]/lstats[t.FTM]));
@@ -767,6 +743,37 @@ namespace NBA_Stats_Tracker.Data
                 metrics = new Dictionary<string, double>(temp_metrics);
             else
                 pl_metrics = new Dictionary<string, double>(temp_metrics);
+        }
+
+        public static void CalculateRates(double[] pstats, ref Dictionary<string,double> temp_metrics)
+        {
+            double pREB = pstats[p.OREB] + pstats[p.DREB];
+
+            // Rates, stat per 36 minutes played
+            double PTSR = (pstats[p.PTS]/pstats[p.MINS])*36;
+            temp_metrics.Add("PTSR", PTSR);
+
+            double REBR = (pREB/pstats[p.MINS])*36;
+            temp_metrics.Add("REBR", REBR);
+
+            double OREBR = (pstats[p.OREB]/pstats[p.MINS])*36;
+            temp_metrics.Add("OREBR", OREBR);
+
+            double ASTR = (pstats[p.AST]/pstats[p.MINS])*36;
+            temp_metrics.Add("ASTR", ASTR);
+
+            double BLKR = (pstats[p.BLK]/pstats[p.MINS])*36;
+            temp_metrics.Add("BLKR", BLKR);
+
+            double STLR = (pstats[p.STL]/pstats[p.MINS])*36;
+            temp_metrics.Add("STLR", STLR);
+
+            double TOR = (pstats[p.TO]/pstats[p.MINS])*36;
+            temp_metrics.Add("TOR", TOR);
+
+            double FTR = (pstats[p.FTM]/pstats[p.FGA]);
+            temp_metrics.Add("FTR", FTR);
+            //
         }
 
         /// <summary>
@@ -905,6 +912,8 @@ namespace NBA_Stats_Tracker.Data
                 pl_stats[i] = 0;
             }
 
+            metrics.Clear();
+
             CalcAvg();
         }
 
@@ -1021,6 +1030,17 @@ namespace NBA_Stats_Tracker.Data
                 else
                     playerStats[playerid].CalcPER(pl_lg_aPER, true);
             }
+        }
+
+        public static void CalculateRates(uint[] pstats, ref Dictionary<string, double> tempMetrics)
+        {
+            double[] pstats_d = new double[pstats.Length];
+            for (int i = 0; i < pstats.Length; i++)
+            {
+                pstats_d[i] = Convert.ToDouble(pstats[i]);
+            }
+
+            CalculateRates(pstats_d, ref tempMetrics);
         }
     }
 
