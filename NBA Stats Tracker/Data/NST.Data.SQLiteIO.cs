@@ -2159,8 +2159,16 @@ namespace NBA_Stats_Tracker.Data
                 {
                     string q2 = "SELECT Date FROM GameResults WHERE SeasonNum = " + tf.SeasonNum + " GROUP BY Date ORDER BY Date ASC";
                     var dataTable = db.GetDataTable(q2);
-                    tf.StartDate = Convert.ToDateTime(dataTable.Rows[0][0].ToString());
-                    tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());
+                    if (dataTable.Rows.Count == 0)
+                    {
+                        tf.StartDate = DateTime.Today.AddMonths(-1).AddDays(1);
+                        tf.EndDate = DateTime.Today;
+                    }
+                    else
+                    {
+                        tf.StartDate = Convert.ToDateTime(dataTable.Rows[0][0].ToString());
+                        tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());    
+                    }
                 }
                 DateTime dCur = tf.StartDate;
                 while (true)

@@ -1,6 +1,3 @@
-- Partial rankings
-- Filter box scores and calculate partial team stats
 - League Notables
 - Player Height/Weight
 - Recommended ratings
-- Don't calculate DNP-CD stats into averages

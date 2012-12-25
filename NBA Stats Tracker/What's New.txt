@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.2.1 Beta
+		- Addition: Added marquee in Main Window displaying the league leaders and their best stats
+		- Fix: Tool would crash when opening a database with no box scores saved (introduced in v1.2)
+
 	v1.2 Beta
 		- Addition: Advanced Stats Calculator added, allows you to calculate Team and Player Stats from games that fulfill a certain set of criteria, as well as from those that don't
 		- Improvement: Huge rework of underlying code regarding grabbing data from database; NBA Stats Tracker should be now much more responsive and faster in every feature, as well as allow for additional analysis

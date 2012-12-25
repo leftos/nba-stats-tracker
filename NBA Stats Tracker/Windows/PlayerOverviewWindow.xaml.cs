@@ -1073,7 +1073,7 @@ namespace NBA_Stats_Tracker.Windows
                 temppst[i].AddPlayerStats(MainWindow.pst[i], true);
             }
 
-            var cumRankingsActive = new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value));
+            var cumRankingsActive = PlayerRankings.CalculateActiveRankings();
             var cumRankingsPosition =
                 new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value));
             var cumRankingsTeam =

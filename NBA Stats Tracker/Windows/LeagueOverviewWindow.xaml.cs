@@ -1336,10 +1336,10 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="teamStats">The player's team stats.</param>
         /// <param name="playoffs">if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.</param>
         /// <returns></returns>
-        private PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
+        public static PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
             string team = psr.TeamF;
-            ts = teamStats[MainWindow.TeamOrder[team]];
+            var ts = teamStats[MainWindow.TeamOrder[team]];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayer = psr.GP;
             var newpsr = new PlayerStatsRow(new PlayerStats(psr));
@@ -1381,6 +1381,60 @@ namespace NBA_Stats_Tracker.Windows
             if (psr.MINS < minRequired)
                 newpsr.MPG = float.NaN;
             return newpsr;
+        }
+
+        /// <summary>
+        /// Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
+        /// </summary>
+        /// <param name="psr">The player stats row.</param>
+        /// <param name="teamStats">The player's team stats.</param>
+        /// <param name="playoffs">if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.</param>
+        /// <returns></returns>
+        public static PlayerStats ConvertToLeagueLeader(PlayerStats ps, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
+        {
+            string team = ps.TeamF;
+            var ts = teamStats[MainWindow.TeamOrder[team]];
+            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
+            uint gamesPlayed = ps.stats[p.GP];
+            var newps = ps.DeepClone();
+
+            // Below functions found using Eureqa II
+            var gamesRequired = (int)Math.Ceiling(0.8522 * gamesTeam); // Maximum error of 0
+            var fgmRequired = (int)Math.Ceiling(3.65 * gamesTeam); // Max error of 0
+            var ftmRequired = (int)Math.Ceiling(1.52 * gamesTeam);
+            var tpmRequired = (int)Math.Ceiling(0.666671427752402 * gamesTeam);
+            var ptsRequired = (int)Math.Ceiling(17.07 * gamesTeam);
+            var rebRequired = (int)Math.Ceiling(9.74720677727814 * gamesTeam);
+            var astRequired = (int)Math.Ceiling(4.87 * gamesTeam);
+            var stlRequired = (int)Math.Ceiling(1.51957078555763 * gamesTeam);
+            var blkRequired = (int)Math.Ceiling(1.21 * gamesTeam);
+            var minRequired = (int)Math.Ceiling(24.39 * gamesTeam);
+
+            if (ps.stats[p.FGM] < fgmRequired)
+                newps.averages[p.FGp] = float.NaN;
+            if (ps.stats[p.TPM] < tpmRequired)
+                newps.averages[p.TPp] = float.NaN;
+            if (ps.stats[p.FTM] < ftmRequired)
+                newps.averages[p.FTp] = float.NaN;
+
+            if (gamesPlayed >= gamesRequired)
+            {
+                return newps;
+            }
+
+            if (ps.stats[p.PTS] < ptsRequired)
+                newps.averages[p.PPG] = float.NaN;
+            if ((ps.stats[p.DREB] + ps.stats[p.OREB]) < rebRequired)
+                newps.averages[p.RPG] = float.NaN;
+            if (ps.stats[p.AST] < astRequired)
+                newps.averages[p.APG] = float.NaN;
+            if (ps.stats[p.STL] < stlRequired)
+                newps.averages[p.SPG] = float.NaN;
+            if (ps.stats[p.BLK] < blkRequired)
+                newps.averages[p.BPG] = float.NaN;
+            if (ps.stats[p.MINS] < minRequired)
+                newps.averages[p.MPG] = float.NaN;
+            return newps;
         }
 
         /// <summary>

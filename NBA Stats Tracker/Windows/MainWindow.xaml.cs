@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
@@ -131,9 +132,12 @@ namespace NBA_Stats_Tracker.Windows
         public static RoutedCommand cmndSave = new RoutedCommand();
         public static RoutedCommand cmndExport = new RoutedCommand();
         private DispatcherTimer dispatcherTimer;
+        private DispatcherTimer marqueeTimer;
         private double progress;
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
+
+        private static List<string> notables = new List<string>(); 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -300,6 +304,7 @@ namespace NBA_Stats_Tracker.Windows
         public static string pl_oppT;
         public static string playersT;
         public static string pl_playersT;
+        private int notableIndex;
 
         /// <summary>
         /// TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program
@@ -458,6 +463,20 @@ namespace NBA_Stats_Tracker.Windows
 
             gameLength = SQLiteIO.GetSetting("Game Length", 48);
             seasonLength = SQLiteIO.GetSetting("Season Length", 82);
+
+            UpdateNotables();
+
+            marqueeTimer.Start();
+        }
+
+        void marqueeTimer_Tick(object sender, EventArgs e)
+        {
+            if (notableIndex < notables.Count - 1)
+                notableIndex++;
+            else
+                notableIndex = 0;
+
+            txbMarquee.Text = notables[notableIndex];
         }
 
         /// <summary>
@@ -1462,6 +1481,21 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            marqueeTimer = new DispatcherTimer();
+            marqueeTimer.Tick += marqueeTimer_Tick;
+            marqueeTimer.Interval = new TimeSpan(0, 0, 6);
+
+            txbMarquee.Width = canMarquee.Width;
+
+            /*
+            DoubleAnimation doubleAnimation = new DoubleAnimation();
+            doubleAnimation.From = -txbMarquee.ActualWidth;
+            doubleAnimation.To = grdMain.ActualWidth;
+            doubleAnimation.RepeatBehavior = RepeatBehavior.Forever;
+            doubleAnimation.Duration = new Duration(new TimeSpan(0, 0, 10));
+            txbMarquee.BeginAnimation(Canvas.BottomProperty, doubleAnimation);
+            */
+ 
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += dispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
@@ -2313,6 +2347,169 @@ namespace NBA_Stats_Tracker.Windows
         {
             SQLiteIO.PopulateAll(tf, out tst, out tstopp, out TeamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bshist,
                                  out TeamRankings, out PlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings, out DisplayNames);
+
+            UpdateNotables();
+        }
+
+        private static void UpdateNotables()
+        {
+            var rankingsActive = PlayerRankings.CalculateLeadersRankings();
+            notables = new List<string>();
+            var psen = pst.Values.Where(ps => ps.isActive).ToList();
+            var psrList = new List<PlayerStatsRow>();
+            psen.ForEach(delegate(PlayerStats ps)
+                         {
+                             var psr = new PlayerStatsRow(ps);
+                             psr = LeagueOverviewWindow.ConvertToLeagueLeader(psr, tst);
+                             psrList.Add(psr);
+                         });
+
+            var curL = psrList.OrderByDescending(pair => pair.PPG).First();
+
+            var m = GetBestStatsForMarquee(curL, rankingsActive, p.PPG);
+            var s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.FGp).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.FGp);
+            s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.RPG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.RPG);
+            s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.BPG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.BPG);
+            s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.APG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.APG);
+            s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m);
+            notables.Add(s); 
+            
+            curL = psrList.OrderByDescending(pair => pair.SPG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.SPG);
+            s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.ORPG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.ORPG);
+            s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.DRPG).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.DRPG);
+            s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.TPp).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.TPp);
+            s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m);
+            notables.Add(s);
+
+            curL = psrList.OrderByDescending(pair => pair.FTp).First();
+            
+            m = GetBestStatsForMarquee(curL, rankingsActive, p.FTp);
+            s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {4})", curL.FirstName, curL.LastName,
+                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m);
+            notables.Add(s);
+
+            notables.Shuffle();
+
+            mwInstance.txbMarquee.Text = "League Notables";
+            mwInstance.marqueeTimer.Start();
+        }
+
+        private static string GetBestStatsForMarquee(PlayerStatsRow curLr, PlayerRankings rankingsActive, int statToIgnore)
+        {
+            string s = "";
+            var dict = new Dictionary<int, int>();
+            for (int k = 0; k < rankingsActive.list[curLr.ID].Length; k++)
+            {
+                dict.Add(k, rankingsActive.list[curLr.ID][k]);
+            }
+            dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
+            dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
+            dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
+            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            int m = 0;
+            int j = 3;
+            while (true)
+            {
+                if (m == j)
+                    break;
+                if (strengths[m] == statToIgnore)
+                {
+                    j++;
+                    m++;
+                    continue;
+                }
+                switch (strengths[m])
+                {
+                    case p.APG:
+                        s += String.Format("{0:F1} APG, ", curLr.APG);
+                        break;
+                    case p.BPG:
+                        s += String.Format("{0:F1} BPG, ", curLr.BPG);
+                        break;
+                    case p.DRPG:
+                        s += String.Format("{0:F1} DRPG, ", curLr.DRPG);
+                        break;
+                    case p.FGp:
+                        s += String.Format("{0:F3} FG%, ", curLr.FGp);
+                        break;
+                    case p.FPG:
+                        s += String.Format("{0:F1} FPG, ", curLr.FPG);
+                        break;
+                    case p.FTp:
+                        s += String.Format("{0:F3} FT%, ", curLr.FTp);
+                        break;
+                    case p.ORPG:
+                        s += String.Format("{0:F1} ORPG, ", curLr.ORPG);
+                        break;
+                    case p.PPG:
+                        s += String.Format("{0:F1} PPG, ", curLr.PPG);
+                        break;
+                    case p.RPG:
+                        s += String.Format("{0:F1} RPG, ", curLr.RPG);
+                        break;
+                    case p.SPG:
+                        s += String.Format("{0:F1} SPG, ", curLr.SPG);
+                        break;
+                    case p.TPG:
+                        s += String.Format("{0:F1} TPG, ", curLr.TPG);
+                        break;
+                    case p.TPp:
+                        s += String.Format("{0:F3} 3P%, ", curLr.TPp);
+                        break;
+                    default:
+                        j++;
+                        break;
+                }
+                m++;
+            }
+            s = s.TrimEnd(new char[] {' ', ','});
+            return s;
         }
     }
 }

@@ -1800,6 +1800,24 @@ namespace NBA_Stats_Tracker.Data
             */
             list = rankings;
         }
+
+        public static PlayerRankings CalculateActiveRankings()
+        {
+            var cumRankingsActive = new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value));
+            return cumRankingsActive;
+        }
+
+        public PlayerRankings CalculateLeadersRankings()
+        {
+            var pstActive = MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(ps => ps.Key, ps => ps.Value);
+            var listOfKeys = pstActive.Keys.ToList();
+            foreach (var key in listOfKeys)
+            {
+                pstActive[key] = LeagueOverviewWindow.ConvertToLeagueLeader(pstActive[key], MainWindow.tst);
+            }
+            var cumRankingsActive = new PlayerRankings(pstActive);
+            return cumRankingsActive;
+        }
     }
 
     /// <summary>
