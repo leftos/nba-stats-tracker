@@ -1812,8 +1812,15 @@ namespace NBA_Stats_Tracker.Data
             q += " GROUP BY SeasonNum";
             List<int> seasons = new List<int>();
             MainWindow.db.GetDataTable(q).Rows.Cast<DataRow>().ToList().ForEach(row => seasons.Add(Tools.getInt(row, "SeasonNum")));
-            seasons.Sort();
-            seasons.Reverse();
+            if (seasons.Count == 0)
+            {
+                seasons.Add(1);
+            }
+            else
+            {
+                seasons.Sort();
+                seasons.Reverse();
+            }
             return seasons;
         }
 
@@ -2125,7 +2132,7 @@ namespace NBA_Stats_Tracker.Data
                         var playerID = Tools.getInt(dr, "ID");
                         if (!pst.Keys.Contains(playerID))
                         {
-                            if (TeamOrder.Keys.Contains(Tools.getString(dr, "TeamF")))
+                            if (TeamOrder.Keys.Contains(Tools.getString(dr, "TeamFin")))
                             {
                                 pst.Add(playerID, new PlayerStats(dr));
                                 pst[playerID].ResetStats();

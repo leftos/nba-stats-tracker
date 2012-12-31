@@ -121,6 +121,44 @@ namespace LeftosCommonLibrary
             sw.Close();
         }
 
+        public static void TSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
+        {
+            var sw = new StreamWriter(path);
+            string str = "";
+
+            var columns = new Dictionary<string, string>();
+
+            foreach (var kvp in dList[0])
+            {
+                string oldColumn = kvp.Key;
+                string newColumn;
+                if (!kvp.Key.StartsWith("Column"))
+                    newColumn = kvp.Key + "\t";
+                else
+                    newColumn = "\" \"" + "\t";
+
+                columns.Add(oldColumn, newColumn);
+
+                str += newColumn;
+            }
+            str = str.TrimEnd(new[] { '\t' });
+
+            sw.WriteLine(str);
+
+            foreach (var dict in dList)
+            {
+                string s3 = "";
+                foreach (var col in columns)
+                {
+                    s3 += dict[col.Key] + "\t";
+                }
+                s3 = s3.TrimEnd(new[] { '\t' });
+                sw.WriteLine(s3);
+            }
+
+            sw.Close();
+        }
+
         /// <summary>
         /// Converts TSV data from a file into a list of dictionaries.
         /// </summary>

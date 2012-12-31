@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.3
+		- Addition: Added Recommended 2K Ratings tab in Leangue Overview, providing recommended ratings for NBA 2K13 based on slimm44's formulas
+		- Addition: Added Export to Roster Editor in Recommended 2K Ratings tab, which allows you to update an NBA 2K13 roster with the recommended ratings
+		- Improvement: Optimizations done to League Overview
+		- Fix: Fixed crash when selecting date timeframe with no box scores between the selected dates
+
 	v1.2.1 Beta
 		- Addition: Added marquee in Main Window displaying the league leaders and their best stats
 		- Fix: Tool would crash when opening a database with no box scores saved (introduced in v1.2)
