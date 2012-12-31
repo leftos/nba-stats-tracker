@@ -379,7 +379,8 @@ namespace NBA_Stats_Tracker.Windows
                 else if (tbcLeagueOverview.SelectedItem == tabPlayerStats || tbcLeagueOverview.SelectedItem == tabMetricStats ||
                          tbcLeagueOverview.SelectedItem == tabBest || tbcLeagueOverview.SelectedItem == tabStartingFive ||
                          tbcLeagueOverview.SelectedItem == tabPlayerPlayoffStats || tbcLeagueOverview.SelectedItem == tabPlayoffMetricStats ||
-                         tbcLeagueOverview.SelectedItem == tabPlayoffBest || tbcLeagueOverview.SelectedItem == tabPlayoffStartingFive)
+                         tbcLeagueOverview.SelectedItem == tabPlayoffBest || tbcLeagueOverview.SelectedItem == tabPlayoffStartingFive ||
+                         tbcLeagueOverview.SelectedItem == tabRatings)
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -554,6 +555,7 @@ namespace NBA_Stats_Tracker.Windows
                                               dgvLeaguePlayerStats.ItemsSource = lpsr;
                                               dgvMetricStats.ItemsSource = pmsrList;
                                               dgvLeagueMetricStats.ItemsSource = lpmsr;
+                                              dgvRatings.ItemsSource = pmsrList;
 
                                               dgvPlayerPlayoffStats.ItemsSource = pl_psrList;
                                               dgvLeaguePlayerPlayoffStats.ItemsSource = pl_lpsr;
@@ -1651,6 +1653,7 @@ namespace NBA_Stats_Tracker.Windows
             tabStartingFive.Visibility = Visibility.Visible;
             tabBest.Visibility = Visibility.Visible;
             tabLeaders.Visibility = Visibility.Visible;
+            tabRatings.Visibility = Visibility.Visible;
 
             if (tbcLeagueOverview.SelectedItem != null)
             {
@@ -1754,6 +1757,7 @@ namespace NBA_Stats_Tracker.Windows
             tabStartingFive.Visibility = Visibility.Collapsed;
             tabBest.Visibility = Visibility.Collapsed;
             tabLeaders.Visibility = Visibility.Collapsed;
+            tabRatings.Visibility = Visibility.Collapsed;
         }
 
         #region Nested type: TeamFilter

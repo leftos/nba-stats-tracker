@@ -773,6 +773,9 @@ namespace NBA_Stats_Tracker.Data
 
             double FTR = (pstats[p.FTM]/pstats[p.FGA]);
             temp_metrics.Add("FTR", FTR);
+
+            double FTAR = (pstats[p.FTA]/pstats[p.MINS])*36;
+            temp_metrics.Add("FTAR", FTAR);
             //
         }
 
@@ -1956,6 +1959,15 @@ namespace NBA_Stats_Tracker.Data
 
                 try
                 {
+                    PTSR = ps.metrics["PTSR"];
+                    REBR = ps.metrics["REBR"];
+                    OREBR = ps.metrics["OREBR"];
+                    ASTR = ps.metrics["ASTR"];
+                    BLKR = ps.metrics["BLKR"];
+                    STLR = ps.metrics["STLR"];
+                    TOR = ps.metrics["TOR"];
+                    FTR = ps.metrics["FTR"];
+                    FTAR = ps.metrics["FTAR"];
                     GmSc = ps.metrics["GmSc"];
                     GmScE = ps.metrics["GmScE"];
                     EFF = ps.metrics["EFF"];
@@ -1965,14 +1977,6 @@ namespace NBA_Stats_Tracker.Data
                     STLp = ps.metrics["STL%"];
                     TOp = ps.metrics["TO%"];
                     USGp = ps.metrics["USG%"];
-                    PTSR = ps.metrics["PTSR"];
-                    REBR = ps.metrics["REBR"];
-                    OREBR = ps.metrics["OREBR"];
-                    ASTR = ps.metrics["ASTR"];
-                    BLKR = ps.metrics["BLKR"];
-                    STLR = ps.metrics["STLR"];
-                    TOR = ps.metrics["TOR"];
-                    FTR = ps.metrics["FTR"];
 
                     try
                     {
@@ -2039,6 +2043,15 @@ namespace NBA_Stats_Tracker.Data
 
                 try
                 {
+                    PTSR = ps.pl_metrics["PTSR"];
+                    REBR = ps.pl_metrics["REBR"];
+                    OREBR = ps.pl_metrics["OREBR"];
+                    ASTR = ps.pl_metrics["ASTR"];
+                    BLKR = ps.pl_metrics["BLKR"];
+                    STLR = ps.pl_metrics["STLR"];
+                    TOR = ps.pl_metrics["TOR"];
+                    FTR = ps.pl_metrics["FTR"];
+                    FTAR = ps.pl_metrics["FTAR"];
                     GmSc = ps.pl_metrics["GmSc"];
                     GmScE = ps.pl_metrics["GmScE"];
                     EFF = ps.pl_metrics["EFF"];
@@ -2048,14 +2061,6 @@ namespace NBA_Stats_Tracker.Data
                     STLp = ps.pl_metrics["STL%"];
                     TOp = ps.pl_metrics["TO%"];
                     USGp = ps.pl_metrics["USG%"];
-                    PTSR = ps.pl_metrics["PTSR"];
-                    REBR = ps.pl_metrics["REBR"];
-                    OREBR = ps.pl_metrics["OREBR"];
-                    ASTR = ps.pl_metrics["ASTR"];
-                    BLKR = ps.pl_metrics["BLKR"];
-                    STLR = ps.pl_metrics["STLR"];
-                    TOR = ps.pl_metrics["TOR"];
-                    FTR = ps.pl_metrics["FTR"];
 
                     try
                     {
@@ -2075,6 +2080,125 @@ namespace NBA_Stats_Tracker.Data
                 catch (KeyNotFoundException)
                 {
                 }
+            }
+            Calculate2KRatings();
+        }
+
+        private void Calculate2KRatings()
+        {
+            try
+            {
+                reRFT = Convert.ToInt32(100*FTp);
+                if (reRFT > 99)
+                    reRFT = 99;
+            }
+            catch
+            {
+                reRFT = -1;
+            }
+
+            try
+            {
+                reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891 * ASTp + 4.34894327991171 / (-0.702541953738967 - ASTp));
+                if (reRPass > 99)
+                    reRPass = 99;
+            }
+            catch
+            {
+                reRPass = -1;
+            }
+
+            try
+            {
+                reRBlock =
+                    Convert.ToInt32(25.76 + 17.03*BLKp + 0.8376*Math.Pow(BLKp, 3) - 3.195*Math.Pow(BLKp, 2) - 0.07319*Math.Pow(BLKp, 4));
+                if (reRBlock > 99)
+                    reRBlock = 99;
+            }
+            catch
+            {
+                reRBlock = -1;
+            }
+
+            try
+            {
+                reRSteal = Convert.ToInt32(29.92 + 14.57*STLp - 0.1509*Math.Pow(STLp, 2));
+                if (reRSteal > 99)
+                    reRSteal = 99;
+            }
+            catch
+            {
+                reRSteal = -1;
+            }
+
+            try
+            {
+                reROffRbd =
+                    Convert.ToInt32(24.67 + 3.864*OREBp + 0.3523*Math.Pow(OREBp, 2) + 0.0007358*Math.Pow(OREBp, 4) -
+                                    0.02796*Math.Pow(OREBp, 3));
+                if (reROffRbd > 99)
+                    reROffRbd = 99;
+            }
+            catch
+            {
+                reROffRbd = -1;
+            }
+
+            try
+            {
+                reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp);
+                if (reRDefRbd > 99)
+                    reRDefRbd = 99;
+            }
+            catch
+            {
+                reRDefRbd = -1;
+            }
+
+            try
+            {
+                reTShotTnd = Convert.ToInt32(2 + 4*FGAPG);
+                if (reTShotTnd > 90)
+                    reTShotTnd = 90;
+            }
+            catch
+            {
+                reTShotTnd = -1;
+            }
+
+            try
+            {
+                reTDrawFoul = Convert.ToInt32(FTAR*10);
+                if (reTDrawFoul > 99)
+                    reTDrawFoul = 99;
+            }
+            catch
+            {
+                reTDrawFoul = -1;
+            }
+
+            try
+            {
+                double FGAR = (double) FGA/MINS*36;
+                int touchTotal = Convert.ToInt32(FGAR + FTAR + TOR + ASTR);
+                reTTouch = Convert.ToInt32(3.141*Math.Pow(touchTotal, 2)/(1.178 + touchTotal));
+                if (reTTouch > 75)
+                    reTTouch = 75;
+            }
+            catch
+            {
+                reTTouch = -1;
+            }
+
+            try
+            {
+                reTCommitFl = Convert.ToInt32((double) FOUL/MINS*36*10);
+                if (reTCommitFl > 99)
+                    reTCommitFl = 99;
+            }
+            catch
+            {
+                reTCommitFl = -1;
             }
         }
 
@@ -2163,6 +2287,7 @@ namespace NBA_Stats_Tracker.Data
         public double STLR { get; set; }
         public double TOR { get; set; }
         public double FTR { get; set; }
+        public double FTAR { get; set; }
 
         public int ID { get; set; }
         public string LastName { get; set; }
@@ -2183,6 +2308,17 @@ namespace NBA_Stats_Tracker.Data
 
         public string Type { get; set; }
         public string Group { get; set; }
+
+        public int reRFT { get; set; }
+        public int reRPass { get; set; }
+        public int reRBlock { get; set; }
+        public int reRSteal { get; set; }
+        public int reROffRbd { get; set; }
+        public int reRDefRbd { get; set; }
+        public int reTShotTnd { get; set; }
+        public int reTDrawFoul { get; set; }
+        public int reTTouch { get; set; }
+        public int reTCommitFl { get; set; }
 
         #region Metrics that require opponents' stats
 
