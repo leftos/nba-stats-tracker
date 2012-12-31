@@ -563,7 +563,7 @@ namespace NBA_Stats_Tracker.Interop
         /// <summary>
         /// Creates the NBA divisions and conferences.
         /// </summary>
-        private static void CreateDivisions()
+        public static void CreateDivisions()
         {
             MainWindow.Conferences.Clear();
             MainWindow.Conferences.Add(new Conference {ID = 0, Name = "East"});

@@ -1054,20 +1054,60 @@ namespace NBA_Stats_Tracker.Windows
                                      {"Wizards", "WAS"}
                                  };
 
+            var TeamDivisions = new Dictionary<string, int> {
+                                     {"76ers", 0},
+                                     {"Bobcats", 2},
+                                     {"Bucks", 1},
+                                     {"Bulls", 1},
+                                     {"Cavaliers", 1},
+                                     {"Celtics", 0},
+                                     {"Clippers", 5},
+                                     {"Grizzlies", 3},
+                                     {"Hawks", 2},
+                                     {"Heat", 2},
+                                     {"Hornets", 3},
+                                     {"Jazz", 4},
+                                     {"Kings", 5},
+                                     {"Knicks", 0},
+                                     {"Lakers", 5},
+                                     {"Magic", 2},
+                                     {"Mavericks", 3},
+                                     {"Nets", 0},
+                                     {"Nuggets", 4},
+                                     {"Pacers", 1},
+                                     {"Pistons", 1},
+                                     {"Raptors", 0},
+                                     {"Rockets", 3},
+                                     {"Spurs", 3},
+                                     {"Suns", 5},
+                                     {"Thunder", 4},
+                                     {"Timberwolves", 4},
+                                     {"Trail Blazers", 4},
+                                     {"Warriors", 5},
+                                     {"Wizards", 2}
+                                 };
+
             worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             worker1.DoWork += delegate
                               {
+                                  InteropREditor.CreateDivisions();
+
                                   foreach (var kvp in TeamNamesShort)
                                   {
                                       Dictionary<int, PlayerStats> temppst;
                                       TeamStats realts;
                                       TeamStats realtsopp;
                                       InteropBR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
-                                      realtst[TeamOrder[kvp.Key]] = realts;
-                                      realtst[TeamOrder[kvp.Key]].ID = TeamOrder[kvp.Key];
-                                      realtstopp[TeamOrder[kvp.Key]] = realtsopp;
-                                      realtstopp[TeamOrder[kvp.Key]].ID = TeamOrder[kvp.Key];
+                                      var id = TeamOrder[kvp.Key];
+                                      realtst[id] = realts;
+                                      realtst[id].ID = id;
+                                      realtst[id].division = TeamDivisions[kvp.Key];
+                                      realtst[id].conference = Divisions.Single(d => d.ID == realtst[id].division).ConferenceID;
+                                      realtstopp[id] = realtsopp;
+                                      realtstopp[id].ID = id;
+                                      realtstopp[id].division = realtst[id].division;
+                                      realtstopp[id].conference = realtst[id].conference;
                                       foreach (var kvp2 in temppst)
                                       {
                                           kvp2.Value.ID = realpst.Count;

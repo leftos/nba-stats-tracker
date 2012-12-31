@@ -426,20 +426,12 @@ namespace NBA_Stats_Tracker.Windows
         private void PreparePlayerStats(bool leaders = false)
         {
             List<PlayerStatsRow> lpsr;
-            List<PlayerStatsRow> pmsrList;
-            List<PlayerStatsRow> lpmsr;
             psrList = new List<PlayerStatsRow>();
             lpsr = new List<PlayerStatsRow>();
-            pmsrList = new List<PlayerStatsRow>();
-            lpmsr = new List<PlayerStatsRow>();
 
             List<PlayerStatsRow> pl_lpsr;
-            List<PlayerStatsRow> pl_pmsrList;
-            List<PlayerStatsRow> pl_lpmsr;
             pl_psrList = new List<PlayerStatsRow>();
             pl_lpsr = new List<PlayerStatsRow>();
-            pl_pmsrList = new List<PlayerStatsRow>();
-            pl_lpmsr = new List<PlayerStatsRow>();
 
             var leadersList = new List<PlayerStatsRow>();
             var pl_leadersList = new List<PlayerStatsRow>();
@@ -462,13 +454,9 @@ namespace NBA_Stats_Tracker.Windows
                                   sem.WaitOne();
                                   psrList = new List<PlayerStatsRow>();
                                   lpsr = new List<PlayerStatsRow>();
-                                  pmsrList = new List<PlayerStatsRow>();
-                                  lpmsr = new List<PlayerStatsRow>();
 
                                   pl_psrList = new List<PlayerStatsRow>();
                                   pl_lpsr = new List<PlayerStatsRow>();
-                                  pl_pmsrList = new List<PlayerStatsRow>();
-                                  pl_lpmsr = new List<PlayerStatsRow>();
 
                                     playerCount = _pst.Count;
                                     foreach (var kvp in _pst)
@@ -484,11 +472,6 @@ namespace NBA_Stats_Tracker.Windows
                                                 continue;
                                             psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
                                             pl_psr.TeamFDisplay = psr.TeamFDisplay;
-
-                                            var pmsr = new PlayerStatsRow(kvp.Value) {TeamFDisplay = psr.TeamFDisplay};
-                                            var pl_pmsr = new PlayerStatsRow(kvp.Value, true) {TeamFDisplay = psr.TeamFDisplay};
-                                            pmsrList.Add(pmsr);
-                                            pl_pmsrList.Add(pl_pmsr);
                                         }
                                         else
                                         {
@@ -504,21 +487,13 @@ namespace NBA_Stats_Tracker.Windows
                                     }
                                     PlayerStats leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
                                     lpsr.Add(new PlayerStatsRow(leagueAverages));
-                                    lpmsr.Add(new PlayerStatsRow(leagueAverages));
                                     pl_lpsr.Add(new PlayerStatsRow(leagueAverages, true));
-                                    pl_lpmsr.Add(new PlayerStatsRow(leagueAverages, true));
 
-                                  psrList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                    psrList.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
                                   psrList.Reverse();
 
-                                  pmsrList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                                  pmsrList.Reverse();
-
-                                  pl_psrList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                  pl_psrList.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
                                   pl_psrList.Reverse();
-
-                                  pl_pmsrList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                                  pl_pmsrList.Reverse();
 
                                   if (leaders)
                                   {
@@ -553,16 +528,16 @@ namespace NBA_Stats_Tracker.Windows
                                           {
                                               dgvPlayerStats.ItemsSource = psrList;
                                               dgvLeaguePlayerStats.ItemsSource = lpsr;
-                                              dgvMetricStats.ItemsSource = pmsrList;
-                                              dgvLeagueMetricStats.ItemsSource = lpmsr;
-                                              dgvRatings.ItemsSource = pmsrList;
+                                              dgvMetricStats.ItemsSource = psrList;
+                                              dgvLeagueMetricStats.ItemsSource = lpsr;
+                                              dgvRatings.ItemsSource = psrList;
 
                                               dgvPlayerPlayoffStats.ItemsSource = pl_psrList;
                                               dgvLeaguePlayerPlayoffStats.ItemsSource = pl_lpsr;
-                                              dgvPlayoffMetricStats.ItemsSource = pl_pmsrList;
-                                              dgvLeaguePlayoffMetricStats.ItemsSource = pl_lpmsr;
+                                              dgvPlayoffMetricStats.ItemsSource = pl_psrList;
+                                              dgvLeaguePlayoffMetricStats.ItemsSource = pl_lpsr;
 
-                                              PrepareBestPerformers(pmsrList, pl_pmsrList);
+                                              PrepareBestPerformers(psrList, pl_psrList);
 
                                               if (leaders)
                                               {
