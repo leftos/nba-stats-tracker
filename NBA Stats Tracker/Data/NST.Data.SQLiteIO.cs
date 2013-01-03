@@ -2182,12 +2182,12 @@ namespace NBA_Stats_Tracker.Data
                 {
                     if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                     {
-                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month, new TeamStats());
+                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                         break;
                     }
                     else
                     {
-                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month, new TeamStats());
+                        splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                         dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
@@ -2233,12 +2233,12 @@ namespace NBA_Stats_Tracker.Data
                 {
                     if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                     {
-                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month, new PlayerStats {ID = id});
+                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new PlayerStats {ID = id});
                         break;
                     }
                     else
                     {
-                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month, new PlayerStats {ID = id});
+                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new PlayerStats { ID = id });
                         dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
@@ -2290,9 +2290,9 @@ namespace NBA_Stats_Tracker.Data
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsA, ref tsH, true);
                 var tsOH = splitTeamStats[t2ID]["vs " + DisplayNames[team1]];
                 var tsOA = splitTeamStats[t1ID]["vs " + DisplayNames[team2]];
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsOH, ref tsOA, true);
-                var tsDH = splitTeamStats[t2ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month];
-                var tsDA = splitTeamStats[t1ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month];
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref tsOA, ref tsOH, true);
+                var tsDH = splitTeamStats[t2ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')];
+                var tsDA = splitTeamStats[t1ID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsDA, ref tsDH, true);
                 if (!bse.bs.isPlayoff)
                 {
@@ -2358,7 +2358,7 @@ namespace NBA_Stats_Tracker.Data
                     }
                     splitPlayerStats[pbs.PlayerID][bs.isPlayoff ? "Playoffs" : "Season"].AddBoxScore(pbs);
 
-                    splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month].AddBoxScore(pbs);
+                    splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')].AddBoxScore(pbs);
                 }
             }
 

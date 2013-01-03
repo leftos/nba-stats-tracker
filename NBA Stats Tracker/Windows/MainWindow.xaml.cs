@@ -466,7 +466,10 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateNotables();
 
-            marqueeTimer.Start();
+            if (notables.Count > 0)
+            {
+                marqueeTimer.Start();
+            }
         }
 
         void marqueeTimer_Tick(object sender, EventArgs e)
@@ -555,6 +558,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
+            UpdateAllData();
 
             updateStatus("One or more Box Scores have been added/updated. Database saved.");
         }
@@ -1598,6 +1602,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
             txtFile.Text = currentDB;
+            UpdateAllData();
             mwInstance.updateStatus("File saved successfully. Season " + curSeason.ToString() + " updated.");
         }
 
@@ -2396,10 +2401,14 @@ namespace NBA_Stats_Tracker.Windows
             var rankingsActive = PlayerRankings.CalculateLeadersRankings();
             notables = new List<string>();
             var psen = pst.Values.Where(ps => ps.isActive).ToList();
+
+            if (psen.Count == 0)
+                return;
+
             var psrList = new List<PlayerStatsRow>();
             psen.ForEach(delegate(PlayerStats ps)
                          {
-                             var psr = new PlayerStatsRow(ps);
+                             var psr = new PlayerStatsRow(ps, calcRatings: false);
                              psr = LeagueOverviewWindow.ConvertToLeagueLeader(psr, tst);
                              psrList.Add(psr);
                          });

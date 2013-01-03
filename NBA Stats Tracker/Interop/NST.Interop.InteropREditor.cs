@@ -47,6 +47,7 @@ namespace NBA_Stats_Tracker.Interop
         public static List<int> teamsThatPlayedAGame;
         public static List<int> pickedTeams;
         private static Dictionary<int, PlayerStats> _pst;
+        public static DateTime SelectedDate;
 
         /// <summary>
         /// Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
@@ -523,34 +524,31 @@ namespace NBA_Stats_Tracker.Interop
                     }
                 }
 
-                if (teamsThatPlayedAGame.Count == 2)
+                if (teamsThatPlayedAGame.Count >= 2)
                 {
-                    var dlw = new DualListWindow(DualListWindow.Mode.PickBoxScore);
+                    pickedTeams = new List<int>();
+                    var dlw = new PickGamesWindow(teamsThatPlayedAGame);
 
                     if (dlw.ShowDialog() == true)
                     {
-                        int t1 = pickedTeams[0];
-                        int t2 = pickedTeams[1];
-
-                        BoxScoreEntry bse = PrepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
-
-                        _pst = new Dictionary<int, PlayerStats>();
-                        foreach (var ps in pst)
-                            _pst.Add(ps.Key, ps.Value.Clone());
-
-                        var bsw = new BoxScoreWindow(bse, pst, true);
-                        bsw.ShowDialog();
-
-                        if (MainWindow.bs.done)
+                        for (int i = 0; i <= pickedTeams.Count - 2; i += 2)
                         {
-                            bse.date = MainWindow.bs.gamedate;
-                            bse.bs = MainWindow.bs;
+                            int t1 = pickedTeams[i];
+                            int t2 = pickedTeams[i + 1];
+
+                            BoxScoreEntry bse = PrepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
+                            
+                            var teamBoxScore = bse.bs;
+                            BoxScoreWindow.CalculateTeamsFromPlayers(ref teamBoxScore, bse.pbsList.Where(pbs => pbs.Team == bse.bs.Team1),
+                                                                     bse.pbsList.Where(pbs => pbs.Team == bse.bs.Team2));
+
+                            bse.bs.gamedate = SelectedDate;
+                            bse.date = bse.bs.gamedate;
                             TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref oldTST, ref oldTSTOpp, t1, t2);
                             MainWindow.bshist.Add(bse);
-                            tst = oldTST;
-                            tstopp = oldTSTOpp;
                         }
-                        pst = _pst;
+                        tst = oldTST;
+                        tstopp = oldTSTOpp;
                     }
                 }
             }

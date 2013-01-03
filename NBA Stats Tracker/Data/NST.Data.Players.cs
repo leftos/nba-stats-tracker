@@ -1890,12 +1890,15 @@ namespace NBA_Stats_Tracker.Data
     /// </summary>
     public class PlayerStatsRow
     {
+        public PlayerStatsRow()
+        {}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
         /// </summary>
         /// <param name="ps">The PlayerStats instance.</param>
         /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false)
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true)
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -2081,7 +2084,8 @@ namespace NBA_Stats_Tracker.Data
                 {
                 }
             }
-            Calculate2KRatings();
+            if (calcRatings) 
+                Calculate2KRatings();
         }
 
         private void Calculate2KRatings()

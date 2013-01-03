@@ -1,6 +1,13 @@
 NBA Stats Tracker - Version History
 
-	v1.3
+	v1.3.1 Beta
+		- Improvement: Tool will now allow you to automatically parse and import multiple box-scores when importing from REDitor*
+			* Teams are required to have played just one game since the database was last saved
+		- Fix: Fixed crash when loading a database with no players
+		- Fix: Fixed crash in Team & Player Overview when box scores were added for single digit months
+		- Fix: Fixed per-opponent split stats in Team Overview
+
+	v1.3 Beta
 		- Addition: Added Recommended 2K Ratings tab in Leangue Overview, providing recommended ratings for NBA 2K13 based on slimm44's formulas
 		- Addition: Added Export to Roster Editor in Recommended 2K Ratings tab, which allows you to update an NBA 2K13 roster with the recommended ratings
 		- Improvement: Optimizations done to League Overview

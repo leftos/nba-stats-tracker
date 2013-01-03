@@ -41,8 +41,7 @@ namespace NBA_Stats_Tracker.Windows
     public partial class LeagueOverviewWindow
     {
         private static Dictionary<int, PlayerStats> _pst;
-        private static Dictionary<int, TeamStats> _tst, partialTST;
-        private static Dictionary<int, TeamStats> _tstopp, partialOppTST;
+        private static Dictionary<int, TeamStats> _tst;
         private static List<BoxScoreEntry> _bshist; 
         private static int lastShownPlayerSeason;
         private static int lastShownLeadersSeason;
@@ -65,11 +64,7 @@ namespace NBA_Stats_Tracker.Windows
         private TeamFilter filterType;
         private List<PlayerStatsRow> pl_psrList;
         private List<PlayerStatsRow> psrList;
-        private string q;
         private bool reload;
-        private DataTable res;
-        private TeamStats ts;
-        private TeamStats tsopp;
         private string best1Text;
         private string best2Text;
         private string best3Text;
@@ -79,6 +74,7 @@ namespace NBA_Stats_Tracker.Windows
         private string pl_best1Text, pl_best2Text, pl_best3Text, pl_best4Text, pl_best5Text, pl_best6Text;
         private string sPGText, sSGText, sSFText, sPFText, sCText, sSubsText;
         private string pl_sPGText, pl_sSGText, pl_sSFText, pl_sPFText, pl_sCText, pl_sSubsText;
+        private Dictionary<int, TeamStats> _tstopp;
         private DataView dv_ts { get; set; }
         private DataView dv_lts { get; set; }
 
@@ -1336,7 +1332,7 @@ namespace NBA_Stats_Tracker.Windows
             var ts = teamStats[MainWindow.TeamOrder[team]];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayer = psr.GP;
-            var newpsr = new PlayerStatsRow(new PlayerStats(psr));
+            var newpsr = psr.DeepClone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0

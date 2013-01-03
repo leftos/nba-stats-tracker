@@ -64,7 +64,7 @@
                              VerticalAlignment="Top" Width="36" TabIndex="12" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
                     <Label Content="OREB" HorizontalAlignment="Left" Margin="516,66,0,0" Name="label14"
                            VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="516,95,0,0" Name="txtOFF1"
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="516,95,0,0" Name="txtOREB1"
                              VerticalAlignment="Top" Width="36" TabIndex="13" GotFocus="_bsAnyTextbox_GotFocus" />
                     <ComboBox Height="23" Margin="25,145,0,0" Name="cmbTeam2" VerticalAlignment="Top" TabIndex="15"
                               SelectionChanged="cmbTeam2_SelectionChanged" HorizontalAlignment="Left" Width="120" />
@@ -119,15 +119,15 @@
                              VerticalAlignment="Top" Width="36" TabIndex="27" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
                     <Label Content="FOUL" HorizontalAlignment="Left" Margin="558,66,0,0" Name="label27"
                            VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="558,95,0,0" Name="txtPF1"
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="558,95,0,0" Name="txtFOUL1"
                              VerticalAlignment="Top" Width="36" TabIndex="14" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="OREB" HorizontalAlignment="Left" Margin="516,175,0,0" Name="label28"
                            VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="516,204,0,0" Name="txtOFF2"
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="516,204,0,0" Name="txtOREB2"
                              VerticalAlignment="Top" Width="36" TabIndex="28" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FOUL" HorizontalAlignment="Left" Margin="558,175,0,0" Name="label29"
                            VerticalAlignment="Top" />
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtPF2"
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtFOUL2"
                              VerticalAlignment="Top" Width="36" TabIndex="29" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Button Content="Calculate" Height="23" HorizontalAlignment="Left" Margin="315,257,0,0"
                             Name="btnCalculateTeams" VerticalAlignment="Top" Width="75" TabIndex="30" Click="btnCalculateTeams_Click"

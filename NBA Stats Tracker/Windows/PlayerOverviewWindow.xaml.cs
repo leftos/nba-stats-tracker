@@ -71,13 +71,13 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> playersSameTeam;
         private string playersT = MainWindow.playersT;
         private string pl_playersT = MainWindow.pl_playersT;
-        private PlayerStats psBetween;
         private PlayerStatsRow psr;
         private PlayerRankings rankingsActive;
         private PlayerRankings rankingsPosition;
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
         private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
+        private PlayerStats psBetween;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
