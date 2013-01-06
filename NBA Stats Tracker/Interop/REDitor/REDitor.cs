@@ -587,6 +587,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             MainWindow.bshist.Add(bse);
                             tst[t1] = oldTST[t1].Clone();
                             tst[t2] = oldTST[t2].Clone();
+                            tstopp[t1] = oldTSTOpp[t1].Clone();
+                            tstopp[t2] = oldTSTOpp[t2].Clone();
                         }
                     }
                 }

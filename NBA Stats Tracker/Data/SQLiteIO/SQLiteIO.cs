@@ -2292,8 +2292,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         ps.AddBoxScore(pbs, bse.bs.isPlayoff);
                     }
                 }
+                /*
                 TeamStats.CalculateAllMetrics(ref tst, tstopp);
                 TeamStats.CalculateAllMetrics(ref tst, tstopp, playoffs: true);
+                TeamStats.CalculateAllMetrics(ref tstopp, tst);
+                TeamStats.CalculateAllMetrics(ref tstopp, tst, playoffs: true);
+                */
                 PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder);
                 PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder, playoffs: true);
             }

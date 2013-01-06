@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.3.4 Beta
+		- Addition: Added Opponent Basic & Metric Stats tabs to League Overview
+		- Fix: Fixed calculated box-scores not updating the teams' opponent stats during REDitor import (v1.3.3 Beta bug)
+
 	v1.3.3 Beta
 		- Addition: Added pasting to players' Playoff Stats in Team Overview, Team & Player Stats in League Overview
 		- Improvement: Players in pasted data will try to be determined by their name, if there's no matching ID

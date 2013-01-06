@@ -961,36 +961,6 @@ namespace NBA_Stats_Tracker.Windows
             dgvBoxScores.DataContext = dv_bs;
         }
 
-        /// <summary>
-        /// Prepares and presents the playoff stats.
-        /// </summary>
-        private void PreparePlayoffStats()
-        {
-            pl_tsrList = new List<TeamStatsRow>();
-            pl_lssr = new List<TeamStatsRow>();
-
-            var ls = new TeamStats("League");
-
-            foreach (int key in _tst.Keys)
-            {
-                if (_tst[key].isHidden)
-                    continue;
-                if (_tst[key].getPlayoffGames() == 0)
-                    continue;
-                if (!InCurrentFilter(_tst[key]))
-                    continue;
-
-                pl_tsrList.Add(new TeamStatsRow(_tst[key], true));
-            }
-
-            ls = TeamStats.CalculateLeagueAverages(_tst, Span.Playoffs);
-
-            pl_lssr.Add(new TeamStatsRow(ls, true));
-
-            pl_tsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
-            pl_tsrList.Reverse();
-        }
-
         protected List<TeamStatsRow> pl_lssr { get; set; }
         protected List<TeamStatsRow> pl_tsrList { get; set; }
 
@@ -1001,6 +971,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             tsrList = new List<TeamStatsRow>();
             lssr = new List<TeamStatsRow>();
+            oppTsrList = new List<TeamStatsRow>();
 
             var ls = new TeamStats("League");
 
@@ -1013,6 +984,7 @@ namespace NBA_Stats_Tracker.Windows
                     continue;
 
                 tsrList.Add(new TeamStatsRow(_tst[key]));
+                oppTsrList.Add(new TeamStatsRow(_tstopp[key]));
             }
 
             ls = TeamStats.CalculateLeagueAverages(_tst, Span.Season);
@@ -1021,14 +993,55 @@ namespace NBA_Stats_Tracker.Windows
 
             tsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
             tsrList.Reverse();
+            oppTsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
+            //oppTsrList.Reverse();
 
-            PreparePlayoffStats();
+            pl_tsrList = new List<TeamStatsRow>();
+            pl_lssr = new List<TeamStatsRow>();
+            pl_oppTsrList = new List<TeamStatsRow>();
 
-            dgvTeamStats.ItemsSource = rbSeason.IsChecked.GetValueOrDefault() ? tsrList : pl_tsrList;
-            dgvLeagueTeamStats.ItemsSource = rbSeason.IsChecked.GetValueOrDefault() ? lssr : pl_lssr;
-            dgvTeamMetricStats.ItemsSource = rbSeason.IsChecked.GetValueOrDefault() ? tsrList : pl_tsrList;
-            dgvLeagueTeamMetricStats.ItemsSource = rbSeason.IsChecked.GetValueOrDefault() ? lssr : pl_lssr;
+            var ls1 = new TeamStats("League");
+
+            foreach (int key1 in _tst.Keys)
+            {
+                if (_tst[key1].isHidden)
+                    continue;
+                if (_tst[key1].getPlayoffGames() == 0)
+                    continue;
+                if (!InCurrentFilter(_tst[key1]))
+                    continue;
+
+                pl_tsrList.Add(new TeamStatsRow(_tst[key1], true));
+                pl_oppTsrList.Add(new TeamStatsRow(_tstopp[key1], true));
+            }
+
+            ls1 = TeamStats.CalculateLeagueAverages(_tst, Span.Playoffs);
+
+            pl_lssr.Add(new TeamStatsRow(ls1, true));
+
+            pl_tsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
+            pl_tsrList.Reverse();
+            pl_oppTsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
+            //pl_oppTsrList.Reverse();
+
+            var isSeason = rbSeason.IsChecked.GetValueOrDefault();
+
+            dgvTeamStats.ItemsSource = isSeason ? tsrList : pl_tsrList;
+            dgvLeagueTeamStats.ItemsSource = isSeason ? lssr : pl_lssr;
+
+            dgvTeamMetricStats.ItemsSource = isSeason ? tsrList : pl_tsrList;
+            dgvLeagueTeamMetricStats.ItemsSource = isSeason ? lssr : pl_lssr;
+
+            dgvOpponentStats.ItemsSource = isSeason ? oppTsrList : pl_oppTsrList;
+            dgvLeagueOpponentStats.ItemsSource = isSeason ? lssr : pl_lssr;
+
+            dgvOpponentMetricStats.ItemsSource = isSeason ? oppTsrList : pl_oppTsrList;
+            dgvLeagueOpponentMetricStats.ItemsSource = isSeason ? lssr : pl_lssr;
         }
+
+        protected List<TeamStatsRow> pl_oppTsrList { get; set; }
+
+        protected List<TeamStatsRow> oppTsrList { get; set; }
 
         protected List<TeamStatsRow> lssr { get; set; }
 
@@ -1707,6 +1720,18 @@ namespace NBA_Stats_Tracker.Windows
                     "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
                     "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void dgvOpponentStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvOpponentStats.Columns.Count && i < dgvLeagueOpponentStats.Columns.Count; ++i)
+                dgvLeagueOpponentStats.Columns[i].Width = dgvOpponentStats.Columns[i].ActualWidth;
+        }
+
+        private void dgvOpponentMetricStats_LayoutUpdated(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dgvOpponentMetricStats.Columns.Count && i < dgvLeagueOpponentMetricStats.Columns.Count; ++i)
+                dgvLeagueOpponentMetricStats.Columns[i].Width = dgvOpponentMetricStats.Columns[i].ActualWidth;
         }
     }
 }

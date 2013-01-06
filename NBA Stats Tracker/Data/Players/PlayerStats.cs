@@ -940,11 +940,13 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     ls.AddTeamStats(teamStats[i], Span.Season);
                     teamStats[i].CalcMetrics(oppStats[i]);
+                    oppStats[i].CalcMetrics(teamStats[i]);
                 }
                 else
                 {
                     ls.AddTeamStats(teamStats[i], Span.Playoffs);
                     teamStats[i].CalcMetrics(oppStats[i], true);
+                    oppStats[i].CalcMetrics(teamStats[i], true);
                 }
             }
             ls.CalcMetrics(ls, playoffs);
