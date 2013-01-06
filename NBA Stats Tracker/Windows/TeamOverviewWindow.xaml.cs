@@ -26,7 +26,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.EventHandlers;
+using NBA_Stats_Tracker.Helper.ListExtensions;
+using NBA_Stats_Tracker.Helper.Misc;
 using SQLite_Database;
 
 #endregion
@@ -146,13 +153,14 @@ namespace NBA_Stats_Tracker.Windows
         private void UpdateOverviewAndBoxScores()
         {
             int i = MainWindow.TeamOrder[curTeam];
-            
+
             curts = tst[i];
             curtsopp = tstopp[i];
 
             bsrList = new List<TeamBoxScore>();
 
             #region Prepare Team Overview
+
             var boxScoreEntries = MainWindow.bshist.Where(bse => bse.bs.Team1 == curTeam || bse.bs.Team2 == curTeam);
 
             foreach (var r in boxScoreEntries)
@@ -478,7 +486,7 @@ namespace NBA_Stats_Tracker.Windows
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(splitTeamStats[ID]["Season"], ref dr, "Season");
             dt_ss.Rows.Add(dr);
-            
+
             dr = dt_ss.NewRow();
             CreateDataRowFromTeamStats(splitTeamStats[ID]["Playoffs"], ref dr, "Playoffs");
             dt_ss.Rows.Add(dr);
@@ -503,7 +511,7 @@ namespace NBA_Stats_Tracker.Windows
             #endregion
 
             #region Monthly split stats
-            
+
             dr = dt_ss.NewRow();
             dr["Type"] = " ";
             dt_ss.Rows.Add(dr);
@@ -846,6 +854,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayerStats.ItemsSource = psrList;
             dgvMetricStats.ItemsSource = psrList;
             dgvTeamRoster.ItemsSource = psrList;
+            dgvTeamRoster.CanUserAddRows = false;
             dgvPlayerPlayoffStats.ItemsSource = pl_psrList;
             dgvPlayoffMetricStats.ItemsSource = pl_psrList;
         }
@@ -1125,6 +1134,11 @@ namespace NBA_Stats_Tracker.Windows
             tstopp[id].CalcAvg();
 
             Dictionary<int, PlayerStats> playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
+            List<int> playerIDs = playersToUpdate.Keys.ToList();
+            foreach (var playerID in playerIDs)
+            {
+                playersToUpdate[playerID].UpdatePlayoffStats(pl_psrList.Single(pl_psr => pl_psr.ID == playerID));
+            }
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);
             SQLiteIO.LoadSeason(MainWindow.currentDB, curSeason, doNotLoadBoxScores: true);
@@ -1401,7 +1415,7 @@ namespace NBA_Stats_Tracker.Windows
             txbOpp1.Text = "";
             txbOpp2.Text = "";
             txbOpp3.Text = "";
-            
+
             if (cmbOppTeam.SelectedIndex == cmbTeam.SelectedIndex)
             {
                 changingOppTeam = false;
@@ -1425,12 +1439,12 @@ namespace NBA_Stats_Tracker.Windows
             var tsopp = new TeamStats(curOpp);
 
             db = new SQLiteDatabase(MainWindow.currentDB);
-            
+
             if (dt_hth.Rows.Count > 1)
                 dt_hth.Rows.RemoveAt(dt_hth.Rows.Count - 1);
 
             var bshist = MainWindow.bshist;
-            
+
             var BSEs =
                 bshist.Where(
                     bse => (bse.bs.Team1 == curTeam && bse.bs.Team2 == curOpp) || (bse.bs.Team1 == curOpp && bse.bs.Team2 == curTeam));
@@ -1450,7 +1464,7 @@ namespace NBA_Stats_Tracker.Windows
                     TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref ts, ref tsopp, true);
                 }
             }
-            
+
             //ts.CalcMetrics(tsopp);
             //tsopp.CalcMetrics(ts);
             var ls = new TeamStats();
@@ -1522,7 +1536,7 @@ namespace NBA_Stats_Tracker.Windows
             CreateDataRowFromTeamStats(tsopp, ref dr, "Opp Avg");
 
             dt_hth.Rows.Add(dr);
-            
+
             dr = dt_hth.NewRow();
 
             CreateDataRowFromTeamStats(ts, ref dr, "Playoffs", true);
@@ -1708,6 +1722,7 @@ namespace NBA_Stats_Tracker.Windows
                 dr["STL"] = String.Format("{0:F1}", ts.averages[t.SPG]);
                 dr["BLK"] = String.Format("{0:F1}", ts.averages[t.BPG]);
                 dr["FOUL"] = String.Format("{0:F1}", ts.averages[t.FPG]);
+                dr["MINS"] = String.Format("{0:F1}", ts.averages[t.MINS]);
             }
             else
             {
@@ -1733,6 +1748,7 @@ namespace NBA_Stats_Tracker.Windows
                 dr["STL"] = String.Format("{0:F1}", ts.pl_averages[t.SPG]);
                 dr["BLK"] = String.Format("{0:F1}", ts.pl_averages[t.BPG]);
                 dr["FOUL"] = String.Format("{0:F1}", ts.pl_averages[t.FPG]);
+                dr["MINS"] = String.Format("{0:F1}", ts.pl_averages[t.MINS]);
             }
         }
 
@@ -1884,6 +1900,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTHStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvHTHBoxScores.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvTeamRoster.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvSplit.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -2057,7 +2074,7 @@ namespace NBA_Stats_Tracker.Windows
                 PopulateTeamsCombo();
 
                 LinkInternalsToMainWindow();
-                
+
                 try
                 {
                     cmbTeam.SelectedIndex = -1;
@@ -2253,20 +2270,21 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the PreviewKeyDown event of the dgvPlayerStats control.
         /// Allows the user to paste and import multiple player stats into the team's players.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-        private void dgvPlayerStats_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void AnyPlayerDataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
                 List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
-                foreach (var dict in dictList)
+                var list = sender == dgvPlayerStats ? psrList : pl_psrList;
+                for (int j = 0; j < dictList.Count; j++)
                 {
+                    var dict = dictList[j];
                     int ID;
                     try
                     {
@@ -2274,53 +2292,39 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("Couldn't detect a player's ID in the pasted data. " +
-                                        "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there.");
-                        return;
-                    }
-                    for (int i = 0; i < psrList.Count; i++)
-                    {
-                        PlayerStatsRow psr = psrList[i];
-                        if (psr.ID == ID)
+                        try
                         {
-                            TryChangePSR(ref psr, dict);
-                            psrList[i] = psr;
-                            break;
+                            ID =
+                                pst.Values.Single(
+                                    ps => ps.TeamF == curTeam && ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ID;
                         }
+                        catch (Exception)
+                        {
+                            MessageBox.Show("Player in row " + (j+1) +
+                                            " couldn't be determined either by ID or Full Name. Make sure the pasted data has the proper headers. " +
+                                            "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there, if needed.");
+                            return;
+                        }
+                    }
+                    try
+                    {
+                        var psr = list.Single(ps => ps.ID == ID);
+                        PlayerStatsRow.TryChangePSR(ref psr, dict);
+                        PlayerStatsRow.Refresh(ref psr);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
                     }
                 }
 
-                dgvPlayerStats.ItemsSource = null;
-                dgvPlayerStats.ItemsSource = psrList;
-                //btnSaveCustomTeam_Click(null, null);
-            }
-        }
+                ((DataGrid) sender).ItemsSource = null;
+                ((DataGrid) sender).ItemsSource = list;
 
-        /// <summary>
-        /// Tries to parse the specified dictionary and update the specified PlayerStatsRow instance.
-        /// </summary>
-        /// <param name="psr">The PSR.</param>
-        /// <param name="dict">The dict.</param>
-        private void TryChangePSR(ref PlayerStatsRow psr, Dictionary<string, string> dict)
-        {
-            psr.GP = psr.GP.TrySetValue(dict, "GP", typeof (UInt16));
-            psr.GS = psr.GS.TrySetValue(dict, "GS", typeof (UInt16));
-            psr.MINS = psr.MINS.TrySetValue(dict, "MINS", typeof (UInt16));
-            psr.PTS = psr.PTS.TrySetValue(dict, "PTS", typeof (UInt16));
-            psr.FGM = psr.FGM.TrySetValue(dict, "FGM", typeof (UInt16));
-            psr.FGA = psr.FGA.TrySetValue(dict, "FGA", typeof (UInt16));
-            psr.TPM = psr.TPM.TrySetValue(dict, "3PM", typeof (UInt16));
-            psr.TPA = psr.TPA.TrySetValue(dict, "3PA", typeof (UInt16));
-            psr.FTM = psr.FTM.TrySetValue(dict, "FTM", typeof (UInt16));
-            psr.FTA = psr.FTA.TrySetValue(dict, "FTA", typeof (UInt16));
-            psr.REB = psr.REB.TrySetValue(dict, "REB", typeof (UInt16));
-            psr.OREB = psr.OREB.TrySetValue(dict, "OREB", typeof (UInt16));
-            psr.DREB = psr.DREB.TrySetValue(dict, "DREB", typeof (UInt16));
-            psr.AST = psr.AST.TrySetValue(dict, "AST", typeof (UInt16));
-            psr.TOS = psr.TOS.TrySetValue(dict, "TO", typeof (UInt16));
-            psr.STL = psr.STL.TrySetValue(dict, "STL", typeof (UInt16));
-            psr.BLK = psr.BLK.TrySetValue(dict, "BLK", typeof (UInt16));
-            psr.FOUL = psr.FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
+                MessageBox.Show(
+                    "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
+                    "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         /// <summary>

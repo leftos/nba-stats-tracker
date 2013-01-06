@@ -37,8 +37,18 @@ using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.WindowsForms;
 using NBA_Stats_Tracker.Interop;
+using NBA_Stats_Tracker.Interop.BR;
+using NBA_Stats_Tracker.Interop.NBA2K12;
+using NBA_Stats_Tracker.Interop.REDitor;
 using SQLite_Database;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -71,7 +81,10 @@ namespace NBA_Stats_Tracker.Windows
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         public static List<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
         public static Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
-        public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
+
+        public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats =
+            new Dictionary<int, Dictionary<string, PlayerStats>>();
+
         public static int[][] TeamRankings;
         public static int[][] PlayoffTeamRankings;
         public static PlayerRankings PlayerRankings;
@@ -104,7 +117,8 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         /// Teams participating in the Western Conference of the NBA. Used to filter teams in the Playoff Tree window.
         /// </summary>
-        public static readonly List<string> West = new List<string> {
+        public static readonly List<string> West = new List<string>
+                                                   {
                                                        "Thunder",
                                                        "Spurs",
                                                        "Trail Blazers",
@@ -137,7 +151,7 @@ namespace NBA_Stats_Tracker.Windows
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
 
-        private static List<string> notables = new List<string>(); 
+        private static List<string> notables = new List<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -153,9 +167,9 @@ namespace NBA_Stats_Tracker.Windows
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
             //btnInject.Visibility = Visibility.Hidden;
-            #if DEBUG
+#if DEBUG
             btnTest.Visibility = Visibility.Visible;
-            #else
+#else
             btnTest.Visibility = Visibility.Hidden;
             #endif
 
@@ -206,12 +220,25 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            Interop2K12.checkForRedundantSettings();
+            NBA2K12.checkForRedundantSettings();
+
+            // TODO: Re-enable downloading NBA stats when possible
+            mnuFileGetRealStats.IsEnabled = false;
+            btnDownloadBoxScore.IsEnabled = false;
+            btnGrabNBAStats.IsEnabled = false;
+            //
 
             if (App.realNBAonly)
             {
+                // TODO: Re-enable downloading NBA stats when possible
+                /*
                 mnuFileGetRealStats_Click(null, null);
                 MessageBox.Show("Nothing but net! Thanks for using NBA Stats Tracker!");
+                Environment.Exit(-1);
+                */
+                //
+                MessageBox.Show("This feature is temporarily disabled. Sorry for the inconvenience.", "NBA Stats Tracker",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
                 Environment.Exit(-1);
             }
             else
@@ -347,7 +374,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 isCustom = true;
                 //prepareWindow(isCustom);
-                TeamOrder = Interop2K12.setTeamOrder("Mode 0");
+                TeamOrder = NBA2K12.setTeamOrder("Mode 0");
 
                 Dictionary<int, TeamStats> temp;
 
@@ -355,7 +382,7 @@ namespace NBA_Stats_Tracker.Windows
                 //Dictionary<int, TeamStats> tempopp = new TeamStats[1];
                 Dictionary<int, TeamStats> tempopp = tstopp;
 
-                Interop2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
+                NBA2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
                 if (temp.Count > 1)
                 {
                     tst = new Dictionary<int, TeamStats>(temp);
@@ -389,7 +416,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-                int result = InteropREditor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
+                int result = REDitor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
 
                 if (result != 0)
                 {
@@ -449,7 +476,7 @@ namespace NBA_Stats_Tracker.Windows
 
             if (ofd.FileName == "")
                 return;
-            
+
             PopulateSeasonCombo(ofd.FileName);
 
             txtFile.Text = ofd.FileName;
@@ -470,10 +497,21 @@ namespace NBA_Stats_Tracker.Windows
             {
                 marqueeTimer.Start();
             }
+
+            mnuTools.IsEnabled = true;
+            grdAnalysis.IsEnabled = true;
+            grdUpdate.IsEnabled = true;
         }
 
-        void marqueeTimer_Tick(object sender, EventArgs e)
+        private void marqueeTimer_Tick(object sender, EventArgs e)
         {
+            if (notables.Count == 0)
+            {
+                txbMarquee.Text = "";
+                marqueeTimer.Stop();
+                return;
+            }
+
             if (notableIndex < notables.Count - 1)
                 notableIndex++;
             else
@@ -690,11 +728,11 @@ namespace NBA_Stats_Tracker.Windows
              */
 
             var sfd = new SaveFileDialog
-            {
-                Filter = "Tab-Separated Values file (*.tsv)|*.tsv",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Title = "Export To TSV"
-            };
+                      {
+                          Filter = "Tab-Separated Values file (*.tsv)|*.tsv",
+                          InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                          Title = "Export To TSV"
+                      };
             sfd.ShowDialog();
             if (sfd.FileName == "")
                 return;
@@ -790,12 +828,12 @@ namespace NBA_Stats_Tracker.Windows
                     return;
                 string fn = ofd.FileName;
 
-                Interop2K12.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
+                NBA2K12.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
 
                 Dictionary<int, TeamStats> temp;
                 var tempopp = new Dictionary<int, TeamStats>();
 
-                Interop2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
+                NBA2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
                 if (temp.Count == 1)
                 {
                     MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
@@ -844,7 +882,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
 
-                Interop2K12.updateSavegame(fn, tst, TeamOrder, pt);
+                NBA2K12.updateSavegame(fn, tst, TeamOrder, pt);
                 updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
             }
             else
@@ -870,7 +908,7 @@ namespace NBA_Stats_Tracker.Windows
                     var temptst = new Dictionary<int, TeamStats>();
                     var temptstopp = new Dictionary<int, TeamStats>();
                     var temppst = new Dictionary<int, PlayerStats>();
-                    int result = InteropREditor.ImportAll(ref temptst, ref temptstopp, ref TeamOrder, ref temppst, fbd.SelectedPath, true);
+                    int result = REDitor.ImportAll(ref temptst, ref temptstopp, ref TeamOrder, ref temppst, fbd.SelectedPath, true);
 
                     if (result != 0)
                     {
@@ -922,7 +960,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                int eresult = InteropREditor.ExportAll(tst, tstopp, pst, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+                int eresult = REDitor.ExportAll(tst, tstopp, pst, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
 
                 if (eresult != 0)
                 {
@@ -1012,7 +1050,7 @@ namespace NBA_Stats_Tracker.Windows
 
             //var grsw = new getRealStatsW();
             //grsw.ShowDialog();
-            TeamOrder = Interop2K12.setTeamOrder("Mode 0");
+            TeamOrder = NBA2K12.setTeamOrder("Mode 0");
 
             var realtstopp = new Dictionary<int, TeamStats>();
             var realpst = new Dictionary<int, PlayerStats>();
@@ -1025,7 +1063,8 @@ namespace NBA_Stats_Tracker.Windows
 
             //MessageBox.Show("Please wait after pressing OK, this could take a few minutes.");
 
-            var TeamNamesShort = new Dictionary<string, string> {
+            var TeamNamesShort = new Dictionary<string, string>
+                                 {
                                      {"76ers", "PHI"},
                                      {"Bobcats", "CHA"},
                                      {"Bucks", "MIL"},
@@ -1058,51 +1097,52 @@ namespace NBA_Stats_Tracker.Windows
                                      {"Wizards", "WAS"}
                                  };
 
-            var TeamDivisions = new Dictionary<string, int> {
-                                     {"76ers", 0},
-                                     {"Bobcats", 2},
-                                     {"Bucks", 1},
-                                     {"Bulls", 1},
-                                     {"Cavaliers", 1},
-                                     {"Celtics", 0},
-                                     {"Clippers", 5},
-                                     {"Grizzlies", 3},
-                                     {"Hawks", 2},
-                                     {"Heat", 2},
-                                     {"Hornets", 3},
-                                     {"Jazz", 4},
-                                     {"Kings", 5},
-                                     {"Knicks", 0},
-                                     {"Lakers", 5},
-                                     {"Magic", 2},
-                                     {"Mavericks", 3},
-                                     {"Nets", 0},
-                                     {"Nuggets", 4},
-                                     {"Pacers", 1},
-                                     {"Pistons", 1},
-                                     {"Raptors", 0},
-                                     {"Rockets", 3},
-                                     {"Spurs", 3},
-                                     {"Suns", 5},
-                                     {"Thunder", 4},
-                                     {"Timberwolves", 4},
-                                     {"Trail Blazers", 4},
-                                     {"Warriors", 5},
-                                     {"Wizards", 2}
-                                 };
+            var TeamDivisions = new Dictionary<string, int>
+                                {
+                                    {"76ers", 0},
+                                    {"Bobcats", 2},
+                                    {"Bucks", 1},
+                                    {"Bulls", 1},
+                                    {"Cavaliers", 1},
+                                    {"Celtics", 0},
+                                    {"Clippers", 5},
+                                    {"Grizzlies", 3},
+                                    {"Hawks", 2},
+                                    {"Heat", 2},
+                                    {"Hornets", 3},
+                                    {"Jazz", 4},
+                                    {"Kings", 5},
+                                    {"Knicks", 0},
+                                    {"Lakers", 5},
+                                    {"Magic", 2},
+                                    {"Mavericks", 3},
+                                    {"Nets", 0},
+                                    {"Nuggets", 4},
+                                    {"Pacers", 1},
+                                    {"Pistons", 1},
+                                    {"Raptors", 0},
+                                    {"Rockets", 3},
+                                    {"Spurs", 3},
+                                    {"Suns", 5},
+                                    {"Thunder", 4},
+                                    {"Timberwolves", 4},
+                                    {"Trail Blazers", 4},
+                                    {"Warriors", 5},
+                                    {"Wizards", 2}
+                                };
 
             worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             worker1.DoWork += delegate
                               {
-                                  InteropREditor.CreateDivisions();
+                                  REDitor.CreateDivisions();
 
                                   foreach (var kvp in TeamNamesShort)
                                   {
                                       Dictionary<int, PlayerStats> temppst;
                                       TeamStats realts;
                                       TeamStats realtsopp;
-                                      InteropBR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
+                                      BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
                                       var id = TeamOrder[kvp.Key];
                                       realtst[id] = realts;
                                       realtst[id].ID = id;
@@ -1120,7 +1160,7 @@ namespace NBA_Stats_Tracker.Windows
                                       worker1.ReportProgress(1);
                                   }
                                   // TODO: Re-enable once Playoffs start
-                                  //InteropBR.AddPlayoffTeamStats(ref realtst, ref realtstopp);
+                                  //BR.AddPlayoffTeamStats(ref realtst, ref realtstopp);
                               };
 
             worker1.ProgressChanged += delegate
@@ -1363,9 +1403,10 @@ namespace NBA_Stats_Tracker.Windows
                 return;
 
             tf = new Timeframe(curSeason);
-            if (!loadingSeason) 
+            if (!loadingSeason)
                 UpdateAllData();
         }
+
         /// <summary>
         /// Calculates the difference in a team's stats rankings between two TeamRankings instances.
         /// </summary>
@@ -1539,7 +1580,11 @@ namespace NBA_Stats_Tracker.Windows
             doubleAnimation.Duration = new Duration(new TimeSpan(0, 0, 10));
             txbMarquee.BeginAnimation(Canvas.BottomProperty, doubleAnimation);
             */
- 
+
+            mnuTools.IsEnabled = false;
+            grdAnalysis.IsEnabled = false;
+            grdUpdate.IsEnabled = false;
+
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += dispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
@@ -1550,10 +1595,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 mnuOptionsCheckForUpdates.IsChecked = true;
                 BackgroundWorker w = new BackgroundWorker();
-                w.DoWork += delegate(object o, DoWorkEventArgs args)
-                {
-                    CheckForUpdates();
-                };
+                w.DoWork += delegate(object o, DoWorkEventArgs args) { CheckForUpdates(); };
                 w.RunWorkerAsync();
             }
             else
@@ -1662,14 +1704,18 @@ namespace NBA_Stats_Tracker.Windows
             bshist = new List<BoxScoreEntry>();
 
             txtFile.Text = sfd.FileName;
+            currentDB = txtFile.Text;
             PopulateSeasonCombo();
             ChangeSeason(1);
 
             SQLiteIO.SetSetting("Game Length", 48);
             SQLiteIO.SetSetting("Season Length", 82);
 
-            //
-            // tst = new TeamStats[2];
+            mnuTools.IsEnabled = true;
+            grdAnalysis.IsEnabled = true;
+            grdUpdate.IsEnabled = true;
+
+            UpdateAllData();
         }
 
         /// <summary>
@@ -2229,7 +2275,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    int result = InteropBR.ImportBoxScore(input);
+                    int result = BR.ImportBoxScore(input);
                     if (result == -1)
                     {
                         MessageBox.Show(
@@ -2398,20 +2444,19 @@ namespace NBA_Stats_Tracker.Windows
 
         private static void UpdateNotables()
         {
-            var rankingsActive = PlayerRankings.CalculateLeadersRankings();
+            Dictionary<int, PlayerStats> pstLeaders;
+            var rankingsActive = PlayerRankings.CalculateLeadersRankings(out pstLeaders);
             notables = new List<string>();
-            var psen = pst.Values.Where(ps => ps.isActive).ToList();
 
-            if (psen.Count == 0)
+            if (pstLeaders.Count == 0)
                 return;
 
             var psrList = new List<PlayerStatsRow>();
-            psen.ForEach(delegate(PlayerStats ps)
-                         {
-                             var psr = new PlayerStatsRow(ps, calcRatings: false);
-                             psr = LeagueOverviewWindow.ConvertToLeagueLeader(psr, tst);
-                             psrList.Add(psr);
-                         });
+            pstLeaders.Values.ToList().ForEach(delegate(PlayerStats ps)
+                                               {
+                                                   var psr = new PlayerStatsRow(ps, calcRatings: false);
+                                                   psrList.Add(psr);
+                                               });
 
             var curL = psrList.OrderByDescending(pair => pair.PPG).First();
 
@@ -2421,66 +2466,66 @@ namespace NBA_Stats_Tracker.Windows
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FGp).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.FGp);
             s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.RPG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.RPG);
             s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.BPG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.BPG);
             s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.APG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.APG);
             s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m);
-            notables.Add(s); 
-            
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m);
+            notables.Add(s);
+
             curL = psrList.OrderByDescending(pair => pair.SPG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.SPG);
             s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.ORPG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.ORPG);
             s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.DRPG).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.DRPG);
             s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.TPp).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.TPp);
             s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FTp).First();
-            
+
             m = GetBestStatsForMarquee(curL, rankingsActive, p.FTp);
             s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m);
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m);
             notables.Add(s);
 
             notables.Shuffle();

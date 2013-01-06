@@ -30,7 +30,11 @@ using Ciloci.Flee;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.EventHandlers;
 using SQLite_Database;
 
 #endregion
@@ -316,14 +320,14 @@ namespace NBA_Stats_Tracker.Windows
             else if (chkIsChampion.IsChecked != null)
             {
                 filteredPST = filteredPST.Where(pair => !pair.Value.isNBAChampion);
-            } 
-            
+            }
+
             if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
-                 chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
+                chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
             {
                 filteredPST = filteredPST.Where(pair => pair.Value.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
             }
-            
+
             var psrList = new List<PlayerStatsRow>();
             var pl_psrList = new List<PlayerStatsRow>();
             foreach (var ps in filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value).Values)
@@ -386,7 +390,8 @@ namespace NBA_Stats_Tracker.Windows
             var ps = new PlayerStats(psr);
             bool keep = true;
             var context = new ExpressionContext();
-            IGenericExpression<bool> ige = context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
+            IGenericExpression<bool> ige =
+                context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
             if (ige.Evaluate() == false)
                 return false;
             context = new ExpressionContext();
@@ -400,9 +405,10 @@ namespace NBA_Stats_Tracker.Windows
                                                                  parts[0] = parts[0].Replace("3P", "TP");
                                                                  parts[0] = parts[0].Replace("TO", "TOS");
                                                                  context = new ExpressionContext();
-                                                                 ige = context.CompileGeneric<bool>(
-                                                                     psr.GetType().GetProperty(parts[0]).GetValue(psr, null) + parts[1] +
-                                                                     parts[2]);
+                                                                 ige =
+                                                                     context.CompileGeneric<bool>(
+                                                                         psr.GetType().GetProperty(parts[0]).GetValue(psr, null) + parts[1] +
+                                                                         parts[2]);
                                                                  keep = ige.Evaluate();
                                                                  if (!keep)
                                                                      loopState.Stop();
@@ -442,8 +448,9 @@ namespace NBA_Stats_Tracker.Windows
                                                                   context = new ExpressionContext();
                                                                   if (!double.IsNaN(ps.metrics[parts[0]]))
                                                                   {
-                                                                      ige = context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
-                                                                                                         parts[2]);
+                                                                      ige =
+                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
+                                                                                                       parts[2]);
                                                                       keep = ige.Evaluate();
                                                                   }
                                                                   else
@@ -678,7 +685,11 @@ namespace NBA_Stats_Tracker.Windows
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new OpenFileDialog
-                      {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
+                      {
+                          InitialDirectory = Path.GetFullPath(folder),
+                          Filter = "NST Search Filters (*.nsf)|*.nsf",
+                          DefaultExt = "nsf"
+                      };
 
             sfd.ShowDialog();
 
@@ -888,7 +899,11 @@ namespace NBA_Stats_Tracker.Windows
                 Directory.CreateDirectory(folder);
 
             var sfd = new SaveFileDialog
-                      {InitialDirectory = Path.GetFullPath(folder), Filter = "NST Search Filters (*.nsf)|*.nsf", DefaultExt = "nsf"};
+                      {
+                          InitialDirectory = Path.GetFullPath(folder),
+                          Filter = "NST Search Filters (*.nsf)|*.nsf",
+                          DefaultExt = "nsf"
+                      };
 
             sfd.ShowDialog();
 
@@ -943,7 +958,8 @@ namespace NBA_Stats_Tracker.Windows
         private void PopulateTeamsCombo()
         {
             List<string> teams =
-                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName).ToList();
+                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
+                    .ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -963,7 +979,7 @@ namespace NBA_Stats_Tracker.Windows
                 cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
                 rbStatsAllTime.IsChecked = true;
 
-                curSeason = ((KeyValuePair<int, string>)(((cmbTFSeason)).SelectedItem)).Key;
+                curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
 
                 if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
                 {

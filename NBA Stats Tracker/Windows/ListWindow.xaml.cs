@@ -3,6 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Windows

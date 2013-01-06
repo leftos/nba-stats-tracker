@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Interop.REDitor;
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -19,7 +21,7 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class PickGamesWindow : Window
     {
-        private List<int> _teams = new List<int>(); 
+        private List<int> _teams = new List<int>();
 
         public PickGamesWindow()
         {
@@ -33,7 +35,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            Interop.InteropREditor.SelectedDate = dtpToday.SelectedDate.GetValueOrDefault();
+            REDitor.SelectedDate = dtpToday.SelectedDate.GetValueOrDefault();
             DialogResult = true;
             Close();
         }
@@ -45,14 +47,16 @@ namespace NBA_Stats_Tracker.Windows
                 var away = lstAvailableAway.SelectedItem;
                 var home = lstAvailableHome.SelectedItem;
                 lstSelectedGames.Items.Add(away + " @ " + home);
-                Interop.InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, away.ToString())]);
-                Interop.InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, home.ToString())]);
+                REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, away.ToString())]);
+                REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, home.ToString())]);
                 lstAvailableAway.Items.Remove(home);
                 lstAvailableHome.Items.Remove(away);
                 lstAvailableHome.Items.Remove(home);
                 lstAvailableAway.Items.Remove(away);
+                /*
                 if (lstAvailableAway.Items.Count == 0 && lstAvailableHome.Items.Count == 0)
                     btnOK.IsEnabled = true;
+                */
             }
             else
             {
@@ -66,12 +70,11 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?") == MessageBoxResult.Yes)
                 {
-                    var parts = lstSelectedGames.SelectedItem.ToString().Split(new []{" @ "}, StringSplitOptions.None);
+                    var parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
                     foreach (var part in parts)
                     {
-                        Interop.InteropREditor.pickedTeams.Remove(
-                            MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, part)]);
+                        REDitor.pickedTeams.Remove(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, part)]);
                         lstAvailableAway.Items.Add(part);
                         lstAvailableHome.Items.Add(part);
                     }
@@ -86,8 +89,10 @@ namespace NBA_Stats_Tracker.Windows
                     lstAvailableHome.Items.Clear();
                     list.ForEach(item => lstAvailableHome.Items.Add(item));
 
+                    /*
                     if (lstAvailableAway.Items.Count != 0 || lstAvailableHome.Items.Count != 0)
                         btnOK.IsEnabled = false;
+                    */
                 }
             }
         }
@@ -102,7 +107,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dtpToday.SelectedDate = DateTime.Today;
 
-            btnOK.IsEnabled = false;
+            //btnOK.IsEnabled = false;
         }
     }
 }

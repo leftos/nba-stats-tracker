@@ -18,10 +18,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
-namespace NBA_Stats_Tracker.Helper
+namespace NBA_Stats_Tracker.Helper.Misc
 {
     /// <summary>
     /// Implements miscellaneous helper methods used all over NBA Stats Tracker.
@@ -37,6 +37,8 @@ namespace NBA_Stats_Tracker.Helper
         /// <exception cref="System.Exception">Requested team that is hidden.</exception>
         public static string GetCurTeamFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
         {
+            if (displayName == "- Inactive -")
+                return displayName;
             for (int i = 0; i < MainWindow.tst.Count; i++)
             {
                 if (teamStats[i].displayName == displayName)
@@ -58,6 +60,8 @@ namespace NBA_Stats_Tracker.Helper
         /// <exception cref="System.Exception">Requested team that is hidden.</exception>
         public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStats, string name)
         {
+            if (name == "- Inactive -")
+                return name;
             for (int i = 0; i < teamStats.Count; i++)
             {
                 if (teamStats[i].name == name)
@@ -175,31 +179,5 @@ namespace NBA_Stats_Tracker.Helper
 
             return settingValue;
         }
-    }
-
-    /// <summary>
-    /// Implements a list of five players. Used in determining the best starting five in a specific scope.
-    /// </summary>
-    public class StartingFivePermutation
-    {
-        public List<int> idList = new List<int>(5);
-        public int PlayersInPrimaryPosition = 0;
-        public double Sum = 0;
-    }
-
-    /// <summary>
-    /// Implements a generic combo-box item with an IsEnabled property. 
-    /// Used to create items in combo-boxes that can't be selected (e.g. group headers).
-    /// </summary>
-    public class ComboBoxItemWithIsEnabled
-    {
-        public ComboBoxItemWithIsEnabled(string item, bool isEnabled = true)
-        {
-            Item = item;
-            IsEnabled = isEnabled;
-        }
-
-        public string Item { get; set; }
-        public bool IsEnabled { get; set; }
     }
 }

@@ -10,7 +10,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.EventHandlers;
+using NBA_Stats_Tracker.Helper.Misc;
 
 namespace NBA_Stats_Tracker.Windows
 {

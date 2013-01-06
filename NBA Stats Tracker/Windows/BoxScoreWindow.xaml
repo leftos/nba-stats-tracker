@@ -12,11 +12,13 @@
                     <Label Content="Please insert the box score of your latest match" HorizontalAlignment="Left"
                            Margin="12,8,0,0" Name="label1" VerticalAlignment="Top" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,37,0,0" Name="cmbTeam1"
-                              VerticalAlignment="Top" Width="120" TabIndex="0" SelectionChanged="cmbTeam1_SelectionChanged" />
+                              VerticalAlignment="Top" Width="120" TabIndex="0"
+                              SelectionChanged="cmbTeam1_SelectionChanged" />
                     <Label Content="PTS" HorizontalAlignment="Left" Margin="12,66,0,0" Name="label2"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="12,95,0,0" Name="txtPTS1"
-                             VerticalAlignment="Top" Width="36" TabIndex="1" IsReadOnly="True" IsTabStop="False" Background="Black"
+                             VerticalAlignment="Top" Width="36" TabIndex="1" IsReadOnly="True" IsTabStop="False"
+                             Background="Black"
                              Foreground="White" FontWeight="Bold" />
                     <Label Content="REB" HorizontalAlignment="Left" Margin="54,66,0,0" Name="label3"
                            VerticalAlignment="Top" />
@@ -41,27 +43,33 @@
                     <Label Content="FGM" HorizontalAlignment="Left" Margin="264,66,0,0" Name="label8"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="264,95,0,0" Name="txtFGM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="7" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
+                             VerticalAlignment="Top" Width="36" TabIndex="7" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreAway" />
                     <Label Content="FGA" HorizontalAlignment="Left" Margin="306,66,0,0" Name="label9"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="306,95,0,0" Name="txtFGA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="8" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
+                             VerticalAlignment="Top" Width="36" TabIndex="8" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreAway" />
                     <Label Content="3PM" HorizontalAlignment="Left" Margin="348,66,0,0" Name="label10"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="348,95,0,0" Name="txt3PM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="9" TextChanged="calculateScoreAway" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="9" TextChanged="calculateScoreAway"
+                             GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="3PA" HorizontalAlignment="Left" Margin="390,66,0,0" Name="label11"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="390,95,0,0" Name="txt3PA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="10" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
+                             VerticalAlignment="Top" Width="36" TabIndex="10" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreAway" />
                     <Label Content="FTM" HorizontalAlignment="Left" Margin="432,66,0,0" Name="label12"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="432,95,0,0" Name="txtFTM1"
-                             VerticalAlignment="Top" Width="36" TabIndex="11" TextChanged="calculateScoreAway" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="11" TextChanged="calculateScoreAway"
+                             GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FTA" HorizontalAlignment="Left" Margin="474,66,0,0" Name="label13"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="474,95,0,0" Name="txtFTA1"
-                             VerticalAlignment="Top" Width="36" TabIndex="12" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreAway" />
+                             VerticalAlignment="Top" Width="36" TabIndex="12" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreAway" />
                     <Label Content="OREB" HorizontalAlignment="Left" Margin="516,66,0,0" Name="label14"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="516,95,0,0" Name="txtOREB1"
@@ -71,7 +79,8 @@
                     <Label Content="PTS" HorizontalAlignment="Left" Margin="12,175,0,0" Name="label15"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="12,204,0,0" Name="txtPTS2"
-                             VerticalAlignment="Top" Width="36" TabIndex="16" IsReadOnly="True" IsTabStop="False" Background="Black"
+                             VerticalAlignment="Top" Width="36" TabIndex="16" IsReadOnly="True" IsTabStop="False"
+                             Background="Black"
                              Foreground="White" FontWeight="Bold" />
                     <Label Content="REB" HorizontalAlignment="Left" Margin="54,175,0,0" Name="label16"
                            VerticalAlignment="Top" />
@@ -96,27 +105,33 @@
                     <Label Content="FGM" HorizontalAlignment="Left" Margin="264,175,0,0" Name="label21"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="264,204,0,0" Name="txtFGM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="22" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="22" TextChanged="calculateScoreHome"
+                             GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FGA" HorizontalAlignment="Left" Margin="306,175,0,0" Name="label22"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="306,204,0,0" Name="txtFGA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="23" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
+                             VerticalAlignment="Top" Width="36" TabIndex="23" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreHome" />
                     <Label Content="3PM" HorizontalAlignment="Left" Margin="348,175,0,0" Name="label23"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="348,204,0,0" Name="txt3PM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="24" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="24" TextChanged="calculateScoreHome"
+                             GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="3PA" HorizontalAlignment="Left" Margin="390,175,0,0" Name="label24"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="390,204,0,0" Name="txt3PA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="25" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
+                             VerticalAlignment="Top" Width="36" TabIndex="25" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreHome" />
                     <Label Content="FTM" HorizontalAlignment="Left" Margin="432,175,0,0" Name="label25"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="432,204,0,0" Name="txtFTM2"
-                             VerticalAlignment="Top" Width="36" TabIndex="26" TextChanged="calculateScoreHome" GotFocus="_bsAnyTextbox_GotFocus" />
+                             VerticalAlignment="Top" Width="36" TabIndex="26" TextChanged="calculateScoreHome"
+                             GotFocus="_bsAnyTextbox_GotFocus" />
                     <Label Content="FTA" HorizontalAlignment="Left" Margin="474,175,0,0" Name="label26"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="474,204,0,0" Name="txtFTA2"
-                             VerticalAlignment="Top" Width="36" TabIndex="27" GotFocus="_bsAnyTextbox_GotFocus" TextChanged="calculateScoreHome" />
+                             VerticalAlignment="Top" Width="36" TabIndex="27" GotFocus="_bsAnyTextbox_GotFocus"
+                             TextChanged="calculateScoreHome" />
                     <Label Content="FOUL" HorizontalAlignment="Left" Margin="558,66,0,0" Name="label27"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="558,95,0,0" Name="txtFOUL1"
@@ -130,10 +145,12 @@
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="558,204,0,0" Name="txtFOUL2"
                              VerticalAlignment="Top" Width="36" TabIndex="29" GotFocus="_bsAnyTextbox_GotFocus" />
                     <Button Content="Calculate" Height="23" HorizontalAlignment="Left" Margin="315,257,0,0"
-                            Name="btnCalculateTeams" VerticalAlignment="Top" Width="75" TabIndex="30" Click="btnCalculateTeams_Click"
+                            Name="btnCalculateTeams" VerticalAlignment="Top" Width="75" TabIndex="30"
+                            Click="btnCalculateTeams_Click"
                             Visibility="Collapsed" />
                     <Button Content="Copy" Height="23" HorizontalAlignment="Left" Margin="397,257,0,0" Name="btnCopy"
-                            TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCopy_Click" Visibility="Collapsed" />
+                            TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCopy_Click"
+                            Visibility="Collapsed" />
                     <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="561,257,0,0"
                             Name="btnCancel" TabIndex="30" VerticalAlignment="Top" Width="75" Click="btnCancel_Click" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="7,288,0,0" Name="cbHistory"
@@ -147,7 +164,8 @@
                     <Label Content="@" HorizontalAlignment="Left" Margin="7,145,0,0" Name="label31"
                            VerticalAlignment="Top" />
                     <CheckBox Content=" " Height="16" HorizontalAlignment="Left" Margin="7,257,0,0"
-                              Name="chkDoNotUpdate" VerticalAlignment="Top"></CheckBox>
+                              Name="chkDoNotUpdate" VerticalAlignment="Top">
+                    </CheckBox>
                     <TextBlock Name="txbDoNotUpdate" HorizontalAlignment="Left" VerticalAlignment="Top"
                                Margin="25,248,0,0">
                         Don't update the Team Stats;
@@ -165,7 +183,8 @@
                     <Label Content="MINS" HorizontalAlignment="Left" Margin="600,66,0,0" Name="label32"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="600,95,0,0" Name="txtMINS1" TabIndex="14"
-                             VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged" IsKeyboardFocusedChanged="Any_ShowToolTip">
+                             VerticalAlignment="Top" Width="36" TextChanged="txtMINS1_TextChanged"
+                             IsKeyboardFocusedChanged="Any_ShowToolTip">
                         <TextBox.ToolTip>
                             <ToolTip>
                                 You should enter the game length, not the total minutes played by all players (e.g. 48, not 240)
@@ -175,7 +194,8 @@
                     <Label Content="MINS" HorizontalAlignment="Left" Margin="600,175,0,0" Name="label33"
                            VerticalAlignment="Top" />
                     <TextBox Height="23" HorizontalAlignment="Left" Margin="600,204,0,0" Name="txtMINS2" TabIndex="29"
-                             VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged" IsKeyboardFocusedChanged="Any_ShowToolTip">
+                             VerticalAlignment="Top" Width="36" TextChanged="txtMINS2_TextChanged"
+                             IsKeyboardFocusedChanged="Any_ShowToolTip">
                         <TextBox.ToolTip>
                             <ToolTip>
                                 You should enter the game length, not the total minutes played by all players (e.g. 48, not 240)
@@ -183,13 +203,17 @@
                         </TextBox.ToolTip>
                     </TextBox>
                     <Button Content="Paste" Height="23" HorizontalAlignment="Left" Margin="478,257,0,0" Name="btnPaste"
-                            TabIndex="30" VerticalAlignment="Top" Width="75" Visibility="Collapsed" Click="btnPaste_Click" />
+                            TabIndex="30" VerticalAlignment="Top" Width="75" Visibility="Collapsed"
+                            Click="btnPaste_Click" />
                     <Button Content="Tools" Height="23" HorizontalAlignment="Left" Margin="368,257,0,0" Name="btnTools"
-                            VerticalAlignment="Top" Width="75" PreviewMouseLeftButtonDown="btnTools_PreviewMouseLeftButtonDown">
+                            VerticalAlignment="Top" Width="75"
+                            PreviewMouseLeftButtonDown="btnTools_PreviewMouseLeftButtonDown">
                         <Button.ContextMenu>
                             <ContextMenu Name="cxmTools">
-                                <MenuItem Header="Replace Team Stats with Accumulated Player Stats" Click="btnCalculateTeams_Click" />
-                                <MenuItem Header="Check if Team Stats and Player Stats match" Click="btnCompareTeamAndPlayerStats_Click" />
+                                <MenuItem Header="Replace Team Stats with Accumulated Player Stats"
+                                          Click="btnCalculateTeams_Click" />
+                                <MenuItem Header="Check if Team Stats and Player Stats match"
+                                          Click="btnCompareTeamAndPlayerStats_Click" />
                                 <MenuItem Header="Copy" Click="btnCopy_Click" />
                                 <MenuItem Header="Paste" Click="btnPaste_Click" />
                             </ContextMenu>
@@ -200,11 +224,13 @@
             <TabItem Header="Away Team" Name="tabTeam1">
                 <Grid>
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
-                              Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1"
+                              Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True"
+                              CanUserDeleteRows="True" FrozenColumnCount="1"
                               Sorting="StatColumn_Sorting">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}"
-                                                    SelectedValuePath="Key" DisplayMemberPath="Value" SortMemberPath="Name" x:Name="colPlayerAway"
+                                                    SelectedValuePath="Key" DisplayMemberPath="Value"
+                                                    SortMemberPath="Name" x:Name="colPlayerAway"
                                                     CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Header="Starter" Binding="{Binding isStarter}" />
                             <DataGridCheckBoxColumn Header="Injured" Binding="{Binding playedInjured}" />
@@ -219,15 +245,18 @@
                             <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
                             <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
                             <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3, Mode=TwoWay}" Header="FG%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding TPM}" Header="3PM" />
                             <DataGridTextColumn Binding="{Binding TPA}" Header="3PA" />
                             <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3, Mode=TwoWay}" Header="3P%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
                             <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
                             <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3, Mode=TwoWay}" Header="FT%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
                             <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         </DataGrid.Columns>
@@ -237,7 +266,8 @@
             <TabItem Header="Away Metric Stats" Name="tabAwayMetric">
                 <Grid>
                     <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
-                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricAway" VerticalAlignment="Stretch" IsReadOnly="True"
+                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricAway"
+                              VerticalAlignment="Stretch" IsReadOnly="True"
                               Sorting="StatColumn_Sorting">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
@@ -278,7 +308,8 @@
                                         <TextBlock Text="{Binding GmSc, StringFormat=F2}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Game Score; a linear calculation of the player's performance." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Game Score; a linear calculation of the player's performance."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -431,7 +462,8 @@
                                         <TextBlock Text="{Binding TOp, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Turnover Percentage; an estimate of turnovers per 100 plays." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Turnover Percentage; an estimate of turnovers per 100 plays."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -458,7 +490,8 @@
                                         <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -471,7 +504,8 @@
                                         <TextBlock Text="{Binding REBR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap"
+                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor."
+                                                    TextWrapping="Wrap"
                                                     MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
@@ -485,7 +519,8 @@
                                         <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -498,7 +533,8 @@
                                         <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -511,7 +547,8 @@
                                         <TextBlock Text="{Binding STLR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -524,7 +561,8 @@
                                         <TextBlock Text="{Binding TOR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -537,7 +575,8 @@
                                         <TextBlock Text="{Binding FTR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score." TextWrapping="Wrap"
+                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
+                                                    TextWrapping="Wrap"
                                                     MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
@@ -551,11 +590,13 @@
             <TabItem Header="Home Team" Name="tabTeam2">
                 <Grid>
                     <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
-                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome" VerticalAlignment="Stretch" FrozenColumnCount="1"
+                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome"
+                              VerticalAlignment="Stretch" FrozenColumnCount="1"
                               Sorting="StatColumn_Sorting">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player"
-                                                    SelectedValueBinding="{Binding PlayerID}" SortMemberPath="Name" SelectedValuePath="Key"
+                                                    SelectedValueBinding="{Binding PlayerID}" SortMemberPath="Name"
+                                                    SelectedValuePath="Key"
                                                     CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />
                             <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
@@ -570,15 +611,18 @@
                             <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
                             <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
                             <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3, Mode=TwoWay}" Header="FG%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding TPM}" Header="3PM" />
                             <DataGridTextColumn Binding="{Binding TPA}" Header="3PA" />
                             <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3, Mode=TwoWay}" Header="3P%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
                             <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
                             <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3, Mode=TwoWay}" Header="FT%"
-                                                IsReadOnly="True" CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
+                                                IsReadOnly="True"
+                                                CopyingCellClipboardContent="PercentageColumn_CopyingCellClipboardContent" />
                             <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
                             <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         </DataGrid.Columns>
@@ -588,7 +632,8 @@
             <TabItem Header="Home Metric Stats" Name="tabHomeMetric">
                 <Grid>
                     <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
-                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricHome" VerticalAlignment="Stretch" IsReadOnly="True"
+                              HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricHome"
+                              VerticalAlignment="Stretch" IsReadOnly="True"
                               Sorting="StatColumn_Sorting">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
@@ -629,7 +674,8 @@
                                         <TextBlock Text="{Binding GmSc, StringFormat=F2}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Game Score; a linear calculation of the player's performance." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Game Score; a linear calculation of the player's performance."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -782,7 +828,8 @@
                                         <TextBlock Text="{Binding TOp, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Turnover Percentage; an estimate of turnovers per 100 plays." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Turnover Percentage; an estimate of turnovers per 100 plays."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -809,7 +856,8 @@
                                         <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -822,7 +870,8 @@
                                         <TextBlock Text="{Binding REBR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap"
+                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor."
+                                                    TextWrapping="Wrap"
                                                     MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
@@ -836,7 +885,8 @@
                                         <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -849,7 +899,8 @@
                                         <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -862,7 +913,8 @@
                                         <TextBlock Text="{Binding STLR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -875,7 +927,8 @@
                                         <TextBlock Text="{Binding TOR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor."
+                                                    TextWrapping="Wrap" MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
                                     </DataTemplate>
@@ -888,7 +941,8 @@
                                         <TextBlock Text="{Binding FTR, StringFormat=F1}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
-                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score." TextWrapping="Wrap"
+                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
+                                                    TextWrapping="Wrap"
                                                     MaxWidth="400" />
                                             </TextBlock.ToolTip>
                                         </TextBlock>
@@ -918,9 +972,11 @@
                                 <RowDefinition Height="227*" />
                             </Grid.RowDefinitions>
                             <TextBlock HorizontalAlignment="Stretch" Margin="6" Name="txbMVP" Text=""
-                                       VerticalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"></TextBlock>
+                                       VerticalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextWrapping="Wrap">
+                            </TextBlock>
                             <TextBlock FontSize="14" FontWeight="Bold" HorizontalAlignment="Stretch" Margin="6"
-                                       Name="txbMVPStats" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="1" />
+                                       Name="txbMVPStats" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch"
+                                       Grid.Row="1" />
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Away" HorizontalAlignment="Stretch" Margin="6" Name="grpAway"

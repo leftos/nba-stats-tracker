@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using NBA_Stats_Tracker.Interop;
+using NBA_Stats_Tracker.Interop.NBA2K12;
 
 #endregion
 

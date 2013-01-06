@@ -75,19 +75,37 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\NST.Data.BoxScores.cs" />
-    <Compile Include="Data\NST.Data.SQLiteIO.cs" />
-    <Compile Include="Data\NST.Data.Players.cs" />
-    <Compile Include="Data\NST.Data.Teams.cs" />
-    <Compile Include="Data\NST.Data.Misc.cs" />
-    <Compile Include="Data\NST.Data.PastStats.cs" />
-    <Compile Include="Helper\NST.Helper.ListExtensions.cs" />
-    <Compile Include="Helper\NST.Helper.Misc.cs" />
-    <Compile Include="Helper\NST.Helper.EventHandlers.cs" />
-    <Compile Include="Helper\NST.Helper.WindowsForms.cs" />
-    <Compile Include="Interop\NST.Interop.InteropREditor.cs" />
-    <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
-    <Compile Include="Interop\NST.Interop.InteropBR.cs" />
+    <Compile Include="Data\Misc\Conference.cs" />
+    <Compile Include="Data\Misc\Span.cs" />
+    <Compile Include="Data\Misc\Timeframe.cs" />
+    <Compile Include="Data\PastStats\PastPlayerStats.cs" />
+    <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
+    <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
+    <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
+    <Compile Include="Data\Players\p.cs" />
+    <Compile Include="Data\Teams\TeamBoxScore.cs" />
+    <Compile Include="Data\Misc\Division.cs" />
+    <Compile Include="Data\PastStats\PastTeamStats.cs" />
+    <Compile Include="Data\Players\Player.cs" />
+    <Compile Include="Data\Players\PlayerBoxScore.cs" />
+    <Compile Include="Data\Players\PlayerRankings.cs" />
+    <Compile Include="Data\Players\PlayerStats.cs" />
+    <Compile Include="Data\Players\PlayerStatsRow.cs" />
+    <Compile Include="Data\Players\Position.cs" />
+    <Compile Include="Data\Teams\t.cs" />
+    <Compile Include="Data\Teams\TeamRankings.cs" />
+    <Compile Include="Data\Teams\TeamStats.cs" />
+    <Compile Include="Data\Teams\TeamStatsRow.cs" />
+    <Compile Include="Helper\ListExtensions\ListExtensions.cs" />
+    <Compile Include="Helper\Misc\ComboBoxItemWithIsEnabled.cs" />
+    <Compile Include="Helper\Misc\Misc.cs" />
+    <Compile Include="Helper\EventHandlers\EventHandlers.cs" />
+    <Compile Include="Helper\Misc\StartingFivePermutation.cs" />
+    <Compile Include="Helper\WindowsForms\WindowsForms.cs" />
+    <Compile Include="Interop\NBA2K12\PlayoffTree.cs" />
+    <Compile Include="Interop\REDitor\REDitor.cs" />
+    <Compile Include="Interop\NBA2K12\NBA2K12.cs" />
+    <Compile Include="Interop\BR\BR.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>

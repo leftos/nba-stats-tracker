@@ -20,6 +20,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.SQLiteIO;
 using SQLite_Database;
 
 #endregion

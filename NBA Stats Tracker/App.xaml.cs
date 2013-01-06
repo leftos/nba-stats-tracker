@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using NBA_Stats_Tracker.Interop;
+using NBA_Stats_Tracker.Interop.NBA2K12;
 
 #endregion
 

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace NBA_Stats_Tracker.Helper
+namespace NBA_Stats_Tracker.Helper.ListExtensions
 {
     /// <summary>
     /// Extensions for various kinds of .NET list constructs, including BindingList and ObservableCollection.

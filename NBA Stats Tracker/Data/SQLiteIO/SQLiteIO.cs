@@ -21,10 +21,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.PastStats;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
 
-namespace NBA_Stats_Tracker.Data
+namespace NBA_Stats_Tracker.Data.SQLiteIO
 {
     /// <summary>
     /// Implements all SQLite-related input/output methods.
@@ -1953,6 +1958,19 @@ namespace NBA_Stats_Tracker.Data
             }
         }
 
+        public static void RepairDB(ref Dictionary<int, PlayerStats> pst)
+        {
+            var list = pst.Keys.ToList();
+            foreach (var key in list)
+            {
+                var ps = pst[key];
+                if (ps.isActive && ps.TeamF == "")
+                {
+                    ps.isActive = false;
+                }
+            }
+        }
+
         /// <summary>
         /// Gets the max player ID.
         /// </summary>
@@ -2132,15 +2150,17 @@ namespace NBA_Stats_Tracker.Data
                         var playerID = Tools.getInt(dr, "ID");
                         if (!pst.Keys.Contains(playerID))
                         {
-                            if (TeamOrder.Keys.Contains(Tools.getString(dr, "TeamFin")))
-                            {
-                                pst.Add(playerID, new PlayerStats(dr));
-                                pst[playerID].ResetStats();
-                            }
+                            //if (TeamOrder.Keys.Contains(Tools.getString(dr, "TeamFin")))
+                            //{
+                            pst.Add(playerID, new PlayerStats(dr));
+                            pst[playerID].ResetStats();
+                            //}
                         }
                     }
                 }
             }
+
+            RepairDB(ref pst);
 
             #endregion
 
@@ -2174,7 +2194,7 @@ namespace NBA_Stats_Tracker.Data
                     else
                     {
                         tf.StartDate = Convert.ToDateTime(dataTable.Rows[0][0].ToString());
-                        tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());    
+                        tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());
                     }
                 }
                 DateTime dCur = tf.StartDate;
@@ -2238,7 +2258,7 @@ namespace NBA_Stats_Tracker.Data
                     }
                     else
                     {
-                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new PlayerStats { ID = id });
+                        splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new PlayerStats {ID = id});
                         dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
@@ -2358,7 +2378,8 @@ namespace NBA_Stats_Tracker.Data
                     }
                     splitPlayerStats[pbs.PlayerID][bs.isPlayoff ? "Playoffs" : "Season"].AddBoxScore(pbs);
 
-                    splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')].AddBoxScore(pbs);
+                    splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')].AddBoxScore
+                        (pbs);
                 }
             }
 

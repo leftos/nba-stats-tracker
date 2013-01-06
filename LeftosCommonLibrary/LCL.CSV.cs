@@ -141,7 +141,7 @@ namespace LeftosCommonLibrary
 
                 str += newColumn;
             }
-            str = str.TrimEnd(new[] { '\t' });
+            str = str.TrimEnd(new[] {'\t'});
 
             sw.WriteLine(str);
 
@@ -152,7 +152,7 @@ namespace LeftosCommonLibrary
                 {
                     s3 += dict[col.Key] + "\t";
                 }
-                s3 = s3.TrimEnd(new[] { '\t' });
+                s3 = s3.TrimEnd(new[] {'\t'});
                 sw.WriteLine(s3);
             }
 

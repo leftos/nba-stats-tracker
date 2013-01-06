@@ -4,87 +4,110 @@
         Title="Advanced Stats Calculator" Height="535" Width="859" Loaded="Window_Loaded_1">
     <TabControl x:Name="tbcAdv">
         <TabItem Header="Search">
-    <Grid>
-        <GroupBox Header="Step 1: Filter Players By" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="166" Width="256">
             <Grid>
-                <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="10,41,0,0"
-            		x:Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" Click="chkIsActive_Click" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="64,11,0,0" x:Name="cmbPosition1Filter"
-            		VerticalAlignment="Top" Width="50" SelectionChanged="cmbPosition1Filter_SelectionChanged" />
-                <Label Content="Position" HorizontalAlignment="Left" Margin="6,10,0,0" x:Name="label5"
-            		VerticalAlignment="Top" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="179,10,0,0" x:Name="cmbPosition2Filter"
-            		VerticalAlignment="Top" Width="50" SelectionChanged="cmbPosition2Filter_SelectionChanged" />
-                <Label Content="2nd Pos" HorizontalAlignment="Left" Margin="122,10,0,0" x:Name="label6"
-            		VerticalAlignment="Top" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,37,0,0" x:Name="cmbTeamFilter"
-            		VerticalAlignment="Top" Width="153" SelectionChanged="cmbTeamFilter_SelectionChanged" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="135,66,0,0" x:Name="cmbSeasonNum"
-            		VerticalAlignment="Top" Width="94" DisplayMemberPath="Value"
-            		SelectedValuePath="Key" SelectionChanged="cmbSeasonNum_SelectionChanged" />
-                <Label Content="Season" HorizontalAlignment="Left" Margin="84,66,0,0" x:Name="label17"
-            		VerticalAlignment="Top" />
+                <GroupBox Header="Step 1: Filter Players By" HorizontalAlignment="Left" Margin="10,10,0,0"
+                          VerticalAlignment="Top" Height="166" Width="256">
+                    <Grid>
+                        <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="10,41,0,0"
+                                  x:Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"
+                                  Click="chkIsActive_Click" />
+                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="64,11,0,0" x:Name="cmbPosition1Filter"
+                                  VerticalAlignment="Top" Width="50"
+                                  SelectionChanged="cmbPosition1Filter_SelectionChanged" />
+                        <Label Content="Position" HorizontalAlignment="Left" Margin="6,10,0,0" x:Name="label5"
+                               VerticalAlignment="Top" />
+                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="179,10,0,0"
+                                  x:Name="cmbPosition2Filter"
+                                  VerticalAlignment="Top" Width="50"
+                                  SelectionChanged="cmbPosition2Filter_SelectionChanged" />
+                        <Label Content="2nd Pos" HorizontalAlignment="Left" Margin="122,10,0,0" x:Name="label6"
+                               VerticalAlignment="Top" />
+                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,37,0,0" x:Name="cmbTeamFilter"
+                                  VerticalAlignment="Top" Width="153" SelectionChanged="cmbTeamFilter_SelectionChanged" />
+                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="135,66,0,0" x:Name="cmbSeasonNum"
+                                  VerticalAlignment="Top" Width="94" DisplayMemberPath="Value"
+                                  SelectedValuePath="Key" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+                        <Label Content="Season" HorizontalAlignment="Left" Margin="84,66,0,0" x:Name="label17"
+                               VerticalAlignment="Top" />
 
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="Step 2: Select Player or Team" Margin="271,10,362,0" VerticalAlignment="Top" Height="166">
-            <Grid>
-                <ComboBox x:Name="cmbSelectedPlayer" Margin="10,10,10,0" VerticalAlignment="Top" DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding PlayersList}" SelectionChanged="cmbSelectedPlayer_SelectionChanged"/>
-                <Label Content="or" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top"/>
-                <ComboBox x:Name="cmbSelectedTeam" Margin="10,68,10,0" VerticalAlignment="Top" SelectionChanged="cmbSelectedTeam_SelectionChanged"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="Step 3: Set Timespan" HorizontalAlignment="Right" Margin="0,10,11,0" VerticalAlignment="Top" Height="166" Width="346">
-            <Grid>
-                <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left" Margin="10,14,0,0"
-            		x:Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
-                <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="10,36,0,0"
-            		x:Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
-                <DatePicker Height="25" HorizontalAlignment="Left" Margin="27,58,0,0" x:Name="dtpStart"
-            		VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpStart_SelectedDateChanged" />
-                <DatePicker Height="25" HorizontalAlignment="Left" Margin="177,58,-73,0" x:Name="dtpEnd"
-            		VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpEnd_SelectedDateChanged" />
-                <Label Content="and" HorizontalAlignment="Left" Margin="143,60,0,0" x:Name="label2"
-            		VerticalAlignment="Top" />
-                <TextBlock Height="31" HorizontalAlignment="Left" Margin="10,98,-95,-31" x:Name="textBlock1"
-            		Text="* Availability of stats between dates depends on whether there are box-scores saved for this player."
-            		VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="125,10,0,0" x:Name="cmbTFSeason"
-            		VerticalAlignment="Top" Width="167" DisplayMemberPath="Value"
-            		SelectedValuePath="Key" SelectionChanged="cmbTFSeason_SelectionChanged" />
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="Step 4: Set Stats Filters" HorizontalAlignment="Left" Margin="10,181,0,40" Width="830">
-            <Grid>
-                <ComboBox Height="22" HorizontalAlignment="Left" Margin="56,10,0,0" x:Name="cmbTotalsPar"
-            		VerticalAlignment="Top" Width="63" />
-                <ComboBox Height="22" HorizontalAlignment="Left" Margin="124,10,0,0" x:Name="cmbTotalsOp"
-            		VerticalAlignment="Top" Width="41" />
-                <TextBox Height="22" HorizontalAlignment="Left" Margin="170,10,0,0" x:Name="txtTotalsVal"
-            		VerticalAlignment="Top" Width="67" />
-                <Button Content="Add" Height="22" Margin="0,10,90,0" x:Name="btnTotalsAdd"
-            		VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="btnTotalsAdd_Click" />
-                <Button Content="Remove" Height="22" Margin="0,10,10,0" x:Name="btnTotalsDel"
-            		VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="btnTotalsDel_Click" />
-                <ListBox HorizontalAlignment="Stretch" Margin="10,39,10,10" x:Name="lstTotals"
-                	VerticalAlignment="Stretch" SelectionMode="Extended" />
-                        <Label Content="Totals" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top"/>
-                        <CheckBox x:Name="chkIsStarter" Content="Starter" HorizontalAlignment="Left" Margin="258,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"/>
-                        <CheckBox x:Name="chkIsInjured" Content="Injured" HorizontalAlignment="Left" Margin="315,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"/>
-                        <CheckBox x:Name="chkIsOut" Content="DNP" HorizontalAlignment="Left" Margin="374,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"/>
                     </Grid>
-        </GroupBox>
-        <Button x:Name="btnSearch" Content="Search" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="btnSearch_Click"/>
-        <Button x:Name="btnClose" Content="Close" Margin="0,0,90,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
+                </GroupBox>
+                <GroupBox Header="Step 2: Select Player or Team" Margin="271,10,362,0" VerticalAlignment="Top"
+                          Height="166">
+                    <Grid>
+                        <ComboBox x:Name="cmbSelectedPlayer" Margin="10,10,10,0" VerticalAlignment="Top"
+                                  DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding PlayersList}"
+                                  SelectionChanged="cmbSelectedPlayer_SelectionChanged" />
+                        <Label Content="or" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" />
+                        <ComboBox x:Name="cmbSelectedTeam" Margin="10,68,10,0" VerticalAlignment="Top"
+                                  SelectionChanged="cmbSelectedTeam_SelectionChanged" />
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Step 3: Set Timespan" HorizontalAlignment="Right" Margin="0,10,11,0"
+                          VerticalAlignment="Top" Height="166" Width="346">
+                    <Grid>
+                        <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left"
+                                     Margin="10,14,0,0"
+                                     x:Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
+                        <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="10,36,0,0"
+                                     x:Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
+                        <DatePicker Height="25" HorizontalAlignment="Left" Margin="27,58,0,0" x:Name="dtpStart"
+                                    VerticalAlignment="Top" Width="115"
+                                    SelectedDateChanged="dtpStart_SelectedDateChanged" />
+                        <DatePicker Height="25" HorizontalAlignment="Left" Margin="177,58,-73,0" x:Name="dtpEnd"
+                                    VerticalAlignment="Top" Width="115"
+                                    SelectedDateChanged="dtpEnd_SelectedDateChanged" />
+                        <Label Content="and" HorizontalAlignment="Left" Margin="143,60,0,0" x:Name="label2"
+                               VerticalAlignment="Top" />
+                        <TextBlock Height="31" HorizontalAlignment="Left" Margin="10,98,-95,-31" x:Name="textBlock1"
+                                   Text="* Availability of stats between dates depends on whether there are box-scores saved for this player."
+                                   VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
+                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="125,10,0,0" x:Name="cmbTFSeason"
+                                  VerticalAlignment="Top" Width="167" DisplayMemberPath="Value"
+                                  SelectedValuePath="Key" SelectionChanged="cmbTFSeason_SelectionChanged" />
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Step 4: Set Stats Filters" HorizontalAlignment="Left" Margin="10,181,0,40"
+                          Width="830">
+                    <Grid>
+                        <ComboBox Height="22" HorizontalAlignment="Left" Margin="56,10,0,0" x:Name="cmbTotalsPar"
+                                  VerticalAlignment="Top" Width="63" />
+                        <ComboBox Height="22" HorizontalAlignment="Left" Margin="124,10,0,0" x:Name="cmbTotalsOp"
+                                  VerticalAlignment="Top" Width="41" />
+                        <TextBox Height="22" HorizontalAlignment="Left" Margin="170,10,0,0" x:Name="txtTotalsVal"
+                                 VerticalAlignment="Top" Width="67" />
+                        <Button Content="Add" Height="22" Margin="0,10,90,0" x:Name="btnTotalsAdd"
+                                VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
+                                Click="btnTotalsAdd_Click" />
+                        <Button Content="Remove" Height="22" Margin="0,10,10,0" x:Name="btnTotalsDel"
+                                VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
+                                Click="btnTotalsDel_Click" />
+                        <ListBox HorizontalAlignment="Stretch" Margin="10,39,10,10" x:Name="lstTotals"
+                                 VerticalAlignment="Stretch" SelectionMode="Extended" />
+                        <Label Content="Totals" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" />
+                        <CheckBox x:Name="chkIsStarter" Content="Starter" HorizontalAlignment="Left"
+                                  Margin="258,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
+                        <CheckBox x:Name="chkIsInjured" Content="Injured" HorizontalAlignment="Left"
+                                  Margin="315,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
+                        <CheckBox x:Name="chkIsOut" Content="DNP" HorizontalAlignment="Left" Margin="374,13,0,0"
+                                  VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
+                    </Grid>
+                </GroupBox>
+                <Button x:Name="btnSearch" Content="Search" Margin="0,0,10,10" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right" Width="75" Click="btnSearch_Click" />
+                <Button x:Name="btnClose" Content="Close" Margin="0,0,90,10" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right" Width="75" />
 
-    </Grid>
+            </Grid>
         </TabItem>
         <TabItem Header="Player Stats" x:Name="tabPlayerStats">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStats"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
-                              Sorting="dgvPlayerStats_Sorting">
+                          CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                          Name="dgvPlayerStats"
+                          VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                          IsReadOnly="True"
+                          Sorting="dgvPlayerStats_Sorting">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                         <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -132,109 +155,116 @@
                         <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                         <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         <DataGridTemplateColumn Header="PTSR" SortMemberPath="PTSR"
-                                                    ClipboardContentBinding="{Binding PTSR}">
+                                                ClipboardContentBinding="{Binding PTSR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="REBR" SortMemberPath="REBR"
-                                                    ClipboardContentBinding="{Binding REBR}">
+                                                ClipboardContentBinding="{Binding REBR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding REBR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap"
-                                                    MaxWidth="400" />
+                                                Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="OREBR" SortMemberPath="OREBR"
-                                                    ClipboardContentBinding="{Binding OREBR}">
+                                                ClipboardContentBinding="{Binding OREBR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding OREBR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR"
-                                                    ClipboardContentBinding="{Binding ASTR}">
+                                                ClipboardContentBinding="{Binding ASTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Assist Rate; an estimate of assists made every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="BLKR" SortMemberPath="BLKR"
-                                                    ClipboardContentBinding="{Binding BLKR}">
+                                                ClipboardContentBinding="{Binding BLKR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="STLR" SortMemberPath="STLR"
-                                                    ClipboardContentBinding="{Binding STLR}">
+                                                ClipboardContentBinding="{Binding STLR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding STLR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Stealing Rate; an estimate of steals every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR"
-                                                    ClipboardContentBinding="{Binding TOR}">
+                                                ClipboardContentBinding="{Binding TOR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TOR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR"
-                                                    ClipboardContentBinding="{Binding FTR}">
+                                                ClipboardContentBinding="{Binding FTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FTR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score." TextWrapping="Wrap"
-                                                    MaxWidth="400" />
+                                                Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -246,8 +276,10 @@
         <TabItem Header="Team Stats" x:Name="tabTeamStats">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvTeamStats"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True" Sorting="dgvTeamStats_Sorting">
+                          CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                          Name="dgvTeamStats"
+                          VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                          IsReadOnly="True" Sorting="dgvTeamStats_Sorting">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                         <DataGridTextColumn Binding="{Binding Wins}" Header="W" />
@@ -292,235 +324,247 @@
                         <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                         <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
-                                                        ClipboardContentBinding="{Binding ORTG}">
+                                                ClipboardContentBinding="{Binding ORTG}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ORTG, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Offensive Rating: A measure of points scored per 100 possessions." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rating: A measure of points scored per 100 possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="DRTG" SortMemberPath="DRTG"
-                                                        ClipboardContentBinding="{Binding DRTG}">
+                                                ClipboardContentBinding="{Binding DRTG}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DRTG, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Defensive Rating: A measure of points allowed per 100 possessions (smaller is better)." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Defensive Rating: A measure of points allowed per 100 possessions (smaller is better)."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFFd" SortMemberPath="EFFd"
-                                                        ClipboardContentBinding="{Binding EFFd}">
+                                                ClipboardContentBinding="{Binding EFFd}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFFd, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Efficiency Differential: A comparison between the team's offensive and defensive ratings." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Efficiency Differential: A comparison between the team's offensive and defensive ratings."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PW%" SortMemberPath="PWp"
-                                                        ClipboardContentBinding="{Binding PWp}">
+                                                ClipboardContentBinding="{Binding PWp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PWp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Projected Winning Percentage: A projection of the winning percentage at the end of the season, based on points for and allowed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Projected Winning Percentage: A projection of the winning percentage at the end of the season, based on points for and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PythW" SortMemberPath="PythW"
-                                                        ClipboardContentBinding="{Binding PythW}">
+                                                ClipboardContentBinding="{Binding PythW}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PythW, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pythagoeran Wins: Projected wins based on points scored and allowed." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pythagoeran Wins: Projected wins based on points scored and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PythL" SortMemberPath="PythL"
-                                                        ClipboardContentBinding="{Binding PythL}">
+                                                ClipboardContentBinding="{Binding PythL}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PythL, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pythagoeran Losses: Projected losses based on points scored and allowed." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pythagoeran Losses: Projected losses based on points scored and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp"
-                                                        ClipboardContentBinding="{Binding TSp}">
+                                                ClipboardContentBinding="{Binding TSp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TSp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFG%" SortMemberPath="EFGp"
-                                                        ClipboardContentBinding="{Binding EFGp}">
+                                                ClipboardContentBinding="{Binding EFGp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFGp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Effective Field Goal Percentage; this metric adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Effective Field Goal Percentage; this metric adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="3PR" SortMemberPath="TPR"
-                                                        ClipboardContentBinding="{Binding TPR}">
+                                                ClipboardContentBinding="{Binding TPR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TPR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="3-Point Rate: The percentage of a team's field goal attempts that are 3-point attempts." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="3-Point Rate: The percentage of a team's field goal attempts that are 3-point attempts."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="OREB%" SortMemberPath="OREBp"
-                                                        ClipboardContentBinding="{Binding OREBp}">
+                                                ClipboardContentBinding="{Binding OREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding OREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a team grabbed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a team grabbed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="DREB%" SortMemberPath="DREBp"
-                                                        ClipboardContentBinding="{Binding DREBp}">
+                                                ClipboardContentBinding="{Binding DREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a team grabbed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a team grabbed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="AST%" SortMemberPath="AST%"
-                                                        ClipboardContentBinding="{Binding ASTp}">
+                                                ClipboardContentBinding="{Binding ASTp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ASTp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Assist Percentage; an estimate of the percentage of team plays that end in assist." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Assist Percentage; an estimate of the percentage of team plays that end in assist."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR"
-                                                        ClipboardContentBinding="{Binding TOR}">
+                                                ClipboardContentBinding="{Binding TOR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TOR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Turnover Rate; an estimate of the percentage of plays that end in turnovers." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Turnover Rate; an estimate of the percentage of plays that end in turnovers."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR"
-                                                        ClipboardContentBinding="{Binding FTR}">
+                                                ClipboardContentBinding="{Binding FTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FTR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Free Throw Rate; a measure of a team's ability to get to the line and score." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Free Throw Rate; a measure of a team's ability to get to the line and score."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Poss" SortMemberPath="Poss"
-                                                        ClipboardContentBinding="{Binding Poss}">
+                                                ClipboardContentBinding="{Binding Poss}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Poss, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Possessions: An estimate of the number of possessions per game." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Possessions: An estimate of the number of possessions per game."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Pace" SortMemberPath="Pace"
-                                                        ClipboardContentBinding="{Binding Pace}">
+                                                ClipboardContentBinding="{Binding Pace}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                
+
             </Grid>
         </TabItem>
         <TabItem Header="Player Stats (Unmet Criteria)" x:Name="tabPlayerStatsOpposite">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayerStatsOpposite"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
-                              Sorting="dgvPlayerStats_Sorting">
+                          CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                          Name="dgvPlayerStatsOpposite"
+                          VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                          IsReadOnly="True"
+                          Sorting="dgvPlayerStats_Sorting">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                         <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -568,317 +612,326 @@
                         <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                         <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         <DataGridTemplateColumn Header="PER" x:Name="dgvPlayerPERColumnOpposite" SortMemberPath="PER"
-                                                    ClipboardContentBinding="{Binding PER}">
+                                                ClipboardContentBinding="{Binding PER}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PER, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Player Efficiency Rating; in the words of its creator, ESPN.com columnist John Hollinger, 'the PER sums up all a player's positive accomplishments, subtracts the negative accomplishments, and returns a per-minute rating of a player's performance.'"
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Player Efficiency Rating; in the words of its creator, ESPN.com columnist John Hollinger, 'the PER sums up all a player's positive accomplishments, subtracts the negative accomplishments, and returns a per-minute rating of a player's performance.'"
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFF" x:Name="dgvPlayerEFFColumnOpposite" SortMemberPath="EFF"
-                                                    ClipboardContentBinding="{Binding EFF}">
+                                                ClipboardContentBinding="{Binding EFF}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFF, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Efficiency; an all-around measure of every aspect of the player's performance compared to the rest of the league."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Efficiency; an all-around measure of every aspect of the player's performance compared to the rest of the league."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="GmSc" SortMemberPath="GmSc"
-                                                    ClipboardContentBinding="{Binding GmSc}">
+                                                ClipboardContentBinding="{Binding GmSc}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding GmSc, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Game Score; a linear calculation of the player's performance." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Game Score; a linear calculation of the player's performance."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="GmScE" SortMemberPath="GmScE"
-                                                    ClipboardContentBinding="{Binding GmScE}">
+                                                ClipboardContentBinding="{Binding GmScE}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding GmScE, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Game Score Efficiency; a linear calculation of the player's performance, adjusted to their minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp"
-                                                    ClipboardContentBinding="{Binding TSp}">
+                                                ClipboardContentBinding="{Binding TSp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TSp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFG%" SortMemberPath="EFGp"
-                                                    ClipboardContentBinding="{Binding EFGp}">
+                                                ClipboardContentBinding="{Binding EFGp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFGp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Effective Field Goal Percentage; this statistic adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Effective Field Goal Percentage; this statistic adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PPR" SortMemberPath="PPR" x:Name="dgvPlayerPPRColumnOpposite"
-                                                    ClipboardContentBinding="{Binding PPR}">
+                                                ClipboardContentBinding="{Binding PPR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PPR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Pure Point Rating; a John Hollinger created metric, measure of a player's ball-handling ability that takes productivity, team and league pace into account. Each assist is worth 2/3 of what each turnover takes away from the rating."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pure Point Rating; a John Hollinger created metric, measure of a player's ball-handling ability that takes productivity, team and league pace into account. Each assist is worth 2/3 of what each turnover takes away from the rating."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="OREB%" SortMemberPath="OREBp"
-                                                    ClipboardContentBinding="{Binding OREBp}">
+                                                ClipboardContentBinding="{Binding OREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding OREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a player grabbed while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a player grabbed while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="DREB%" SortMemberPath="DREBp"
-                                                    ClipboardContentBinding="{Binding DREBp}">
+                                                ClipboardContentBinding="{Binding DREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a player grabbed while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a player grabbed while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="REB%" SortMemberPath="REBp"
-                                                    ClipboardContentBinding="{Binding REBp}">
+                                                ClipboardContentBinding="{Binding REBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding REBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Total Rebound Percentage; an estimate of the percentage of available rebounds a player grabbed while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Total Rebound Percentage; an estimate of the percentage of available rebounds a player grabbed while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="AST%" SortMemberPath="ASTp"
-                                                    ClipboardContentBinding="{Binding ASTp}">
+                                                ClipboardContentBinding="{Binding ASTp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ASTp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Assist Percentage; an estimate of the percentage of teammate field goals a player assisted while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Assist Percentage; an estimate of the percentage of teammate field goals a player assisted while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="STL%" SortMemberPath="STLp"
-                                                    ClipboardContentBinding="{Binding STLp}">
+                                                ClipboardContentBinding="{Binding STLp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding STLp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Steal Percentage; an estimate of the percentage of opponent possessions that end with a steal by the player while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Steal Percentage; an estimate of the percentage of opponent possessions that end with a steal by the player while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="BLK%" SortMemberPath="BLKp"
-                                                    ClipboardContentBinding="{Binding BLKp}">
+                                                ClipboardContentBinding="{Binding BLKp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding BLKp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Block Percentage; an estimate of the percentage of opponent two-point field goal attempts blocked by the player while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Block Percentage; an estimate of the percentage of opponent two-point field goal attempts blocked by the player while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TO%" SortMemberPath="TOp"
-                                                    ClipboardContentBinding="{Binding TOp}">
+                                                ClipboardContentBinding="{Binding TOp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TOp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Turnover Percentage; an estimate of turnovers per 100 plays." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Turnover Percentage; an estimate of turnovers per 100 plays."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="USG%" SortMemberPath="USGp"
-                                                    ClipboardContentBinding="{Binding USGp}">
+                                                ClipboardContentBinding="{Binding USGp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding USGp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Usage Percentage; an estimate of the percentage of team plays used by a player while he was on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Usage Percentage; an estimate of the percentage of team plays used by a player while he was on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PTSR" SortMemberPath="PTSR"
-                                                    ClipboardContentBinding="{Binding PTSR}">
+                                                ClipboardContentBinding="{Binding PTSR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PTSR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Scoring Rate; an estimate of points scored every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="REBR" SortMemberPath="REBR"
-                                                    ClipboardContentBinding="{Binding REBR}">
+                                                ClipboardContentBinding="{Binding REBR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding REBR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor." TextWrapping="Wrap"
-                                                    MaxWidth="400" />
+                                                Text="Rebounding Rate; an estimate of rebounds grabbed every 36 minutes on the floor."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="OREBR" SortMemberPath="OREBR"
-                                                    ClipboardContentBinding="{Binding OREBR}">
+                                                ClipboardContentBinding="{Binding OREBR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding OREBR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
-                                                    TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rebounding Rate; an estimate of offensive rebounds grabbed every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="ASTR" SortMemberPath="ASTR"
-                                                    ClipboardContentBinding="{Binding ASTR}">
+                                                ClipboardContentBinding="{Binding ASTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ASTR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Assist Rate; an estimate of assists made every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Assist Rate; an estimate of assists made every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="BLKR" SortMemberPath="BLKR"
-                                                    ClipboardContentBinding="{Binding BLKR}">
+                                                ClipboardContentBinding="{Binding BLKR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding BLKR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Blocking Rate; an estimate of shots blocked every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="STLR" SortMemberPath="STLR"
-                                                    ClipboardContentBinding="{Binding STLR}">
+                                                ClipboardContentBinding="{Binding STLR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding STLR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Stealing Rate; an estimate of steals every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Stealing Rate; an estimate of steals every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR"
-                                                    ClipboardContentBinding="{Binding TOR}">
+                                                ClipboardContentBinding="{Binding TOR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TOR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Turnover Rate; an estimate of turnovers every 36 minutes on the floor."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR"
-                                                    ClipboardContentBinding="{Binding FTR}">
+                                                ClipboardContentBinding="{Binding FTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FTR, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                    Text="Free Throw Rate; a measure of a player's ability to get to the line and score." TextWrapping="Wrap"
-                                                    MaxWidth="400" />
+                                                Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                        </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -890,8 +943,10 @@
         <TabItem Header="Team Stats (Unmet Criteria)" x:Name="tabTeamStatsOpposite">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvTeamStatsOpposite"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True" Sorting="dgvTeamStats_Sorting">
+                          CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
+                          Name="dgvTeamStatsOpposite"
+                          VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                          IsReadOnly="True" Sorting="dgvTeamStats_Sorting">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                         <DataGridTextColumn Binding="{Binding Wins}" Header="W" />
@@ -936,227 +991,237 @@
                         <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                         <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                         <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
-                                                        ClipboardContentBinding="{Binding ORTG}">
+                                                ClipboardContentBinding="{Binding ORTG}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ORTG, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Offensive Rating: A measure of points scored per 100 possessions." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rating: A measure of points scored per 100 possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="DRTG" SortMemberPath="DRTG"
-                                                        ClipboardContentBinding="{Binding DRTG}">
+                                                ClipboardContentBinding="{Binding DRTG}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DRTG, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Defensive Rating: A measure of points allowed per 100 possessions (smaller is better)." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Defensive Rating: A measure of points allowed per 100 possessions (smaller is better)."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFFd" SortMemberPath="EFFd"
-                                                        ClipboardContentBinding="{Binding EFFd}">
+                                                ClipboardContentBinding="{Binding EFFd}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFFd, StringFormat=F2}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Efficiency Differential: A comparison between the team's offensive and defensive ratings." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Efficiency Differential: A comparison between the team's offensive and defensive ratings."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PW%" SortMemberPath="PWp"
-                                                        ClipboardContentBinding="{Binding PWp}">
+                                                ClipboardContentBinding="{Binding PWp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PWp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Projected Winning Percentage: A projection of the winning percentage at the end of the season, based on points for and allowed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Projected Winning Percentage: A projection of the winning percentage at the end of the season, based on points for and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PythW" SortMemberPath="PythW"
-                                                        ClipboardContentBinding="{Binding PythW}">
+                                                ClipboardContentBinding="{Binding PythW}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PythW, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pythagoeran Wins: Projected wins based on points scored and allowed." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pythagoeran Wins: Projected wins based on points scored and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PythL" SortMemberPath="PythL"
-                                                        ClipboardContentBinding="{Binding PythL}">
+                                                ClipboardContentBinding="{Binding PythL}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PythL, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pythagoeran Losses: Projected losses based on points scored and allowed." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pythagoeran Losses: Projected losses based on points scored and allowed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TS%" SortMemberPath="TSp"
-                                                        ClipboardContentBinding="{Binding TSp}">
+                                                ClipboardContentBinding="{Binding TSp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TSp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="True Shooting Percentage; a measure of shooting effeciency that takes into account 2-point field goals, 3-point field goals, and free throws."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="EFG%" SortMemberPath="EFGp"
-                                                        ClipboardContentBinding="{Binding EFGp}">
+                                                ClipboardContentBinding="{Binding EFGp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding EFGp, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Effective Field Goal Percentage; this metric adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Effective Field Goal Percentage; this metric adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="3PR" SortMemberPath="TPR"
-                                                        ClipboardContentBinding="{Binding TPR}">
+                                                ClipboardContentBinding="{Binding TPR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TPR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="3-Point Rate: The percentage of a team's field goal attempts that are 3-point attempts." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="3-Point Rate: The percentage of a team's field goal attempts that are 3-point attempts."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="OREB%" SortMemberPath="OREBp"
-                                                        ClipboardContentBinding="{Binding OREBp}">
+                                                ClipboardContentBinding="{Binding OREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding OREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a team grabbed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a team grabbed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="DREB%" SortMemberPath="DREBp"
-                                                        ClipboardContentBinding="{Binding DREBp}">
+                                                ClipboardContentBinding="{Binding DREBp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DREBp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a team grabbed."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a team grabbed."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="AST%" SortMemberPath="AST%"
-                                                        ClipboardContentBinding="{Binding ASTp}">
+                                                ClipboardContentBinding="{Binding ASTp}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ASTp, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Assist Percentage; an estimate of the percentage of team plays that end in assist." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Assist Percentage; an estimate of the percentage of team plays that end in assist."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="TOR" SortMemberPath="TOR"
-                                                        ClipboardContentBinding="{Binding TOR}">
+                                                ClipboardContentBinding="{Binding TOR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TOR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Turnover Rate; an estimate of the percentage of plays that end in turnovers." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Turnover Rate; an estimate of the percentage of plays that end in turnovers."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="FTR" SortMemberPath="FTR"
-                                                        ClipboardContentBinding="{Binding FTR}">
+                                                ClipboardContentBinding="{Binding FTR}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FTR, StringFormat=F3}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Free Throw Rate; a measure of a team's ability to get to the line and score." TextWrapping="Wrap"
-                                                        MaxWidth="400" />
+                                                Text="Free Throw Rate; a measure of a team's ability to get to the line and score."
+                                                TextWrapping="Wrap"
+                                                MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Poss" SortMemberPath="Poss"
-                                                        ClipboardContentBinding="{Binding Poss}">
+                                                ClipboardContentBinding="{Binding Poss}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Poss, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Possessions: An estimate of the number of possessions per game." TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Possessions: An estimate of the number of possessions per game."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Pace" SortMemberPath="Pace"
-                                                        ClipboardContentBinding="{Binding Pace}">
+                                                ClipboardContentBinding="{Binding Pace}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                        Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
-                                                        TextWrapping="Wrap" MaxWidth="400" />
+                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
-                                            </TextBlock>
+                                    </TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                
+
             </Grid>
         </TabItem>
     </TabControl>

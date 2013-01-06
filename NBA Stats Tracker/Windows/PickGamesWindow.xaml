@@ -4,29 +4,32 @@
         Title="PickGamesWindow" Height="506" Width="432" Loaded="Window_Loaded_1" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="70" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
-        <Label Content="Select the teams that had a game today..." Grid.ColumnSpan="4" Grid.Column="1" Margin="0,3,0,0"/>
-        <ListBox Name="lstAvailableHome" Grid.Row="6" Grid.Column="3"/>
-        <ListBox Name="lstAvailableAway" Grid.Row="6" Grid.Column="1"/>
-        <ListBox Name="lstSelectedGames" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" MouseDoubleClick="lstSelectedGames_MouseDoubleClick"/>
-        <DatePicker Name="dtpToday" Grid.Row="2" Grid.Column="1" Margin="2"/>
-        <Button x:Name="btnAddGame" Grid.Row="8" Grid.Column="1" Margin="6" Content="Add Game" Click="btnAddGame_Click"/>
-        <Button Name="btnOK" Grid.Row="8" Grid.Column="3" Margin="6" Content="Done" Click="btnOK_Click"/>
+        <TextBlock Grid.ColumnSpan="3" Grid.Column="1" Margin="0,3,0,0" TextWrapping="Wrap">
+            Select any games for which you want to calculate the box-score.<LineBreak /><LineBreak />Any games you don't select won't have their box scores calculated, but the teams' and players' stats will still be updated.
+        </TextBlock>
+        <ListBox Name="lstAvailableHome" Grid.Row="6" Grid.Column="3" />
+        <ListBox Name="lstAvailableAway" Grid.Row="6" Grid.Column="1" />
+        <ListBox Name="lstSelectedGames" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+                 MouseDoubleClick="lstSelectedGames_MouseDoubleClick" />
+        <DatePicker Name="dtpToday" Grid.Row="2" Grid.Column="1" Margin="2" />
+        <Button x:Name="btnAddGame" Grid.Row="8" Grid.Column="1" Margin="6" Content="Add Game" Click="btnAddGame_Click" />
+        <Button Name="btnOK" Grid.Row="8" Grid.Column="3" Margin="6" Content="Done" Click="btnOK_Click" />
     </Grid>
 </Window>

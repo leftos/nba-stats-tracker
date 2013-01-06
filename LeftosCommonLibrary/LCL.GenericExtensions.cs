@@ -30,7 +30,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace LeftosCommonLibrary
 {
-
     /// <summary>
     /// Implements generic extension methods.
     /// </summary>
@@ -47,7 +46,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                variable = (T)Convert.ChangeType(dict[key], typeof(T));
+                variable = (T) Convert.ChangeType(dict[key], typeof (T));
             }
             catch (InvalidCastException)
             {
@@ -115,7 +114,7 @@ namespace LeftosCommonLibrary
             try
             {
                 string s = dict[key];
-                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
+                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
                 foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
@@ -144,39 +143,47 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                if (typeof(T).BaseType != null)
+                if (typeof (T).BaseType != null)
                 {
-                    if (typeof(T).BaseType == typeof(Enum))
+                    if (typeof (T).BaseType == typeof (Enum))
                     {
-                        return (T)Enum.Parse(typeof(T), dict[key]);
+                        return (T) Enum.Parse(typeof (T), dict[key]);
                     }
                 }
-                var ret = (T)Convert.ChangeType(dict[key], typeof(T));
+                var ret = (T) Convert.ChangeType(dict[key], typeof (T));
                 return ret;
             }
             catch (OverflowException)
             {
                 Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (InvalidCastException)
             {
                 Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (FormatException)
             {
                 Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (ArgumentException)
             {
                 Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (KeyNotFoundException)
             {
@@ -200,32 +207,40 @@ namespace LeftosCommonLibrary
             try
             {
                 object val = Convert.ChangeType(dict[key], type);
-                var ret = (T)Convert.ChangeType(val, typeof(T));
+                var ret = (T) Convert.ChangeType(val, typeof (T));
                 return ret;
             }
             catch (OverflowException)
             {
                 Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (InvalidCastException)
             {
                 Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (FormatException)
             {
                 Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (ArgumentException)
             {
                 Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (KeyNotFoundException)
             {
@@ -246,42 +261,51 @@ namespace LeftosCommonLibrary
         /// <returns>The value that the variable should be set to if the operation succeeds. 
         /// If the cast is invalid, it returns the default value of the type. 
         /// If the key isn't found, it returns the original value of the variable.</returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter, bool onErrorRemain = false)
+        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter,
+                                       bool onErrorRemain = false)
         {
             try
             {
                 string s = dict[key];
-                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
+                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
                 foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
-                var ret = (T)Convert.ChangeType(s, typeof(T));
+                var ret = (T) Convert.ChangeType(s, typeof (T));
                 return ret;
             }
             catch (OverflowException)
             {
                 Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (InvalidCastException)
             {
                 Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (FormatException)
             {
                 Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (ArgumentException)
             {
                 Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
-                if (onErrorRemain) return variable;
-                else return default(T);
+                if (onErrorRemain)
+                    return variable;
+                else
+                    return default(T);
             }
             catch (KeyNotFoundException)
             {
@@ -320,7 +344,7 @@ namespace LeftosCommonLibrary
             // Check if the object already has been copied
             if (copies.TryGetValue(original, out tmpResult))
             {
-                return (T)tmpResult;
+                return (T) tmpResult;
             }
             else
             {
@@ -330,7 +354,7 @@ namespace LeftosCommonLibrary
                         * the constructor if the constructor if there is no default constructor
                         * or you change it to Activator.CreateInstance<T>() if there is always
                         * a default constructor */
-                    result = (T)Activator.CreateInstance(t, args);
+                    result = (T) Activator.CreateInstance(t, args);
                     copies.Add(original, result);
 
                     // Maybe you need here some more BindingFlags
@@ -347,7 +371,7 @@ namespace LeftosCommonLibrary
 
                         /* You can check here for ft.GetCustomAttributes(typeof(SerializableAttribute), false).Length != 0 to 
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
-                        if (fieldValue != null && !ft.IsValueType && ft != typeof(String))
+                        if (fieldValue != null && !ft.IsValueType && ft != typeof (String))
                         {
                             fieldValue = fieldValue.DeepClone(copies);
                             /* Does not support parameters for subobjects nativly, but you can provide them when using
@@ -361,8 +385,8 @@ namespace LeftosCommonLibrary
                 else
                 {
                     // Handle arrays here
-                    var originalArray = (Array)(Object)original;
-                    var resultArray = (Array)originalArray.Clone();
+                    var originalArray = (Array) (Object) original;
+                    var resultArray = (Array) originalArray.Clone();
                     copies.Add(original, resultArray);
 
                     // If the type is not a value type we need to copy each of the elements
@@ -387,7 +411,7 @@ namespace LeftosCommonLibrary
                                 resultArray.SetValue(value.DeepClone(copies), indicies);
                         }
                     }
-                    result = (T)(Object)resultArray;
+                    result = (T) (Object) resultArray;
                 }
                 return result;
             }
@@ -431,7 +455,7 @@ namespace LeftosCommonLibrary
                 IFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(objectStream, RealObject);
                 objectStream.Seek(0, SeekOrigin.Begin);
-                return (T)formatter.Deserialize(objectStream);
+                return (T) formatter.Deserialize(objectStream);
             }
         }
 

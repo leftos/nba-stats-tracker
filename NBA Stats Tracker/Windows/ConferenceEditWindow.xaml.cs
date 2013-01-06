@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Windows
@@ -30,8 +32,9 @@ namespace NBA_Stats_Tracker.Windows
             curConf = conf;
             txtName.Text = conf.Name;
             txtDivisions.Text = "";
-            MainWindow.Divisions.Where(division => division.ConferenceID == conf.ID).ToList().ForEach(
-                division => txtDivisions.Text += division.Name + "\n");
+            MainWindow.Divisions.Where(division => division.ConferenceID == conf.ID)
+                      .ToList()
+                      .ForEach(division => txtDivisions.Text += division.Name + "\n");
             txtDivisions.Text = txtDivisions.Text.TrimEnd(new[] {'\n'});
         }
 
@@ -87,7 +90,11 @@ namespace NBA_Stats_Tracker.Windows
             {
                 db.Insert("Divisions",
                           new Dictionary<string, string>
-                          {{"ID", div.ID.ToString()}, {"Name", div.Name}, {"Conference", div.ConferenceID.ToString()}});
+                          {
+                              {"ID", div.ID.ToString()},
+                              {"Name", div.Name},
+                              {"Conference", div.ConferenceID.ToString()}
+                          });
             }
 
             TeamStats.CheckForInvalidDivisions();

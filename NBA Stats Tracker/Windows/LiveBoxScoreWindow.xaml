@@ -12,11 +12,13 @@
                   VerticalAlignment="Top" Width="120" SelectionChanged="cmbTeam1_SelectionChanged" />
         <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" FrozenColumnCount="1"
                   Margin="12,41,12,8" Name="dgvPlayersAway" CellEditEnding="dataGrid_CellEditEnding"
-                  CurrentCellChanged="dataGrid_CurrentCellChanged" CanUserResizeRows="False" MouseMove="DataGrid_MouseMove"
+                  CurrentCellChanged="dataGrid_CurrentCellChanged" CanUserResizeRows="False"
+                  MouseMove="DataGrid_MouseMove"
                   Drop="DataGrid_Drop">
             <DataGrid.Columns>
                 <DataGridComboBoxColumn x:Name="colPlayerAway"
-                                        CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" DisplayMemberPath="Value" Header="Player"
+                                        CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent"
+                                        DisplayMemberPath="Value" Header="Player"
                                         SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                 <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" Visibility="Collapsed" />
                 <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
@@ -27,7 +29,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding FGM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding FGM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 IsReadOnly="True" SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -36,7 +39,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TwoPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TwoPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -45,7 +49,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -54,7 +59,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding FTM, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding FTM, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -63,7 +69,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding REB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding REB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -72,7 +79,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding OREB, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding OREB, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -81,7 +89,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding AST, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding AST, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -90,7 +99,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding BLK, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding BLK, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -99,7 +109,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding STL, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding STL, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -108,7 +119,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TOS, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TOS, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -117,7 +129,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding FOUL, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding FOUL, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -132,11 +145,13 @@
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="cmbTeam2" TabIndex="15"
                   VerticalAlignment="Top" Width="120" Grid.Row="1" SelectionChanged="cmbTeam2_SelectionChanged" />
         <DataGrid AutoGenerateColumns="False" Grid.Row="1" CanUserAddRows="True" CanUserDeleteRows="True"
-                  FrozenColumnCount="1" Margin="12,41,12,8" Name="dgvPlayersHome" CellEditEnding="dataGrid_CellEditEnding"
+                  FrozenColumnCount="1" Margin="12,41,12,8" Name="dgvPlayersHome"
+                  CellEditEnding="dataGrid_CellEditEnding"
                   CurrentCellChanged="dataGrid_CurrentCellChanged" MouseMove="DataGrid_MouseMove" Drop="DataGrid_Drop">
             <DataGrid.Columns>
                 <DataGridComboBoxColumn x:Name="colPlayerHome"
-                                        CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" DisplayMemberPath="Value" Header="Player"
+                                        CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent"
+                                        DisplayMemberPath="Value" Header="Player"
                                         SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                 <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" Visibility="Collapsed" />
                 <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
@@ -147,7 +162,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown Value="{Binding FGM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Minimum="0" IsReadOnly="True" SourceUpdated="IntegerUpDown_SourceUpdated" />
+                                                Minimum="0" IsReadOnly="True"
+                                                SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -155,7 +171,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TwoPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TwoPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -164,7 +181,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TPM, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -173,7 +191,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding FTM, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding FTM, UpdateSourceTrigger =PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -182,7 +201,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding REB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding REB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -191,7 +211,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding OREB, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding OREB, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -200,7 +221,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding AST, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding AST, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -209,7 +231,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding BLK, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding BLK, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -218,7 +241,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding STL, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding STL, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -227,7 +251,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding TOS, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding TOS, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -236,7 +261,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <xctk:IntegerUpDown
-                                Value="{Binding FOUL, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Minimum="0"
+                                Value="{Binding FOUL, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                Minimum="0"
                                 SourceUpdated="IntegerUpDown_SourceUpdated" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

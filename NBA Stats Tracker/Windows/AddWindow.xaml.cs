@@ -21,6 +21,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
 
 #endregion
 
@@ -44,7 +46,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 Teams.Add(kvp.Key);
             }
-            
+
             Players = new ObservableCollection<Player>();
 
             teamColumn.ItemsSource = Teams;

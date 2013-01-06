@@ -21,17 +21,19 @@ using System.Data;
 using System.Linq;
 using HtmlAgilityPack;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Interop
+namespace NBA_Stats_Tracker.Interop.BR
 {
     /// <summary>
     /// Used to download and import real NBA stats from the Basketball-Reference.com website.
     /// </summary>
-    public static class InteropBR
+    public static class BR
     {
         /// <summary>
         /// Downloads a box score from the specified URL.
@@ -62,7 +64,7 @@ namespace NBA_Stats_Tracker.Interop
                     var h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
                     string name = h1.InnerText;
                     parts = name.Split(new[] {" at ", " Box Score, ", ", "}, 4, StringSplitOptions.None);
-                    for (int i = 0; i< parts.Count();i++)
+                    for (int i = 0; i < parts.Count(); i++)
                     {
                         parts[i] = parts[i].Replace("\n", "");
                     }

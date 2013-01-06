@@ -1,4 +1,8 @@
-1.1.0.0
-http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+1.3.3.0
+http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		- Addition: Added option to add team/player stats for seasons before the ones contained in the database, meant for the Yearly Report tabs
+		Although v1.3.3 is a Beta version, I strongly encourage you to upgrade to it as no support will be offered for earlier versions pending a response from Basketball-Reference.com regarding the use of its data.
+		
+		v1.2 added the Advanced Stats Calculator and v1.3 added the Recommended 2K Ratings tab in League Overview. During the development of both versions a huge rework of the codebase was done which has made the tool much faster and more responsive.
+		
+		For the full changelog, check the What's New.txt file in the program's installation folder after installing the latest version.

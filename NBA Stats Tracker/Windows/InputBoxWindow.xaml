@@ -4,7 +4,7 @@
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" SizeToContent="Width">
     <Grid>
         <TextBlock Height="43" Margin="15,12,15,0" Name="lblMessage"
-               VerticalAlignment="Top" Padding="0,5,0,0" TextWrapping="Wrap" >
+                   VerticalAlignment="Top" Padding="0,5,0,0" TextWrapping="Wrap">
             Hello<LineBreak />my dearest!
         </TextBlock>
         <TextBox Height="23" Margin="15,60,15,0" Name="txtInput" VerticalAlignment="Top" />

@@ -1,5 +1,27 @@
 NBA Stats Tracker - Version History
 
+	v1.3.3 Beta
+		- Addition: Added pasting to players' Playoff Stats in Team Overview, Team & Player Stats in League Overview
+		- Improvement: Players in pasted data will try to be determined by their name, if there's no matching ID
+		- Fix: Saving a team will now save its players' playoff stats as well
+		- Fix: Fixed behavior of Pick Games window during REDitor imports
+		- Fix: Fixed crash on some occurrences when switching to date timeframe
+		- Removal: Downloading real NBA stats has been temporarily disabled, pending response from Basketball-Reference.com on whether the tool can use its data
+
+	v1.3.2.3 Beta
+		- Fix: Tool should now import BirthYear and YearsPro during REDitor imports
+		- Fix: Fixed features remaining grayed out after creating a new database
+
+	v1.3.2.2 Beta
+		- Fix: Fixed crash introduced in v1.3.2.1 when importing using REDitor
+
+	v1.3.2.1 Beta
+		- Fix: Fixed various minor bugs and improved decisions on REDitor importing
+		- Fix: Fixed Enable/Disable Players for this Season dialog labels
+
+	v1.3.2 Beta
+		- Addition: When opening a database, certain repairs will be attempted, such as fixing a player being marked Active but not being assigned to a team
+
 	v1.3.1 Beta
 		- Improvement: Tool will now allow you to automatically parse and import multiple box-scores when importing from REDitor*
 			* Teams are required to have played just one game since the database was last saved

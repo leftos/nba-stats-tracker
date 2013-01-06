@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.PastStats;
+using NBA_Stats_Tracker.Data.SQLiteIO;
 
 namespace NBA_Stats_Tracker.Windows
 {

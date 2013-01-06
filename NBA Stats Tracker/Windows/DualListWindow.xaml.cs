@@ -26,7 +26,9 @@ using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.ListExtensions;
 using NBA_Stats_Tracker.Interop;
+using NBA_Stats_Tracker.Interop.REDitor;
 using SQLite_Database;
 
 #endregion
@@ -153,6 +155,10 @@ namespace NBA_Stats_Tracker.Windows
             }
             else if (mode == Mode.HiddenPlayers)
             {
+                Title = "Enable/Disable Players for Season";
+                lblEnabled.Content = "Enabled Players";
+                lblDisabled.Content = "Disabled Players";
+
                 string q = "SELECT (LastName || ', ' || FirstName || ' (' || TeamFin || ')') AS Name, ID, isHidden FROM " + _playersT +
                            " ORDER BY LastName";
 
@@ -199,7 +205,7 @@ namespace NBA_Stats_Tracker.Windows
             if (mode == Mode.PickBoxScore)
             {
                 btnLoadList.Visibility = Visibility.Hidden;
-                List<int> candidates = InteropREditor.teamsThatPlayedAGame;
+                List<int> candidates = REDitor.teamsThatPlayedAGame;
                 lblCurSeason.Content = "Select the two teams that you want to extract the box score for";
 
                 if (candidates.Count > 2)
@@ -473,17 +479,17 @@ namespace NBA_Stats_Tracker.Windows
                 if (r == MessageBoxResult.Cancel)
                     return;
 
-                InteropREditor.pickedTeams = new List<int>();
+                REDitor.pickedTeams = new List<int>();
 
                 if (r == MessageBoxResult.Yes)
                 {
-                    InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
-                    InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
+                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
+                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
                 }
                 else
                 {
-                    InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
-                    InteropREditor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
+                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
+                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
                 }
 
                 DialogResult = true;
@@ -509,7 +515,11 @@ namespace NBA_Stats_Tracker.Windows
             if (mode == Mode.REditor)
             {
                 var ofd = new OpenFileDialog
-                          {Title = "Load Active Teams List", InitialDirectory = App.AppDocsPath, Filter = "Active Teams List (*.red)|*.red"};
+                          {
+                              Title = "Load Active Teams List",
+                              InitialDirectory = App.AppDocsPath,
+                              Filter = "Active Teams List (*.red)|*.red"
+                          };
                 ofd.ShowDialog();
 
                 if (String.IsNullOrWhiteSpace(ofd.FileName))

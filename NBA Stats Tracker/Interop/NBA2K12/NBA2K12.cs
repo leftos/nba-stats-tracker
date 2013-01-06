@@ -19,25 +19,25 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.Teams;
+using NBA_Stats_Tracker.Interop.REDitor;
 using NBA_Stats_Tracker.Windows;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Interop
+namespace NBA_Stats_Tracker.Interop.NBA2K12
 {
     /// <summary>
     /// Implements methods for importing and exporting NBA 2K12 saves using BinaryReader and BinaryWriter.
     /// This method of interoperability has multiple issues regarding the team order detection and only worked for the first season, 
-    /// so it's preferable to use <see cref="InteropREditor"/> instead.
+    /// so it's preferable to use <see cref="REDitor"/> instead.
     /// </summary>
-    public static class Interop2K12
+    public static class NBA2K12
     {
         /// <summary>
         /// Gets the stats from an NBA 2K12 save.
@@ -112,7 +112,9 @@ namespace NBA_Stats_Tracker.Interop
                                   {
                                       Filter = "Playoff Tree files (*.ptr)|*.ptr",
                                       InitialDirectory = App.AppDocsPath,
-                                      Title = "Please select the file you saved the Playoff Tree to for " + Tools.getSafeFilename(fn) + "..."
+                                      Title =
+                                          "Please select the file you saved the Playoff Tree to for " +
+                                          Tools.getSafeFilename(fn) + "..."
                                   };
                         ofd.ShowDialog();
 
@@ -520,7 +522,8 @@ namespace NBA_Stats_Tracker.Interop
             switch (modeToSet)
             {
                 default:
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 9},
@@ -555,7 +558,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 1":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 2},
@@ -590,7 +594,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 6":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 8},
@@ -625,7 +630,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 2":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 8},
@@ -660,7 +666,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 3":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 7},
@@ -695,7 +702,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 4":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 20},
                                     {"Bobcats", 22},
                                     {"Bucks", 7},
@@ -730,7 +738,8 @@ namespace NBA_Stats_Tracker.Interop
                     break;
 
                 case "Mode 5":
-                    TeamOrder = new SortedDictionary<string, int> {
+                    TeamOrder = new SortedDictionary<string, int>
+                                {
                                     {"76ers", 13},
                                     {"Bobcats", 10},
                                     {"Bucks", 0},
@@ -825,53 +834,6 @@ namespace NBA_Stats_Tracker.Interop
                         File.Delete(file);
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// Implements the Playoff Tree structure, containing the 16 teams participating in the playoffs.
-    /// </summary>
-    [Serializable]
-    public class PlayoffTree : ISerializable
-    {
-        public readonly string[] teams = new string[16];
-        public bool done;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayoffTree" /> class.
-        /// </summary>
-        public PlayoffTree()
-        {
-            teams[0] = "Invalid";
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayoffTree" /> class. Used for serialization.
-        /// </summary>
-        /// <param name="info">The info.</param>
-        /// <param name="ctxt">The CTXT.</param>
-        protected PlayoffTree(SerializationInfo info, StreamingContext ctxt)
-        {
-            teams = (string[]) info.GetValue("teams", typeof (string[]));
-            done = (bool) info.GetValue("done", typeof (bool));
-        }
-
-        #region ISerializable Members
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-                throw new ArgumentNullException("info");
-
-            GetObjectData(info, context);
-        }
-
-        #endregion
-
-        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("teams", teams);
-            info.AddValue("done", done);
         }
     }
 }

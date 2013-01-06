@@ -26,7 +26,15 @@ using System.Windows.Media;
 using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
+using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.SQLiteIO;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
+using NBA_Stats_Tracker.Helper.EventHandlers;
+using NBA_Stats_Tracker.Helper.ListExtensions;
+using NBA_Stats_Tracker.Helper.Misc;
 using SQLite_Database;
 
 #endregion
@@ -140,8 +148,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="bse">The Box Score Entry from which to load the box score to be viewed.</param>
         /// <param name="pst">The player stats dictionary to use for this instance.</param>
         /// <param name="onImport">if set to <c>true</c>, a box score is being imported into the database, and the window is prepared accordingly.</param>
-        public BoxScoreWindow(BoxScoreEntry bse, Dictionary<int, PlayerStats> pst, bool onImport)
-            : this()
+        public BoxScoreWindow(BoxScoreEntry bse, Dictionary<int, PlayerStats> pst, bool onImport) : this()
         {
             this.pst = pst;
 
@@ -656,22 +663,27 @@ namespace NBA_Stats_Tracker.Windows
                 MainWindow.bs.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
 
                 #region Additional Box Score Checks
+
                 if (MainWindow.bs.AST1 > MainWindow.bs.FGM1 || MainWindow.bs.AST2 > MainWindow.bs.FGM2)
                 {
                     throwErrorWithMessage("The AST stat can't be higher than the FGM stat.");
                 }
 
-                if (MainWindow.bs.BLK1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 || MainWindow.bs.BLK2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                if (MainWindow.bs.BLK1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
+                    MainWindow.bs.BLK2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
                 {
                     throwErrorWithMessage("The BLK stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.bs.REB1 - MainWindow.bs.OREB1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 || MainWindow.bs.REB2 - MainWindow.bs.OREB2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                if (MainWindow.bs.REB1 - MainWindow.bs.OREB1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
+                    MainWindow.bs.REB2 - MainWindow.bs.OREB2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
                 {
-                    throwErrorWithMessage("The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
+                    throwErrorWithMessage(
+                        "The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.bs.OREB1 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1 || MainWindow.bs.OREB2 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2)
+                if (MainWindow.bs.OREB1 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1 ||
+                    MainWindow.bs.OREB2 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2)
                 {
                     throwErrorWithMessage("The OREB stat cant' be higher than the missed FGA (i.e. FGA - FGM).");
                 }
@@ -688,6 +700,7 @@ namespace NBA_Stats_Tracker.Windows
                     throwErrorWithMessage("The FTA stat for one team can't be more than 3 times the other team's FOUL stat.");
                 }
                 */
+
                 #endregion
 
                 MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
@@ -1064,7 +1077,7 @@ namespace NBA_Stats_Tracker.Windows
             txtFTA1.Text = bs.FTA1.ToString();
             txtOREB1.Text = bs.OREB1.ToString();
             txtFOUL1.Text = bs.FOUL1.ToString();
-            
+
             txtREB2.Text = bs.REB2.ToString();
             txtAST2.Text = bs.AST2.ToString();
             txtSTL2.Text = bs.STL2.ToString();
@@ -1083,7 +1096,8 @@ namespace NBA_Stats_Tracker.Windows
             calculateScoreHome();
         }
 
-        public static void CalculateTeamsFromPlayers(ref TeamBoxScore bs, IEnumerable<PlayerBoxScore> awayPBS, IEnumerable<PlayerBoxScore> homePBS)
+        public static void CalculateTeamsFromPlayers(ref TeamBoxScore bs, IEnumerable<PlayerBoxScore> awayPBS,
+                                                     IEnumerable<PlayerBoxScore> homePBS)
         {
             ushort REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
 
@@ -1163,9 +1177,9 @@ namespace NBA_Stats_Tracker.Windows
             bs.FTM2 = FTM;
             bs.FTA2 = FTA;
             bs.OREB2 = OREB;
-            bs.FOUL2 = FOUL; 
-            
-            bs.PTS2 = (ushort)(bs.FGM2 * 2 + bs.TPM2 + bs.FTM2);
+            bs.FOUL2 = FOUL;
+
+            bs.PTS2 = (ushort) (bs.FGM2*2 + bs.TPM2 + bs.FTM2);
         }
 
         /// <summary>
@@ -1775,7 +1789,19 @@ namespace NBA_Stats_Tracker.Windows
                 return;
             }
 
-            REB = 0; AST = 0; STL = 0; TOS = 0; BLK = 0; FGM = 0; FGA = 0; TPM = 0; TPA = 0; FTM = 0; FTA = 0; OREB = 0; FOUL = 0;
+            REB = 0;
+            AST = 0;
+            STL = 0;
+            TOS = 0;
+            BLK = 0;
+            FGM = 0;
+            FGA = 0;
+            TPM = 0;
+            TPA = 0;
+            FTM = 0;
+            FTA = 0;
+            OREB = 0;
+            FOUL = 0;
 
             foreach (PlayerBoxScore pbs in pbsHomeList)
             {

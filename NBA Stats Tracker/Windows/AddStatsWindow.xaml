@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Add Past Stats" Height="369" Width="709" Icon="/NBA Stats Tracker;component/NBA 2K12.ico" Topmost="True">
     <Grid>
-        <DataGrid x:Name="dgStats"  Margin="10,10,10,35" CanUserAddRows="True" CanUserDeleteRows="True" AutoGenerateColumns="False">
+        <DataGrid x:Name="dgStats" Margin="10,10,10,35" CanUserAddRows="True" CanUserDeleteRows="True"
+                  AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding SeasonName}" Header="Season Name" />
                 <DataGridTextColumn Binding="{Binding Order}" Header="Order" />
@@ -34,7 +35,9 @@
                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click"/>
-        <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,0,90,8" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,8"
+                VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" />
+        <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,0,90,8" VerticalAlignment="Bottom"
+                Width="75" IsDefault="True" Click="btnOK_Click" />
     </Grid>
 </Window>
