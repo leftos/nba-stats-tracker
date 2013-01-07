@@ -21,12 +21,12 @@ using System.ComponentModel;
 namespace NBA_Stats_Tracker.Helper.ListExtensions
 {
     /// <summary>
-    /// Extensions for various kinds of .NET list constructs, including BindingList and ObservableCollection.
+    ///     Extensions for various kinds of .NET list constructs, including BindingList and ObservableCollection.
     /// </summary>
     public static class ListExtensions
     {
         /// <summary>
-        /// Sorts using the default IComparer of T.
+        ///     Sorts using the default IComparer of T.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
@@ -36,7 +36,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts using a custom IComparer of T.
+        ///     Sorts using a custom IComparer of T.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
@@ -47,7 +47,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts using a custom Comparison of T.
+        ///     Sorts using a custom Comparison of T.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
@@ -58,7 +58,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts using a custom IComparer and custom Comparison.
+        ///     Sorts using a custom IComparer and custom Comparison.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
@@ -97,7 +97,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts the specified ObservableCollection using the default IComparer and Comparison.
+        ///     Sorts the specified ObservableCollection using the default IComparer and Comparison.
         /// </summary>
         public static void Sort<T>(this ObservableCollection<T> oc)
         {
@@ -105,7 +105,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts the specified ObservableCollection using a custom IComparer.
+        ///     Sorts the specified ObservableCollection using a custom IComparer.
         /// </summary>
         public static void Sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer)
         {
@@ -113,7 +113,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts the specified ObservableCollection using a custom Comparison.
+        ///     Sorts the specified ObservableCollection using a custom Comparison.
         /// </summary>
         public static void Sort<T>(this ObservableCollection<T> oc, Comparison<T> p_Comparison)
         {
@@ -121,7 +121,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Sorts the specified ObservableCollection using a custom IComparer and Comparison.
+        ///     Sorts the specified ObservableCollection using a custom IComparer and Comparison.
         /// </summary>
         private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
         {
@@ -145,7 +145,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         }
 
         /// <summary>
-        /// Implements a comparison between the values of two int-string KeyValuePairs.
+        ///     Implements a comparison between the values of two int-string KeyValuePairs.
         /// </summary>
         public static int KVPStringComparison(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
         {

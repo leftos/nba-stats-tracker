@@ -31,7 +31,7 @@ namespace LeftosCommonLibrary
     public static class Tools
     {
         /// <summary>
-        /// Gets the extension of a specified file.
+        ///     Gets the extension of a specified file.
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns>The extension of the file.</returns>
@@ -41,7 +41,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets the filename part of a path to a file.
+        ///     Gets the filename part of a path to a file.
         /// </summary>
         /// <param name="f">The path to the file.</param>
         /// <returns>The safe filename of the file.</returns>
@@ -51,7 +51,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets the CRC32 of a specified file.
+        ///     Gets the CRC32 of a specified file.
         /// </summary>
         /// <param name="filename">The path to the file.</param>
         /// <returns>The hex representation of the CRC32 of the file.</returns>
@@ -61,7 +61,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Reverses the byte order of (part of) an array of bytes.
+        ///     Reverses the byte order of (part of) an array of bytes.
         /// </summary>
         /// <param name="original">The original.</param>
         /// <param name="length">The amount of bytes that should be reversed and returned, counting from the start of the array.</param>
@@ -77,7 +77,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Converts a hex representation string to a byte array of corresponding values.
+        ///     Converts a hex representation string to a byte array of corresponding values.
         /// </summary>
         /// <param name="hex">The hex representation.</param>
         /// <returns>The corresponding byte array.</returns>
@@ -97,7 +97,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets the MD5 hash of a string.
+        ///     Gets the MD5 hash of a string.
         /// </summary>
         /// <param name="s">The string.</param>
         /// <returns>The MD5 hash.</returns>
@@ -119,7 +119,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets a cell of a WPF DataGrid at the specified row and column.
+        ///     Gets a cell of a WPF DataGrid at the specified row and column.
         /// </summary>
         /// <param name="dataGrid">The data grid.</param>
         /// <param name="row">The row.</param>
@@ -135,7 +135,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets an unsigned 16-bit integer from the specified column of the given DataRow.
+        ///     Gets an unsigned 16-bit integer from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="ColumnName">Name of the column.</param>
@@ -146,7 +146,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets an unsigned 32-bit integer from the specified column of the given DataRow.
+        ///     Gets an unsigned 32-bit integer from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="ColumnName">Name of the column.</param>
@@ -157,7 +157,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets a signed 32-bit integer from the specified column of the given DataRow.
+        ///     Gets a signed 32-bit integer from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="ColumnName">Name of the column.</param>
@@ -168,7 +168,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets a boolean from the specified column of the given DataRow.
+        ///     Gets a boolean from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="ColumnName">Name of the column.</param>
@@ -181,7 +181,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets a string from the specified column of the given DataRow.
+        ///     Gets a string from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="ColumnName">Name of the column.</param>
@@ -192,7 +192,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Splits a multi-line string to an array of its lines.
+        ///     Splits a multi-line string to an array of its lines.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns></returns>
@@ -202,10 +202,12 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Splits a multi-line string to a list of its lines.
+        ///     Splits a multi-line string to a list of its lines.
         /// </summary>
         /// <param name="text">The text.</param>
-        /// <param name="keepDuplicates">if set to <c>true</c> [keep duplicates].</param>
+        /// <param name="keepDuplicates">
+        ///     if set to <c>true</c> [keep duplicates].
+        /// </param>
         /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {

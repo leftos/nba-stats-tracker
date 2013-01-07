@@ -25,12 +25,12 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Data.Teams
 {
     /// <summary>
-    /// Contains all the information for the teams' performances in a game.
+    ///     Contains all the information for the teams' performances in a game.
     /// </summary>
     public class TeamBoxScore
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="TeamBoxScore" /> class.
         /// </summary>
         public TeamBoxScore()
         {
@@ -39,7 +39,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="TeamBoxScore" /> class.
         /// </summary>
         /// <param name="r">The SQLite query result row which contains the required information.</param>
         public TeamBoxScore(DataRow r)
@@ -84,7 +84,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="TeamBoxScore" /> class.
         /// </summary>
         /// <param name="ds">The Basketball-Reference.com dataset resulting from the parsing.</param>
         /// <param name="dateParts">The parts of the date string.</param>
@@ -213,7 +213,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public double DisplayGmSc { get; set; }
 
         /// <summary>
-        /// Prepares the presentation fields of the class.
+        ///     Prepares the presentation fields of the class.
         /// </summary>
         /// <param name="team">The team.</param>
         public void PrepareForDisplay(string team)

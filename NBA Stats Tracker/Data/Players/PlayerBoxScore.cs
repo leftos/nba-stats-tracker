@@ -9,7 +9,7 @@ using NBA_Stats_Tracker.Data.Teams;
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// Contains all the information of a player's performance in a game.
+    ///     Contains all the information of a player's performance in a game.
     /// </summary>
     [Serializable]
     public class PlayerBoxScore : INotifyPropertyChanged
@@ -23,7 +23,7 @@ namespace NBA_Stats_Tracker.Data.Players
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         public PlayerBoxScore()
         {
@@ -36,7 +36,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="r">The DataRow containing the player's box score.</param>
         public PlayerBoxScore(DataRow r)
@@ -111,12 +111,14 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="brRow">The Basketball-Reference.com row containing the player's box score.</param>
         /// <param name="team">The team.</param>
         /// <param name="gameID">The game ID.</param>
-        /// <param name="starter">if set to <c>true</c>, the player is a starter.</param>
+        /// <param name="starter">
+        ///     if set to <c>true</c>, the player is a starter.
+        /// </param>
         /// <param name="playerStats">The player stats.</param>
         public PlayerBoxScore(DataRow brRow, string team, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
         {
@@ -179,7 +181,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="dict">The dictionary containing the player box score.</param>
         /// <param name="playerID">The player ID.</param>
@@ -209,8 +211,8 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerBoxScore" /> class. 
-        /// Used to cast a LivePlayerBoxScore to a PlayerBoxScore which can be saved to the database.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
+        ///     Used to cast a LivePlayerBoxScore to a PlayerBoxScore which can be saved to the database.
         /// </summary>
         /// <param name="lpbs">The LivePlayerBoxScore instance containing the player's box score.</param>
         public PlayerBoxScore(LivePlayerBoxScore lpbs)
@@ -249,17 +251,6 @@ namespace NBA_Stats_Tracker.Data.Players
             Result = lpbs.Result;
             Date = lpbs.Date;
             GameID = lpbs.GameID;
-        }
-
-        public void AddInfoFromTeamBoxScore(TeamBoxScore bs)
-        {
-            bs.PrepareForDisplay(Team);
-            Result = bs.DisplayResult;
-            TeamPTS = Team == bs.Team1 ? bs.PTS1 : bs.PTS2;
-            OppTeam = Team == bs.Team1 ? bs.Team2 : bs.Team1;
-            OppTeamPTS = Team == bs.Team1 ? bs.PTS2 : bs.PTS1;
-            Date = bs.gamedate.ToString().Split(' ')[0];
-            RealDate = bs.gamedate;
         }
 
         public DateTime RealDate { get; set; }
@@ -381,8 +372,19 @@ namespace NBA_Stats_Tracker.Data.Players
 
         #endregion
 
+        public void AddInfoFromTeamBoxScore(TeamBoxScore bs)
+        {
+            bs.PrepareForDisplay(Team);
+            Result = bs.DisplayResult;
+            TeamPTS = Team == bs.Team1 ? bs.PTS1 : bs.PTS2;
+            OppTeam = Team == bs.Team1 ? bs.Team2 : bs.Team1;
+            OppTeamPTS = Team == bs.Team1 ? bs.PTS2 : bs.PTS1;
+            Date = bs.gamedate.ToString().Split(' ')[0];
+            RealDate = bs.gamedate;
+        }
+
         /// <summary>
-        /// Calculates the metrics of a player's performance.
+        ///     Calculates the metrics of a player's performance.
         /// </summary>
         /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
         public void CalcMetrics(DataRow r)
@@ -410,7 +412,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the metrics of a player's performance.
+        ///     Calculates the metrics of a player's performance.
         /// </summary>
         /// <param name="gameID">The game ID.</param>
         /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
@@ -437,7 +439,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the points scored.
+        ///     Calculates the points scored.
         /// </summary>
         protected void CalculatePoints()
         {
@@ -445,7 +447,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Gets the best stats of a player's performance.
+        ///     Gets the best stats of a player's performance.
         /// </summary>
         /// <param name="count">The count of stats to return.</param>
         /// <param name="position">The player's primary position.</param>
@@ -621,7 +623,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Resets the stats.
+        ///     Resets the stats.
         /// </summary>
         public void ResetStats()
         {

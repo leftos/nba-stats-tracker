@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -27,15 +26,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Misc;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using SQLite_Database;
 
@@ -44,7 +40,7 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Provides an overview of the whole league's stats. Allows filtering by division and conference.
+    ///     Provides an overview of the whole league's stats. Allows filtering by division and conference.
     /// </summary>
     public partial class LeagueOverviewWindow
     {
@@ -59,6 +55,13 @@ namespace NBA_Stats_Tracker.Windows
         private static Semaphore sem;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
+        private Dictionary<int, TeamStats> _tstopp;
+        private string best1Text;
+        private string best2Text;
+        private string best3Text;
+        private string best4Text;
+        private string best5Text;
+        private string best6Text;
         private bool changingTimeframe;
         /*
                 private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
@@ -66,24 +69,25 @@ namespace NBA_Stats_Tracker.Windows
         private int curSeason = MainWindow.curSeason;
         private string filterDescription;
         private TeamFilter filterType;
+        private string pl_best1Text, pl_best2Text, pl_best3Text, pl_best4Text, pl_best5Text, pl_best6Text;
         private List<PlayerStatsRow> pl_psrList;
+        private string pl_sCText;
+        private string pl_sPFText;
+        private string pl_sPGText;
+        private string pl_sSFText;
+        private string pl_sSGText;
+        private string pl_sSubsText;
         private List<PlayerStatsRow> psrList;
         private bool reload;
-        private string best1Text;
-        private string best2Text;
-        private string best3Text;
-        private string best4Text;
-        private string best5Text;
-        private string best6Text;
-        private string pl_best1Text, pl_best2Text, pl_best3Text, pl_best4Text, pl_best5Text, pl_best6Text;
-        private string sPGText, sSGText, sSFText, sPFText, sCText, sSubsText;
-        private string pl_sPGText, pl_sSGText, pl_sSFText, pl_sPFText, pl_sCText, pl_sSubsText;
-        private Dictionary<int, TeamStats> _tstopp;
-        private DataView dv_ts { get; set; }
-        private DataView dv_lts { get; set; }
+        private string sCText;
+        private string sPFText;
+        private string sPGText;
+        private string sSFText;
+        private string sSGText;
+        private string sSubsText;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
+        ///     Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
         /// </summary>
         public LeagueOverviewWindow()
         {
@@ -135,8 +139,20 @@ namespace NBA_Stats_Tracker.Windows
             sem = new Semaphore(1, 1);
         }
 
+        private DataView dv_ts { get; set; }
+        private DataView dv_lts { get; set; }
+        protected List<TeamStatsRow> pl_lssr { get; set; }
+        protected List<TeamStatsRow> pl_tsrList { get; set; }
+        protected List<TeamStatsRow> pl_oppTsrList { get; set; }
+
+        protected List<TeamStatsRow> oppTsrList { get; set; }
+
+        protected List<TeamStatsRow> lssr { get; set; }
+
+        protected List<TeamStatsRow> tsrList { get; set; }
+
         /// <summary>
-        /// Populates the division combo.
+        ///     Populates the division combo.
         /// </summary>
         private void PopulateDivisionCombo()
         {
@@ -183,7 +199,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Finds the team's name by its displayName.
+        ///     Finds the team's name by its displayName.
         /// </summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
@@ -193,7 +209,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Finds the team's displayName by its name.
+        ///     Finds the team's displayName by its name.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -203,11 +219,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectedDateChanged event of the dtpStart control.
-        /// Makes sure that the starting date isn't before the ending date, and reloads the current tab.
+        ///     Handles the SelectedDateChanged event of the dtpStart control.
+        ///     Makes sure that the starting date isn't before the ending date, and reloads the current tab.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!changingTimeframe)
@@ -232,11 +250,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectedDateChanged event of the dtpEnd control.
-        /// Makes sure that the starting date isn't before the ending date, and reloads the current tab.
+        ///     Handles the SelectedDateChanged event of the dtpEnd control.
+        ///     Makes sure that the starting date isn't before the ending date, and reloads the current tab.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!changingTimeframe)
@@ -261,7 +281,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the season combo.
+        ///     Populates the season combo.
         /// </summary>
         private void PopulateSeasonCombo()
         {
@@ -271,11 +291,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the tbcLeagueOverview control.
-        /// Handles tab changes, and refreshes the data if required (e.g. on season/time-range changes).
+        ///     Handles the SelectionChanged event of the tbcLeagueOverview control.
+        ///     Handles tab changes, and refreshes the data if required (e.g. on season/time-range changes).
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //try
@@ -354,9 +376,11 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Prepares and presents the player stats.
+        ///     Prepares and presents the player stats.
         /// </summary>
-        /// <param name="leaders">if set to <c>true</c>, the stats are calculated based on the NBA rules for League Leaders standings.</param>
+        /// <param name="leaders">
+        ///     if set to <c>true</c>, the stats are calculated based on the NBA rules for League Leaders standings.
+        /// </param>
         private void PreparePlayerStats(bool leaders = false)
         {
             List<PlayerStatsRow> lpsr;
@@ -460,7 +484,7 @@ namespace NBA_Stats_Tracker.Windows
 
             worker1.RunWorkerCompleted += delegate
                                           {
-                                              var isSeason = rbSeason.IsChecked.GetValueOrDefault();
+                                              bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
                                               dgvPlayerStats.ItemsSource = isSeason ? psrList : pl_psrList;
                                               dgvLeaguePlayerStats.ItemsSource = isSeason ? lpsr : pl_lpsr;
                                               dgvMetricStats.ItemsSource = isSeason ? psrList : pl_psrList;
@@ -504,7 +528,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Prepares and presents the best performers' stats.
+        ///     Prepares and presents the best performers' stats.
         /// </summary>
         /// <param name="pmsrList">The list of currently loaded PlayerMetricStatsRow instances.</param>
         /// <param name="pl_pmsrList">The list of currently loaded playoff PlayerMetricStatsRow instances.</param>
@@ -611,10 +635,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Calculates the best starting five for the current scope.
+        ///     Calculates the best starting five for the current scope.
         /// </summary>
         /// <param name="sortedPSRList">The list of currently loaded PlayerStatsRow instances, sorted by GmSc in descending order.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the starting five will be determined based on their playoff performances.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the starting five will be determined based on their playoff performances.
+        /// </param>
         private void CalculateStarting5(List<PlayerStatsRow> sortedPSRList, bool playoffs = false)
         {
             if (!playoffs)
@@ -914,7 +940,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Prepares and presents the available box scores.
+        ///     Prepares and presents the available box scores.
         /// </summary>
         private void PrepareBoxScores()
         {
@@ -962,11 +988,8 @@ namespace NBA_Stats_Tracker.Windows
             dgvBoxScores.DataContext = dv_bs;
         }
 
-        protected List<TeamStatsRow> pl_lssr { get; set; }
-        protected List<TeamStatsRow> pl_tsrList { get; set; }
-
         /// <summary>
-        /// Prepares and presents the team stats.
+        ///     Prepares and presents the team stats.
         /// </summary>
         private void PrepareTeamStats()
         {
@@ -1025,7 +1048,7 @@ namespace NBA_Stats_Tracker.Windows
             pl_oppTsrList.Sort((tmsr1, tmsr2) => tmsr1.EFFd.CompareTo(tmsr2.EFFd));
             //pl_oppTsrList.Reverse();
 
-            var isSeason = rbSeason.IsChecked.GetValueOrDefault();
+            bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
 
             dgvTeamStats.ItemsSource = isSeason ? tsrList : pl_tsrList;
             dgvLeagueTeamStats.ItemsSource = isSeason ? lssr : pl_lssr;
@@ -1040,16 +1063,8 @@ namespace NBA_Stats_Tracker.Windows
             dgvLeagueOpponentMetricStats.ItemsSource = isSeason ? lssr : pl_lssr;
         }
 
-        protected List<TeamStatsRow> pl_oppTsrList { get; set; }
-
-        protected List<TeamStatsRow> oppTsrList { get; set; }
-
-        protected List<TeamStatsRow> lssr { get; set; }
-
-        protected List<TeamStatsRow> tsrList { get; set; }
-
         /// <summary>
-        /// Determines whether a specific team should be shown or not, based on the current filter.
+        ///     Determines whether a specific team should be shown or not, based on the current filter.
         /// </summary>
         /// <param name="ts">The team's TeamStats instance.</param>
         /// <returns>true if it should be shown; otherwise, false</returns>
@@ -1086,11 +1101,11 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Determines whether a specific team should be shown or not, based on the current filter.
+        ///     Determines whether a specific team should be shown or not, based on the current filter.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <returns>
-        /// true if it should be shown; otherwise, false
+        ///     true if it should be shown; otherwise, false
         /// </returns>
         private bool InCurrentFilter(string teamName)
         {
@@ -1128,11 +1143,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbStatsAllTime control.
-        /// Changes the timeframe to the whole season, forces all tabs to be reloaded on first request, and reloads the current one.
+        ///     Handles the Checked event of the rbStatsAllTime control.
+        ///     Changes the timeframe to the whole season, forces all tabs to be reloaded on first request, and reloads the current one.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1150,11 +1167,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbStatsBetween control.
-        /// Changes the timeframe to be between the specified dates, forces all tabs to be reloaded on first request, and reloads the current one.
+        ///     Handles the Checked event of the rbStatsBetween control.
+        ///     Changes the timeframe to be between the specified dates, forces all tabs to be reloaded on first request, and reloads the current one.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1172,22 +1191,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LoadingRow event of the dg control. 
-        /// Adds a ranking number to the row's header.
+        ///     Handles the LoadingRow event of the dg control.
+        ///     Adds a ranking number to the row's header.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridRowEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridRowEventArgs" /> instance containing the event data.
+        /// </param>
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbSeasonNum control.
-        /// Loads all the required information for the new season and reloads the current tab.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
+        ///     Loads all the required information for the new season and reloads the current tab.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
@@ -1217,11 +1240,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the dgvBoxScores control. 
-        /// Views the selected box score in the Box Score Window.
+        ///     Handles the MouseDoubleClick event of the dgvBoxScores control.
+        ///     Views the selected box score in the Box Score Window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
@@ -1243,30 +1268,34 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the AnyTeamDataGrid control.
-        /// Views the selected team in the Team Overview Window.
+        ///     Handles the MouseDoubleClick event of the AnyTeamDataGrid control.
+        ///     Views the selected team in the Team Overview Window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void AnyTeamDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             EventHandlers.AnyTeamDataGrid_MouseDoubleClick(sender, e);
         }
 
         /// <summary>
-        /// Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
+        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
         /// </summary>
         /// <param name="psr">The player stats row.</param>
         /// <param name="teamStats">The player's team stats.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.
+        /// </param>
         /// <returns></returns>
         public static PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
             string team = psr.TeamF;
-            var ts = teamStats[MainWindow.TeamOrder[team]];
+            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayer = psr.GP;
-            var newpsr = psr.DeepClone();
+            PlayerStatsRow newpsr = psr.DeepClone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
@@ -1308,19 +1337,21 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
+        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
         /// </summary>
         /// <param name="psr">The player stats row.</param>
         /// <param name="teamStats">The player's team stats.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.
+        /// </param>
         /// <returns></returns>
         public static PlayerStats ConvertToLeagueLeader(PlayerStats ps, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
             string team = ps.TeamF;
-            var ts = teamStats[MainWindow.TeamOrder[team]];
+            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayed = ps.stats[p.GP];
-            var newps = ps.Clone();
+            PlayerStats newps = ps.Clone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
@@ -1362,22 +1393,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the AnyPlayerDataGrid control.
-        /// Views the selected player in the Player Overview Window.
+        ///     Handles the MouseDoubleClick event of the AnyPlayerDataGrid control.
+        ///     Views the selected player in the Player Overview Window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             EventHandlers.AnyPlayerDataGrid_MouseDoubleClick(sender, e);
         }
 
         /// <summary>
-        /// Handles the Loaded event of the Window control.
-        /// Forces all tabs to be reloaded on first request.
+        ///     Handles the Loaded event of the Window control.
+        ///     Forces all tabs to be reloaded on first request.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, MainWindow.TeamOrder, true);
@@ -1389,11 +1424,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Closing event of the Window control.
-        /// Forces all tabs to be reloaded on first request.
+        ///     Handles the Closing event of the Window control.
+        ///     Forces all tabs to be reloaded on first request.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="CancelEventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             lastShownTeamSeason = 0;
@@ -1408,22 +1445,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Sorting event of the StatColumn control.
-        /// Uses a custom Sorting event handler that sorts a stat column in descending order, if it's not already sorted.
+        ///     Handles the Sorting event of the StatColumn control.
+        ///     Uses a custom Sorting event handler that sorts a stat column in descending order, if it's not already sorted.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
+        /// </param>
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
         }
 
         /// <summary>
-        /// Handles the LayoutUpdated event of the dgvTeamMetricStats control.
-        /// Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
+        ///     Handles the LayoutUpdated event of the dgvTeamMetricStats control.
+        ///     Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvTeamMetricStats_LayoutUpdated(object sender, EventArgs e)
         {
             for (int i = 0; i < dgvTeamMetricStats.Columns.Count && i < dgvLeagueTeamMetricStats.Columns.Count; ++i)
@@ -1431,11 +1472,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LayoutUpdated event of the dgvTeamStats control.
-        /// Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
+        ///     Handles the LayoutUpdated event of the dgvTeamStats control.
+        ///     Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvTeamStats_LayoutUpdated(object sender, EventArgs e)
         {
             for (int i = 0; i < dgvTeamStats.Columns.Count && i < dgvLeagueTeamStats.Columns.Count; ++i)
@@ -1443,11 +1486,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LayoutUpdated event of the dgvPlayerStats control.
-        /// Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
+        ///     Handles the LayoutUpdated event of the dgvPlayerStats control.
+        ///     Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvPlayerStats_LayoutUpdated(object sender, EventArgs e)
         {
             for (int i = 0; i < dgvPlayerStats.Columns.Count && i < dgvLeaguePlayerStats.Columns.Count; ++i)
@@ -1455,11 +1500,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LayoutUpdated event of the dgvMetricStats control.
-        /// Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
+        ///     Handles the LayoutUpdated event of the dgvMetricStats control.
+        ///     Used to synchronize the column width between the teams/players DataGrid and the league average DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvMetricStats_LayoutUpdated(object sender, EventArgs e)
         {
             for (int i = 0; i < dgvMetricStats.Columns.Count && i < dgvLeagueMetricStats.Columns.Count; ++i)
@@ -1467,22 +1514,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LoadingRow event of the dgLeague control.
-        /// Adds an "L" to the row header for the league average row.
+        ///     Handles the LoadingRow event of the dgLeague control.
+        ///     Adds an "L" to the row header for the league average row.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridRowEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridRowEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgLeague_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = "L";
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbDivConf control.
-        /// Applies the new filter, forces all tabs to reload on first request and reloads the current tab.
+        ///     Handles the SelectionChanged event of the cmbDivConf control.
+        ///     Applies the new filter, forces all tabs to reload on first request and reloads the current tab.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbDivConf_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (changingTimeframe)
@@ -1522,11 +1573,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbSeason control.
-        /// Switches the visibility of the Season tabs to visible, and of the Playoff tabs to hidden.
+        ///     Handles the Checked event of the rbSeason control.
+        ///     Switches the visibility of the Season tabs to visible, and of the Playoff tabs to hidden.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbSeason_Checked(object sender, RoutedEventArgs e)
         {
             if (changingTimeframe)
@@ -1541,11 +1594,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbPlayoffs control.
-        /// Switches the visibility of the Season tabs to hidden, and of the Playoff tabs to visible.
+        ///     Handles the Checked event of the rbPlayoffs control.
+        ///     Switches the visibility of the Season tabs to hidden, and of the Playoff tabs to visible.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbPlayoffs_Checked(object sender, RoutedEventArgs e)
         {
             if (changingTimeframe)
@@ -1559,24 +1614,9 @@ namespace NBA_Stats_Tracker.Windows
             tbcLeagueOverview_SelectionChanged(null, null);
         }
 
-        #region Nested type: TeamFilter
-
-        /// <summary>
-        /// Used to determine the filter that should be applied to which teams and players are included in the calculations
-        /// and shown in the DataGrids.
-        /// </summary>
-        private enum TeamFilter
-        {
-            League,
-            Conference,
-            Division
-        }
-
-        #endregion
-
         private void btnExportLRERatings_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog();
             ofd.Title = "Select the TSV file of your roster";
             ofd.ShowDialog();
 
@@ -1585,13 +1625,14 @@ namespace NBA_Stats_Tracker.Windows
 
             string file = ofd.FileName;
 
-            var dictList = CSV.DictionaryListFromTSV(file);
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(file);
 
-            var plist = rbSeason.IsChecked.GetValueOrDefault() ? psrList : pl_psrList;
+            List<PlayerStatsRow> plist = rbSeason.IsChecked.GetValueOrDefault() ? psrList : pl_psrList;
 
-            foreach (var ps in plist)
+            foreach (PlayerStatsRow ps in plist)
             {
-                var pInsts = dictList.FindAll(dict => dict["Name"] == ps.FirstName + " " + ps.LastName).ToList();
+                List<Dictionary<string, string>> pInsts =
+                    dictList.FindAll(dict => dict["Name"] == ps.FirstName + " " + ps.LastName).ToList();
                 foreach (var pInst in pInsts)
                 {
                     pInst["RFT"] = ps.reRFT.ToString();
@@ -1620,11 +1661,11 @@ namespace NBA_Stats_Tracker.Windows
                 string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
                 List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
-                var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-                var list = isSeason ? psrList : pl_psrList;
+                bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
+                List<PlayerStatsRow> list = isSeason ? psrList : pl_psrList;
                 for (int j = 0; j < dictList.Count; j++)
                 {
-                    var dict = dictList[j];
+                    Dictionary<string, string> dict = dictList[j];
                     int ID;
                     try
                     {
@@ -1648,7 +1689,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     try
                     {
-                        var psr = list.Single(ps => ps.ID == ID);
+                        PlayerStatsRow psr = list.Single(ps => ps.ID == ID);
                         PlayerStatsRow.TryChangePSR(ref psr, dict);
                         PlayerStatsRow.Refresh(ref psr);
                         list[list.FindIndex(ts => ts.ID == ID)] = psr;
@@ -1675,12 +1716,12 @@ namespace NBA_Stats_Tracker.Windows
                 string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
                 List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
 
-                var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-                var list = isSeason ? tsrList : pl_tsrList;
+                bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
+                List<TeamStatsRow> list = isSeason ? tsrList : pl_tsrList;
 
                 for (int j = 0; j < dictList.Count; j++)
                 {
-                    var dict = dictList[j];
+                    Dictionary<string, string> dict = dictList[j];
                     int ID;
                     try
                     {
@@ -1702,7 +1743,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     try
                     {
-                        var tsr = list.Single(ts => ts.ID == ID);
+                        TeamStatsRow tsr = list.Single(ts => ts.ID == ID);
                         TeamStatsRow.TryChangeTSR(ref tsr, dict);
                         TeamStatsRow.Refresh(ref tsr);
                         list[list.FindIndex(ts => ts.ID == ID)] = tsr;
@@ -1714,8 +1755,8 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ((DataGrid)sender).ItemsSource = null;
-                ((DataGrid)sender).ItemsSource = list;
+                ((DataGrid) sender).ItemsSource = null;
+                ((DataGrid) sender).ItemsSource = list;
 
                 MessageBox.Show(
                     "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
@@ -1734,5 +1775,20 @@ namespace NBA_Stats_Tracker.Windows
             for (int i = 0; i < dgvOpponentMetricStats.Columns.Count && i < dgvLeagueOpponentMetricStats.Columns.Count; ++i)
                 dgvLeagueOpponentMetricStats.Columns[i].Width = dgvOpponentMetricStats.Columns[i].ActualWidth;
         }
+
+        #region Nested type: TeamFilter
+
+        /// <summary>
+        ///     Used to determine the filter that should be applied to which teams and players are included in the calculations
+        ///     and shown in the DataGrids.
+        /// </summary>
+        private enum TeamFilter
+        {
+            League,
+            Conference,
+            Division
+        }
+
+        #endregion
     }
 }

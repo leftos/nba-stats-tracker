@@ -33,21 +33,23 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Interop.NBA2K12
 {
     /// <summary>
-    /// Implements methods for importing and exporting NBA 2K12 saves using BinaryReader and BinaryWriter.
-    /// This method of interoperability has multiple issues regarding the team order detection and only worked for the first season, 
-    /// so it's preferable to use <see cref="REDitor"/> instead.
+    ///     Implements methods for importing and exporting NBA 2K12 saves using BinaryReader and BinaryWriter.
+    ///     This method of interoperability has multiple issues regarding the team order detection and only worked for the first season,
+    ///     so it's preferable to use <see cref="REDitor" /> instead.
     /// </summary>
     public static class NBA2K12
     {
         /// <summary>
-        /// Gets the stats from an NBA 2K12 save.
+        ///     Gets the stats from an NBA 2K12 save.
         /// </summary>
         /// <param name="fn">The path to the save.</param>
         /// <param name="tst">The resulting team stats dictionary.</param>
         /// <param name="tstopp">The resulting opposing team stats dictionary.</param>
         /// <param name="TeamOrder">The team order.</param>
         /// <param name="pt">The playoff tree.</param>
-        /// <param name="havePT">if set to <c>true</c>, the pre-existing PlayoffTree will be used.</param>
+        /// <param name="havePT">
+        ///     if set to <c>true</c>, the pre-existing PlayoffTree will be used.
+        /// </param>
         public static void GetStatsFrom2K12Save(string fn, out Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                                 ref SortedDictionary<string, int> TeamOrder, ref PlayoffTree pt, bool havePT = false)
         {
@@ -207,7 +209,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Calculates the decimal offsets for each team inside the save file.
+        ///     Calculates the decimal offsets for each team inside the save file.
         /// </summary>
         /// <param name="fn">The path to the save file.</param>
         /// <param name="_teamStats">The team stats dictionary.</param>
@@ -259,7 +261,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Checks if the specified save file is in the playoffs, by checking if all teams have played the required number of games.
+        ///     Checks if the specified save file is in the playoffs, by checking if all teams have played the required number of games.
         /// </summary>
         /// <param name="fn">The path to the save file.</param>
         /// <param name="_teamStats">The team stats dictionary.</param>
@@ -404,7 +406,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Asks the user which compatibility mode to use.
+        ///     Asks the user which compatibility mode to use.
         /// </summary>
         /// <returns></returns>
         private static string askMode()
@@ -415,7 +417,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Saves the settings for the specified NBA 2K12 save.
+        ///     Saves the settings for the specified NBA 2K12 save.
         /// </summary>
         /// <param name="fn">The save file path.</param>
         /// <param name="gamesInSeason">The games in season.</param>
@@ -431,7 +433,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Exports the stats from the current database to the NBA 2K12 save file.
+        ///     Exports the stats from the current database to the NBA 2K12 save file.
         /// </summary>
         /// <param name="fn">The save file path.</param>
         /// <param name="tst">The team stats dictionary.</param>
@@ -511,7 +513,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Sets the team order (team name & ID pairs).
+        ///     Sets the team order (team name & ID pairs).
         /// </summary>
         /// <param name="modeToSet">The compatibility mode to use.</param>
         /// <returns></returns>
@@ -792,7 +794,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Asks the user how many games are in a season for the current save file being loaded.
+        ///     Asks the user how many games are in a season for the current save file being loaded.
         /// </summary>
         /// <param name="gamesInSeason">The games in season.</param>
         /// <returns></returns>

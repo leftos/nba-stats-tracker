@@ -1018,26 +1018,34 @@
                         <StackPanel>
                             <GroupBox Margin="6" Header="Season Scouting Report">
                                 <StackPanel Margin="2">
-                                    <TextBlock Name="txbSeasonScoutingReport" Margin="6" TextWrapping="Wrap"/>
-                                    <Button Name="btnCopySeasonScouting" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopySeasonScouting_Click"/>
+                                    <TextBlock Name="txbSeasonScoutingReport" Margin="6" TextWrapping="Wrap" />
+                                    <Button Name="btnCopySeasonScouting" Width="150" Height="25"
+                                            HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6"
+                                            Click="btnCopySeasonScouting_Click" />
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Margin="6" Header="Significant Season Facts">
                                 <StackPanel Margin="2">
-                                    <TextBlock Name="txbSeasonFacts" Margin="6" TextWrapping="Wrap"/>
-                                    <Button Name="btnCopySeasonFacts" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopySeasonFacts_Click"/>
+                                    <TextBlock Name="txbSeasonFacts" Margin="6" TextWrapping="Wrap" />
+                                    <Button Name="btnCopySeasonFacts" Width="150" Height="25"
+                                            HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6"
+                                            Click="btnCopySeasonFacts_Click" />
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox x:Name="grpPlayoffsScoutingReport" Margin="6" Header="Playoffs Scouting Report">
                                 <StackPanel Margin="2">
-                                    <TextBlock Name="txbPlayoffsScoutingReport" Margin="6" TextWrapping="Wrap"/>
-                                    <Button Name="btnCopyPlayoffsScouting" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopyPlayoffsScouting_Click"/>
+                                    <TextBlock Name="txbPlayoffsScoutingReport" Margin="6" TextWrapping="Wrap" />
+                                    <Button Name="btnCopyPlayoffsScouting" Width="150" Height="25"
+                                            HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6"
+                                            Click="btnCopyPlayoffsScouting_Click" />
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Margin="6" Header="Significant Playoffs Facts" Name="grpPlayoffsFacts">
                                 <StackPanel Margin="2">
-                                    <TextBlock Name="txbPlayoffsFacts" Margin="6" TextWrapping="Wrap"/>
-                                    <Button Name="btnCopyPlayoffsFacts" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopyPlayoffsFacts_Click"/>
+                                    <TextBlock Name="txbPlayoffsFacts" Margin="6" TextWrapping="Wrap" />
+                                    <Button Name="btnCopyPlayoffsFacts" Width="150" Height="25"
+                                            HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6"
+                                            Click="btnCopyPlayoffsFacts_Click" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>

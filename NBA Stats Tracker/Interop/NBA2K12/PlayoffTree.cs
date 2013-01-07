@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NBA_Stats_Tracker.Interop.NBA2K12
 {
     /// <summary>
-    /// Implements the Playoff Tree structure, containing the 16 teams participating in the playoffs.
+    ///     Implements the Playoff Tree structure, containing the 16 teams participating in the playoffs.
     /// </summary>
     [Serializable]
     public class PlayoffTree : ISerializable
@@ -13,7 +13,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         public bool done;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayoffTree" /> class.
+        ///     Initializes a new instance of the <see cref="PlayoffTree" /> class.
         /// </summary>
         public PlayoffTree()
         {
@@ -21,7 +21,7 @@ namespace NBA_Stats_Tracker.Interop.NBA2K12
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayoffTree" /> class. Used for serialization.
+        ///     Initializes a new instance of the <see cref="PlayoffTree" /> class. Used for serialization.
         /// </summary>
         /// <param name="info">The info.</param>
         /// <param name="ctxt">The CTXT.</param>

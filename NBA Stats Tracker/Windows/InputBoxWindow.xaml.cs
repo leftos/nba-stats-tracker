@@ -22,12 +22,12 @@ using System.Windows;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Implements a general-purpose Input-box Window.
+    ///     Implements a general-purpose Input-box Window.
     /// </summary>
     public partial class InputBoxWindow
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputBoxWindow" /> class.
+        ///     Initializes a new instance of the <see cref="InputBoxWindow" /> class.
         /// </summary>
         /// <param name="message">The prompt to display.</param>
         public InputBoxWindow(string message)
@@ -40,7 +40,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputBoxWindow" /> class.
+        ///     Initializes a new instance of the <see cref="InputBoxWindow" /> class.
         /// </summary>
         /// <param name="message">The prompt to display.</param>
         /// <param name="defaultValue">The default value.</param>

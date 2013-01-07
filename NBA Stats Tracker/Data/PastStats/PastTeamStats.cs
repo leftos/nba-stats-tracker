@@ -5,31 +5,6 @@ namespace NBA_Stats_Tracker.Data.PastStats
 {
     public class PastTeamStats
     {
-        public int TeamID { get; set; }
-        public int ID { get; set; }
-        public string SeasonName { get; set; }
-        public int Order { get; set; }
-        public bool isPlayoff { get; set; }
-        public uint Wins { get; set; }
-        public uint Losses { get; set; }
-        public uint MINS { get; set; }
-        public uint PF { get; set; }
-        public uint PA { get; set; }
-        public uint FGM { get; set; }
-        public uint FGA { get; set; }
-        public uint TPM { get; set; }
-        public uint TPA { get; set; }
-        public uint FTM { get; set; }
-        public uint FTA { get; set; }
-        public uint REB { get; set; }
-        public uint OREB { get; set; }
-        public uint DREB { get; set; }
-        public uint STL { get; set; }
-        public uint TOS { get; set; }
-        public uint BLK { get; set; }
-        public uint AST { get; set; }
-        public uint FOUL { get; set; }
-
         public PastTeamStats()
         {
         }
@@ -63,6 +38,31 @@ namespace NBA_Stats_Tracker.Data.PastStats
             isPlayoff = Tools.getBoolean(dr, "isPlayoff");
             ID = Tools.getInt(dr, "ID");
         }
+
+        public int TeamID { get; set; }
+        public int ID { get; set; }
+        public string SeasonName { get; set; }
+        public int Order { get; set; }
+        public bool isPlayoff { get; set; }
+        public uint Wins { get; set; }
+        public uint Losses { get; set; }
+        public uint MINS { get; set; }
+        public uint PF { get; set; }
+        public uint PA { get; set; }
+        public uint FGM { get; set; }
+        public uint FGA { get; set; }
+        public uint TPM { get; set; }
+        public uint TPA { get; set; }
+        public uint FTM { get; set; }
+        public uint FTA { get; set; }
+        public uint REB { get; set; }
+        public uint OREB { get; set; }
+        public uint DREB { get; set; }
+        public uint STL { get; set; }
+        public uint TOS { get; set; }
+        public uint BLK { get; set; }
+        public uint AST { get; set; }
+        public uint FOUL { get; set; }
 
         public void EndEdit()
         {

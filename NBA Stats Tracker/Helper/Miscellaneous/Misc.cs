@@ -25,12 +25,12 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
     /// <summary>
-    /// Implements miscellaneous helper methods used all over NBA Stats Tracker.
+    ///     Implements miscellaneous helper methods used all over NBA Stats Tracker.
     /// </summary>
     public static class Misc
     {
         /// <summary>
-        /// Finds a team's name based on its displayName.
+        ///     Finds a team's name based on its displayName.
         /// </summary>
         /// <param name="teamStats">The team stats dictionary..</param>
         /// <param name="displayName">The display name.</param>
@@ -54,7 +54,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         }
 
         /// <summary>
-        /// Finds a team's display name from its name.
+        ///     Finds a team's display name from its name.
         /// </summary>
         /// <param name="teamStats">The team stats dictionary.</param>
         /// <param name="name">The display name.</param>
@@ -77,7 +77,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         }
 
         /// <summary>
-        /// Loads an image into a BitmapImage object.
+        ///     Loads an image into a BitmapImage object.
         /// </summary>
         /// <param name="path">The path to the image file.</param>
         public static BitmapImage LoadImage(string path)
@@ -91,7 +91,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         }
 
         /// <summary>
-        /// Saves a setting into the Windows registry.
+        ///     Saves a setting into the Windows registry.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="setting">The setting.</param>
@@ -126,7 +126,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         }
 
         /// <summary>
-        /// Gets a setting from the Windows registry.
+        ///     Gets a setting from the Windows registry.
         /// </summary>
         /// <param name="setting">The setting.</param>
         /// <param name="defaultValue">The default value.</param>
@@ -154,7 +154,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         }
 
         /// <summary>
-        /// Gets a setting from the Windows registry.
+        ///     Gets a setting from the Windows registry.
         /// </summary>
         /// <param name="setting">The setting.</param>
         /// <param name="defaultValue">The default value.</param>
@@ -205,7 +205,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     return "nd";
                 }
             }
-            else if (rank % 10 == 3)
+            else if (rank%10 == 3)
             {
                 if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("13"))
                 {

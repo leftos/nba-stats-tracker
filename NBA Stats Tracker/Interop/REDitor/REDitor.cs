@@ -31,13 +31,13 @@ using MessageBox = System.Windows.MessageBox;
 namespace NBA_Stats_Tracker.Interop.REDitor
 {
     /// <summary>
-    /// Implements import and export methods for interoperability with REDitor. 
-    /// This is the safest and most complete way to import and export stats from NBA 2K save files.
+    ///     Implements import and export methods for interoperability with REDitor.
+    ///     This is the safest and most complete way to import and export stats from NBA 2K save files.
     /// </summary>
     public static class REDitor
     {
         /// <summary>
-        /// Implements the Positions enum used by 2K12 save files.
+        ///     Implements the Positions enum used by 2K12 save files.
         /// </summary>
         private static readonly Dictionary<string, string> Positions = new Dictionary<string, string>
                                                                        {
@@ -54,7 +54,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         public static DateTime SelectedDate;
 
         /// <summary>
-        /// Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
+        ///     Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
         /// </summary>
         /// <param name="activeTeams">The active teams.</param>
         /// <param name="folder">The default import/export folder.</param>
@@ -85,14 +85,16 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Imports all team (and optionally) player stats from an REDitor-exported set of CSV files.
+        ///     Imports all team (and optionally) player stats from an REDitor-exported set of CSV files.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstopp">The opposing team stats dictionary.</param>
         /// <param name="TeamOrder">The team order.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="folder">The folder containing the exported CSV files.</param>
-        /// <param name="teamsOnly">if set to <c>true</c>, only team stats will be imported.</param>
+        /// <param name="teamsOnly">
+        ///     if set to <c>true</c>, only team stats will be imported.
+        /// </param>
         /// <returns></returns>
         public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp,
                                     ref SortedDictionary<string, int> TeamOrder, ref Dictionary<int, PlayerStats> pst, string folder,
@@ -566,7 +568,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                             BoxScoreEntry bse = PrepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
 
-                            var teamBoxScore = bse.bs;
+                            TeamBoxScore teamBoxScore = bse.bs;
                             BoxScoreWindow.CalculateTeamsFromPlayers(ref teamBoxScore, bse.pbsList.Where(pbs => pbs.Team == bse.bs.Team1),
                                                                      bse.pbsList.Where(pbs => pbs.Team == bse.bs.Team2));
 
@@ -600,7 +602,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Creates the NBA divisions and conferences.
+        ///     Creates the NBA divisions and conferences.
         /// </summary>
         public static void CreateDivisions()
         {
@@ -618,7 +620,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Creates a new player and adds them to the player stats dictionary.
+        ///     Creates a new player and adds them to the player stats dictionary.
         /// </summary>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="player">The dictionary containing the player information.</param>
@@ -656,7 +658,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Calculates the box score by comparing the participating team's current and previous team and player stats.
+        ///     Calculates the box score by comparing the participating team's current and previous team and player stats.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="oldTST">The old team stats dictionary.</param>
@@ -741,13 +743,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Gets the difference of a team's stat's value between the current and previous stats.
+        ///     Gets the difference of a team's stat's value between the current and previous stats.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="oldTST">The old team stats dictionary.</param>
         /// <param name="teamID">The team ID.</param>
         /// <param name="stat">The stat.</param>
-        /// <param name="isPlayoff">if set to <c>true</c>, the difference will be calculated based on the playoff stats.</param>
+        /// <param name="isPlayoff">
+        ///     if set to <c>true</c>, the difference will be calculated based on the playoff stats.
+        /// </param>
         /// <returns></returns>
         private static ushort getDiff(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST, int teamID, int stat,
                                       bool isPlayoff = false)
@@ -758,7 +762,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Gets the difference of a player's stat's value between the current and previous stats.
+        ///     Gets the difference of a player's stat's value between the current and previous stats.
         /// </summary>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="oldPST">The old player stats dictionary.</param>
@@ -772,7 +776,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Gets the difference of a player's stat's value between the current and previous stats.
+        ///     Gets the difference of a player's stat's value between the current and previous stats.
         /// </summary>
         /// <param name="newPS">The new player stats instance.</param>
         /// <param name="oldPS">The old player stats instance.</param>
@@ -784,13 +788,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into REDitor.
+        ///     Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into REDitor.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstopp">The opposing team stats dictionary.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="folder">The folder.</param>
-        /// <param name="teamsOnly">if set to <c>true</c>, only the teams' stats will be exported.</param>
+        /// <param name="teamsOnly">
+        ///     if set to <c>true</c>, only the teams' stats will be exported.
+        /// </param>
         /// <returns></returns>
         public static int ExportAll(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, Dictionary<int, PlayerStats> pst,
                                     string folder, bool teamsOnly = false)
@@ -953,8 +959,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        /// Populates the REDitor dictionary lists by importing the CSV data into them. 
-        /// Each dictionary has Setting-Value pairs, where Setting is the column header, and Value is the corresponding value of that particular record.
+        ///     Populates the REDitor dictionary lists by importing the CSV data into them.
+        ///     Each dictionary has Setting-Value pairs, where Setting is the column header, and Value is the corresponding value of that particular record.
         /// </summary>
         /// <param name="folder">The folder containing the REDitor-exported CSV files.</param>
         /// <param name="teams">The resulting teams information dictionary list.</param>

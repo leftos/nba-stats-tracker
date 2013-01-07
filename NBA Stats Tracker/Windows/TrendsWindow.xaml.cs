@@ -23,8 +23,8 @@ using System.Windows.Media.Imaging;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// OBSOLETE:
-    /// Used to show trends in teams' performances between two different snapshots of the same league.
+    ///     OBSOLETE:
+    ///     Used to show trends in teams' performances between two different snapshots of the same league.
     /// </summary>
     public partial class TrendsWindow
     {

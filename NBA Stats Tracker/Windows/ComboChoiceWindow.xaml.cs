@@ -17,7 +17,6 @@
 
 using System.Collections.Generic;
 using System.Windows;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.Misc;
 
 #endregion
@@ -25,14 +24,14 @@ using NBA_Stats_Tracker.Data.Misc;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Implements a multi-function combo-box choice window.
+    ///     Implements a multi-function combo-box choice window.
     /// </summary>
     public partial class ComboChoiceWindow
     {
         #region Mode enum
 
         /// <summary>
-        /// Used to determine what choices the window should offer, and its functions
+        ///     Used to determine what choices the window should offer, and its functions
         /// </summary>
         public enum Mode
         {
@@ -47,7 +46,7 @@ namespace NBA_Stats_Tracker.Windows
         private readonly Mode mode;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
+        ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
         /// </summary>
         /// <param name="mode">The Mode enum instance which determines what choices should be offered.</param>
         /// <param name="index">The default choice.</param>
@@ -92,8 +91,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
-        /// Used for when a player is set to active while previously inactive.
+        ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
+        ///     Used for when a player is set to active while previously inactive.
         /// </summary>
         /// <param name="teams">The available teams to sign the player to.</param>
         public ComboChoiceWindow(IEnumerable<string> teams)

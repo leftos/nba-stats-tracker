@@ -3,7 +3,7 @@ using System;
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// Used to keep live track of a player's performance. Extends PlayerBoxScore.
+    ///     Used to keep live track of a player's performance. Extends PlayerBoxScore.
     /// </summary>
     [Serializable]
     public class LivePlayerBoxScore : PlayerBoxScore

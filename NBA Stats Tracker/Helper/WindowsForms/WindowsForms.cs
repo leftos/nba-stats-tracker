@@ -22,7 +22,7 @@ using IWin32Window = System.Windows.Forms.IWin32Window;
 namespace NBA_Stats_Tracker.Helper.WindowsForms
 {
     /// <summary>
-    /// Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.
+    ///     Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.
     /// </summary>
     public static class WindowsForms
     {

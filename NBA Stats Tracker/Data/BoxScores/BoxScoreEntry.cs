@@ -25,7 +25,7 @@ using NBA_Stats_Tracker.Data.Teams;
 namespace NBA_Stats_Tracker.Data.BoxScores
 {
     /// <summary>
-    /// A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.
+    ///     A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.
     /// </summary>
     public class BoxScoreEntry
     {
@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         public List<PlayerBoxScore> pbsList;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
+        ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
         /// </summary>
         /// <param name="bs">The TeamBoxScore to initialize with.</param>
         public BoxScoreEntry(TeamBoxScore bs)
@@ -44,7 +44,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
+        ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
         /// </summary>
         /// <param name="bs">The TeamBoxScore to initialize with.</param>
         /// <param name="date">The date of the game.</param>

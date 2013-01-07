@@ -11,7 +11,7 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// A container for all of a player's information, stats, averages and metrics handled by the program.
+    ///     A container for all of a player's information, stats, averages and metrics handled by the program.
     /// </summary>
     [Serializable]
     public class PlayerStats
@@ -21,10 +21,10 @@ namespace NBA_Stats_Tracker.Data.Players
         public string LastName;
         public Position Position1;
         public Position Position2;
-        public int YearOfBirth;
-        public int YearsPro;
         public string TeamF;
         public string TeamS = "";
+        public int YearOfBirth;
+        public int YearsPro;
         public float[] averages = new float[16];
         public bool isActive;
         public bool isAllStar;
@@ -38,14 +38,14 @@ namespace NBA_Stats_Tracker.Data.Players
         public uint[] stats = new uint[17];
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         public PlayerStats() : this(new Player())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="player">A Player instance containing the information to initialize with.</param>
         public PlayerStats(Player player)
@@ -86,10 +86,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the row is assumed to contain playoff stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the row is assumed to contain playoff stats.
+        /// </param>
         public PlayerStats(DataRow dataRow, bool playoffs = false)
         {
             ID = Tools.getInt(dataRow, "ID");
@@ -156,54 +158,8 @@ namespace NBA_Stats_Tracker.Data.Players
             GetStatsFromDataRow(dataRow, playoffs);
         }
 
-        public void GetStatsFromDataRow(DataRow dataRow, bool isPlayoff)
-        {
-            if (!isPlayoff)
-            {
-                stats[p.GP] = Tools.getUInt16(dataRow, "GP");
-                stats[p.GS] = Tools.getUInt16(dataRow, "GS");
-                stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
-                stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
-                stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
-                stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
-                stats[p.TPM] = Tools.getUInt16(dataRow, "TPM");
-                stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
-                stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
-                stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
-                stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
-                stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
-                stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
-                stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
-                stats[p.AST] = Tools.getUInt16(dataRow, "AST");
-                stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
-            }
-            else
-            {
-                pl_stats[p.GP] = Tools.getUInt16(dataRow, "GP");
-                pl_stats[p.GS] = Tools.getUInt16(dataRow, "GS");
-                pl_stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
-                pl_stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
-                pl_stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
-                pl_stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
-                pl_stats[p.TPM] = Tools.getUInt16(dataRow, "TPM");
-                pl_stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
-                pl_stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
-                pl_stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
-                pl_stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
-                pl_stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
-                pl_stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                pl_stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
-                pl_stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
-                pl_stats[p.AST] = Tools.getUInt16(dataRow, "AST");
-                pl_stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
-            }
-
-            CalcAvg();
-        }
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="ID">The ID.</param>
         /// <param name="LastName">The last name.</param>
@@ -212,13 +168,25 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="Position2">The secondary position.</param>
         /// <param name="TeamF">The team the player is currently with.</param>
         /// <param name="TeamS">The team the player started the season with.</param>
-        /// <param name="isActive">if set to <c>true</c> the player is currently active (i.e. signed with a team).</param>
-        /// <param name="isHidden">if set to <c>true</c> the player is hidden for this season.</param>
-        /// <param name="isInjured">if set to <c>true</c> the player is injured.</param>
-        /// <param name="isAllStar">if set to <c>true</c> is an All-Star this season.</param>
-        /// <param name="isNBAChampion">if set to <c>true</c> is a champion this season.</param>
+        /// <param name="isActive">
+        ///     if set to <c>true</c> the player is currently active (i.e. signed with a team).
+        /// </param>
+        /// <param name="isHidden">
+        ///     if set to <c>true</c> the player is hidden for this season.
+        /// </param>
+        /// <param name="isInjured">
+        ///     if set to <c>true</c> the player is injured.
+        /// </param>
+        /// <param name="isAllStar">
+        ///     if set to <c>true</c> is an All-Star this season.
+        /// </param>
+        /// <param name="isNBAChampion">
+        ///     if set to <c>true</c> is a champion this season.
+        /// </param>
         /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
-        /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c> the row is assumed to contain playoff stats.
+        /// </param>
         public PlayerStats(int ID, string LastName, string FirstName, Position Position1, Position Position2, int YearOfBirth, int YearsPro,
                            string TeamF, string TeamS, bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion,
                            DataRow dataRow, bool playoffs = false)
@@ -310,10 +278,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStats" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="playerStatsRow">The player stats row.</param>
-        /// <param name="playoffs">if set to <c>true</c> the row is assumed to contain playoff stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c> the row is assumed to contain playoff stats.
+        /// </param>
         public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false)
         {
             LastName = playerStatsRow.LastName;
@@ -424,8 +394,54 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg();
         }
 
+        public void GetStatsFromDataRow(DataRow dataRow, bool isPlayoff)
+        {
+            if (!isPlayoff)
+            {
+                stats[p.GP] = Tools.getUInt16(dataRow, "GP");
+                stats[p.GS] = Tools.getUInt16(dataRow, "GS");
+                stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
+                stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
+                stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
+                stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
+                stats[p.TPM] = Tools.getUInt16(dataRow, "TPM");
+                stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
+                stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
+                stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
+                stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
+                stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
+                stats[p.STL] = Tools.getUInt16(dataRow, "STL");
+                stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+                stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
+                stats[p.AST] = Tools.getUInt16(dataRow, "AST");
+                stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
+            }
+            else
+            {
+                pl_stats[p.GP] = Tools.getUInt16(dataRow, "GP");
+                pl_stats[p.GS] = Tools.getUInt16(dataRow, "GS");
+                pl_stats[p.MINS] = Tools.getUInt16(dataRow, "MINS");
+                pl_stats[p.PTS] = Tools.getUInt16(dataRow, "PTS");
+                pl_stats[p.FGM] = Tools.getUInt16(dataRow, "FGM");
+                pl_stats[p.FGA] = Tools.getUInt16(dataRow, "FGA");
+                pl_stats[p.TPM] = Tools.getUInt16(dataRow, "TPM");
+                pl_stats[p.TPA] = Tools.getUInt16(dataRow, "TPA");
+                pl_stats[p.FTM] = Tools.getUInt16(dataRow, "FTM");
+                pl_stats[p.FTA] = Tools.getUInt16(dataRow, "FTA");
+                pl_stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
+                pl_stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
+                pl_stats[p.STL] = Tools.getUInt16(dataRow, "STL");
+                pl_stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+                pl_stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
+                pl_stats[p.AST] = Tools.getUInt16(dataRow, "AST");
+                pl_stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
+            }
+
+            CalcAvg();
+        }
+
         /// <summary>
-        /// Updates the playoff stats.
+        ///     Updates the playoff stats.
         /// </summary>
         /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(DataRow dataRow)
@@ -452,7 +468,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Updates the playoff stats.
+        ///     Updates the playoff stats.
         /// </summary>
         /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(PlayerStatsRow pl_psr)
@@ -479,9 +495,11 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the averages of a player's stats.
+        ///     Calculates the averages of a player's stats.
         /// </summary>
-        /// <param name="playoffsOnly">if set to <c>true</c>, only the playoff averages will be calculated.</param>
+        /// <param name="playoffsOnly">
+        ///     if set to <c>true</c>, only the playoff averages will be calculated.
+        /// </param>
         public void CalcAvg(bool playoffsOnly = false)
         {
             if (!playoffsOnly)
@@ -525,7 +543,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the Metric Stats for this Player
+        ///     Calculates the Metric Stats for this Player
         /// </summary>
         /// <param name="ts">The player's team's stats</param>
         /// <param name="tsopp">The player's team's opponents' stats</param>
@@ -743,10 +761,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the PER.
+        ///     Calculates the PER.
         /// </summary>
         /// <param name="lg_aPER">The league average PER.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the PER is calculated for the player's playoff stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the PER is calculated for the player's playoff stats.
+        /// </param>
         public void CalcPER(double lg_aPER, bool playoffs = false)
         {
             try
@@ -766,10 +786,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Adds a player's box score to their stats.
+        ///     Adds a player's box score to their stats.
         /// </summary>
         /// <param name="pbs">The Player Box Score.</param>
-        /// <param name="isPlayoff">if set to <c>true</c>, the stats are added to the playoff stats.</param>
+        /// <param name="isPlayoff">
+        ///     if set to <c>true</c>, the stats are added to the playoff stats.
+        /// </param>
         /// <exception cref="System.Exception">Occurs when the player IDs from the stats and box score do not match.</exception>
         public void AddBoxScore(PlayerBoxScore pbs, bool isPlayoff = false)
         {
@@ -829,10 +851,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Adds the player stats from a PlayerStats instance to the current stats.
+        ///     Adds the player stats from a PlayerStats instance to the current stats.
         /// </summary>
         /// <param name="ps">The PlayerStats instance.</param>
-        /// <param name="addBothToSeasonStats">if set to <c>true</c>, both season and playoff stats will be added to the season stats.</param>
+        /// <param name="addBothToSeasonStats">
+        ///     if set to <c>true</c>, both season and playoff stats will be added to the season stats.
+        /// </param>
         public void AddPlayerStats(PlayerStats ps, bool addBothToSeasonStats = false)
         {
             if (!addBothToSeasonStats)
@@ -864,7 +888,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Resets the stats.
+        ///     Resets the stats.
         /// </summary>
         public void ResetStats()
         {
@@ -884,7 +908,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates the league averages.
+        ///     Calculates the league averages.
         /// </summary>
         /// <param name="playerStats">The player stats.</param>
         /// <param name="teamStats">The team stats.</param>
@@ -919,14 +943,18 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Calculates all metrics.
+        ///     Calculates all metrics.
         /// </summary>
         /// <param name="playerStats">The player stats.</param>
         /// <param name="teamStats">The team stats.</param>
         /// <param name="oppStats">The opposing team stats.</param>
         /// <param name="TeamOrder">The team order.</param>
-        /// <param name="leagueOv">set to <c>true</c> if calling from the LeagueOverview window.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the metrics will be calculated for the playoff stats.</param>
+        /// <param name="leagueOv">
+        ///     set to <c>true</c> if calling from the LeagueOverview window.
+        /// </param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the metrics will be calculated for the playoff stats.
+        /// </param>
         public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats,
                                                Dictionary<int, TeamStats> oppStats, SortedDictionary<string, int> TeamOrder,
                                                bool leagueOv = false, bool playoffs = false)
@@ -1002,7 +1030,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public static void CalculateRates(uint[] pstats, ref Dictionary<string, double> tempMetrics)
         {
-            double[] pstats_d = new double[pstats.Length];
+            var pstats_d = new double[pstats.Length];
             for (int i = 0; i < pstats.Length; i++)
             {
                 pstats_d[i] = Convert.ToDouble(pstats[i]);

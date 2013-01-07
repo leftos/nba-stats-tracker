@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Interop.NBA2K12;
 
 #endregion
@@ -29,7 +28,7 @@ using NBA_Stats_Tracker.Interop.NBA2K12;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Used by the binary editing method of NBA 2K import/export in order to determine the order of the teams in the playoffs tree.
+    ///     Used by the binary editing method of NBA 2K import/export in order to determine the order of the teams in the playoffs tree.
     /// </summary>
     public partial class PlayoffTreeWindow
     {
@@ -38,7 +37,7 @@ namespace NBA_Stats_Tracker.Windows
         private bool valid = true;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayoffTreeWindow" /> class.
+        ///     Initializes a new instance of the <see cref="PlayoffTreeWindow" /> class.
         /// </summary>
         public PlayoffTreeWindow()
         {
@@ -95,10 +94,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Checks if any of the teams in the Western Conference are the same.
+        ///     Checks if any of the teams in the Western Conference are the same.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void checkIfSameTeamsWest(object sender, SelectionChangedEventArgs e)
         {
             var tree = new string[8];
@@ -178,10 +179,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Checks if any of the teams in the Eastern Conference are the same.
+        ///     Checks if any of the teams in the Eastern Conference are the same.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void checkIfSameTeamsEast(object sender, SelectionChangedEventArgs e)
         {
             var tree = new string[8];
@@ -241,11 +244,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Closed event of the Window control.
-        /// Copies the local playoff tree instance to the application-wide one when the window's closed.
+        ///     Handles the Closed event of the Window control.
+        ///     Copies the local playoff tree instance to the application-wide one when the window's closed.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Closed(object sender, EventArgs e)
         {
             App.tempPT = myPT;

@@ -23,13 +23,13 @@ using System.Windows;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Implements a window to display a message to the user that can be copied to the clipboard.
-    /// Window size adjusts depending on the contents.
+    ///     Implements a window to display a message to the user that can be copied to the clipboard.
+    ///     Window size adjusts depending on the contents.
     /// </summary>
     public partial class CopyableMessageWindow
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CopyableMessageWindow" /> class.
+        ///     Initializes a new instance of the <see cref="CopyableMessageWindow" /> class.
         /// </summary>
         /// <param name="msg">The message to display.</param>
         /// <param name="title">The title of the window.</param>
@@ -49,11 +49,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnCopyToClip control. 
-        /// Copies the message displayed to the clipboard.
+        ///     Handles the Click event of the btnCopyToClip control.
+        ///     Copies the message displayed to the clipboard.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnCopyToClip_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(txbMsg.Text);

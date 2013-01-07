@@ -19,7 +19,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using SQLite_Database;
@@ -29,7 +28,7 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Used for displaying a basic list of available box scores, in order to easily delete any of them.
+    ///     Used for displaying a basic list of available box scores, in order to easily delete any of them.
     /// </summary>
     public partial class BoxScoreListWindow
     {
@@ -56,10 +55,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the dgvBoxScores control. The selected box score is displayed in the Box Score Window.
+        ///     Handles the MouseDoubleClick event of the dgvBoxScores control. The selected box score is displayed in the Box Score Window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var boxScoreEntry = dgvBoxScores.SelectedItem as BoxScoreEntry;
@@ -84,10 +85,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnDelete control. Deletes all the specified Team Box Score, as well as any corresponding Player Box Scores, from the database.
+        ///     Handles the Click event of the btnDelete control. Deletes all the specified Team Box Score, as well as any corresponding Player Box Scores, from the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult r =

@@ -24,10 +24,7 @@ using System.Windows;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data;
-using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.ListExtensions;
-using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Interop.REDitor;
 using SQLite_Database;
 
@@ -36,14 +33,14 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Provides a multi-purpose dual-list window interface (e.g. used to enable/disable (show/hide) teams and players).
+    ///     Provides a multi-purpose dual-list window interface (e.g. used to enable/disable (show/hide) teams and players).
     /// </summary>
     public partial class DualListWindow
     {
         #region Mode enum
 
         /// <summary>
-        /// Provides the different modes of function for this window.
+        ///     Provides the different modes of function for this window.
         /// </summary>
         public enum Mode
         {
@@ -76,8 +73,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DualListWindow" /> class.
-        /// Used to determine the active teams in an NBA 2K save file.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
+        ///     Used to determine the active teams in an NBA 2K save file.
         /// </summary>
         /// <param name="validTeams">The valid teams.</param>
         /// <param name="activeTeams">The active teams.</param>
@@ -106,8 +103,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DualListWindow" /> class.
-        /// Used to enable/disable players/teams for the season.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
+        ///     Used to enable/disable players/teams for the season.
         /// </summary>
         /// <param name="currentDB">The current DB.</param>
         /// <param name="curSeason">The cur season.</param>
@@ -192,8 +189,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DualListWindow" /> class.
-        /// Used to pick one out of the available box scores to import.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
+        ///     Used to pick one out of the available box scores to import.
         /// </summary>
         /// <param name="mode">The mode.</param>
         public DualListWindow(Mode mode)
@@ -226,7 +223,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Finds the specified team's name by its displayName.
+        ///     Finds the specified team's name by its displayName.
         /// </summary>
         /// <param name="displayName">The team's name.</param>
         /// <returns></returns>
@@ -243,7 +240,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Finds the specified team's displayName by its name.
+        ///     Finds the specified team's displayName by its name.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -260,11 +257,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnEnable control. 
-        /// Adds one or more disabled items to the enabled list, and sorts.
+        ///     Handles the Click event of the btnEnable control.
+        ///     Adds one or more disabled items to the enabled list, and sorts.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnEnable_Click(object sender, RoutedEventArgs e)
         {
             if (mode != Mode.HiddenPlayers)
@@ -304,11 +303,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnDisable control. 
-        /// Adds one or more enabled items to the disabled list and sorts.
+        ///     Handles the Click event of the btnDisable control.
+        ///     Adds one or more enabled items to the disabled list and sorts.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnDisable_Click(object sender, RoutedEventArgs e)
         {
             if (mode != Mode.HiddenPlayers)
@@ -505,11 +506,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnLoadList control. 
-        /// Used to load a previously saved active teams list.
+        ///     Handles the Click event of the btnLoadList control.
+        ///     Used to load a previously saved active teams list.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnLoadList_Click(object sender, RoutedEventArgs e)
         {
             if (mode == Mode.REditor)
@@ -579,11 +582,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Loaded event of the Window control. 
-        /// Automates the OK button click if there's just two teams to pick as far as box score goes.
+        ///     Handles the Loaded event of the Window control.
+        ///     Automates the OK button click if there's just two teams to pick as far as box score goes.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(() =>

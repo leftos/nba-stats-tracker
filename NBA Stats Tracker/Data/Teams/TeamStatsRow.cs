@@ -6,75 +6,6 @@ namespace NBA_Stats_Tracker.Data.Teams
 {
     public class TeamStatsRow
     {
-        public int ID { get; set; }
-        public uint Games { get; set; }
-        public uint Wins { get; set; }
-        public uint Losses { get; set; }
-        public uint MINS { get; set; }
-        public uint PF { get; set; }
-        public uint PA { get; set; }
-        public uint FGM { get; set; }
-        public uint FGA { get; set; }
-        public uint TPM { get; set; }
-        public uint TPA { get; set; }
-        public uint FTM { get; set; }
-        public uint FTA { get; set; }
-        public uint REB { get; set; }
-        public uint OREB { get; set; }
-        public uint DREB { get; set; }
-        public uint STL { get; set; }
-        public uint TOS { get; set; }
-        public uint BLK { get; set; }
-        public uint AST { get; set; }
-        public uint FOUL { get; set; }
-
-        public float Wp { get; set; }
-        public float Weff { get; set; }
-        public float PPG { get; set; }
-        public float PAPG { get; set; }
-        public float FGp { get; set; }
-        public float FGeff { get; set; }
-        public float TPp { get; set; }
-        public float TPeff { get; set; }
-        public float FTp { get; set; }
-        public float FTeff { get; set; }
-        public float RPG { get; set; }
-        public float ORPG { get; set; }
-        public float DRPG { get; set; }
-        public float SPG { get; set; }
-        public float TPG { get; set; }
-        public float BPG { get; set; }
-        public float APG { get; set; }
-        public float FPG { get; set; }
-
-        public float FGMPG { get; set; }
-        public float FGAPG { get; set; }
-        public float TPMPG { get; set; }
-        public float TPAPG { get; set; }
-        public float FTMPG { get; set; }
-        public float FTAPG { get; set; }
-
-        public string Name { get; set; }
-        public string DisplayName { get; set; }
-        public double ORTG { get; set; }
-        public double DRTG { get; set; }
-        public double EFFd { get; set; }
-        public double PWp { get; set; }
-        public double PythW { get; set; }
-        public double PythL { get; set; }
-        public double TSp { get; set; }
-        public double EFGp { get; set; }
-        public double TPR { get; set; }
-        public double DREBp { get; set; }
-        public double OREBp { get; set; }
-        public double ASTp { get; set; }
-        public double TOR { get; set; }
-        public double FTR { get; set; }
-        public double Poss { get; set; }
-        public double Pace { get; set; }
-
-        public bool isHidden { get; set; }
-
         public TeamStatsRow(TeamStats ts, bool playoffs = false)
         {
             ID = ts.ID;
@@ -214,27 +145,96 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
+        public int ID { get; set; }
+        public uint Games { get; set; }
+        public uint Wins { get; set; }
+        public uint Losses { get; set; }
+        public uint MINS { get; set; }
+        public uint PF { get; set; }
+        public uint PA { get; set; }
+        public uint FGM { get; set; }
+        public uint FGA { get; set; }
+        public uint TPM { get; set; }
+        public uint TPA { get; set; }
+        public uint FTM { get; set; }
+        public uint FTA { get; set; }
+        public uint REB { get; set; }
+        public uint OREB { get; set; }
+        public uint DREB { get; set; }
+        public uint STL { get; set; }
+        public uint TOS { get; set; }
+        public uint BLK { get; set; }
+        public uint AST { get; set; }
+        public uint FOUL { get; set; }
+
+        public float Wp { get; set; }
+        public float Weff { get; set; }
+        public float PPG { get; set; }
+        public float PAPG { get; set; }
+        public float FGp { get; set; }
+        public float FGeff { get; set; }
+        public float TPp { get; set; }
+        public float TPeff { get; set; }
+        public float FTp { get; set; }
+        public float FTeff { get; set; }
+        public float RPG { get; set; }
+        public float ORPG { get; set; }
+        public float DRPG { get; set; }
+        public float SPG { get; set; }
+        public float TPG { get; set; }
+        public float BPG { get; set; }
+        public float APG { get; set; }
+        public float FPG { get; set; }
+
+        public float FGMPG { get; set; }
+        public float FGAPG { get; set; }
+        public float TPMPG { get; set; }
+        public float TPAPG { get; set; }
+        public float FTMPG { get; set; }
+        public float FTAPG { get; set; }
+
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public double ORTG { get; set; }
+        public double DRTG { get; set; }
+        public double EFFd { get; set; }
+        public double PWp { get; set; }
+        public double PythW { get; set; }
+        public double PythL { get; set; }
+        public double TSp { get; set; }
+        public double EFGp { get; set; }
+        public double TPR { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double ASTp { get; set; }
+        public double TOR { get; set; }
+        public double FTR { get; set; }
+        public double Poss { get; set; }
+        public double Pace { get; set; }
+
+        public bool isHidden { get; set; }
+
         public static void TryChangeTSR(ref TeamStatsRow tsr, Dictionary<string, string> dict)
         {
-            tsr.Wins = tsr.Wins.TrySetValue(dict, "Wins", typeof(UInt16));
-            tsr.Losses = tsr.Losses.TrySetValue(dict, "Losses", typeof(UInt16));
-            tsr.MINS = tsr.MINS.TrySetValue(dict, "MINS", typeof(UInt16));
-            tsr.PF = tsr.PF.TrySetValue(dict, "PF", typeof(UInt16));
-            tsr.PA = tsr.PF.TrySetValue(dict, "PA", typeof(UInt16));
-            tsr.FGM = tsr.FGM.TrySetValue(dict, "FGM", typeof(UInt16));
-            tsr.FGA = tsr.FGA.TrySetValue(dict, "FGA", typeof(UInt16));
-            tsr.TPM = tsr.TPM.TrySetValue(dict, "3PM", typeof(UInt16));
-            tsr.TPA = tsr.TPA.TrySetValue(dict, "3PA", typeof(UInt16));
-            tsr.FTM = tsr.FTM.TrySetValue(dict, "FTM", typeof(UInt16));
-            tsr.FTA = tsr.FTA.TrySetValue(dict, "FTA", typeof(UInt16));
-            tsr.REB = tsr.REB.TrySetValue(dict, "REB", typeof(UInt16));
-            tsr.OREB = tsr.OREB.TrySetValue(dict, "OREB", typeof(UInt16));
-            tsr.DREB = tsr.DREB.TrySetValue(dict, "DREB", typeof(UInt16));
-            tsr.AST = tsr.AST.TrySetValue(dict, "AST", typeof(UInt16));
-            tsr.TOS = tsr.TOS.TrySetValue(dict, "TO", typeof(UInt16));
-            tsr.STL = tsr.STL.TrySetValue(dict, "STL", typeof(UInt16));
-            tsr.BLK = tsr.BLK.TrySetValue(dict, "BLK", typeof(UInt16));
-            tsr.FOUL = tsr.FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
+            tsr.Wins = tsr.Wins.TrySetValue(dict, "Wins", typeof (UInt16));
+            tsr.Losses = tsr.Losses.TrySetValue(dict, "Losses", typeof (UInt16));
+            tsr.MINS = tsr.MINS.TrySetValue(dict, "MINS", typeof (UInt16));
+            tsr.PF = tsr.PF.TrySetValue(dict, "PF", typeof (UInt16));
+            tsr.PA = tsr.PF.TrySetValue(dict, "PA", typeof (UInt16));
+            tsr.FGM = tsr.FGM.TrySetValue(dict, "FGM", typeof (UInt16));
+            tsr.FGA = tsr.FGA.TrySetValue(dict, "FGA", typeof (UInt16));
+            tsr.TPM = tsr.TPM.TrySetValue(dict, "3PM", typeof (UInt16));
+            tsr.TPA = tsr.TPA.TrySetValue(dict, "3PA", typeof (UInt16));
+            tsr.FTM = tsr.FTM.TrySetValue(dict, "FTM", typeof (UInt16));
+            tsr.FTA = tsr.FTA.TrySetValue(dict, "FTA", typeof (UInt16));
+            tsr.REB = tsr.REB.TrySetValue(dict, "REB", typeof (UInt16));
+            tsr.OREB = tsr.OREB.TrySetValue(dict, "OREB", typeof (UInt16));
+            tsr.DREB = tsr.DREB.TrySetValue(dict, "DREB", typeof (UInt16));
+            tsr.AST = tsr.AST.TrySetValue(dict, "AST", typeof (UInt16));
+            tsr.TOS = tsr.TOS.TrySetValue(dict, "TO", typeof (UInt16));
+            tsr.STL = tsr.STL.TrySetValue(dict, "STL", typeof (UInt16));
+            tsr.BLK = tsr.BLK.TrySetValue(dict, "BLK", typeof (UInt16));
+            tsr.FOUL = tsr.FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
         }
 
         public static void Refresh(ref TeamStatsRow tsr)

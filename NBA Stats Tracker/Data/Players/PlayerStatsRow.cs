@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// Implements an easily bindable interface to a player's stats.
+    ///     Implements an easily bindable interface to a player's stats.
     /// </summary>
     public class PlayerStatsRow
     {
@@ -18,10 +16,12 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
         /// </summary>
         /// <param name="ps">The PlayerStats instance.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the interface provided will show playoff stats.
+        /// </param>
         public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true)
         {
             LastName = ps.LastName;
@@ -212,6 +212,139 @@ namespace NBA_Stats_Tracker.Data.Players
                 Calculate2KRatings();
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the interface provided will show playoff stats.
+        /// </param>
+        public PlayerStatsRow(PlayerStats ps, string type, bool playoffs = false) : this(ps, playoffs)
+        {
+            Type = type;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
+        /// </summary>
+        /// <param name="ps">The PlayerStats instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the interface provided will show playoff stats.
+        /// </param>
+        public PlayerStatsRow(PlayerStats ps, string type, string group, bool playoffs = false) : this(ps, type, playoffs)
+        {
+            Type = type;
+            Group = group;
+        }
+
+        public uint GP { get; set; }
+        public uint GS { get; set; }
+
+        public uint MINS { get; set; }
+        public uint PTS { get; set; }
+        public uint FGM { get; set; }
+        public uint FGA { get; set; }
+        public uint TPM { get; set; }
+        public uint TPA { get; set; }
+        public uint FTM { get; set; }
+        public uint FTA { get; set; }
+        public uint REB { get; set; }
+        public uint OREB { get; set; }
+        public uint DREB { get; set; }
+        public uint STL { get; set; }
+        public uint TOS { get; set; }
+        public uint BLK { get; set; }
+        public uint AST { get; set; }
+        public uint FOUL { get; set; }
+
+        public float MPG { get; set; }
+        public float PPG { get; set; }
+        public float FGp { get; set; }
+        public float FGeff { get; set; }
+        public float TPp { get; set; }
+        public float TPeff { get; set; }
+        public float FTp { get; set; }
+        public float FTeff { get; set; }
+        public float RPG { get; set; }
+        public float ORPG { get; set; }
+        public float DRPG { get; set; }
+        public float SPG { get; set; }
+        public float TPG { get; set; }
+        public float BPG { get; set; }
+        public float APG { get; set; }
+        public float FPG { get; set; }
+
+        public float FGMPG { get; set; }
+        public float FGAPG { get; set; }
+        public float TPMPG { get; set; }
+        public float TPAPG { get; set; }
+        public float FTMPG { get; set; }
+        public float FTAPG { get; set; }
+
+        public double EFF { get; set; }
+        public double GmSc { get; set; }
+        public double GmScE { get; set; }
+        public double EFGp { get; set; }
+        public double TSp { get; set; }
+        public double ASTp { get; set; }
+        public double STLp { get; set; }
+        public double TOp { get; set; }
+        public double USGp { get; set; }
+        public double PTSR { get; set; }
+        public double REBR { get; set; }
+        public double OREBR { get; set; }
+        public double ASTR { get; set; }
+        public double BLKR { get; set; }
+        public double STLR { get; set; }
+        public double TOR { get; set; }
+        public double FTR { get; set; }
+        public double FTAR { get; set; }
+
+        public int ID { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public Position Position1 { get; set; }
+        public Position Position2 { get; set; }
+        public string TeamF { get; set; }
+        public string TeamFDisplay { get; set; }
+        public string TeamS { get; set; }
+        public bool isActive { get; set; }
+        public bool isHidden { get; set; }
+        public bool isAllStar { get; set; }
+        public bool isInjured { get; set; }
+        public bool isNBAChampion { get; set; }
+
+        public int YearOfBirth { get; set; }
+        public int YearsPro { get; set; }
+
+        public string Type { get; set; }
+        public string Group { get; set; }
+
+        public int reRFT { get; set; }
+        public int reRPass { get; set; }
+        public int reRBlock { get; set; }
+        public int reRSteal { get; set; }
+        public int reROffRbd { get; set; }
+        public int reRDefRbd { get; set; }
+        public int reTShotTnd { get; set; }
+        public int reTDrawFoul { get; set; }
+        public int reTTouch { get; set; }
+        public int reTCommitFl { get; set; }
+
+        #region Metrics that require opponents' stats
+
+        public double PER { get; set; }
+        public double BLKp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double REBp { get; set; }
+        public double PPR { get; set; }
+
+        #endregion
+
         private void Calculate2KRatings()
         {
             try
@@ -331,136 +464,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
-        /// </summary>
-        /// <param name="ps">The PlayerStats instance.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
-        public PlayerStatsRow(PlayerStats ps, string type, bool playoffs = false) : this(ps, playoffs)
-        {
-            Type = type;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
-        /// </summary>
-        /// <param name="ps">The PlayerStats instance.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the interface provided will show playoff stats.</param>
-        public PlayerStatsRow(PlayerStats ps, string type, string group, bool playoffs = false) : this(ps, type, playoffs)
-        {
-            Type = type;
-            Group = group;
-        }
-
-        public uint GP { get; set; }
-        public uint GS { get; set; }
-
-        public uint MINS { get; set; }
-        public uint PTS { get; set; }
-        public uint FGM { get; set; }
-        public uint FGA { get; set; }
-        public uint TPM { get; set; }
-        public uint TPA { get; set; }
-        public uint FTM { get; set; }
-        public uint FTA { get; set; }
-        public uint REB { get; set; }
-        public uint OREB { get; set; }
-        public uint DREB { get; set; }
-        public uint STL { get; set; }
-        public uint TOS { get; set; }
-        public uint BLK { get; set; }
-        public uint AST { get; set; }
-        public uint FOUL { get; set; }
-
-        public float MPG { get; set; }
-        public float PPG { get; set; }
-        public float FGp { get; set; }
-        public float FGeff { get; set; }
-        public float TPp { get; set; }
-        public float TPeff { get; set; }
-        public float FTp { get; set; }
-        public float FTeff { get; set; }
-        public float RPG { get; set; }
-        public float ORPG { get; set; }
-        public float DRPG { get; set; }
-        public float SPG { get; set; }
-        public float TPG { get; set; }
-        public float BPG { get; set; }
-        public float APG { get; set; }
-        public float FPG { get; set; }
-
-        public float FGMPG { get; set; }
-        public float FGAPG { get; set; }
-        public float TPMPG { get; set; }
-        public float TPAPG { get; set; }
-        public float FTMPG { get; set; }
-        public float FTAPG { get; set; }
-
-        public double EFF { get; set; }
-        public double GmSc { get; set; }
-        public double GmScE { get; set; }
-        public double EFGp { get; set; }
-        public double TSp { get; set; }
-        public double ASTp { get; set; }
-        public double STLp { get; set; }
-        public double TOp { get; set; }
-        public double USGp { get; set; }
-        public double PTSR { get; set; }
-        public double REBR { get; set; }
-        public double OREBR { get; set; }
-        public double ASTR { get; set; }
-        public double BLKR { get; set; }
-        public double STLR { get; set; }
-        public double TOR { get; set; }
-        public double FTR { get; set; }
-        public double FTAR { get; set; }
-
-        public int ID { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public Position Position1 { get; set; }
-        public Position Position2 { get; set; }
-        public string TeamF { get; set; }
-        public string TeamFDisplay { get; set; }
-        public string TeamS { get; set; }
-        public bool isActive { get; set; }
-        public bool isHidden { get; set; }
-        public bool isAllStar { get; set; }
-        public bool isInjured { get; set; }
-        public bool isNBAChampion { get; set; }
-
-        public int YearOfBirth { get; set; }
-        public int YearsPro { get; set; }
-
-        public string Type { get; set; }
-        public string Group { get; set; }
-
-        public int reRFT { get; set; }
-        public int reRPass { get; set; }
-        public int reRBlock { get; set; }
-        public int reRSteal { get; set; }
-        public int reROffRbd { get; set; }
-        public int reRDefRbd { get; set; }
-        public int reTShotTnd { get; set; }
-        public int reTDrawFoul { get; set; }
-        public int reTTouch { get; set; }
-        public int reTCommitFl { get; set; }
-
-        #region Metrics that require opponents' stats
-
-        public double PER { get; set; }
-        public double BLKp { get; set; }
-        public double DREBp { get; set; }
-        public double OREBp { get; set; }
-        public double REBp { get; set; }
-        public double PPR { get; set; }
-
-        #endregion
-
-        /// <summary>
-        /// Gets the best stats.
+        ///     Gets the best stats.
         /// </summary>
         /// <param name="count">The count of stats to return.</param>
         /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
@@ -636,7 +640,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Gets a list (dictionary) of the best stats.
+        ///     Gets a list (dictionary) of the best stats.
         /// </summary>
         /// <param name="count">The count of stats to return.</param>
         /// <returns>A list (dictionary) of the best stats' names and values</returns>
@@ -654,7 +658,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Shows a scouting report for the player in natural language.
+        ///     Shows a scouting report for the player in natural language.
         /// </summary>
         /// <param name="pst">The PlayerStats dictionary containing all the player information.</param>
         /// <param name="rankingsActive">The rankingsPerGame of currently active players.</param>
@@ -663,9 +667,9 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="pbsList">The list of the player's available box scores.</param>
         /// <param name="bestGame">The well-formatted string from the player's best game.</param>
         public string ScoutingReport(Dictionary<int, PlayerStats> pst, PlayerRankings rankingsActive, PlayerRankings rankingsTeam,
-                                   PlayerRankings rankingsPosition, IList<PlayerBoxScore> pbsIList, string bestGame, bool playoffs = false)
+                                     PlayerRankings rankingsPosition, IList<PlayerBoxScore> pbsIList, string bestGame, bool playoffs = false)
         {
-            var pbsList = pbsIList.ToList();
+            List<PlayerBoxScore> pbsList = pbsIList.ToList();
             string s = "";
             s += String.Format("{0} {1}, born in {3}, is a {2} ", FirstName, LastName, Position1, YearOfBirth);
             if (Position2 != Position.None)
@@ -687,7 +691,8 @@ namespace NBA_Stats_Tracker.Data.Players
             s += String.Format("He averages {0:F1} PPG on {1:F1} MPG, making for {2:F1} points per 36 minutes. ", PPG, MPG, PTSR);
 
             if (rankingsTeam.rankingsPerGame[ID][p.PPG] <= 3)
-                s += String.Format("One of the best scorers in the team, #{0} among his teammates. ", rankingsTeam.rankingsPerGame[ID][p.PPG]);
+                s += String.Format("One of the best scorers in the team, #{0} among his teammates. ",
+                                   rankingsTeam.rankingsPerGame[ID][p.PPG]);
             if (rankingsPosition.rankingsPerGame[ID][p.PPG] <= 10)
                 s += String.Format("His performance has got him to become one of the best at his position in scoring, #{0} among {1}'s. ",
                                    rankingsPosition.rankingsPerGame[ID][p.PPG], Position1);
@@ -695,7 +700,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 s += String.Format("He's actually one of the best in the league in scoring, rated #{0} overall. ",
                                    rankingsActive.rankingsPerGame[ID][p.PPG]);
 
-            var statList = GetBestStatsList(5);
+            Dictionary<string, string> statList = GetBestStatsList(5);
 
             s += "\n\n";
 
@@ -720,7 +725,8 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "His 3-point shooting is another area of focus. His three-point shooting averages {0}. #{1} in the league in 3P%. ",
                                 stat.Value, rankingsActive.rankingsPerGame[ID][p.TPp]);
                         if (rankingsTeam.rankingsPerGame[ID][p.TPp] <= 3)
-                            s += String.Format("One of the best guys from the arc in his team, ranks at #{0} ", rankingsTeam.rankingsPerGame[ID][p.TPp]);
+                            s += String.Format("One of the best guys from the arc in his team, ranks at #{0} ",
+                                               rankingsTeam.rankingsPerGame[ID][p.TPp]);
                         if (rankingsPosition.rankingsPerGame[ID][p.TPp] <= 10)
                             s += String.Format("Not many {0}'s do better than him, as he's ranked at #{1}. ", Position1,
                                                rankingsPosition.rankingsPerGame[ID][p.TPp]);
@@ -758,7 +764,8 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "He makes a point of crashing the boards. His RPG are at {0} ({2:F1} per 36 minutes), which " +
                                 "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.RPG], REBR);
                         if (rankingsTeam.rankingsPerGame[ID][p.RPG] <= 3)
-                            s += String.Format("One of the top rebounders in his team, #{0} actually. ", rankingsTeam.rankingsPerGame[ID][p.RPG]);
+                            s += String.Format("One of the top rebounders in his team, #{0} actually. ",
+                                               rankingsTeam.rankingsPerGame[ID][p.RPG]);
                         if (rankingsPosition.rankingsPerGame[ID][p.RPG] <= 10)
                             s += String.Format("He's ranked at #{1} among {0}'s in crashing the boards. ", Position1,
                                                rankingsPosition.rankingsPerGame[ID][p.RPG]);
@@ -769,7 +776,8 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Keep him in mind when he's in your face. His BPG are at {0} ({2:F1} per 36 minutes), which " +
                                 "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.BPG], BLKR);
                         if (rankingsTeam.rankingsPerGame[ID][p.BPG] <= 3)
-                            s += String.Format("Among the top blockers in the team, ranked at #{0}. ", rankingsTeam.rankingsPerGame[ID][p.BPG]);
+                            s += String.Format("Among the top blockers in the team, ranked at #{0}. ",
+                                               rankingsTeam.rankingsPerGame[ID][p.BPG]);
                         if (rankingsPosition.rankingsPerGame[ID][p.BPG] <= 10)
                             s += String.Format("One of the best {0}'s (#{1}) at blocking shots. ", Position1,
                                                rankingsPosition.rankingsPerGame[ID][p.BPG]);
@@ -812,7 +820,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (!String.IsNullOrWhiteSpace(bestGame))
             {
-                string[] parts = bestGame.Split(new string[] {": ", " vs ", " (", "\n"}, StringSplitOptions.None);
+                string[] parts = bestGame.Split(new[] {": ", " vs ", " (", "\n"}, StringSplitOptions.None);
                 s += String.Format("His best game was at {0} against the {1}, with a Game Score of {2:F2} ", parts[1], parts[2],
                                    pbsList.Find(pbs => pbs.RealDate == Convert.ToDateTime(parts[1])).GmSc);
                 s += "(";
@@ -833,7 +841,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         i += 1;
                     }
                 }
-                s = s.TrimEnd(new char[] {',', ' '});
+                s = s.TrimEnd(new[] {',', ' '});
                 s += "). ";
             }
 
@@ -887,7 +895,7 @@ namespace NBA_Stats_Tracker.Data.Players
             dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
             dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
             dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
-            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
             int j = 3;
             while (true)
@@ -941,14 +949,14 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 m++;
             }
-            s = s.TrimEnd(new char[] {' ', ','});
+            s = s.TrimEnd(new[] {' ', ','});
             s += ".";
 
             return s;
         }
 
         /// <summary>
-        /// Tries to parse the specified dictionary and update the specified PlayerStatsRow instance.
+        ///     Tries to parse the specified dictionary and update the specified PlayerStatsRow instance.
         /// </summary>
         /// <param name="psr">The PSR.</param>
         /// <param name="dict">The dict.</param>

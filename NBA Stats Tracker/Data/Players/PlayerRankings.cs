@@ -5,29 +5,31 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// Used to determine the player ranking for each stat.
+    ///     Used to determine the player ranking for each stat.
     /// </summary>
     public class PlayerRankings
     {
         public int avgcount = (new PlayerStats(new Player(-1, "", "", "", Position.None, Position.None))).averages.Length;
+        public Dictionary<int, Dictionary<string, int>> rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
 
         public Dictionary<int, int[]> rankingsPerGame = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> rankingsTotal = new Dictionary<int, int[]>();
-        public Dictionary<int, Dictionary<string, int>> rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-        
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerRankings" /> class, and calculates the rankingsPerGame.
+        ///     Initializes a new instance of the <see cref="PlayerRankings" /> class, and calculates the rankingsPerGame.
         /// </summary>
         /// <param name="pst">The PlayerStats dictionary, containing all player information.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the rankingsPerGame will take only playoff performances into account.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the rankingsPerGame will take only playoff performances into account.
+        /// </param>
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
-            var validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0).ToDictionary(a => a.Key, a => a.Value);
+            Dictionary<int, PlayerStats> validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0).ToDictionary(a => a.Key, a => a.Value);
             if (validPlayers.Count == 0)
                 return;
-            var firstPlayerID = validPlayers.Keys.ToList()[0];
-            var totalsCount = validPlayers[firstPlayerID].stats.Length;
-            var metricsCount = validPlayers[firstPlayerID].metrics.Count;
+            int firstPlayerID = validPlayers.Keys.ToList()[0];
+            int totalsCount = validPlayers[firstPlayerID].stats.Length;
+            int metricsCount = validPlayers[firstPlayerID].metrics.Count;
 
             foreach (var kvp in validPlayers)
             {
@@ -95,7 +97,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
 
-            var metricsNames = validPlayers[firstPlayerID].metrics.Keys.ToList();
+            List<string> metricsNames = validPlayers[firstPlayerID].metrics.Keys.ToList();
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics;
@@ -124,7 +126,6 @@ namespace NBA_Stats_Tracker.Data.Players
                     rankingsMetrics[kvp.Key][metricsNames[i]] = plCount;
                 }
             }
-
         }
 
         public static PlayerRankings CalculateActiveRankings(bool playoffs = false)
@@ -136,9 +137,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public PlayerRankings CalculateLeadersRankings(out Dictionary<int, PlayerStats> pstLeaders)
         {
-            var pstActive = MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(ps => ps.Key, ps => ps.Value);
-            var listOfKeys = pstActive.Keys.ToList();
-            foreach (var key in listOfKeys)
+            Dictionary<int, PlayerStats> pstActive = MainWindow.pst.Where(ps => ps.Value.isActive)
+                                                               .ToDictionary(ps => ps.Key, ps => ps.Value);
+            List<int> listOfKeys = pstActive.Keys.ToList();
+            foreach (int key in listOfKeys)
             {
                 pstActive[key] = LeagueOverviewWindow.ConvertToLeagueLeader(pstActive[key], MainWindow.tst);
             }

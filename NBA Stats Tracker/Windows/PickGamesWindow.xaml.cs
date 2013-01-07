@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Media;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using NBA_Stats_Tracker.Helper;
-using NBA_Stats_Tracker.Helper.Misc;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
 
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for PickGamesWindow.xaml
+    ///     Interaction logic for PickGamesWindow.xaml
     /// </summary>
     public partial class PickGamesWindow : Window
     {
-        private List<int> _teams = new List<int>();
+        private readonly List<int> _teams = new List<int>();
 
         public PickGamesWindow()
         {
@@ -45,8 +37,8 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (lstAvailableAway.SelectedItems.Count == 1 && lstAvailableHome.SelectedItems.Count == 1)
             {
-                var away = lstAvailableAway.SelectedItem;
-                var home = lstAvailableHome.SelectedItem;
+                object away = lstAvailableAway.SelectedItem;
+                object home = lstAvailableHome.SelectedItem;
                 lstSelectedGames.Items.Add(away + " @ " + home);
                 REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, away.ToString())]);
                 REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, home.ToString())]);
@@ -61,7 +53,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                System.Media.SystemSounds.Beep.Play();
+                SystemSounds.Beep.Play();
             }
         }
 
@@ -71,16 +63,16 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?") == MessageBoxResult.Yes)
                 {
-                    var parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
+                    string[] parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
-                    foreach (var part in parts)
+                    foreach (string part in parts)
                     {
                         REDitor.pickedTeams.Remove(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, part)]);
                         lstAvailableAway.Items.Add(part);
                         lstAvailableHome.Items.Add(part);
                     }
 
-                    var list = lstAvailableAway.Items.Cast<string>().ToList();
+                    List<string> list = lstAvailableAway.Items.Cast<string>().ToList();
                     list.Sort();
                     lstAvailableAway.Items.Clear();
                     list.ForEach(item => lstAvailableAway.Items.Add(item));
@@ -100,7 +92,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
-            foreach (var team in _teams)
+            foreach (int team in _teams)
             {
                 lstAvailableAway.Items.Add(MainWindow.tst[team].displayName);
                 lstAvailableHome.Items.Add(MainWindow.tst[team].displayName);

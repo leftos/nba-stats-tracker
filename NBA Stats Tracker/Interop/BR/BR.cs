@@ -31,12 +31,12 @@ using NBA_Stats_Tracker.Windows;
 namespace NBA_Stats_Tracker.Interop.BR
 {
     /// <summary>
-    /// Used to download and import real NBA stats from the Basketball-Reference.com website.
+    ///     Used to download and import real NBA stats from the Basketball-Reference.com website.
     /// </summary>
     public static class BR
     {
         /// <summary>
-        /// Downloads a box score from the specified URL.
+        ///     Downloads a box score from the specified URL.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="parts">The resulting date parts.</param>
@@ -61,7 +61,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     {
                         continue;
                     }
-                    var h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
+                    HtmlNode h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
                     string name = h1.InnerText;
                     parts = name.Split(new[] {" at ", " Box Score, ", ", "}, 4, StringSplitOptions.None);
                     for (int i = 0; i < parts.Count(); i++)
@@ -118,7 +118,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Downloads the season team stats for a team.
+        ///     Downloads the season team stats for a team.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="recordparts">The parts of the team's record string.</param>
@@ -178,7 +178,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Gets the player stats for a specific player.
+        ///     Gets the player stats for a specific player.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
@@ -239,7 +239,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Gets the playoff team stats for a specific team.
+        ///     Gets the playoff team stats for a specific team.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
@@ -300,7 +300,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Creates the team and opposing team stats instances using data from the downloaded DataTable.
+        ///     Creates the team and opposing team stats instances using data from the downloaded DataTable.
         /// </summary>
         /// <param name="dt">The DataTable.</param>
         /// <param name="name">The name of the team.</param>
@@ -358,7 +358,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Creates the playoff team and opposing playoff team stats instances using data from the downloaded DataSet.
+        ///     Creates the playoff team and opposing playoff team stats instances using data from the downloaded DataSet.
         /// </summary>
         /// <param name="ds">The dataset.</param>
         /// <param name="tst">The team stats dictionary.</param>
@@ -450,7 +450,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Creates the player stats instances using data from the downloaded DataSet.
+        ///     Creates the player stats instances using data from the downloaded DataSet.
         /// </summary>
         /// <param name="ds">The DataSet.</param>
         /// <param name="team">The player's team.</param>
@@ -578,7 +578,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Creates a team box score and all the required player box score instances using data from the downloaded DataSet.
+        ///     Creates a team box score and all the required player box score instances using data from the downloaded DataSet.
         /// </summary>
         /// <param name="ds">The DataSet.</param>
         /// <param name="parts">The parts of the split date string.</param>
@@ -622,7 +622,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Downloads and imports the real NBA stats of a specific team and its players.
+        ///     Downloads and imports the real NBA stats of a specific team and its players.
         /// </summary>
         /// <param name="teamAbbr">The team name-abbreviation KeyValuePair.</param>
         /// <param name="ts">The resulting team stats instance.</param>
@@ -640,7 +640,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Downloads and imports a box score.
+        ///     Downloads and imports a box score.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
@@ -657,7 +657,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         }
 
         /// <summary>
-        /// Adds the playoff team stats to the current database.
+        ///     Adds the playoff team stats to the current database.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstopp">The opposing team stats dictionary.</param>

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 namespace NBA_Stats_Tracker.Data.Teams
 {
     /// <summary>
-    /// Used to determine the team ranking for each stat.
+    ///     Used to determine the team ranking for each stat.
     /// </summary>
     public class TeamRankings
     {
+        public Dictionary<int, Dictionary<string, int>> rankingsMetrics;
         public int[][] rankingsPerGame;
         public int[][] rankingsTotal;
-        public Dictionary<int, Dictionary<string, int>> rankingsMetrics;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamRankings" /> class.
+        ///     Initializes a new instance of the <see cref="TeamRankings" /> class.
         /// </summary>
         /// <param name="tst">The team stats dictionary containing all team stats.</param>
         public TeamRankings(Dictionary<int, TeamStats> tst, bool playoffs = false)
@@ -73,7 +73,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 rankingsMetrics[i] = new Dictionary<string, int>();
             }
-            foreach (var metricName in metricsNames)
+            foreach (string metricName in metricsNames)
             {
                 var metricStats = new Dictionary<int, double>();
                 for (int i = 0; i < tst.Count; i++)

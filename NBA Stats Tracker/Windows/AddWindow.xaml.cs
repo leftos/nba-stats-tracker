@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 
@@ -29,7 +28,7 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Used for adding Teams and Players to the database.
+    ///     Used for adding Teams and Players to the database.
     /// </summary>
     public partial class AddWindow
     {

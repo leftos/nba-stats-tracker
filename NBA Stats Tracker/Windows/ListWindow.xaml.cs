@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
@@ -10,14 +9,14 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Implements a multi-purpose single list window with add & remove buttons.
+    ///     Implements a multi-purpose single list window with add & remove buttons.
     /// </summary>
     public partial class ListWindow
     {
         public static bool mustUpdate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListWindow" /> class.
+        ///     Initializes a new instance of the <see cref="ListWindow" /> class.
         /// </summary>
         public ListWindow()
         {
@@ -32,11 +31,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the lstData control.
-        /// When editing conferences, it displays the Edit Conference Window for the selected conference.
+        ///     Handles the MouseDoubleClick event of the lstData control.
+        ///     When editing conferences, it displays the Edit Conference Window for the selected conference.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void lstData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lstData.SelectedIndex == -1)
@@ -47,7 +48,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Shows the edit conference window, and reloads the conferences the window is closed, if required.
+        ///     Shows the edit conference window, and reloads the conferences the window is closed, if required.
         /// </summary>
         /// <param name="conf">The conf.</param>
         private void ShowEditConferenceWindow(Conference conf)
@@ -68,11 +69,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnAdd control.
-        /// Allows the user to add a new item.
+        ///     Handles the Click event of the btnAdd control.
+        ///     Allows the user to add a new item.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
@@ -112,11 +115,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnRemove control.
-        /// Allows the user to remove an item.
+        ///     Handles the Click event of the btnRemove control.
+        ///     Allows the user to remove an item.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             if (lstData.SelectedIndex == -1)

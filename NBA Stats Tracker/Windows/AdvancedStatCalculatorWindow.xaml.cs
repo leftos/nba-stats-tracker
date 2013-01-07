@@ -3,61 +3,32 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Misc;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for AdvancedStatCalculatorWindow.xaml
+    ///     Interaction logic for AdvancedStatCalculatorWindow.xaml
     /// </summary>
     public partial class AdvancedStatCalculatorWindow : Window
     {
-        private bool changingTimeframe;
-
-        private ObservableCollection<KeyValuePair<int, string>> PlayersList
+        public enum SelectionType
         {
-            get { return _playersList; }
-            set
-            {
-                _playersList = value;
-                OnPropertyChanged("PlayersList");
-            }
-        }
+            Team,
+            Player
+        };
 
-        private ObservableCollection<PlayerStatsRow> psrList { get; set; }
-        private ObservableCollection<TeamStatsRow> tsrList { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
+        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
 
         private readonly List<string> Totals = new List<string>
@@ -80,48 +51,44 @@ namespace NBA_Stats_Tracker.Windows
                                                    "FOUL"
                                                };
 
-        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+        private readonly Dictionary<Selection, List<Filter>> filters = new Dictionary<Selection, List<Filter>>();
         private ObservableCollection<KeyValuePair<int, string>> _playersList;
-        private bool loading;
+
+        private bool changingTimeframe;
         private int curSeason;
-
-        public enum SelectionType
-        {
-            Team,
-            Player
-        };
-
-        public struct Selection
-        {
-            public SelectionType SelectionType;
-            public int ID;
-
-            public Selection(SelectionType selectionType, int ID)
-            {
-                SelectionType = selectionType;
-                this.ID = ID;
-            }
-        };
-
-        public struct Filter
-        {
-            public string Parameter;
-            public string Operator;
-            public string Value;
-
-            public Filter(string parameter, string oper, string value)
-            {
-                Parameter = parameter;
-                Operator = oper;
-                Value = value;
-            }
-        }
-
-        private Dictionary<Selection, List<Filter>> filters = new Dictionary<Selection, List<Filter>>();
+        private bool loading;
 
         public AdvancedStatCalculatorWindow()
         {
             InitializeComponent();
+        }
+
+        private ObservableCollection<KeyValuePair<int, string>> PlayersList
+        {
+            get { return _playersList; }
+            set
+            {
+                _playersList = value;
+                OnPropertyChanged("PlayersList");
+            }
+        }
+
+        private ObservableCollection<PlayerStatsRow> psrList { get; set; }
+        private ObservableCollection<TeamStatsRow> tsrList { get; set; }
+        protected ObservableCollection<TeamStatsRow> tsrList_not { get; set; }
+
+        protected ObservableCollection<PlayerStatsRow> psrList_not { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
@@ -161,7 +128,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             cmbTeamFilter.Items.Clear();
             cmbSelectedTeam.Items.Clear();
-            List<string> teams = new List<string>();
+            var teams = new List<string>();
             MainWindow.tst.Values.ToList().ForEach(ts => teams.Add(ts.displayName));
             teams.Sort();
             cmbTeamFilter.Items.Add("- Any -");
@@ -512,7 +479,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    var player = MainWindow.pst.Values.Single(ps => ps.ID == filter.Key.ID);
+                    PlayerStats player = MainWindow.pst.Values.Single(ps => ps.ID == filter.Key.ID);
                     string teamName;
                     try
                     {
@@ -525,7 +492,7 @@ namespace NBA_Stats_Tracker.Windows
                     s = String.Format("(#P{4}) {0}, {1} ({2} - {3}): ", player.LastName, player.FirstName, player.Position1, teamName,
                                       player.ID);
                 }
-                foreach (var option in filter.Value)
+                foreach (Filter option in filter.Value)
                 {
                     string s2 = s + String.Format("{0} {1} {2}", option.Parameter, option.Operator, option.Value);
                     lstTotals.Items.Add(s2);
@@ -574,10 +541,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the LoadingRow event of the dg control.
+        ///     Handles the LoadingRow event of the dg control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridRowEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridRowEventArgs" /> instance containing the event data.
+        /// </param>
         private void dg_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
@@ -595,26 +564,26 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<int, TeamStats> advtst = new Dictionary<int, TeamStats>();
-            Dictionary<int, TeamStats> advtstopp = new Dictionary<int, TeamStats>();
-            Dictionary<int, PlayerStats> advpst = new Dictionary<int, PlayerStats>();
-            SortedDictionary<string, int> advTeamOrder = new SortedDictionary<string, int>();
+            var advtst = new Dictionary<int, TeamStats>();
+            var advtstopp = new Dictionary<int, TeamStats>();
+            var advpst = new Dictionary<int, PlayerStats>();
+            var advTeamOrder = new SortedDictionary<string, int>();
 
-            Dictionary<int, TeamStats> advtst_not = new Dictionary<int, TeamStats>();
-            Dictionary<int, TeamStats> advtstopp_not = new Dictionary<int, TeamStats>();
-            Dictionary<int, PlayerStats> advpst_not = new Dictionary<int, PlayerStats>();
-            SortedDictionary<string, int> advTeamOrder_not = new SortedDictionary<string, int>();
+            var advtst_not = new Dictionary<int, TeamStats>();
+            var advtstopp_not = new Dictionary<int, TeamStats>();
+            var advpst_not = new Dictionary<int, PlayerStats>();
+            var advTeamOrder_not = new SortedDictionary<string, int>();
 
             var bsToCalculate = new List<BoxScoreEntry>();
             var notBsToCalculate = new List<BoxScoreEntry>();
-            foreach (var bse in MainWindow.bshist)
+            foreach (BoxScoreEntry bse in MainWindow.bshist)
             {
                 bool keep = true;
                 foreach (var filter in filters)
                 {
                     if (filter.Key.SelectionType == SelectionType.Team)
                     {
-                        var teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
+                        string teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
                         if (bse.bs.Team1 != teamName && bse.bs.Team2 != teamName)
                         {
                             keep = false;
@@ -622,7 +591,7 @@ namespace NBA_Stats_Tracker.Windows
                         }
                         string p = bse.bs.Team1 == teamName ? "1" : "2";
 
-                        foreach (var option in filter.Value)
+                        foreach (Filter option in filter.Value)
                         {
                             string parameter;
                             parameter = option.Parameter.Replace("PTS (PF)", "PF");
@@ -659,7 +628,7 @@ namespace NBA_Stats_Tracker.Windows
                             break;
                         }
 
-                        foreach (var option in filter.Value)
+                        foreach (Filter option in filter.Value)
                         {
                             string parameter;
                             parameter = option.Parameter.Replace("PTS (PF)", "PTS");
@@ -689,7 +658,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            foreach (var bse in bsToCalculate)
+            foreach (BoxScoreEntry bse in bsToCalculate)
             {
                 string team1 = bse.bs.Team1;
                 string team2 = bse.bs.Team2;
@@ -700,19 +669,19 @@ namespace NBA_Stats_Tracker.Windows
                     advtst.Add(advTeamOrder[team1], new TeamStats {ID = advTeamOrder[team1], name = team1, displayName = team1});
                     advtstopp.Add(advTeamOrder[team1], new TeamStats {ID = advTeamOrder[team1], name = team1, displayName = team1});
                 }
-                var ts1 = advtst.Single(pair => pair.Value.name == team1).Value;
-                var ts1opp = advtstopp.Single(pair => pair.Value.name == team1).Value;
+                TeamStats ts1 = advtst.Single(pair => pair.Value.name == team1).Value;
+                TeamStats ts1opp = advtstopp.Single(pair => pair.Value.name == team1).Value;
                 if (advtst.Values.All(ts => ts.name != team2))
                 {
                     advTeamOrder.Add(team2, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst.Add(advTeamOrder[team2], new TeamStats {ID = advTeamOrder[team2], name = team2, displayName = team2});
                     advtstopp.Add(advTeamOrder[team2], new TeamStats {ID = advTeamOrder[team2], name = team2, displayName = team2});
                 }
-                var ts2 = advtst.Single(pair => pair.Value.name == team2).Value;
-                var ts2opp = advtstopp.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2 = advtst.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2opp = advtstopp.Single(pair => pair.Value.name == team2).Value;
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
-                foreach (var pbs in bse.pbsList)
+                foreach (PlayerBoxScore pbs in bse.pbsList)
                 {
                     if (advpst.All(pair => pair.Key != pbs.PlayerID))
                     {
@@ -723,7 +692,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            foreach (var bse in notBsToCalculate)
+            foreach (BoxScoreEntry bse in notBsToCalculate)
             {
                 string team1 = bse.bs.Team1;
                 string team2 = bse.bs.Team2;
@@ -735,8 +704,8 @@ namespace NBA_Stats_Tracker.Windows
                     advtstopp_not.Add(advTeamOrder_not[team1],
                                       new TeamStats {ID = advTeamOrder_not[team1], name = team1, displayName = team1});
                 }
-                var ts1 = advtst_not.Single(pair => pair.Value.name == team1).Value;
-                var ts1opp = advtstopp_not.Single(pair => pair.Value.name == team1).Value;
+                TeamStats ts1 = advtst_not.Single(pair => pair.Value.name == team1).Value;
+                TeamStats ts1opp = advtstopp_not.Single(pair => pair.Value.name == team1).Value;
                 if (advtst_not.Values.All(ts => ts.name != team2))
                 {
                     advTeamOrder_not.Add(team2, advTeamOrder_not.Any() ? advTeamOrder_not.Values.Max() + 1 : 0);
@@ -744,11 +713,11 @@ namespace NBA_Stats_Tracker.Windows
                     advtstopp_not.Add(advTeamOrder_not[team2],
                                       new TeamStats {ID = advTeamOrder_not[team2], name = team2, displayName = team2});
                 }
-                var ts2 = advtst_not.Single(pair => pair.Value.name == team2).Value;
-                var ts2opp = advtstopp_not.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2 = advtst_not.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2opp = advtstopp_not.Single(pair => pair.Value.name == team2).Value;
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
-                foreach (var pbs in bse.pbsList)
+                foreach (PlayerBoxScore pbs in bse.pbsList)
                 {
                     if (pbs.isOut)
                         continue;
@@ -787,8 +756,30 @@ namespace NBA_Stats_Tracker.Windows
             tbcAdv.SelectedItem = tabPlayerStats;
         }
 
-        protected ObservableCollection<TeamStatsRow> tsrList_not { get; set; }
+        public struct Filter
+        {
+            public string Operator;
+            public string Parameter;
+            public string Value;
 
-        protected ObservableCollection<PlayerStatsRow> psrList_not { get; set; }
+            public Filter(string parameter, string oper, string value)
+            {
+                Parameter = parameter;
+                Operator = oper;
+                Value = value;
+            }
+        }
+
+        public struct Selection
+        {
+            public int ID;
+            public SelectionType SelectionType;
+
+            public Selection(SelectionType selectionType, int ID)
+            {
+                SelectionType = selectionType;
+                this.ID = ID;
+            }
+        };
     }
 }

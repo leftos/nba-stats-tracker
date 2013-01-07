@@ -31,22 +31,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper;
-using NBA_Stats_Tracker.Helper.Misc;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Helper.WindowsForms;
-using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Interop.BR;
 using NBA_Stats_Tracker.Interop.NBA2K12;
 using NBA_Stats_Tracker.Interop.REDitor;
@@ -61,7 +56,7 @@ using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// The Main window, offering quick access to the program's features
+    ///     The Main window, offering quick access to the program's features
     /// </summary>
     public partial class MainWindow
     {
@@ -92,7 +87,7 @@ namespace NBA_Stats_Tracker.Windows
         public static PlayerRankings PlayoffPlayerRankings;
         public static Timeframe tf = new Timeframe(0);
 
-        private static Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
+        private static readonly Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
         public static TeamBoxScore bs;
         public static PlayoffTree pt;
         public static string currentDB = "";
@@ -116,7 +111,7 @@ namespace NBA_Stats_Tracker.Windows
         public static bool selectedTeamsChanged;
 
         /// <summary>
-        /// Teams participating in the Western Conference of the NBA. Used to filter teams in the Playoff Tree window.
+        ///     Teams participating in the Western Conference of the NBA. Used to filter teams in the Playoff Tree window.
         /// </summary>
         public static readonly List<string> West = new List<string>
                                                    {
@@ -146,17 +141,26 @@ namespace NBA_Stats_Tracker.Windows
         public static RoutedCommand cmndOpen = new RoutedCommand();
         public static RoutedCommand cmndSave = new RoutedCommand();
         public static RoutedCommand cmndExport = new RoutedCommand();
+
+        private static List<string> notables = new List<string>();
+
+        public static Dictionary<string, string> DisplayNames;
+        public static string teamsT;
+        public static string pl_teamsT;
+        public static string oppT;
+        public static string pl_oppT;
+        public static string playersT;
+        public static string pl_playersT;
         private DispatcherTimer dispatcherTimer;
         private DispatcherTimer marqueeTimer;
+        private int notableIndex;
         private double progress;
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
 
-        private static List<string> notables = new List<string>();
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainWindow" /> class.
-        /// Creates the program's documents directories if needed, initializes structures, and loads the settings from registry.
+        ///     Initializes a new instance of the <see cref="MainWindow" /> class.
+        ///     Creates the program's documents directories if needed, initializes structures, and loads the settings from registry.
         /// </summary>
         public MainWindow()
         {
@@ -325,17 +329,8 @@ namespace NBA_Stats_Tracker.Windows
             }
         }
 
-        public static Dictionary<string, string> DisplayNames;
-        public static string teamsT;
-        public static string pl_teamsT;
-        public static string oppT;
-        public static string pl_oppT;
-        public static string playersT;
-        public static string pl_playersT;
-        private int notableIndex;
-
         /// <summary>
-        /// TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program
+        ///     TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program
         /// </summary>
         private static void prepareImageCache()
         {
@@ -348,11 +343,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnImport2K12 control.
-        /// Asks the user for the folder containing the NBA 2K12 save (in the case of the old method), or the REDitor-exported CSV files.
+        ///     Handles the Click event of the btnImport2K12 control.
+        ///     Asks the user for the folder containing the NBA 2K12 save (in the case of the old method), or the REDitor-exported CSV files.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB))
@@ -431,11 +428,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuFileSaveAs control.
-        /// Allows the user to save the database to a different file.
+        ///     Handles the Click event of the mnuFileSaveAs control.
+        ///     Allows the user to save the database to a different file.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrWhiteSpace(currentDB))
@@ -455,11 +454,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuFileOpen control.
-        /// Opens a database.
+        ///     Handles the Click event of the mnuFileOpen control.
+        ///     Opens a database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
         {
             loadingSeason = true;
@@ -522,7 +523,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Changes the current season.
+        ///     Changes the current season.
         /// </summary>
         /// <param name="curSeason">The ID of the season to change to.</param>
         public static void ChangeSeason(int curSeason)
@@ -539,11 +540,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnLoadUpdate control.
-        /// Opens the Box Score window to allow the user to update the team stats by entering a box score.
+        ///     Handles the Click event of the btnLoadUpdate control.
+        ///     Opens the Box Score window to allow the user to update the team stats by entering a box score.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -560,7 +563,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Parses the local box score instance; adds the stats to the according teams and players and adds the box score to the box score history.
+        ///     Parses the local box score instance; adds the stats to the according teams and players and adds the box score to the box score history.
         /// </summary>
         private void ParseBoxScoreResult()
         {
@@ -603,9 +606,11 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Checks for software updates asynchronously.
+        ///     Checks for software updates asynchronously.
         /// </summary>
-        /// <param name="showMessage">if set to <c>true</c>, a message will be shown even if no update is found.</param>
+        /// <param name="showMessage">
+        ///     if set to <c>true</c>, a message will be shown even if no update is found.
+        /// </param>
         public static void CheckForUpdates(bool showMessage = false)
         {
             showUpdateMessage = showMessage;
@@ -630,10 +635,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Checks the downloaded version file to see if there's a newer version, and displays a message if needed.
+        ///     Checks the downloaded version file to see if there's a newer version, and displays a message if needed.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="AsyncCompletedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="AsyncCompletedEventArgs" /> instance containing the event data.
+        /// </param>
         private static void CheckForUpdatesCompleted(object sender, AsyncCompletedEventArgs e)
         {
             string[] updateInfo;
@@ -684,11 +691,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnEraseSettings control.
-        /// Allows the user to erase the saved settings file for a particular NBA 2K save.
+        ///     Handles the Click event of the btnEraseSettings control.
+        ///     Allows the user to erase the saved settings file for a particular NBA 2K save.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnEraseSettings_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -713,10 +722,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Exports the current league-wide team stats to a tab-separated values formatted file.
+        ///     Exports the current league-wide team stats to a tab-separated values formatted file.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnLeagueTSV_Click(object sender, RoutedEventArgs e)
         {
             const string header1 = "\tTeam\tGP\tW\tL\tPF\tPA\tFGM\tFGA\t3PM\t3PA\tFTM\tFTA\tOREB\tDREB\tSTL\tTO\tBLK\tAST\tFOUL\t";
@@ -787,22 +798,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuExit control.
-        /// Plans world domination and reticulates splines.
+        ///     Handles the Click event of the mnuExit control.
+        ///     Plans world domination and reticulates splines.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuExit_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(-1);
         }
 
         /// <summary>
-        /// Handles the Click event of the btnExport2K12 control.
-        /// Exports the current team and player stats to an NBA 2K save.
+        ///     Handles the Click event of the btnExport2K12 control.
+        ///     Exports the current team and player stats to an NBA 2K save.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnExport2K12_Click(object sender, RoutedEventArgs e)
         {
             if (tst.Count != 30)
@@ -973,22 +988,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuHelpReadme control.
-        /// Opens the Readme file with the default txt file handler.
+        ///     Handles the Click event of the mnuHelpReadme control.
+        ///     Opens the Readme file with the default txt file handler.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuHelpReadme_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(AppPath + @"\readme.txt");
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuHelpAbout control.
-        /// Shows the About window.
+        ///     Handles the Click event of the mnuHelpAbout control.
+        ///     Shows the About window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuHelpAbout_Click(object sender, RoutedEventArgs e)
         {
             var aw = new AboutWindow();
@@ -996,11 +1015,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuFileGetRealStats control.
-        /// Downloads and imports the current NBA stats from Basketball-Reference.com.
+        ///     Handles the Click event of the mnuFileGetRealStats control.
+        ///     Downloads and imports the current NBA stats from Basketball-Reference.com.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
         {
             string file = "";
@@ -1144,7 +1165,7 @@ namespace NBA_Stats_Tracker.Windows
                                       TeamStats realts;
                                       TeamStats realtsopp;
                                       BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
-                                      var id = TeamOrder[kvp.Key];
+                                      int id = TeamOrder[kvp.Key];
                                       realtst[id] = realts;
                                       realtst[id].ID = id;
                                       realtst[id].division = TeamDivisions[kvp.Key];
@@ -1214,7 +1235,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the progress bar during the download of the real NBA stats.
+        ///     Updates the progress bar during the download of the real NBA stats.
         /// </summary>
         private void GetRealStats_UpdateProgressBar()
         {
@@ -1232,12 +1253,14 @@ namespace NBA_Stats_Tracker.Windows
 
         // TODO: Implement Compare to Real again sometime
         /// <summary>
-        /// OBSOLETE:
-        /// Handles the Click event of the btnCompareToReal control.
-        /// Used to compare a team's stats to the ones of its real counterpart.
+        ///     OBSOLETE:
+        ///     Handles the Click event of the btnCompareToReal control.
+        ///     Used to compare a team's stats to the ones of its real counterpart.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnCompareToReal_Click(object sender, RoutedEventArgs e)
         {
             /*
@@ -1280,12 +1303,14 @@ namespace NBA_Stats_Tracker.Windows
 
         // TODO: Implement Compare to Other file again sometime
         /// <summary>
-        /// OBSOLETE:
-        /// Handles the Click event of the btnCompareOtherFile control.
-        /// Used to compare a team's stats to the ones in another NST database.
+        ///     OBSOLETE:
+        ///     Handles the Click event of the btnCompareOtherFile control.
+        ///     Used to compare a team's stats to the ones in another NST database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnCompareOtherFile_Click(object sender, RoutedEventArgs e)
         {
             /*
@@ -1332,11 +1357,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the TextChanged event of the txtFile control.
-        /// Updates the currentDB field of MainWindow with the new file loaded. Usually called after Open or Save As.
+        ///     Handles the TextChanged event of the txtFile control.
+        ///     Updates the currentDB field of MainWindow with the new file loaded. Usually called after Open or Save As.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TextChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="TextChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void txtFile_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (String.IsNullOrWhiteSpace(txtFile.Text))
@@ -1349,7 +1376,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the season combo using a specified NST database file.
+        ///     Populates the season combo using a specified NST database file.
         /// </summary>
         /// <param name="file">The file from which to determine the available seasons.</param>
         public void PopulateSeasonCombo(string file)
@@ -1360,7 +1387,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the season combo using the current database.
+        ///     Populates the season combo using the current database.
         /// </summary>
         public void PopulateSeasonCombo()
         {
@@ -1368,7 +1395,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Generates the entries used to populate the season combo.
+        ///     Generates the entries used to populate the season combo.
         /// </summary>
         public void GenerateSeasons()
         {
@@ -1388,11 +1415,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbSeasonNum control.
-        /// Changes the curSeason property accordingly.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
+        ///     Changes the curSeason property accordingly.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
@@ -1409,7 +1438,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Calculates the difference in a team's stats rankingsPerGame between two TeamRankings instances.
+        ///     Calculates the difference in a team's stats rankingsPerGame between two TeamRankings instances.
         /// </summary>
         /// <param name="oldR">The old team rankingsPerGame.</param>
         /// <param name="newR">The new team rankingsPerGame.</param>
@@ -1429,7 +1458,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Calculates the difference average.
+        ///     Calculates the difference average.
         /// </summary>
         /// <param name="curTST">The cur TST.</param>
         /// <param name="oldTST">The old TST.</param>
@@ -1449,11 +1478,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnTest control.
-        /// Displays the Test window or runs a specific test method. Used for various debugging purposes.
+        ///     Handles the Click event of the btnTest control.
+        ///     Displays the Test window or runs a specific test method. Used for various debugging purposes.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
             //TestWindow tw = new TestWindow(ds);
@@ -1468,7 +1499,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Recalculates the opponent stats for all teams by accumulating the stats from the box scores.
+        ///     Recalculates the opponent stats for all teams by accumulating the stats from the box scores.
         /// </summary>
         private static void RecalculateOpponentStats()
         {
@@ -1489,13 +1520,15 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// OBSOLETE:
-        /// Handles the Click event of the mnuHistoryBoxScores control.
-        /// Used to open the Box Score window in View mode so that the user can view and edit any box score.
-        /// Superseded by the Box Scores tab in the League Overview window.
+        ///     OBSOLETE:
+        ///     Handles the Click event of the mnuHistoryBoxScores control.
+        ///     Used to open the Box Score window in View mode so that the user can view and edit any box score.
+        ///     Superseded by the Box Scores tab in the League Overview window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -1509,7 +1542,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates a specific box score using the local box score instance.
+        ///     Updates a specific box score using the local box score instance.
         /// </summary>
         public static void UpdateBoxScore()
         {
@@ -1528,11 +1561,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnTeamOverview control.
-        /// Displays the Team Overview window.
+        ///     Handles the Click event of the btnTeamOverview control.
+        ///     Displays the Team Overview window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnTeamOverview_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB))
@@ -1549,22 +1584,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnOpen control.
-        /// Opens a database.
+        ///     Handles the Click event of the btnOpen control.
+        ///     Opens a database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
             mnuFileOpen_Click(null, null);
         }
 
         /// <summary>
-        /// Handles the Loaded event of the Window control.
-        /// Creates the DispatcherTimer instance used to revert the status bar message after a number of seconds.
+        ///     Handles the Loaded event of the Window control.
+        ///     Creates the DispatcherTimer instance used to revert the status bar message after a number of seconds.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             marqueeTimer = new DispatcherTimer();
@@ -1595,8 +1634,8 @@ namespace NBA_Stats_Tracker.Windows
             if (checkForUpdatesSetting == 1)
             {
                 mnuOptionsCheckForUpdates.IsChecked = true;
-                BackgroundWorker w = new BackgroundWorker();
-                w.DoWork += delegate(object o, DoWorkEventArgs args) { CheckForUpdates(); };
+                var w = new BackgroundWorker();
+                w.DoWork += delegate { CheckForUpdates(); };
                 w.RunWorkerAsync();
             }
             else
@@ -1606,11 +1645,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Tick event of the dispatcherTimer control.
-        /// Reverts the status bar message to "Ready".
+        ///     Handles the Tick event of the dispatcherTimer control.
+        ///     Reverts the status bar message to "Ready".
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             status.FontWeight = FontWeights.Normal;
@@ -1619,7 +1660,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the status bar message and starts the timer which will revert it after a number of seconds.
+        ///     Updates the status bar message and starts the timer which will revert it after a number of seconds.
         /// </summary>
         /// <param name="newStatus">The new status.</param>
         private void updateStatus(string newStatus)
@@ -1631,11 +1672,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnSaveCurrentSeason control.
-        /// Saves the current season.
+        ///     Handles the Click event of the btnSaveCurrentSeason control.
+        ///     Saves the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
             if (tf.isBetween)
@@ -1650,11 +1693,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnLeagueOverview control.
-        /// Displays the League Overview window.
+        ///     Handles the Click event of the btnLeagueOverview control.
+        ///     Displays the League Overview window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnLeagueOverview_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB))
@@ -1678,11 +1723,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuFileNew control.
-        /// Allows the user to create a new database.
+        ///     Handles the Click event of the mnuFileNew control.
+        ///     Allows the user to create a new database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog {Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath};
@@ -1720,11 +1767,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnAdd control.
-        /// Allows the user to add teams or players the database.
+        ///     Handles the Click event of the btnAdd control.
+        ///     Allows the user to add teams or players the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB))
@@ -1770,33 +1819,39 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnGrabNBAStats control.
-        /// Allows the user to download the current NBA stats from Basketball-Reference.com.
+        ///     Handles the Click event of the btnGrabNBAStats control.
+        ///     Allows the user to download the current NBA stats from Basketball-Reference.com.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnGrabNBAStats_Click(object sender, RoutedEventArgs e)
         {
             mnuFileGetRealStats_Click(null, null);
         }
 
         /// <summary>
-        /// Handles the Closed event of the Window control.
-        /// Makes sure the application shuts down properly after this window closes.
+        ///     Handles the Closed event of the Window control.
+        ///     Makes sure the application shuts down properly after this window closes.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="EventArgs" /> instance containing the event data.
+        /// </param>
         private void Window_Closed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscStartNewSeason control.
-        /// Allows the user to add a new season to the database.
+        ///     Handles the Click event of the mnuMiscStartNewSeason control.
+        ///     Allows the user to add a new season to the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscStartNewSeason_Click(object sender, RoutedEventArgs e)
         {
             if (!SQLiteIO.isTSTEmpty())
@@ -1887,22 +1942,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnSaveAllSeasons control.
-        /// Saves all the seasons to the database.
+        ///     Handles the Click event of the btnSaveAllSeasons control.
+        ///     Saves all the seasons to the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
         {
             SQLiteIO.saveAllSeasons(currentDB);
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPlayerOverview control.
-        /// Opens the Player Overview window.
+        ///     Handles the Click event of the btnPlayerOverview control.
+        ///     Opens the Player Overview window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPlayerOverview_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(currentDB))
@@ -1919,11 +1978,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscImportBoxScores control.
-        /// Allows the user to import box scores from another database.
+        ///     Handles the Click event of the mnuMiscImportBoxScores control.
+        ///     Allows the user to import box scores from another database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscImportBoxScores_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -2006,7 +2067,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Gets the first free BoxScoreEntry ID in the box score history list.
+        ///     Gets the first free BoxScoreEntry ID in the box score history list.
         /// </summary>
         /// <returns></returns>
         private int GetFreeBseId()
@@ -2025,11 +2086,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscEnableTeams control.
-        /// Used to enable/disable (i.e. show/hide) teams for the current season.
+        ///     Handles the Click event of the mnuMiscEnableTeams control.
+        ///     Used to enable/disable (i.e. show/hide) teams for the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscEnableTeams_Click(object sender, RoutedEventArgs e)
         {
             addInfo = "";
@@ -2044,11 +2107,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscDeleteBoxScores control.
-        /// Allows the user to delete box score entries.
+        ///     Handles the Click event of the mnuMiscDeleteBoxScores control.
+        ///     Allows the user to delete box score entries.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscDeleteBoxScores_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -2060,11 +2125,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPlayerSearch control.
-        /// Allows the user to search for players fulfilling any combination of user-specified criteria.
+        ///     Handles the Click event of the btnPlayerSearch control.
+        ///     Allows the user to search for players fulfilling any combination of user-specified criteria.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPlayerSearch_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -2075,11 +2142,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscResetTeamStats control.
-        /// Allows the user to reset all team stats for the current season.
+        ///     Handles the Click event of the mnuMiscResetTeamStats control.
+        ///     Allows the user to reset all team stats for the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscResetTeamStats_Click(object sender, RoutedEventArgs e)
         {
             if (!SQLiteIO.isTSTEmpty())
@@ -2104,11 +2173,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscResetPlayerStats control.
-        /// Allows the user to reset all player stats for the current season.
+        ///     Handles the Click event of the mnuMiscResetPlayerStats control.
+        ///     Allows the user to reset all player stats for the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscResetPlayerStats_Click(object sender, RoutedEventArgs e)
         {
             if (!SQLiteIO.isTSTEmpty())
@@ -2130,22 +2201,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuOptionsCheckForUpdates control.
-        /// Enables/disables the automatic check for updates each time the program starts.
+        ///     Handles the Click event of the mnuOptionsCheckForUpdates control.
+        ///     Enables/disables the automatic check for updates each time the program starts.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
             Misc.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuOptionsImportREditor control.
-        /// Changes the NBA 2K import/export method to using REDitor-exported CSV files.
+        ///     Handles the Click event of the mnuOptionsImportREditor control.
+        ///     Changes the NBA 2K import/export method to using REDitor-exported CSV files.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuOptionsImportREditor_Click(object sender, RoutedEventArgs e)
         {
             if (!mnuOptionsImportREditor.IsChecked)
@@ -2156,11 +2231,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuOptionsImportOld control.
-        /// Changes the NBA 2K import/export method to direct binary editing of NBA 2K saves.
+        ///     Handles the Click event of the mnuOptionsImportOld control.
+        ///     Changes the NBA 2K import/export method to direct binary editing of NBA 2K saves.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuOptionsImportOld_Click(object sender, RoutedEventArgs e)
         {
             if (!mnuOptionsImportOld.IsChecked)
@@ -2171,33 +2248,39 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuOptionsExportTeamsOnly control.
-        /// Sets whether only the team stats will be exported when exporting to an NBA 2K save.
+        ///     Handles the Click event of the mnuOptionsExportTeamsOnly control.
+        ///     Sets whether only the team stats will be exported when exporting to an NBA 2K save.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuOptionsExportTeamsOnly_Click(object sender, RoutedEventArgs e)
         {
             Misc.SetRegistrySetting("ExportTeamsOnly", mnuOptionsExportTeamsOnly.IsChecked ? 1 : 0);
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuOptionsCompatibilityCheck control.
-        /// Sets whether the database-save compatibility check will be run before exporting to an NBA 2K save.
+        ///     Handles the Click event of the mnuOptionsCompatibilityCheck control.
+        ///     Sets whether the database-save compatibility check will be run before exporting to an NBA 2K save.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuOptionsCompatibilityCheck_Click(object sender, RoutedEventArgs e)
         {
             Misc.SetRegistrySetting("CompatibilityCheck", mnuOptionsCompatibilityCheck.IsChecked ? 1 : 0);
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscRenameCurrentSeason control.
-        /// Renames the current season.
+        ///     Handles the Click event of the mnuMiscRenameCurrentSeason control.
+        ///     Renames the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscRenameCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
             string curName = GetSeasonName(curSeason);
@@ -2212,7 +2295,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Sets the name of the specified season.
+        ///     Sets the name of the specified season.
         /// </summary>
         /// <param name="season">The season.</param>
         /// <param name="name">The name.</param>
@@ -2231,7 +2314,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Gets the name of the specified season.
+        ///     Gets the name of the specified season.
         /// </summary>
         /// <param name="season">The season.</param>
         /// <returns></returns>
@@ -2246,11 +2329,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscLiveBoxScore control.
-        /// Allows the user to keep track of the box score of a live game.
+        ///     Handles the Click event of the mnuMiscLiveBoxScore control.
+        ///     Allows the user to keep track of the box score of a live game.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscLiveBoxScore_Click(object sender, RoutedEventArgs e)
         {
             var lbsw = new LiveBoxScoreWindow();
@@ -2264,11 +2349,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnDownloadBoxScore control.
-        /// Allows the user to download and import a box score from Basketball-Reference.com.
+        ///     Handles the Click event of the btnDownloadBoxScore control.
+        ///     Allows the user to download and import a box score from Basketball-Reference.com.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnDownloadBoxScore_Click(object sender, RoutedEventArgs e)
         {
             var ibw = new InputBoxWindow("Enter the full URL of the box score you want to download");
@@ -2297,11 +2384,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscEnablePlayers control.
-        /// Allows the user to enable/disable (i.e. show/hide) specific players in the current season.
+        ///     Handles the Click event of the mnuMiscEnablePlayers control.
+        ///     Allows the user to enable/disable (i.e. show/hide) specific players in the current season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscEnablePlayers_Click(object sender, RoutedEventArgs e)
         {
             addInfo = "";
@@ -2316,7 +2405,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Copies the team & player stats dictionaries to the corresponding local MainWindow instances.
+        ///     Copies the team & player stats dictionaries to the corresponding local MainWindow instances.
         /// </summary>
         /// <param name="teamStats">The team stats.</param>
         /// <param name="oppStats">The opp stats.</param>
@@ -2330,22 +2419,26 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuHelpDonate control.
-        /// Shows the user a website prompting for a donation.
+        ///     Handles the Click event of the mnuHelpDonate control.
+        ///     Shows the user a website prompting for a donation.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuHelpDonate_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("http://users.tellas.gr/~aslan16/donate.html");
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscEditDivisions control.
-        /// Allows the user to edit the divisions and conferences.
+        ///     Handles the Click event of the mnuMiscEditDivisions control.
+        ///     Allows the user to edit the divisions and conferences.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscEditDivisions_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrWhiteSpace(currentDB))
@@ -2356,11 +2449,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscRecalculateOppStats control.
-        /// Allows the user to recalculate the opponent stats by accumulating the stats in the available box scores.
+        ///     Handles the Click event of the mnuMiscRecalculateOppStats control.
+        ///     Allows the user to recalculate the opponent stats by accumulating the stats in the available box scores.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscRecalculateOppStats_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -2372,11 +2467,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscEditGameLength control.
-        /// Allows the user to change the default game length in minutes used in statistical calculations and in the Box Score window.
+        ///     Handles the Click event of the mnuMiscEditGameLength control.
+        ///     Allows the user to change the default game length in minutes used in statistical calculations and in the Box Score window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscEditGameLength_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -2401,11 +2498,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the mnuMiscEditSeasonLength control.
-        /// Allows the user to edit the season length used in statistical calculations.
+        ///     Handles the Click event of the mnuMiscEditSeasonLength control.
+        ///     Allows the user to edit the season length used in statistical calculations.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void mnuMiscEditSeasonLength_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.isTSTEmpty())
@@ -2431,14 +2530,15 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAdvStatCalc_Click(object sender, RoutedEventArgs e)
         {
-            AdvancedStatCalculatorWindow ascw = new AdvancedStatCalculatorWindow();
+            var ascw = new AdvancedStatCalculatorWindow();
             ascw.ShowDialog();
         }
 
         public static void UpdateAllData()
         {
             SQLiteIO.PopulateAll(tf, out tst, out tstopp, out TeamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bshist,
-                                 out SeasonTeamRankings, out SeasonPlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings, out DisplayNames);
+                                 out SeasonTeamRankings, out SeasonPlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings,
+                                 out DisplayNames);
 
             UpdateNotables();
         }
@@ -2446,7 +2546,7 @@ namespace NBA_Stats_Tracker.Windows
         private static void UpdateNotables()
         {
             Dictionary<int, PlayerStats> pstLeaders;
-            var rankingsActive = SeasonPlayerRankings.CalculateLeadersRankings(out pstLeaders);
+            PlayerRankings rankingsActive = SeasonPlayerRankings.CalculateLeadersRankings(out pstLeaders);
             notables = new List<string>();
 
             if (pstLeaders.Count == 0)
@@ -2459,11 +2559,11 @@ namespace NBA_Stats_Tracker.Windows
                                                    psrList.Add(psr);
                                                });
 
-            var curL = psrList.OrderByDescending(pair => pair.PPG).First();
+            PlayerStatsRow curL = psrList.OrderByDescending(pair => pair.PPG).First();
 
-            var m = GetBestStatsForMarquee(curL, rankingsActive, p.PPG);
-            var s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                                  Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
+            string m = GetBestStatsForMarquee(curL, rankingsActive, p.PPG);
+            string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                                     Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FGp).First();
@@ -2546,7 +2646,7 @@ namespace NBA_Stats_Tracker.Windows
             dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
             dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
             dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
-            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
             int j = 3;
             while (true)
@@ -2603,7 +2703,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 m++;
             }
-            s = s.TrimEnd(new char[] {' ', ','});
+            s = s.TrimEnd(new[] {' ', ','});
             return s;
         }
     }

@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
@@ -12,7 +11,7 @@ using SQLite_Database;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Used to edit a conference and its divisions.
+    ///     Used to edit a conference and its divisions.
     /// </summary>
     public partial class ConferenceEditWindow
     {
@@ -24,7 +23,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConferenceEditWindow" /> class.
+        ///     Initializes a new instance of the <see cref="ConferenceEditWindow" /> class.
         /// </summary>
         /// <param name="conf">The conference to be edited.</param>
         public ConferenceEditWindow(Conference conf) : this()
@@ -45,12 +44,14 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnOK control.
-        /// The conference is renamed, the divisions are deleted and recreated, and if any teams are left in division IDs that no longer exist, 
-        /// they get reassigned.
+        ///     Handles the Click event of the btnOK control.
+        ///     The conference is renamed, the divisions are deleted and recreated, and if any teams are left in division IDs that no longer exist,
+        ///     they get reassigned.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);

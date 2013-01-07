@@ -1,32 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using NBA_Stats_Tracker.Data;
 using NBA_Stats_Tracker.Data.PastStats;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Interaction logic for AddStatsWindow.xaml
+    ///     Interaction logic for AddStatsWindow.xaml
     /// </summary>
     public partial class AddStatsWindow : Window
     {
-        public static ObservableCollection<PastTeamStats> ptsList { get; set; }
-        public static ObservableCollection<PastPlayerStats> ppsList { get; set; }
-        private bool isTeam;
-        private int id;
+        private readonly int id;
+        private readonly bool isTeam;
 
         public AddStatsWindow(bool isTeam, int id)
         {
@@ -61,6 +49,9 @@ namespace NBA_Stats_Tracker.Windows
                 dgStats.ItemsSource = ppsList;
             }
         }
+
+        public static ObservableCollection<PastTeamStats> ptsList { get; set; }
+        public static ObservableCollection<PastPlayerStats> ppsList { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {

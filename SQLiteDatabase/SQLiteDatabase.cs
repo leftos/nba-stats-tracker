@@ -316,9 +316,11 @@ namespace SQLite_Database
         ///     Allows the programmer to easily insert multiple records into the DB
         /// </summary>
         /// <param name="tableName">The table into which we insert the data.</param>
-        /// <param name="data">A list of dictionaries containing the column names and data for the insert.
-        ///                     All dictionaries must have the same order of inserted pairs. 
-        ///                     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.</param>
+        /// <param name="data">
+        ///     A list of dictionaries containing the column names and data for the insert.
+        ///     All dictionaries must have the same order of inserted pairs.
+        ///     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.
+        /// </param>
         /// <returns>The number of lines affected by this query.</returns>
         public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
         {
@@ -391,7 +393,7 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        /// Converts a DateTime object into an SQLite-compatible date string.
+        ///     Converts a DateTime object into an SQLite-compatible date string.
         /// </summary>
         /// <param name="dt">The DateTime object.</param>
         /// <returns></returns>
@@ -401,12 +403,14 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        /// Adds a date range to an SQL query.
+        ///     Adds a date range to an SQL query.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="dStart">The starting date.</param>
         /// <param name="dEnd">The ending.</param>
-        /// <param name="addWhere">if set to <c>true</c> add WHERE to the query.</param>
+        /// <param name="addWhere">
+        ///     if set to <c>true</c> add WHERE to the query.
+        /// </param>
         /// <returns></returns>
         public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
         {

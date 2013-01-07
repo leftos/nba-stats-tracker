@@ -1,7 +1,7 @@
 ﻿namespace NBA_Stats_Tracker.Data.Misc
 {
     /// <summary>
-    /// Basic conference information.
+    ///     Basic conference information.
     /// </summary>
     public class Conference
     {

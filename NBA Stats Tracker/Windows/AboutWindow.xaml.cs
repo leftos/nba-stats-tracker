@@ -24,7 +24,7 @@ using System.Windows;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Contains basic version information and accreditations.
+    ///     Contains basic version information and accreditations.
     /// </summary>
     public partial class AboutWindow
     {

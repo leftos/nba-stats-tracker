@@ -27,7 +27,7 @@ using LumenWorks.Framework.IO.Csv;
 namespace LeftosCommonLibrary
 {
     /// <summary>
-    /// Provides methods to convert from and to CSV data. 
+    ///     Provides methods to convert from and to CSV data.
     /// </summary>
     public static class CSV
     {
@@ -38,7 +38,7 @@ namespace LeftosCommonLibrary
         private static readonly char listSeparator = CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
 
         /// <summary>
-        /// Converts CSV data from a file into a list of dictionaries.
+        ///     Converts CSV data from a file into a list of dictionaries.
         /// </summary>
         /// <param name="path">The path of the CSV file.</param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
@@ -79,7 +79,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Converts a dictionary list into CSV data and writes it to a file.
+        ///     Converts a dictionary list into CSV data and writes it to a file.
         /// </summary>
         /// <param name="dList">The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the key-value pairs should be the column header and corresponding value.</param>
         /// <param name="path">The path of the file where the data should be written to.</param>
@@ -160,7 +160,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Converts TSV data from a file into a list of dictionaries.
+        ///     Converts TSV data from a file into a list of dictionaries.
         /// </summary>
         /// <param name="path">The path of the TSV file.</param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
@@ -171,10 +171,12 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Converts TSV data from an array of strings into a list of dictionaries.
+        ///     Converts TSV data from an array of strings into a list of dictionaries.
         /// </summary>
-        /// <param name="lines">The array of strings to be converted. First string should be the tab-separated column headers. 
-        /// Each following string should be a tab-separated record.</param>
+        /// <param name="lines">
+        ///     The array of strings to be converted. First string should be the tab-separated column headers.
+        ///     Each following string should be a tab-separated record.
+        /// </param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
         public static List<Dictionary<string, string>> DictionaryListFromTSV(string[] lines)
         {
@@ -197,7 +199,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Adds quotes to a string if it needs to be escaped.
+        ///     Adds quotes to a string if it needs to be escaped.
         /// </summary>
         /// <param name="s">The string to be escaped.</param>
         /// <returns>The escaped string.</returns>
@@ -213,7 +215,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Unescapes (removes the quotes from) the specified string.
+        ///     Unescapes (removes the quotes from) the specified string.
         /// </summary>
         /// <param name="s">The string to be unescaped.</param>
         /// <returns>The unescaped string.</returns>

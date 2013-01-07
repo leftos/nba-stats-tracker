@@ -21,7 +21,6 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Interop.NBA2K12;
 
 #endregion
@@ -29,7 +28,7 @@ using NBA_Stats_Tracker.Interop.NBA2K12;
 namespace NBA_Stats_Tracker
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App
     {
@@ -43,11 +42,13 @@ namespace NBA_Stats_Tracker
         public static string mode = "";
 
         /// <summary>
-        /// Handles the DispatcherUnhandledException event of the App control.
-        /// Makes sure that any unhandled exceptions produce an error report that includes a stack trace.
+        ///     Handles the DispatcherUnhandledException event of the App control.
+        ///     Makes sure that any unhandled exceptions produce an error report that includes a stack trace.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.
+        /// </param>
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             try
@@ -82,7 +83,7 @@ namespace NBA_Stats_Tracker
         }
 
         /// <summary>
-        /// Forces a critical error to happen and produces an error-report which includes the stack trace.
+        ///     Forces a critical error to happen and produces an error-report which includes the stack trace.
         /// </summary>
         /// <param name="e">The e.</param>
         /// <param name="additional">The additional.</param>
@@ -116,10 +117,12 @@ namespace NBA_Stats_Tracker
         }
 
         /// <summary>
-        /// Raises the <see cref="E:System.Windows.Application.Startup" /> event.
-        /// Checks if the program is called with the -realnbaonly argument, which makes the program download the latest NBA stats and exit.
+        ///     Raises the <see cref="E:System.Windows.Application.Startup" /> event.
+        ///     Checks if the program is called with the -realnbaonly argument, which makes the program download the latest NBA stats and exit.
         /// </summary>
-        /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
+        /// <param name="e">
+        ///     A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.
+        /// </param>
         protected override void OnStartup(StartupEventArgs e)
         {
             /*

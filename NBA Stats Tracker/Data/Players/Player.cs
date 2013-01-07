@@ -5,19 +5,19 @@ using LeftosCommonLibrary;
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
-    /// Contains the basic information required to initially create a player.
+    ///     Contains the basic information required to initially create a player.
     /// </summary>
     public class Player
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Player" /> class.
+        ///     Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>
         public Player()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Player" /> class.
+        ///     Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>
         /// <param name="ID">The ID.</param>
         /// <param name="Team">The team.</param>
@@ -36,7 +36,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Player" /> class.
+        ///     Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>
         /// <param name="dataRow">The data row containing the player information.</param>
         public Player(DataRow dataRow)

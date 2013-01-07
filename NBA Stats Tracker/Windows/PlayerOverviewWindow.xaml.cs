@@ -22,20 +22,18 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data;
+using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Misc;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using SQLite_Database;
 using Swordfish.WPF.Charts;
@@ -45,7 +43,7 @@ using Swordfish.WPF.Charts;
 namespace NBA_Stats_Tracker.Windows
 {
     /// <summary>
-    /// Shows player information and stats.
+    ///     Shows player information and stats.
     /// </summary>
     public partial class PlayerOverviewWindow
     {
@@ -59,6 +57,8 @@ namespace NBA_Stats_Tracker.Windows
 
         private string _selectedPlayer;
         private bool changingTimeframe;
+        private PlayerRankings cumPlayoffsRankingsActive, cumPlayoffsRankingsPosition, cumPlayoffsRankingsTeam;
+        private PlayerRankings cumSeasonRankingsActive, cumSeasonRankingsPosition, cumSeasonRankingsTeam;
         private int curSeason = MainWindow.curSeason;
         private DataTable dt_ov;
         private List<PlayerBoxScore> hthAllPBS;
@@ -68,6 +68,7 @@ namespace NBA_Stats_Tracker.Windows
         private ObservableCollection<KeyValuePair<int, string>> oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
 
         private ObservableCollection<PlayerBoxScore> pbsList;
+        private string pl_playersT = MainWindow.pl_playersT;
         private PlayerStatsRow pl_psr;
         private PlayerRankings pl_rankingsActive;
         private PlayerRankings pl_rankingsPosition;
@@ -77,18 +78,15 @@ namespace NBA_Stats_Tracker.Windows
         private Dictionary<int, PlayerStats> playersSamePosition;
         private Dictionary<int, PlayerStats> playersSameTeam;
         private string playersT = MainWindow.playersT;
-        private string pl_playersT = MainWindow.pl_playersT;
         private PlayerStatsRow psr;
         private PlayerRankings rankingsActive;
         private PlayerRankings rankingsPosition;
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
         private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
-        private PlayerRankings cumSeasonRankingsActive, cumSeasonRankingsPosition, cumSeasonRankingsTeam;
-        private PlayerRankings cumPlayoffsRankingsActive, cumPlayoffsRankingsPosition, cumPlayoffsRankingsTeam;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
+        ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
         /// </summary>
         public PlayerOverviewWindow()
         {
@@ -103,8 +101,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
-        /// Automatically switches to view a specific player.
+        ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
+        ///     Automatically switches to view a specific player.
         /// </summary>
         /// <param name="team">The player's team name.</param>
         /// <param name="playerID">The player ID.</param>
@@ -144,7 +142,7 @@ namespace NBA_Stats_Tracker.Windows
         private int SelectedOppPlayerID { get; set; }
 
         /// <summary>
-        /// Finds a team's name by its displayName.
+        ///     Finds a team's name by its displayName.
         /// </summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
@@ -167,7 +165,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Finds a team's displayName by its name.
+        ///     Finds a team's displayName by its name.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -190,7 +188,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the teams combo.
+        ///     Populates the teams combo.
         /// </summary>
         private void PopulateTeamsCombo()
         {
@@ -210,7 +208,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Prepares the window: populates data tables, sets DataGrid properties, populates combos and calculates metrics.
+        ///     Prepares the window: populates data tables, sets DataGrid properties, populates combos and calculates metrics.
         /// </summary>
         private void prepareWindow()
         {
@@ -272,7 +270,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.
+        ///     Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.
         /// </summary>
         private void GetActivePlayers()
         {
@@ -296,7 +294,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the season combo.
+        ///     Populates the season combo.
         /// </summary>
         private void PopulateSeasonCombo()
         {
@@ -306,11 +304,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbTeam control.
-        /// Populates the player combo, resets all relevant DataGrid DataContext and ItemsSource properties, and calculates the in-team player rankingsPerGame.
+        ///     Handles the SelectionChanged event of the cmbTeam control.
+        ///     Populates the player combo, resets all relevant DataGrid DataContext and ItemsSource properties, and calculates the in-team player rankingsPerGame.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             dgvOverviewStats.DataContext = null;
@@ -332,7 +332,7 @@ namespace NBA_Stats_Tracker.Windows
             playersSameTeam = new Dictionary<int, PlayerStats>();
             if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                var list =
+                List<PlayerStats> list =
                     MainWindow.pst.Values.Where(
                         ps => ps.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.isHidden && ps.isActive)
                               .ToList();
@@ -347,7 +347,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                var list = MainWindow.pst.Values.Where(ps => !ps.isHidden && !ps.isActive).ToList();
+                List<PlayerStats> list = MainWindow.pst.Values.Where(ps => !ps.isHidden && !ps.isActive).ToList();
                 list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
                 list.ForEach(delegate(PlayerStats ps)
                              {
@@ -376,11 +376,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbPlayer control.
-        /// Updates the PlayerStatsRow instance and all DataGrid controls with this player's information and stats.
+        ///     Handles the SelectionChanged event of the cmbPlayer control.
+        ///     Updates the PlayerStatsRow instance and all DataGrid controls with this player's information and stats.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbPlayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbPlayer.SelectedIndex == -1)
@@ -422,7 +424,8 @@ namespace NBA_Stats_Tracker.Windows
 
             cumPlayoffsRankingsActive = PlayerRankings.CalculateActiveRankings(true);
             cumPlayoffsRankingsPosition =
-                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value), true);
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value),
+                                   true);
             cumPlayoffsRankingsTeam =
                 new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.TeamF == psr.TeamF).ToDictionary(r => r.Key, r => r.Value), true);
 
@@ -443,7 +446,7 @@ namespace NBA_Stats_Tracker.Windows
             var facts = new List<string>();
             for (int i = 0; i < rankings.rankingsTotal[id].Length; i++)
             {
-                var rank = rankings.rankingsTotal[id][i];
+                int rank = rankings.rankingsTotal[id][i];
                 if (rank <= 20)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), p.totals[i]);
@@ -454,7 +457,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             for (int i = 0; i < rankings.rankingsPerGame[id].Length; i++)
             {
-                var rank = rankings.rankingsPerGame[id][i];
+                int rank = rankings.rankingsPerGame[id][i];
                 if (rank <= 20)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), p.averages[i]);
@@ -477,11 +480,11 @@ namespace NBA_Stats_Tracker.Windows
             var metricsToSkip = new List<string> {"aPER", "uPER"};
             for (int i = 0; i < rankings.rankingsMetrics[id].Keys.Count; i++)
             {
-                var metricName = rankings.rankingsMetrics[id].Keys.ToList()[i];
+                string metricName = rankings.rankingsMetrics[id].Keys.ToList()[i];
                 if (metricsToSkip.Contains(metricName))
                     continue;
 
-                var rank = rankings.rankingsMetrics[id][metricName];
+                int rank = rankings.rankingsMetrics[id][metricName];
                 if (rank <= 20)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), metricName.Replace("p", "%"));
@@ -503,8 +506,8 @@ namespace NBA_Stats_Tracker.Windows
             }
             facts.Sort(
                 (f1, f2) =>
-                Convert.ToInt32(f1.Substring(0, f1.IndexOfAny(new char[] {'s', 'n', 'r', 't'})))
-                       .CompareTo(Convert.ToInt32(f2.Substring(0, f2.IndexOfAny(new char[] {'s', 'n', 'r', 't'})))));
+                Convert.ToInt32(f1.Substring(0, f1.IndexOfAny(new[] {'s', 'n', 'r', 't'})))
+                       .CompareTo(Convert.ToInt32(f2.Substring(0, f2.IndexOfAny(new[] {'s', 'n', 'r', 't'})))));
             return facts;
         }
 
@@ -512,17 +515,20 @@ namespace NBA_Stats_Tracker.Windows
         {
             int id = SelectedPlayerID;
 
-            string msg = new PlayerStatsRow(MainWindow.pst[id], false, false).ScoutingReport(MainWindow.pst, cumSeasonRankingsActive, cumSeasonRankingsTeam,
-                                                                               cumSeasonRankingsPosition, pbsList, txbGame1.Text);
+            string msg = new PlayerStatsRow(MainWindow.pst[id], false, false).ScoutingReport(MainWindow.pst, cumSeasonRankingsActive,
+                                                                                             cumSeasonRankingsTeam,
+                                                                                             cumSeasonRankingsPosition, pbsList,
+                                                                                             txbGame1.Text);
             txbSeasonScoutingReport.Text = msg;
 
-            var facts = GetFacts(id, cumSeasonRankingsActive);
+            List<string> facts = GetFacts(id, cumSeasonRankingsActive);
             txbSeasonFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
 
             if (MainWindow.pst[id].pl_stats[p.GP] > 0)
             {
-                msg = new PlayerStatsRow(MainWindow.pst[id], true, false).ScoutingReport(MainWindow.pst, cumPlayoffsRankingsActive, cumPlayoffsRankingsTeam,
-                                                                               cumPlayoffsRankingsPosition, pbsList, txbGame1.Text);
+                msg = new PlayerStatsRow(MainWindow.pst[id], true, false).ScoutingReport(MainWindow.pst, cumPlayoffsRankingsActive,
+                                                                                         cumPlayoffsRankingsTeam,
+                                                                                         cumPlayoffsRankingsPosition, pbsList, txbGame1.Text);
                 txbPlayoffsScoutingReport.Text = msg;
 
                 facts = GetFacts(id, cumPlayoffsRankingsActive);
@@ -541,7 +547,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the tab viewing the year-by-year overview of the player's stats.
+        ///     Updates the tab viewing the year-by-year overview of the player's stats.
         /// </summary>
         private void UpdateYearlyReport()
         {
@@ -552,7 +558,7 @@ namespace NBA_Stats_Tracker.Windows
             DataTable dt = db.GetDataTable(qr);
             foreach (DataRow dr in dt.Rows)
             {
-                PlayerStats ps = new PlayerStats();
+                var ps = new PlayerStats();
                 bool isPlayoff = Tools.getBoolean(dr, "isPlayoff");
                 ps.GetStatsFromDataRow(dr, isPlayoff);
                 ps.TeamF = Tools.getString(dr, "TeamFin");
@@ -607,11 +613,11 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the overview tab and prepares the available box scores for the current timeframe.
+        ///     Updates the overview tab and prepares the available box scores for the current timeframe.
         /// </summary>
         private void UpdateOverviewAndBoxScores()
         {
-            var ts = psr.isActive ? MainWindow.tst[MainWindow.TeamOrder[psr.TeamF]] : new TeamStats();
+            TeamStats ts = psr.isActive ? MainWindow.tst[MainWindow.TeamOrder[psr.TeamF]] : new TeamStats();
             var tsopp = new TeamStats("Opponents");
 
             grdOverview.DataContext = psr;
@@ -623,9 +629,10 @@ namespace NBA_Stats_Tracker.Windows
             rankingsPosition = new PlayerRankings(playersSamePosition);
             pl_rankingsPosition = new PlayerRankings(playersSamePosition, true);
 
-            foreach (var bse in MainWindow.bshist.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == psr.ID && !pbs.isOut)).ToList())
+            foreach (
+                BoxScoreEntry bse in MainWindow.bshist.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == psr.ID && !pbs.isOut)).ToList())
             {
-                PlayerBoxScore pbs = new PlayerBoxScore();
+                var pbs = new PlayerBoxScore();
                 pbs = bse.pbsList.Single(pbs1 => pbs1.PlayerID == psr.ID);
                 pbs.AddInfoFromTeamBoxScore(bse.bs);
                 pbs.CalcMetrics(bse.bs);
@@ -939,7 +946,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the best performances tab with the player's best performances and the most significant stats of each one for the current timeframe.
+        ///     Updates the best performances tab with the player's best performances and the most significant stats of each one for the current timeframe.
         /// </summary>
         private void UpdateBest()
         {
@@ -996,12 +1003,12 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Updates the split stats tab for the current timeframe.
+        ///     Updates the split stats tab for the current timeframe.
         /// </summary>
         private void UpdateSplitStats()
         {
             splitPSRs = new ObservableCollection<PlayerStatsRow>();
-            var split = MainWindow.splitPlayerStats;
+            Dictionary<int, Dictionary<string, PlayerStats>> split = MainWindow.splitPlayerStats;
             //Home
             splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Home"], "Home"));
 
@@ -1054,11 +1061,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbSeasonNum control.
-        /// Loads the specified season's team and player stats and tries to automatically switch to the same player again, if he exists in the specified season and isn't hidden.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
+        ///     Loads the specified season's team and player stats and tries to automatically switch to the same player again, if he exists in the specified season and isn't hidden.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1188,11 +1197,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnScoutingReport control.
-        /// Displays a quick overview of the player's performance in a natural language scouting report.
+        ///     Handles the Click event of the btnScoutingReport control.
+        ///     Displays a quick overview of the player's performance in a natural language scouting report.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
         {
             if (cmbPlayer.SelectedIndex == -1)
@@ -1207,7 +1218,7 @@ namespace NBA_Stats_Tracker.Windows
                 temppst[i].AddPlayerStats(MainWindow.pst[i], true);
             }
 
-            var cumRankingsActive = PlayerRankings.CalculateActiveRankings();
+            PlayerRankings cumRankingsActive = PlayerRankings.CalculateActiveRankings();
             var cumRankingsPosition =
                 new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value));
             var cumRankingsTeam =
@@ -1218,11 +1229,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnSavePlayer control.
-        /// Saves the current player's stats to the database.
+        ///     Handles the Click event of the btnSavePlayer control.
+        ///     Saves the current player's stats to the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnSavePlayer_Click(object sender, RoutedEventArgs e)
         {
             if (cmbPlayer.SelectedIndex == -1)
@@ -1254,7 +1267,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Creates a PlayerStats instance from the currently displayed information and stats.
+        ///     Creates a PlayerStats instance from the currently displayed information and stats.
         /// </summary>
         /// <returns></returns>
         private PlayerStats CreatePlayerStatsFromCurrent()
@@ -1290,11 +1303,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnNext control.
-        /// Switches to the next team.
+        ///     Handles the Click event of the btnNext control.
+        ///     Switches to the next team.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
             if (cmbTeam.SelectedIndex == cmbTeam.Items.Count - 1)
@@ -1304,11 +1319,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPrev control.
-        /// Switches to the previous team.
+        ///     Handles the Click event of the btnPrev control.
+        ///     Switches to the previous team.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
             if (cmbTeam.SelectedIndex == 0)
@@ -1318,11 +1335,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnNextPlayer control.
-        /// Switches to the next player.
+        ///     Handles the Click event of the btnNextPlayer control.
+        ///     Switches to the next player.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnNextPlayer_Click(object sender, RoutedEventArgs e)
         {
             if (cmbPlayer.SelectedIndex == cmbPlayer.Items.Count - 1)
@@ -1332,11 +1351,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPrevPlayer control.
-        /// Switches to the previous player.
+        ///     Handles the Click event of the btnPrevPlayer control.
+        ///     Switches to the previous player.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPrevPlayer_Click(object sender, RoutedEventArgs e)
         {
             if (cmbPlayer.SelectedIndex == 0)
@@ -1346,11 +1367,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbStatsAllTime control.
-        /// Allows the user to display stats from the whole season.
+        ///     Handles the Checked event of the rbStatsAllTime control.
+        ///     Allows the user to display stats from the whole season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1362,11 +1385,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbStatsBetween control.
-        /// Allows the user to display stats between the specified timeframe.
+        ///     Handles the Checked event of the rbStatsBetween control.
+        ///     Allows the user to display stats between the specified timeframe.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1378,11 +1403,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectedDateChanged event of the dtpStart control.
-        /// Makes sure the starting date isn't after the ending date, and updates the player's stats based on the new timeframe.
+        ///     Handles the SelectedDateChanged event of the dtpStart control.
+        ///     Makes sure the starting date isn't after the ending date, and updates the player's stats based on the new timeframe.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1402,11 +1429,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectedDateChanged event of the dtpEnd control.
-        /// Makes sure the starting date isn't after the ending date, and updates the player's stats based on the new timeframe.
+        ///     Handles the SelectedDateChanged event of the dtpEnd control.
+        ///     Makes sure the starting date isn't after the ending date, and updates the player's stats based on the new timeframe.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!changingTimeframe)
@@ -1426,11 +1455,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbOppTeam control.
-        /// Allows the user to change the opposing team, the players of which can be compared to.
+        ///     Handles the SelectionChanged event of the cmbOppTeam control.
+        ///     Allows the user to change the opposing team, the players of which can be compared to.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbOppTeam_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbOppTeam.SelectedIndex == -1)
@@ -1464,11 +1495,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbOppPlayer control.
-        /// Allows the user to change the opposing player, to whose stats the current player's stats will be compared.
+        ///     Handles the SelectionChanged event of the cmbOppPlayer control.
+        ///     Allows the user to change the opposing player, to whose stats the current player's stats will be compared.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbOppPlayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -1604,10 +1637,10 @@ namespace NBA_Stats_Tracker.Windows
                         gameIDs.Add(cur.GameID);
                     }
 
-                    var oppPBSList =
+                    IEnumerable<PlayerBoxScore> oppPBSList =
                         MainWindow.bshist.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == SelectedOppPlayerID))
                                   .Select(bse => bse.pbsList.Single(pbs => pbs.PlayerID == SelectedOppPlayerID));
-                    foreach (var oppPBS in oppPBSList)
+                    foreach (PlayerBoxScore oppPBS in oppPBSList)
                     {
                         if (!gameIDs.Contains(oppPBS.GameID))
                         {
@@ -1615,7 +1648,7 @@ namespace NBA_Stats_Tracker.Windows
                         }
                     }
 
-                    var oppPS = MainWindow.pst[SelectedOppPlayerID];
+                    PlayerStats oppPS = MainWindow.pst[SelectedOppPlayerID];
                     psrList.Add(new PlayerStatsRow(oppPS, oppPS.FirstName + " " + oppPS.LastName));
                 }
                 else
@@ -1682,11 +1715,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the dgvBoxScores control.
-        /// Allows the user to view a specific box score in the Box Score window.
+        ///     Handles the MouseDoubleClick event of the dgvBoxScores control.
+        ///     Allows the user to view a specific box score in the Box Score window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
@@ -1708,11 +1743,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the MouseDoubleClick event of the dgvHTHBoxScores control.
-        /// Allows the user to view a specific box score in the Box Score window.
+        ///     Handles the MouseDoubleClick event of the dgvHTHBoxScores control.
+        ///     Allows the user to view a specific box score in the Box Score window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvHTHBoxScores.SelectedCells.Count > 0)
@@ -1734,44 +1771,52 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbHTHStatsAnyone control.
-        /// Used to include all the players' games in the stat calculations, no matter the opponent.
+        ///     Handles the Checked event of the rbHTHStatsAnyone control.
+        ///     Used to include all the players' games in the stat calculations, no matter the opponent.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbHTHStatsAnyone_Checked(object sender, RoutedEventArgs e)
         {
             cmbOppPlayer_SelectionChanged(null, null);
         }
 
         /// <summary>
-        /// Handles the Checked event of the rbHTHStatsEachOther control.
-        /// Used to include only stats from the games these two players have played against each other.
+        ///     Handles the Checked event of the rbHTHStatsEachOther control.
+        ///     Used to include only stats from the games these two players have played against each other.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void rbHTHStatsEachOther_Checked(object sender, RoutedEventArgs e)
         {
             cmbOppPlayer_SelectionChanged(null, null);
         }
 
         /// <summary>
-        /// Handles the Sorting event of the StatColumn control.
-        /// Uses a custom Sorting event handler that sorts a stat in descending order, if it's not sorted already.
+        ///     Handles the Sorting event of the StatColumn control.
+        ///     Uses a custom Sorting event handler that sorts a stat in descending order, if it's not sorted already.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
+        /// </param>
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting(e);
         }
 
         /// <summary>
-        /// Handles the PreviewKeyDown event of the dgvOverviewStats control.
-        /// Allows the user to paste and import tab-separated values formatted player stats into the current player.
+        ///     Handles the PreviewKeyDown event of the dgvOverviewStats control.
+        ///     Allows the user to paste and import tab-separated values formatted player stats into the current player.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="KeyEventArgs" /> instance containing the event data.
+        /// </param>
         private void dgvOverviewStats_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && rbStatsAllTime.IsChecked.GetValueOrDefault())
@@ -1804,8 +1849,8 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Tries to change the specified row of the Overview data table using the specified dictionary.
-        /// Used when pasting TSV data from the clipboard.
+        ///     Tries to change the specified row of the Overview data table using the specified dictionary.
+        ///     Used when pasting TSV data from the clipboard.
         /// </summary>
         /// <param name="row">The row of dt_ov to try and change.</param>
         /// <param name="dict">The dictionary containing stat-value pairs.</param>
@@ -1829,7 +1874,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Creates a DataView instance based on the dt_ov Overview data table and updates the dgvOverviewStats data context.
+        ///     Creates a DataView instance based on the dt_ov Overview data table and updates the dgvOverviewStats data context.
         /// </summary>
         private void CreateViewAndUpdateOverview()
         {
@@ -1838,17 +1883,19 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the SelectionChanged event of the cmbGraphStat control.
-        /// Calculates and displays the player's performance graph for the newly selected stat.
+        ///     Handles the SelectionChanged event of the cmbGraphStat control.
+        ///     Calculates and displays the player's performance graph for the newly selected stat.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || pbsList.Count < 1)
                 return;
 
-            ChartPrimitive cp = new ChartPrimitive();
+            var cp = new ChartPrimitive();
             double i = 0;
 
             string propToGet = cmbGraphStat.SelectedItem.ToString();
@@ -1858,7 +1905,7 @@ namespace NBA_Stats_Tracker.Windows
             double sum = 0;
             double games = 0;
 
-            foreach (var pbs in pbsList)
+            foreach (PlayerBoxScore pbs in pbsList)
             {
                 i++;
                 double value = Convert.ToDouble(typeof (PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
@@ -1877,19 +1924,19 @@ namespace NBA_Stats_Tracker.Windows
             if (cp.Points.Count > 0)
             {
                 double average = sum/games;
-                ChartPrimitive cpavg = new ChartPrimitive();
+                var cpavg = new ChartPrimitive();
                 for (int j = 1; j <= i; j++)
                 {
                     cpavg.AddPoint(j, average);
                 }
-                cpavg.Color = System.Windows.Media.Color.FromRgb(0, 0, 100);
+                cpavg.Color = Color.FromRgb(0, 0, 100);
                 cpavg.Dashed = true;
                 cpavg.ShowInLegend = false;
                 chart.Primitives.Add(cpavg);
                 chart.Primitives.Add(cp);
             }
             chart.RedrawPlotLines();
-            ChartPrimitive cp2 = new ChartPrimitive();
+            var cp2 = new ChartPrimitive();
             cp2.AddPoint(1, 0);
             cp2.AddPoint(i, 1);
             chart.Primitives.Add(cp2);
@@ -1897,43 +1944,45 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Populates the graph stat combo.
+        ///     Populates the graph stat combo.
         /// </summary>
         private void PopulateGraphStatCombo()
         {
-            List<string> stats = new List<string>
-                                 {
-                                     "GmSc",
-                                     "GmScE",
-                                     "PTS",
-                                     "FGM",
-                                     "FGA",
-                                     "FG%",
-                                     "3PM",
-                                     "3PA",
-                                     "3P%",
-                                     "FTM",
-                                     "FTA",
-                                     "FT%",
-                                     "REB",
-                                     "OREB",
-                                     "DREB",
-                                     "AST",
-                                     "BLK",
-                                     "STL",
-                                     "TO",
-                                     "FOUL"
-                                 };
+            var stats = new List<string>
+                        {
+                            "GmSc",
+                            "GmScE",
+                            "PTS",
+                            "FGM",
+                            "FGA",
+                            "FG%",
+                            "3PM",
+                            "3PA",
+                            "3P%",
+                            "FTM",
+                            "FTA",
+                            "FT%",
+                            "REB",
+                            "OREB",
+                            "DREB",
+                            "AST",
+                            "BLK",
+                            "STL",
+                            "TO",
+                            "FOUL"
+                        };
 
             stats.ForEach(s => cmbGraphStat.Items.Add(s));
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPrevStat control.
-        /// Switches to the previous graph stat.
+        ///     Handles the Click event of the btnPrevStat control.
+        ///     Switches to the previous graph stat.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPrevStat_Click(object sender, RoutedEventArgs e)
         {
             if (cmbGraphStat.SelectedIndex == 0)
@@ -1943,11 +1992,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnNextStat control.
-        /// Switches to the next graph stat.
+        ///     Handles the Click event of the btnNextStat control.
+        ///     Switches to the next graph stat.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnNextStat_Click(object sender, RoutedEventArgs e)
         {
             if (cmbGraphStat.SelectedIndex == cmbGraphStat.Items.Count - 1)
@@ -1957,11 +2008,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPrevOppTeam control.
-        /// Switches to the previous opposing team.
+        ///     Handles the Click event of the btnPrevOppTeam control.
+        ///     Switches to the previous opposing team.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPrevOppTeam_Click(object sender, RoutedEventArgs e)
         {
             if (cmbOppTeam.SelectedIndex == 0)
@@ -1971,11 +2024,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnNextOppTeam control.
-        /// Switches to the next opposing team.
+        ///     Handles the Click event of the btnNextOppTeam control.
+        ///     Switches to the next opposing team.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnNextOppTeam_Click(object sender, RoutedEventArgs e)
         {
             if (cmbOppTeam.SelectedIndex == cmbOppTeam.Items.Count - 1)
@@ -1985,11 +2040,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnPrevOppPlayer control.
-        /// Switches to the previous opposing player.
+        ///     Handles the Click event of the btnPrevOppPlayer control.
+        ///     Switches to the previous opposing player.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnPrevOppPlayer_Click(object sender, RoutedEventArgs e)
         {
             if (cmbOppPlayer.SelectedIndex == 0)
@@ -1999,11 +2056,13 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Handles the Click event of the btnNextOppPlayer control.
-        /// Switches to the next opposing player.
+        ///     Handles the Click event of the btnNextOppPlayer control.
+        ///     Switches to the next opposing player.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
         private void btnNextOppPlayer_Click(object sender, RoutedEventArgs e)
         {
             if (cmbOppPlayer.SelectedIndex == cmbOppPlayer.Items.Count - 1)
@@ -2022,7 +2081,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnAddPastStats_Click(object sender, RoutedEventArgs e)
         {
-            AddStatsWindow adw = new AddStatsWindow(false, psr.ID);
+            var adw = new AddStatsWindow(false, psr.ID);
             if (adw.ShowDialog() == true)
             {
                 UpdateYearlyReport();
@@ -2031,22 +2090,18 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCopySeasonScouting_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void btnCopySeasonFacts_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void btnCopyPlayoffsScouting_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void btnCopyPlayoffsFacts_Click(object sender, RoutedEventArgs e)
         {
-            
         }
     }
 }
