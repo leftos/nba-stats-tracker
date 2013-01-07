@@ -5,7 +5,7 @@
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
         MinWidth="698" Closing="Window_Closing">
     <Grid>
-        <TabControl Margin="0,41,0,193" Name="tbcTeamOverview" Padding="0">
+        <TabControl Margin="0,41,0,188" Name="tbcTeamOverview" Padding="0">
             <TabItem Header="Overview" Name="tabOverview">
                 <Grid VerticalAlignment="Stretch">
                     <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
@@ -1012,6 +1012,38 @@
                             Click="btnAddPastStats_Click" />
                 </Grid>
             </TabItem>
+            <TabItem Header="Scouting Report">
+                <Grid>
+                    <ScrollViewer Name="svScoutingReport">
+                        <StackPanel>
+                            <GroupBox Margin="6" Header="Season Scouting Report">
+                                <StackPanel Margin="2">
+                                    <TextBlock Name="txbSeasonScoutingReport" Margin="6" TextWrapping="Wrap"/>
+                                    <Button Name="btnCopySeasonScouting" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopySeasonScouting_Click"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Margin="6" Header="Significant Season Facts">
+                                <StackPanel Margin="2">
+                                    <TextBlock Name="txbSeasonFacts" Margin="6" TextWrapping="Wrap"/>
+                                    <Button Name="btnCopySeasonFacts" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopySeasonFacts_Click"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox x:Name="grpPlayoffsScoutingReport" Margin="6" Header="Playoffs Scouting Report">
+                                <StackPanel Margin="2">
+                                    <TextBlock Name="txbPlayoffsScoutingReport" Margin="6" TextWrapping="Wrap"/>
+                                    <Button Name="btnCopyPlayoffsScouting" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopyPlayoffsScouting_Click"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Margin="6" Header="Significant Playoffs Facts" Name="grpPlayoffsFacts">
+                                <StackPanel Margin="2">
+                                    <TextBlock Name="txbPlayoffsFacts" Margin="6" TextWrapping="Wrap"/>
+                                    <Button Name="btnCopyPlayoffsFacts" Width="150" Height="25" HorizontalAlignment="Right" Content="Copy to Clipboard" Margin="6" Click="btnCopyPlayoffsFacts_Click"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
         </TabControl>
         <ComboBox Height="23" HorizontalAlignment="Center" Margin="0,12,0,0" Name="cmbTeam" VerticalAlignment="Top"
                   Width="153" SelectionChanged="cmbTeam_SelectionChanged" />
@@ -1022,13 +1054,10 @@
         <GroupBox HorizontalAlignment="Left" Margin="7,0,0,8" Name="groupBox1" Width="327" Header="Actions"
                   Height="175" VerticalAlignment="Bottom">
             <Grid>
-                <Button Content="Alternate Averages &amp; Rankings Window" Height="23" HorizontalAlignment="Center"
-                        Margin="0,6,0,0" Name="btnShowAvg" VerticalAlignment="Top" Width="249" Click="btnShowAvg_Click"
-                        Grid.ColumnSpan="2" />
                 <Button Content="Save This Team's Season Stats &amp; Re-Calculate*" Height="23"
-                        HorizontalAlignment="Center" Margin="0,93,0,0" Name="btnSaveCustomTeam" TabIndex="22"
+                        HorizontalAlignment="Center" Margin="0,38,0,0" Name="btnSaveCustomTeam" TabIndex="22"
                         VerticalAlignment="Top"
-                        Width="249" Click="btnSaveCustomTeam_Click" Grid.ColumnSpan="2">
+                        Width="260" Click="btnSaveCustomTeam_Click">
                     <Button.ToolTip>
                         <StackPanel>
                             <TextBlock
@@ -1040,19 +1069,16 @@
                         </StackPanel>
                     </Button.ToolTip>
                 </Button>
-                <Button Content="Scouting Report" Height="23" HorizontalAlignment="Center" Margin="0,35,0,0"
-                        Name="btnScoutingReport" VerticalAlignment="Top" Width="249" Click="btnScoutingReport_Click"
-                        Grid.ColumnSpan="2" />
-                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,121,0,0" Name="textBlock2"
+                <TextBlock HorizontalAlignment="Left" Margin="10,111,0,0" Name="textBlock2"
                            Text="* Always remember to save each team's stats before switching teams or else your changes could be lost."
-                           TextWrapping="Wrap" VerticalAlignment="Top" Width="304" />
-                <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="33,64,162,0"
-                        Name="btnChangeName" VerticalAlignment="Top" Width="120" Click="btnChangeName_Click" />
-                <Button Content="Change Division" Height="23" HorizontalAlignment="Center" Margin="162,64,33,0"
-                        Name="btnChangeDivision" VerticalAlignment="Top" Width="120" Click="btnChangeDivision_Click" />
+                           TextWrapping="Wrap" VerticalAlignment="Top" Width="295" />
+                <Button Content="Change Team Name" Height="23" HorizontalAlignment="Center" Margin="28,10,162,0"
+                        Name="btnChangeName" VerticalAlignment="Top" Width="125" Click="btnChangeName_Click" />
+                <Button Content="Change Division" Height="23" HorizontalAlignment="Center" Margin="162,10,27,0"
+                        Name="btnChangeDivision" VerticalAlignment="Top" Width="126" Click="btnChangeDivision_Click" />
             </Grid>
         </GroupBox>
-        <GroupBox HorizontalAlignment="Right" Margin="0,0,6,12" Name="groupBox2" Width="328" Header="Timeframe"
+        <GroupBox HorizontalAlignment="Right" Margin="0,0,6,8" Name="groupBox2" Width="328" Header="Timeframe"
                   Height="175" VerticalAlignment="Bottom">
             <Grid Margin="0,0,0,0">
                 <Label Content="Show Stats from" Height="24" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1"
@@ -1067,9 +1093,9 @@
                             VerticalAlignment="Top" Width="115" SelectedDateChanged="dtpEnd_SelectedDateChanged" />
                 <Label Content="and" HorizontalAlignment="Left" Margin="139,81,0,0" Name="label2"
                        VerticalAlignment="Top" />
-                <TextBlock Height="31" HorizontalAlignment="Left" Margin="6,119,0,0" Name="textBlock1"
+                <TextBlock HorizontalAlignment="Left" Margin="10,115,0,0" Name="textBlock1"
                            Text="* Availability of stats between dates depends on whether there are box-scores saved for this team."
-                           VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
+                           VerticalAlignment="Top" TextWrapping="Wrap" Width="296" />
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="121,31,0,0" Name="cmbSeasonNum"
                           VerticalAlignment="Top" Width="94" SelectionChanged="cmbSeasonNum_SelectionChanged"
                           DisplayMemberPath="Value"

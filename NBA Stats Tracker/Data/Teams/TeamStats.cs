@@ -41,7 +41,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public float[] pl_averages = new float[19];
         public Dictionary<string, double> pl_metrics = new Dictionary<string, double>();
         public int pl_offset;
-        public uint[] pl_stats = new uint[18];
+        public uint[] pl_stats = new uint[17];
         public uint[] pl_winloss = new uint[2];
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// 10: OREB, 11: DREB, 12: STL, 13: TO, 14: BLK, 15: AST,
         /// 16: FOUL
         /// </summary>
-        public uint[] stats = new uint[18];
+        public uint[] stats = new uint[17];
 
         public uint[] winloss = new uint[2];
 
@@ -373,10 +373,10 @@ namespace NBA_Stats_Tracker.Data.Teams
             double DRTG = (tstats[t.PA]/temp_metrics["Poss"])*100;
             temp_metrics.Add("DRTG", DRTG);
 
-            double ASTp = 100*(tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
+            double ASTp = (tstats[t.AST])/(tstats[t.FGA] + tstats[t.FTA]*0.44 + tstats[t.AST] + tstats[t.TO]);
             temp_metrics.Add("AST%", ASTp);
 
-            double DREBp = 100*tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
+            double DREBp = tstats[t.DREB]/(tstats[t.DREB] + toppstats[t.OREB]);
             temp_metrics.Add("DREB%", DREBp);
 
             double EFGp = (tstats[t.FGM] + tstats[t.TPM]*0.5)/tstats[t.FGA];
@@ -388,7 +388,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             double TOR = tstats[t.TO]/(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]);
             temp_metrics.Add("TOR", TOR);
 
-            double OREBp = 100*tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
+            double OREBp = tstats[t.OREB]/(tstats[t.OREB] + toppstats[t.DREB]);
             temp_metrics.Add("OREB%", OREBp);
 
             double FTR = tstats[t.FTM]/tstats[t.FGA];
@@ -588,52 +588,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         }
 
         /// <summary>
-        /// Calculates the team rankings for each stat.
-        /// </summary>
-        /// <param name="_teamStats">The team stats dictionary.</param>
-        /// <param name="playoffs">if set to <c>true</c>, the rankings will be calculated based on the teams' playoff performances.</param>
-        /// <returns></returns>
-        public static int[][] CalculateTeamRankings(Dictionary<int, TeamStats> _teamStats, bool playoffs = false)
-        {
-            int len = _teamStats.Count;
-            var rating = new int[len][];
-            for (int i = 0; i < len; i++)
-            {
-                rating[i] = new int[20];
-            }
-            for (int k = 0; k < len; k++)
-            {
-                for (int i = 0; i < 19; i++)
-                {
-                    rating[k][i] = 1;
-                    for (int j = 0; j < len; j++)
-                    {
-                        if (j != k)
-                        {
-                            if (!playoffs)
-                            {
-                                if (_teamStats[j].averages[i] > _teamStats[k].averages[i])
-                                {
-                                    rating[k][i]++;
-                                }
-                            }
-                            else
-                            {
-                                if (_teamStats[j].pl_averages[i] > _teamStats[k].pl_averages[i])
-                                {
-                                    rating[k][i]++;
-                                }
-                            }
-                        }
-                    }
-                }
-                rating[k][19] = (int) _teamStats[k].getGames();
-            }
-            return rating;
-        }
-
-        /// <summary>
-        /// Presents the team's averages and rankings in a well-formatted multi-line string.
+        /// Presents the team's averages and rankingsPerGame in a well-formatted multi-line string.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <param name="tst">The team stats dictionary.</param>
@@ -651,7 +606,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 return "";
             }
-            int[][] rating = CalculateTeamRankings(tst);
+            int[][] rating = new TeamRankings(tst).rankingsPerGame;
             string text =
                 String.Format(
                     "Win %: {32:F3} ({33})\nWin eff: {34:F2} ({35})\n\nPPG: {0:F1} ({16})\nPAPG: {1:F1} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F2} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F2} ({21})\n" +
@@ -694,8 +649,12 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="psrList"> </param>
         /// <returns></returns>
-        public string ScoutingReport(Dictionary<int, TeamStats> tst, ObservableCollection<PlayerStatsRow> psrList)
+        public string ScoutingReport(Dictionary<int, TeamStats> tst, ObservableCollection<PlayerStatsRow> psrList, TeamRankings teamRankings, bool playoffs = false)
         {
+            var temp_wl = playoffs ? pl_winloss : winloss;
+            var temp_stats = playoffs ? pl_stats : stats;
+            var temp_averages = playoffs ? pl_averages : averages;
+
             var pgList = psrList.Where(ps => ps.Position1 == Position.PG).ToList();
             pgList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps1.GmSc));
             pgList.Reverse();
@@ -729,7 +688,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             cList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
             roster = roster.Remove(roster.Length - 2);
 
-            int[][] rating = CalculateTeamRankings(tst);
+            int[][] rating = teamRankings.rankingsPerGame;
             int teamCount = tst.Count;
             int divpos = 0;
             int confpos = 0;
@@ -758,34 +717,18 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             string msg = roster + "\n\n===================================================\n\n";
-            msg += String.Format("{0}, the {1}", displayName, rating[ID][17]);
-            switch (rating[ID][17])
-            {
-                case 1:
-                case 21:
-                    msg += "st";
-                    break;
-                case 2:
-                case 22:
-                    msg += "nd";
-                    break;
-                case 3:
-                case 23:
-                    msg += "rd";
-                    break;
-                default:
-                    msg += "th";
-                    break;
-            }
-
+            msg += String.Format("{0}, the {1}{2}", displayName, rating[ID][17], Helper.Miscellaneous.Misc.getRankingSuffix(rating[ID][17]));
+            
             int topThird = teamCount/3;
             int secondThird = teamCount/3*2;
             int topHalf = teamCount/2;
 
-            msg += " strongest team in the league right now, after having played " + rating[ID][19].ToString() + " games. Their record is " +
-                   "currently at " + winloss[0] + "-" + winloss[1];
+            msg +=
+                string.Format(
+                    " strongest team in the league right now, after having played {0} games. Their record is currently at {1}-{2}",
+                    (temp_wl[0] + temp_wl[1]), temp_wl[0], temp_wl[1]);
 
-            if (MainWindow.Divisions.Count > 1)
+            if (!playoffs && MainWindow.Divisions.Count > 1)
                 msg += ", putting them at #" + divpos + " in their division and at #" + confpos + " in their conference";
 
             msg += ".\n\n";
@@ -857,8 +800,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg +=
                     "\nThey can be dangerous whenever they shoot the ball. Their offense just doesn't get them enough chances to shoot it, though.";
 
-            msg += String.Format(" (#{0} in FG%: {1:F3} - #{2} in FGeff: {3:F2})", rating[ID][t.FGp], averages[t.FGp], rating[ID][t.FGeff],
-                                 averages[t.FGeff]);
+            msg += String.Format(" (#{0} in FG%: {1:F3} - #{2} in FGeff: {3:F2})", rating[ID][t.FGp], temp_averages[t.FGp], rating[ID][t.FGeff],
+                                 temp_averages[t.FGeff]);
             msg += "\n";
 
             if (rating[ID][5] <= 5)
@@ -877,8 +820,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             else if (comp > topHalf)
                 msg += "\nWith their accuracy from the 3PT line, you'd think they'd shoot more of those.";
 
-            msg += String.Format(" (#{0} in 3P%: {1:F3} - #{2} in 3Peff: {3:F2})", rating[ID][t.TPp], averages[t.TPp], rating[ID][t.TPeff],
-                                 averages[t.TPeff]);
+            msg += String.Format(" (#{0} in 3P%: {1:F3} - #{2} in 3Peff: {3:F2})", rating[ID][t.TPp], temp_averages[t.TPp], rating[ID][t.TPeff],
+                                 temp_averages[t.TPeff]);
             msg += "\n";
 
             if (rating[ID][7] <= 5)
@@ -898,8 +841,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     msg +=
                         "A team that doesn't know how to get to the line, or how to score from there. You don't have to worry about freebies against them.";
 
-            msg += String.Format(" (#{0} in FT%: {1:F3} - #{2} in FTeff: {3:F2})", rating[ID][t.FTp], averages[t.FTp], rating[ID][t.FTeff],
-                                 averages[t.FTeff]);
+            msg += String.Format(" (#{0} in FT%: {1:F3} - #{2} in FTeff: {3:F2})", rating[ID][t.FTp], temp_averages[t.FTp], rating[ID][t.FTeff],
+                                 temp_averages[t.FTeff]);
             comp = rating[ID][t.FTeff] - rating[ID][t.FTp];
             if (comp < -topHalf)
                 msg +=
@@ -920,7 +863,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg +=
                     "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
 
-            msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][t.APG], averages[t.APG]);
+            msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][t.APG], temp_averages[t.APG]);
             msg += "\n\n";
 
             if (31 - rating[ID][t.PAPG] <= 5)
@@ -932,7 +875,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             else if (31 - rating[ID][t.PAPG] <= teamCount)
                 msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
 
-            msg += String.Format(" (#{0} in PAPG: {1:F1})", tst.Count + 1 - rating[ID][t.PAPG], averages[t.PAPG]);
+            msg += String.Format(" (#{0} in PAPG: {1:F1})", tst.Count + 1 - rating[ID][t.PAPG], temp_averages[t.PAPG]);
             msg += "\n\n";
 
             if ((rating[ID][9] <= topThird) && (rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -957,8 +900,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg +=
                     "The work they put on rebounding on both sides of the court is commendable. Both offensive and defensive rebounds, their bread and butter.";
 
-            msg += String.Format(" (#{0} in RPG: {1:F1}, #{2} in ORPG: {3:F1}, #{4} in DRPG: {5:F1})", rating[ID][t.RPG], averages[t.RPG],
-                                 rating[ID][t.ORPG], averages[t.ORPG], rating[ID][t.DRPG], averages[t.DRPG]);
+            msg += String.Format(" (#{0} in RPG: {1:F1}, #{2} in ORPG: {3:F1}, #{4} in DRPG: {5:F1})", rating[ID][t.RPG], temp_averages[t.RPG],
+                                 rating[ID][t.ORPG], temp_averages[t.ORPG], rating[ID][t.DRPG], temp_averages[t.DRPG]);
             msg += "\n\n";
 
             if ((rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -972,8 +915,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     "Get that thing outta here! Great blocking team, they turn the lights off on any mismatched jumper or drive; sometimes even when you least expect it.";
             else
                 msg += "Nothing too significant as far as blocks and steals go.";
-            msg += String.Format(" (#{0} in SPG: {1:F1}, #{2} in BPG: {3:F1})\n", rating[ID][t.SPG], averages[t.SPG], rating[ID][t.BPG],
-                                 averages[t.BPG]);
+            msg += String.Format(" (#{0} in SPG: {1:F1}, #{2} in BPG: {3:F1})\n", rating[ID][t.SPG], temp_averages[t.SPG], rating[ID][t.BPG],
+                                 temp_averages[t.BPG]);
 
             if ((rating[ID][13] <= topThird) && (rating[ID][15] <= topThird))
                 msg +=
@@ -988,8 +931,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     "This team is careful with and without the ball. They're good at keeping their turnovers down, and don't foul too much.\nDon't throw " +
                     "your players into steals or fouls against them, because they play smart, and you're probably going to see the opposite call than the " +
                     "one you expected.";
-            msg += String.Format(" (#{0} in TPG: {1:F1}, #{2} in FPG: {3:F1})", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG],
-                                 tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
+            msg += String.Format(" (#{0} in TPG: {1:F1}, #{2} in FPG: {3:F1})", tst.Count + 1 - rating[ID][t.TPG], temp_averages[t.TPG],
+                                 tst.Count + 1 - rating[ID][t.FPG], temp_averages[t.FPG]);
 
             msg += "\n\n";
 
@@ -1012,47 +955,47 @@ namespace NBA_Stats_Tracker.Data.Teams
                 switch (strengths[m])
                 {
                     case t.APG:
-                        msg += String.Format("assists (#{0}, {1:F1}), ", rating[ID][t.APG], averages[t.APG]);
+                        msg += String.Format("assists (#{0}, {1:F1}), ", rating[ID][t.APG], temp_averages[t.APG]);
                         break;
                     case t.BPG:
-                        msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][t.BPG], averages[t.BPG]);
+                        msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][t.BPG], temp_averages[t.BPG]);
                         break;
                     case t.DRPG:
-                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][t.DRPG], averages[t.DRPG]);
+                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][t.DRPG], temp_averages[t.DRPG]);
                         break;
                     case t.FGeff:
                         msg += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.FGeff],
-                                             (double) stats[t.FGM]/getGames(), averages[t.FGp]);
+                                             (double) temp_stats[t.FGM]/getGames(), temp_averages[t.FGp]);
                         break;
                     case t.FPG:
-                        msg += String.Format("fouls (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.FPG], averages[t.FPG]);
+                        msg += String.Format("fouls (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.FPG], temp_averages[t.FPG]);
                         break;
                     case t.FTeff:
                         msg += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.FTeff],
-                                             (double) stats[t.FTM]/getGames(), averages[t.FTp]);
+                                             (double) temp_stats[t.FTM]/getGames(), temp_averages[t.FTp]);
                         break;
                     case t.ORPG:
-                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][t.ORPG], averages[t.ORPG]);
+                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][t.ORPG], temp_averages[t.ORPG]);
                         break;
                     case t.PAPG:
                         msg += String.Format("points allowed per game (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.PAPG],
-                                             averages[t.PAPG]);
+                                             temp_averages[t.PAPG]);
                         break;
                     case t.PPG:
-                        msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][t.PPG], averages[t.PPG]);
+                        msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][t.PPG], temp_averages[t.PPG]);
                         break;
                     case t.RPG:
-                        msg += String.Format("rebounds (#{0}, {1:F1}), ", rating[ID][t.RPG], averages[t.RPG]);
+                        msg += String.Format("rebounds (#{0}, {1:F1}), ", rating[ID][t.RPG], temp_averages[t.RPG]);
                         break;
                     case t.SPG:
-                        msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][t.SPG], averages[t.SPG]);
+                        msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][t.SPG], temp_averages[t.SPG]);
                         break;
                     case t.TPG:
-                        msg += String.Format("turnovers (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.TPG], averages[t.TPG]);
+                        msg += String.Format("turnovers (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][t.TPG], temp_averages[t.TPG]);
                         break;
                     case t.TPeff:
                         msg += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ", rating[ID][t.TPeff],
-                                             (double) stats[t.TPM]/getGames(), averages[t.TPp]);
+                                             (double) temp_stats[t.TPM]/getGames(), temp_averages[t.TPp]);
                         break;
                     default:
                         j++;

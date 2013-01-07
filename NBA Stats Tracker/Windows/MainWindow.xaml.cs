@@ -44,6 +44,7 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Helper.WindowsForms;
 using NBA_Stats_Tracker.Interop;
 using NBA_Stats_Tracker.Interop.BR;
@@ -85,9 +86,9 @@ namespace NBA_Stats_Tracker.Windows
         public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats =
             new Dictionary<int, Dictionary<string, PlayerStats>>();
 
-        public static int[][] TeamRankings;
-        public static int[][] PlayoffTeamRankings;
-        public static PlayerRankings PlayerRankings;
+        public static TeamRankings SeasonTeamRankings;
+        public static TeamRankings PlayoffTeamRankings;
+        public static PlayerRankings SeasonPlayerRankings;
         public static PlayerRankings PlayoffPlayerRankings;
         public static Timeframe tf = new Timeframe(0);
 
@@ -1408,10 +1409,10 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Calculates the difference in a team's stats rankings between two TeamRankings instances.
+        /// Calculates the difference in a team's stats rankingsPerGame between two TeamRankings instances.
         /// </summary>
-        /// <param name="oldR">The old team rankings.</param>
-        /// <param name="newR">The new team rankings.</param>
+        /// <param name="oldR">The old team rankingsPerGame.</param>
+        /// <param name="newR">The new team rankingsPerGame.</param>
         /// <returns></returns>
         private int[][] calculateDifferenceRanking(TeamRankings oldR, TeamRankings newR)
         {
@@ -1421,7 +1422,7 @@ namespace NBA_Stats_Tracker.Windows
                 diff[i] = new int[18];
                 for (int j = 0; j < 18; j++)
                 {
-                    diff[i][j] = newR.rankings[i][j] - oldR.rankings[i][j];
+                    diff[i][j] = newR.rankingsPerGame[i][j] - oldR.rankingsPerGame[i][j];
                 }
             }
             return diff;
@@ -2410,7 +2411,7 @@ namespace NBA_Stats_Tracker.Windows
             if (SQLiteIO.isTSTEmpty())
                 return;
 
-            var ibw = new InputBoxWindow("Insert the length of each game in minutes, without overtime (e.g. 48):", seasonLength.ToString());
+            var ibw = new InputBoxWindow("Insert the length of the season in games (etc. 82):", seasonLength.ToString());
             if (ibw.ShowDialog() == true)
             {
                 try
@@ -2437,7 +2438,7 @@ namespace NBA_Stats_Tracker.Windows
         public static void UpdateAllData()
         {
             SQLiteIO.PopulateAll(tf, out tst, out tstopp, out TeamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bshist,
-                                 out TeamRankings, out PlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings, out DisplayNames);
+                                 out SeasonTeamRankings, out SeasonPlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings, out DisplayNames);
 
             UpdateNotables();
         }
@@ -2445,7 +2446,7 @@ namespace NBA_Stats_Tracker.Windows
         private static void UpdateNotables()
         {
             Dictionary<int, PlayerStats> pstLeaders;
-            var rankingsActive = PlayerRankings.CalculateLeadersRankings(out pstLeaders);
+            var rankingsActive = SeasonPlayerRankings.CalculateLeadersRankings(out pstLeaders);
             notables = new List<string>();
 
             if (pstLeaders.Count == 0)
@@ -2538,9 +2539,9 @@ namespace NBA_Stats_Tracker.Windows
         {
             string s = "";
             var dict = new Dictionary<int, int>();
-            for (int k = 0; k < rankingsActive.list[curLr.ID].Length; k++)
+            for (int k = 0; k < rankingsActive.rankingsPerGame[curLr.ID].Length; k++)
             {
-                dict.Add(k, rankingsActive.list[curLr.ID][k]);
+                dict.Add(k, rankingsActive.rankingsPerGame[curLr.ID][k]);
             }
             dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
             dict[t.TPG] = pst.Count + 1 - dict[t.TPG];

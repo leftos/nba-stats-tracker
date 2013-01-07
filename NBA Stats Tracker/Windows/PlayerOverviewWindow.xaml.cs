@@ -36,6 +36,7 @@ using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using SQLite_Database;
 using Swordfish.WPF.Charts;
 
@@ -83,6 +84,8 @@ namespace NBA_Stats_Tracker.Windows
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
         private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
+        private PlayerRankings cumSeasonRankingsActive, cumSeasonRankingsPosition, cumSeasonRankingsTeam;
+        private PlayerRankings cumPlayoffsRankingsActive, cumPlayoffsRankingsPosition, cumPlayoffsRankingsTeam;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
@@ -269,7 +272,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        /// Gets a player stats dictionary of only the active players, and calculates their rankings.
+        /// Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.
         /// </summary>
         private void GetActivePlayers()
         {
@@ -304,7 +307,7 @@ namespace NBA_Stats_Tracker.Windows
 
         /// <summary>
         /// Handles the SelectionChanged event of the cmbTeam control.
-        /// Populates the player combo, resets all relevant DataGrid DataContext and ItemsSource properties, and calculates the in-team player rankings.
+        /// Populates the player combo, resets all relevant DataGrid DataContext and ItemsSource properties, and calculates the in-team player rankingsPerGame.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
@@ -411,6 +414,20 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateYearlyReport();
 
+            cumSeasonRankingsActive = PlayerRankings.CalculateActiveRankings();
+            cumSeasonRankingsPosition =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value));
+            cumSeasonRankingsTeam =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.TeamF == psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
+
+            cumPlayoffsRankingsActive = PlayerRankings.CalculateActiveRankings(true);
+            cumPlayoffsRankingsPosition =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.Position1 == psr.Position1).ToDictionary(r => r.Key, r => r.Value), true);
+            cumPlayoffsRankingsTeam =
+                new PlayerRankings(MainWindow.pst.Where(ps => ps.Value.TeamF == psr.TeamF).ToDictionary(r => r.Key, r => r.Value), true);
+
+            UpdateScoutingReport();
+
             //if (tbcPlayerOverview.SelectedItem == tabHTH)
             //{
             cmbOppPlayer_SelectionChanged(null, null);
@@ -418,6 +435,109 @@ namespace NBA_Stats_Tracker.Windows
 
             if (cmbGraphStat.SelectedIndex == -1)
                 cmbGraphStat.SelectedIndex = 0;
+        }
+
+        private List<string> GetFacts(int id, PlayerRankings rankings)
+        {
+            int count = 0;
+            var facts = new List<string>();
+            for (int i = 0; i < rankings.rankingsTotal[id].Length; i++)
+            {
+                var rank = rankings.rankingsTotal[id][i];
+                if (rank <= 20)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), p.totals[i]);
+                    fact += String.Format("{0}", MainWindow.pst[id].stats[i]);
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            for (int i = 0; i < rankings.rankingsPerGame[id].Length; i++)
+            {
+                var rank = rankings.rankingsPerGame[id][i];
+                if (rank <= 20)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), p.averages[i]);
+                    if (t.averages[i].EndsWith("%"))
+                    {
+                        fact += String.Format("{0:F3}", MainWindow.pst[id].averages[i]);
+                    }
+                    else if (t.averages[i].EndsWith("eff"))
+                    {
+                        fact += String.Format("{0:F2}", MainWindow.pst[id].averages[i]);
+                    }
+                    else
+                    {
+                        fact += String.Format("{0:F1}", MainWindow.pst[id].averages[i]);
+                    }
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            var metricsToSkip = new List<string> {"aPER", "uPER"};
+            for (int i = 0; i < rankings.rankingsMetrics[id].Keys.Count; i++)
+            {
+                var metricName = rankings.rankingsMetrics[id].Keys.ToList()[i];
+                if (metricsToSkip.Contains(metricName))
+                    continue;
+
+                var rank = rankings.rankingsMetrics[id][metricName];
+                if (rank <= 20)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), metricName.Replace("p", "%"));
+                    if (metricName.EndsWith("p") || metricName.EndsWith("%"))
+                    {
+                        fact += String.Format("{0:F3}", MainWindow.pst[id].metrics[metricName]);
+                    }
+                    else if (metricName.EndsWith("eff"))
+                    {
+                        fact += String.Format("{0:F2}", MainWindow.pst[id].metrics[metricName]);
+                    }
+                    else
+                    {
+                        fact += String.Format("{0:F1}", MainWindow.pst[id].metrics[metricName]);
+                    }
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            facts.Sort(
+                (f1, f2) =>
+                Convert.ToInt32(f1.Substring(0, f1.IndexOfAny(new char[] {'s', 'n', 'r', 't'})))
+                       .CompareTo(Convert.ToInt32(f2.Substring(0, f2.IndexOfAny(new char[] {'s', 'n', 'r', 't'})))));
+            return facts;
+        }
+
+        private void UpdateScoutingReport()
+        {
+            int id = SelectedPlayerID;
+
+            string msg = new PlayerStatsRow(MainWindow.pst[id], false, false).ScoutingReport(MainWindow.pst, cumSeasonRankingsActive, cumSeasonRankingsTeam,
+                                                                               cumSeasonRankingsPosition, pbsList, txbGame1.Text);
+            txbSeasonScoutingReport.Text = msg;
+
+            var facts = GetFacts(id, cumSeasonRankingsActive);
+            txbSeasonFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
+
+            if (MainWindow.pst[id].pl_stats[p.GP] > 0)
+            {
+                msg = new PlayerStatsRow(MainWindow.pst[id], true, false).ScoutingReport(MainWindow.pst, cumPlayoffsRankingsActive, cumPlayoffsRankingsTeam,
+                                                                               cumPlayoffsRankingsPosition, pbsList, txbGame1.Text);
+                txbPlayoffsScoutingReport.Text = msg;
+
+                facts = GetFacts(id, cumPlayoffsRankingsActive);
+                txbPlayoffsFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
+
+                grpPlayoffsScoutingReport.Visibility = Visibility.Visible;
+                grpPlayoffsFacts.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                grpPlayoffsScoutingReport.Visibility = Visibility.Collapsed;
+                grpPlayoffsFacts.Visibility = Visibility.Collapsed;
+            }
+
+            svScoutingReport.ScrollToTop();
         }
 
         /// <summary>
@@ -569,66 +689,66 @@ namespace NBA_Stats_Tracker.Windows
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Rankings";
-                dr["MINS"] = String.Format("{0}", rankingsActive.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", rankingsActive.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", rankingsActive.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", rankingsActive.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", rankingsActive.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", rankingsActive.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", rankingsActive.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", rankingsActive.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", rankingsActive.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", rankingsActive.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", rankingsActive.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", rankingsActive.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", rankingsActive.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", rankingsActive.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", rankingsActive.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", rankingsActive.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsActive.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "In-team Rankings";
-                dr["MINS"] = String.Format("{0}", rankingsTeam.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", rankingsTeam.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", rankingsTeam.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", rankingsTeam.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", rankingsTeam.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", rankingsTeam.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", rankingsTeam.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", rankingsTeam.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", rankingsTeam.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", rankingsTeam.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", rankingsTeam.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", rankingsTeam.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", rankingsTeam.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", rankingsTeam.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", rankingsTeam.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", rankingsTeam.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsTeam.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Position Rankings";
-                dr["MINS"] = String.Format("{0}", rankingsPosition.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", rankingsPosition.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", rankingsPosition.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", rankingsPosition.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", rankingsPosition.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", rankingsPosition.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", rankingsPosition.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", rankingsPosition.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", rankingsPosition.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", rankingsPosition.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", rankingsPosition.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", rankingsPosition.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", rankingsPosition.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", rankingsPosition.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", rankingsPosition.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", rankingsPosition.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", rankingsPosition.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
@@ -716,66 +836,66 @@ namespace NBA_Stats_Tracker.Windows
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Pl Rank";
-                dr["MINS"] = String.Format("{0}", pl_rankingsActive.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", pl_rankingsActive.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", pl_rankingsActive.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", pl_rankingsActive.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", pl_rankingsActive.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", pl_rankingsActive.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", pl_rankingsActive.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", pl_rankingsActive.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", pl_rankingsActive.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", pl_rankingsActive.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsActive.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Pl In-Team";
-                dr["MINS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", pl_rankingsTeam.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", pl_rankingsTeam.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", pl_rankingsTeam.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", pl_rankingsTeam.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", pl_rankingsTeam.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", pl_rankingsTeam.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsTeam.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
                 dr = dt_ov.NewRow();
 
                 dr["Type"] = "Pl Position";
-                dr["MINS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.MPG]);
-                dr["PTS"] = String.Format("{0}", pl_rankingsPosition.list[id][p.PPG]);
-                dr["FG"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGp]);
-                dr["FGeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FGeff]);
-                dr["3PT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPp]);
-                dr["3Peff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPeff]);
-                dr["FT"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTp]);
-                dr["FTeff"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FTeff]);
-                dr["REB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.RPG]);
-                dr["OREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.ORPG]);
-                dr["DREB"] = String.Format("{0}", pl_rankingsPosition.list[id][p.DRPG]);
-                dr["AST"] = String.Format("{0}", pl_rankingsPosition.list[id][t.PAPG]);
-                dr["TO"] = String.Format("{0}", pl_rankingsPosition.list[id][p.TPG]);
-                dr["STL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.SPG]);
-                dr["BLK"] = String.Format("{0}", pl_rankingsPosition.list[id][p.BPG]);
-                dr["FOUL"] = String.Format("{0}", pl_rankingsPosition.list[id][p.FPG]);
+                dr["MINS"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.MPG]);
+                dr["PTS"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.PPG]);
+                dr["FG"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.FGp]);
+                dr["FGeff"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.FGeff]);
+                dr["3PT"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.TPp]);
+                dr["3Peff"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.TPeff]);
+                dr["FT"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.FTp]);
+                dr["FTeff"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.FTeff]);
+                dr["REB"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.RPG]);
+                dr["OREB"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.ORPG]);
+                dr["DREB"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.DRPG]);
+                dr["AST"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][t.PAPG]);
+                dr["TO"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.TPG]);
+                dr["STL"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.SPG]);
+                dr["BLK"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.BPG]);
+                dr["FOUL"] = String.Format("{0}", pl_rankingsPosition.rankingsPerGame[id][p.FPG]);
 
                 dt_ov.Rows.Add(dr);
 
@@ -1907,6 +2027,26 @@ namespace NBA_Stats_Tracker.Windows
             {
                 UpdateYearlyReport();
             }
+        }
+
+        private void btnCopySeasonScouting_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnCopySeasonFacts_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnCopyPlayoffsScouting_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnCopyPlayoffsFacts_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

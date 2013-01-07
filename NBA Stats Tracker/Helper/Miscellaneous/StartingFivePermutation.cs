@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NBA_Stats_Tracker.Helper.Misc
+namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
     /// <summary>
     /// Implements a list of five players. Used in determining the best starting five in a specific scope.

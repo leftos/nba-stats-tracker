@@ -17,6 +17,8 @@
 
 #endregion
 
+using System.Collections.Generic;
+
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
@@ -42,6 +44,28 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTM = 15,
                          FTA = 16;
 
+        public static Dictionary<int, string> totals =
+            new Dictionary<int, string>
+            {
+                {0, "GP"},
+                {1, "GS"},
+                {2, "MINS"},
+                {3, "PTS"},
+                {4, "DREB"},
+                {5, "OREB"},
+                {6, "AST"},
+                {7, "STL"},
+                {8, "BLK"},
+                {9, "TO"},
+                {10, "FOUL"},
+                {11, "FGM"},
+                {12, "FGA"},
+                {13, "3PM"},
+                {14, "3PA"},
+                {15, "FTM"},
+                {16, "FTA"}
+            };
+
         public const int MPG = 0,
                          PPG = 1,
                          DRPG = 2,
@@ -58,6 +82,27 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTp = 13,
                          FTeff = 14,
                          RPG = 15;
+
+        public static Dictionary<int, string> averages =
+            new Dictionary<int, string>
+            {
+                {0, "MPG"},
+                {1, "PPG"},
+                {2, "DRPG"},
+                {3, "ORPG"},
+                {4, "APG"},
+                {5, "SPG"},
+                {6, "BPG"},
+                {7, "TPG"},
+                {8, "FPG"},
+                {9, "FG%"},
+                {10, "FGeff"},
+                {11, "3P%"},
+                {12, "3Peff"},
+                {13, "FT%"},
+                {14, "FTeff"},
+                {15, "RPG"}
+            };
     }
 
     // Unlike TeamStats which was designed before REditor implemented such stats,

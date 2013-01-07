@@ -1354,8 +1354,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
             LoadSeason(MainWindow.currentDB, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder,
-                       ref MainWindow.bshist, out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.TeamRankings,
-                       out MainWindow.PlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
+                       ref MainWindow.bshist, out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.SeasonTeamRankings,
+                       out MainWindow.SeasonPlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
                        out MainWindow.DisplayNames, season == 0 ? MainWindow.curSeason : season, doNotLoadBoxScores);
         }
 
@@ -1365,8 +1365,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
         {
             LoadSeason(file, out MainWindow.tst, out MainWindow.tstopp, out MainWindow.pst, out MainWindow.TeamOrder, ref MainWindow.bshist,
-                       out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.TeamRankings,
-                       out MainWindow.PlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
+                       out MainWindow.splitTeamStats, out MainWindow.splitPlayerStats, out MainWindow.SeasonTeamRankings,
+                       out MainWindow.SeasonPlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
                        out MainWindow.DisplayNames, season == 0 ? MainWindow.curSeason : season, doNotLoadBoxScores);
         }
 
@@ -1384,8 +1384,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         public static void LoadSeason(string file, out Dictionary<int, TeamStats> tst, out Dictionary<int, TeamStats> tstopp,
                                       out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> teamOrder,
                                       ref List<BoxScoreEntry> bshist, out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
-                                      out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out int[][] teamRankings,
-                                      out PlayerRankings playerRankings, out int[][] playoffTeamRankings,
+                                      out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out TeamRankings teamRankings,
+                                      out PlayerRankings playerRankings, out TeamRankings playoffTeamRankings,
                                       out PlayerRankings playoffPlayerRankings, out Dictionary<string, string> displayNames,
                                       int curSeason = 0, bool doNotLoadBoxScores = false)
         {
@@ -2081,7 +2081,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        out SortedDictionary<string, int> TeamOrder, out Dictionary<int, PlayerStats> pst,
                                        out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
                                        out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out List<BoxScoreEntry> bshist,
-                                       out int[][] teamRankings, out PlayerRankings playerRankings, out int[][] playoffTeamRankings,
+                                       out TeamRankings teamRankings, out PlayerRankings playerRankings, out TeamRankings playoffTeamRankings,
                                        out PlayerRankings playoffPlayerRankings, out Dictionary<string, string> DisplayNames)
         {
             tst = new Dictionary<int, TeamStats>();
@@ -2389,8 +2389,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
-            teamRankings = TeamStats.CalculateTeamRankings(tst);
-            playoffTeamRankings = TeamStats.CalculateTeamRankings(tst, true);
+            teamRankings = new TeamRankings(tst);
+            playoffTeamRankings = new TeamRankings(tst, true);
             playerRankings = new PlayerRankings(pst);
             playoffPlayerRankings = new PlayerRankings(pst, true);
         }

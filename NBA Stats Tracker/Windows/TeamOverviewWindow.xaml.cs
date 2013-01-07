@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,6 +35,7 @@ using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.ListExtensions;
 using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using SQLite_Database;
 
 #endregion
@@ -65,10 +67,10 @@ namespace NBA_Stats_Tracker.Windows
         private DataView dv_hth;
         private int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
         private ObservableCollection<PlayerStatsRow> pl_psrList;
-        private int[][] pl_rankings;
+        private TeamRankings playoffRankings;
         private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
-        private int[][] rankings;
+        private TeamRankings seasonRankings;
         private Dictionary<int, TeamStats> tst;
         private Dictionary<int, TeamStats> tstopp;
 
@@ -145,6 +147,114 @@ namespace NBA_Stats_Tracker.Windows
                 cmbTeam.SelectedIndex = 0;
             else
                 cmbTeam.SelectedIndex++;
+        }
+
+        private void UpdateScoutingReport()
+        {
+            int id;
+            try
+            {
+                id = MainWindow.TeamOrder[GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString())];
+            }
+            catch
+            {
+                return;
+            }
+
+            string msg = tst[id].ScoutingReport(tst, psrList, MainWindow.SeasonTeamRankings);
+            txbSeasonScoutingReport.Text = msg;
+
+            var facts = GetFacts(id, MainWindow.SeasonTeamRankings);
+            txbSeasonFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
+
+            if (tst[id].getPlayoffGames() > 0)
+            {
+                msg = tst[id].ScoutingReport(tst, psrList, MainWindow.PlayoffTeamRankings, true);
+                txbPlayoffsScoutingReport.Text = msg;
+
+                facts = GetFacts(id, MainWindow.PlayoffTeamRankings);
+                txbPlayoffsFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
+
+                grpPlayoffsScoutingReport.Visibility = Visibility.Visible;
+                grpPlayoffsFacts.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                grpPlayoffsScoutingReport.Visibility = Visibility.Collapsed;
+                grpPlayoffsFacts.Visibility = Visibility.Collapsed;
+            }
+
+            svScoutingReport.ScrollToTop();
+        }
+
+        private List<string> GetFacts(int id, TeamRankings rankings)
+        {
+            int count = 0;
+            var facts = new List<string>();
+            for (int i = 0; i < rankings.rankingsTotal[id].Length; i++)
+            {
+                if (i == 3)
+                    continue;
+
+                var rank = rankings.rankingsTotal[id][i];
+                if (rank <= 5)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), t.totals[i]);
+                    fact += String.Format("{0}", tst[id].stats[i]);
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            for (int i = 0; i < rankings.rankingsPerGame[id].Length; i++)
+            {
+                var rank = rankings.rankingsPerGame[id][i];
+                if (rank <= 5)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), t.averages[i]);
+                    if (t.averages[i].EndsWith("%"))
+                    {
+                        fact += String.Format("{0:F3}", tst[id].averages[i]);
+                    }
+                    else if (t.averages[i].EndsWith("eff"))
+                    {
+                        fact += String.Format("{0:F2}", tst[id].averages[i]);
+                    }
+                    else
+                    {
+                        fact += String.Format("{0:F1}", tst[id].averages[i]);
+                    }
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            for (int i = 0; i < rankings.rankingsMetrics[id].Keys.Count; i++)
+            {
+                var metricName = rankings.rankingsMetrics[id].Keys.ToList()[i];
+                var rank = rankings.rankingsMetrics[id][metricName];
+                if (rank <= 5)
+                {
+                    string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), metricName.Replace("p", "%"));
+                    if (metricName.EndsWith("p") || metricName.EndsWith("%"))
+                    {
+                        fact += String.Format("{0:F3}", tst[id].metrics[metricName]);
+                    }
+                    else if (metricName.EndsWith("eff"))
+                    {
+                        fact += String.Format("{0:F2}", tst[id].metrics[metricName]);
+                    }
+                    else
+                    {
+                        fact += String.Format("{0:F1}", tst[id].metrics[metricName]);
+                    }
+                    facts.Add(fact);
+                    count++;
+                }
+            }
+            facts.Sort(
+                (f1, f2) =>
+                Convert.ToInt32(f1.Substring(0, f1.IndexOfAny(new char[] { 's', 'n', 'r', 't' })))
+                       .CompareTo(Convert.ToInt32(f2.Substring(0, f2.IndexOfAny(new char[] { 's', 'n', 'r', 't' })))));
+            return facts;
         }
 
         /// <summary>
@@ -230,25 +340,25 @@ namespace NBA_Stats_Tracker.Windows
             dr2 = dt_ov.NewRow();
 
             dr2["Type"] = "Rankings";
-            dr2["Wins (W%)"] = rankings[i][t.Wp];
-            dr2["Losses (Weff)"] = rankings[i][t.Weff];
-            dr2["PF"] = rankings[i][t.PPG];
-            dr2["PA"] = cmbTeam.Items.Count + 1 - rankings[i][t.PAPG];
-            dr2["PD"] = rankings[i][t.PD];
-            dr2["FG"] = rankings[i][t.FGp];
-            dr2["FGeff"] = rankings[i][t.FGeff];
-            dr2["3PT"] = rankings[i][t.TPp];
-            dr2["3Peff"] = rankings[i][t.TPeff];
-            dr2["FT"] = rankings[i][t.FTp];
-            dr2["FTeff"] = rankings[i][t.FTeff];
-            dr2["REB"] = rankings[i][t.RPG];
-            dr2["OREB"] = rankings[i][t.ORPG];
-            dr2["DREB"] = rankings[i][t.DRPG];
-            dr2["AST"] = rankings[i][t.APG];
-            dr2["TO"] = cmbTeam.Items.Count + 1 - rankings[i][t.TPG];
-            dr2["STL"] = rankings[i][t.SPG];
-            dr2["BLK"] = rankings[i][t.BPG];
-            dr2["FOUL"] = cmbTeam.Items.Count + 1 - rankings[i][t.FPG];
+            dr2["Wins (W%)"] = seasonRankings.rankingsPerGame[i][t.Wp];
+            dr2["Losses (Weff)"] = seasonRankings.rankingsPerGame[i][t.Weff];
+            dr2["PF"] = seasonRankings.rankingsPerGame[i][t.PPG];
+            dr2["PA"] = cmbTeam.Items.Count + 1 - seasonRankings.rankingsPerGame[i][t.PAPG];
+            dr2["PD"] = seasonRankings.rankingsPerGame[i][t.PD];
+            dr2["FG"] = seasonRankings.rankingsPerGame[i][t.FGp];
+            dr2["FGeff"] = seasonRankings.rankingsPerGame[i][t.FGeff];
+            dr2["3PT"] = seasonRankings.rankingsPerGame[i][t.TPp];
+            dr2["3Peff"] = seasonRankings.rankingsPerGame[i][t.TPeff];
+            dr2["FT"] = seasonRankings.rankingsPerGame[i][t.FTp];
+            dr2["FTeff"] = seasonRankings.rankingsPerGame[i][t.FTeff];
+            dr2["REB"] = seasonRankings.rankingsPerGame[i][t.RPG];
+            dr2["OREB"] = seasonRankings.rankingsPerGame[i][t.ORPG];
+            dr2["DREB"] = seasonRankings.rankingsPerGame[i][t.DRPG];
+            dr2["AST"] = seasonRankings.rankingsPerGame[i][t.APG];
+            dr2["TO"] = cmbTeam.Items.Count + 1 - seasonRankings.rankingsPerGame[i][t.TPG];
+            dr2["STL"] = seasonRankings.rankingsPerGame[i][t.SPG];
+            dr2["BLK"] = seasonRankings.rankingsPerGame[i][t.BPG];
+            dr2["FOUL"] = cmbTeam.Items.Count + 1 - seasonRankings.rankingsPerGame[i][t.FPG];
 
             dt_ov.Rows.Add(dr2);
 
@@ -361,25 +471,25 @@ namespace NBA_Stats_Tracker.Windows
             int count = tst.Count(z => z.Value.getPlayoffGames() > 0);
 
             dr2["Type"] = "Pl Rank";
-            dr2["Wins (W%)"] = pl_rankings[i][t.Wp];
-            dr2["Losses (Weff)"] = pl_rankings[i][t.Weff];
-            dr2["PF"] = pl_rankings[i][t.PPG];
-            dr2["PA"] = count + 1 - pl_rankings[i][t.PAPG];
-            dr2["PD"] = pl_rankings[i][t.PD];
-            dr2["FG"] = pl_rankings[i][t.FGp];
-            dr2["FGeff"] = pl_rankings[i][t.FGeff];
-            dr2["3PT"] = pl_rankings[i][t.TPp];
-            dr2["3Peff"] = pl_rankings[i][t.TPeff];
-            dr2["FT"] = pl_rankings[i][t.FTp];
-            dr2["FTeff"] = pl_rankings[i][t.FTeff];
-            dr2["REB"] = pl_rankings[i][t.RPG];
-            dr2["OREB"] = pl_rankings[i][t.ORPG];
-            dr2["DREB"] = pl_rankings[i][t.DRPG];
-            dr2["AST"] = pl_rankings[i][t.APG];
-            dr2["TO"] = count + 1 - pl_rankings[i][t.TPG];
-            dr2["STL"] = pl_rankings[i][t.SPG];
-            dr2["BLK"] = pl_rankings[i][t.BPG];
-            dr2["FOUL"] = count + 1 - pl_rankings[i][t.FPG];
+            dr2["Wins (W%)"] = playoffRankings.rankingsPerGame[i][t.Wp];
+            dr2["Losses (Weff)"] = playoffRankings.rankingsPerGame[i][t.Weff];
+            dr2["PF"] = playoffRankings.rankingsPerGame[i][t.PPG];
+            dr2["PA"] = count + 1 - playoffRankings.rankingsPerGame[i][t.PAPG];
+            dr2["PD"] = playoffRankings.rankingsPerGame[i][t.PD];
+            dr2["FG"] = playoffRankings.rankingsPerGame[i][t.FGp];
+            dr2["FGeff"] = playoffRankings.rankingsPerGame[i][t.FGeff];
+            dr2["3PT"] = playoffRankings.rankingsPerGame[i][t.TPp];
+            dr2["3Peff"] = playoffRankings.rankingsPerGame[i][t.TPeff];
+            dr2["FT"] = playoffRankings.rankingsPerGame[i][t.FTp];
+            dr2["FTeff"] = playoffRankings.rankingsPerGame[i][t.FTeff];
+            dr2["REB"] = playoffRankings.rankingsPerGame[i][t.RPG];
+            dr2["OREB"] = playoffRankings.rankingsPerGame[i][t.ORPG];
+            dr2["DREB"] = playoffRankings.rankingsPerGame[i][t.DRPG];
+            dr2["AST"] = playoffRankings.rankingsPerGame[i][t.APG];
+            dr2["TO"] = count + 1 - playoffRankings.rankingsPerGame[i][t.TPG];
+            dr2["STL"] = playoffRankings.rankingsPerGame[i][t.SPG];
+            dr2["BLK"] = playoffRankings.rankingsPerGame[i][t.BPG];
+            dr2["FOUL"] = count + 1 - playoffRankings.rankingsPerGame[i][t.FPG];
 
             dt_ov.Rows.Add(dr2);
 
@@ -587,6 +697,8 @@ namespace NBA_Stats_Tracker.Windows
             UpdatePlayerAndMetricStats();
 
             UpdateBest();
+
+            UpdateScoutingReport();
         }
 
         /// <summary>
@@ -973,7 +1085,7 @@ namespace NBA_Stats_Tracker.Windows
 
         /// <summary>
         /// Handles the Click event of the btnShowAvg control.
-        /// Shows the old "Correct Team Stats" styled averages and rankings window.
+        /// Shows the old "Correct Team Stats" styled averages and rankingsPerGame window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -1183,31 +1295,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
         {
-            int id;
-            try
-            {
-                id = MainWindow.TeamOrder[GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString())];
-            }
-            catch
-            {
-                return;
-            }
-
-            var temptst = new Dictionary<int, TeamStats>();
-            foreach (var kvp in tst)
-            {
-                int i = kvp.Key;
-                temptst.Add(i, tst[i].DeepClone());
-                temptst[i].ResetStats(Span.SeasonAndPlayoffs);
-                temptst[i].AddTeamStats(tst[i], Span.SeasonAndPlayoffs);
-            }
-
-            if (temptst.Count > 1)
-            {
-                string msg = temptst[id].ScoutingReport(temptst, psrList);
-                var cw = new CopyableMessageWindow(msg, "Scouting Report", TextAlignment.Left);
-                cw.ShowDialog();
-            }
+            
         }
 
         /// <summary>
@@ -1754,7 +1842,7 @@ namespace NBA_Stats_Tracker.Windows
 
         /// <summary>
         /// Handles the Loaded event of the Window control.
-        /// Connects the team and player stats dictionaries to the Main window's, calculates team rankings, 
+        /// Connects the team and player stats dictionaries to the Main window's, calculates team rankingsPerGame, 
         /// prepares the data tables and sets DataGrid parameters.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -1813,6 +1901,7 @@ namespace NBA_Stats_Tracker.Windows
             dt_hth.Columns.Add("STL");
             dt_hth.Columns.Add("BLK");
             dt_hth.Columns.Add("FOUL");
+            dt_hth.Columns.Add("MINS");
 
             dt_ss = new DataTable();
 
@@ -1839,6 +1928,7 @@ namespace NBA_Stats_Tracker.Windows
             dt_ss.Columns.Add("STL");
             dt_ss.Columns.Add("BLK");
             dt_ss.Columns.Add("FOUL");
+            dt_ss.Columns.Add("MINS");
 
             dt_yea = new DataTable();
 
@@ -1865,6 +1955,7 @@ namespace NBA_Stats_Tracker.Windows
             dt_yea.Columns.Add("STL");
             dt_yea.Columns.Add("BLK");
             dt_yea.Columns.Add("FOUL");
+            dt_yea.Columns.Add("MINS");
 
             dt_bs = new DataTable();
             dt_bs.Columns.Add("Date", typeof (DateTime));
@@ -1931,8 +2022,8 @@ namespace NBA_Stats_Tracker.Windows
             tstopp = MainWindow.tstopp;
             pst = MainWindow.pst;
 
-            rankings = MainWindow.TeamRankings;
-            pl_rankings = MainWindow.PlayoffTeamRankings;
+            seasonRankings = MainWindow.SeasonTeamRankings;
+            playoffRankings = MainWindow.PlayoffTeamRankings;
         }
 
         /// <summary>
@@ -2397,6 +2488,26 @@ namespace NBA_Stats_Tracker.Windows
             {
                 UpdateYearlyStats();
             }
+        }
+
+        private void btnCopySeasonScouting_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(txbSeasonScoutingReport.Text);
+        }
+
+        private void btnCopyPlayoffsScouting_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(txbPlayoffsScoutingReport.Text);
+        }
+
+        private void btnCopySeasonFacts_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(txbSeasonFacts.Text);
+        }
+
+        private void btnCopyPlayoffsFacts_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(txbPlayoffsFacts.Text);
         }
     }
 }

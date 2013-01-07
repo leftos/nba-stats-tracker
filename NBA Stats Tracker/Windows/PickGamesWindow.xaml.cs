@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
 
 namespace NBA_Stats_Tracker.Windows

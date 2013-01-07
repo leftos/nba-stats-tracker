@@ -587,7 +587,7 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 #region temp_metrics that do not require Opponent Stats
 
-                double ASTp = 100*pstats[p.AST]/(((pstats[p.MINS]/(tstats[t.MINS]))*tstats[t.FGM]) - pstats[p.FGM]);
+                double ASTp = pstats[p.AST]/(((pstats[p.MINS]/(tstats[t.MINS]))*tstats[t.FGM]) - pstats[p.FGM]);
                 temp_metrics.Add("AST%", ASTp);
 
                 double EFGp = (pstats[p.FGM] + 0.5*pstats[p.TPM])/pstats[p.FGA];
@@ -599,16 +599,16 @@ namespace NBA_Stats_Tracker.Data.Players
                 else
                     toppmetrics = tsopp.pl_metrics;
 
-                double STLp = 100*(pstats[p.STL]*(tstats[t.MINS]))/(pstats[p.MINS]*toppmetrics["Poss"]);
+                double STLp = (pstats[p.STL]*(tstats[t.MINS]))/(pstats[p.MINS]*toppmetrics["Poss"]);
                 temp_metrics.Add("STL%", STLp);
 
-                double TOp = 100*pstats[p.TO]/(pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO]);
+                double TOp = pstats[p.TO]/(pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO]);
                 temp_metrics.Add("TO%", TOp);
 
                 double TSp = pstats[p.PTS]/(2*(pstats[p.FGA] + 0.44*pstats[p.FTA]));
                 temp_metrics.Add("TS%", TSp);
 
-                double USGp = 100*((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO])*(tstats[t.MINS]))/
+                double USGp = ((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO])*(tstats[t.MINS]))/
                               (pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]));
                 temp_metrics.Add("USG%", USGp);
 
@@ -634,15 +634,15 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 if (ts.getGames() == tsopp.getGames())
                 {
-                    double BLKp = 100*(pstats[p.BLK]*(tstats[t.MINS]))/(pstats[p.MINS]*(toppstats[t.FGA] - toppstats[t.TPA]));
+                    double BLKp = (pstats[p.BLK]*(tstats[t.MINS]))/(pstats[p.MINS]*(toppstats[t.FGA] - toppstats[t.TPA]));
 
-                    double DRBp = 100*(pstats[p.DREB]*(tstats[t.MINS]))/(pstats[p.MINS]*(tstats[t.DREB] + toppstats[t.OREB]));
+                    double DRBp = (pstats[p.DREB]*(tstats[t.MINS]))/(pstats[p.MINS]*(tstats[t.DREB] + toppstats[t.OREB]));
 
-                    double ORBp = 100*(pstats[p.OREB]*(tstats[t.MINS]))/(pstats[p.MINS]*(tstats[t.OREB] + toppstats[t.DREB]));
+                    double ORBp = (pstats[p.OREB]*(tstats[t.MINS]))/(pstats[p.MINS]*(tstats[t.OREB] + toppstats[t.DREB]));
 
                     double toppREB = toppstats[t.OREB] + toppstats[t.DREB];
 
-                    double REBp = 100*(pREB*(tstats[t.MINS]))/(pstats[p.MINS]*(tREB + toppREB));
+                    double REBp = (pREB*(tstats[t.MINS]))/(pstats[p.MINS]*(tREB + toppREB));
 
                     #region temp_metrics that require league stats
 

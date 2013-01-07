@@ -36,6 +36,7 @@ using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Misc;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using SQLite_Database;
 
 #endregion
@@ -1319,7 +1320,7 @@ namespace NBA_Stats_Tracker.Windows
             var ts = teamStats[MainWindow.TeamOrder[team]];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayed = ps.stats[p.GP];
-            var newps = ps.DeepClone();
+            var newps = ps.Clone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0

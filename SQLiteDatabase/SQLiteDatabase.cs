@@ -184,7 +184,6 @@ namespace SQLite_Database
         public void UpdateManyTransaction(String tableName, List<Dictionary<String, String>> dataList, List<String> whereList)
         {
             SQLiteConnection cnn;
-            int returnCode;
             String vals = "";
             using (cnn = new SQLiteConnection(dbConnection))
             {
@@ -196,8 +195,6 @@ namespace SQLite_Database
                         for (int i = 0; i < dataList.Count; i++)
                         {
                             Dictionary<string, string> data = dataList[i];
-                            String columns = "";
-                            String values = "";
                             if (data.Count >= 1)
                             {
                                 vals = data.Aggregate("", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
@@ -280,7 +277,6 @@ namespace SQLite_Database
         public void InsertManyTransaction(String tableName, List<Dictionary<String, String>> dataList)
         {
             SQLiteConnection cnn;
-            int returnCode;
             using (cnn = new SQLiteConnection(dbConnection))
             {
                 cnn.Open();

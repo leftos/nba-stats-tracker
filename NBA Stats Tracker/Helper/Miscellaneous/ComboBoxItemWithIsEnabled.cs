@@ -1,4 +1,4 @@
-namespace NBA_Stats_Tracker.Helper.Misc
+namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
     /// <summary>
     /// Implements a generic combo-box item with an IsEnabled property. 

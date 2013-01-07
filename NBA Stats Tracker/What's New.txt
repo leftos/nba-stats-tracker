@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.3.5
+		- Addition: Added Scouting Report tab in Team and Player Overview, providing scouting reports for each team and player for both their season and playoffs performances, as well as significant facts about them (i.e. in which stats they're rated at the top of the league)
+
 	v1.3.4 Beta
 		- Addition: Added Opponent Basic & Metric Stats tabs to League Overview
 		- Fix: Fixed calculated box-scores not updating the teams' opponent stats during REDitor import (v1.3.3 Beta bug)

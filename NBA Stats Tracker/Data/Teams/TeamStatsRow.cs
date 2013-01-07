@@ -176,6 +176,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                 AST = ts.pl_stats[t.AST];
                 FOUL = ts.pl_stats[t.FOUL];
 
+                Wp = ts.pl_averages[t.Wp];
+                Weff = ts.pl_averages[t.Weff];
                 PPG = ts.pl_averages[t.PPG];
                 PAPG = ts.pl_averages[t.PAPG];
                 FGp = ts.pl_averages[t.FGp];

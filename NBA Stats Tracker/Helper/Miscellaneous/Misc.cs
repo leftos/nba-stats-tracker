@@ -15,13 +15,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
-namespace NBA_Stats_Tracker.Helper.Misc
+namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
     /// <summary>
     /// Implements miscellaneous helper methods used all over NBA Stats Tracker.
@@ -178,6 +179,47 @@ namespace NBA_Stats_Tracker.Helper.Misc
             }
 
             return settingValue;
+        }
+
+        public static string getRankingSuffix(int rank)
+        {
+            if (rank%10 == 1)
+            {
+                if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("11"))
+                {
+                    return "th";
+                }
+                else
+                {
+                    return "st";
+                }
+            }
+            else if (rank%10 == 2)
+            {
+                if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("12"))
+                {
+                    return "th";
+                }
+                else
+                {
+                    return "nd";
+                }
+            }
+            else if (rank % 10 == 3)
+            {
+                if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("13"))
+                {
+                    return "th";
+                }
+                else
+                {
+                    return "rd";
+                }
+            }
+            else
+            {
+                return "th";
+            }
         }
     }
 }

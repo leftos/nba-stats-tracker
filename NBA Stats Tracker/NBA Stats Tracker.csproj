@@ -97,10 +97,10 @@
     <Compile Include="Data\Teams\TeamStats.cs" />
     <Compile Include="Data\Teams\TeamStatsRow.cs" />
     <Compile Include="Helper\ListExtensions\ListExtensions.cs" />
-    <Compile Include="Helper\Misc\ComboBoxItemWithIsEnabled.cs" />
-    <Compile Include="Helper\Misc\Misc.cs" />
+    <Compile Include="Helper\Miscellaneous\ComboBoxItemWithIsEnabled.cs" />
+    <Compile Include="Helper\Miscellaneous\Misc.cs" />
     <Compile Include="Helper\EventHandlers\EventHandlers.cs" />
-    <Compile Include="Helper\Misc\StartingFivePermutation.cs" />
+    <Compile Include="Helper\Miscellaneous\StartingFivePermutation.cs" />
     <Compile Include="Helper\WindowsForms\WindowsForms.cs" />
     <Compile Include="Interop\NBA2K12\PlayoffTree.cs" />
     <Compile Include="Interop\REDitor\REDitor.cs" />
