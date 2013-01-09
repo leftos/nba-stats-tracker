@@ -15,6 +15,11 @@ namespace NBA_Stats_Tracker.Data.Players
         public Dictionary<int, int[]> rankingsPerGame = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> rankingsTotal = new Dictionary<int, int[]>();
 
+        public PlayerRankings()
+        {
+            
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerRankings" /> class, and calculates the rankingsPerGame.
         /// </summary>

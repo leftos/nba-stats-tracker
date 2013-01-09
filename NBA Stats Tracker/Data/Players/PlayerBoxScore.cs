@@ -22,6 +22,8 @@ namespace NBA_Stats_Tracker.Data.Players
         protected UInt16 _TPM;
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
 
+        public int SeasonNum { get; set; }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
@@ -102,6 +104,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 Date = Tools.getString(r, "Date").Split(' ')[0];
                 RealDate = Convert.ToDateTime(Date);
+                SeasonNum = Tools.getInt(r, "SeasonNum");
 
                 CalcMetrics(r);
             }

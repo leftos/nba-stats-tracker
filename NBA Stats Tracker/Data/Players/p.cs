@@ -35,7 +35,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          AST = 6,
                          STL = 7,
                          BLK = 8,
-                         TO = 9,
+                         TOS = 9,
                          FOUL = 10,
                          FGM = 11,
                          FGA = 12,
@@ -43,6 +43,11 @@ namespace NBA_Stats_Tracker.Data.Players
                          TPA = 14,
                          FTM = 15,
                          FTA = 16;
+
+        /// <summary>
+        /// Only to be used with CareerHighs
+        /// </summary>
+        public const int REB = 17; // REB used only for CareerHighs
 
         public const int MPG = 0,
                          PPG = 1,
@@ -72,7 +77,7 @@ namespace NBA_Stats_Tracker.Data.Players
                                                            {6, "AST"},
                                                            {7, "STL"},
                                                            {8, "BLK"},
-                                                           {9, "TO"},
+                                                           {9, "TOS"},
                                                            {10, "FOUL"},
                                                            {11, "FGM"},
                                                            {12, "FGA"},

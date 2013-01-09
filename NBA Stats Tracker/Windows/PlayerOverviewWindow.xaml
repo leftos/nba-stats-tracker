@@ -264,9 +264,7 @@
                 </TabItem>
                 <TabItem Header="Yearly Report" x:Name="tabYearly">
                     <Grid>
-                        <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
-                                  CanUserAddRows="True"
-                                  CanUserDeleteRows="True" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                        <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                                   x:Name="dgvYearly"
                                   VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting"
                                   Margin="0,0,0,38">
@@ -324,6 +322,44 @@
                         <Button Content="Add Past Stats" Height="23" HorizontalAlignment="Right"
                                 Margin="0,0,10,10" x:Name="btnAddPastStats" VerticalAlignment="Bottom" Width="143"
                                 Click="btnAddPastStats_Click" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Records" x:Name="tabHighs">
+                    <Grid>
+                        <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                                  x:Name="dgvHighs"
+                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting">
+                            <DataGrid.GroupStyle>
+                                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                                    <GroupStyle.Panel>
+                                        <ItemsPanelTemplate>
+                                            <DataGridRowsPresenter />
+                                        </ItemsPanelTemplate>
+                                    </GroupStyle.Panel>
+                                </GroupStyle>
+                            </DataGrid.GroupStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
+                                <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                                <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                                <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                                <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                                <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                                <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                                <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                                <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                                <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                                <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                                <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
+                                <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                                <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                                <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                                <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                                <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
+                                                    Visibility="Collapsed" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Performance Graph">

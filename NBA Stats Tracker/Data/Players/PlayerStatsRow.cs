@@ -62,7 +62,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 DREB = ps.stats[p.DREB];
                 REB = (UInt16) (OREB + DREB);
                 STL = ps.stats[p.STL];
-                TOS = ps.stats[p.TO];
+                TOS = ps.stats[p.TOS];
                 BLK = ps.stats[p.BLK];
                 AST = ps.stats[p.AST];
                 FOUL = ps.stats[p.FOUL];
@@ -146,7 +146,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 DREB = ps.pl_stats[p.DREB];
                 REB = (UInt16) (OREB + DREB);
                 STL = ps.pl_stats[p.STL];
-                TOS = ps.pl_stats[p.TO];
+                TOS = ps.pl_stats[p.TOS];
                 BLK = ps.pl_stats[p.BLK];
                 AST = ps.pl_stats[p.AST];
                 FOUL = ps.pl_stats[p.FOUL];
@@ -871,7 +871,7 @@ namespace NBA_Stats_Tracker.Data.Players
             else if (pbsList.Count > 3)
             {
                 double sum = 0;
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     sum += pbsList[i].GmSc;
                 }

@@ -36,6 +36,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public Dictionary<string, double> pl_metrics = new Dictionary<string, double>();
         public uint[] pl_stats = new uint[17];
         public uint[] stats = new uint[17];
+        public ushort[] careerHighs = new ushort[18];
+        public PlayerContract contract;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
@@ -79,10 +81,17 @@ namespace NBA_Stats_Tracker.Data.Players
                 pl_stats[i] = 0;
             }
 
-            for (int i = 0; i < averages.Length; i++)
+            for (int i = 0; i < pl_averages.Length; i++)
             {
                 pl_averages[i] = 0;
             }
+
+            for (int i = 0; i < careerHighs.Length; i++)
+            {
+                careerHighs[i] = 0;
+            }
+
+            contract = new PlayerContract();
         }
 
         /// <summary>
@@ -153,9 +162,93 @@ namespace NBA_Stats_Tracker.Data.Players
                 isInjured = Tools.getBoolean(dataRow, "isInjured");
                 isAllStar = Tools.getBoolean(dataRow, "isAllStar");
                 isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
+                contract = new PlayerContract();
+                for (int i = 1; i <= 7; i++)
+                {
+                    int salary;
+                    try
+                    {
+                        salary = Tools.getInt(dataRow, "ContractY" + i);
+                    }
+                    catch (ArgumentException)
+                    {
+                        break;
+                    }
+                    if (salary == 0)
+                        break;
+
+                    contract.ContractSalaryPerYear.Add(salary);
+                }
             }
 
             GetStatsFromDataRow(dataRow, playoffs);
+        }
+
+        public void UpdateCareerHighs(DataRow r)
+        {
+            careerHighs[p.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+            careerHighs[p.PTS] = Convert.ToUInt16(r["PTS"].ToString());
+            careerHighs[p.REB] = Convert.ToUInt16(r["REB"].ToString());
+            careerHighs[p.AST] = Convert.ToUInt16(r["AST"].ToString());
+            careerHighs[p.STL] = Convert.ToUInt16(r["STL"].ToString());
+            careerHighs[p.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+            careerHighs[p.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+            careerHighs[p.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+            careerHighs[p.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+            careerHighs[p.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+            careerHighs[p.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+            careerHighs[p.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+            careerHighs[p.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+            careerHighs[p.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+            careerHighs[p.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            careerHighs[p.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+        }
+
+        public void CalculateSeasonHighs()
+        {
+            var allTimePBSList = new List<PlayerBoxScore>();
+            var db = new SQLite_Database.SQLiteDatabase(MainWindow.currentDB);
+            string q = "select * from PlayerResults where PlayerID = " + ID;
+            var res = db.GetDataTable(q);
+            foreach (DataRow dr in res.Rows)
+            {
+                allTimePBSList.Add(new PlayerBoxScore(dr));
+                q = "select SeasonNum from GameResults where GameID = " + Tools.getInt(dr, "GameID");
+                int seasonNum = Convert.ToInt32(db.ExecuteScalar(q));
+                allTimePBSList.Last().SeasonNum = seasonNum;
+            }
+
+            if (MainWindow.seasonHighs.ContainsKey(ID))
+            {
+                MainWindow.seasonHighs.Remove(ID);
+            }
+            MainWindow.seasonHighs.Add(ID, new Dictionary<int, ushort[]>());
+            var seasons = allTimePBSList.GroupBy(pbs => pbs.SeasonNum).Select(g => g.Key).ToList();
+            foreach (var season in seasons)
+            {
+                var seasonPBSList = allTimePBSList.Where(pbs => pbs.SeasonNum == season).ToList();
+                MainWindow.seasonHighs[ID].Add(season, new ushort[18]);
+                var sh = MainWindow.seasonHighs[ID][season];
+                for (int i = 0; i < sh.Length; i++)
+                {
+                    sh[i] = 0;
+                }
+                sh[p.AST] = seasonPBSList.Select(pbs => pbs.AST).Max();
+                sh[p.BLK] = seasonPBSList.Select(pbs => pbs.BLK).Max();
+                sh[p.DREB] = seasonPBSList.Select(pbs => pbs.DREB).Max();
+                sh[p.OREB] = seasonPBSList.Select(pbs => pbs.OREB).Max();
+                sh[p.REB] = seasonPBSList.Select(pbs => pbs.REB).Max();
+                sh[p.STL] = seasonPBSList.Select(pbs => pbs.STL).Max();
+                sh[p.TOS] = seasonPBSList.Select(pbs => pbs.TOS).Max();
+                sh[p.FOUL] = seasonPBSList.Select(pbs => pbs.FOUL).Max();
+                sh[p.FGM] = seasonPBSList.Select(pbs => pbs.FGM).Max();
+                sh[p.FGA] = seasonPBSList.Select(pbs => pbs.FGA).Max();
+                sh[p.TPM] = seasonPBSList.Select(pbs => pbs.TPM).Max();
+                sh[p.TPA] = seasonPBSList.Select(pbs => pbs.TPA).Max();
+                sh[p.FTM] = seasonPBSList.Select(pbs => pbs.FTM).Max();
+                sh[p.FTA] = seasonPBSList.Select(pbs => pbs.FTA).Max();
+                sh[p.PTS] = seasonPBSList.Select(pbs => pbs.PTS).Max();
+            }
         }
 
         /// <summary>
@@ -233,7 +326,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
                     stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
                     stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                    stats[p.TO] = Tools.getUInt16(dataRow, "TO");
+                    stats[p.TOS] = Tools.getUInt16(dataRow, "TO");
                     stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
                     stats[p.AST] = Tools.getUInt16(dataRow, "AST");
                     stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
@@ -263,7 +356,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     pl_stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
                     pl_stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
                     pl_stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                    pl_stats[p.TO] = Tools.getUInt16(dataRow, "TO");
+                    pl_stats[p.TOS] = Tools.getUInt16(dataRow, "TO");
                     pl_stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
                     pl_stats[p.AST] = Tools.getUInt16(dataRow, "AST");
                     pl_stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
@@ -304,7 +397,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 stats[p.OREB] = playerStatsRow.OREB;
                 stats[p.DREB] = playerStatsRow.DREB;
                 stats[p.STL] = playerStatsRow.STL;
-                stats[p.TO] = playerStatsRow.TOS;
+                stats[p.TOS] = playerStatsRow.TOS;
                 stats[p.BLK] = playerStatsRow.BLK;
                 stats[p.AST] = playerStatsRow.AST;
                 stats[p.FOUL] = playerStatsRow.FOUL;
@@ -348,7 +441,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 pl_stats[p.OREB] = playerStatsRow.OREB;
                 pl_stats[p.DREB] = playerStatsRow.DREB;
                 pl_stats[p.STL] = playerStatsRow.STL;
-                pl_stats[p.TO] = playerStatsRow.TOS;
+                pl_stats[p.TOS] = playerStatsRow.TOS;
                 pl_stats[p.BLK] = playerStatsRow.BLK;
                 pl_stats[p.AST] = playerStatsRow.AST;
                 pl_stats[p.FOUL] = playerStatsRow.FOUL;
@@ -411,7 +504,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
                 stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
                 stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+                stats[p.TOS] = Tools.getUInt16(dataRow, "TOS");
                 stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
                 stats[p.AST] = Tools.getUInt16(dataRow, "AST");
                 stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
@@ -431,7 +524,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 pl_stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
                 pl_stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
                 pl_stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-                pl_stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+                pl_stats[p.TOS] = Tools.getUInt16(dataRow, "TOS");
                 pl_stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
                 pl_stats[p.AST] = Tools.getUInt16(dataRow, "AST");
                 pl_stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
@@ -459,7 +552,7 @@ namespace NBA_Stats_Tracker.Data.Players
             pl_stats[p.OREB] = Tools.getUInt16(dataRow, "OREB");
             pl_stats[p.DREB] = Tools.getUInt16(dataRow, "DREB");
             pl_stats[p.STL] = Tools.getUInt16(dataRow, "STL");
-            pl_stats[p.TO] = Tools.getUInt16(dataRow, "TOS");
+            pl_stats[p.TOS] = Tools.getUInt16(dataRow, "TOS");
             pl_stats[p.BLK] = Tools.getUInt16(dataRow, "BLK");
             pl_stats[p.AST] = Tools.getUInt16(dataRow, "AST");
             pl_stats[p.FOUL] = Tools.getUInt16(dataRow, "FOUL");
@@ -486,7 +579,7 @@ namespace NBA_Stats_Tracker.Data.Players
             pl_stats[p.OREB] = pl_psr.OREB;
             pl_stats[p.DREB] = pl_psr.DREB;
             pl_stats[p.STL] = pl_psr.STL;
-            pl_stats[p.TO] = pl_psr.TOS;
+            pl_stats[p.TOS] = pl_psr.TOS;
             pl_stats[p.BLK] = pl_psr.BLK;
             pl_stats[p.AST] = pl_psr.AST;
             pl_stats[p.FOUL] = pl_psr.FOUL;
@@ -518,7 +611,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 averages[p.DRPG] = (float) stats[p.DREB]/games;
                 averages[p.SPG] = (float) stats[p.STL]/games;
                 averages[p.BPG] = (float) stats[p.BLK]/games;
-                averages[p.TPG] = (float) stats[p.TO]/games;
+                averages[p.TPG] = (float) stats[p.TOS]/games;
                 averages[p.APG] = (float) stats[p.AST]/games;
                 averages[p.FPG] = (float) stats[p.FOUL]/games;
             }
@@ -537,7 +630,7 @@ namespace NBA_Stats_Tracker.Data.Players
             pl_averages[p.DRPG] = (float) pl_stats[p.DREB]/pl_games;
             pl_averages[p.SPG] = (float) pl_stats[p.STL]/pl_games;
             pl_averages[p.BPG] = (float) pl_stats[p.BLK]/pl_games;
-            pl_averages[p.TPG] = (float) pl_stats[p.TO]/pl_games;
+            pl_averages[p.TPG] = (float) pl_stats[p.TOS]/pl_games;
             pl_averages[p.APG] = (float) pl_stats[p.AST]/pl_games;
             pl_averages[p.FPG] = (float) pl_stats[p.FOUL]/pl_games;
         }
@@ -595,7 +688,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var temp_metrics = new Dictionary<string, double>();
 
             double GmSc = pstats[p.PTS] + 0.4*pstats[p.FGM] - 0.7*pstats[p.FGA] - 0.4*(pstats[p.FTA] - pstats[p.FTM]) + 0.7*pstats[p.OREB] +
-                          0.3*pstats[p.DREB] + pstats[p.STL] + 0.7*pstats[p.AST] + 0.7*pstats[p.BLK] - 0.4*pstats[p.FOUL] - pstats[p.TO];
+                          0.3*pstats[p.DREB] + pstats[p.STL] + 0.7*pstats[p.AST] + 0.7*pstats[p.BLK] - 0.4*pstats[p.FOUL] - pstats[p.TOS];
             temp_metrics.Add("GmSc", GmSc/pstats[p.GP]);
 
             double GmScE = 36*(1/pstats[p.MINS])*GmSc;
@@ -620,13 +713,13 @@ namespace NBA_Stats_Tracker.Data.Players
                 double STLp = (pstats[p.STL]*(tstats[t.MINS]))/(pstats[p.MINS]*toppmetrics["Poss"]);
                 temp_metrics.Add("STL%", STLp);
 
-                double TOp = pstats[p.TO]/(pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO]);
+                double TOp = pstats[p.TOS]/(pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TOS]);
                 temp_metrics.Add("TO%", TOp);
 
                 double TSp = pstats[p.PTS]/(2*(pstats[p.FGA] + 0.44*pstats[p.FTA]));
                 temp_metrics.Add("TS%", TSp);
 
-                double USGp = ((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TO])*(tstats[t.MINS]))/
+                double USGp = ((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TOS])*(tstats[t.MINS]))/
                               (pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]));
                 temp_metrics.Add("USG%", USGp);
 
@@ -640,7 +733,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 double uPER = (1/pstats[p.MINS])*
                               (pstats[p.TPM] + (2/3)*pstats[p.AST] + (2 - factor*(tstats[t.AST]/tstats[t.FGM]))*pstats[p.FGM] +
                                (pstats[p.FTM]*0.5*(1 + (1 - (tstats[t.AST]/tstats[t.FGM])) + (2/3)*(tstats[t.AST]/tstats[t.FGM]))) -
-                               VOP*pstats[p.TO] - VOP*lDRBp*(pstats[p.FGA] - pstats[p.FGM]) -
+                               VOP*pstats[p.TOS] - VOP*lDRBp*(pstats[p.FGA] - pstats[p.FGM]) -
                                VOP*0.44*(0.44 + (0.56*lDRBp))*(pstats[p.FTA] - pstats[p.FTM]) + VOP*(1 - lDRBp)*(pREB - pstats[p.OREB]) +
                                VOP*lDRBp*pstats[p.OREB] + VOP*pstats[p.STL] + VOP*lDRBp*pstats[p.BLK] -
                                pstats[p.FOUL]*((lstats[t.FTM]/lstats[t.FOUL]) - 0.44*(lstats[t.FTA]/lstats[t.FOUL])*VOP));
@@ -678,7 +771,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                         aPER = estPaceAdj*uPER;
 
-                        PPR = 100*estPaceAdj*(((pstats[p.AST]*2/3) - pstats[p.TO])/pstats[p.MINS]);
+                        PPR = 100*estPaceAdj*(((pstats[p.AST]*2/3) - pstats[p.TOS])/pstats[p.MINS]);
                     }
                     else
                     {
@@ -749,7 +842,7 @@ namespace NBA_Stats_Tracker.Data.Players
             double STLR = (pstats[p.STL]/pstats[p.MINS])*36;
             temp_metrics.Add("STLR", STLR);
 
-            double TOR = (pstats[p.TO]/pstats[p.MINS])*36;
+            double TOR = (pstats[p.TOS]/pstats[p.MINS])*36;
             temp_metrics.Add("TOR", TOR);
 
             double FTR = (pstats[p.FTM]/pstats[p.FGA]);
@@ -779,9 +872,9 @@ namespace NBA_Stats_Tracker.Data.Players
             catch (Exception)
             {
                 if (!playoffs)
-                    metrics.Add("PER", double.NaN);
+                    metrics.Add("PER", Double.NaN);
                 else
-                    pl_metrics.Add("PER", double.NaN);
+                    pl_metrics.Add("PER", Double.NaN);
             }
         }
 
@@ -817,7 +910,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 stats[p.OREB] += pbs.OREB;
                 stats[p.DREB] += pbs.DREB;
                 stats[p.STL] += pbs.STL;
-                stats[p.TO] += pbs.TOS;
+                stats[p.TOS] += pbs.TOS;
                 stats[p.BLK] += pbs.BLK;
                 stats[p.AST] += pbs.AST;
                 stats[p.FOUL] += pbs.FOUL;
@@ -841,7 +934,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 pl_stats[p.OREB] += pbs.OREB;
                 pl_stats[p.DREB] += pbs.DREB;
                 pl_stats[p.STL] += pbs.STL;
-                pl_stats[p.TO] += pbs.TOS;
+                pl_stats[p.TOS] += pbs.TOS;
                 pl_stats[p.BLK] += pbs.BLK;
                 pl_stats[p.AST] += pbs.AST;
                 pl_stats[p.FOUL] += pbs.FOUL;

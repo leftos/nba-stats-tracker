@@ -477,7 +477,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.stats[p.AST] = Convert.ToUInt16(plStats["Assists"]);
                         ps.stats[p.STL] = Convert.ToUInt16(plStats["Steals"]);
                         ps.stats[p.BLK] = Convert.ToUInt16(plStats["Blocks"]);
-                        ps.stats[p.TO] = Convert.ToUInt16(plStats["TOs"]);
+                        ps.stats[p.TOS] = Convert.ToUInt16(plStats["TOs"]);
                         ps.stats[p.FOUL] = Convert.ToUInt16(plStats["Fouls"]);
                         ps.stats[p.FGM] = Convert.ToUInt16(plStats["FGMade"]);
                         ps.stats[p.FGA] = Convert.ToUInt16(plStats["FGAtt"]);
@@ -714,7 +714,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                               AST = getDiff(newPlayer, oldPlayer, p.AST),
                               STL = getDiff(newPlayer, oldPlayer, p.STL),
                               BLK = getDiff(newPlayer, oldPlayer, p.BLK),
-                              TOS = getDiff(newPlayer, oldPlayer, p.TO),
+                              TOS = getDiff(newPlayer, oldPlayer, p.TOS),
                               FGM = getDiff(newPlayer, oldPlayer, p.FGM),
                               FGA = getDiff(newPlayer, oldPlayer, p.FGA),
                               TPM = getDiff(newPlayer, oldPlayer, p.TPM),
@@ -933,7 +933,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         playerStats[playerStatsIndex]["Assists"] = ps.stats[p.AST].ToString();
                         playerStats[playerStatsIndex]["Steals"] = ps.stats[p.STL].ToString();
                         playerStats[playerStatsIndex]["Blocks"] = ps.stats[p.BLK].ToString();
-                        playerStats[playerStatsIndex]["TOs"] = ps.stats[p.TO].ToString();
+                        playerStats[playerStatsIndex]["TOs"] = ps.stats[p.TOS].ToString();
                         playerStats[playerStatsIndex]["Fouls"] = ps.stats[p.FOUL].ToString();
                         playerStats[playerStatsIndex]["FGMade"] = ps.stats[p.FGM].ToString();
                         playerStats[playerStatsIndex]["FGAtt"] = ps.stats[p.FGA].ToString();

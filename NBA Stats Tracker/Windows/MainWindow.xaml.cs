@@ -81,6 +81,8 @@ namespace NBA_Stats_Tracker.Windows
         public static Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats =
             new Dictionary<int, Dictionary<string, PlayerStats>>();
 
+        public static Dictionary<int, Dictionary<int, UInt16[]>> seasonHighs = new Dictionary<int, Dictionary<int, ushort[]>>();
+
         public static TeamRankings SeasonTeamRankings;
         public static TeamRankings PlayoffTeamRankings;
         public static PlayerRankings SeasonPlayerRankings;
@@ -1663,7 +1665,7 @@ namespace NBA_Stats_Tracker.Windows
         ///     Updates the status bar message and starts the timer which will revert it after a number of seconds.
         /// </summary>
         /// <param name="newStatus">The new status.</param>
-        private void updateStatus(string newStatus)
+        public void updateStatus(string newStatus)
         {
             dispatcherTimer.Stop();
             status.FontWeight = FontWeights.Bold;
@@ -2705,6 +2707,71 @@ namespace NBA_Stats_Tracker.Windows
             }
             s = s.TrimEnd(new[] {' ', ','});
             return s;
+        }
+
+        private void mnuMiscRecalculateCareerHighs_Click(object sender, RoutedEventArgs e)
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.WorkerReportsProgress = true;
+            bw.DoWork += delegate(object o, DoWorkEventArgs args)
+                         {
+                             var highsCount = pst.FirstOrDefault().Value.careerHighs.Length;
+                             var plCount = pst.Keys.Count();
+                             for (int i = 0; i < plCount; i++)
+                             {
+                                 bw.ReportProgress(Convert.ToInt32((double)100*i/plCount));
+                                 var pID = pst.Keys.ToList()[i];
+                                 pst[pID].CalculateSeasonHighs();
+                                 bool fail = false;
+                                 for (int k = 0; k < highsCount; k++)
+                                 {
+                                     try
+                                     {
+                                         pst[pID].careerHighs[k] = seasonHighs[pID].Select(sh => sh.Value[k]).Max();
+                                     }
+                                     catch (InvalidOperationException)
+                                     {
+                                         for (int j = 0; j < highsCount; j++)
+                                         {
+                                             pst[pID].careerHighs[j] = 0;
+                                         }
+                                         fail = true;
+                                         break;
+                                     }
+                                     if (fail)
+                                         continue;
+                                 }
+                             }
+                         };
+
+            bw.RunWorkerCompleted += delegate(object o, RunWorkerCompletedEventArgs args)
+                                     {
+                                         mainGrid.Visibility = Visibility.Visible;
+                                         updateStatus(
+                                             "Calculated career highs from season highs. Confirm you want this by saving the database.");
+                                     };
+
+            bw.ProgressChanged += delegate(object o, ProgressChangedEventArgs args)
+                                  { status.Content = "Updating (" + args.ProgressPercentage + "% complete)..."; };
+
+            mainGrid.Visibility = Visibility.Hidden;
+            bw.RunWorkerAsync();
+        }
+
+        public static void RelinkEverything(DBData dbdata)
+        {
+            tst = dbdata.tst;
+            tstopp = dbdata.tstopp;
+            TeamOrder = dbdata.TeamOrder;
+            pst = dbdata.pst;
+            splitTeamStats = dbdata.splitTeamStats;
+            splitPlayerStats = dbdata.splitPlayerStats;
+            bshist = dbdata.bshist;
+            SeasonTeamRankings = dbdata.teamRankings;
+            SeasonPlayerRankings = dbdata.playerRankings;
+            PlayoffTeamRankings = dbdata.playoffTeamRankings;
+            PlayoffPlayerRankings = dbdata.playoffPlayerRankings;
+            DisplayNames = dbdata.DisplayNames;
         }
     }
 }

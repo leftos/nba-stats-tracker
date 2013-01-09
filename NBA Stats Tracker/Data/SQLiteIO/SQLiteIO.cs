@@ -38,6 +38,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
     {
         private static bool upgrading;
 
+        private static string createCareerHighsQuery = "CREATE TABLE \"CareerHighs\" (\"PlayerID\" INTEGER ,\"MINS\" INTEGER , \"PTS\" INTEGER ,\"REB\" INTEGER ," +
+                                                       "\"AST\" INTEGER ,\"STL\" INTEGER ,\"BLK\" INTEGER ,\"TOS\" INTEGER ,\"FGM\" INTEGER ,\"FGA\" INTEGER ," +
+                                                       "\"TPM\" INTEGER ,\"TPA\" INTEGER ,\"FTM\" INTEGER ,\"FTA\" INTEGER ,\"OREB\" INTEGER , \"DREB\" INTEGER, " +
+                                                       "\"FOUL\" INTEGER, PRIMARY KEY (\"PlayerID\") )";
+
         /// <summary>
         ///     Saves the database to a new file.
         /// </summary>
@@ -624,6 +629,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 MainWindow.db.ClearTable(playersT);
                 MainWindow.db.ClearTable(pl_playersT);
+                MainWindow.db.ClearTable("CareerHighs");
             }
             string q = "select ID from " + playersT + ";";
             DataTable res = MainWindow.db.GetDataTable(q);
@@ -632,6 +638,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             var sqlinsert = new List<Dictionary<string, string>>();
             var pl_sqlinsert = new List<Dictionary<string, string>>();
+            var ch_sqlinsert = new List<Dictionary<string, string>>();
             int i = 0;
 
             foreach (var kvp in playerStats)
@@ -641,6 +648,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 {
                     _db.Delete(playersT, "ID = " + ps.ID);
                     _db.Delete(pl_playersT, "ID = " + ps.ID);
+                    _db.Delete("CareerHighs", "ID = " + ps.ID);
                 }
                 var dict = new Dictionary<string, string>
                            {
@@ -669,12 +677,19 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"OREB", ps.stats[p.OREB].ToString()},
                                {"DREB", ps.stats[p.DREB].ToString()},
                                {"STL", ps.stats[p.STL].ToString()},
-                               {"TOS", ps.stats[p.TO].ToString()},
+                               {"TOS", ps.stats[p.TOS].ToString()},
                                {"BLK", ps.stats[p.BLK].ToString()},
                                {"AST", ps.stats[p.AST].ToString()},
                                {"FOUL", ps.stats[p.FOUL].ToString()},
                                {"isAllStar", ps.isAllStar.ToString()},
-                               {"isNBAChampion", ps.isNBAChampion.ToString()}
+                               {"isNBAChampion", ps.isNBAChampion.ToString()},
+                               {"ContractY1", ps.contract.TryGetSalary(1).ToString()},
+                               {"ContractY2", ps.contract.TryGetSalary(2).ToString()},
+                               {"ContractY3", ps.contract.TryGetSalary(3).ToString()},
+                               {"ContractY4", ps.contract.TryGetSalary(4).ToString()},
+                               {"ContractY5", ps.contract.TryGetSalary(5).ToString()},
+                               {"ContractY6", ps.contract.TryGetSalary(6).ToString()},
+                               {"ContractY7", ps.contract.TryGetSalary(7).ToString()}
                            };
                 var pl_dict = new Dictionary<string, string>
                               {
@@ -692,14 +707,35 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                   {"OREB", ps.pl_stats[p.OREB].ToString()},
                                   {"DREB", ps.pl_stats[p.DREB].ToString()},
                                   {"STL", ps.pl_stats[p.STL].ToString()},
-                                  {"TOS", ps.pl_stats[p.TO].ToString()},
+                                  {"TOS", ps.pl_stats[p.TOS].ToString()},
                                   {"BLK", ps.pl_stats[p.BLK].ToString()},
                                   {"AST", ps.pl_stats[p.AST].ToString()},
                                   {"FOUL", ps.pl_stats[p.FOUL].ToString()}
                               };
+                var ch_dict = new Dictionary<string, string>
+                              {
+                                  {"PlayerID", ps.ID.ToString()},
+                                  {"MINS", ps.careerHighs[p.MINS].ToString()},
+                                  {"PTS", ps.careerHighs[p.PTS].ToString()},
+                                  {"FGM", ps.careerHighs[p.FGM].ToString()},
+                                  {"FGA", ps.careerHighs[p.FGA].ToString()},
+                                  {"TPM", ps.careerHighs[p.TPM].ToString()},
+                                  {"TPA", ps.careerHighs[p.TPA].ToString()},
+                                  {"FTM", ps.careerHighs[p.FTM].ToString()},
+                                  {"FTA", ps.careerHighs[p.FTA].ToString()},
+                                  {"REB", ps.careerHighs[p.REB].ToString()},
+                                  {"OREB", ps.careerHighs[p.OREB].ToString()},
+                                  {"DREB", ps.careerHighs[p.DREB].ToString()},
+                                  {"STL", ps.careerHighs[p.STL].ToString()},
+                                  {"TOS", ps.careerHighs[p.TOS].ToString()},
+                                  {"BLK", ps.careerHighs[p.BLK].ToString()},
+                                  {"AST", ps.careerHighs[p.AST].ToString()},
+                                  {"FOUL", ps.careerHighs[p.FOUL].ToString()}
+                              };
 
                 sqlinsert.Add(dict);
                 pl_sqlinsert.Add(pl_dict);
+                ch_sqlinsert.Add(ch_dict);
                 i++;
             }
 
@@ -707,6 +743,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 _db.InsertManyTransaction(playersT, sqlinsert);
                 _db.InsertManyTransaction(pl_playersT, pl_sqlinsert);
+                _db.InsertManyTransaction("CareerHighs", ch_sqlinsert);
             }
         }
 
@@ -859,6 +896,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     qr = @"CREATE TABLE ""Conferences"" (""ID"" INTEGER PRIMARY KEY NOT NULL , ""Name"" TEXT)";
                     db.ExecuteNonQuery(qr);
                     db.Insert("Conferences", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}});
+                    qr = @"DROP TABLE IF EXISTS ""CareerHighs""";
+                    db.ExecuteNonQuery(qr);
+                    qr = createCareerHighsQuery;
+                    db.ExecuteNonQuery(qr);
 
                     CreatePastPlayerAndTeamStatsTables(db);
                 }
@@ -914,7 +955,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 db.ExecuteNonQuery(qr);
                 qr =
                     string.Format(
-                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""isInjured"" TEXT,""TeamFin"" TEXT,""TeamSta"" TEXT,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT)",
+                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""isInjured"" TEXT,""TeamFin"" TEXT,""TeamSta"" TEXT,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT, ""ContractY1"" INTEGER, ""ContractY2"" INTEGER, ""ContractY3"" INTEGER, ""ContractY4"" INTEGER, ""ContractY5"" INTEGER, ""ContractY6"" INTEGER, ""ContractY7"" INTEGER, ""ContractOption"" TEXT)",
                         playersT);
                 db.ExecuteNonQuery(qr);
 
@@ -1442,7 +1483,23 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (mustSave)
             {
                 upgrading = true;
+                var backupName = file + ".UpgradeBackup.tst";
+                try
+                {
+                    File.Delete(backupName);
+                }
+                catch
+                {
+                }
+                try
+                {
+                    File.Copy(file, backupName);
+                }
+                catch
+                {
+                }
                 SaveDatabaseAs(file);
+                File.Delete(backupName);
                 upgrading = false;
             }
 
@@ -1615,6 +1672,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                 }
                             }
                         }
+                        else if (!dr["sql"].ToString().Contains("\"ContractY1\""))
+                        {
+                            mustSave = true;
+                        }
                         break;
                     }
                 }
@@ -1671,6 +1732,20 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
             }
 
+            #endregion
+
+            #region CareerHighs
+            qr = "SELECT * FROM CareerHighs";
+            try
+            {
+                db.GetDataTable(qr);
+            }
+            catch (Exception)
+            {
+                qr =
+                    createCareerHighsQuery;
+                db.ExecuteNonQuery(qr);
+            }
             #endregion
 
             return mustSave;
@@ -1927,11 +2002,32 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 if (ex.Message.ToLowerInvariant().Contains("no such table"))
                     return _pst;
             }
-
+            
             foreach (DataRow r in res.Rows)
             {
                 int id = Tools.getInt(r, "ID");
                 _pst[id].UpdatePlayoffStats(r);
+            }
+
+            q = "SELECT * FROM CareerHighs";
+
+            try
+            {
+                res = _db.GetDataTable(q);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLowerInvariant().Contains("no such table"))
+                    return _pst;
+            }
+
+            foreach (DataRow r in res.Rows)
+            {
+                int id = Tools.getInt(r, "PlayerID");
+                if (_pst.Keys.Contains(id))
+                {
+                    _pst[id].UpdateCareerHighs(r);
+                }
             }
 
             PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder, playoffs: true);
@@ -2164,11 +2260,20 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         int playerID = Tools.getInt(dr, "ID");
                         if (!pst.Keys.Contains(playerID))
                         {
-                            //if (TeamOrder.Keys.Contains(Tools.getString(dr, "TeamFin")))
-                            //{
                             pst.Add(playerID, new PlayerStats(dr));
                             pst[playerID].ResetStats();
-                            //}
+                            pst[playerID].CalculateSeasonHighs();
+                        }
+                    }
+
+                    q = "SELECT * FROM CareerHighs";
+                    res = db.GetDataTable(q);
+                    foreach (DataRow dr in res.Rows)
+                    {
+                        int playerID = Tools.getInt(dr, "PlayerID");
+                        if (pst.Keys.Contains(playerID))
+                        {
+                            pst[playerID].UpdateCareerHighs(dr);
                         }
                     }
                 }

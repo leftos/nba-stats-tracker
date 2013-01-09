@@ -6,13 +6,14 @@
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid Name="grdMain">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" /><RowDefinition Height="50" />
-        </Grid.RowDefinitions>
         <TextBlock Name="txbWait" Text="Please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"
                    TextAlignment="Center" FontSize="16" FontWeight="Bold" Visibility="Hidden">
         </TextBlock>
         <Grid Name="mainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
             <TextBox Height="23" HorizontalAlignment="Left" Margin="12,29,0,0" Name="txtFile" VerticalAlignment="Top"
                      Width="567" IsReadOnly="True" HorizontalContentAlignment="Left" MaxLines="1"
                      TextChanged="txtFile_TextChanged"
@@ -75,6 +76,8 @@
                               Click="mnuMiscResetPlayerStats_Click" />
                     <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats"
                               Click="mnuMiscRecalculateOppStats_Click" />
+                    <MenuItem Header="Recalculate Player Career _Highs from Season Highs" Name="mnuMiscRecalculateCareerHighs" Click="mnuMiscRecalculateCareerHighs_Click"
+                               />
                     <Separator />
                     <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions"
                               Click="mnuMiscEditDivisions_Click" />
@@ -217,14 +220,15 @@
                       DisplayMemberPath="Value" SelectedValuePath="Key" VerticalAlignment="Top"
                       SelectionChanged="cmbSeasonNum_SelectionChanged" HorizontalAlignment="Left" Width="94"
                       TabIndex="1" />
+
+            <Grid x:Name="canMarquee" Height="23" Margin="10,0,10,27" Grid.Row="1" VerticalAlignment="Bottom">
+                <TextBlock Name="txbMarquee" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                       TextAlignment="Center" FontWeight="Bold" Text="" />
+            </Grid>
         </Grid>
         <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom"
                    Grid.Row="1">
             <StatusBarItem Name="status" Content="Ready" />
         </StatusBar>
-        <Grid x:Name="canMarquee" Height="23" Margin="10,0,10,27" Grid.Row="1" VerticalAlignment="Bottom">
-            <TextBlock Name="txbMarquee" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                       TextAlignment="Center" FontWeight="Bold" Text="" />
-        </Grid>
     </Grid>
 </Window>

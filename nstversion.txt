@@ -1,4 +1,4 @@
-1.3.4.0
+1.3.5.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
 		Although this is a Beta version, I strongly encourage you to upgrade to it as no support will be offered for versions earlier than v1.3.3 pending a response from Basketball-Reference.com regarding the use of its data.

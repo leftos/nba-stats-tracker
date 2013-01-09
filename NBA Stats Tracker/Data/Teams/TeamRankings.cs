@@ -11,6 +11,11 @@ namespace NBA_Stats_Tracker.Data.Teams
         public int[][] rankingsPerGame;
         public int[][] rankingsTotal;
 
+        public TeamRankings()
+        {
+            
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamRankings" /> class.
         /// </summary>

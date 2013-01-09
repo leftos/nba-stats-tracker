@@ -76,11 +76,15 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Misc\Conference.cs" />
+    <Compile Include="Data\Misc\DBData.cs" />
     <Compile Include="Data\Misc\Span.cs" />
     <Compile Include="Data\Misc\Timeframe.cs" />
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
     <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
     <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
+    <Compile Include="Data\Players\PlayerContract.cs" />
+    <Compile Include="Data\Players\PlayerContractOption.cs" />
+    <Compile Include="Data\Players\PlayerHighsRow.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
     <Compile Include="Data\Players\p.cs" />
     <Compile Include="Data\Teams\TeamBoxScore.cs" />

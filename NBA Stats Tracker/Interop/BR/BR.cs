@@ -532,7 +532,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 pstnames[name].stats[p.AST] = Tools.getUInt16(r, "AST");
                 pstnames[name].stats[p.STL] = Tools.getUInt16(r, "STL");
                 pstnames[name].stats[p.BLK] = Tools.getUInt16(r, "BLK");
-                pstnames[name].stats[p.TO] = Tools.getUInt16(r, "TOV");
+                pstnames[name].stats[p.TOS] = Tools.getUInt16(r, "TOV");
                 pstnames[name].stats[p.FOUL] = Tools.getUInt16(r, "PF");
                 pstnames[name].stats[p.PTS] = Tools.getUInt16(r, "PTS");
             }
@@ -558,7 +558,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     pstnames[name].pl_stats[p.AST] += Tools.getUInt16(r, "AST");
                     pstnames[name].pl_stats[p.STL] += Tools.getUInt16(r, "STL");
                     pstnames[name].pl_stats[p.BLK] += Tools.getUInt16(r, "BLK");
-                    pstnames[name].pl_stats[p.TO] += Tools.getUInt16(r, "TOV");
+                    pstnames[name].pl_stats[p.TOS] += Tools.getUInt16(r, "TOV");
                     pstnames[name].pl_stats[p.FOUL] += Tools.getUInt16(r, "PF");
                     pstnames[name].pl_stats[p.PTS] += Tools.getUInt16(r, "PTS");
 

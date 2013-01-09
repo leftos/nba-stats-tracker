@@ -84,6 +84,7 @@ namespace NBA_Stats_Tracker.Windows
         private PlayerRankings rankingsTeam;
         private ObservableCollection<PlayerStatsRow> splitPSRs;
         private SortedDictionary<string, int> teamOrder = MainWindow.TeamOrder;
+        private ObservableCollection<PlayerHighsRow> recordsList { get; set; } 
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
@@ -431,10 +432,9 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateScoutingReport();
 
-            //if (tbcPlayerOverview.SelectedItem == tabHTH)
-            //{
+            UpdateRecords();
+
             cmbOppPlayer_SelectionChanged(null, null);
-            //}
 
             if (cmbGraphStat.SelectedIndex == -1)
                 cmbGraphStat.SelectedIndex = 0;
@@ -544,6 +544,22 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             svScoutingReport.ScrollToTop();
+        }
+
+        private void UpdateRecords()
+        {
+            MainWindow.pst[SelectedPlayerID].CalculateSeasonHighs();
+
+            recordsList = new ObservableCollection<PlayerHighsRow>();
+            var shList = MainWindow.seasonHighs.Single(sh => sh.Key == SelectedPlayerID).Value;
+            foreach (var shRec in shList)
+            {
+                recordsList.Add(new PlayerHighsRow(SelectedPlayerID, "Season " + MainWindow.GetSeasonName(shRec.Key), shRec.Value));
+            }
+            recordsList.Add(new PlayerHighsRow(SelectedPlayerID, "Career", MainWindow.pst[SelectedPlayerID].careerHighs));
+
+            dgvHighs.ItemsSource = null;
+            dgvHighs.ItemsSource = recordsList;
         }
 
         /// <summary>
