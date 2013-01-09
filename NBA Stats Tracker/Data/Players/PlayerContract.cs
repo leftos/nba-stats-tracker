@@ -13,7 +13,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerContract()
         {
             Option = PlayerContractOption.None;
-            ContractSalaryPerYear = new List<int> {0};
+            ContractSalaryPerYear = new List<int>();
         }
 
         public int GetYears()

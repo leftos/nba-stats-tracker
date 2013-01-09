@@ -30,11 +30,10 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
             Dictionary<int, PlayerStats> validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0).ToDictionary(a => a.Key, a => a.Value);
-            if (validPlayers.Count == 0)
-                return;
-            int firstPlayerID = validPlayers.Keys.ToList()[0];
-            int totalsCount = validPlayers[firstPlayerID].stats.Length;
-            int metricsCount = validPlayers[firstPlayerID].metrics.Count;
+            
+            //int firstPlayerID = validPlayers.Keys.ToList()[0];
+            int totalsCount = pst.FirstOrDefault().Value.stats.Length;
+            int metricsCount = pst.FirstOrDefault().Value.metrics.Count;
 
             foreach (var kvp in validPlayers)
             {
@@ -102,7 +101,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
 
-            List<string> metricsNames = validPlayers[firstPlayerID].metrics.Keys.ToList();
+            List<string> metricsNames = pst.FirstOrDefault().Value.metrics.Keys.ToList();
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics;
@@ -140,16 +139,16 @@ namespace NBA_Stats_Tracker.Data.Players
             return cumRankingsActive;
         }
 
-        public PlayerRankings CalculateLeadersRankings(out Dictionary<int, PlayerStats> pstLeaders)
+        public static PlayerRankings CalculateLeadersRankings(out Dictionary<int, PlayerStats> pstLeaders, bool playoffs = false)
         {
             Dictionary<int, PlayerStats> pstActive = MainWindow.pst.Where(ps => ps.Value.isActive)
                                                                .ToDictionary(ps => ps.Key, ps => ps.Value);
             List<int> listOfKeys = pstActive.Keys.ToList();
             foreach (int key in listOfKeys)
             {
-                pstActive[key] = LeagueOverviewWindow.ConvertToLeagueLeader(pstActive[key], MainWindow.tst);
+                pstActive[key] = LeagueOverviewWindow.ConvertToLeagueLeader(pstActive[key], MainWindow.tst, playoffs);
             }
-            var cumRankingsActive = new PlayerRankings(pstActive);
+            var cumRankingsActive = new PlayerRankings(pstActive, playoffs);
             pstLeaders = pstActive;
             return cumRankingsActive;
         }

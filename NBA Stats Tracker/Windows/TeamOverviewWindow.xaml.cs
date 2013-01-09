@@ -702,7 +702,23 @@ namespace NBA_Stats_Tracker.Windows
             UpdateBest();
 
             UpdateScoutingReport();
+
+            UpdateRecords();
         }
+
+        private void UpdateRecords()
+        {
+            recordsList = new ObservableCollection<PlayerHighsRow>();
+            foreach (var psr in psrList)
+            {
+                recordsList.Add(new PlayerHighsRow(psr.ID, psr.FirstName + " " + psr.LastName, MainWindow.pst[psr.ID].careerHighs));
+            }
+
+            dgvHighs.ItemsSource = null;
+            dgvHighs.ItemsSource = recordsList;
+        }
+
+        protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
 
         /// <summary>
         ///     Finds the tam's name by its displayName.
@@ -1257,6 +1273,7 @@ namespace NBA_Stats_Tracker.Windows
             foreach (int playerID in playerIDs)
             {
                 playersToUpdate[playerID].UpdatePlayoffStats(pl_psrList.Single(pl_psr => pl_psr.ID == playerID));
+                playersToUpdate[playerID].UpdateCareerHighs(recordsList.Single(r => r.PlayerID == playerID));
             }
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);

@@ -3,7 +3,7 @@
 namespace NBA_Stats_Tracker.Data.Players
 {
     [Serializable]
-    public enum PlayerContractOption
+    public enum PlayerContractOption : byte
     {
         None = 0,
         Team = 1,

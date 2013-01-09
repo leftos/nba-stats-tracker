@@ -635,15 +635,36 @@ namespace NBA_Stats_Tracker.Data.Teams
         {
             if (span == Span.Season)
             {
-                return winloss[0]/getGames();
+                try
+                {
+                    return winloss[0]/getGames();
+                }
+                catch (DivideByZeroException)
+                {
+                    return 0;
+                }
             }
             else if (span == Span.Playoffs)
             {
+                try
+                {
                 return pl_winloss[0]/getGames();
+                }
+                catch (DivideByZeroException)
+                {
+                    return 0;
+                }
             }
             else
             {
+                try
+                {
                 return (winloss[0] + pl_winloss[0])/(getGames() + getPlayoffGames());
+                }
+                catch (DivideByZeroException)
+                {
+                    return 0;
+                }
             }
         }
 

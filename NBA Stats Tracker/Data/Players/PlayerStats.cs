@@ -42,30 +42,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
-        public PlayerStats() : this(new Player())
+        public PlayerStats()
         {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
-        /// </summary>
-        /// <param name="player">A Player instance containing the information to initialize with.</param>
-        public PlayerStats(Player player)
-        {
-            ID = player.ID;
-            LastName = player.LastName;
-            FirstName = player.FirstName;
-            Position1 = player.Position1;
-            Position2 = player.Position2;
-            YearOfBirth = 0;
-            YearsPro = 0;
-            TeamF = player.Team;
-            isActive = true;
-            isHidden = false;
-            isInjured = false;
-            isAllStar = false;
-            isNBAChampion = false;
-
             for (int i = 0; i < stats.Length; i++)
             {
                 stats[i] = 0;
@@ -92,6 +70,27 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             contract = new PlayerContract();
+            isActive = true;
+            isHidden = false;
+            isInjured = false;
+            isAllStar = false;
+            isNBAChampion = false;
+            YearOfBirth = 0;
+            YearsPro = 0;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
+        /// </summary>
+        /// <param name="player">A Player instance containing the information to initialize with.</param>
+        public PlayerStats(Player player) :this()
+        {
+            ID = player.ID;
+            LastName = player.LastName;
+            FirstName = player.FirstName;
+            Position1 = player.Position1;
+            Position2 = player.Position2;
+            TeamF = player.Team;
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the row is assumed to contain playoff stats.
         /// </param>
-        public PlayerStats(DataRow dataRow, bool playoffs = false)
+        public PlayerStats(DataRow dataRow, bool playoffs = false) :this()
         {
             ID = Tools.getInt(dataRow, "ID");
 
@@ -179,6 +178,15 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     contract.ContractSalaryPerYear.Add(salary);
                 }
+                try
+                {
+                    contract.Option =
+                        (PlayerContractOption) Enum.Parse(typeof (PlayerContractOption), Tools.getString(dataRow, "ContractOption"));
+                }
+                catch (ArgumentException)
+                {
+                    contract.Option = PlayerContractOption.None;
+                }
             }
 
             GetStatsFromDataRow(dataRow, playoffs);
@@ -186,6 +194,11 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public void UpdateCareerHighs(DataRow r)
         {
+            var importedID = Tools.getInt(r, "PlayerID");
+            if (importedID != ID)
+            {
+                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " + importedID);
+            }
             careerHighs[p.MINS] = Convert.ToUInt16(r["MINS"].ToString());
             careerHighs[p.PTS] = Convert.ToUInt16(r["PTS"].ToString());
             careerHighs[p.REB] = Convert.ToUInt16(r["REB"].ToString());
@@ -202,6 +215,31 @@ namespace NBA_Stats_Tracker.Data.Players
             careerHighs[p.OREB] = Convert.ToUInt16(r["OREB"].ToString());
             careerHighs[p.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
             careerHighs[p.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+        }
+
+        public void UpdateCareerHighs(PlayerHighsRow phr)
+        {
+            if (phr.PlayerID != ID)
+            {
+                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " +
+                                    phr.PlayerID);
+            }
+            careerHighs[p.MINS] = phr.MINS;
+            careerHighs[p.PTS] = phr.PTS;
+            careerHighs[p.FGM] = phr.FGM;
+            careerHighs[p.FGA] = phr.FGA;
+            careerHighs[p.TPM] = phr.TPM;
+            careerHighs[p.TPA] = phr.TPA;
+            careerHighs[p.FTM] = phr.FTM;
+            careerHighs[p.FTA] = phr.FTA;
+            careerHighs[p.REB] = phr.REB;
+            careerHighs[p.OREB] = phr.OREB;
+            careerHighs[p.DREB] = phr.DREB;
+            careerHighs[p.STL] = phr.STL;
+            careerHighs[p.TOS] = phr.TOS;
+            careerHighs[p.BLK] = phr.BLK;
+            careerHighs[p.AST] = phr.AST;
+            careerHighs[p.FOUL] = phr.FOUL;
         }
 
         public void CalculateSeasonHighs()
@@ -282,7 +320,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </param>
         public PlayerStats(int ID, string LastName, string FirstName, Position Position1, Position Position2, int YearOfBirth, int YearsPro,
                            string TeamF, string TeamS, bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion,
-                           DataRow dataRow, bool playoffs = false)
+                           DataRow dataRow, bool playoffs = false) : this()
         {
             this.ID = ID;
             this.LastName = LastName;
@@ -377,7 +415,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c> the row is assumed to contain playoff stats.
         /// </param>
-        public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false)
+        public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false) :this()
         {
             LastName = playerStatsRow.LastName;
             FirstName = playerStatsRow.FirstName;
@@ -483,6 +521,19 @@ namespace NBA_Stats_Tracker.Data.Players
             isAllStar = playerStatsRow.isAllStar;
             isInjured = playerStatsRow.isInjured;
             isNBAChampion = playerStatsRow.isNBAChampion;
+
+            contract.Option = playerStatsRow.ContractOption;
+            contract.ContractSalaryPerYear.Clear();
+            for (int i = 1; i <= 7; i++)
+            {
+                int salary = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("ContractY" + i).GetValue(playerStatsRow, null));
+                if (salary == 0)
+                {
+                    break;
+                }
+
+                contract.ContractSalaryPerYear.Add(salary);
+            }
 
             CalcAvg();
         }
@@ -1130,6 +1181,22 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             CalculateRates(pstats_d, ref tempMetrics);
+        }
+
+        public void UpdateContract(PlayerStatsRow psr)
+        {
+            contract.Option = psr.ContractOption;
+            contract.ContractSalaryPerYear.Clear();
+            for (int i = 1; i <= 7; i++)
+            {
+                int salary = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("ContractY" + i).GetValue(psr, null));
+                if (salary == 0)
+                {
+                    break;
+                }
+
+                contract.ContractSalaryPerYear.Add(salary);
+            }
         }
     }
 }

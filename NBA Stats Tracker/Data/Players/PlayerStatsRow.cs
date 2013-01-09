@@ -40,6 +40,12 @@ namespace NBA_Stats_Tracker.Data.Players
             YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
 
+            ContractOption = ps.contract.Option;
+            for (int i = 1; i <= 7; i++)
+            {
+                typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.contract.TryGetSalary(i), null);
+            }
+
             if (!playoffs)
             {
                 GP = ps.stats[p.GP];
@@ -334,6 +340,15 @@ namespace NBA_Stats_Tracker.Data.Players
         public int reTTouch { get; set; }
         public int reTCommitFl { get; set; }
 
+        public int ContractY1 { get; set; }
+        public int ContractY2 { get; set; }
+        public int ContractY3 { get; set; }
+        public int ContractY4 { get; set; }
+        public int ContractY5 { get; set; }
+        public int ContractY6 { get; set; }
+        public int ContractY7 { get; set; }
+        public PlayerContractOption ContractOption { get; set; }
+
         #region Metrics that require opponents' stats
 
         public double PER { get; set; }
@@ -475,6 +490,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
         public string GetBestStats(int count)
         {
+            if (GP == 0) return "";
+
             Position position = Position1;
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
             var statsn = new Dictionary<string, double>();
@@ -651,6 +668,9 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns>A list (dictionary) of the best stats' names and values</returns>
         public Dictionary<string, string> GetBestStatsList(int count)
         {
+            if (GP == 0)
+                return new Dictionary<string, string>();
+
             var statList = new Dictionary<string, string>();
             string s = GetBestStats(count);
             string[] lines = s.Split('\n');

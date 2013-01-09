@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.4
+		- Addition: Added career and season highs for Players (season highs are calculated from box-scores, career highs can be edited via Team/Player Overview or calculated from the season highs)
+		- Addition: Added contracts
+		- Fix: Fixed various bugs with starting a new season in an existing database
+		- Improvement: Minor improvements and bug fixes
+
 	v1.3.5.1 Beta
 		- Fix: Fixed recent Recommended 2K Ratings bug which occurred due to the transition to using the .XXX% format for metric percentages as well
 

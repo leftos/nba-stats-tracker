@@ -159,6 +159,8 @@ namespace NBA_Stats_Tracker.Windows
         private double progress;
         private Semaphore sem;
         private BackgroundWorker worker1 = new BackgroundWorker();
+        public static PlayerRankings SeasonLeadersRankings;
+        public static PlayerRankings PlayoffsLeadersRankings;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -1887,6 +1889,9 @@ namespace NBA_Stats_Tracker.Windows
                     q = "alter table Players rename to PlayersS" + curSeason;
                     db.ExecuteNonQuery(q);
 
+                    q = "alter table PlayoffPlayers rename to PlayoffPlayersS" + curSeason;
+                    db.ExecuteNonQuery(q);
+
                     curSeason++;
 
                     SQLiteIO.prepareNewDB(db, curSeason, curSeason, true);
@@ -1929,14 +1934,31 @@ namespace NBA_Stats_Tracker.Windows
                         for (int i = 0; i < ps.Value.stats.Length; i++)
                         {
                             ps.Value.stats[i] = 0;
+                            ps.Value.pl_stats[i] = 0;
                         }
                         ps.Value.isAllStar = false;
                         ps.Value.isNBAChampion = false;
+                        if (ps.Value.contract.Option == PlayerContractOption.Team2Yr)
+                        {
+                            ps.Value.contract.Option = PlayerContractOption.Team;
+                        }
+                        else if (ps.Value.contract.Option == PlayerContractOption.Team ||
+                                 ps.Value.contract.Option == PlayerContractOption.Player)
+                        {
+                            ps.Value.contract.Option = PlayerContractOption.None;
+                        }
+                        try
+                        {
+                            ps.Value.contract.ContractSalaryPerYear.RemoveAt(0);
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                        }
                         ps.Value.CalcAvg();
                     }
 
-                    PopulateSeasonCombo();
                     SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
+                    PopulateSeasonCombo();
                     ChangeSeason(curSeason);
                     updateStatus("New season started. Database saved.");
                 }
@@ -2548,8 +2570,11 @@ namespace NBA_Stats_Tracker.Windows
         private static void UpdateNotables()
         {
             Dictionary<int, PlayerStats> pstLeaders;
-            PlayerRankings rankingsActive = SeasonPlayerRankings.CalculateLeadersRankings(out pstLeaders);
+            SeasonLeadersRankings = PlayerRankings.CalculateLeadersRankings(out pstLeaders);
             notables = new List<string>();
+
+            Dictionary<int, PlayerStats> temp;
+            PlayoffsLeadersRankings = PlayerRankings.CalculateLeadersRankings(out temp, true);
 
             if (pstLeaders.Count == 0)
                 return;
@@ -2563,70 +2588,70 @@ namespace NBA_Stats_Tracker.Windows
 
             PlayerStatsRow curL = psrList.OrderByDescending(pair => pair.PPG).First();
 
-            string m = GetBestStatsForMarquee(curL, rankingsActive, p.PPG);
+            string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.PPG);
             string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
                                      Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FGp).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.FGp);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.FGp);
             s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.RPG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.RPG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.RPG);
             s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.BPG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.BPG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.BPG);
             s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.APG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.APG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.APG);
             s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.SPG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.SPG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.SPG);
             s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.ORPG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.ORPG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.ORPG);
             s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.DRPG).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.DRPG);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.DRPG);
             s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.TPp).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.TPp);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.TPp);
             s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FTp).First();
 
-            m = GetBestStatsForMarquee(curL, rankingsActive, p.FTp);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.FTp);
             s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {4})", curL.FirstName, curL.LastName,
                               Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m);
             notables.Add(s);

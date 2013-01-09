@@ -648,7 +648,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 {
                     _db.Delete(playersT, "ID = " + ps.ID);
                     _db.Delete(pl_playersT, "ID = " + ps.ID);
-                    _db.Delete("CareerHighs", "ID = " + ps.ID);
+                    _db.Delete("CareerHighs", "PlayerID = " + ps.ID);
                 }
                 var dict = new Dictionary<string, string>
                            {
@@ -689,7 +689,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"ContractY4", ps.contract.TryGetSalary(4).ToString()},
                                {"ContractY5", ps.contract.TryGetSalary(5).ToString()},
                                {"ContractY6", ps.contract.TryGetSalary(6).ToString()},
-                               {"ContractY7", ps.contract.TryGetSalary(7).ToString()}
+                               {"ContractY7", ps.contract.TryGetSalary(7).ToString()},
+                               {"ContractOption", ((byte) ps.contract.Option).ToString()}
                            };
                 var pl_dict = new Dictionary<string, string>
                               {
