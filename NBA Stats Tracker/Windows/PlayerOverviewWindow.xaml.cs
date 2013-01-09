@@ -661,10 +661,12 @@ namespace NBA_Stats_Tracker.Windows
                 ps.GetStatsFromDataRow(dr, isPlayoff);
                 ps.TeamF = Tools.getString(dr, "TeamFin");
                 ps.TeamS = Tools.getString(dr, "TeamSta");
-                psrList.Add(new PlayerStatsRow(ps,
-                                               isPlayoff
-                                                   ? "Playoffs " + Tools.getString(dr, "SeasonName")
-                                                   : "Season " + Tools.getString(dr, "SeasonName"), isPlayoff));
+                var tempMetrics = isPlayoff ? ps.pl_metrics : ps.metrics;
+                PlayerStats.CalculateRates(isPlayoff ? ps.pl_stats : ps.stats, ref tempMetrics);
+                var curPSR = new PlayerStatsRow(ps, isPlayoff ? "Playoffs " + Tools.getString(dr, "SeasonName") : "Season " + Tools.getString(dr, "SeasonName"), isPlayoff);
+                
+                psrList.Add(curPSR);
+                
                 psCareer.AddPlayerStats(ps);
             }
 
@@ -679,6 +681,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (res.Rows.Count == 1)
                 {
                     var ps = new PlayerStats(res.Rows[0]);
+                    PlayerStats.CalculateRates(ps.stats, ref ps.metrics);
                     var psr2 = new PlayerStatsRow(ps, "Season " + i);
                     psrList.Add(psr2);
                     psCareer.AddPlayerStats(ps);
@@ -695,6 +698,7 @@ namespace NBA_Stats_Tracker.Windows
                     var ps = new PlayerStats(res.Rows[0], true);
                     if (ps.pl_stats[p.GP] > 0)
                     {
+                        PlayerStats.CalculateRates(ps.pl_stats, ref ps.pl_metrics);
                         var psr2 = new PlayerStatsRow(ps, "Playoffs " + i, true);
                         psrList.Add(psr2);
                         psCareer.AddPlayerStats(ps, true);
@@ -702,6 +706,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
+            PlayerStats.CalculateRates(psCareer.stats, ref psCareer.metrics);
             psrList.Add(new PlayerStatsRow(psCareer, "Career", "Career"));
 
             var psrListCollection = new ListCollectionView(psrList);

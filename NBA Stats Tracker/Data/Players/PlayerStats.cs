@@ -911,30 +911,39 @@ namespace NBA_Stats_Tracker.Data.Players
 
             // Rates, stat per 36 minutes played
             double PTSR = (pstats[p.PTS]/pstats[p.MINS])*36;
+            temp_metrics.Remove("PTSR");
             temp_metrics.Add("PTSR", PTSR);
 
-            double REBR = (pREB/pstats[p.MINS])*36;
+            double REBR = (pREB / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("REBR");
             temp_metrics.Add("REBR", REBR);
 
-            double OREBR = (pstats[p.OREB]/pstats[p.MINS])*36;
+            double OREBR = (pstats[p.OREB] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("OREBR");
             temp_metrics.Add("OREBR", OREBR);
 
-            double ASTR = (pstats[p.AST]/pstats[p.MINS])*36;
+            double ASTR = (pstats[p.AST] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("ASTR");
             temp_metrics.Add("ASTR", ASTR);
 
-            double BLKR = (pstats[p.BLK]/pstats[p.MINS])*36;
+            double BLKR = (pstats[p.BLK] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("BLKR");
             temp_metrics.Add("BLKR", BLKR);
 
-            double STLR = (pstats[p.STL]/pstats[p.MINS])*36;
+            double STLR = (pstats[p.STL] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("STLR");
             temp_metrics.Add("STLR", STLR);
 
-            double TOR = (pstats[p.TOS]/pstats[p.MINS])*36;
+            double TOR = (pstats[p.TOS] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("TOR");
             temp_metrics.Add("TOR", TOR);
 
-            double FTR = (pstats[p.FTM]/pstats[p.FGA]);
+            double FTR = (pstats[p.FTM] / pstats[p.FGA]);
+            temp_metrics.Remove("FTR");
             temp_metrics.Add("FTR", FTR);
 
-            double FTAR = (pstats[p.FTA]/pstats[p.MINS])*36;
+            double FTAR = (pstats[p.FTA] / pstats[p.MINS]) * 36;
+            temp_metrics.Remove("FTAR");
             temp_metrics.Add("FTAR", FTAR);
             //
         }

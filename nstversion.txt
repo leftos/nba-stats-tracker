@@ -1,8 +1,15 @@
-1.3.5.1
+1.4.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		Although this is a Beta version, I strongly encourage you to upgrade to it as no support will be offered for versions earlier than v1.3.3 pending a response from Basketball-Reference.com regarding the use of its data.
-		
-		v1.2 added the Advanced Stats Calculator and v1.3 added the Recommended 2K Ratings tab in League Overview. During the development of both versions a huge rework of the codebase was done which has made the tool much faster and more responsive.
-		
-		For the full changelog, check the What's New.txt file in the program's installation folder after installing the latest version.
+		- Addition: Added career and season highs for Players (season highs are calculated from box-scores, career highs can be edited via Team/Player Overview or calculated from the season highs)
+		- Addition: Added player contracts
+		- Addition: Added importing previous season's stats from NBA 2K12 using REDitor
+		- Addition: User will now be informed of league transactions whenever you import using REDitor
+		- Addition: Added player height & weight, along with option to use metric or imperial measurements
+		- Addition: Added League Leaders rankings as separate factoids in Player Overview's Scouting Reports
+		- Fix: Fixed some bugs with the League Notables messages
+		- Improvement: League Notables will always show PPG; also never show DRPG as significant stat
+		- Improvement: When matching players during an import, the Birth Year will also be used if all other criteria fail to limit the matches to one
+		- Fix: Fixed various bugs with starting a new season in an existing database
+		- Fix: Fixed crash when clicking the left arrow buttons to select the last team/player when none were selected before
+		- Improvement: Minor improvements and bug fixes

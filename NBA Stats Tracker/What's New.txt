@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.4.1 Beta
+		- Addition: Added per-36 minute stats to Yearly Report tab in Player Overview
+
 	v1.4 Beta
 		- Addition: Added career and season highs for Players (season highs are calculated from box-scores, career highs can be edited via Team/Player Overview or calculated from the season highs)
 		- Addition: Added player contracts
