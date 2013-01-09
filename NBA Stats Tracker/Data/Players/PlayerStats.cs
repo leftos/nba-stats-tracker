@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
@@ -14,7 +16,7 @@ namespace NBA_Stats_Tracker.Data.Players
     ///     A container for all of a player's information, stats, averages and metrics handled by the program.
     /// </summary>
     [Serializable]
-    public class PlayerStats
+    public class PlayerStats : INotifyPropertyChanged
     {
         public string FirstName;
         public int ID;
@@ -38,6 +40,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public uint[] stats = new uint[17];
         public ushort[] careerHighs = new ushort[18];
         public PlayerContract contract;
+        public double height;
+        public double weight;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
@@ -70,13 +74,23 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             contract = new PlayerContract();
-            isActive = true;
+            isActive = false;
             isHidden = false;
             isInjured = false;
             isAllStar = false;
             isNBAChampion = false;
             YearOfBirth = 0;
             YearsPro = 0;
+            height = 0;
+            weight = 0;
+            TeamF = "";
+            TeamS = "";
+
+            metricsNames.ForEach(name =>
+                                 {
+                                     metrics.Add(name, double.NaN);
+                                     pl_metrics.Add(name, double.NaN);
+                                 });
         }
 
         /// <summary>
@@ -187,6 +201,16 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     contract.Option = PlayerContractOption.None;
                 }
+                try
+                {
+                    height = Tools.getReal(dataRow, "Height");
+                    weight = Tools.getReal(dataRow, "Weight");
+                }
+                catch (ArgumentException)
+                {
+                    height = 0;
+                    weight = 0;
+                }
             }
 
             GetStatsFromDataRow(dataRow, playoffs);
@@ -286,6 +310,14 @@ namespace NBA_Stats_Tracker.Data.Players
                 sh[p.FTM] = seasonPBSList.Select(pbs => pbs.FTM).Max();
                 sh[p.FTA] = seasonPBSList.Select(pbs => pbs.FTA).Max();
                 sh[p.PTS] = seasonPBSList.Select(pbs => pbs.PTS).Max();
+
+                for (int i = 0; i < sh.Length; i++)
+                {
+                    if (careerHighs[i] < sh[i])
+                    {
+                        careerHighs[i] = sh[i];
+                    }
+                }
             }
         }
 
@@ -535,6 +567,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 contract.ContractSalaryPerYear.Add(salary);
             }
 
+            height = playerStatsRow.Height;
+            weight = playerStatsRow.Weight;
+
             CalcAvg();
         }
 
@@ -771,14 +806,14 @@ namespace NBA_Stats_Tracker.Data.Players
                 temp_metrics.Add("TS%", TSp);
 
                 double USGp = ((pstats[p.FGA] + 0.44*pstats[p.FTA] + pstats[p.TOS])*(tstats[t.MINS]))/
-                              (pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TO]));
+                              (pstats[p.MINS]*(tstats[t.FGA] + 0.44*tstats[t.FTA] + tstats[t.TOS]));
                 temp_metrics.Add("USG%", USGp);
 
                 CalculateRates(pstats, ref temp_metrics);
                 // PER preparations
                 double lREB = lstats[t.OREB] + lstats[t.DREB];
                 double factor = (2/3) - (0.5*(lstats[t.AST]/lstats[t.FGM]))/(2*(lstats[t.FGM]/lstats[t.FTM]));
-                double VOP = lstats[t.PF]/(lstats[t.FGA] - lstats[t.OREB] + lstats[t.TO] + 0.44*lstats[t.FTA]);
+                double VOP = lstats[t.PF]/(lstats[t.FGA] - lstats[t.OREB] + lstats[t.TOS] + 0.44*lstats[t.FTA]);
                 double lDRBp = lstats[t.DREB]/lREB;
 
                 double uPER = (1/pstats[p.MINS])*
@@ -903,6 +938,11 @@ namespace NBA_Stats_Tracker.Data.Players
             temp_metrics.Add("FTAR", FTAR);
             //
         }
+
+        public static List<string> metricsNames = new List<string>
+                                                  {
+                                                      "GmSc", "GmScE", "AST%", "EFG%", "STL%", "TO%", "TS%", "USG%", "EFF", "aPER", "BLK%", "DREB%", "OREB%", "REB%", "PPR", "PTSR", "REBR", "OREBR", "ASTR", "BLKR", "STLR", "TOR", "FTR", "FTAR", "PER"
+                                                  }; 
 
         /// <summary>
         ///     Calculates the PER.
@@ -1197,6 +1237,16 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 contract.ContractSalaryPerYear.Add(salary);
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

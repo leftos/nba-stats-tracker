@@ -37,13 +37,14 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DREB = ts.stats[t.DREB];
                 REB = (UInt16) (OREB + DREB);
                 STL = ts.stats[t.STL];
-                TOS = ts.stats[t.TO];
+                TOS = ts.stats[t.TOS];
                 BLK = ts.stats[t.BLK];
                 AST = ts.stats[t.AST];
                 FOUL = ts.stats[t.FOUL];
 
                 Wp = ts.averages[t.Wp];
                 Weff = ts.averages[t.Weff];
+                MPG = ts.averages[t.MPG];
                 PPG = ts.averages[t.PPG];
                 PAPG = ts.averages[t.PAPG];
                 FGp = ts.averages[t.FGp];
@@ -102,7 +103,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DREB = ts.pl_stats[t.DREB];
                 REB = (UInt16) (OREB + DREB);
                 STL = ts.pl_stats[t.STL];
-                TOS = ts.pl_stats[t.TO];
+                TOS = ts.pl_stats[t.TOS];
                 BLK = ts.pl_stats[t.BLK];
                 AST = ts.pl_stats[t.AST];
                 FOUL = ts.pl_stats[t.FOUL];
@@ -169,6 +170,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public float Wp { get; set; }
         public float Weff { get; set; }
+        public float MPG { get; set; }
         public float PPG { get; set; }
         public float PAPG { get; set; }
         public float FGp { get; set; }

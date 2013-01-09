@@ -27,7 +27,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 rankingsPerGame[i] = new int[tst[i].averages.Length];
             }
-            for (int j = 0; j < tst[0].averages.Length; j++)
+            for (int j = 0; j < (new TeamStats()).averages.Length; j++)
             {
                 var averages = new Dictionary<int, float>();
                 for (int i = 0; i < tst.Count; i++)
@@ -37,7 +37,8 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                tempList.Reverse();
+                if (j != t.FPG && j != t.TPG)
+                    tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -52,7 +53,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 rankingsTotal[i] = new int[tst[i].stats.Length];
             }
-            for (int j = 0; j < tst[0].stats.Length; j++)
+            for (int j = 0; j < (new TeamStats()).stats.Length; j++)
             {
                 var totals = new Dictionary<int, float>();
                 for (int i = 0; i < tst.Count; i++)
@@ -62,7 +63,8 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                tempList.Reverse();
+                if (j != t.FOUL && j != t.TOS)
+                    tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -73,7 +75,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-            var metricsNames = new List<string>(tst[0].metrics.Keys);
+            var metricsNames = TeamStats.metricsNames;
             for (int i = 0; i < tst.Count; i++)
             {
                 rankingsMetrics[i] = new Dictionary<string, int>();

@@ -304,7 +304,8 @@ namespace NBA_Stats_Tracker.Windows
             //{
             if (reload || e.OriginalSource is TabControl)
             {
-                if (tbcLeagueOverview.SelectedItem == tabTeamStats || tbcLeagueOverview.SelectedItem == tabTeamMetricStats)
+                var currentTab = tbcLeagueOverview.SelectedItem;
+                if (currentTab == tabTeamStats || currentTab == tabTeamMetricStats)
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -319,7 +320,7 @@ namespace NBA_Stats_Tracker.Windows
                         lastShownTeamSeason = curSeason;
                     }
                 }
-                else if (tbcLeagueOverview.SelectedItem == tabLeaders)
+                else if (currentTab == tabLeaders)
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -334,9 +335,9 @@ namespace NBA_Stats_Tracker.Windows
                         lastShownLeadersSeason = curSeason;
                     }
                 }
-                else if (tbcLeagueOverview.SelectedItem == tabPlayerStats || tbcLeagueOverview.SelectedItem == tabMetricStats ||
-                         tbcLeagueOverview.SelectedItem == tabBest || tbcLeagueOverview.SelectedItem == tabStartingFive ||
-                         tbcLeagueOverview.SelectedItem == tabRatings)
+                else if (currentTab == tabPlayerStats || currentTab == tabMetricStats ||
+                         currentTab == tabBest || currentTab == tabStartingFive ||
+                         currentTab == tabRatings || currentTab == tabContracts)
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -351,7 +352,7 @@ namespace NBA_Stats_Tracker.Windows
                         lastShownPlayerSeason = curSeason;
                     }
                 }
-                else if (tbcLeagueOverview.SelectedItem == tabBoxScores)
+                else if (currentTab == tabBoxScores)
                 {
                     //cmbDivConf.IsEnabled = false;
                     bool doIt = false;
@@ -490,6 +491,7 @@ namespace NBA_Stats_Tracker.Windows
                                               dgvMetricStats.ItemsSource = isSeason ? psrList : pl_psrList;
                                               dgvLeagueMetricStats.ItemsSource = isSeason ? lpsr : pl_lpsr;
                                               dgvRatings.ItemsSource = isSeason ? psrList : pl_psrList;
+                                              dgvContracts.ItemsSource = isSeason ? psrList : pl_psrList;
 
                                               PrepareBestPerformers(psrList, pl_psrList);
 

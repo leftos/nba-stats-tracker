@@ -312,7 +312,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             MainWindow.mwInstance.txtFile.Text = file;
             MainWindow.currentDB = file;
-            MainWindow.isCustom = true;
 
             //}
             //catch (Exception ex)
@@ -420,7 +419,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"OREB", tstToSave[key].stats[t.OREB].ToString()},
                                {"DREB", tstToSave[key].stats[t.DREB].ToString()},
                                {"STL", tstToSave[key].stats[t.STL].ToString()},
-                               {"TOS", tstToSave[key].stats[t.TO].ToString()},
+                               {"TOS", tstToSave[key].stats[t.TOS].ToString()},
                                {"BLK", tstToSave[key].stats[t.BLK].ToString()},
                                {"AST", tstToSave[key].stats[t.AST].ToString()},
                                {"FOUL", tstToSave[key].stats[t.FOUL].ToString()},
@@ -451,7 +450,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                   {"OREB", tstToSave[key].pl_stats[t.OREB].ToString()},
                                   {"DREB", tstToSave[key].pl_stats[t.DREB].ToString()},
                                   {"STL", tstToSave[key].pl_stats[t.STL].ToString()},
-                                  {"TOS", tstToSave[key].pl_stats[t.TO].ToString()},
+                                  {"TOS", tstToSave[key].pl_stats[t.TOS].ToString()},
                                   {"BLK", tstToSave[key].pl_stats[t.BLK].ToString()},
                                   {"AST", tstToSave[key].pl_stats[t.AST].ToString()},
                                   {"FOUL", tstToSave[key].pl_stats[t.FOUL].ToString()},
@@ -524,7 +523,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"OREB", tstoppToSave[key].stats[t.OREB].ToString()},
                                {"DREB", tstoppToSave[key].stats[t.DREB].ToString()},
                                {"STL", tstoppToSave[key].stats[t.STL].ToString()},
-                               {"TOS", tstoppToSave[key].stats[t.TO].ToString()},
+                               {"TOS", tstoppToSave[key].stats[t.TOS].ToString()},
                                {"BLK", tstoppToSave[key].stats[t.BLK].ToString()},
                                {"AST", tstoppToSave[key].stats[t.AST].ToString()},
                                {"FOUL", tstoppToSave[key].stats[t.FOUL].ToString()},
@@ -555,7 +554,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                   {"OREB", tstoppToSave[key].pl_stats[t.OREB].ToString()},
                                   {"DREB", tstoppToSave[key].pl_stats[t.DREB].ToString()},
                                   {"STL", tstoppToSave[key].pl_stats[t.STL].ToString()},
-                                  {"TOS", tstoppToSave[key].pl_stats[t.TO].ToString()},
+                                  {"TOS", tstoppToSave[key].pl_stats[t.TOS].ToString()},
                                   {"BLK", tstoppToSave[key].pl_stats[t.BLK].ToString()},
                                   {"AST", tstoppToSave[key].pl_stats[t.AST].ToString()},
                                   {"FOUL", tstoppToSave[key].pl_stats[t.FOUL].ToString()},
@@ -690,7 +689,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"ContractY5", ps.contract.TryGetSalary(5).ToString()},
                                {"ContractY6", ps.contract.TryGetSalary(6).ToString()},
                                {"ContractY7", ps.contract.TryGetSalary(7).ToString()},
-                               {"ContractOption", ((byte) ps.contract.Option).ToString()}
+                               {"ContractOption", ((byte) ps.contract.Option).ToString()},
+                               {"Height", ps.height.ToString()},
+                               {"Weight", ps.weight.ToString()}
                            };
                 var pl_dict = new Dictionary<string, string>
                               {
@@ -956,7 +957,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 db.ExecuteNonQuery(qr);
                 qr =
                     string.Format(
-                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""isInjured"" TEXT,""TeamFin"" TEXT,""TeamSta"" TEXT,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT, ""ContractY1"" INTEGER, ""ContractY2"" INTEGER, ""ContractY3"" INTEGER, ""ContractY4"" INTEGER, ""ContractY5"" INTEGER, ""ContractY6"" INTEGER, ""ContractY7"" INTEGER, ""ContractOption"" TEXT)",
+                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""isInjured"" TEXT,""TeamFin"" TEXT,""TeamSta"" TEXT,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT, ""ContractY1"" INTEGER, ""ContractY2"" INTEGER, ""ContractY3"" INTEGER, ""ContractY4"" INTEGER, ""ContractY5"" INTEGER, ""ContractY6"" INTEGER, ""ContractY7"" INTEGER, ""ContractOption"" TEXT, ""Height"" REAL, ""Weight"" REAL)",
                         playersT);
                 db.ExecuteNonQuery(qr);
 
@@ -1192,7 +1193,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 ts.pl_stats[t.OREB] = Convert.ToUInt16(r["OREB"].ToString());
                 ts.pl_stats[t.DREB] = Convert.ToUInt16(r["DREB"].ToString());
                 ts.pl_stats[t.STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.pl_stats[t.TO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.pl_stats[t.TOS] = Convert.ToUInt16(r["TOS"].ToString());
                 ts.pl_stats[t.BLK] = Convert.ToUInt16(r["BLK"].ToString());
                 ts.pl_stats[t.AST] = Convert.ToUInt16(r["AST"].ToString());
                 ts.pl_stats[t.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
@@ -1262,7 +1263,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 tsopp.stats[t.OREB] = Convert.ToUInt16(r["OREB"].ToString());
                 tsopp.stats[t.DREB] = Convert.ToUInt16(r["DREB"].ToString());
                 tsopp.stats[t.STL] = Convert.ToUInt16(r["STL"].ToString());
-                tsopp.stats[t.TO] = Convert.ToUInt16(r["TOS"].ToString());
+                tsopp.stats[t.TOS] = Convert.ToUInt16(r["TOS"].ToString());
                 tsopp.stats[t.BLK] = Convert.ToUInt16(r["BLK"].ToString());
                 tsopp.stats[t.AST] = Convert.ToUInt16(r["AST"].ToString());
                 tsopp.stats[t.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
@@ -1295,7 +1296,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 tsopp.pl_stats[t.OREB] = Convert.ToUInt16(r["OREB"].ToString());
                 tsopp.pl_stats[t.DREB] = Convert.ToUInt16(r["DREB"].ToString());
                 tsopp.pl_stats[t.STL] = Convert.ToUInt16(r["STL"].ToString());
-                tsopp.pl_stats[t.TO] = Convert.ToUInt16(r["TOS"].ToString());
+                tsopp.pl_stats[t.TOS] = Convert.ToUInt16(r["TOS"].ToString());
                 tsopp.pl_stats[t.BLK] = Convert.ToUInt16(r["BLK"].ToString());
                 tsopp.pl_stats[t.AST] = Convert.ToUInt16(r["AST"].ToString());
                 tsopp.pl_stats[t.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
@@ -1323,7 +1324,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 ts.stats[t.OREB] = Convert.ToUInt16(r["OREB"].ToString());
                 ts.stats[t.DREB] = Convert.ToUInt16(r["DREB"].ToString());
                 ts.stats[t.STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.stats[t.TO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.stats[t.TOS] = Convert.ToUInt16(r["TOS"].ToString());
                 ts.stats[t.BLK] = Convert.ToUInt16(r["BLK"].ToString());
                 ts.stats[t.AST] = Convert.ToUInt16(r["AST"].ToString());
                 ts.stats[t.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
@@ -1344,7 +1345,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 ts.pl_stats[t.OREB] = Convert.ToUInt16(r["OREB"].ToString());
                 ts.pl_stats[t.DREB] = Convert.ToUInt16(r["DREB"].ToString());
                 ts.pl_stats[t.STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.pl_stats[t.TO] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.pl_stats[t.TOS] = Convert.ToUInt16(r["TOS"].ToString());
                 ts.pl_stats[t.BLK] = Convert.ToUInt16(r["BLK"].ToString());
                 ts.pl_stats[t.AST] = Convert.ToUInt16(r["AST"].ToString());
                 ts.pl_stats[t.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
@@ -1674,6 +1675,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                             }
                         }
                         else if (!dr["sql"].ToString().Contains("\"ContractY1\""))
+                        {
+                            mustSave = true;
+                        }
+                        else if (!dr["sql"].ToString().Contains("\"Height\""))
                         {
                             mustSave = true;
                         }

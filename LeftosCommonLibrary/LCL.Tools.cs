@@ -225,5 +225,10 @@ namespace LeftosCommonLibrary
                 return list;
             }
         }
+
+        public static double getReal(DataRow r, string ColumnName)
+        {
+            return Convert.ToSingle(r[ColumnName].ToString());
+        }
     }
 }

@@ -330,7 +330,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             ts.stats[t.AST] = Tools.getUInt16(tr, "AST");
             ts.stats[t.STL] = Tools.getUInt16(tr, "STL");
             ts.stats[t.BLK] = Tools.getUInt16(tr, "BLK");
-            ts.stats[t.TO] = Tools.getUInt16(tr, "TOV");
+            ts.stats[t.TOS] = Tools.getUInt16(tr, "TOV");
             ts.stats[t.FOUL] = Tools.getUInt16(tr, "PF");
             ts.stats[t.PF] = Tools.getUInt16(tr, "PTS");
             ts.stats[t.PA] = Tools.getUInt16(toppr, "PTS");
@@ -349,7 +349,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             tsopp.stats[t.AST] = Tools.getUInt16(toppr, "AST");
             tsopp.stats[t.STL] = Tools.getUInt16(toppr, "STL");
             tsopp.stats[t.BLK] = Tools.getUInt16(toppr, "BLK");
-            tsopp.stats[t.TO] = Tools.getUInt16(toppr, "TOV");
+            tsopp.stats[t.TOS] = Tools.getUInt16(toppr, "TOV");
             tsopp.stats[t.FOUL] = Tools.getUInt16(toppr, "PF");
             tsopp.stats[t.PF] = Tools.getUInt16(toppr, "PTS");
             tsopp.stats[t.PA] = Tools.getUInt16(tr, "PTS");
@@ -423,7 +423,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 tst[i].pl_stats[t.AST] = Tools.getUInt16(tr, "AST");
                 tst[i].pl_stats[t.STL] = Tools.getUInt16(tr, "STL");
                 tst[i].pl_stats[t.BLK] = Tools.getUInt16(tr, "BLK");
-                tst[i].pl_stats[t.TO] = Tools.getUInt16(tr, "TOV");
+                tst[i].pl_stats[t.TOS] = Tools.getUInt16(tr, "TOV");
                 tst[i].pl_stats[t.FOUL] = Tools.getUInt16(tr, "PF");
                 tst[i].pl_stats[t.PF] = Tools.getUInt16(tr, "PTS");
                 tst[i].pl_stats[t.PA] = Tools.getUInt16(toppr, "PTS");
@@ -442,7 +442,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 tstopp[i].pl_stats[t.AST] = Tools.getUInt16(toppr, "AST");
                 tstopp[i].pl_stats[t.STL] = Tools.getUInt16(toppr, "STL");
                 tstopp[i].pl_stats[t.BLK] = Tools.getUInt16(toppr, "BLK");
-                tstopp[i].pl_stats[t.TO] = Tools.getUInt16(toppr, "TOV");
+                tstopp[i].pl_stats[t.TOS] = Tools.getUInt16(toppr, "TOV");
                 tstopp[i].pl_stats[t.FOUL] = Tools.getUInt16(toppr, "PF");
                 tstopp[i].pl_stats[t.PF] = Tools.getUInt16(toppr, "PTS");
                 tstopp[i].pl_stats[t.PA] = Tools.getUInt16(tr, "PTS");

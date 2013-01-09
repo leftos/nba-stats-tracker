@@ -1,7 +1,1 @@
-- Player Height/Weight
 - Rates in yearly
-- Message with updates on import (signings, trades, contract extensions)
-- Check after each box-score update if career highs need to be updated
-- Match players by other info as well
-- Import previous season
-- Check if user is in latest season when importing/exporting

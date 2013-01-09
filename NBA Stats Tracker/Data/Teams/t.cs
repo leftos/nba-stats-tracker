@@ -19,7 +19,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                          OREB = 10,
                          DREB = 11,
                          STL = 12,
-                         TO = 13,
+                         TOS = 13,
                          BLK = 14,
                          AST = 15,
                          FOUL = 16;
@@ -42,7 +42,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                          FPG = 15,
                          Wp = 16,
                          Weff = 17,
-                         PD = 18;
+                         PD = 18,
+                         MPG = 19;
 
         public static Dictionary<int, string> totals = new Dictionary<int, string>
                                                        {
@@ -84,7 +85,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                                                              {15, "FPG"},
                                                              {16, "WP"},
                                                              {17, "Weff"},
-                                                             {18, "PD"}
+                                                             {18, "PD"},
+                                                             {19, "MPG"}
                                                          };
     }
 }

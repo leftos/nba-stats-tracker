@@ -128,7 +128,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == 0)
+            if (cmbTeam.SelectedIndex <= 0)
                 cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
             else
                 cmbTeam.SelectedIndex--;
@@ -299,7 +299,7 @@ namespace NBA_Stats_Tracker.Windows
             dr["OREB"] = curts.stats[t.OREB].ToString();
             dr["DREB"] = curts.stats[t.DREB].ToString();
             dr["AST"] = curts.stats[t.AST].ToString();
-            dr["TO"] = curts.stats[t.TO].ToString();
+            dr["TO"] = curts.stats[t.TOS].ToString();
             dr["STL"] = curts.stats[t.STL].ToString();
             dr["BLK"] = curts.stats[t.BLK].ToString();
             dr["FOUL"] = curts.stats[t.FOUL].ToString();
@@ -379,7 +379,7 @@ namespace NBA_Stats_Tracker.Windows
             dr2["OREB"] = curtsopp.stats[t.OREB].ToString();
             dr2["DREB"] = curtsopp.stats[t.DREB].ToString();
             dr2["AST"] = curtsopp.stats[t.AST].ToString();
-            dr2["TO"] = curtsopp.stats[t.TO].ToString();
+            dr2["TO"] = curtsopp.stats[t.TOS].ToString();
             dr2["STL"] = curtsopp.stats[t.STL].ToString();
             dr2["BLK"] = curtsopp.stats[t.BLK].ToString();
             dr2["FOUL"] = curtsopp.stats[t.FOUL].ToString();
@@ -434,7 +434,7 @@ namespace NBA_Stats_Tracker.Windows
             dr["OREB"] = curts.pl_stats[t.OREB].ToString();
             dr["DREB"] = curts.pl_stats[t.DREB].ToString();
             dr["AST"] = curts.pl_stats[t.AST].ToString();
-            dr["TO"] = curts.pl_stats[t.TO].ToString();
+            dr["TO"] = curts.pl_stats[t.TOS].ToString();
             dr["STL"] = curts.pl_stats[t.STL].ToString();
             dr["BLK"] = curts.pl_stats[t.BLK].ToString();
             dr["FOUL"] = curts.pl_stats[t.FOUL].ToString();
@@ -510,7 +510,7 @@ namespace NBA_Stats_Tracker.Windows
             dr2["OREB"] = curtsopp.pl_stats[t.OREB].ToString();
             dr2["DREB"] = curtsopp.pl_stats[t.DREB].ToString();
             dr2["AST"] = curtsopp.pl_stats[t.AST].ToString();
-            dr2["TO"] = curtsopp.pl_stats[t.TO].ToString();
+            dr2["TO"] = curtsopp.pl_stats[t.TOS].ToString();
             dr2["STL"] = curtsopp.pl_stats[t.STL].ToString();
             dr2["BLK"] = curtsopp.pl_stats[t.BLK].ToString();
             dr2["FOUL"] = curtsopp.pl_stats[t.FOUL].ToString();
@@ -1175,7 +1175,7 @@ namespace NBA_Stats_Tracker.Windows
             tst[id].stats[t.DREB] = Convert.ToUInt16(myCell(0, 15));
 
             tst[id].stats[t.AST] = Convert.ToUInt16(myCell(0, 16));
-            tst[id].stats[t.TO] = Convert.ToUInt16(myCell(0, 17));
+            tst[id].stats[t.TOS] = Convert.ToUInt16(myCell(0, 17));
             tst[id].stats[t.STL] = Convert.ToUInt16(myCell(0, 18));
             tst[id].stats[t.BLK] = Convert.ToUInt16(myCell(0, 19));
             tst[id].stats[t.FOUL] = Convert.ToUInt16(myCell(0, 20));
@@ -1202,7 +1202,7 @@ namespace NBA_Stats_Tracker.Windows
             tst[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(6, 15));
 
             tst[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(6, 16));
-            tst[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(6, 17));
+            tst[id].pl_stats[t.TOS] = Convert.ToUInt16(myCell(6, 17));
             tst[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(6, 18));
             tst[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(6, 19));
             tst[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(6, 20));
@@ -1233,7 +1233,7 @@ namespace NBA_Stats_Tracker.Windows
             tstopp[id].stats[t.DREB] = Convert.ToUInt16(myCell(3, 15));
 
             tstopp[id].stats[t.AST] = Convert.ToUInt16(myCell(3, 16));
-            tstopp[id].stats[t.TO] = Convert.ToUInt16(myCell(3, 17));
+            tstopp[id].stats[t.TOS] = Convert.ToUInt16(myCell(3, 17));
             tstopp[id].stats[t.STL] = Convert.ToUInt16(myCell(3, 18));
             tstopp[id].stats[t.BLK] = Convert.ToUInt16(myCell(3, 19));
             tstopp[id].stats[t.FOUL] = Convert.ToUInt16(myCell(3, 20));
@@ -1260,7 +1260,7 @@ namespace NBA_Stats_Tracker.Windows
             tstopp[id].pl_stats[t.DREB] = Convert.ToUInt16(myCell(9, 15));
 
             tstopp[id].pl_stats[t.AST] = Convert.ToUInt16(myCell(9, 16));
-            tstopp[id].pl_stats[t.TO] = Convert.ToUInt16(myCell(9, 17));
+            tstopp[id].pl_stats[t.TOS] = Convert.ToUInt16(myCell(9, 17));
             tstopp[id].pl_stats[t.STL] = Convert.ToUInt16(myCell(9, 18));
             tstopp[id].pl_stats[t.BLK] = Convert.ToUInt16(myCell(9, 19));
             tstopp[id].pl_stats[t.FOUL] = Convert.ToUInt16(myCell(9, 20));
@@ -1278,6 +1278,8 @@ namespace NBA_Stats_Tracker.Windows
 
             SQLiteIO.saveSeasonToDatabase(MainWindow.currentDB, tst, tstopp, playersToUpdate, curSeason, maxSeason, partialUpdate: true);
             SQLiteIO.LoadSeason(MainWindow.currentDB, curSeason, doNotLoadBoxScores: true);
+            LinkInternalsToMainWindow();
+            MainWindow.UpdateNotables();
 
             int temp = cmbTeam.SelectedIndex;
             cmbTeam.SelectedIndex = -1;
@@ -1446,7 +1448,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrevOpp_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbOppTeam.SelectedIndex == 0)
+            if (cmbOppTeam.SelectedIndex <= 0)
                 cmbOppTeam.SelectedIndex = cmbOppTeam.Items.Count - 1;
             else
                 cmbOppTeam.SelectedIndex--;

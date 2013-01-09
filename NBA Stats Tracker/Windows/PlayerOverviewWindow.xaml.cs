@@ -453,12 +453,18 @@ namespace NBA_Stats_Tracker.Windows
                 cmbGraphStat.SelectedIndex = 0;
         }
 
-        private List<string> GetFacts(int id, PlayerRankings rankings, bool onlyPerGame = false)
+        private List<string> GetFacts(int id, PlayerRankings rankings, bool onlyLeaders = false)
         {
+            var leadersStats = new List<int> {p.PPG, p.FGp, p.TPp, p.FTp, p.RPG, p.SPG, p.APG, p.BPG};
             int count = 0;
             var facts = new List<string>();
             for (int i = 0; i < rankings.rankingsPerGame[id].Length; i++)
             {
+                if (onlyLeaders)
+                {
+                    if (!leadersStats.Contains(i))
+                        continue;
+                }
                 int rank = rankings.rankingsPerGame[id][i];
                 if (rank <= 20)
                 {
@@ -497,7 +503,7 @@ namespace NBA_Stats_Tracker.Windows
                     count++;
                 }
             }
-            if (!onlyPerGame)
+            if (!onlyLeaders)
             {
                 for (int i = 0; i < rankings.rankingsTotal[id].Length; i++)
                 {
@@ -551,6 +557,10 @@ namespace NBA_Stats_Tracker.Windows
 
             if (MainWindow.pst[id].stats[p.GP] > 0)
             {
+                grpSeasonScoutingReport.Visibility = Visibility.Visible;
+                grpSeasonFacts.Visibility = Visibility.Visible;
+                grpSeasonLeadersFacts.Visibility = Visibility.Visible;
+
                 string msg = new PlayerStatsRow(MainWindow.pst[id], false, false).ScoutingReport(MainWindow.pst, cumSeasonRankingsActive,
                                                                                                  cumSeasonRankingsTeam,
                                                                                                  cumSeasonRankingsPosition, pbsList,
@@ -558,14 +568,14 @@ namespace NBA_Stats_Tracker.Windows
                 txbSeasonScoutingReport.Text = msg;
 
                 List<string> facts = GetFacts(id, cumSeasonRankingsActive);
-                txbSeasonFacts.Text = facts.Aggregate((s1, s2) => s1 + "\n" + s2);
+                txbSeasonFacts.Text = AggregateFacts(facts);
+                if (facts.Count == 0)
+                    grpSeasonFacts.Visibility = Visibility.Collapsed;
 
-                List<string> factsLeaders = GetFacts(id, MainWindow.SeasonLeadersRankings, true);
-                txbSeasonLeadersFacts.Text = factsLeaders.Aggregate((s1, s2) => s1 + "\n" + s2);
-
-                grpSeasonScoutingReport.Visibility = Visibility.Visible;
-                grpSeasonFacts.Visibility = Visibility.Visible;
-                grpSeasonLeadersFacts.Visibility = Visibility.Visible;
+                facts = GetFacts(id, MainWindow.SeasonLeadersRankings, true);
+                txbSeasonLeadersFacts.Text = AggregateFacts(facts);
+                if (facts.Count == 0)
+                    grpSeasonLeadersFacts.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -576,18 +586,22 @@ namespace NBA_Stats_Tracker.Windows
 
             if (MainWindow.pst[id].pl_stats[p.GP] > 0)
             {
+                grpPlayoffsScoutingReport.Visibility = Visibility.Visible;
+                grpPlayoffsFacts.Visibility = Visibility.Visible;
+                grpPlayoffsLeadersFacts.Visibility = Visibility.Visible;
+
                 string msg = new PlayerStatsRow(MainWindow.pst[id], true, false).ScoutingReport(MainWindow.pst, cumPlayoffsRankingsActive, cumPlayoffsRankingsTeam, cumPlayoffsRankingsPosition, pbsList, txbGame1.Text);
                 txbPlayoffsScoutingReport.Text = msg;
 
                 List<string> facts = GetFacts(id, cumPlayoffsRankingsActive);
-                txbPlayoffsFacts.Text = facts.Aggregate((s1, s2) => s1 + "\n" + s2);
+                txbPlayoffsFacts.Text = AggregateFacts(facts);
+                if (facts.Count == 0)
+                    grpPlayoffsFacts.Visibility = Visibility.Collapsed;
 
                 facts = GetFacts(id, MainWindow.PlayoffsLeadersRankings, true);
-                txbPlayoffsLeadersFacts.Text = facts.Aggregate((s1, s2) => s1 + "\n" + s2);
-
-                grpPlayoffsScoutingReport.Visibility = Visibility.Visible;
-                grpPlayoffsFacts.Visibility = Visibility.Visible;
-                grpPlayoffsLeadersFacts.Visibility = Visibility.Visible;
+                txbPlayoffsLeadersFacts.Text = AggregateFacts(facts);
+                if (facts.Count == 0)
+                    grpPlayoffsLeadersFacts.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -597,6 +611,19 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             svScoutingReport.ScrollToTop();
+        }
+
+        private static string AggregateFacts(List<string> facts)
+        {
+            switch (facts.Count)
+            {
+                case 0:
+                    return "";
+                case 1:
+                    return facts[0];
+                default:
+                    return facts.Aggregate((s1, s2) => s1 + "\n" + s2);
+            }
         }
 
         private void UpdateRecords()
@@ -1370,6 +1397,8 @@ namespace NBA_Stats_Tracker.Windows
                                      chkIsActive.IsChecked.GetValueOrDefault(), false, chkIsInjured.IsChecked.GetValueOrDefault(),
                                      chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
                                      dt_ov.Rows[0]);
+            ps.height = psr.Height;
+            ps.weight = psr.Weight;
             ps.UpdateCareerHighs(recordsList.Single(r => r.Type == "Career"));
             ps.UpdateContract(dgvContract.ItemsSource.Cast<PlayerStatsRow>().First());
             return ps;
@@ -1401,7 +1430,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbTeam.SelectedIndex == 0)
+            if (cmbTeam.SelectedIndex <= 0)
                 cmbTeam.SelectedIndex = cmbTeam.Items.Count - 1;
             else
                 cmbTeam.SelectedIndex--;
@@ -1433,7 +1462,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrevPlayer_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbPlayer.SelectedIndex == 0)
+            if (cmbPlayer.SelectedIndex <= 0)
                 cmbPlayer.SelectedIndex = cmbPlayer.Items.Count - 1;
             else
                 cmbPlayer.SelectedIndex--;
@@ -2090,7 +2119,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrevOppTeam_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbOppTeam.SelectedIndex == 0)
+            if (cmbOppTeam.SelectedIndex <= 0)
                 cmbOppTeam.SelectedIndex = cmbOppTeam.Items.Count - 1;
             else
                 cmbOppTeam.SelectedIndex--;
@@ -2122,7 +2151,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPrevOppPlayer_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbOppPlayer.SelectedIndex == 0)
+            if (cmbOppPlayer.SelectedIndex <= 0)
                 cmbOppPlayer.SelectedIndex = cmbOppPlayer.Items.Count - 1;
             else
                 cmbOppPlayer.SelectedIndex--;

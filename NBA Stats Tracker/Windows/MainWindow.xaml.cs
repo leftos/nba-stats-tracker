@@ -66,7 +66,6 @@ namespace NBA_Stats_Tracker.Windows
         public static readonly string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
-        public static bool isCustom;
 
         public static string input = "";
 
@@ -161,6 +160,7 @@ namespace NBA_Stats_Tracker.Windows
         private BackgroundWorker worker1 = new BackgroundWorker();
         public static PlayerRankings SeasonLeadersRankings;
         public static PlayerRankings PlayoffsLeadersRankings;
+        public static bool IsImperial = true;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -181,9 +181,7 @@ namespace NBA_Stats_Tracker.Windows
 #else
             btnTest.Visibility = Visibility.Hidden;
             #endif
-
-            isCustom = true;
-
+            
             if (Directory.Exists(AppDocsPath) == false)
                 Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(AppTempPath) == false)
@@ -267,6 +265,9 @@ namespace NBA_Stats_Tracker.Windows
 
                 int CompatibilityCheck = Misc.GetRegistrySetting("CompatibilityCheck", 1);
                 mnuOptionsCompatibilityCheck.IsChecked = CompatibilityCheck == 1;
+
+                IsImperial = Misc.GetRegistrySetting("IsImperial", 1) == 1;
+                mnuOptionsIsImperial.IsChecked = IsImperial;
 
                 // Displays a message to urge the user to donate at the 50th start of the program.
                 int TimesStarted = Misc.GetRegistrySetting("TimesStarted", -1);
@@ -358,6 +359,23 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (String.IsNullOrEmpty(currentDB))
                 return;
+
+            if (curSeason != SQLiteIO.getMaxSeason(currentDB))
+            {
+                if (
+                    MessageBox.Show(
+                        "Note that the currently selected season isn't the latest one in the database. " +
+                        "Are you sure you want to import into this season?",
+                        "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                    return;
+            }
+
+            if (tf.isBetween)
+            {
+                tf = new Timeframe(curSeason);
+                UpdateAllData();
+            }
+
             if (mnuOptionsImportOld.IsChecked)
             {
                 var ofd = new OpenFileDialog
@@ -374,7 +392,6 @@ namespace NBA_Stats_Tracker.Windows
                 if (ofd.FileName == "")
                     return;
 
-                isCustom = true;
                 //prepareWindow(isCustom);
                 TeamOrder = NBA2K12.setTeamOrder("Mode 0");
 
@@ -602,7 +619,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 bshist[bs.bshistid].bs = bs;
             }
-
+            
             SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
             UpdateAllData();
 
@@ -828,6 +845,22 @@ namespace NBA_Stats_Tracker.Windows
             {
                 MessageBox.Show("You can't export a database that has less/more than 30 teams to an NBA 2K12 save.");
                 return;
+            }
+
+            if (curSeason != SQLiteIO.getMaxSeason(currentDB))
+            {
+                if (
+                    MessageBox.Show(
+                        "Note that the currently selected season isn't the latest one in the database. " +
+                        "Are you sure you want to export from this season?",
+                        "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                    return;
+            }
+
+            if (tf.isBetween)
+            {
+                tf = new Timeframe(curSeason);
+                UpdateAllData();
             }
 
             if (mnuOptionsImportOld.IsChecked)
@@ -1960,6 +1993,8 @@ namespace NBA_Stats_Tracker.Windows
                     SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
                     PopulateSeasonCombo();
                     ChangeSeason(curSeason);
+                    tf = new Timeframe(curSeason);
+                    UpdateAllData();
                     updateStatus("New season started. Database saved.");
                 }
             }
@@ -2567,7 +2602,7 @@ namespace NBA_Stats_Tracker.Windows
             UpdateNotables();
         }
 
-        private static void UpdateNotables()
+        public static void UpdateNotables()
         {
             Dictionary<int, PlayerStats> pstLeaders;
             SeasonLeadersRankings = PlayerRankings.CalculateLeadersRankings(out pstLeaders);
@@ -2588,72 +2623,81 @@ namespace NBA_Stats_Tracker.Windows
 
             PlayerStatsRow curL = psrList.OrderByDescending(pair => pair.PPG).First();
 
-            string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.PPG);
+            string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 3, p.PPG);
             string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
                                      Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FGp).First();
+            var ppg = double.IsNaN(curL.PPG) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.FGp);
-            s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FGp);
+            s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.RPG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.RPG);
-            s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.RPG);
+            s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {5:F1} PPG,{4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.BPG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.BPG);
-            s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.BPG);
+            s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.APG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.APG);
-            s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.APG);
+            s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.SPG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.SPG);
-            s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.SPG);
+            s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.ORPG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.ORPG);
-            s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.ORPG);
+            s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.DRPG).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.DRPG);
-            s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.DRPG);
+            s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.TPp).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.TPp);
-            s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.TPp);
+            s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FTp).First();
+            ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
-            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, p.FTp);
-            s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m);
+            m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FTp);
+            s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
+                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m, ppg);
             notables.Add(s);
 
             notables.Shuffle();
@@ -2662,7 +2706,7 @@ namespace NBA_Stats_Tracker.Windows
             mwInstance.marqueeTimer.Start();
         }
 
-        private static string GetBestStatsForMarquee(PlayerStatsRow curLr, PlayerRankings rankingsActive, int statToIgnore)
+        private static string GetBestStatsForMarquee(PlayerStatsRow curLr, PlayerRankings rankingsActive, int count, int statToIgnore)
         {
             string s = "";
             var dict = new Dictionary<int, int>();
@@ -2670,17 +2714,17 @@ namespace NBA_Stats_Tracker.Windows
             {
                 dict.Add(k, rankingsActive.rankingsPerGame[curLr.ID][k]);
             }
-            dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
-            dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
-            dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
+            dict[p.FPG] = pst.Count + 1 - dict[p.FPG];
+            dict[p.TPG] = pst.Count + 1 - dict[p.TPG];
+            //dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
             List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
-            int j = 3;
+            int j = count;
             while (true)
             {
                 if (m == j)
                     break;
-                if (strengths[m] == statToIgnore)
+                if (strengths[m] == statToIgnore || strengths[m] == p.PPG || strengths[m] == p.DRPG)
                 {
                     j++;
                     m++;
@@ -2797,6 +2841,49 @@ namespace NBA_Stats_Tracker.Windows
             PlayoffTeamRankings = dbdata.playoffTeamRankings;
             PlayoffPlayerRankings = dbdata.playoffPlayerRankings;
             DisplayNames = dbdata.DisplayNames;
+        }
+
+        private void mnuMiscImportPrevYear2K12_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                MessageBox.Show(
+                    "Are you sure you want to import the stats of the previous season from your NBA 2K12 save? This " +
+                    "will overwrite any data in the current season of the database.", "NBA Stats Tracker", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            var fbd = new FolderBrowserDialog
+                      {
+                          Description = "Select folder with REditor-exported CSVs",
+                          ShowNewFolderButton = false,
+                          SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+                      };
+            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+
+            if (dr != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (fbd.SelectedPath == "")
+                return;
+
+            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+
+            int result = REDitor.ImportPrevious(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
+
+            if (result != 0)
+            {
+                MessageBox.Show("Import failed! Please reload your database immediately to avoid saving corrupt data.",
+                                "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
+        }
+
+        private void mnuOptionsIsImperial_Click(object sender, RoutedEventArgs e)
+        {
+            IsImperial = mnuOptionsIsImperial.IsChecked;
+            Misc.SetRegistrySetting("IsImperial", IsImperial ? 1 : 0);
         }
     }
 }

@@ -52,16 +52,21 @@
                     </MenuItem>
                     <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
                               Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
+                    <MenuItem Header="Use Imperial Measurements" Name="mnuOptionsIsImperial" IsCheckable="True" Click="mnuOptionsIsImperial_Click" />
                 </MenuItem>
                 <MenuItem x:Name="mnuTools" Header="_Tools">
                     <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason"
                               Click="mnuMiscStartNewSeason_Click" />
-                    <MenuItem Header="_Rename Current Season..." Name="mnuMiscRenameCurrentSeason"
-                              Click="mnuMiscRenameCurrentSeason_Click" />
-                    <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
-                              Click="mnuMiscEnableTeams_Click" />
-                    <MenuItem Header="E_nable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
-                              Click="mnuMiscEnablePlayers_Click" />
+                    <MenuItem Header="Season Settings">
+                        <MenuItem Header="_Rename Current Season..." Name="mnuMiscRenameCurrentSeason"
+                                  Click="mnuMiscRenameCurrentSeason_Click" />
+                        <MenuItem Header="_Enable/Disable Teams For This Season..." Name="mnuMiscEnableTeams"
+                                  Click="mnuMiscEnableTeams_Click" />
+                        <MenuItem Header="E_nable/Disable Players For This Season..." Name="mnuMiscEnablePlayers"
+                                  Click="mnuMiscEnablePlayers_Click" />
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Import previous year from 2K12 Save..." Name="mnuMiscImportPrevYear2K12" Click="mnuMiscImportPrevYear2K12_Click" />
                     <Separator />
                     <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores"
                               Click="mnuMiscImportBoxScores_Click" />
@@ -70,21 +75,26 @@
                     <Separator />
                     <MenuItem Header="_Live Box Score..." Name="mnuMiscLiveBoxScore" Click="mnuMiscLiveBoxScore_Click" />
                     <Separator />
-                    <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats"
-                              Click="mnuMiscResetTeamStats_Click" />
-                    <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
-                              Click="mnuMiscResetPlayerStats_Click" />
-                    <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats"
-                              Click="mnuMiscRecalculateOppStats_Click" />
-                    <MenuItem Header="Recalculate Player Career _Highs from Season Highs" Name="mnuMiscRecalculateCareerHighs" Click="mnuMiscRecalculateCareerHighs_Click"
-                               />
+                    <MenuItem Header="Fix/Reset Stats">
+                        <MenuItem Header="Reset All _Team Stats" Name="mnuMiscResetTeamStats"
+                                  Click="mnuMiscResetTeamStats_Click" />
+                        <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
+                                  Click="mnuMiscResetPlayerStats_Click" />
+                        <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats"
+                                  Click="mnuMiscRecalculateOppStats_Click" />
+                        <MenuItem Header="Recalculate Player Career _Highs from Season Highs"
+                                  Name="mnuMiscRecalculateCareerHighs" Click="mnuMiscRecalculateCareerHighs_Click"
+                                  Visibility="Collapsed" />
+                    </MenuItem>
                     <Separator />
-                    <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions"
-                              Click="mnuMiscEditDivisions_Click" />
-                    <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength"
-                              Click="mnuMiscEditGameLength_Click" />
-                    <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength"
-                              Click="mnuMiscEditSeasonLength_Click" />
+                    <MenuItem Header="Database Settings">
+                        <MenuItem Header="Edit _Divisions/Conferences..." Name="mnuMiscEditDivisions"
+                                  Click="mnuMiscEditDivisions_Click" />
+                        <MenuItem Header="Edit Game Length..." Name="mnuMiscEditGameLength"
+                                  Click="mnuMiscEditGameLength_Click" />
+                        <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength"
+                                  Click="mnuMiscEditSeasonLength_Click" />
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_Readme" Name="mnuHelpReadme" Click="mnuHelpReadme_Click" />
@@ -223,7 +233,7 @@
 
             <Grid x:Name="canMarquee" Height="23" Margin="10,0,10,27" Grid.Row="1" VerticalAlignment="Bottom">
                 <TextBlock Name="txbMarquee" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                       TextAlignment="Center" FontWeight="Bold" Text="" />
+                           TextAlignment="Center" FontWeight="Bold" Text="" />
             </Grid>
         </Grid>
         <StatusBar HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="statusBar1" VerticalAlignment="Bottom"

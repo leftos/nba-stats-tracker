@@ -30,10 +30,11 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
             Dictionary<int, PlayerStats> validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0).ToDictionary(a => a.Key, a => a.Value);
-            
+
+            var dummyPS = new PlayerStats();
             //int firstPlayerID = validPlayers.Keys.ToList()[0];
-            int totalsCount = pst.FirstOrDefault().Value.stats.Length;
-            int metricsCount = pst.FirstOrDefault().Value.metrics.Count;
+            int totalsCount = dummyPS.stats.Length;
+            int metricsCount = dummyPS.metrics.Count;
 
             foreach (var kvp in validPlayers)
             {
@@ -82,7 +83,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 var tempList = new List<KeyValuePair<int, uint>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != p.FPG && j != p.TPG)
+                if (j != p.FOUL && j != p.TOS)
                     tempList.Reverse();
 
                 int k = 1;
@@ -101,7 +102,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
 
-            List<string> metricsNames = pst.FirstOrDefault().Value.metrics.Keys.ToList();
+            List<string> metricsNames = PlayerStats.metricsNames;
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics;
@@ -112,8 +113,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 var tempList = new List<KeyValuePair<int, double>>(metrics);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != p.FPG && j != p.TPG)
-                    tempList.Reverse();
+                tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)

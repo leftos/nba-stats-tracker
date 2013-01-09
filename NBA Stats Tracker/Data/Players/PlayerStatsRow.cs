@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.Teams;
+using NBA_Stats_Tracker.Windows;
 
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
     ///     Implements an easily bindable interface to a player's stats.
     /// </summary>
-    public class PlayerStatsRow
+    public class PlayerStatsRow : INotifyPropertyChanged
     {
         public PlayerStatsRow()
         {
@@ -46,6 +50,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.contract.TryGetSalary(i), null);
             }
 
+            Height = ps.height;
+            Weight = ps.weight;
+            
             if (!playoffs)
             {
                 GP = ps.stats[p.GP];
@@ -325,6 +332,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public int YearOfBirth { get; set; }
         public int YearsPro { get; set; }
+        public double Height { get; set; }
+        public double Weight { get; set; }
 
         public string Type { get; set; }
         public string Group { get; set; }
@@ -349,6 +358,96 @@ namespace NBA_Stats_Tracker.Data.Players
         public int ContractY7 { get; set; }
         public PlayerContractOption ContractOption { get; set; }
 
+        public string DisplayHeight
+        {
+            get
+            {
+                if (!MainWindow.IsImperial)
+                {
+                    return Height.ToString("0");
+                }
+                else
+                {
+                    var allInches = Height*0.393701;
+                    int feet = Convert.ToInt32(Math.Floor(allInches/12));
+                    int inches = Convert.ToInt32(allInches)%12;
+                    return String.Format("{0}\'{1}\"", feet, inches);
+                }
+            }
+            set
+            {
+                if (!MainWindow.IsImperial)
+                {
+                    try
+                    {
+                        Height = Convert.ToDouble(value);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(value + " is not a proper value for metric height.");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        var parts = value.Split('\'');
+                        parts[1] = parts[1].Replace("\"", "");
+                        var allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
+                        Height = ((double) allInches)/0.393701;
+                    }
+                    catch
+                    {
+                        MessageBox.Show(value + " is not a proper value for imperial height.");
+                    }
+                }
+                OnPropertyChanged("DisplayHeight");
+                OnPropertyChanged("Height");
+            }
+        }
+        
+        public string DisplayWeight
+        {
+            get
+            {
+                if (MainWindow.IsImperial)
+                {
+                    return Weight.ToString("F2");
+                }
+                else
+                {
+                    return (Weight*0.453592).ToString("F2");
+                }
+            }
+            set
+            {
+                if (MainWindow.IsImperial)
+                {
+                    try
+                    {
+                        Weight = Convert.ToDouble(value);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(value + " is not a proper value for imperial weight.");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        Weight = Convert.ToDouble(value) / 0.453592;
+                    }
+                    catch
+                    {
+                        MessageBox.Show(value + " is not a proper value for metric weight.");
+                    }
+                }
+                OnPropertyChanged("DisplayWeight");
+                OnPropertyChanged("Weight");
+            }
+        }
+        
         #region Metrics that require opponents' stats
 
         public double PER { get; set; }
@@ -696,7 +795,7 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             List<PlayerBoxScore> pbsList = pbsIList.ToList();
             string s = "";
-            s += String.Format("{0} {1}, born in {3}, is a {2} ", FirstName, LastName, Position1, YearOfBirth);
+            s += String.Format("{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ", FirstName, LastName, Position1, YearOfBirth, DisplayHeight, MainWindow.IsImperial ? "" : "cm.", DateTime.Today.Year - YearOfBirth);
             if (Position2 != Position.None)
                 s += String.Format("(alternatively {0})", Position2);
             s += ", ";
@@ -707,7 +806,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 s += String.Format("who is currently a Free Agent.");
 
             s += String.Format(" He's been a pro for {0} year", YearsPro);
-            if (YearsPro > 1)
+            if (YearsPro != 1)
                 s += "s";
             s += ".";
 
@@ -1010,6 +1109,16 @@ namespace NBA_Stats_Tracker.Data.Players
         public static void Refresh(ref PlayerStatsRow psr)
         {
             psr = new PlayerStatsRow(new PlayerStats(psr));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

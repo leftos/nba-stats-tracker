@@ -6,8 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         xmlns:system="clr-namespace:System;assembly=mscorlib" mc:Ignorable="d"
-        Height="557" Width="698"
-        Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" MinWidth="698" Title="Player Overview"
+        Height="557" Width="791"
+        Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" MinWidth="791" Title="Player Overview"
         WindowStartupLocation="CenterScreen" Closing="Window_Closing_1">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
@@ -27,7 +27,7 @@
         <Grid Margin="0,39,0,193">
             <TabControl HorizontalAlignment="Stretch" x:Name="tbcPlayerOverview"
                         VerticalAlignment="Stretch">
-                <TabItem Header="Overview" x:Name="tabOverview">
+                <TabItem Header="Overview" x:Name="tabOverview" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                     <Grid x:Name="grdOverview">
                         <Label Margin="6,6,0,0" Content="Last Name" HorizontalAlignment="Left" x:Name="label3"
                                VerticalAlignment="Top" />
@@ -52,26 +52,36 @@
                         <DataGrid Margin="0,66,0,0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True"
                                   FrozenColumnCount="1" ItemsSource="{Binding .}" x:Name="dgvOverviewStats"
                                   PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" CanUserSortColumns="False" />
-                        <ComboBox Height="23" Margin="495,8,0,0" Width="40" HorizontalAlignment="Left"
+                        <ComboBox Height="23" Margin="0,8,145,0" Width="40" HorizontalAlignment="Right"
                                   x:Name="cmbPosition1"
                                   VerticalAlignment="Top" />
-                        <Label Margin="439,8,0,0" Content="Position" HorizontalAlignment="Left" x:Name="label5"
+                        <Label Margin="0,8,188,0" Content="Position" HorizontalAlignment="Right" x:Name="label5"
                                VerticalAlignment="Top" />
-                        <ComboBox Height="23" Margin="619,8,0,0" Width="40" HorizontalAlignment="Left"
+                        <ComboBox Height="23" Margin="0,8,21,0" Width="40" HorizontalAlignment="Right"
                                   x:Name="cmbPosition2"
                                   VerticalAlignment="Top" />
-                        <Label Margin="544,8,0,0" Content="2nd Position" HorizontalAlignment="Left" x:Name="label6"
+                        <Label Margin="0,8,61,0" Content="2nd Position" HorizontalAlignment="Right" x:Name="label6"
                                VerticalAlignment="Top" />
-                        <Label Margin="377,36,0,0" Content="Year of Birth" HorizontalAlignment="Left"
+                        <Label Margin="0,36,228,0" Content="Year of Birth" HorizontalAlignment="Right"
                                VerticalAlignment="Top" />
                         <TextBox Height="23" Margin="0,38,188,0" Width="35" HorizontalAlignment="Right"
                                  x:Name="txtYearOfBirth"
                                  Text="{Binding YearOfBirth}" VerticalAlignment="Top" />
-                        <Label Margin="504,36,0,0" Content="Years Pro" HorizontalAlignment="Left"
+                        <Label Margin="0,36,117,0" Content="Years Pro" HorizontalAlignment="Right"
                                VerticalAlignment="Top" />
                         <TextBox Height="23" Margin="0,38,74,0" Width="35" HorizontalAlignment="Right"
                                  x:Name="txtYearsPro"
                                  Text="{Binding YearsPro}" VerticalAlignment="Top" />
+                        <Label Margin="0,36,467,0" Content="Height" HorizontalAlignment="Right"
+                        	VerticalAlignment="Top" />
+                        <TextBox Height="23" Margin="0,37,413,0" Width="49" HorizontalAlignment="Right"
+                        	x:Name="txtHeight"
+                        	Text="{Binding DisplayHeight}" VerticalAlignment="Top" />
+                        <Label Margin="0,36,360,0" Content="Weight" HorizontalAlignment="Right"
+                        	VerticalAlignment="Top" />
+                        <TextBox Height="23" Margin="0,37,308,0" Width="47" HorizontalAlignment="Right"
+                        	x:Name="txtWeight"
+                        	Text="{Binding DisplayWeight}" VerticalAlignment="Top" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Split Stats" x:Name="tabSplitStats">
@@ -319,6 +329,7 @@
                                 <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
                                 <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                                <DataGridTextColumn Binding="{Binding REBR}" Header="REBR" />
                                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
                                                     Visibility="Collapsed" />
                             </DataGrid.Columns>
@@ -374,13 +385,13 @@
                                   d:DataContext="{d:DesignInstance players:PlayerStatsRow}" Margin="0,3,0,0">
                             <DataGrid.Columns>
                                 <DataGridComboBoxColumn SelectedValueBinding="{Binding ContractOption, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource OptionsList}}" Header="Option"/>
-                                <DataGridTextColumn Binding="{Binding ContractY1, StringFormat=C}" Header="Year 1" />
-                                <DataGridTextColumn Binding="{Binding ContractY2, StringFormat=C}" Header="Year 2" />
-                                <DataGridTextColumn Binding="{Binding ContractY3, StringFormat=C}" Header="Year 3" />
-                                <DataGridTextColumn Binding="{Binding ContractY4, StringFormat=C}" Header="Year 4" />
-                                <DataGridTextColumn Binding="{Binding ContractY5, StringFormat=C}" Header="Year 5" />
-                                <DataGridTextColumn Binding="{Binding ContractY6, StringFormat=C}" Header="Year 6" />
-                                <DataGridTextColumn Binding="{Binding ContractY7, StringFormat=C}" Header="Year 7" />
+                                <DataGridTextColumn Binding="{Binding ContractY1, StringFormat=C0}" Header="Year 1" />
+                                <DataGridTextColumn Binding="{Binding ContractY2, StringFormat=C0}" Header="Year 2" />
+                                <DataGridTextColumn Binding="{Binding ContractY3, StringFormat=C0}" Header="Year 3" />
+                                <DataGridTextColumn Binding="{Binding ContractY4, StringFormat=C0}" Header="Year 4" />
+                                <DataGridTextColumn Binding="{Binding ContractY5, StringFormat=C0}" Header="Year 5" />
+                                <DataGridTextColumn Binding="{Binding ContractY6, StringFormat=C0}" Header="Year 6" />
+                                <DataGridTextColumn Binding="{Binding ContractY7, StringFormat=C0}" Header="Year 7" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

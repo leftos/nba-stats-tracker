@@ -1273,7 +1273,35 @@
                         </DataGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Player Stats" Name="tabPlayerStats">
+                <TabItem Header="Player Contracts" Name="tabContracts">
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
+                                  CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
+                                  Margin="6" Name="dgvContracts"
+                                  VerticalAlignment="Stretch" FrozenColumnCount="2"
+                                  AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
+                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
+                                <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                                <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
+                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridComboBoxColumn SelectedValueBinding="{Binding ContractOption, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource OptionsList}}" Header="Option"/>
+                                <DataGridTextColumn Binding="{Binding ContractY1, StringFormat=C0}" Header="Year 1" />
+                                <DataGridTextColumn Binding="{Binding ContractY2, StringFormat=C0}" Header="Year 2" />
+                                <DataGridTextColumn Binding="{Binding ContractY3, StringFormat=C0}" Header="Year 3" />
+                                <DataGridTextColumn Binding="{Binding ContractY4, StringFormat=C0}" Header="Year 4" />
+                                <DataGridTextColumn Binding="{Binding ContractY5, StringFormat=C0}" Header="Year 5" />
+                                <DataGridTextColumn Binding="{Binding ContractY6, StringFormat=C0}" Header="Year 6" />
+                                <DataGridTextColumn Binding="{Binding ContractY7, StringFormat=C0}" Header="Year 7" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+                    <TabItem Header="Player Stats" Name="tabPlayerStats">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />

@@ -110,6 +110,7 @@
     <Compile Include="Interop\REDitor\REDitor.cs" />
     <Compile Include="Interop\NBA2K12\NBA2K12.cs" />
     <Compile Include="Interop\BR\BR.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
