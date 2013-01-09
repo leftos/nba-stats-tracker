@@ -461,11 +461,11 @@ namespace NBA_Stats_Tracker.Windows
                 if (rank <= 20)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), p.averages[i]);
-                    if (t.averages[i].EndsWith("%"))
+                    if (p.averages[i].EndsWith("%"))
                     {
                         fact += String.Format("{0:F3}", MainWindow.pst[id].averages[i]);
                     }
-                    else if (t.averages[i].EndsWith("eff"))
+                    else if (p.averages[i].EndsWith("eff"))
                     {
                         fact += String.Format("{0:F2}", MainWindow.pst[id].averages[i]);
                     }

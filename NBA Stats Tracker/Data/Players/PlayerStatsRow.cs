@@ -360,7 +360,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891*ASTp + 4.34894327991171/(-0.702541953738967 - ASTp));
+                var ASTp100 = ASTp*100;
+                reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891*ASTp100 + 4.34894327991171/(-0.702541953738967 - ASTp100));
                 if (reRPass > 99)
                     reRPass = 99;
             }
@@ -371,8 +372,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
+                var BLKp100 = BLKp*100;
                 reRBlock =
-                    Convert.ToInt32(25.76 + 17.03*BLKp + 0.8376*Math.Pow(BLKp, 3) - 3.195*Math.Pow(BLKp, 2) - 0.07319*Math.Pow(BLKp, 4));
+                    Convert.ToInt32(25.76 + 17.03*BLKp100 + 0.8376*Math.Pow(BLKp100, 3) - 3.195*Math.Pow(BLKp100, 2) - 0.07319*Math.Pow(BLKp100, 4));
                 if (reRBlock > 99)
                     reRBlock = 99;
             }
@@ -383,7 +385,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reRSteal = Convert.ToInt32(29.92 + 14.57*STLp - 0.1509*Math.Pow(STLp, 2));
+                var STLp100 = STLp*100;
+                reRSteal = Convert.ToInt32(29.92 + 14.57 * STLp100 - 0.1509 * Math.Pow(STLp100, 2));
                 if (reRSteal > 99)
                     reRSteal = 99;
             }
@@ -394,9 +397,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
+                var OREBp100 = OREBp*100;
                 reROffRbd =
-                    Convert.ToInt32(24.67 + 3.864*OREBp + 0.3523*Math.Pow(OREBp, 2) + 0.0007358*Math.Pow(OREBp, 4) -
-                                    0.02796*Math.Pow(OREBp, 3));
+                    Convert.ToInt32(24.67 + 3.864*OREBp100 + 0.3523*Math.Pow(OREBp100, 2) + 0.0007358*Math.Pow(OREBp100, 4) -
+                                    0.02796*Math.Pow(OREBp100, 3));
                 if (reROffRbd > 99)
                     reROffRbd = 99;
             }
@@ -407,7 +411,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp);
+                var DREBp100 = DREBp*100;
+                reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp100);
                 if (reRDefRbd > 99)
                     reRDefRbd = 99;
             }

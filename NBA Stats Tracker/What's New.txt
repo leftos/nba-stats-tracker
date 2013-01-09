@@ -1,6 +1,9 @@
 NBA Stats Tracker - Version History
 
-	v1.3.5
+	v1.3.5.1 Beta
+		- Fix: Fixed recent Recommended 2K Ratings bug which occurred due to the transition to using the .XXX% format for metric percentages as well
+
+	v1.3.5 Beta
 		- Addition: Added Scouting Report tab in Team and Player Overview, providing scouting reports for each team and player for both their season and playoffs performances, as well as significant facts about them (i.e. in which stats they're rated at the top of the league)
 
 	v1.3.4 Beta

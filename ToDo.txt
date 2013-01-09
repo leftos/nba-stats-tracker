@@ -1,4 +1,8 @@
 - Player Height/Weight
 - Rates in yearly
-- Include metrics and totals in rankings
-- Scouting report a tab
+- Message with updates on import (signings, trades, contract extensions)
+- Career/season highs
+- Match players by other info as well
+- Leader Rankings in facts
+- Import previous season
+- Check if user is in latest season when importing/exporting
