@@ -511,6 +511,9 @@ namespace NBA_Stats_Tracker.Windows
 
             LoadRatingsCriteria();
             LoadMyLeadersCriteria();
+            bool preferNBALeaders = LeadersPrefSetting == "NBA";
+            mwInstance.mnuMiscPreferNBALeaders.IsChecked = preferNBALeaders;
+            mwInstance.mnuMiscPreferMyLeaders.IsChecked = !preferNBALeaders;
 
             SQLiteIO.LoadSeason();
 
@@ -2916,6 +2919,7 @@ namespace NBA_Stats_Tracker.Windows
             mnuMiscPreferMyLeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "NBA");
             LoadMyLeadersCriteria();
+            UpdateNotables();
         }
 
         private void mnuMiscPreferMyLeaders_Checked(object sender, RoutedEventArgs e)
@@ -2923,6 +2927,7 @@ namespace NBA_Stats_Tracker.Windows
             mnuMiscPreferNBALeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "My");
             LoadMyLeadersCriteria();
+            UpdateNotables();
         }
     }
 }
