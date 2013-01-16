@@ -1,6 +1,6 @@
 NBA Stats Tracker - Version History
 
-	v1.4.3
+	v1.4.3 Beta
 		- Addition: Added exporting Recommended 2K Ratings to REDitor's exported CSV files
 		- Addition: Added My League Leaders in League Overview, allowing user to set custom criteria for Leaders calculation
 			* Percentage of team's games played
