@@ -222,7 +222,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
             if (calcRatings)
-                Calculate2KRatings();
+                Calculate2KRatings(playoffs);
         }
 
         /// <summary>
@@ -459,8 +459,41 @@ namespace NBA_Stats_Tracker.Data.Players
 
         #endregion
 
-        private void Calculate2KRatings()
+        private void Calculate2KRatings(bool playoffs = false)
         {
+            var gpPctSetting = MainWindow.RatingsGPPctSetting;
+            var gpPCTreq = MainWindow.RatingsGPPctRequired;
+            var mpgSetting = MainWindow.RatingsMPGSetting;
+            var MPGreq = MainWindow.RatingsMPGRequired;
+
+            var pGP = GP;
+            TeamStats team = new TeamStats();
+            uint tGP = 0;
+            try
+            {
+                team = MainWindow.tst.Single(ts => ts.Value.name == TeamF).Value;
+                tGP = playoffs ? team.getPlayoffGames() : team.getGames();
+            }
+            catch (InvalidOperationException)
+            {
+                gpPctSetting = "-1";
+            }
+
+            if ((gpPctSetting != "-1" && (double) (pGP*100)/tGP < gpPCTreq) || (mpgSetting != "-1" && MPG < MPGreq))
+            {
+                reRFT = -1;
+                reRPass = -1;
+                reRBlock = -1;
+                reRSteal = -1;
+                reROffRbd = -1;
+                reRDefRbd = -1;
+                reTShotTnd = -1;
+                reTDrawFoul = -1;
+                reTTouch = -1;
+                reTCommitFl = -1;
+                return;
+            }
+
             try
             {
                 reRFT = Convert.ToInt32(100*FTp);
@@ -562,8 +595,8 @@ namespace NBA_Stats_Tracker.Data.Players
                 double FGAR = (double) FGA/MINS*36;
                 int touchTotal = Convert.ToInt32(FGAR + FTAR + TOR + ASTR);
                 reTTouch = Convert.ToInt32(3.141*Math.Pow(touchTotal, 2)/(1.178 + touchTotal));
-                if (reTTouch > 75)
-                    reTTouch = 75;
+                if (reTTouch > 99)
+                    reTTouch = 99;
             }
             catch
             {
@@ -1119,6 +1152,109 @@ namespace NBA_Stats_Tracker.Data.Players
             var handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public PlayerStatsRow ConvertToMyLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
+        {
+            string team = TeamF;
+            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
+            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
+            uint gamesPlayer = GP;
+            PlayerStatsRow newpsr = this.DeepClone();
+
+            var gpPctSetting = MainWindow.MyLeadersGPPctSetting;
+            var gpPctRequired = MainWindow.MyLeadersGPPctRequired;
+            var mpgSetting = MainWindow.MyLeadersMPGSetting;
+            var mpgRequired = MainWindow.MyLeadersMPGRequired;
+
+            if ((gpPctSetting != "-1" && (double) gamesPlayer*100/gamesTeam < gpPctRequired) || (mpgSetting != "-1" && MPG < mpgRequired))
+            {
+                newpsr.FGp = float.NaN;
+                newpsr.FGeff = float.NaN;
+                newpsr.TPp = float.NaN;
+                newpsr.TPeff = float.NaN; 
+                newpsr.FTp = float.NaN;
+                newpsr.FTeff = float.NaN;
+                newpsr.PPG = float.NaN; 
+                newpsr.RPG = float.NaN;
+                newpsr.DRPG = float.NaN;
+                newpsr.ORPG = float.NaN;
+                newpsr.APG = float.NaN;
+                newpsr.SPG = float.NaN;
+                newpsr.BPG = float.NaN;
+                newpsr.MPG = float.NaN;
+            }
+
+            return newpsr;
+        }
+
+        /// <summary>
+        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
+        /// </summary>
+        /// <param name="psr">The player stats row.</param>
+        /// <param name="teamStats">The player's team stats.</param>
+        /// <param name="playoffs">
+        ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.
+        /// </param>
+        /// <returns></returns>
+        public PlayerStatsRow ConvertToLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
+        {
+            string team = TeamF;
+            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
+            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
+            uint gamesPlayer = GP;
+            PlayerStatsRow newpsr = this.DeepClone();
+
+            // Below functions found using Eureqa II
+            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
+            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
+            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
+            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
+            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
+            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
+            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
+            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
+            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
+            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
+
+            if (FGM < fgmRequired)
+            {
+                newpsr.FGp = float.NaN;
+                newpsr.FGeff = float.NaN;
+            }
+            if (TPM < tpmRequired)
+            {
+                newpsr.TPp = float.NaN;
+                newpsr.TPeff = float.NaN;
+            }
+            if (FTM < ftmRequired)
+            {
+                newpsr.FTp = float.NaN;
+                newpsr.FTeff = float.NaN;
+            }
+
+            if (gamesPlayer >= gamesRequired)
+            {
+                return newpsr;
+            }
+
+            if (PTS < ptsRequired)
+                newpsr.PPG = float.NaN;
+            if (REB < rebRequired)
+            {
+                newpsr.RPG = float.NaN;
+                newpsr.DRPG = float.NaN;
+                newpsr.ORPG = float.NaN;
+            }
+            if (AST < astRequired)
+                newpsr.APG = float.NaN;
+            if (STL < stlRequired)
+                newpsr.SPG = float.NaN;
+            if (BLK < blkRequired)
+                newpsr.BPG = float.NaN;
+            if (MINS < minRequired)
+                newpsr.MPG = float.NaN;
+            return newpsr;
         }
     }
 }

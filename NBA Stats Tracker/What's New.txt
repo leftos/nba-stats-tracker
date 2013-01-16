@@ -1,7 +1,31 @@
 NBA Stats Tracker - Version History
 
+	v1.4.3
+		- Addition: Added exporting Recommended 2K Ratings to REDitor's exported CSV files
+		- Addition: Added My League Leaders in League Overview, allowing user to set custom criteria for Leaders calculation
+			* Percentage of team's games played
+			* Minutes per game
+		- Addition: Added Preferred League Leaders to Tools menu in Main Window, allowing user to use either NBA-based or Custom League Leaders rules in features that use Leaders stats (e.g. the League Notables marquee)
+		- Improvement: Updated System.Data.SQLite library to v1.0.84.0, included performance improvements and bug-fixes
+
+	v1.4.2.1 Beta
+		- Fix: Max TTouch rating is now 99 instead of 75
+
+	v1.4.2 Beta
+		- Addition: Added Recommended 2K Ratings to Advanced Player Search
+		- Addition: Added settings to limit for which players the Recommended 2K Ratings will be calculated
+			* Percentage of team's games played
+			* Minutes per game
+		- Fix: Any ratings that can't be calculated and shown as -1 won't be exported
+		- Fix: When exporting ratings, players would be matched using case-sensitive comparison of their names; now using case-insensitive comparison
+
+	v1.4.1.1 Beta
+		- Fix: Fixed rankings being reversed for some facts
+		- Change: Team facts will now show all stats for which the team is ranked in the top third of the league, instead of top 5
+
 	v1.4.1 Beta
 		- Addition: Added per-36 minute stats to Yearly Report tab in Player Overview
+		- Fix: Fixed crash during REDitor import when the League Transactions window had nothing to show
 
 	v1.4 Beta
 		- Addition: Added career and season highs for Players (season highs are calculated from box-scores, career highs can be edited via Team/Player Overview or calculated from the season highs)

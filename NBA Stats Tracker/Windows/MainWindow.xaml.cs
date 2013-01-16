@@ -161,6 +161,10 @@ namespace NBA_Stats_Tracker.Windows
         public static PlayerRankings SeasonLeadersRankings;
         public static PlayerRankings PlayoffsLeadersRankings;
         public static bool IsImperial = true;
+        public static string RatingsGPPctSetting, RatingsMPGSetting, MyLeadersGPPctSetting, MyLeadersMPGSetting;
+        public static double RatingsGPPctRequired, MyLeadersGPPctRequired;
+        public static float RatingsMPGRequired, MyLeadersMPGRequired;
+        public static string LeadersPrefSetting;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -504,12 +508,13 @@ namespace NBA_Stats_Tracker.Windows
 
             txtFile.Text = ofd.FileName;
             currentDB = txtFile.Text;
+
+            LoadRatingsCriteria();
+            LoadMyLeadersCriteria();
+
             SQLiteIO.LoadSeason();
 
             txtFile.Text = ofd.FileName;
-
-            updateStatus(String.Format("{0} teams & {1} players loaded successfully!", tst.Count, pst.Count));
-            loadingSeason = false;
 
             gameLength = SQLiteIO.GetSetting("Game Length", 48);
             seasonLength = SQLiteIO.GetSetting("Season Length", 82);
@@ -521,9 +526,29 @@ namespace NBA_Stats_Tracker.Windows
                 marqueeTimer.Start();
             }
 
+            updateStatus(String.Format("{0} teams & {1} players loaded successfully!", tst.Count, pst.Count));
+            loadingSeason = false;
+
             mnuTools.IsEnabled = true;
             grdAnalysis.IsEnabled = true;
             grdUpdate.IsEnabled = true;
+        }
+
+        public static void LoadMyLeadersCriteria()
+        {
+            MyLeadersGPPctSetting = SQLiteIO.GetSetting("MyLeadersGPPct", "-1");
+            MyLeadersGPPctRequired = Convert.ToDouble(MyLeadersGPPctSetting);
+            MyLeadersMPGSetting = SQLiteIO.GetSetting("MyLeadersMPG", "-1");
+            MyLeadersMPGRequired = Convert.ToSingle(MyLeadersMPGSetting);
+            LeadersPrefSetting = SQLiteIO.GetSetting("Leaders", "NBA");
+        }
+
+        public static void LoadRatingsCriteria()
+        {
+            RatingsGPPctSetting = SQLiteIO.GetSetting("RatingsGPPct", "-1");
+            RatingsGPPctRequired = Convert.ToDouble(RatingsGPPctSetting);
+            RatingsMPGSetting = SQLiteIO.GetSetting("RatingsMPG", "-1");
+            RatingsMPGRequired = Convert.ToSingle(RatingsMPGSetting);
         }
 
         private void marqueeTimer_Tick(object sender, EventArgs e)
@@ -2790,7 +2815,7 @@ namespace NBA_Stats_Tracker.Windows
                              {
                                  bw.ReportProgress(Convert.ToInt32((double)100*i/plCount));
                                  var pID = pst.Keys.ToList()[i];
-                                 pst[pID].CalculateSeasonHighs();
+                                 pst[pID].CalculateSeasonHighs(MainWindow.bshist);
                                  bool fail = false;
                                  for (int k = 0; k < highsCount; k++)
                                  {
@@ -2884,6 +2909,20 @@ namespace NBA_Stats_Tracker.Windows
         {
             IsImperial = mnuOptionsIsImperial.IsChecked;
             Misc.SetRegistrySetting("IsImperial", IsImperial ? 1 : 0);
+        }
+
+        private void mnuMiscPreferNBALeaders_Checked(object sender, RoutedEventArgs e)
+        {
+            mnuMiscPreferMyLeaders.IsChecked = false;
+            SQLiteIO.SetSetting("Leaders", "NBA");
+            LoadMyLeadersCriteria();
+        }
+
+        private void mnuMiscPreferMyLeaders_Checked(object sender, RoutedEventArgs e)
+        {
+            mnuMiscPreferNBALeaders.IsChecked = false;
+            SQLiteIO.SetSetting("Leaders", "My");
+            LoadMyLeadersCriteria();
         }
     }
 }

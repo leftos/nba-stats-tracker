@@ -192,13 +192,14 @@ namespace NBA_Stats_Tracker.Windows
         {
             int count = 0;
             var facts = new List<string>();
+            int topThird = MainWindow.tst.Count / 3;
             for (int i = 0; i < rankings.rankingsTotal[id].Length; i++)
             {
                 if (i == 3)
                     continue;
 
                 int rank = rankings.rankingsTotal[id][i];
-                if (rank <= 5)
+                if (rank <= topThird)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), t.totals[i]);
                     fact += String.Format("{0}", tst[id].stats[i]);
@@ -209,7 +210,7 @@ namespace NBA_Stats_Tracker.Windows
             for (int i = 0; i < rankings.rankingsPerGame[id].Length; i++)
             {
                 int rank = rankings.rankingsPerGame[id][i];
-                if (rank <= 5)
+                if (rank <= topThird)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), t.averages[i]);
                     if (t.averages[i].EndsWith("%"))
@@ -232,7 +233,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 string metricName = rankings.rankingsMetrics[id].Keys.ToList()[i];
                 int rank = rankings.rankingsMetrics[id][metricName];
-                if (rank <= 5)
+                if (rank <= topThird)
                 {
                     string fact = String.Format("{0}{1} in {2}: ", rank, Misc.getRankingSuffix(rank), metricName.Replace("p", "%"));
                     if (metricName.EndsWith("p") || metricName.EndsWith("%"))

@@ -152,7 +152,7 @@
             <TabItem Header="Results (Season)" Name="tabResults">
                 <Grid>
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
+                              CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
                               Margin="6,6,6,0" Name="dgvPlayerStats"
                               VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
                               IsReadOnly="True"
@@ -529,6 +529,27 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="2K Ratings" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding reRFT}" Header="RFT" />
+                            <DataGridTextColumn Binding="{Binding reRPass}" Header="RPass" />
+                            <DataGridTextColumn Binding="{Binding reRBlock}" Header="RBlock" />
+                            <DataGridTextColumn Binding="{Binding reRSteal}" Header="RSteal" />
+                            <DataGridTextColumn Binding="{Binding reROffRbd}" Header="ROffRbd" />
+                            <DataGridTextColumn Binding="{Binding reRDefRbd}" Header="RDefRbd" />
+                            <DataGridTextColumn Binding="{Binding reTShotTnd}" Header="TShotTnd" />
+                            <DataGridTextColumn Binding="{Binding reTDrawFoul}" Header="TDrawFoul" />
+                            <DataGridTextColumn Binding="{Binding reTTouch}" Header="TTouch" />
+                            <DataGridTextColumn Binding="{Binding reTCommitFl}" Header="TCommitFl" />
+                            <DataGridTextColumn Binding="{Binding reRFT}" Header="RFT" />
+                            <DataGridTextColumn Binding="{Binding reRPass}" Header="RPass" />
+                            <DataGridTextColumn Binding="{Binding reRBlock}" Header="RBlock" />
+                            <DataGridTextColumn Binding="{Binding reRSteal}" Header="RSteal" />
+                            <DataGridTextColumn Binding="{Binding reROffRbd}" Header="ROffRbd" />
+                            <DataGridTextColumn Binding="{Binding reRDefRbd}" Header="RDefRbd" />
+                            <DataGridTextColumn Binding="{Binding reTShotTnd}" Header="TShotTnd" />
+                            <DataGridTextColumn Binding="{Binding reTDrawFoul}" Header="TDrawFoul" />
+                            <DataGridTextColumn Binding="{Binding reTTouch}" Header="TTouch" />
+                            <DataGridTextColumn Binding="{Binding reTCommitFl}" Header="TCommitFl" />
                             <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -537,7 +558,7 @@
             <TabItem Header="Results (Playoffs)" Name="tabPlayoffResults">
                 <Grid>
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
-                              CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
+                              CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
                               Margin="6,6,6,0" Name="dgvPlayoffStats"
                               VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
                               IsReadOnly="True"

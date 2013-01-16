@@ -1,15 +1,4 @@
-1.4.0.0
+1.4.2.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		- Addition: Added career and season highs for Players (season highs are calculated from box-scores, career highs can be edited via Team/Player Overview or calculated from the season highs)
-		- Addition: Added player contracts
-		- Addition: Added importing previous season's stats from NBA 2K12 using REDitor
-		- Addition: User will now be informed of league transactions whenever you import using REDitor
-		- Addition: Added player height & weight, along with option to use metric or imperial measurements
-		- Addition: Added League Leaders rankings as separate factoids in Player Overview's Scouting Reports
-		- Fix: Fixed some bugs with the League Notables messages
-		- Improvement: League Notables will always show PPG; also never show DRPG as significant stat
-		- Improvement: When matching players during an import, the Birth Year will also be used if all other criteria fail to limit the matches to one
-		- Fix: Fixed various bugs with starting a new season in an existing database
-		- Fix: Fixed crash when clicking the left arrow buttons to select the last team/player when none were selected before
-		- Improvement: Minor improvements and bug fixes
+		- Fix: Max TTouch rating is now 99 instead of 75

@@ -413,6 +413,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     var curPlayer = pst[playerID];
                     var oldPlayer = curPlayer.Clone();
 
+                    curPlayer.Position1 = (Position) Enum.Parse(typeof (Position), player["Pos"]);
+                    curPlayer.Position2 = (Position) Enum.Parse(typeof (Position), player["SecondPos"]);
                     curPlayer.isHidden = false;
                     curPlayer.YearsPro = Convert.ToInt32(player["YearsPro"]);
                     curPlayer.YearOfBirth = Convert.ToInt32(player["BirthYear"]);
@@ -636,9 +638,13 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             #endregion
 
-            CopyableMessageWindow cmw = new CopyableMessageWindow(importMessages.Aggregate((m1, m2) => m1 + "\n" + m2),
-                                                                  "League Transactions", TextAlignment.Left);
-            cmw.ShowDialog();
+            if (importMessages.Count > 0)
+            {
+                importMessages.Add("");
+                CopyableMessageWindow cmw = new CopyableMessageWindow(importMessages.Aggregate((m1, m2) => m1 + "\n" + m2),
+                                                                      "League Transactions", TextAlignment.Left);
+                cmw.ShowDialog();
+            }
 
             return 0;
         }

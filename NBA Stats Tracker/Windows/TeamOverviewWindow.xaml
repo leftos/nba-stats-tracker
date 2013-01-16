@@ -908,6 +908,35 @@
                     </Grid>
                 </Grid>
             </TabItem>
+            <TabItem Header="Player Career Highs" x:Name="tabHighs">
+                <Grid>
+                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                                  x:Name="dgvHighs"
+                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Type}" Header="Name" />
+                            <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
+                            <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
+                            <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
+                            <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
+                            <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
+                            <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
+                            <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
+                            <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
+                            <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
+                            <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
+                            <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
+                            <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
+                            <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
+                            <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
+                            <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
+                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
+                                                    Visibility="Collapsed" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
             <TabItem Header="Box Scores" Name="tabBoxScores">
                 <Grid VerticalAlignment="Stretch">
                     <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True" Name="dgvBoxScores"
@@ -951,10 +980,10 @@
                               Margin="0,160,0,0" Name="dgvHTHBoxScores" VerticalAlignment="Stretch"
                               AlternatingRowBackground="#FFE5E5E5"
                               MouseDoubleClick="dgvHTHBoxScores_MouseDoubleClick" IsReadOnly="True" />
-                    <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Left" Margin="531,11,0,0"
+                    <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Right" Margin="0,10,89,0"
                                  Name="rbHTHStatsAnyone" VerticalAlignment="Top" IsChecked="True"
                                  Checked="rbHTHStatsAnyone_Checked" />
-                    <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Left" Margin="598,11,0,0"
+                    <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Right" Margin="0,10,10,0"
                                  Name="rbHTHStatsEachOther" VerticalAlignment="Top"
                                  Checked="rbHTHStatsEachOther_Checked" />
                 </Grid>
@@ -967,10 +996,10 @@
                             Name="btnPrevOppBest" VerticalAlignment="Top" Width="24" Click="btnPrevOpp_Click" />
                     <Button Content="&gt;" Height="23" HorizontalAlignment="Center" Margin="419,6,230,0"
                             Name="btnNextOppBest" VerticalAlignment="Top" Width="24" Click="btnNextOpp_Click" />
-                    <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Left" Margin="531,11,0,0"
+                    <RadioButton Content="Anyone" Height="16" HorizontalAlignment="Right" Margin="0,10,89,0"
                                  Name="rbHTHStatsAnyoneBest" VerticalAlignment="Top" IsChecked="True"
                                  Checked="rbHTHStatsAnyone_Checked" />
-                    <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Left" Margin="598,11,0,0"
+                    <RadioButton Content="Each Other" Height="16" HorizontalAlignment="Right" Margin="0,10,10,0"
                                  Name="rbHTHStatsEachOtherBest" VerticalAlignment="Top"
                                  Checked="rbHTHStatsEachOther_Checked" />
                     <Grid HorizontalAlignment="Stretch" Margin="6,35,6,6" Name="grid1" VerticalAlignment="Stretch">
@@ -1015,35 +1044,7 @@
                               Name="chkHTHHideInjured" VerticalAlignment="Top" Click="chkHTHHideInjured_Click" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Player Career Highs" x:Name="tabHighs">
-                <Grid>
-                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
-                                  x:Name="dgvHighs"
-                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Type}" Header="Name" />
-                            <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
-                            <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
-                            <DataGridTextColumn Binding="{Binding FGA}" Header="FGA" />
-                            <DataGridTextColumn Binding="{Binding TPM}" Header="TPM" />
-                            <DataGridTextColumn Binding="{Binding TPA}" Header="TPA" />
-                            <DataGridTextColumn Binding="{Binding FTM}" Header="FTM" />
-                            <DataGridTextColumn Binding="{Binding FTA}" Header="FTA" />
-                            <DataGridTextColumn Binding="{Binding REB}" Header="REB" />
-                            <DataGridTextColumn Binding="{Binding OREB}" Header="OREB" />
-                            <DataGridTextColumn Binding="{Binding DREB}" Header="DREB" />
-                            <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
-                            <DataGridTextColumn Binding="{Binding STL}" Header="STL" />
-                            <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
-                            <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
-                            <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
-                            <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
-                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
-                                                    Visibility="Collapsed" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </TabItem>
+            
             <TabItem Header="Yearly Report" Name="tabYearly">
                 <Grid>
                     <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,38"

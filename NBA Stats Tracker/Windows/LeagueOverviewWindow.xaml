@@ -1260,17 +1260,60 @@
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                                 <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
                                 <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
+                                <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
                                 <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
+                                <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
                                 <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
+                                <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
                                 <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
+                                <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
+                                <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
                                 <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
                                 <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
                                 <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
                             </DataGrid.Columns>
                         </DataGrid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="My League Leaders" x:Name="tabMyLeaders">
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="35"/></Grid.RowDefinitions>
+                        <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
+                                  CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
+                                  Margin="6,6,6,0" x:Name="dgvMyLeaders"
+                                  VerticalAlignment="Stretch" FrozenColumnCount="2"
+                                  AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
+                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Grid.ColumnSpan="2"
+                                  Sorting="StatColumn_Sorting">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
+                                <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                                <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
+                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
+                                <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
+                                <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
+                                <DataGridTextColumn Binding="{Binding FGeff, StringFormat=F2}" Header="FGeff" />
+                                <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
+                                <DataGridTextColumn Binding="{Binding TPeff, StringFormat=F2}" Header="3Peff" />
+                                <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
+                                <DataGridTextColumn Binding="{Binding FTeff, StringFormat=F2}" Header="FTeff" />
+                                <DataGridTextColumn Binding="{Binding RPG, StringFormat=F1}" Header="RPG" />
+                                <DataGridTextColumn Binding="{Binding ORPG, StringFormat=F1}" Header="ORPG" />
+                                <DataGridTextColumn Binding="{Binding DRPG, StringFormat=F1}" Header="DRPG" />
+                                <DataGridTextColumn Binding="{Binding SPG, StringFormat=F1}" Header="SPG" />
+                                <DataGridTextColumn Binding="{Binding BPG, StringFormat=F1}" Header="BPG" />
+                                <DataGridTextColumn Binding="{Binding APG, StringFormat=F1}" Header="APG" />
+                                <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button Grid.Row="1" Margin="10,5,0,5" Width="150" HorizontalAlignment="Left"
+                        	Content="Set Criteria for Inclusion" x:Name="btnSetMyLeadersCriteria"
+                        	Click="btnSetMyLeadersCriteria_Click" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Player Contracts" Name="tabContracts">
@@ -2205,7 +2248,10 @@
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                                 <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
-                                <DataGridTextColumn Binding="{Binding reRFT}" Header="RFT" />
+                                <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
+                                <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                                <DataGridTextColumn Header="RatingsStart" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding reRFT}" Header="RFT"/>
                                 <DataGridTextColumn Binding="{Binding reRPass}" Header="RPass" />
                                 <DataGridTextColumn Binding="{Binding reRBlock}" Header="RBlock" />
                                 <DataGridTextColumn Binding="{Binding reRSteal}" Header="RSteal" />
@@ -2220,6 +2266,12 @@
                         <Button Grid.Row="1" Margin="6,5" Width="150" HorizontalAlignment="Right"
                                 Content="Export for Roster Editor" Name="btnExportLRERatings"
                                 Click="btnExportLRERatings_Click" />
+                        <Button Grid.Row="1" Margin="10,5,0,5" Width="150" HorizontalAlignment="Left"
+                        	Content="Set Criteria for Inclusion" x:Name="btnSetRatingsCriteria"
+                        	Click="btnSetRatingsCriteria_Click" />
+                        <Button Grid.Row="1" Margin="0,5,161,5" Width="150" HorizontalAlignment="Right"
+                        	Content="Export for REDitor" x:Name="btnExportLREDitorRatings"
+                        	Click="btnExportLREDitorRatings_Click" />
                     </Grid>
                 </TabItem>
             </TabControl>

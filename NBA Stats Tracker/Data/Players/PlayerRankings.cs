@@ -102,6 +102,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
 
+            List<string> badMetrics = new List<string> {"TO%", "TOR"};
             List<string> metricsNames = PlayerStats.metricsNames;
             for (int j = 0; j < metricsCount; j++)
             {
@@ -113,7 +114,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 var tempList = new List<KeyValuePair<int, double>>(metrics);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                tempList.Reverse();
+                if (!badMetrics.Contains(metricsNames[j]))
+                    tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -146,7 +148,9 @@ namespace NBA_Stats_Tracker.Data.Players
             List<int> listOfKeys = pstActive.Keys.ToList();
             foreach (int key in listOfKeys)
             {
-                pstActive[key] = LeagueOverviewWindow.ConvertToLeagueLeader(pstActive[key], MainWindow.tst, playoffs);
+                pstActive[key] = MainWindow.LeadersPrefSetting == "NBA"
+                                     ? pstActive[key].ConvertToLeagueLeader(MainWindow.tst, playoffs)
+                                     : pstActive[key].ConvertToMyLeagueLeader(MainWindow.tst, playoffs);
             }
             var cumRankingsActive = new PlayerRankings(pstActive, playoffs);
             pstLeaders = pstActive;

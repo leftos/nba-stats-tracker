@@ -94,6 +94,10 @@
                                   Click="mnuMiscEditGameLength_Click" />
                         <MenuItem Header="Edit Season Length..." Name="mnuMiscEditSeasonLength"
                                   Click="mnuMiscEditSeasonLength_Click" />
+                        <MenuItem Header="Preferred League Leaders">
+                            <MenuItem Header="NBA Rules" Name="mnuMiscPreferNBALeaders" IsCheckable="True" Checked="mnuMiscPreferNBALeaders_Checked"/>
+                            <MenuItem Header="Custom Rules" Name="mnuMiscPreferMyLeaders" IsCheckable="True" Checked="mnuMiscPreferMyLeaders_Checked"/>
+                        </MenuItem>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Help">

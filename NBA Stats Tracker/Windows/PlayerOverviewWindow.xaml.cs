@@ -628,7 +628,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void UpdateRecords()
         {
-            MainWindow.pst[SelectedPlayerID].CalculateSeasonHighs();
+            //MainWindow.pst[SelectedPlayerID].CalculateSeasonHighs();
 
             recordsList = new ObservableCollection<PlayerHighsRow>();
             var shList = MainWindow.seasonHighs.Single(sh => sh.Key == SelectedPlayerID).Value;

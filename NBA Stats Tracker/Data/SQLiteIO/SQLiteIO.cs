@@ -2268,7 +2268,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         {
                             pst.Add(playerID, new PlayerStats(dr));
                             pst[playerID].ResetStats();
-                            pst[playerID].CalculateSeasonHighs();
                         }
                     }
 
@@ -2513,6 +2512,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
 
             #endregion
+
+            foreach (var ps in pst)
+            {
+                ps.Value.CalculateSeasonHighs(bshist);
+            }
 
             teamRankings = new TeamRankings(tst);
             playoffTeamRankings = new TeamRankings(tst, true);

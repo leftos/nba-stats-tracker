@@ -74,6 +74,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
 
+            List<string> badMetrics = new List<string> {"DRTG", "TOR", "PythL"};
             rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
             var metricsNames = TeamStats.metricsNames;
             for (int i = 0; i < tst.Count; i++)
@@ -90,7 +91,8 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, double>>(metricStats);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                tempList.Reverse();
+                if (!badMetrics.Contains(metricName))
+                    tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)

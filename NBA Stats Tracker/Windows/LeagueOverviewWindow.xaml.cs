@@ -48,7 +48,6 @@ namespace NBA_Stats_Tracker.Windows
         private static Dictionary<int, TeamStats> _tst;
         private static List<BoxScoreEntry> _bshist;
         private static int lastShownPlayerSeason;
-        private static int lastShownLeadersSeason;
         private static int lastShownTeamSeason;
         private static int lastShownBoxSeason;
         private static string message;
@@ -242,7 +241,6 @@ namespace NBA_Stats_Tracker.Windows
                 reload = true;
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
-                lastShownLeadersSeason = 0;
                 lastShownBoxSeason = 0;
                 tbcLeagueOverview_SelectionChanged(null, null);
                 changingTimeframe = false;
@@ -273,7 +271,6 @@ namespace NBA_Stats_Tracker.Windows
                 reload = true;
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
-                lastShownLeadersSeason = 0;
                 lastShownBoxSeason = 0;
                 tbcLeagueOverview_SelectionChanged(null, null);
                 changingTimeframe = false;
@@ -320,24 +317,9 @@ namespace NBA_Stats_Tracker.Windows
                         lastShownTeamSeason = curSeason;
                     }
                 }
-                else if (currentTab == tabLeaders)
-                {
-                    cmbDivConf.IsEnabled = true;
-                    bool doIt = false;
-                    if (lastShownLeadersSeason != curSeason)
-                        doIt = true;
-                    else if (reload)
-                        doIt = true;
-
-                    if (doIt)
-                    {
-                        PreparePlayerStats(leaders: true);
-                        lastShownLeadersSeason = curSeason;
-                    }
-                }
-                else if (currentTab == tabPlayerStats || currentTab == tabMetricStats ||
-                         currentTab == tabBest || currentTab == tabStartingFive ||
-                         currentTab == tabRatings || currentTab == tabContracts)
+                else if (currentTab == tabPlayerStats || currentTab == tabMetricStats || currentTab == tabBest ||
+                         currentTab == tabStartingFive || currentTab == tabRatings || currentTab == tabContracts || currentTab == tabLeaders ||
+                         currentTab == tabMyLeaders)
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -382,7 +364,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="leaders">
         ///     if set to <c>true</c>, the stats are calculated based on the NBA rules for League Leaders standings.
         /// </param>
-        private void PreparePlayerStats(bool leaders = false)
+        private void PreparePlayerStats()
         {
             List<PlayerStatsRow> lpsr;
             psrList = new List<PlayerStatsRow>();
@@ -395,12 +377,11 @@ namespace NBA_Stats_Tracker.Windows
             var leadersList = new List<PlayerStatsRow>();
             var pl_leadersList = new List<PlayerStatsRow>();
 
+            var myLeadersList = new List<PlayerStatsRow>();
+            var pl_myLeadersList = new List<PlayerStatsRow>();
+
             var worker1 = new BackgroundWorker {WorkerReportsProgress = true};
 
-            bool allTime = rbStatsAllTime.IsChecked.GetValueOrDefault();
-            bool alltime = allTime;
-            DateTime startDate = dtpStart.SelectedDate.GetValueOrDefault();
-            DateTime endDate = dtpEnd.SelectedDate.GetValueOrDefault();
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while player averages and metric stats are being calculated...";
 
@@ -454,19 +435,34 @@ namespace NBA_Stats_Tracker.Windows
                                   pl_psrList.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
                                   pl_psrList.Reverse();
 
-                                  if (leaders)
+                                  foreach (PlayerStatsRow psr in psrList)
                                   {
-                                      foreach (PlayerStatsRow psr in psrList)
+                                      if (psr.isActive)
                                       {
-                                          if (psr.isActive)
-                                              leadersList.Add(ConvertToLeagueLeader(psr, _tst));
-                                      }
-                                      foreach (PlayerStatsRow psr in pl_psrList)
-                                      {
-                                          if (psr.isActive)
-                                              pl_leadersList.Add(ConvertToLeagueLeader(psr, _tst, true));
+                                          leadersList.Add(psr.ConvertToLeagueLeader(_tst));
+                                          myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst));
                                       }
                                   }
+                                  foreach (PlayerStatsRow psr in pl_psrList)
+                                  {
+                                      if (psr.isActive)
+                                      {
+                                          pl_leadersList.Add(psr.ConvertToLeagueLeader(_tst, true));
+                                          pl_myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst, true));
+                                      }
+                                  }
+
+                                  leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                  leadersList.Reverse();
+
+                                  pl_leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                  pl_leadersList.Reverse();
+
+                                  myLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                  myLeadersList.Reverse();
+
+                                  pl_myLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+                                  pl_myLeadersList.Reverse();
                               };
 
             worker1.ProgressChanged += delegate
@@ -492,6 +488,8 @@ namespace NBA_Stats_Tracker.Windows
                                               dgvLeagueMetricStats.ItemsSource = isSeason ? lpsr : pl_lpsr;
                                               dgvRatings.ItemsSource = isSeason ? psrList : pl_psrList;
                                               dgvContracts.ItemsSource = isSeason ? psrList : pl_psrList;
+                                              dgvLeaders.ItemsSource = isSeason ? leadersList : pl_leadersList;
+                                              dgvMyLeaders.ItemsSource = isSeason ? myLeadersList : pl_myLeadersList;
 
                                               PrepareBestPerformers(psrList, pl_psrList);
 
@@ -509,23 +507,13 @@ namespace NBA_Stats_Tracker.Windows
                                               txbPlayer5.Text = isSeason ? best5Text : pl_best5Text;
                                               txbPlayer6.Text = isSeason ? best6Text : pl_best6Text;
 
-                                              if (leaders)
-                                              {
-                                                  leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                                                  leadersList.Reverse();
-
-                                                  pl_leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                                                  pl_leadersList.Reverse();
-
-                                                  dgvLeaders.ItemsSource = isSeason ? leadersList : pl_leadersList;
-                                              }
-
                                               tbcLeagueOverview.Visibility = Visibility.Visible;
                                               txbStatus.FontWeight = FontWeights.Normal;
                                               txbStatus.Text = message;
                                               sem.Release();
                                           };
 
+            tbcLeagueOverview.Visibility = Visibility.Hidden;
             worker1.RunWorkerAsync();
         }
 
@@ -1162,7 +1150,6 @@ namespace NBA_Stats_Tracker.Windows
                 LinkInternalsToMainWindow();
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
-                lastShownLeadersSeason = 0;
                 lastShownBoxSeason = 0;
                 tbcLeagueOverview_SelectionChanged(null, null);
             }
@@ -1186,7 +1173,6 @@ namespace NBA_Stats_Tracker.Windows
                 LinkInternalsToMainWindow();
                 lastShownTeamSeason = 0;
                 lastShownPlayerSeason = 0;
-                lastShownLeadersSeason = 0;
                 lastShownBoxSeason = 0;
                 tbcLeagueOverview_SelectionChanged(null, null);
             }
@@ -1283,121 +1269,6 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
-        /// </summary>
-        /// <param name="psr">The player stats row.</param>
-        /// <param name="teamStats">The player's team stats.</param>
-        /// <param name="playoffs">
-        ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.
-        /// </param>
-        /// <returns></returns>
-        public static PlayerStatsRow ConvertToLeagueLeader(PlayerStatsRow psr, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
-        {
-            string team = psr.TeamF;
-            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
-            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
-            uint gamesPlayer = psr.GP;
-            PlayerStatsRow newpsr = psr.DeepClone();
-
-            // Below functions found using Eureqa II
-            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
-            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
-            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
-            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
-            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
-            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
-            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
-            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
-            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
-            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
-
-            if (psr.FGM < fgmRequired)
-                newpsr.FGp = float.NaN;
-            if (psr.TPM < tpmRequired)
-                newpsr.TPp = float.NaN;
-            if (psr.FTM < ftmRequired)
-                newpsr.FTp = float.NaN;
-
-            if (gamesPlayer >= gamesRequired)
-            {
-                return newpsr;
-            }
-
-            if (psr.PTS < ptsRequired)
-                newpsr.PPG = float.NaN;
-            if (psr.REB < rebRequired)
-                newpsr.RPG = float.NaN;
-            if (psr.AST < astRequired)
-                newpsr.APG = float.NaN;
-            if (psr.STL < stlRequired)
-                newpsr.SPG = float.NaN;
-            if (psr.BLK < blkRequired)
-                newpsr.BPG = float.NaN;
-            if (psr.MINS < minRequired)
-                newpsr.MPG = float.NaN;
-            return newpsr;
-        }
-
-        /// <summary>
-        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
-        /// </summary>
-        /// <param name="psr">The player stats row.</param>
-        /// <param name="teamStats">The player's team stats.</param>
-        /// <param name="playoffs">
-        ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.
-        /// </param>
-        /// <returns></returns>
-        public static PlayerStats ConvertToLeagueLeader(PlayerStats ps, Dictionary<int, TeamStats> teamStats, bool playoffs = false)
-        {
-            string team = ps.TeamF;
-            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
-            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
-            uint gamesPlayed = (!playoffs) ? ps.stats[p.GP] : ps.pl_stats[p.GP];
-            PlayerStats newps = ps.Clone();
-
-            // Below functions found using Eureqa II
-            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
-            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
-            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
-            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
-            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
-            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
-            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
-            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
-            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
-            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
-
-            var tempstats = (!playoffs) ? ps.stats : ps.pl_stats;
-            var newavg = (!playoffs) ? newps.averages : newps.pl_averages;
-
-            if (tempstats[p.FGM] < fgmRequired)
-                newavg[p.FGp] = float.NaN;
-            if (tempstats[p.TPM] < tpmRequired)
-                newavg[p.TPp] = float.NaN;
-            if (tempstats[p.FTM] < ftmRequired)
-                newavg[p.FTp] = float.NaN;
-
-            if (gamesPlayed >= gamesRequired)
-            {
-                return newps;
-            }
-
-            if (tempstats[p.PTS] < ptsRequired)
-                newavg[p.PPG] = float.NaN;
-            if ((tempstats[p.DREB] + tempstats[p.OREB]) < rebRequired)
-                newavg[p.RPG] = float.NaN;
-            if (tempstats[p.AST] < astRequired)
-                newavg[p.APG] = float.NaN;
-            if (tempstats[p.STL] < stlRequired)
-                newavg[p.SPG] = float.NaN;
-            if (tempstats[p.BLK] < blkRequired)
-                newavg[p.BPG] = float.NaN;
-            if (tempstats[p.MINS] < minRequired)
-                newavg[p.MPG] = float.NaN;
-            return newps;
-        }
-
-        /// <summary>
         ///     Handles the MouseDoubleClick event of the AnyPlayerDataGrid control.
         ///     Views the selected player in the Player Overview Window.
         /// </summary>
@@ -1422,7 +1293,6 @@ namespace NBA_Stats_Tracker.Windows
         {
             //PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, MainWindow.TeamOrder, true);
             lastShownPlayerSeason = 0;
-            lastShownLeadersSeason = 0;
             lastShownTeamSeason = curSeason;
             lastShownBoxSeason = 0;
             message = txbStatus.Text;
@@ -1440,7 +1310,6 @@ namespace NBA_Stats_Tracker.Windows
         {
             lastShownTeamSeason = 0;
             lastShownPlayerSeason = 0;
-            lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
 
             Misc.SetRegistrySetting("LeagueOvHeight", Height);
@@ -1572,7 +1441,6 @@ namespace NBA_Stats_Tracker.Windows
             reload = true;
             lastShownTeamSeason = 0;
             lastShownPlayerSeason = 0;
-            lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
@@ -1593,7 +1461,6 @@ namespace NBA_Stats_Tracker.Windows
             reload = true;
             lastShownTeamSeason = 0;
             lastShownPlayerSeason = 0;
-            lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
@@ -1614,7 +1481,6 @@ namespace NBA_Stats_Tracker.Windows
             reload = true;
             lastShownTeamSeason = 0;
             lastShownPlayerSeason = 0;
-            lastShownLeadersSeason = 0;
             lastShownBoxSeason = 0;
             tbcLeagueOverview_SelectionChanged(null, null);
         }
@@ -1634,22 +1500,28 @@ namespace NBA_Stats_Tracker.Windows
 
             List<PlayerStatsRow> plist = rbSeason.IsChecked.GetValueOrDefault() ? psrList : pl_psrList;
 
+            List<string> ratingNames =
+                dgvRatings.Columns.ToList()
+                          .SkipWhile(c => c.Header.ToString() != "RatingsStart")
+                          .Skip(1)
+                          .Select(c => c.Header.ToString())
+                          .ToList();
+
             foreach (PlayerStatsRow ps in plist)
             {
                 List<Dictionary<string, string>> pInsts =
-                    dictList.FindAll(dict => dict["Name"] == ps.FirstName + " " + ps.LastName).ToList();
+                    dictList.FindAll(dict => dict["Name"].ToLowerInvariant() == (ps.FirstName + " " + ps.LastName).ToLowerInvariant())
+                            .ToList();
                 foreach (var pInst in pInsts)
                 {
-                    pInst["RFT"] = ps.reRFT.ToString();
-                    pInst["RPass"] = ps.reRPass.ToString();
-                    pInst["RBlock"] = ps.reRBlock.ToString();
-                    pInst["RSteal"] = ps.reRSteal.ToString();
-                    pInst["ROffRbd"] = ps.reROffRbd.ToString();
-                    pInst["RDefRbd"] = ps.reRDefRbd.ToString();
-                    pInst["TShotTnd"] = ps.reTShotTnd.ToString();
-                    pInst["TDrawFoul"] = ps.reTDrawFoul.ToString();
-                    pInst["TTouch"] = ps.reTTouch.ToString();
-                    pInst["TCommitFl"] = ps.reTCommitFl.ToString();
+                    foreach (var ratingName in ratingNames)
+                    {
+                        int rating = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
+                        if (rating != -1)
+                        {
+                            pInst[ratingName] = rating.ToString();
+                        }
+                    }
                 }
             }
 
@@ -1795,5 +1667,114 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         #endregion
+
+        private void btnSetRatingsCriteria_Click(object sender, RoutedEventArgs e)
+        {
+            var ibw =
+                new InputBoxWindow(
+                    "Enter percentage (0-100) of team's games played the player must have " +
+                    "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("RatingsGPPct", "-1"));
+            if (ibw.ShowDialog() == true)
+            {
+                SQLiteIO.SetSetting("RatingsGPPct", MainWindow.input);
+            }
+
+            ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
+                                     SQLiteIO.GetSetting("RatingsMPG", "-1"));
+            if (ibw.ShowDialog() == true)
+            {
+                SQLiteIO.SetSetting("RatingsMPG", MainWindow.input);
+            }
+
+            MainWindow.LoadRatingsCriteria();
+
+            PreparePlayerStats();
+        }
+
+        private Dictionary<string, string> REtoREDitor = new Dictionary<string, string>
+                                                         {
+                                                             {"RFT", "SShtFT"},
+                                                             {"RPass", "SPass"},
+                                                             {"RBlock", "SBlock"},
+                                                             {"RSteal", "SSteal"},
+                                                             {"ROffRbd", "SOReb"},
+                                                             {"RDefRbd", "SDReb"},
+                                                             {"TShotTnd", "TShtTend"},
+                                                             {"TDrawFoul", "TDrawFoul"},
+                                                             {"TTouch", "TTouches"},
+                                                             {"TCommitFl", "TCommFoul"}
+                                                         };
+
+        private void btnExportLREDitorRatings_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Title = "Select the Players.csv file of your REDitor-exported save";
+            ofd.Filter = "Comma-separated Values Files (*.csv)|*.csv";
+            ofd.ShowDialog();
+
+            if (String.IsNullOrWhiteSpace(ofd.FileName))
+                return;
+
+            string file = ofd.FileName;
+
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromCSV(file);
+
+            List<PlayerStatsRow> plist = rbSeason.IsChecked.GetValueOrDefault() ? psrList : pl_psrList;
+
+            List<string> ratingNames =
+                dgvRatings.Columns.ToList()
+                          .SkipWhile(c => c.Header.ToString() != "RatingsStart")
+                          .Skip(1)
+                          .Select(c => c.Header.ToString())
+                          .ToList();
+
+            foreach (PlayerStatsRow ps in plist)
+            {
+                List<Dictionary<string, string>> pInsts =
+                    dictList.FindAll(
+                        dict =>
+                        dict["First_Name"].ToLowerInvariant() == ps.FirstName.ToLowerInvariant() &&
+                        dict["Last_Name"].ToLowerInvariant() == ps.LastName.ToLowerInvariant()).ToList();
+                foreach (var pInst in pInsts)
+                {
+                    foreach (var ratingName in ratingNames)
+                    {
+                        int rating = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
+                        if (rating != -1)
+                        {
+                            pInst[REtoREDitor[ratingName]] = rating.ToString();
+                        }
+                    }
+                }
+            }
+
+            CSV.CSVFromDictionaryList(dictList, file);
+
+            MessageBox.Show("Successfully updated Players CSV with calculated ratings.", "NBA Stats Tracker", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+        }
+
+        private void btnSetMyLeadersCriteria_Click(object sender, RoutedEventArgs e)
+        {
+            var ibw =
+                new InputBoxWindow(
+                    "Enter percentage (0-100) of team's games played the player must have " +
+                    "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("MyLeadersGPPct", "-1"));
+            if (ibw.ShowDialog() == true)
+            {
+                SQLiteIO.SetSetting("MyLeadersGPPct", MainWindow.input);
+            }
+
+            ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
+                                     SQLiteIO.GetSetting("MyLeadersMPG", "-1"));
+            if (ibw.ShowDialog() == true)
+            {
+                SQLiteIO.SetSetting("MyLeadersMPG", MainWindow.input);
+            }
+
+            MainWindow.LoadMyLeadersCriteria();
+
+            PreparePlayerStats();
+        }
     }
 }

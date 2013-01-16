@@ -1,1 +1,2 @@
-- Rates in yearly
+- Matchup Preview
+- Allow user to pick between duplicate players
