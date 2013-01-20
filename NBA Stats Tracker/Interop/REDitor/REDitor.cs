@@ -207,7 +207,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                                                        return false;
                                                                    });
 
-                tst[id].ID = Convert.ToInt32(team["ID"]);
+                tst[id].ID = id;
+                tstopp[id].ID = id;
                 tst[id].division = Convert.ToInt32(team["Division"]);
                 tstopp[id].division = Convert.ToInt32(team["Division"]);
 
@@ -324,9 +325,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     //if (LastName == "Kemp") System.Diagnostics.Debugger.Break();
 
                     int pTeam;
+                    TeamStats curTeam = new TeamStats();
                     try
                     {
                         pTeam = rosters.Single(r => r.Value.Contains(playerID)).Key;
+                        curTeam = tst[pTeam];
                     }
                     catch (InvalidOperationException)
                     {
@@ -381,24 +384,55 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 {
                                     if (pTeam != -1)
                                     {
-                                        KeyValuePair<int, TeamStats> curTeam =
-                                            tst.Single(
-                                                team => team.Value.name == activeTeams.Find(ateam => ateam["ID"] == pTeam.ToString())["Name"]);
-
                                         List<KeyValuePair<int, PlayerStats>> c3 =
-                                            candidates.Where(pair => pair.Value.TeamF == curTeam.Value.name).ToList();
+                                            candidates.Where(pair => pair.Value.TeamF == curTeam.name).ToList();
                                         if (c3.Count == 1)
                                         {
                                             playerID = c3.First().Value.ID;
                                             found = true;
-                                        }  
+                                        }
                                     }
                                 }
                             }
                             if (!found)
                             {
-                                duplicatePlayers.Add(FirstName + " " + LastName);
-                                continue;
+                                var choices = new List<string>();
+                                foreach (var pair in candidates)
+                                {
+                                    var choice = String.Format("{0}: {1} {2} (Born {3}", pair.Value.ID, pair.Value.FirstName,
+                                                               pair.Value.LastName, pair.Value.YearOfBirth);
+                                    if (pair.Value.isActive)
+                                    {
+                                        choice += String.Format(", plays in {0}", pair.Value.TeamF);
+                                    }
+                                    else
+                                    {
+                                        choice += ", free agent";
+                                    }
+                                    choice += ")";
+                                    choices.Add(choice);
+                                }
+                                var message = String.Format("{0}: {1} {2} (Born {3}", player["ID"], player["First_Name"],
+                                                            player["Last_Name"], player["BirthYear"]);
+                                if (pTeam != -1)
+                                {
+                                    message += String.Format(", plays in {0}", curTeam.displayName);
+                                }
+                                else
+                                {
+                                    message += ", free agent";
+                                }
+                                message += ")";
+                                var ccw = new ComboChoiceWindow(choices, message);
+                                if (ccw.ShowDialog() != true)
+                                {
+                                    duplicatePlayers.Add(FirstName + " " + LastName);
+                                    continue;
+                                }
+                                else
+                                {
+                                    playerID = Convert.ToInt32(MainWindow.input.Split(':')[0]);
+                                }
                             }
                         }
                         else
@@ -418,15 +452,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     curPlayer.isHidden = false;
                     curPlayer.YearsPro = Convert.ToInt32(player["YearsPro"]);
                     curPlayer.YearOfBirth = Convert.ToInt32(player["BirthYear"]);
-                    curPlayer.contract.Option = (PlayerContractOption) Enum.Parse(typeof (PlayerContractOption), player["COption"]);
-                    curPlayer.contract.ContractSalaryPerYear.Clear();
+                    curPlayer.Contract.Option = (PlayerContractOption) Enum.Parse(typeof (PlayerContractOption), player["COption"]);
+                    curPlayer.Contract.ContractSalaryPerYear.Clear();
                     for (int i = 1; i < 7; i++)
                     {
                         var salary = Convert.ToInt32(player["CYear" + i]);
                         if (salary == 0)
                             break;
 
-                        curPlayer.contract.ContractSalaryPerYear.Add(salary);
+                        curPlayer.Contract.ContractSalaryPerYear.Add(salary);
                     }
                     curPlayer.height = Convert.ToDouble(player["Height"]);
                     curPlayer.weight = Convert.ToDouble(player["Weight"]);
@@ -507,13 +541,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         string team1 = pTeam.ToString();
                         if (team1 != "-1" && player["IsFA"] != "1")
                         {
+                            /*
                             Dictionary<string, string> TeamF = teams.Find(delegate(Dictionary<string, string> s)
                                                                           {
                                                                               if (s["ID"] == team1)
                                                                                   return true;
                                                                               return false;
                                                                           });
-                            TeamFName = TeamF["Name"];
+                            */
+                            TeamFName = tst[pTeam].name;
                         }
                         ps.TeamF = TeamFName;
 
@@ -544,7 +580,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                     }
                     
-                    if (oldPlayer.contract.GetYears() < curPlayer.contract.GetYears() && curPlayer.isActive)
+                    if (oldPlayer.Contract.GetYears() < curPlayer.Contract.GetYears() && curPlayer.isActive)
                     {
                         string msg = name;
                         if (!oldPlayer.isActive && curPlayer.isActive)
@@ -557,7 +593,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                         msg += String.Format("with the {0} on a {1}yr/{2:C0} contract.",
                                                  Helper.Miscellaneous.Misc.GetDisplayNameFromTeam(tst, curPlayer.TeamF),
-                                                 curPlayer.contract.GetYears(), curPlayer.contract.GetTotal());
+                                                 curPlayer.Contract.GetYears(), curPlayer.Contract.GetTotal());
                         importMessages.Add(msg);
                     }
                 }

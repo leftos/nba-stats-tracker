@@ -66,8 +66,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTeff = 14,
                          RPG = 15;
 
-        public static Dictionary<int, string> totals = new Dictionary<int, string>
-                                                       {
+        public static Dictionary<int, string> totals = new Dictionary<int, string> {
                                                            {0, "GP"},
                                                            {1, "GS"},
                                                            {2, "MINS"},
@@ -87,8 +86,7 @@ namespace NBA_Stats_Tracker.Data.Players
                                                            {16, "FTA"}
                                                        };
 
-        public static Dictionary<int, string> averages = new Dictionary<int, string>
-                                                         {
+        public static Dictionary<int, string> averages = new Dictionary<int, string> {
                                                              {0, "MPG"},
                                                              {1, "PPG"},
                                                              {2, "DRPG"},
@@ -106,6 +104,35 @@ namespace NBA_Stats_Tracker.Data.Players
                                                              {14, "FTeff"},
                                                              {15, "RPG"}
                                                          };
+
+        public static List<string> metricsNames = new List<string>
+                                                  {
+                                                      "GmSc",
+                                                      "GmScE",
+                                                      "AST%",
+                                                      "EFG%",
+                                                      "STL%",
+                                                      "TO%",
+                                                      "TS%",
+                                                      "USG%",
+                                                      "EFF",
+                                                      "aPER",
+                                                      "BLK%",
+                                                      "DREB%",
+                                                      "OREB%",
+                                                      "REB%",
+                                                      "PPR",
+                                                      "PTSR",
+                                                      "REBR",
+                                                      "OREBR",
+                                                      "ASTR",
+                                                      "BLKR",
+                                                      "STLR",
+                                                      "TOR",
+                                                      "FTR",
+                                                      "FTAR",
+                                                      "PER"
+                                                  };
     }
 
     // Unlike TeamStats which was designed before REditor implemented such stats,

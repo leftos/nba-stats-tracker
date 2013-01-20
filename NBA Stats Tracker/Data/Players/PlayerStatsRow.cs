@@ -44,11 +44,12 @@ namespace NBA_Stats_Tracker.Data.Players
             YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
 
-            ContractOption = ps.contract.Option;
+            ContractOption = ps.Contract.Option;
             for (int i = 1; i <= 7; i++)
             {
-                typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.contract.TryGetSalary(i), null);
+                typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
             }
+            ContractYears = ps.Contract.GetYears();
 
             Height = ps.height;
             Weight = ps.weight;
@@ -225,6 +226,8 @@ namespace NBA_Stats_Tracker.Data.Players
                 Calculate2KRatings(playoffs);
         }
 
+        public int ContractYears { get; set; }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
         /// </summary>
@@ -321,6 +324,16 @@ namespace NBA_Stats_Tracker.Data.Players
         public string FirstName { get; set; }
         public Position Position1 { get; set; }
         public Position Position2 { get; set; }
+
+        public string Position1S
+        {
+            get { return PlayerStats.PositionToString(Position1); }
+        }
+
+        public string Position2S
+        {
+            get { return PlayerStats.PositionToString(Position2); }
+        }
         public string TeamF { get; set; }
         public string TeamFDisplay { get; set; }
         public string TeamS { get; set; }
@@ -391,10 +404,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     try
                     {
-                        var parts = value.Split('\'');
-                        parts[1] = parts[1].Replace("\"", "");
-                        var allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
-                        Height = ((double) allInches)/0.393701;
+                        Height = ConvertImperialHeightToMetric(value);
                     }
                     catch
                     {
@@ -405,7 +415,26 @@ namespace NBA_Stats_Tracker.Data.Players
                 OnPropertyChanged("Height");
             }
         }
-        
+
+        public static double ConvertImperialHeightToMetric(string value)
+        {
+            try
+            {
+                var parts = value.Split('\'');
+                if (parts.Length != 2)
+                {
+                    throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
+                }
+                parts[1] = parts[1].Replace("\"", "");
+                var allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
+                return ((double) allInches)/0.393701;
+            }
+            catch
+            {
+                throw new Exception(value + " is not a proper value for imperial height.");
+            }
+        }
+
         public string DisplayWeight
         {
             get
@@ -436,7 +465,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     try
                     {
-                        Weight = Convert.ToDouble(value) / 0.453592;
+                        Weight = ConvertMetricWeightToImperial(value);
                     }
                     catch
                     {
@@ -447,7 +476,24 @@ namespace NBA_Stats_Tracker.Data.Players
                 OnPropertyChanged("Weight");
             }
         }
-        
+
+        public static double ConvertMetricWeightToImperial(string value)
+        {
+            try
+            {
+                return ConvertMetricWeightToImperial(Convert.ToDouble(value));
+            }
+            catch (FormatException)
+            {
+                throw new FormatException(value + " is not a proper value for metric weight.");
+            }
+        }
+
+        public static double ConvertMetricWeightToImperial(double value)
+        {
+            return value/0.453592;
+        }
+
         #region Metrics that require opponents' stats
 
         public double PER { get; set; }
@@ -1183,6 +1229,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 newpsr.SPG = float.NaN;
                 newpsr.BPG = float.NaN;
                 newpsr.MPG = float.NaN;
+                newpsr.GmSc = float.NaN;
             }
 
             return newpsr;
@@ -1236,6 +1283,10 @@ namespace NBA_Stats_Tracker.Data.Players
             if (gamesPlayer >= gamesRequired)
             {
                 return newpsr;
+            }
+            else
+            {
+                newpsr.GmSc = double.NaN;
             }
 
             if (PTS < ptsRequired)

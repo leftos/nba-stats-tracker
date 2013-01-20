@@ -1389,9 +1389,16 @@ namespace NBA_Stats_Tracker.Windows
                 if (TeamF == "- Inactive -")
                 {
                     askedTeam = "";
-                    var atw = new ComboChoiceWindow(Teams);
-                    atw.ShowDialog();
-                    TeamF = askedTeam;
+                    var atw = new ComboChoiceWindow(Teams, "Select the team to which to sign the player", ComboChoiceWindow.Mode.OneTeam);
+                    if (atw.ShowDialog() == true)
+                    {
+                        TeamF = askedTeam;
+                    }
+                    else
+                    {
+                        TeamF = "";
+                        chkIsActive.IsChecked = false;
+                    }
                 }
             }
 

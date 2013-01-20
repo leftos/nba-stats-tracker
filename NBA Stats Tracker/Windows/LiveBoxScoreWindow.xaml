@@ -22,7 +22,7 @@
                                         SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                 <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" Visibility="Collapsed" />
                 <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
-                <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="Out" Visibility="Collapsed" />
+                <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="DNP" Visibility="Collapsed" />
                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" Visibility="Collapsed" />
                 <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                 <DataGridTemplateColumn Header="FGM" Visibility="Collapsed">
@@ -155,7 +155,7 @@
                                         SelectedValueBinding="{Binding PlayerID}" SelectedValuePath="Key" />
                 <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" Visibility="Collapsed" />
                 <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
-                <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="Out" Visibility="Collapsed" />
+                <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="DNP" Visibility="Collapsed" />
                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" Visibility="Collapsed" />
                 <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                 <DataGridTemplateColumn Header="FGM" Visibility="Collapsed">

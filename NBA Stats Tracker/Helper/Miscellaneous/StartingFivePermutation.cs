@@ -9,6 +9,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     {
         public int PlayersInPrimaryPosition = 0;
         public double Sum = 0;
-        public List<int> idList = new List<int>(5);
+        public List<int> IDList = new List<int>(5);
     }
 }

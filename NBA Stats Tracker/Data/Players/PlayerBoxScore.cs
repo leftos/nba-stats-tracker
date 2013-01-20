@@ -195,7 +195,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Team = team;
             isStarter = isStarter.TrySetValue(dict, "Starter", typeof (bool));
             playedInjured = playedInjured.TrySetValue(dict, "Injured", typeof (bool));
-            isOut = isOut.TrySetValue(dict, "Out", typeof (bool));
+            isOut = isOut.TrySetValue(dict, "DNP", typeof (bool));
             MINS = MINS.TrySetValue(dict, "MINS", typeof (UInt16));
             PTS = PTS.TrySetValue(dict, "PTS", typeof (UInt16));
             REB = REB.TrySetValue(dict, "REB", typeof (UInt16));

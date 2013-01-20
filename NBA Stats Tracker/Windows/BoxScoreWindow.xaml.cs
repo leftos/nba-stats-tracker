@@ -94,9 +94,7 @@ namespace NBA_Stats_Tracker.Windows
             pst = MainWindow.pst;
             tstopp = MainWindow.tstopp;
             */
-
-            cbHistory.Visibility = Visibility.Hidden;
-
+            
             _curMode = curMode;
             prepareWindow(curMode);
 
@@ -729,6 +727,9 @@ namespace NBA_Stats_Tracker.Windows
                         //pbs.PlayerID = 
                         if (pbs.PlayerID == -1)
                             continue;
+
+                        if (pbs.MINS == 0)
+                            pbs.isOut = true;
 
                         if (pbs.isOut)
                         {
@@ -1948,6 +1949,15 @@ namespace NBA_Stats_Tracker.Windows
         private void comparisonError(string stat, string team)
         {
             MessageBox.Show("The accumulated " + stat + " stat for the " + team + "'s players doesn't match the stat entered for the team.");
+        }
+
+        private void btnCopyBestToClipboard_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(
+                String.Format(
+                    "Player of the Game\n\n{0}\n\n\n{1} Best Performers\n\n{2}\n\n{3}\n\n{4}\n\n\n" +
+                    "{5} Best Performers\n\n{6}\n\n{7}\n\n{8}", txbMVP.Text + "\n\n" + txbMVPStats.Text, tabTeam1.Header, txbAway1.Text,
+                    txbAway2.Text, txbAway3.Text, tabTeam2.Header, txbHome1.Text, txbHome2.Text, txbHome3.Text));
         }
     }
 }

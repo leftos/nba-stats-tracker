@@ -26,6 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Ciloci.Flee;
+using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Misc;
 using NBA_Stats_Tracker.Data.Players;
@@ -85,6 +86,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
+        private readonly List<string> ContractOptions = new List<string>{"Any", "None", "Team", "Player", "Team2Yr"}; 
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
 
         private readonly List<string> Totals = new List<string>
@@ -133,11 +135,9 @@ namespace NBA_Stats_Tracker.Windows
 
             cmbYOBOp.ItemsSource = NumericOptions;
             cmbYOBOp.SelectedIndex = 3;
-            txtYOBVal.Text = "0";
 
             cmbYearsProOp.ItemsSource = NumericOptions;
             cmbYearsProOp.SelectedIndex = 3;
-            txtYearsProVal.Text = "0";
 
             curSeason = MainWindow.curSeason;
             PopulateSeasonCombo();
@@ -155,10 +155,30 @@ namespace NBA_Stats_Tracker.Windows
             cmbMetricsOp.ItemsSource = NumericOptions;
             cmbMetricsOp.SelectedIndex = 3;
 
+            for (int i = 1; i <= 7; i++)
+            {
+                cmbContractPar.Items.Add("Year " + i);
+            }
+            cmbContractOp.ItemsSource = NumericOptions;
+            cmbContractOp.SelectedIndex = 1;
+
+            cmbHeightOp.ItemsSource = NumericOptions;
+            cmbHeightOp.SelectedIndex = 3;
+
+            cmbWeightOp.ItemsSource = NumericOptions;
+            cmbWeightOp.SelectedIndex = 3;
+
+            cmbContractYLeftOp.ItemsSource = NumericOptions;
+            cmbContractYLeftOp.SelectedIndex = 1;
+
+            cmbContractOpt.ItemsSource = ContractOptions;
+            cmbContractOpt.SelectedIndex = 0;
+
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
-
+            
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvPlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
         }
 
         /// <summary>
@@ -285,6 +305,11 @@ namespace NBA_Stats_Tracker.Windows
                 filteredPST = filteredPST.Where(pair => pair.Value.Position2.ToString() == cmbPosition2.SelectedItem.ToString());
             }
 
+            if (cmbContractOpt.SelectedIndex != -1 && cmbContractOpt.SelectedItem.ToString() != "Any")
+            {
+                filteredPST = filteredPST.Where(pair => pair.Value.Contract.Option.ToString() == cmbContractOpt.SelectedItem.ToString());
+            }
+
             if (chkIsActive.IsChecked.GetValueOrDefault())
             {
                 filteredPST = filteredPST.Where(pair => pair.Value.isActive);
@@ -389,14 +414,57 @@ namespace NBA_Stats_Tracker.Windows
             var ps = new PlayerStats(psr);
             bool keep = true;
             var context = new ExpressionContext();
-            IGenericExpression<bool> ige =
-                context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
-            if (ige.Evaluate() == false)
-                return false;
-            context = new ExpressionContext();
-            ige = context.CompileGeneric<bool>(psr.YearOfBirth.ToString() + cmbYOBOp.SelectedItem + txtYOBVal.Text);
-            if (ige.Evaluate() == false)
-                return false;
+            IGenericExpression<bool> ige;
+            if (!String.IsNullOrWhiteSpace(txtYearsProVal.Text))
+            {
+                ige = context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
+                if (ige.Evaluate() == false)
+                    return false;
+            }
+            if (!String.IsNullOrWhiteSpace(txtYOBVal.Text))
+            {
+                context = new ExpressionContext();
+                ige = context.CompileGeneric<bool>(psr.YearOfBirth.ToString() + cmbYOBOp.SelectedItem + txtYOBVal.Text);
+                if (ige.Evaluate() == false)
+                    return false;
+            }
+            if (!String.IsNullOrWhiteSpace(txtHeightVal.Text))
+            {
+                var metricHeight = MainWindow.IsImperial
+                                       ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
+                                       : Convert.ToDouble(txtHeightVal.Text);
+                context = new ExpressionContext();
+                ige = context.CompileGeneric<bool>(psr.Height.ToString() + cmbHeightOp.SelectedItem + metricHeight.ToString());
+                if (ige.Evaluate() == false)
+                    return false;
+            }
+            if (!String.IsNullOrWhiteSpace(txtWeightVal.Text))
+            {
+                var imperialWeight = MainWindow.IsImperial
+                                         ? Convert.ToDouble(txtWeightVal.Text)
+                                         : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
+                context = new ExpressionContext();
+                ige = context.CompileGeneric<bool>(psr.Weight.ToString() + cmbWeightOp.SelectedItem + imperialWeight.ToString());
+                if (ige.Evaluate() == false)
+                    return false;
+            }
+            if (!String.IsNullOrWhiteSpace(txtContractYLeftVal.Text))
+            {
+                context = new ExpressionContext();
+                ige = context.CompileGeneric<bool>(psr.ContractYears.ToString() + cmbContractYLeftOp.SelectedItem + txtContractYLeftVal.Text);
+                if (ige.Evaluate() == false)
+                    return false;
+            }
+
+            foreach (var contractYear in lstContract.Items.Cast<string>())
+            {
+                string[] parts = contractYear.Split(' ');
+                ige =
+                    context.CompileGeneric<bool>(psr.GetType().GetProperty("ContractY" + parts[1]).GetValue(psr, null) + parts[2] + parts[3]);
+                keep = ige.Evaluate();
+                if (!keep)
+                    return keep;
+            }
 
             Parallel.ForEach(lstTotals.Items.Cast<string>(), (item, loopState) =>
                                                              {
@@ -729,6 +797,7 @@ namespace NBA_Stats_Tracker.Windows
                     lstTotals.Items.Clear();
                     lstAvg.Items.Clear();
                     lstMetrics.Items.Clear();
+                    lstContract.Items.Clear();
                 }
             }
 
@@ -761,6 +830,25 @@ namespace NBA_Stats_Tracker.Windows
                     case "YearsPro":
                         cmbYearsProOp.SelectedItem = parts[1];
                         txtYearsProVal.Text = parts[2];
+                        break;
+
+                    case "Height":
+                        cmbHeightOp.SelectedItem = parts[1];
+                        txtHeightVal.Text = parts[2];
+                        break;
+
+                    case "Weight":
+                        cmbWeightOp.SelectedItem = parts[1];
+                        txtWeightVal.Text = parts[2];
+                        break;
+
+                    case "ContractYLeft":
+                        cmbContractYLeftOp.SelectedItem = parts[1];
+                        txtContractYLeftVal.Text = parts[2];
+                        break;
+
+                    case "ContractOpt":
+                        cmbContractOpt.SelectedItem = parts[1];
                         break;
 
                     case "Active":
@@ -848,6 +936,17 @@ namespace NBA_Stats_Tracker.Windows
                         }
                         break;
 
+                    case "Contract":
+                        while (true)
+                        {
+                            string line = s[++i];
+                            if (line.StartsWith("ContractEND"))
+                                break;
+
+                            lstMetrics.Items.Add(line);
+                        }
+                        break;
+
                     case "TF":
                         if (parts[1].ToLowerInvariant() == "true")
                         {
@@ -868,6 +967,8 @@ namespace NBA_Stats_Tracker.Windows
                             rbStatsAllTime.IsChecked = true;
                         }
                         break;
+
+                        
                 }
             }
         }
@@ -888,6 +989,10 @@ namespace NBA_Stats_Tracker.Windows
             s += String.Format("Position\t{0}\t{1}\n", cmbPosition1.SelectedItem, cmbPosition2.SelectedItem);
             s += String.Format("YearOfBirth\t{0}\t{1}\n", cmbYOBOp.SelectedItem, txtYOBVal.Text);
             s += String.Format("YearsPro\t{0}\t{1}\n", cmbYearsProOp.SelectedItem, txtYearsProVal.Text);
+            s += String.Format("Height\t{0}\t{1}\n", cmbHeightOp.SelectedItem, txtHeightVal.Text);
+            s += String.Format("Weight\t{0}\t{1}\n", cmbWeightOp.SelectedItem, txtWeightVal.Text);
+            s += String.Format("ContractYLeft\t{0}\t{1}\n", cmbContractYLeftOp.SelectedItem, txtContractYLeftVal.Text);
+            s += String.Format("ContractOpt\t{0}\n", cmbContractOpt.SelectedItem);
             s += String.Format("Active\t{0}\n", chkIsActive.IsChecked.ToString());
             s += String.Format("Injured\t{0}\n", chkIsInjured.IsChecked.ToString());
             s += String.Format("AllStar\t{0}\n", chkIsAllStar.IsChecked.ToString());
@@ -913,6 +1018,12 @@ namespace NBA_Stats_Tracker.Windows
                 s += item + "\n";
             }
             s += "MetricsEND\n";
+            s += String.Format("Contract\n");
+            foreach (string item in lstContract.Items.Cast<string>())
+            {
+                s += item + "\n";
+            }
+            s += "ContractEND\n";
             bool isBetween = rbStatsBetween.IsChecked.GetValueOrDefault();
             s += String.Format("TF\t{0}\t{1}\t{2}", isBetween.ToString(),
                                isBetween ? dtpStart.SelectedDate.GetValueOrDefault().ToString() : cmbTFSeason.SelectedItem.ToString(),

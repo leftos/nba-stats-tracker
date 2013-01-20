@@ -19,6 +19,7 @@ namespace NBA_Stats_Tracker.Data.Players
     [Serializable]
     public class PlayerStats : INotifyPropertyChanged
     {
+        public PlayerContract Contract;
         public string FirstName;
         public int ID;
         public string LastName;
@@ -29,6 +30,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public int YearOfBirth;
         public int YearsPro;
         public float[] averages = new float[16];
+        public ushort[] careerHighs = new ushort[18];
+        public double height;
         public bool isActive;
         public bool isAllStar;
         public bool isHidden;
@@ -39,9 +42,6 @@ namespace NBA_Stats_Tracker.Data.Players
         public Dictionary<string, double> pl_metrics = new Dictionary<string, double>();
         public uint[] pl_stats = new uint[17];
         public uint[] stats = new uint[17];
-        public ushort[] careerHighs = new ushort[18];
-        public PlayerContract contract;
-        public double height;
         public double weight;
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 careerHighs[i] = 0;
             }
 
-            contract = new PlayerContract();
+            Contract = new PlayerContract();
             isActive = false;
             isHidden = false;
             isInjured = false;
@@ -87,18 +87,18 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamF = "";
             TeamS = "";
 
-            metricsNames.ForEach(name =>
-                                 {
-                                     metrics.Add(name, double.NaN);
-                                     pl_metrics.Add(name, double.NaN);
-                                 });
+            p.metricsNames.ForEach(name =>
+                                   {
+                                       metrics.Add(name, double.NaN);
+                                       pl_metrics.Add(name, double.NaN);
+                                   });
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="player">A Player instance containing the information to initialize with.</param>
-        public PlayerStats(Player player) :this()
+        public PlayerStats(Player player) : this()
         {
             ID = player.ID;
             LastName = player.LastName;
@@ -115,7 +115,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the row is assumed to contain playoff stats.
         /// </param>
-        public PlayerStats(DataRow dataRow, bool playoffs = false) :this()
+        public PlayerStats(DataRow dataRow, bool playoffs = false) : this()
         {
             ID = Tools.getInt(dataRow, "ID");
 
@@ -176,7 +176,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 isInjured = Tools.getBoolean(dataRow, "isInjured");
                 isAllStar = Tools.getBoolean(dataRow, "isAllStar");
                 isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
-                contract = new PlayerContract();
+                Contract = new PlayerContract();
                 for (int i = 1; i <= 7; i++)
                 {
                     int salary;
@@ -191,16 +191,16 @@ namespace NBA_Stats_Tracker.Data.Players
                     if (salary == 0)
                         break;
 
-                    contract.ContractSalaryPerYear.Add(salary);
+                    Contract.ContractSalaryPerYear.Add(salary);
                 }
                 try
                 {
-                    contract.Option =
+                    Contract.Option =
                         (PlayerContractOption) Enum.Parse(typeof (PlayerContractOption), Tools.getString(dataRow, "ContractOption"));
                 }
                 catch (ArgumentException)
                 {
-                    contract.Option = PlayerContractOption.None;
+                    Contract.Option = PlayerContractOption.None;
                 }
                 try
                 {
@@ -215,119 +215,6 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             GetStatsFromDataRow(dataRow, playoffs);
-        }
-
-        public void UpdateCareerHighs(DataRow r)
-        {
-            var importedID = Tools.getInt(r, "PlayerID");
-            if (importedID != ID)
-            {
-                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " + importedID);
-            }
-            careerHighs[p.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-            careerHighs[p.PTS] = Convert.ToUInt16(r["PTS"].ToString());
-            careerHighs[p.REB] = Convert.ToUInt16(r["REB"].ToString());
-            careerHighs[p.AST] = Convert.ToUInt16(r["AST"].ToString());
-            careerHighs[p.STL] = Convert.ToUInt16(r["STL"].ToString());
-            careerHighs[p.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-            careerHighs[p.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-            careerHighs[p.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-            careerHighs[p.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-            careerHighs[p.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-            careerHighs[p.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-            careerHighs[p.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-            careerHighs[p.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-            careerHighs[p.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-            careerHighs[p.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
-            careerHighs[p.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-        }
-
-        public void UpdateCareerHighs(PlayerHighsRow phr)
-        {
-            if (phr.PlayerID != ID)
-            {
-                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " +
-                                    phr.PlayerID);
-            }
-            careerHighs[p.MINS] = phr.MINS;
-            careerHighs[p.PTS] = phr.PTS;
-            careerHighs[p.FGM] = phr.FGM;
-            careerHighs[p.FGA] = phr.FGA;
-            careerHighs[p.TPM] = phr.TPM;
-            careerHighs[p.TPA] = phr.TPA;
-            careerHighs[p.FTM] = phr.FTM;
-            careerHighs[p.FTA] = phr.FTA;
-            careerHighs[p.REB] = phr.REB;
-            careerHighs[p.OREB] = phr.OREB;
-            careerHighs[p.DREB] = phr.DREB;
-            careerHighs[p.STL] = phr.STL;
-            careerHighs[p.TOS] = phr.TOS;
-            careerHighs[p.BLK] = phr.BLK;
-            careerHighs[p.AST] = phr.AST;
-            careerHighs[p.FOUL] = phr.FOUL;
-        }
-
-        public void CalculateSeasonHighs(List<BoxScoreEntry> bsList)
-        {
-            /*
-            var allTimePBSList = new List<PlayerBoxScore>();
-            var db = new SQLite_Database.SQLiteDatabase(MainWindow.currentDB);
-            string q = "select * from PlayerResults where PlayerID = " + ID;
-            var res = db.GetDataTable(q);
-            foreach (DataRow dr in res.Rows)
-            {
-                allTimePBSList.Add(new PlayerBoxScore(dr));
-                q = "select SeasonNum from GameResults where GameID = " + Tools.getInt(dr, "GameID");
-                int seasonNum = Convert.ToInt32(db.ExecuteScalar(q));
-                allTimePBSList.Last().SeasonNum = seasonNum;
-            }
-            var seasons = allTimePBSList.GroupBy(pbs => pbs.SeasonNum).Select(g => g.Key).ToList();
-            */
-
-            var bsListWithPlayer = bsList.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == ID)).ToList();
-            var seasonsList = bsListWithPlayer.GroupBy(bse => bse.bs.SeasonNum).Select(pair => pair.Key).ToList();
-            var allTimePBSList = bsListWithPlayer.Select(bse => bse.pbsList.Single(pbs => pbs.PlayerID == ID)).ToList();
-            allTimePBSList.ForEach(pbs => pbs.SeasonNum = bsListWithPlayer.Single(bse => bse.bs.id == pbs.GameID).bs.SeasonNum);
-
-            if (MainWindow.seasonHighs.ContainsKey(ID))
-            {
-                MainWindow.seasonHighs.Remove(ID);
-            }
-            MainWindow.seasonHighs.Add(ID, new Dictionary<int, ushort[]>());
-            foreach (var season in seasonsList)
-            {
-                var seasonPBSList = allTimePBSList.Where(pbs => pbs.SeasonNum == season).ToList();
-                MainWindow.seasonHighs[ID].Add(season, new ushort[18]);
-                var sh = MainWindow.seasonHighs[ID][season];
-                for (int i = 0; i < sh.Length; i++)
-                {
-                    sh[i] = 0;
-                }
-                sh[p.AST] = seasonPBSList.Select(pbs => pbs.AST).Max();
-                sh[p.BLK] = seasonPBSList.Select(pbs => pbs.BLK).Max();
-                sh[p.DREB] = seasonPBSList.Select(pbs => pbs.DREB).Max();
-                sh[p.OREB] = seasonPBSList.Select(pbs => pbs.OREB).Max();
-                sh[p.REB] = seasonPBSList.Select(pbs => pbs.REB).Max();
-                sh[p.STL] = seasonPBSList.Select(pbs => pbs.STL).Max();
-                sh[p.TOS] = seasonPBSList.Select(pbs => pbs.TOS).Max();
-                sh[p.FOUL] = seasonPBSList.Select(pbs => pbs.FOUL).Max();
-                sh[p.FGM] = seasonPBSList.Select(pbs => pbs.FGM).Max();
-                sh[p.FGA] = seasonPBSList.Select(pbs => pbs.FGA).Max();
-                sh[p.TPM] = seasonPBSList.Select(pbs => pbs.TPM).Max();
-                sh[p.TPA] = seasonPBSList.Select(pbs => pbs.TPA).Max();
-                sh[p.FTM] = seasonPBSList.Select(pbs => pbs.FTM).Max();
-                sh[p.FTA] = seasonPBSList.Select(pbs => pbs.FTA).Max();
-                sh[p.PTS] = seasonPBSList.Select(pbs => pbs.PTS).Max();
-                sh[p.MINS] = seasonPBSList.Select(pbs => pbs.MINS).Max();
-
-                for (int i = 0; i < sh.Length; i++)
-                {
-                    if (careerHighs[i] < sh[i])
-                    {
-                        careerHighs[i] = sh[i];
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -456,7 +343,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c> the row is assumed to contain playoff stats.
         /// </param>
-        public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false) :this()
+        public PlayerStats(PlayerStatsRow playerStatsRow, bool playoffs = false) : this()
         {
             LastName = playerStatsRow.LastName;
             FirstName = playerStatsRow.FirstName;
@@ -563,23 +450,168 @@ namespace NBA_Stats_Tracker.Data.Players
             isInjured = playerStatsRow.isInjured;
             isNBAChampion = playerStatsRow.isNBAChampion;
 
-            contract.Option = playerStatsRow.ContractOption;
-            contract.ContractSalaryPerYear.Clear();
+            Contract.Option = playerStatsRow.ContractOption;
+            Contract.ContractSalaryPerYear.Clear();
             for (int i = 1; i <= 7; i++)
             {
-                int salary = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("ContractY" + i).GetValue(playerStatsRow, null));
+                int salary = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("ContractY" + i).GetValue(playerStatsRow, null));
                 if (salary == 0)
                 {
                     break;
                 }
 
-                contract.ContractSalaryPerYear.Add(salary);
+                Contract.ContractSalaryPerYear.Add(salary);
             }
 
             height = playerStatsRow.Height;
             weight = playerStatsRow.Weight;
 
             CalcAvg();
+        }
+
+        public string Position1S
+        {
+            get { return PositionToString(Position1); }
+        }
+
+        public string Position2S
+        {
+            get { return PositionToString(Position2); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public static string PositionToString(Position position)
+        {
+            switch (position)
+            {
+                case Position.C:
+                    return "C";
+                case Position.PF:
+                    return "PF";
+                case Position.SF:
+                    return "SF";
+                case Position.SG:
+                    return "SG";
+                case Position.PG:
+                    return "PG";
+                default:
+                    return "";
+            }
+        }
+
+        public void UpdateCareerHighs(DataRow r)
+        {
+            int importedID = Tools.getInt(r, "PlayerID");
+            if (importedID != ID)
+            {
+                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " +
+                                    importedID);
+            }
+            careerHighs[p.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+            careerHighs[p.PTS] = Convert.ToUInt16(r["PTS"].ToString());
+            careerHighs[p.REB] = Convert.ToUInt16(r["REB"].ToString());
+            careerHighs[p.AST] = Convert.ToUInt16(r["AST"].ToString());
+            careerHighs[p.STL] = Convert.ToUInt16(r["STL"].ToString());
+            careerHighs[p.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+            careerHighs[p.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+            careerHighs[p.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+            careerHighs[p.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+            careerHighs[p.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+            careerHighs[p.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+            careerHighs[p.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+            careerHighs[p.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+            careerHighs[p.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+            careerHighs[p.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            careerHighs[p.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+        }
+
+        public void UpdateCareerHighs(PlayerHighsRow phr)
+        {
+            if (phr.PlayerID != ID)
+            {
+                throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " +
+                                    phr.PlayerID);
+            }
+            careerHighs[p.MINS] = phr.MINS;
+            careerHighs[p.PTS] = phr.PTS;
+            careerHighs[p.FGM] = phr.FGM;
+            careerHighs[p.FGA] = phr.FGA;
+            careerHighs[p.TPM] = phr.TPM;
+            careerHighs[p.TPA] = phr.TPA;
+            careerHighs[p.FTM] = phr.FTM;
+            careerHighs[p.FTA] = phr.FTA;
+            careerHighs[p.REB] = phr.REB;
+            careerHighs[p.OREB] = phr.OREB;
+            careerHighs[p.DREB] = phr.DREB;
+            careerHighs[p.STL] = phr.STL;
+            careerHighs[p.TOS] = phr.TOS;
+            careerHighs[p.BLK] = phr.BLK;
+            careerHighs[p.AST] = phr.AST;
+            careerHighs[p.FOUL] = phr.FOUL;
+        }
+
+        public void CalculateSeasonHighs(List<BoxScoreEntry> bsList)
+        {
+            /*
+            var allTimePBSList = new List<PlayerBoxScore>();
+            var db = new SQLite_Database.SQLiteDatabase(MainWindow.currentDB);
+            string q = "select * from PlayerResults where PlayerID = " + ID;
+            var res = db.GetDataTable(q);
+            foreach (DataRow dr in res.Rows)
+            {
+                allTimePBSList.Add(new PlayerBoxScore(dr));
+                q = "select SeasonNum from GameResults where GameID = " + Tools.getInt(dr, "GameID");
+                int seasonNum = Convert.ToInt32(db.ExecuteScalar(q));
+                allTimePBSList.Last().SeasonNum = seasonNum;
+            }
+            var seasons = allTimePBSList.GroupBy(pbs => pbs.SeasonNum).Select(g => g.Key).ToList();
+            */
+
+            List<BoxScoreEntry> bsListWithPlayer = bsList.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == ID)).ToList();
+            List<int> seasonsList = bsListWithPlayer.GroupBy(bse => bse.bs.SeasonNum).Select(pair => pair.Key).ToList();
+            List<PlayerBoxScore> allTimePBSList = bsListWithPlayer.Select(bse => bse.pbsList.Single(pbs => pbs.PlayerID == ID)).ToList();
+            allTimePBSList.ForEach(pbs => pbs.SeasonNum = bsListWithPlayer.Single(bse => bse.bs.id == pbs.GameID).bs.SeasonNum);
+
+            if (MainWindow.seasonHighs.ContainsKey(ID))
+            {
+                MainWindow.seasonHighs.Remove(ID);
+            }
+            MainWindow.seasonHighs.Add(ID, new Dictionary<int, ushort[]>());
+            foreach (int season in seasonsList)
+            {
+                List<PlayerBoxScore> seasonPBSList = allTimePBSList.Where(pbs => pbs.SeasonNum == season).ToList();
+                MainWindow.seasonHighs[ID].Add(season, new ushort[18]);
+                ushort[] sh = MainWindow.seasonHighs[ID][season];
+                for (int i = 0; i < sh.Length; i++)
+                {
+                    sh[i] = 0;
+                }
+                sh[p.AST] = seasonPBSList.Select(pbs => pbs.AST).Max();
+                sh[p.BLK] = seasonPBSList.Select(pbs => pbs.BLK).Max();
+                sh[p.DREB] = seasonPBSList.Select(pbs => pbs.DREB).Max();
+                sh[p.OREB] = seasonPBSList.Select(pbs => pbs.OREB).Max();
+                sh[p.REB] = seasonPBSList.Select(pbs => pbs.REB).Max();
+                sh[p.STL] = seasonPBSList.Select(pbs => pbs.STL).Max();
+                sh[p.TOS] = seasonPBSList.Select(pbs => pbs.TOS).Max();
+                sh[p.FOUL] = seasonPBSList.Select(pbs => pbs.FOUL).Max();
+                sh[p.FGM] = seasonPBSList.Select(pbs => pbs.FGM).Max();
+                sh[p.FGA] = seasonPBSList.Select(pbs => pbs.FGA).Max();
+                sh[p.TPM] = seasonPBSList.Select(pbs => pbs.TPM).Max();
+                sh[p.TPA] = seasonPBSList.Select(pbs => pbs.TPA).Max();
+                sh[p.FTM] = seasonPBSList.Select(pbs => pbs.FTM).Max();
+                sh[p.FTA] = seasonPBSList.Select(pbs => pbs.FTA).Max();
+                sh[p.PTS] = seasonPBSList.Select(pbs => pbs.PTS).Max();
+                sh[p.MINS] = seasonPBSList.Select(pbs => pbs.MINS).Max();
+
+                for (int i = 0; i < sh.Length; i++)
+                {
+                    if (careerHighs[i] < sh[i])
+                    {
+                        careerHighs[i] = sh[i];
+                    }
+                }
+            }
         }
 
         public void GetStatsFromDataRow(DataRow dataRow, bool isPlayoff)
@@ -923,68 +955,39 @@ namespace NBA_Stats_Tracker.Data.Players
             temp_metrics.Remove("PTSR");
             temp_metrics.Add("PTSR", PTSR);
 
-            double REBR = (pREB / pstats[p.MINS]) * 36;
+            double REBR = (pREB/pstats[p.MINS])*36;
             temp_metrics.Remove("REBR");
             temp_metrics.Add("REBR", REBR);
 
-            double OREBR = (pstats[p.OREB] / pstats[p.MINS]) * 36;
+            double OREBR = (pstats[p.OREB]/pstats[p.MINS])*36;
             temp_metrics.Remove("OREBR");
             temp_metrics.Add("OREBR", OREBR);
 
-            double ASTR = (pstats[p.AST] / pstats[p.MINS]) * 36;
+            double ASTR = (pstats[p.AST]/pstats[p.MINS])*36;
             temp_metrics.Remove("ASTR");
             temp_metrics.Add("ASTR", ASTR);
 
-            double BLKR = (pstats[p.BLK] / pstats[p.MINS]) * 36;
+            double BLKR = (pstats[p.BLK]/pstats[p.MINS])*36;
             temp_metrics.Remove("BLKR");
             temp_metrics.Add("BLKR", BLKR);
 
-            double STLR = (pstats[p.STL] / pstats[p.MINS]) * 36;
+            double STLR = (pstats[p.STL]/pstats[p.MINS])*36;
             temp_metrics.Remove("STLR");
             temp_metrics.Add("STLR", STLR);
 
-            double TOR = (pstats[p.TOS] / pstats[p.MINS]) * 36;
+            double TOR = (pstats[p.TOS]/pstats[p.MINS])*36;
             temp_metrics.Remove("TOR");
             temp_metrics.Add("TOR", TOR);
 
-            double FTR = (pstats[p.FTM] / pstats[p.FGA]);
+            double FTR = (pstats[p.FTM]/pstats[p.FGA]);
             temp_metrics.Remove("FTR");
             temp_metrics.Add("FTR", FTR);
 
-            double FTAR = (pstats[p.FTA] / pstats[p.MINS]) * 36;
+            double FTAR = (pstats[p.FTA]/pstats[p.MINS])*36;
             temp_metrics.Remove("FTAR");
             temp_metrics.Add("FTAR", FTAR);
             //
         }
-
-        public static List<string> metricsNames = new List<string>
-                                                  {
-                                                      "GmSc",
-                                                      "GmScE",
-                                                      "AST%",
-                                                      "EFG%",
-                                                      "STL%",
-                                                      "TO%",
-                                                      "TS%",
-                                                      "USG%",
-                                                      "EFF",
-                                                      "aPER",
-                                                      "BLK%",
-                                                      "DREB%",
-                                                      "OREB%",
-                                                      "REB%",
-                                                      "PPR",
-                                                      "PTSR",
-                                                      "REBR",
-                                                      "OREBR",
-                                                      "ASTR",
-                                                      "BLKR",
-                                                      "STLR",
-                                                      "TOR",
-                                                      "FTR",
-                                                      "FTAR",
-                                                      "PER"
-                                                  };
 
         /// <summary>
         ///     Calculates the PER.
@@ -1267,39 +1270,37 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public void UpdateContract(PlayerStatsRow psr)
         {
-            contract.Option = psr.ContractOption;
-            contract.ContractSalaryPerYear.Clear();
+            Contract.Option = psr.ContractOption;
+            Contract.ContractSalaryPerYear.Clear();
             for (int i = 1; i <= 7; i++)
             {
-                int salary = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("ContractY" + i).GetValue(psr, null));
+                int salary = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("ContractY" + i).GetValue(psr, null));
                 if (salary == 0)
                 {
                     break;
                 }
 
-                contract.ContractSalaryPerYear.Add(salary);
+                Contract.ContractSalaryPerYear.Add(salary);
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public PlayerStats ConvertToMyLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            var newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToMyLeagueLeader(teamStats, playoffs);
+            PlayerStatsRow newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToMyLeagueLeader(teamStats, playoffs);
             return new PlayerStats(newpsr, playoffs);
         }
 
         public PlayerStats ConvertToLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            var newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToLeagueLeader(teamStats, playoffs);
+            PlayerStatsRow newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToLeagueLeader(teamStats, playoffs);
             return new PlayerStats(newpsr, playoffs);
 
             /*

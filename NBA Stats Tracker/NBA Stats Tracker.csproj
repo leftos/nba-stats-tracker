@@ -106,9 +106,7 @@
     <Compile Include="Helper\EventHandlers\EventHandlers.cs" />
     <Compile Include="Helper\Miscellaneous\StartingFivePermutation.cs" />
     <Compile Include="Helper\WindowsForms\WindowsForms.cs" />
-    <Compile Include="Interop\NBA2K12\PlayoffTree.cs" />
     <Compile Include="Interop\REDitor\REDitor.cs" />
-    <Compile Include="Interop\NBA2K12\NBA2K12.cs" />
     <Compile Include="Interop\BR\BR.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
@@ -164,9 +162,6 @@
     </Compile>
     <Compile Include="Windows\PlayerSearchWindow.xaml.cs">
       <DependentUpon>PlayerSearchWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\PlayoffTreeWindow.xaml.cs">
-      <DependentUpon>PlayoffTreeWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TeamOverviewWindow.xaml.cs">
       <DependentUpon>TeamOverviewWindow.xaml</DependentUpon>
@@ -252,10 +247,6 @@
     <Page Include="Windows\PlayerSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\PlayoffTreeWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\TeamOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

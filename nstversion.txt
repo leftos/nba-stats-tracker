@@ -1,4 +1,9 @@
-1.4.2.1
+1.4.3.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		- Fix: Max TTouch rating is now 99 instead of 75
+		- Addition: Added exporting Recommended 2K Ratings to REDitor's exported CSV files
+		- Addition: Added My League Leaders in League Overview, allowing user to set custom criteria for Leaders calculation
+			* Percentage of team's games played
+			* Minutes per game
+		- Addition: Added Preferred League Leaders to Tools menu in Main Window, allowing user to use either NBA-based or Custom League Leaders rules in features that use Leaders stats (e.g. the League Notables marquee)
+		- Improvement: Updated System.Data.SQLite library to v1.0.84.0, included performance improvements and bug-fixes

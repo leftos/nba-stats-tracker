@@ -1,2 +1,2 @@
-- Matchup Preview
-- Allow user to pick between duplicate players
+- Import previous player stats
+- Ultimate Defensive Team

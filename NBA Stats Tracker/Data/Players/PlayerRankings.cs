@@ -103,7 +103,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             List<string> badMetrics = new List<string> {"TO%", "TOR"};
-            List<string> metricsNames = PlayerStats.metricsNames;
+            List<string> metricsNames = p.metricsNames;
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics;

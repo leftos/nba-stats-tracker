@@ -37,13 +37,13 @@ namespace NBA_Stats_Tracker.Windows
         {
             OneTeam,
             Versus,
-            ImportCompatibility,
-            Division
+            Division,
+            Generic
         }
 
         #endregion
 
-        private readonly Mode mode;
+        private readonly Mode _mode;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
@@ -53,41 +53,30 @@ namespace NBA_Stats_Tracker.Windows
         public ComboChoiceWindow(Mode mode, int index = 0)
         {
             InitializeComponent();
-            this.mode = mode;
-
-            if (mode == Mode.ImportCompatibility)
-            {
-                cmbTeams1.Items.Add("Mode 0");
-                cmbTeams1.Items.Add("Mode 1");
-                cmbTeams1.Items.Add("Mode 2");
-                cmbTeams1.Items.Add("Mode 3");
-                cmbTeams1.Items.Add("Mode 4");
-                cmbTeams1.Items.Add("Mode 5");
-                cmbTeams1.Items.Add("Mode 6");
-                cmbTeams2.Visibility = Visibility.Hidden;
-            }
-            else if (mode == Mode.Versus)
+            this._mode = mode;
+            
+            if (mode == Mode.Versus)
             {
                 label1.Content = "Pick the two teams";
-                cmbTeams2.Visibility = Visibility.Visible;
+                cmbSelection2.Visibility = Visibility.Visible;
                 foreach (var kvp in MainWindow.TeamOrder)
                 {
-                    cmbTeams1.Items.Add(kvp.Key);
-                    cmbTeams2.Items.Add(kvp.Key);
+                    cmbSelection1.Items.Add(kvp.Key);
+                    cmbSelection2.Items.Add(kvp.Key);
                 }
             }
             else if (mode == Mode.Division)
             {
                 label1.Content = "Pick the new division for the team:";
-                cmbTeams2.Visibility = Visibility.Hidden;
+                cmbSelection2.Visibility = Visibility.Hidden;
                 foreach (Division div in MainWindow.Divisions)
                 {
                     Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
-                    cmbTeams1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
+                    cmbSelection1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
                 }
             }
-            cmbTeams1.SelectedIndex = index;
-            cmbTeams2.SelectedIndex = index != 0 ? 0 : 1;
+            cmbSelection1.SelectedIndex = index;
+            cmbSelection2.SelectedIndex = index != 0 ? 0 : 1;
         }
 
         /// <summary>
@@ -95,33 +84,36 @@ namespace NBA_Stats_Tracker.Windows
         ///     Used for when a player is set to active while previously inactive.
         /// </summary>
         /// <param name="teams">The available teams to sign the player to.</param>
-        public ComboChoiceWindow(IEnumerable<string> teams)
+        public ComboChoiceWindow(IEnumerable<string> items, string message, Mode mode = Mode.Generic)
         {
             InitializeComponent();
 
-            mode = Mode.OneTeam;
+            _mode = mode;
 
-            label1.Content = "Sign the player to which team?";
-            cmbTeams1.ItemsSource = teams;
-            cmbTeams2.Visibility = Visibility.Hidden;
+            label1.Content = message;
+            cmbSelection1.ItemsSource = items;
+            cmbSelection2.Visibility = Visibility.Hidden;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (mode == Mode.ImportCompatibility)
+            if (_mode == Mode.OneTeam)
             {
-                App.mode = cmbTeams1.SelectedItem.ToString();
-            }
-            else if (mode == Mode.OneTeam)
-            {
-                if (cmbTeams1.SelectedIndex == -1)
+                if (cmbSelection1.SelectedIndex == -1)
                     return;
-                PlayerOverviewWindow.askedTeam = cmbTeams1.SelectedItem.ToString();
+                PlayerOverviewWindow.askedTeam = cmbSelection1.SelectedItem.ToString();
             }
-            else if (mode == Mode.Division)
+            else if (_mode == Mode.Division || _mode == Mode.Generic)
             {
-                MainWindow.input = cmbTeams1.SelectedItem.ToString();
+                MainWindow.input = cmbSelection1.SelectedItem.ToString();
             }
+            DialogResult = true;
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
             Close();
         }
     }

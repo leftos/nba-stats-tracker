@@ -39,11 +39,9 @@
                 </MenuItem>
                 <MenuItem Header="_Options">
                     <MenuItem Header="_NBA 2K12 Options">
-                        <MenuItem Header="_Import/Export Method">
+                        <MenuItem Header="_Import/Export Method" Visibility="Collapsed">
                             <MenuItem Header="_REditor" Name="mnuOptionsImportREditor" IsCheckable="True"
                                       Click="mnuOptionsImportREditor_Click" />
-                            <MenuItem Header="_Old Season 1 Workaround" Name="mnuOptionsImportOld" IsCheckable="True"
-                                      Click="mnuOptionsImportOld_Click" />
                         </MenuItem>
                         <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly"
                                   IsCheckable="True" Click="mnuOptionsExportTeamsOnly_Click" />

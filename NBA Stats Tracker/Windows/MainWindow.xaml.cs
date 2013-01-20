@@ -43,7 +43,6 @@ using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Helper.WindowsForms;
 using NBA_Stats_Tracker.Interop.BR;
-using NBA_Stats_Tracker.Interop.NBA2K12;
 using NBA_Stats_Tracker.Interop.REDitor;
 using SQLite_Database;
 using Application = System.Windows.Application;
@@ -90,7 +89,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private static readonly Dictionary<int, TeamStats> realtst = new Dictionary<int, TeamStats>();
         public static TeamBoxScore bs;
-        public static PlayoffTree pt;
         public static string currentDB = "";
         public static string addInfo;
         private static int _curSeason;
@@ -230,9 +228,7 @@ namespace NBA_Stats_Tracker.Windows
                     SavesPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\2K Sports\NBA 2K12\Saves\";
                 }
             }
-
-            NBA2K12.checkForRedundantSettings();
-
+            
             // TODO: Re-enable downloading NBA stats when possible
             mnuFileGetRealStats.IsEnabled = false;
             btnDownloadBoxScore.IsEnabled = false;
@@ -261,7 +257,8 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    mnuOptionsImportOld.IsChecked = true;
+                    Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
+                    mnuOptionsImportREditor.IsChecked = true;
                 }
 
                 int ExportTeamsOnly = Misc.GetRegistrySetting("ExportTeamsOnly", 1);
@@ -380,76 +377,32 @@ namespace NBA_Stats_Tracker.Windows
                 UpdateAllData();
             }
 
-            if (mnuOptionsImportOld.IsChecked)
+            var fbd = new FolderBrowserDialog
+                        {
+                            Description = "Select folder with REditor-exported CSVs",
+                            ShowNewFolderButton = false,
+                            SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+                        };
+            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+
+            if (dr != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (fbd.SelectedPath == "")
+                return;
+
+            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+
+            int result = REDitor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
+
+            if (result != 0)
             {
-                var ofd = new OpenFileDialog
-                          {
-                              Title = "Please select the Career file you're playing...",
-                              Filter =
-                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|" +
-                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                                  "Create A Legend files (*.SMG)|*.SMG"
-                          };
-                if (Directory.Exists(App.SavesPath))
-                    ofd.InitialDirectory = SavesPath;
-                ofd.ShowDialog();
-                if (ofd.FileName == "")
-                    return;
-
-                //prepareWindow(isCustom);
-                TeamOrder = NBA2K12.setTeamOrder("Mode 0");
-
-                Dictionary<int, TeamStats> temp;
-
-                //TODO: Implement Opponents stats from 2K12 Save
-                //Dictionary<int, TeamStats> tempopp = new TeamStats[1];
-                Dictionary<int, TeamStats> tempopp = tstopp;
-
-                NBA2K12.GetStatsFrom2K12Save(ofd.FileName, out temp, ref tempopp, ref TeamOrder, ref pt);
-                if (temp.Count > 1)
-                {
-                    tst = new Dictionary<int, TeamStats>(temp);
-                    tstopp = new Dictionary<int, TeamStats>(tempopp);
-                }
-
-                if (tst.Count != tstopp.Count)
-                {
-                    tstopp = new Dictionary<int, TeamStats>();
-                    for (int i = 0; i < tst.Count; i++)
-                        tstopp[i] = new TeamStats(tst[i].name);
-                }
-
-                updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
+                MessageBox.Show("Import failed! Please reload your database immediatelly to avoid saving corrupt data.",
+                                "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-            else
-            {
-                var fbd = new FolderBrowserDialog
-                          {
-                              Description = "Select folder with REditor-exported CSVs",
-                              ShowNewFolderButton = false,
-                              SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
-                          };
-                DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
-                if (dr != System.Windows.Forms.DialogResult.OK)
-                    return;
-
-                if (fbd.SelectedPath == "")
-                    return;
-
-                Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
-
-                int result = REDitor.ImportAll(ref tst, ref tstopp, ref TeamOrder, ref pst, fbd.SelectedPath);
-
-                if (result != 0)
-                {
-                    MessageBox.Show("Import failed! Please reload your database immediatelly to avoid saving corrupt data.",
-                                    "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
-            }
+            updateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
         }
 
         /// <summary>
@@ -890,51 +843,52 @@ namespace NBA_Stats_Tracker.Windows
                 tf = new Timeframe(curSeason);
                 UpdateAllData();
             }
+            
+            var fbd = new FolderBrowserDialog
+                        {
+                            Description = "Select folder with REditor-exported CSVs",
+                            ShowNewFolderButton = false,
+                            SelectedPath = Misc.GetRegistrySetting("LastExportDir", "")
+                        };
+            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
-            if (mnuOptionsImportOld.IsChecked)
+            if (dr != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (fbd.SelectedPath == "")
+                return;
+
+            Misc.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
+
+            if (mnuOptionsCompatibilityCheck.IsChecked)
             {
-                var ofd = new OpenFileDialog
-                          {
-                              Title = "Please select the Career file you want to update...",
-                              Filter =
-                                  "All NBA 2K12 Career Files (*.FXG; *.CMG; *.RFG; *.PMG; *.SMG)|*.FXG;*.CMG;*.RFG;*.PMG;*.SMG|" +
-                                  "Association files (*.FXG)|*.FXG|My Player files (*.CMG)|*.CMG|Season files (*.RFG)|*.RFG|Playoff files (*.PMG)|*.PMG|" +
-                                  "Create A Legend files (*.SMG)|*.SMG"
-                          };
-                if (Directory.Exists(SavesPath))
-                    ofd.InitialDirectory = SavesPath;
-                ofd.ShowDialog();
+                var temptst = new Dictionary<int, TeamStats>();
+                var temptstopp = new Dictionary<int, TeamStats>();
+                var temppst = new Dictionary<int, PlayerStats>();
+                int result = REDitor.ImportAll(ref temptst, ref temptstopp, ref TeamOrder, ref temppst, fbd.SelectedPath, true);
 
-                if (ofd.FileName == "")
-                    return;
-                string fn = ofd.FileName;
-
-                NBA2K12.prepareOffsets(fn, tst, ref TeamOrder, ref pt);
-
-                Dictionary<int, TeamStats> temp;
-                var tempopp = new Dictionary<int, TeamStats>();
-
-                NBA2K12.GetStatsFrom2K12Save(fn, out temp, ref tempopp, ref TeamOrder, ref pt);
-                if (temp.Count == 1)
+                if (result != 0)
                 {
-                    MessageBox.Show("Couldn't get stats from " + Tools.getSafeFilename(fn) + ". Update failed.");
+                    MessageBox.Show("Export failed.");
                     return;
                 }
+
                 bool incompatible = false;
 
-                if (temp.Count != tst.Count)
+                if (temptst.Count != tst.Count)
                     incompatible = true;
                 else
                 {
-                    for (int i = 0; i < temp.Count; i++)
+                    for (int i = 0; i < temptst.Count; i++)
                     {
-                        if (temp[i].name != tst[i].name)
+                        if (temptst[i].name != tst[i].name)
                         {
                             incompatible = true;
                             break;
                         }
 
-                        if ((!temp[i].winloss.SequenceEqual(tst[i].winloss)) || (!temp[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
+                        if ((!temptst[i].winloss.SequenceEqual(tst[i].winloss)) ||
+                            (!temptst[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
                         {
                             incompatible = true;
                             break;
@@ -960,85 +914,6 @@ namespace NBA_Stats_Tracker.Windows
 
                     if (r == MessageBoxResult.No)
                         return;
-                }
-
-
-                NBA2K12.updateSavegame(fn, tst, TeamOrder, pt);
-                updateStatus("Injected custom Team Stats into " + Tools.getSafeFilename(fn) + " successfully!");
-            }
-            else
-            {
-                var fbd = new FolderBrowserDialog
-                          {
-                              Description = "Select folder with REditor-exported CSVs",
-                              ShowNewFolderButton = false,
-                              SelectedPath = Misc.GetRegistrySetting("LastExportDir", "")
-                          };
-                DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
-
-                if (dr != System.Windows.Forms.DialogResult.OK)
-                    return;
-
-                if (fbd.SelectedPath == "")
-                    return;
-
-                Misc.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
-
-                if (mnuOptionsCompatibilityCheck.IsChecked)
-                {
-                    var temptst = new Dictionary<int, TeamStats>();
-                    var temptstopp = new Dictionary<int, TeamStats>();
-                    var temppst = new Dictionary<int, PlayerStats>();
-                    int result = REDitor.ImportAll(ref temptst, ref temptstopp, ref TeamOrder, ref temppst, fbd.SelectedPath, true);
-
-                    if (result != 0)
-                    {
-                        MessageBox.Show("Export failed.");
-                        return;
-                    }
-
-                    bool incompatible = false;
-
-                    if (temptst.Count != tst.Count)
-                        incompatible = true;
-                    else
-                    {
-                        for (int i = 0; i < temptst.Count; i++)
-                        {
-                            if (temptst[i].name != tst[i].name)
-                            {
-                                incompatible = true;
-                                break;
-                            }
-
-                            if ((!temptst[i].winloss.SequenceEqual(tst[i].winloss)) ||
-                                (!temptst[i].pl_winloss.SequenceEqual(tst[i].pl_winloss)))
-                            {
-                                incompatible = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (incompatible)
-                    {
-                        MessageBoxResult r =
-                            MessageBox.Show(
-                                "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into." +
-                                "\nThis could be happening for a number of reasons:\n\n" +
-                                "1. The file currently loaded isn't one that had stats imported to it from your 2K save.\n" +
-                                "2. The Win/Loss record for one or more teams would be different after this procedure.\n\n" +
-                                "If you're updating using a box score, then either you're not using the NST database you imported your stats\n" +
-                                "into before the game, or you entered the box score incorrectly. Remember that you need to import your stats\n" +
-                                "into a database right before the game starts, let the game end and save the Association, and then update the\n" +
-                                "database using the box score. If you follow these steps correctly, you shouldn't get this message when you try\n" +
-                                "to export the stats from the database to your 2K save.\n\n" +
-                                "Are you sure you want to continue? SAVE CORRUPTION MAY OCCUR, AND I WON'T BE HELD LIABLE FOR IT. ALWAYS KEEP BACKUPS.",
-                                "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                        if (r == MessageBoxResult.No)
-                            return;
-                    }
                 }
 
                 int eresult = REDitor.ExportAll(tst, tstopp, pst, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
@@ -1137,7 +1012,6 @@ namespace NBA_Stats_Tracker.Windows
 
             //var grsw = new getRealStatsW();
             //grsw.ShowDialog();
-            TeamOrder = NBA2K12.setTeamOrder("Mode 0");
 
             var realtstopp = new Dictionary<int, TeamStats>();
             var realpst = new Dictionary<int, PlayerStats>();
@@ -1999,18 +1873,18 @@ namespace NBA_Stats_Tracker.Windows
                         }
                         ps.Value.isAllStar = false;
                         ps.Value.isNBAChampion = false;
-                        if (ps.Value.contract.Option == PlayerContractOption.Team2Yr)
+                        if (ps.Value.Contract.Option == PlayerContractOption.Team2Yr)
                         {
-                            ps.Value.contract.Option = PlayerContractOption.Team;
+                            ps.Value.Contract.Option = PlayerContractOption.Team;
                         }
-                        else if (ps.Value.contract.Option == PlayerContractOption.Team ||
-                                 ps.Value.contract.Option == PlayerContractOption.Player)
+                        else if (ps.Value.Contract.Option == PlayerContractOption.Team ||
+                                 ps.Value.Contract.Option == PlayerContractOption.Player)
                         {
-                            ps.Value.contract.Option = PlayerContractOption.None;
+                            ps.Value.Contract.Option = PlayerContractOption.None;
                         }
                         try
                         {
-                            ps.Value.contract.ContractSalaryPerYear.RemoveAt(0);
+                            ps.Value.Contract.ContractSalaryPerYear.RemoveAt(0);
                         }
                         catch (ArgumentOutOfRangeException)
                         {
@@ -2312,26 +2186,8 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (!mnuOptionsImportREditor.IsChecked)
                 mnuOptionsImportREditor.IsChecked = true;
-            mnuOptionsImportOld.IsChecked = false;
 
             Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
-        }
-
-        /// <summary>
-        ///     Handles the Click event of the mnuOptionsImportOld control.
-        ///     Changes the NBA 2K import/export method to direct binary editing of NBA 2K saves.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void mnuOptionsImportOld_Click(object sender, RoutedEventArgs e)
-        {
-            if (!mnuOptionsImportOld.IsChecked)
-                mnuOptionsImportOld.IsChecked = true;
-            mnuOptionsImportREditor.IsChecked = false;
-
-            Misc.SetRegistrySetting("NBA2K12ImportMethod", 1);
         }
 
         /// <summary>

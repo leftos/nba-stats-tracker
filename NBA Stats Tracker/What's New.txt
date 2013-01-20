@@ -1,12 +1,30 @@
 NBA Stats Tracker - Version History
 
+	v1.5 Beta
+		- Addition: Added Height, Weight and Contract criteria to Advanced Player Search
+		- Improvement: Recommended Starters in Team Overview is now Recommended Situationals, allowing you to pick whether to calculate the recommended starting 5, bench 5, or the best 5 based on any metric, average or total stat
+		- Fix: Fixed team matching when importing using REDitor to a database that wasn't populated from the same 2K12 save
+		- Improvement: Ultimate Team in League Overview now offers multiple choices
+			* All-League 1st Team
+			* All-League 2nd Team
+			* All-League 3rd Team
+			* All-Rookies 1st Team
+			* All-Rookies 2nd Team
+		- Improvement: Ultimate Team and Best Performers in League Overview can now be filtered to:
+			* All players
+			* League Leaders (NBA-based criteria)
+			* My League Leaders
+		- Addition: Added Matchup Preview tab to Team Overview, allowing you to compare two teams and their most important stats and players at-a-glance
+		- Addition: Added Copy To Clipboard functionality in the Best Performers tab in the Box Score window
+		- Removal: Old Season 1 Workaround for importing/exporting from/to an NBA 2K12 save has been removed and is no longer supported; you'll need to use REDitor with the proper license for this functionality from this version on
+
 	v1.4.3 Beta
 		- Addition: Added exporting Recommended 2K Ratings to REDitor's exported CSV files
 		- Addition: Added My League Leaders in League Overview, allowing user to set custom criteria for Leaders calculation
 			* Percentage of team's games played
 			* Minutes per game
 		- Addition: Added Preferred League Leaders to Tools menu in Main Window, allowing user to use either NBA-based or Custom League Leaders rules in features that use Leaders stats (e.g. the League Notables marquee)
-		- Improvement: Updated System.Data.SQLite library to v1.0.84.0, included performance improvements and bug-fixes
+		- Improvement: Updated System.Data.SQLite library to v1.0.84.0, includes performance improvements and bug-fixes
 
 	v1.4.2.1 Beta
 		- Fix: Max TTouch rating is now 99 instead of 75
