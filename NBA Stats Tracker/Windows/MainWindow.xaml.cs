@@ -230,7 +230,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             
             // TODO: Re-enable downloading NBA stats when possible
-            mnuFileGetRealStats.IsEnabled = false;
+            //mnuFileGetRealStats.IsEnabled = false;
             btnDownloadBoxScore.IsEnabled = false;
             btnGrabNBAStats.IsEnabled = false;
             //
@@ -253,12 +253,12 @@ namespace NBA_Stats_Tracker.Windows
                 int importSetting = Misc.GetRegistrySetting("NBA2K12ImportMethod", 0);
                 if (importSetting == 0)
                 {
-                    mnuOptionsImportREditor.IsChecked = true;
+                    mnuOptionsImportREDitor.IsChecked = true;
                 }
                 else
                 {
                     Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
-                    mnuOptionsImportREditor.IsChecked = true;
+                    mnuOptionsImportREDitor.IsChecked = true;
                 }
 
                 int ExportTeamsOnly = Misc.GetRegistrySetting("ExportTeamsOnly", 1);
@@ -379,7 +379,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var fbd = new FolderBrowserDialog
                         {
-                            Description = "Select folder with REditor-exported CSVs",
+                            Description = "Select folder with REDitor-exported CSVs",
                             ShowNewFolderButton = false,
                             SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
                         };
@@ -846,7 +846,7 @@ namespace NBA_Stats_Tracker.Windows
             
             var fbd = new FolderBrowserDialog
                         {
-                            Description = "Select folder with REditor-exported CSVs",
+                            Description = "Select folder with REDitor-exported CSVs",
                             ShowNewFolderButton = false,
                             SelectedPath = Misc.GetRegistrySetting("LastExportDir", "")
                         };
@@ -1092,6 +1092,9 @@ namespace NBA_Stats_Tracker.Windows
                                     {"Wizards", 2}
                                 };
 
+            int k = 0;
+            TeamNamesShort.ToList().ForEach(tn => TeamOrder.Add(tn.Key, k++));
+
             worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             worker1.DoWork += delegate
@@ -1165,6 +1168,10 @@ namespace NBA_Stats_Tracker.Windows
 
                                                   txbWait.Visibility = Visibility.Hidden;
                                                   mainGrid.Visibility = Visibility.Visible;
+
+                                                  mnuTools.IsEnabled = true;
+                                                  grdAnalysis.IsEnabled = true;
+                                                  grdUpdate.IsEnabled = true;
 
                                                   updateStatus("The download of real NBA stats is done.");
                                               }
@@ -2175,17 +2182,17 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         /// <summary>
-        ///     Handles the Click event of the mnuOptionsImportREditor control.
+        ///     Handles the Click event of the mnuOptionsImportREDitor control.
         ///     Changes the NBA 2K import/export method to using REDitor-exported CSV files.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuOptionsImportREditor_Click(object sender, RoutedEventArgs e)
+        private void mnuOptionsImportREDitor_Click(object sender, RoutedEventArgs e)
         {
-            if (!mnuOptionsImportREditor.IsChecked)
-                mnuOptionsImportREditor.IsChecked = true;
+            if (!mnuOptionsImportREDitor.IsChecked)
+                mnuOptionsImportREDitor.IsChecked = true;
 
             Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
         }
@@ -2738,7 +2745,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var fbd = new FolderBrowserDialog
                       {
-                          Description = "Select folder with REditor-exported CSVs",
+                          Description = "Select folder with REDitor-exported CSVs",
                           ShowNewFolderButton = false,
                           SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
                       };
@@ -2784,6 +2791,77 @@ namespace NBA_Stats_Tracker.Windows
             SQLiteIO.SetSetting("Leaders", "My");
             LoadMyLeadersCriteria();
             UpdateNotables();
+        }
+
+        private void mnuMiscImportOldPlayerStats2K12_Click(object sender, RoutedEventArgs e)
+        {
+            var fbd = new FolderBrowserDialog
+            {
+                Description = "Select folder with REDitor-exported CSVs",
+                ShowNewFolderButton = false,
+                SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+            };
+            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+
+            if (dr != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (fbd.SelectedPath == "")
+                return;
+
+            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+
+            mainGrid.Visibility = Visibility.Hidden;
+
+            REDitor.ImportOld(pst, tst, TeamOrder, fbd.SelectedPath);
+        }
+
+        public void OnImportOldPlayerStatsCompleted(int result)
+        {
+            mainGrid.Visibility = Visibility.Visible;
+            if (result == -1)
+            {
+                MessageBox.Show("Import failed! Please reload your database immediately to avoid saving corrupt data.", "NBA Stats Tracker",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            else if (result == -2)
+            {
+                updateStatus("Failed to import player career stats from 2K12 save.");
+                return;
+            }
+
+            updateStatus("NBA 2K12 player career stats imported successfully and saved into the database.");
+        }
+
+        private void mnuMiscErasePastTeamStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                MessageBox.Show(
+                    "Are you sure you want to erase past team stats?\nThis doesn't erase any seasons from the " +
+                    "database, but rather erases past team stats entered manually via the Yearly Report tab" +
+                    "in Team Overview.", "NBA Stats Tracker", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            db.ClearTable("PastTeamStats");
+
+            updateStatus("Erased all past team stats. Database saved.");
+        }
+
+        private void mnuMiscErasePastPlayerStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                MessageBox.Show(
+                    "Are you sure you want to erase past player stats?\nThis doesn't erase any seasons from the " +
+                    "database, but rather erases past player stats either entered manually via the Yearly Report tab" +
+                    "in Player Overview, or imported from an NBA 2K save.", "NBA Stats Tracker", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            db.ClearTable("PastPlayerStats");
+
+            updateStatus("Erased all past player stats. Database saved.");
         }
     }
 }

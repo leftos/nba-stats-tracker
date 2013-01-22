@@ -1420,6 +1420,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                                <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                                 <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
@@ -1823,6 +1824,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                                <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                                 <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
                                 <DataGridTemplateColumn x:Name="dgvLeagueMetricStatsPERColumn"
                                                         ClipboardContentBinding="{Binding PER}" Header="PER"

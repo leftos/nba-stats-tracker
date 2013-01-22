@@ -44,7 +44,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         public enum Mode
         {
-            REditor,
+            REDitor,
             HiddenTeams,
             HiddenPlayers,
             PickBoxScore
@@ -82,7 +82,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             _validTeams = validTeams;
             _activeTeams = activeTeams;
-            mode = Mode.REditor;
+            mode = Mode.REDitor;
 
             lblCurSeason.Content = "NST couldn't determine all the teams in your save. Please enable them.";
 
@@ -446,7 +446,7 @@ namespace NBA_Stats_Tracker.Windows
                 MainWindow.addInfo = "$$PLAYERSENABLED";
                 Close();
             }
-            else if (mode == Mode.REditor)
+            else if (mode == Mode.REDitor)
             {
                 if (lstEnabled.Items.Count != 30)
                 {
@@ -515,7 +515,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnLoadList_Click(object sender, RoutedEventArgs e)
         {
-            if (mode == Mode.REditor)
+            if (mode == Mode.REDitor)
             {
                 var ofd = new OpenFileDialog
                           {

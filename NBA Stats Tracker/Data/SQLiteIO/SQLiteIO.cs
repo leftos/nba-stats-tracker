@@ -802,18 +802,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         public static void SavePastPlayerStatsToDatabase(SQLiteDatabase db, List<PastPlayerStats> statsList)
         {
-            int playerID;
-            try
-            {
-                playerID = statsList[0].PlayerID;
-            }
-            catch
-            {
-                return;
-            }
-
-            db.Delete("PastPlayerStats", "PlayerID = " + playerID);
-
+            statsList.GroupBy(stat => stat.PlayerID)
+                     .Select(pair => pair.Key)
+                     .ToList()
+                     .ForEach(playerID => db.Delete("PastPlayerStats", "PlayerID = " + playerID));
+            
             var sqlinsert = new List<Dictionary<string, string>>();
             var usedIDs = new List<int>();
             foreach (PastPlayerStats pps in statsList)
@@ -2168,19 +2161,15 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             string q = "select " + columnName + " from " + table + " ORDER BY " + columnName + " ASC;";
             DataTable res = db.GetDataTable(q);
-
-            int i;
-            for (i = 0; i < res.Rows.Count; i++)
+            res.Rows.Cast<DataRow>().ToList().ForEach(r => used.Add(Convert.ToInt32(r["ID"].ToString())));
+            int i = 0;
+            while (true)
             {
-                if (Convert.ToInt32(res.Rows[i][columnName].ToString()) != i)
-                {
-                    if (used == null || !used.Contains(i))
-                    {
-                        return i;
-                    }
-                }
+                if (used.Contains(i))
+                    i++;
+                else
+                    return i;
             }
-            return res.Rows.Count;
         }
 
         /// <summary>

@@ -83,8 +83,11 @@ namespace NBA_Stats_Tracker.Windows
         ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
         ///     Used for when a player is set to active while previously inactive.
         /// </summary>
+        /// <param name="message"></param>
+        /// <param name="items"></param>
+        /// <param name="mode"></param>
         /// <param name="teams">The available teams to sign the player to.</param>
-        public ComboChoiceWindow(IEnumerable<string> items, string message, Mode mode = Mode.Generic)
+        public ComboChoiceWindow(string message, IEnumerable<string> items, Mode mode = Mode.Generic)
         {
             InitializeComponent();
 
@@ -93,6 +96,11 @@ namespace NBA_Stats_Tracker.Windows
             label1.Content = message;
             cmbSelection1.ItemsSource = items;
             cmbSelection2.Visibility = Visibility.Hidden;
+
+            if (cmbSelection1.Items.Count > 0)
+            {
+                cmbSelection1.SelectedIndex = 0;
+            }
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)

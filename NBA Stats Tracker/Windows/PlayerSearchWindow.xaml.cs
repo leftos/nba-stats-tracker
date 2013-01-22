@@ -57,7 +57,8 @@ namespace NBA_Stats_Tracker.Windows
                                                      "SPG",
                                                      "BPG",
                                                      "TPG",
-                                                     "FPG"
+                                                     "FPG",
+                                                     "MPG"
                                                  };
 
         private readonly List<string> Metrics = new List<string>
@@ -106,7 +107,8 @@ namespace NBA_Stats_Tracker.Windows
                                                    "STL",
                                                    "BLK",
                                                    "TO",
-                                                   "FOUL"
+                                                   "FOUL",
+                                                   "MINS"
                                                };
 
         private readonly string folder = App.AppDocsPath + @"\Search Filters";

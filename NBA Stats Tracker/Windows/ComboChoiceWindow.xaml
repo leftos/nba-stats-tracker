@@ -6,10 +6,10 @@
         <Label Content="Select a mode" Margin="12,12,12,0" Name="label1"
                VerticalAlignment="Top" />
         <ComboBox Height="23" Margin="12,41,12,0" Name="cmbSelection1" VerticalAlignment="Top" />
-        <Button Content="OK" Height="23" HorizontalAlignment="Center" Margin="115,153,93,0" x:Name="btnOK"
-                VerticalAlignment="Top" Width="76" Click="btnOK_Click" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,10" x:Name="btnOK"
+                VerticalAlignment="Bottom" Width="76" Click="btnOK_Click" />
         <ComboBox Height="23" Margin="12,70,12,0" Name="cmbSelection2" VerticalAlignment="Top" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Center" Margin="196,153,12,0" x:Name="btnCancel"
-        	VerticalAlignment="Top" Width="76" Click="btnCancel_Click" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,10" x:Name="btnCancel"
+        	VerticalAlignment="Bottom" Width="76" Click="btnCancel_Click" />
     </Grid>
 </Window>

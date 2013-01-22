@@ -91,29 +91,29 @@ NBA 2K12 Features
 	If you have the patience to follow the tutorial below for each game you play in your career, you should have your team stats automatically corrected, and also have full box-scores (with Team & Player Stats) of your games in NBA Stats Tracker for you to check out.
 	
 	Just follow these steps:
-	REditor
+	REDitor
 		1. From in-game, select Play Game (even if you're going to simulate it), and let it save your career on the jersey selection screen.
-		2. Alt-Tab out of the game and start REditor.
-		3. Open your save in REditor, export everything to CSV (File > Export to CSV).
+		2. Alt-Tab out of the game and start REDitor.
+		3. Open your save in REDitor, export everything to CSV (File > Export to CSV).
 		4. Start NBA Stats Tracker.
 		5. Open your database, or create a new one if you haven't previously done so.
 		6. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 3.
 		7. Save the database.
 		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again. If you're simulating games, simulate just this game and then save immediately. Do not let any other games simulate since your last save.
-		9. Alt-Tab out of the game and start REditor.
-		10. Open your save in REditor, export everything to CSV (File > Export to CSV).
+		9. Alt-Tab out of the game and start REDitor.
+		10. Open your save in REDitor, export everything to CSV (File > Export to CSV).
 		11. Go back to the tool, open the database you saved before the game.
 		12. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 10.
 		13. The tool should detect the game you played and ask you which team is the home team.
 		14. The tool will now show you the full box score of the game so that you can verify everything's okay. Click on OK.
 		15. Save the database.
 		16. Click on Export to 2K12 Save, select the folder you saved the CSVs into in Step 3.
-		17. Go to REditor, open your career again, import everything from CSV (File > Import from CSV).
-		18. Save your career in REditor.
+		17. Go to REDitor, open your career again, import everything from CSV (File > Import from CSV).
+		18. Save your career in REDitor.
 		19. You're done! Once you go back to NBA 2K12, make sure to quit your career and reload it, or your changes could be lost.
 
-		Q: I don't even know what REditor is! Care to throw me a bone?
-		A: In short, REditor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
+		Q: I don't even know what REDitor is! Care to throw me a bone?
+		A: In short, REDitor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
 		http://www.red-mods.com/
 
 	Old Season 1 Workaround

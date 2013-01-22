@@ -106,6 +106,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Position1 = player.Position1;
             Position2 = player.Position2;
             TeamF = player.Team;
+            isActive = !(String.IsNullOrWhiteSpace(TeamF));
         }
 
         /// <summary>

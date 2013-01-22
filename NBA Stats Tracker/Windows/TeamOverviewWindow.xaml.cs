@@ -1105,12 +1105,12 @@ namespace NBA_Stats_Tracker.Windows
                     SQLiteIO.GetTeamStatsFromDatabase(MainWindow.currentDB, curTeam, j, out ts, out tsopp);
                     DataRow dr3 = dt_yea.NewRow();
                     DataRow dr3_pl = dt_yea.NewRow();
-                    CreateDataRowFromTeamStats(ts, ref dr3, "Season " + j.ToString());
+                    CreateDataRowFromTeamStats(ts, ref dr3, "Season " + MainWindow.GetSeasonName(j));
 
                     dt_yea.Rows.Add(dr3);
                     if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
                     {
-                        CreateDataRowFromTeamStats(ts, ref dr3_pl, "Playoffs " + j.ToString(), true);
+                        CreateDataRowFromTeamStats(ts, ref dr3_pl, "Playoffs " + MainWindow.GetSeasonName(j), true);
                         dt_yea.Rows.Add(dr3_pl);
                     }
 

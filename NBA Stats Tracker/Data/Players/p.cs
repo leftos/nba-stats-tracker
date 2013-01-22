@@ -135,7 +135,7 @@ namespace NBA_Stats_Tracker.Data.Players
                                                   };
     }
 
-    // Unlike TeamStats which was designed before REditor implemented such stats,
-    // PlayerStats were made according to REditor's standards, to make life 
-    // easier when importing/exporting from REditor's CSV
+    // Unlike TeamStats which was designed before REDitor implemented such stats,
+    // PlayerStats were made according to REDitor's standards, to make life 
+    // easier when importing/exporting from REDitor's CSV
 }

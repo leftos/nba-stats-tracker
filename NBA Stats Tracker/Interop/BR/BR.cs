@@ -503,6 +503,26 @@ namespace NBA_Stats_Tracker.Interop.BR
                         Position2 = Position.PF;
                         break;
 
+                    case "PG":
+                        Position1 = Position.PG;
+                        Position2 = Position.None;
+                        break;
+
+                    case "SG":
+                        Position1 = Position.SG;
+                        Position2 = Position.None;
+                        break;
+
+                    case "SF":
+                        Position1 = Position.SF;
+                        Position2 = Position.None;
+                        break;
+
+                    case "PF":
+                        Position1 = Position.PF;
+                        Position2 = Position.None;
+                        break;
+
                     default:
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }

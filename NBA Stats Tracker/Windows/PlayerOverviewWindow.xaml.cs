@@ -652,7 +652,7 @@ namespace NBA_Stats_Tracker.Windows
             var psrList = new List<PlayerStatsRow>();
             var psCareer = new PlayerStats(new Player(psr.ID, psr.TeamF, psr.LastName, psr.FirstName, psr.Position1, psr.Position2));
 
-            string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + psr.ID + " ORDER BY \"SOrder\"";
+            string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + psr.ID + " ORDER BY CAST(\"SOrder\" AS INTEGER)";
             DataTable dt = db.GetDataTable(qr);
             foreach (DataRow dr in dt.Rows)
             {
@@ -682,7 +682,7 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     var ps = new PlayerStats(res.Rows[0]);
                     PlayerStats.CalculateRates(ps.stats, ref ps.metrics);
-                    var psr2 = new PlayerStatsRow(ps, "Season " + i);
+                    var psr2 = new PlayerStatsRow(ps, "Season " + MainWindow.GetSeasonName(i));
                     psrList.Add(psr2);
                     psCareer.AddPlayerStats(ps);
                 }
@@ -699,7 +699,7 @@ namespace NBA_Stats_Tracker.Windows
                     if (ps.pl_stats[p.GP] > 0)
                     {
                         PlayerStats.CalculateRates(ps.pl_stats, ref ps.pl_metrics);
-                        var psr2 = new PlayerStatsRow(ps, "Playoffs " + i, true);
+                        var psr2 = new PlayerStatsRow(ps, "Playoffs " + MainWindow.GetSeasonName(i), true);
                         psrList.Add(psr2);
                         psCareer.AddPlayerStats(ps, true);
                     }
@@ -1389,7 +1389,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (TeamF == "- Inactive -")
                 {
                     askedTeam = "";
-                    var atw = new ComboChoiceWindow(Teams, "Select the team to which to sign the player", ComboChoiceWindow.Mode.OneTeam);
+                    var atw = new ComboChoiceWindow("Select the team to which to sign the player", Teams, ComboChoiceWindow.Mode.OneTeam);
                     if (atw.ShowDialog() == true)
                     {
                         TeamF = askedTeam;
