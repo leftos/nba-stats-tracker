@@ -1578,7 +1578,7 @@ namespace NBA_Stats_Tracker.Windows
 
             string file = ofd.FileName;
 
-            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(file);
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVFile(file);
 
             List<PlayerStatsRow> plist = rbSeason.IsChecked.GetValueOrDefault() ? _psrList : _plPsrList;
 
@@ -1617,8 +1617,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
-                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
-                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
+                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
                 List<PlayerStatsRow> list = isSeason ? _psrList : _plPsrList;
@@ -1672,8 +1671,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
-                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
-                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
+                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
                 List<TeamStatsRow> list = isSeason ? tsrList : pl_tsrList;
@@ -1804,7 +1802,7 @@ namespace NBA_Stats_Tracker.Windows
 
             string file = ofd.FileName;
 
-            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromCSV(file);
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromCSVFile(file);
 
             List<PlayerStatsRow> plist = rbSeason.IsChecked.GetValueOrDefault() ? _psrList : _plPsrList;
 

@@ -1935,8 +1935,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && rbStatsAllTime.IsChecked.GetValueOrDefault())
             {
-                string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
-                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
+                List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 foreach (var dict in dictList)
                 {

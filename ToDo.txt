@@ -1,1 +1,2 @@
 - Ultimate Defensive Team
+- Go through all tables, check if they should have paste, implement OnExecutedPaste and database updates

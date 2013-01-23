@@ -1541,7 +1541,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPaste_Click(object sender, RoutedEventArgs e)
         {
-            string[] lines = Tools.SplitLinesToArray(Clipboard.GetText());
+            var text = Clipboard.GetText();
+            string[] lines = Tools.SplitLinesToArray(text);
             int found = 0;
             for (int i = 0; i < lines.Length; i++)
             {
@@ -1565,7 +1566,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (found == 2)
                     break;
             }
-            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSV(lines);
+            List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVString(text);
 
             int status = 0;
             for (int j = 0; j < dictList.Count; j++)

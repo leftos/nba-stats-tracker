@@ -1,19 +1,5 @@
-1.5.0.0
+1.5.1.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		- Addition: Added Height, Weight and Contract criteria to Advanced Player Search
-		- Improvement: Recommended Starters in Team Overview is now Recommended Situationals, allowing you to pick whether to calculate the recommended starting 5, bench 5, or the best 5 based on any metric, average or total stat
-		- Fix: Fixed team matching when importing using REDitor to a database that wasn't populated from the same 2K12 save
-		- Improvement: Ultimate Team in League Overview now offers multiple choices
-			* All-League 1st Team
-			* All-League 2nd Team
-			* All-League 3rd Team
-			* All-Rookies 1st Team
-			* All-Rookies 2nd Team
-		- Improvement: Ultimate Team and Best Performers in League Overview can now be filtered to:
-			* All players
-			* League Leaders (NBA-based criteria)
-			* My League Leaders
-		- Addition: Added Matchup Preview tab to Team Overview, allowing you to compare two teams and their most important stats and players at-a-glance
-		- Addition: Added Copy To Clipboard functionality in the Best Performers tab in the Box Score window
-		- Removal: Old Season 1 Workaround for importing/exporting from/to an NBA 2K12 save has been removed and is no longer supported; you'll need to use REDitor with the proper license for this functionality from this version on
+		- Addition: Added importing player career stats from NBA 2K saves (Tools > NBA 2K Tools > Import Previous Years' Player Stats)
+		- Addition: Past Team & Player Stats (entered manually in Yearly Report or by importing player career stats) can now be quickly erased (Tools > Fix/Reset Stats)

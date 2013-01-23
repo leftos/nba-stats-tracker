@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -229,6 +230,11 @@ namespace LeftosCommonLibrary
         public static double getReal(DataRow r, string ColumnName)
         {
             return Convert.ToSingle(r[ColumnName].ToString());
+        }
+
+        public static void WriteToTrace(string msg)
+        {
+            Trace.WriteLine(string.Format("{0}: {1}", DateTime.Now, msg));
         }
     }
 }

@@ -1873,10 +1873,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         {
             try
             {
-                teams = CSV.DictionaryListFromCSV(folder + @"\Teams.csv");
-                players = CSV.DictionaryListFromCSV(folder + @"\Players.csv");
-                teamStats = CSV.DictionaryListFromCSV(folder + @"\Team_Stats.csv");
-                playerStats = CSV.DictionaryListFromCSV(folder + @"\Player_Stats.csv");
+                teams = CSV.DictionaryListFromCSVFile(folder + @"\Teams.csv");
+                players = CSV.DictionaryListFromCSVFile(folder + @"\Players.csv");
+                teamStats = CSV.DictionaryListFromCSVFile(folder + @"\Team_Stats.csv");
+                playerStats = CSV.DictionaryListFromCSVFile(folder + @"\Player_Stats.csv");
             }
             catch (Exception ex)
             {
