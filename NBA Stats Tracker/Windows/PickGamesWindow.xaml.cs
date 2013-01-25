@@ -40,8 +40,8 @@ namespace NBA_Stats_Tracker.Windows
                 object away = lstAvailableAway.SelectedItem;
                 object home = lstAvailableHome.SelectedItem;
                 lstSelectedGames.Items.Add(away + " @ " + home);
-                REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, away.ToString())]);
-                REDitor.pickedTeams.Add(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, home.ToString())]);
+                REDitor.pickedTeams.Add(Misc.GetTeamIDFromDisplayName(MainWindow.tst, away.ToString()));
+                REDitor.pickedTeams.Add(Misc.GetTeamIDFromDisplayName(MainWindow.tst, home.ToString()));
                 lstAvailableAway.Items.Remove(home);
                 lstAvailableHome.Items.Remove(away);
                 lstAvailableHome.Items.Remove(home);
@@ -67,7 +67,7 @@ namespace NBA_Stats_Tracker.Windows
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
                     foreach (string part in parts)
                     {
-                        REDitor.pickedTeams.Remove(MainWindow.TeamOrder[Misc.GetCurTeamFromDisplayName(MainWindow.tst, part)]);
+                        REDitor.pickedTeams.Remove(Misc.GetTeamIDFromDisplayName(MainWindow.tst, part));
                         lstAvailableAway.Items.Add(part);
                         lstAvailableHome.Items.Add(part);
                     }

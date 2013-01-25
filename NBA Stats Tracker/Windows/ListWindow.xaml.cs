@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
 

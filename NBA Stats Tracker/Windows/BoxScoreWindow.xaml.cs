@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,13 +27,14 @@ using System.Windows.Media;
 using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.ListExtensions;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
+using SQLite_Database;
 
 #endregion
 
@@ -261,7 +263,7 @@ namespace NBA_Stats_Tracker.Windows
             loading = true;
             foreach (PlayerBoxScore pbs in bse.pbsList)
             {
-                if (pbs.Team == bs.Team1)
+                if (pbs.TeamID == bs.Team1ID)
                 {
                     pbsAwayList.Add(pbs);
                 }
@@ -276,8 +278,8 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                cmbTeam1.SelectedItem = Misc.GetDisplayNameFromTeam(MainWindow.tst, bs.Team1);
-                cmbTeam2.SelectedItem = Misc.GetDisplayNameFromTeam(MainWindow.tst, bs.Team2);
+                cmbTeam1.SelectedItem = MainWindow.tst[bs.Team1ID].displayName;
+                cmbTeam2.SelectedItem = MainWindow.tst[bs.Team2ID].displayName;
             }
             catch
             {
@@ -308,12 +310,12 @@ namespace NBA_Stats_Tracker.Windows
         private void UpdateDataGrid(int team)
         {
             SortableBindingList<PlayerBoxScore> pbsList;
-            string TeamName;
+            int teamID;
             if (team == 1)
             {
                 try
                 {
-                    TeamName = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
                     pbsList = pbsAwayList;
                 }
                 catch (Exception)
@@ -325,7 +327,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    TeamName = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
                     pbsList = pbsHomeList;
                 }
                 catch (Exception)
@@ -335,7 +337,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             ObservableCollection<KeyValuePair<int, string>> PlayersList;
-            EventHandlers.UpdateBoxScoreDataGrid(TeamName, out PlayersList, ref pbsList, playersT, loading);
+            UpdateBoxScoreDataGrid(teamID, out PlayersList, ref pbsList, playersT, loading);
 
             if (team == 1)
             {
@@ -469,13 +471,13 @@ namespace NBA_Stats_Tracker.Windows
                 if (cmbTeam1.SelectedItem != null)
                 {
                     if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
-                                                       Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString()), i))
+                                                       Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (cmbTeam2.SelectedItem != null)
                 {
                     if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
-                                                       Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString()), i))
+                                                       Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (addIt)
@@ -564,8 +566,8 @@ namespace NBA_Stats_Tracker.Windows
                 MainWindow.bs.isPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
                 MainWindow.bs.gamedate = dtpGameDate.SelectedDate.GetValueOrDefault();
                 MainWindow.bs.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
-                MainWindow.bs.Team1 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-                MainWindow.bs.Team2 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                MainWindow.bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+                MainWindow.bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
                 MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
 
                 if (MainWindow.bs.MINS1 <= 0)
@@ -705,14 +707,14 @@ namespace NBA_Stats_Tracker.Windows
 
                 #region Player Box Scores Check
 
-                string Team1 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-                string Team2 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                int Team1 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+                int Team2 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
 
                 foreach (PlayerBoxScore pbs in pbsAwayList)
-                    pbs.Team = Team1;
+                    pbs.TeamID = Team1;
 
                 foreach (PlayerBoxScore pbs in pbsHomeList)
-                    pbs.Team = Team2;
+                    pbs.TeamID = Team2;
 
                 int starters = 0;
                 var pbsLists = new List<SortableBindingList<PlayerBoxScore>>(2) {pbsAwayList, pbsHomeList};
@@ -743,7 +745,7 @@ namespace NBA_Stats_Tracker.Windows
                             if (starters > 5)
                             {
                                 string s = "There can't be more than 5 starters in each team.";
-                                s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                                s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                                 MessageBox.Show(s);
                                 throw (new Exception());
                             }
@@ -752,7 +754,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.FGM > pbs.FGA)
                         {
                             string s = "The FGM stat can't be higher than the FGA stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -760,7 +762,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.TPM > pbs.TPA)
                         {
                             string s = "The 3PM stat can't be higher than the 3PA stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -768,7 +770,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.FGM < pbs.TPM)
                         {
                             string s = "The 3PM stat can't be higher than the FGM stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -776,7 +778,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.FGA < pbs.TPA)
                         {
                             string s = "The TPA stat can't be higher than the FGA stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -784,7 +786,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.FTM > pbs.FTA)
                         {
                             string s = "The FTM stat can't be higher than the FTA stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -792,7 +794,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.OREB > pbs.REB)
                         {
                             string s = "The OREB stat can't be higher than the REB stat.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -800,7 +802,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.isStarter && pbs.MINS == 0)
                         {
                             string s = "A player can't be a starter but not have any minutes played.";
-                            s += "\n\nTeam: " + pbs.Team + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -1484,8 +1486,8 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="team">1 if the away team's players' metric stats should be updated; anything else for the home team.</param>
         private void UpdateMetric(int team)
         {
-            var ts = new TeamStats(cmbTeam1.SelectedItem.ToString());
-            var tsopp = new TeamStats(cmbTeam2.SelectedItem.ToString());
+            var ts = new TeamStats(-1, cmbTeam1.SelectedItem.ToString());
+            var tsopp = new TeamStats(-1, cmbTeam2.SelectedItem.ToString());
 
             tryParseBS();
             if (!MainWindow.bs.done)
@@ -1512,7 +1514,7 @@ namespace NBA_Stats_Tracker.Windows
                 PlayerStats ps = pst[pbs.PlayerID].Clone();
                 ps.ResetStats();
                 ps.AddBoxScore(pbs, bs.isPlayoff);
-                ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"));
+                ps.CalcMetrics(ts, tsopp, new TeamStats(-1));
                 pmsrList.Add(new PlayerStatsRow(ps));
             }
 
@@ -1611,7 +1613,9 @@ namespace NBA_Stats_Tracker.Windows
                             {
                             }
 
-                            pbsAwayList.Add(new PlayerBoxScore(dict, PlayersListAway[i].Key, cmbTeam1.SelectedItem.ToString()));
+                            pbsAwayList.Add(new PlayerBoxScore(dict, PlayersListAway[i].Key,
+                                                               Misc.GetTeamIDFromDisplayName(MainWindow.tst,
+                                                                                             cmbTeam1.SelectedItem.ToString())));
                             break;
                         }
                     }
@@ -1654,7 +1658,9 @@ namespace NBA_Stats_Tracker.Windows
                             {
                             }
 
-                            pbsHomeList.Add(new PlayerBoxScore(dict, PlayersListHome[i].Key, cmbTeam1.SelectedItem.ToString()));
+                            pbsHomeList.Add(new PlayerBoxScore(dict, PlayersListHome[i].Key,
+                                                               Misc.GetTeamIDFromDisplayName(MainWindow.tst,
+                                                                                             cmbTeam2.SelectedItem.ToString())));
                             break;
                         }
                     }
@@ -1959,6 +1965,54 @@ namespace NBA_Stats_Tracker.Windows
                     "Player of the Game\n\n{0}\n\n\n{1} Best Performers\n\n{2}\n\n{3}\n\n{4}\n\n\n" +
                     "{5} Best Performers\n\n{6}\n\n{7}\n\n{8}", txbMVP.Text + "\n\n" + txbMVPStats.Text, tabTeam1.Header, txbAway1.Text,
                     txbAway2.Text, txbAway3.Text, tabTeam2.Header, txbHome1.Text, txbHome2.Text, txbHome3.Text));
+        }
+
+        /// <summary>
+        ///     Updates the box score data grid.
+        /// </summary>
+        /// <param name="TeamID">Name of the team.</param>
+        /// <param name="PlayersList">The players list.</param>
+        /// <param name="pbsList">The player box score list.</param>
+        /// <param name="playersT">The players' SQLite table name.</param>
+        /// <param name="loading">
+        ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
+        /// </param>
+        private static void UpdateBoxScoreDataGrid(int TeamID, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+                                                  ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
+        {
+            var db = new SQLiteDatabase(MainWindow.currentDB);
+            string q = "select * from " + playersT + " where TeamFin = " + TeamID + "";
+            q += " ORDER BY LastName ASC";
+            DataTable res = db.GetDataTable(q);
+
+            PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
+            if (!loading)
+                pbsList = new SortableBindingList<PlayerBoxScore>();
+
+            foreach (DataRow r in res.Rows)
+            {
+                var ps = new PlayerStats(r, MainWindow.tst);
+                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+                if (!loading)
+                {
+                    var pbs = new PlayerBoxScore {PlayerID = ps.ID, TeamID = TeamID};
+                    pbsList.Add(pbs);
+                }
+            }
+
+            for (int i = 0; i < pbsList.Count; i++)
+            {
+                PlayerBoxScore cur = pbsList[i];
+                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                var player = new KeyValuePair<int, string>(cur.PlayerID, name);
+                cur.Name = name;
+                if (!PlayersList.Contains(player))
+                {
+                    PlayersList.Add(player);
+                }
+                pbsList[i] = cur;
+            }
+            PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
         }
     }
 }

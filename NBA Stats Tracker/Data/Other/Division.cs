@@ -12,7 +12,7 @@
 
 #endregion
 
-namespace NBA_Stats_Tracker.Data.Misc
+namespace NBA_Stats_Tracker.Data.Other
 {
     /// <summary>
     ///     Basic division information.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NBA_Stats_Tracker.Data.Misc
+namespace NBA_Stats_Tracker.Data.Other
 {
     /// <summary>
     ///     Used to pass on all the required information for a specific timeframe.

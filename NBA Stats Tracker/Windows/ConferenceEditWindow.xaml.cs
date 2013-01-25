@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
 

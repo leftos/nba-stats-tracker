@@ -36,7 +36,7 @@ using LeftosCommonLibrary;
 using LeftosCommonLibrary.BeTimvwFramework;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
@@ -72,6 +72,7 @@ namespace NBA_Stats_Tracker.Windows
 
         public static Dictionary<int, TeamStats> tst = new Dictionary<int, TeamStats>();
         public static Dictionary<int, TeamStats> tstopp = new Dictionary<int, TeamStats>();
+        public static Dictionary<int, string> DisplayNames = new Dictionary<int, string>(); 
         public static Dictionary<int, PlayerStats> pst = new Dictionary<int, PlayerStats>();
         public static List<BoxScoreEntry> bshist = new List<BoxScoreEntry>();
         public static Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
@@ -143,7 +144,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private static List<string> notables = new List<string>();
 
-        public static Dictionary<string, string> DisplayNames;
         public static string teamsT;
         public static string pl_teamsT;
         public static string oppT;
@@ -189,8 +189,8 @@ namespace NBA_Stats_Tracker.Windows
             if (Directory.Exists(AppTempPath) == false)
                 Directory.CreateDirectory(AppTempPath);
 
-            tst[0] = new TeamStats("$$NewDB");
-            tstopp[0] = new TeamStats("$$NewDB");
+            tst[0] = new TeamStats(-1, "$$NewDB");
+            tstopp[0] = new TeamStats(-1, "$$NewDB");
 
             for (int i = 0; i < 30; i++)
             {
@@ -572,8 +572,8 @@ namespace NBA_Stats_Tracker.Windows
             if (bs.done == false)
                 return;
 
-            int id1 = TeamOrder[bs.Team1];
-            int id2 = TeamOrder[bs.Team2];
+            int id1 = bs.Team1ID;
+            int id2 = bs.Team2ID;
 
             SQLiteIO.LoadSeason(bs.SeasonNum);
 
@@ -1148,8 +1148,8 @@ namespace NBA_Stats_Tracker.Windows
                                                       {
                                                           if (kvp.Value == i)
                                                           {
-                                                              tst[i] = new TeamStats(kvp.Key);
-                                                              tstopp[i] = new TeamStats(kvp.Key);
+                                                              tst[i] = new TeamStats(i, kvp.Key);
+                                                              tstopp[i] = new TeamStats(i, kvp.Key);
                                                               break;
                                                           }
                                                       }
@@ -1684,16 +1684,23 @@ namespace NBA_Stats_Tracker.Windows
             if (sfd.FileName == "")
                 return;
 
-            File.Delete(sfd.FileName);
+            try
+            {
+                File.Delete(sfd.FileName);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show("Couldn't create the database.\n" + ex.Message);
+                return;
+            }
 
             db = new SQLiteDatabase(sfd.FileName);
 
             SQLiteIO.prepareNewDB(db, 1, 1);
 
             tst = new Dictionary<int, TeamStats>();
-            tst[0] = new TeamStats("$$NewDB");
             tstopp = new Dictionary<int, TeamStats>();
-            tstopp[0] = new TeamStats("$$NewDB");
+            pst = new Dictionary<int, PlayerStats>();
             TeamOrder = new SortedDictionary<string, int>();
             bshist = new List<BoxScoreEntry>();
 
@@ -1742,15 +1749,15 @@ namespace NBA_Stats_Tracker.Windows
 
                     for (int i = 0; i < newTeams.Count; i++)
                     {
-                        if (tst.Where(pair => pair.Value.name == newTeams[i]).Count() == 1)
+                        if (tst.Count(pair => pair.Value.name == newTeams[i]) == 1)
                         {
                             MessageBox.Show("There's a team with the name " + newTeams[i] +
                                             " already in the database so it won't be added again.");
                             continue;
                         }
                         int newid = oldlen + i;
-                        tst[newid] = new TeamStats(newTeams[i]) {ID = newid};
-                        tstopp[newid] = new TeamStats(newTeams[i]) {ID = newid};
+                        tst[newid] = new TeamStats(newid, newTeams[i]);
+                        tstopp[newid] = new TeamStats(newid, newTeams[i]);
                         TeamOrder.Add(newTeams[i], newid);
                     }
                     SQLiteIO.saveSeasonToDatabase();
@@ -1971,7 +1978,7 @@ namespace NBA_Stats_Tracker.Windows
             int maxSeason = SQLiteIO.getMaxSeason(file);
             for (int i = 1; i <= maxSeason; i++)
             {
-                List<BoxScoreEntry> newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason);
+                List<BoxScoreEntry> newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason, tst);
 
                 foreach (BoxScoreEntry newbse in newBShist)
                 {
@@ -1980,7 +1987,7 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         if (bse.bs.id == newbse.bs.id)
                         {
-                            if (bse.bs.gamedate == newbse.bs.gamedate && bse.bs.Team1 == newbse.bs.Team1 && bse.bs.Team2 == newbse.bs.Team2)
+                            if (bse.bs.gamedate == newbse.bs.gamedate && bse.bs.Team1ID == newbse.bs.Team1ID && bse.bs.Team2ID == newbse.bs.Team2ID)
                             {
                                 MessageBoxResult r;
                                 if (bse.bs.PTS1 == newbse.bs.PTS1 && bse.bs.PTS2 == newbse.bs.PTS2)
@@ -1988,8 +1995,8 @@ namespace NBA_Stats_Tracker.Windows
                                     r =
                                         MessageBox.Show(
                                             "A box score with the same date, teams and score as one in the current database was found in the file being imported." +
-                                            "\n" + bse.bs.gamedate.ToShortDateString() + ": " + bse.bs.Team1 + " " + bse.bs.PTS1 + " @ " +
-                                            bse.bs.Team2 + " " + bse.bs.PTS2 +
+                                            "\n" + bse.bs.gamedate.ToShortDateString() + ": " + bse.bs.Team1ID + " " + bse.bs.PTS1 + " @ " +
+                                            bse.bs.Team2ID + " " + bse.bs.PTS2 +
                                             "\n\nClick Yes to only keep the box score that is already in this databse." +
                                             "\nClick No to only keep the box score that is being imported, replacing the one in this database." +
                                             "\nClick Cancel to keep both box scores.", "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
@@ -2000,10 +2007,10 @@ namespace NBA_Stats_Tracker.Windows
                                     r =
                                         MessageBox.Show(
                                             "A box score with the same date, teams and score as one in the current database was found in the file being imported." +
-                                            "\nCurrent: " + bse.bs.gamedate.ToShortDateString() + ": " + bse.bs.Team1 + " " + bse.bs.PTS1 +
-                                            " @ " + bse.bs.Team2 + " " + bse.bs.PTS2 + "\nTo be imported: " +
-                                            newbse.bs.gamedate.ToShortDateString() + ": " + newbse.bs.Team1 + " " + newbse.bs.PTS1 + " @ " +
-                                            newbse.bs.Team2 + " " + newbse.bs.PTS2 +
+                                            "\nCurrent: " + bse.bs.gamedate.ToShortDateString() + ": " + bse.bs.Team1ID + " " + bse.bs.PTS1 +
+                                            " @ " + bse.bs.Team2ID + " " + bse.bs.PTS2 + "\nTo be imported: " +
+                                            newbse.bs.gamedate.ToShortDateString() + ": " + newbse.bs.Team1ID + " " + newbse.bs.PTS1 + " @ " +
+                                            newbse.bs.Team2ID + " " + newbse.bs.PTS2 +
                                             "\n\nClick Yes to only keep the box score that is already in this databse." +
                                             "\nClick No to only keep the box score that is being imported, replacing the one in this database." +
                                             "\nClick Cancel to keep both box scores.", "NBA Stats Tracker", MessageBoxButton.YesNoCancel,
@@ -2516,7 +2523,7 @@ namespace NBA_Stats_Tracker.Windows
 
             string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 3, p.PPG);
             string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                                     Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.PPG, m);
+                                     tst[curL.TeamF].displayName, curL.PPG, m);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FGp).First();
@@ -2524,7 +2531,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FGp);
             s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FGp, m, ppg);
+                              tst[curL.TeamF].displayName, curL.FGp, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.RPG).First();
@@ -2532,7 +2539,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.RPG);
             s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {5:F1} PPG,{4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.RPG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.RPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.BPG).First();
@@ -2540,7 +2547,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.BPG);
             s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.BPG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.BPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.APG).First();
@@ -2548,7 +2555,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.APG);
             s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.APG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.APG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.SPG).First();
@@ -2556,7 +2563,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.SPG);
             s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.SPG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.SPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.ORPG).First();
@@ -2564,7 +2571,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.ORPG);
             s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.ORPG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.ORPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.DRPG).First();
@@ -2572,7 +2579,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.DRPG);
             s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.DRPG, m, ppg);
+                              tst[curL.TeamF].displayName, curL.DRPG, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.TPp).First();
@@ -2580,7 +2587,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.TPp);
             s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.TPp, m, ppg);
+                              tst[curL.TeamF].displayName, curL.TPp, m, ppg);
             notables.Add(s);
 
             curL = psrList.OrderByDescending(pair => pair.FTp).First();
@@ -2588,7 +2595,7 @@ namespace NBA_Stats_Tracker.Windows
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FTp);
             s = String.Format("FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
-                              Misc.GetDisplayNameFromTeam(tst, curL.TeamF), curL.FTp, m, ppg);
+                              tst[curL.TeamF].displayName, curL.FTp, m, ppg);
             notables.Add(s);
 
             notables.Shuffle();
@@ -2717,23 +2724,7 @@ namespace NBA_Stats_Tracker.Windows
             mainGrid.Visibility = Visibility.Hidden;
             bw.RunWorkerAsync();
         }
-
-        public static void RelinkEverything(DBData dbdata)
-        {
-            tst = dbdata.tst;
-            tstopp = dbdata.tstopp;
-            TeamOrder = dbdata.TeamOrder;
-            pst = dbdata.pst;
-            splitTeamStats = dbdata.splitTeamStats;
-            splitPlayerStats = dbdata.splitPlayerStats;
-            bshist = dbdata.bshist;
-            SeasonTeamRankings = dbdata.teamRankings;
-            SeasonPlayerRankings = dbdata.playerRankings;
-            PlayoffTeamRankings = dbdata.playoffTeamRankings;
-            PlayoffPlayerRankings = dbdata.playoffPlayerRankings;
-            DisplayNames = dbdata.DisplayNames;
-        }
-
+        
         private void mnuMiscImportPrevYear2K12_Click(object sender, RoutedEventArgs e)
         {
             if (

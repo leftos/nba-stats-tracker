@@ -309,8 +309,8 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="tsopp">The resulting opposing team stats instance.</param>
         private static void TeamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
-            ts = new TeamStats(name);
-            tsopp = new TeamStats(name);
+            ts = new TeamStats(MainWindow.TeamOrder[name], name);
+            tsopp = new TeamStats(MainWindow.TeamOrder[name], name);
 
             tsopp.winloss[1] = ts.winloss[0] = Convert.ToByte(recordparts[0]);
             tsopp.winloss[0] = ts.winloss[1] = Convert.ToByte(recordparts[1]);
@@ -453,10 +453,10 @@ namespace NBA_Stats_Tracker.Interop.BR
         ///     Creates the player stats instances using data from the downloaded DataSet.
         /// </summary>
         /// <param name="ds">The DataSet.</param>
-        /// <param name="team">The player's team.</param>
+        /// <param name="teamID">The player's team.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <exception cref="System.Exception">Don't recognize the position </exception>
-        private static void PlayerStatsFromDataSet(DataSet ds, string team, out Dictionary<int, PlayerStats> pst)
+        private static void PlayerStatsFromDataSet(DataSet ds, int teamID, out Dictionary<int, PlayerStats> pst)
         {
             var pstnames = new Dictionary<string, PlayerStats>();
 
@@ -527,7 +527,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
                 var ps =
-                    new PlayerStats(new Player(pstnames.Count, team, r["Player"].ToString().Split(' ')[1],
+                    new PlayerStats(new Player(pstnames.Count, teamID, r["Player"].ToString().Split(' ')[1],
                                                r["Player"].ToString().Split(' ')[0], Position1, Position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
@@ -618,7 +618,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             {
                 if (i == 5)
                     continue;
-                var pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1ID, bs.id, (i < 5), MainWindow.pst);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;
@@ -630,7 +630,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             {
                 if (i == 5)
                     continue;
-                var pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2ID, bs.id, (i < 5), MainWindow.pst);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;
@@ -656,7 +656,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             TeamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
             ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");
-            PlayerStatsFromDataSet(ds, teamAbbr.Key, out pst);
+            PlayerStatsFromDataSet(ds, ts.ID, out pst);
         }
 
         /// <summary>

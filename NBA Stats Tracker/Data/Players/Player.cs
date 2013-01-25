@@ -14,6 +14,12 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </summary>
         public Player()
         {
+            ID = -1;
+            Team = -1;
+            LastName = "";
+            FirstName = "";
+            Position1 = Position.None;
+            Position2 = Position.None;
         }
 
         /// <summary>
@@ -25,7 +31,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="FirstName">The first name.</param>
         /// <param name="Position1">The primary position.</param>
         /// <param name="Position2">The secondary position.</param>
-        public Player(int ID, string Team, string LastName, string FirstName, Position Position1, Position Position2)
+        public Player(int ID, int Team, string LastName, string FirstName, Position Position1, Position Position2)
         {
             this.ID = ID;
             this.Team = Team;
@@ -42,7 +48,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public Player(DataRow dataRow)
         {
             ID = Tools.getInt(dataRow, "ID");
-            Team = Tools.getString(dataRow, "TeamFin");
+            Team = Tools.getInt(dataRow, "TeamFin");
             LastName = Tools.getString(dataRow, "LastName");
             FirstName = Tools.getString(dataRow, "FirstName");
             string p1 = Tools.getString(dataRow, "Position1");
@@ -58,7 +64,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         public int ID { get; set; }
-        public string Team { get; set; }
+        public int Team { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public Position Position1 { get; set; }

@@ -1,5 +1,13 @@
 NBA Stats Tracker - Version History
 
+	v1.5.1.2 Beta
+		- Fix: Players are now matched to the proper ones in the NBA 2K save when exporting using REDitor, if "Only Export/Update Team Stats" is diabled
+		- Change: Changed some aspects of the underlying team-handling code, which will hopefully improve compatibility with REDitor, and make coding further features easier
+
+	v1.5.1.1 Beta
+		- Fix: Fixed players being assigned to the wrong teams in some cases when importing using REDitor
+		- Improvement: Recalculated the factors based on which the best stats are selected based on an improved approach
+
 	v1.5.1 Beta
 		- Addition: Added importing player career stats from NBA 2K saves (Tools > NBA 2K Tools > Import Previous Years' Player Stats)
 		- Addition: Past Team & Player Stats (entered manually in Yearly Report or by importing player career stats) can now be quickly erased (Tools > Fix/Reset Stats)

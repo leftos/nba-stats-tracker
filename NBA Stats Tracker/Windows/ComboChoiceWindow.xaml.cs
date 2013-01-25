@@ -17,7 +17,7 @@
 
 using System.Collections.Generic;
 using System.Windows;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 
 #endregion
 

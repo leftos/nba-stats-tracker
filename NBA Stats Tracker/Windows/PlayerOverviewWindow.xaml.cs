@@ -29,7 +29,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
@@ -107,11 +107,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="team">The player's team name.</param>
         /// <param name="playerID">The player ID.</param>
-        public PlayerOverviewWindow(string team, int playerID) : this()
+        public PlayerOverviewWindow(int team, int playerID) : this()
         {
-            if (!String.IsNullOrWhiteSpace(team))
+            if (team != -1)
             {
-                cmbTeam.SelectedItem = GetDisplayNameFromTeam(team);
+                cmbTeam.SelectedItem = MainWindow.tst[team].displayName;
             }
             else
             {
@@ -148,46 +148,11 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">Requested team that is hidden.</exception>
-        private string GetCurTeamFromDisplayName(string displayName)
+        private int GetTeamIDFromDisplayName(string displayName)
         {
-            if (displayName == "- Inactive -")
-                return displayName;
-            foreach (int kvp in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[kvp].displayName == displayName)
-                {
-                    if (MainWindow.tst[kvp].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[kvp].name);
-
-                    return MainWindow.tst[kvp].name;
-                }
-            }
-            throw new Exception("Team not found: " + displayName);
+            return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
         }
-
-        /// <summary>
-        ///     Finds a team's displayName by its name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Requested team that is hidden.</exception>
-        private string GetDisplayNameFromTeam(string name)
-        {
-            if (name == "- Inactive -")
-                return name;
-            foreach (int kvp in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[kvp].name == name)
-                {
-                    if (MainWindow.tst[kvp].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[kvp].name);
-
-                    return MainWindow.tst[kvp].displayName;
-                }
-            }
-            throw new Exception("Team not found: " + name);
-        }
-
+        
         /// <summary>
         ///     Populates the teams combo.
         /// </summary>
@@ -292,7 +257,7 @@ namespace NBA_Stats_Tracker.Windows
                 string q2 = "select * from " + pl_playersT + " where ID = " + Tools.getInt(r, "ID");
                 DataTable pl_res = db.GetDataTable(q2);
 
-                var ps = new PlayerStats(r);
+                var ps = new PlayerStats(r, MainWindow.tst);
                 playersActive.Add(ps.ID, ps);
                 playersActive[ps.ID].UpdatePlayoffStats(pl_res.Rows[0]);
             }
@@ -348,7 +313,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 List<PlayerStats> list =
                     MainWindow.pst.Values.Where(
-                        ps => ps.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.isHidden && ps.isActive)
+                        ps => ps.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.isHidden && ps.isActive)
                               .ToList();
                 list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
                 list.ForEach(delegate(PlayerStats ps)
@@ -659,8 +624,8 @@ namespace NBA_Stats_Tracker.Windows
                 var ps = new PlayerStats();
                 bool isPlayoff = Tools.getBoolean(dr, "isPlayoff");
                 ps.GetStatsFromDataRow(dr, isPlayoff);
-                ps.TeamF = Tools.getString(dr, "TeamFin");
-                ps.TeamS = Tools.getString(dr, "TeamSta");
+                ps.TeamF = Tools.getInt(dr, "TeamFin");
+                ps.TeamS = Tools.getInt(dr, "TeamSta");
                 var tempMetrics = isPlayoff ? ps.pl_metrics : ps.metrics;
                 PlayerStats.CalculateRates(isPlayoff ? ps.pl_stats : ps.stats, ref tempMetrics);
                 var curPSR = new PlayerStatsRow(ps, isPlayoff ? "Playoffs " + Tools.getString(dr, "SeasonName") : "Season " + Tools.getString(dr, "SeasonName"), isPlayoff);
@@ -680,7 +645,7 @@ namespace NBA_Stats_Tracker.Windows
                 DataTable res = db.GetDataTable(q);
                 if (res.Rows.Count == 1)
                 {
-                    var ps = new PlayerStats(res.Rows[0]);
+                    var ps = new PlayerStats(res.Rows[0], MainWindow.tst);
                     PlayerStats.CalculateRates(ps.stats, ref ps.metrics);
                     var psr2 = new PlayerStatsRow(ps, "Season " + MainWindow.GetSeasonName(i));
                     psrList.Add(psr2);
@@ -695,7 +660,7 @@ namespace NBA_Stats_Tracker.Windows
                 res = db.GetDataTable(q);
                 if (res.Rows.Count == 1)
                 {
-                    var ps = new PlayerStats(res.Rows[0], true);
+                    var ps = new PlayerStats(res.Rows[0], MainWindow.tst, true);
                     if (ps.pl_stats[p.GP] > 0)
                     {
                         PlayerStats.CalculateRates(ps.pl_stats, ref ps.pl_metrics);
@@ -720,8 +685,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void UpdateOverviewAndBoxScores()
         {
-            TeamStats ts = psr.isActive ? MainWindow.tst[MainWindow.TeamOrder[psr.TeamF]] : new TeamStats();
-            var tsopp = new TeamStats("Opponents");
+            TeamStats ts = psr.isActive ? MainWindow.tst[psr.TeamF] : new TeamStats();
+            var tsopp = new TeamStats(ts.ID, "Opponents");
 
             grdOverview.DataContext = psr;
 
@@ -737,7 +702,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 var pbs = new PlayerBoxScore();
                 pbs = bse.pbsList.Single(pbs1 => pbs1.PlayerID == psr.ID);
-                pbs.AddInfoFromTeamBoxScore(bse.bs);
+                pbs.AddInfoFromTeamBoxScore(MainWindow.tst, bse.bs);
                 pbs.CalcMetrics(bse.bs);
                 pbsList.Add(pbs);
             }
@@ -1078,27 +1043,27 @@ namespace NBA_Stats_Tracker.Windows
 
                 PlayerBoxScore psr1 = templist[0];
                 string text = psr1.GetBestStats(5, psr.Position1);
-                txbGame1.Text = "1: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame1.Text = "1: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[1];
                 text = psr1.GetBestStats(5, psr.Position1);
-                txbGame2.Text = "2: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame2.Text = "2: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[2];
                 text = psr1.GetBestStats(5, psr.Position1);
-                txbGame3.Text = "3: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame3.Text = "3: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[3];
                 text = psr1.GetBestStats(5, psr.Position1);
-                txbGame4.Text = "4: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame4.Text = "4: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[4];
                 text = psr1.GetBestStats(5, psr.Position1);
-                txbGame5.Text = "5: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame5.Text = "5: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
 
                 psr1 = templist[5];
                 text = psr1.GetBestStats(5, psr.Position1);
-                txbGame6.Text = "6: " + psr1.Date + " vs " + psr1.OppTeam + " (" + psr1.Result + ")\n\n" + text;
+                txbGame6.Text = "6: " + psr1.Date + " vs " + MainWindow.DisplayNames[psr1.OppTeamID] + " (" + psr1.Result + ")\n\n" + text;
             }
             catch (Exception)
             {
@@ -1216,15 +1181,15 @@ namespace NBA_Stats_Tracker.Windows
                     if (res.Rows.Count > 0)
                     {
                         bool nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                        string newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                        int newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
                         cmbTeam.SelectedIndex = -1;
                         if (nowActive)
                         {
-                            if (newTeam != "")
+                            if (newTeam != -1)
                             {
                                 try
                                 {
-                                    cmbTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                    cmbTeam.SelectedItem = MainWindow.tst[newTeam].displayName;
                                 }
                                 catch (Exception)
                                 {
@@ -1252,15 +1217,15 @@ namespace NBA_Stats_Tracker.Windows
                             if (res.Rows.Count > 0)
                             {
                                 nowActive = Tools.getBoolean(res.Rows[0], "isActive");
-                                newTeam = nowActive ? res.Rows[0]["TeamFin"].ToString() : " - Inactive -";
+                                newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
                                 cmbOppTeam.SelectedIndex = -1;
                                 if (nowActive)
                                 {
-                                    if (newTeam != "")
+                                    if (newTeam != -1)
                                     {
                                         try
                                         {
-                                            cmbOppTeam.SelectedItem = GetDisplayNameFromTeam(newTeam);
+                                            cmbOppTeam.SelectedItem = MainWindow.tst[newTeam].displayName;
                                         }
                                         catch (Exception)
                                         {
@@ -1363,7 +1328,7 @@ namespace NBA_Stats_Tracker.Windows
 
             GetActivePlayers();
             cmbTeam.SelectedIndex = -1;
-            cmbTeam.SelectedItem = ps.isActive ? GetDisplayNameFromTeam(ps.TeamF) : "- Inactive -";
+            cmbTeam.SelectedItem = ps.isActive ? MainWindow.tst[ps.TeamF].displayName : "- Inactive -";
             cmbPlayer.SelectedIndex = -1;
             cmbPlayer.SelectedValue = ps.ID;
             //cmbPlayer.SelectedValue = ps.LastName + " " + ps.FirstName + " (" + ps.Position1 + ")";
@@ -1378,25 +1343,25 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbPosition2.SelectedItem == null)
                 cmbPosition2.SelectedItem = " ";
 
-            string TeamF;
+            int TeamF;
             if (chkIsActive.IsChecked.GetValueOrDefault() == false)
             {
-                TeamF = "";
+                TeamF = -1;
             }
             else
             {
-                TeamF = GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString());
-                if (TeamF == "- Inactive -")
+                TeamF = GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString());
+                if (TeamF == -1)
                 {
                     askedTeam = "";
                     var atw = new ComboChoiceWindow("Select the team to which to sign the player", Teams, ComboChoiceWindow.Mode.OneTeam);
                     if (atw.ShowDialog() == true)
                     {
-                        TeamF = askedTeam;
+                        TeamF = Misc.GetTeamIDFromDisplayName(MainWindow.tst, askedTeam);
                     }
                     else
                     {
-                        TeamF = "";
+                        TeamF = -1;
                         chkIsActive.IsChecked = false;
                     }
                 }
@@ -1588,7 +1553,7 @@ namespace NBA_Stats_Tracker.Windows
             string q;
             if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + playersT + " where TeamFin LIKE \"" + cmbOppTeam.SelectedItem + "\" AND isActive LIKE \"True\"";
+                q = "select * from " + playersT + " where TeamFin = " + Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbOppTeam.SelectedItem.ToString()) + " AND isActive LIKE \"True\"";
             }
             else
             {
@@ -1659,7 +1624,7 @@ namespace NBA_Stats_Tracker.Windows
                     q = "SELECT * FROM " + playersT + " WHERE ID = " + SelectedOppPlayerID;
                     res = db.GetDataTable(q);
 
-                    var ps = new PlayerStats(res.Rows[0]);
+                    var ps = new PlayerStats(res.Rows[0], MainWindow.tst);
                     var oppPSR = new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName);
 
                     oppPSR.Type = oppPSR.FirstName + " " + oppPSR.LastName;
@@ -1672,7 +1637,7 @@ namespace NBA_Stats_Tracker.Windows
                     hthOppPBS = new List<PlayerBoxScore>();
                     foreach (DataRow r in res.Rows)
                     {
-                        var pbs = new PlayerBoxScore(r);
+                        var pbs = new PlayerBoxScore(r, MainWindow.tst);
                         hthOppPBS.Add(pbs);
                     }
                     var gameIDs = new List<int>();
@@ -1704,7 +1669,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r in res.Rows)
                     {
-                        var pbs = new PlayerBoxScore(r);
+                        var pbs = new PlayerBoxScore(r, MainWindow.tst);
                         ps.AddBoxScore(pbs);
                         hthAllPBS.Add(pbs);
                     }
@@ -1730,7 +1695,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r in res.Rows)
                     {
-                        var pbs = new PlayerBoxScore(r);
+                        var pbs = new PlayerBoxScore(r, MainWindow.tst);
                         ps.AddBoxScore(pbs);
                     }
 
@@ -1783,7 +1748,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r in res.Rows)
                     {
-                        var pbs = new PlayerBoxScore(r);
+                        var pbs = new PlayerBoxScore(r, MainWindow.tst);
                         ps.AddBoxScore(pbs);
                         hthAllPBS.Add(pbs);
                     }
@@ -1812,7 +1777,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     foreach (DataRow r in res.Rows)
                     {
-                        var pbs = new PlayerBoxScore(r);
+                        var pbs = new PlayerBoxScore(r, MainWindow.tst);
                         ps.AddBoxScore(pbs);
                     }
 

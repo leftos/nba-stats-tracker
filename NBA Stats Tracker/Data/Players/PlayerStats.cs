@@ -7,7 +7,7 @@ using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
@@ -25,8 +25,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public string LastName;
         public Position Position1;
         public Position Position2;
-        public string TeamF;
-        public string TeamS = "";
+        public int TeamF;
+        public int TeamS = -1;
         public int YearOfBirth;
         public int YearsPro;
         public float[] averages = new float[16];
@@ -84,8 +84,8 @@ namespace NBA_Stats_Tracker.Data.Players
             YearsPro = 0;
             height = 0;
             weight = 0;
-            TeamF = "";
-            TeamS = "";
+            TeamF = -1;
+            TeamS = -1;
 
             p.metricsNames.ForEach(name =>
                                    {
@@ -106,7 +106,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Position1 = player.Position1;
             Position2 = player.Position2;
             TeamF = player.Team;
-            isActive = !(String.IsNullOrWhiteSpace(TeamF));
+            isActive = TeamF != -1;
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the row is assumed to contain playoff stats.
         /// </param>
-        public PlayerStats(DataRow dataRow, bool playoffs = false) : this()
+        public PlayerStats(DataRow dataRow, Dictionary<int, TeamStats> tst, bool playoffs = false) : this()
         {
             ID = Tools.getInt(dataRow, "ID");
 
@@ -134,8 +134,30 @@ namespace NBA_Stats_Tracker.Data.Players
                     Position2 = Position.None;
                 else
                     Position2 = (Position) Enum.Parse(typeof (Position), p2);
-                TeamF = Tools.getString(dataRow, "TeamFin");
-                TeamS = Tools.getString(dataRow, "TeamSta");
+                try
+                {
+                    TeamF = Tools.getInt(dataRow, "TeamFin");
+                    TeamS = Tools.getInt(dataRow, "TeamSta");
+                }
+                catch (FormatException)
+                {
+                    try
+                    {
+                        TeamF = tst.Single(ts => ts.Value.name == Tools.getString(dataRow, "TeamFin")).Value.ID;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        TeamF = -1;
+                    }
+                    try
+                    {
+                        TeamS = tst.Single(ts => ts.Value.name == Tools.getString(dataRow, "TeamSta")).Value.ID;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        TeamS = -1;
+                    }
+                }
                 isActive = Tools.getBoolean(dataRow, "isActive");
 
                 // Backwards compatibility with databases that didn't have the field
@@ -248,7 +270,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     if set to <c>true</c> the row is assumed to contain playoff stats.
         /// </param>
         public PlayerStats(int ID, string LastName, string FirstName, Position Position1, Position Position2, int YearOfBirth, int YearsPro,
-                           string TeamF, string TeamS, bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion,
+                           int TeamF, int TeamS, bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion,
                            DataRow dataRow, bool playoffs = false) : this()
         {
             this.ID = ID;
@@ -1145,13 +1167,13 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns></returns>
         public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
         {
-            var lps = new PlayerStats(new Player(-1, "", "League", "Averages", Position.None, Position.None));
+            var lps = new PlayerStats(new Player(-1, -1, "League", "Averages", Position.None, Position.None));
             foreach (int key in playerStats.Keys)
             {
                 lps.AddPlayerStats(playerStats[key]);
             }
 
-            var ls = new TeamStats("League");
+            var ls = new TeamStats(-2, "League");
             for (int i = 0; i < teamStats.Count; i++)
             {
                 ls.AddTeamStats(teamStats[i], Span.Season);
@@ -1216,10 +1238,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
             foreach (int playerid in playerStats.Keys.ToList())
             {
-                if (String.IsNullOrEmpty(playerStats[playerid].TeamF))
+                if (playerStats[playerid].TeamF == -1)
                     continue;
 
-                int teamid = TeamOrder[playerStats[playerid].TeamF];
+                int teamid = playerStats[playerid].TeamF;
                 TeamStats ts = teamStats[teamid];
                 TeamStats tsopp = oppStats[teamid];
 
@@ -1248,7 +1270,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             foreach (int playerid in playerStats.Keys.ToList())
             {
-                if (String.IsNullOrEmpty(playerStats[playerid].TeamF))
+                if (playerStats[playerid].TeamF == -1)
                     continue;
 
                 if (!playoffs)

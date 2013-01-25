@@ -3,7 +3,7 @@ using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Teams;
 
-namespace NBA_Stats_Tracker.Data.Misc
+namespace NBA_Stats_Tracker.Data.Other
 {
     public struct DBData
     {

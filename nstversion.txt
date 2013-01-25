@@ -1,5 +1,5 @@
-1.5.1.0
+1.5.1.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-		- Addition: Added importing player career stats from NBA 2K saves (Tools > NBA 2K Tools > Import Previous Years' Player Stats)
-		- Addition: Past Team & Player Stats (entered manually in Yearly Report or by importing player career stats) can now be quickly erased (Tools > Fix/Reset Stats)
+		- Fix: Fixed players being assigned to the wrong teams in some cases when importing using REDitor
+		- Improvement: Recalculated the factors based on which the best stats are selected based on an improved approach

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
@@ -167,7 +167,7 @@ namespace NBA_Stats_Tracker.Windows
                 list =
                     list.Where(
                         ps =>
-                        ps.TeamF == Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeamFilter.SelectedItem.ToString()) && ps.isActive)
+                        ps.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeamFilter.SelectedItem.ToString()) && ps.isActive)
                         .ToList();
             }
             else if (chkIsActive.IsChecked == false)
@@ -319,18 +319,18 @@ namespace NBA_Stats_Tracker.Windows
                     if (cmbTotalsPar.SelectedIndex < 1 || cmbTotalsOp.SelectedIndex == -1)
                         return;
 
-                    string team = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbSelectedTeam.SelectedItem.ToString());
+                    int teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbSelectedTeam.SelectedItem.ToString());
                     KeyValuePair<Selection, List<Filter>> filter;
                     try
                     {
                         filter =
-                            filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == MainWindow.TeamOrder[team]);
+                            filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
                     }
                     catch
                     {
-                        filters.Add(new Selection(SelectionType.Team, MainWindow.TeamOrder[team]), new List<Filter>());
+                        filters.Add(new Selection(SelectionType.Team, teamID), new List<Filter>());
                         filter =
-                            filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == MainWindow.TeamOrder[team]);
+                            filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
                     }
                     try
                     {
@@ -483,7 +483,7 @@ namespace NBA_Stats_Tracker.Windows
                     string teamName;
                     try
                     {
-                        teamName = Misc.GetDisplayNameFromTeam(MainWindow.tst, player.TeamF);
+                        teamName = MainWindow.tst[player.TeamF].displayName;
                     }
                     catch (Exception)
                     {
@@ -583,13 +583,13 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     if (filter.Key.SelectionType == SelectionType.Team)
                     {
-                        string teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
-                        if (bse.bs.Team1 != teamName && bse.bs.Team2 != teamName)
+                        //string teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
+                        if (bse.bs.Team1ID != filter.Key.ID && bse.bs.Team2ID != filter.Key.ID)
                         {
                             keep = false;
                             break;
                         }
-                        string p = bse.bs.Team1 == teamName ? "1" : "2";
+                        string p = bse.bs.Team1ID == filter.Key.ID ? "1" : "2";
 
                         foreach (Filter option in filter.Value)
                         {
@@ -660,25 +660,49 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (BoxScoreEntry bse in bsToCalculate)
             {
-                string team1 = bse.bs.Team1;
-                string team2 = bse.bs.Team2;
+                int team1ID = bse.bs.Team1ID;
+                int team2ID = bse.bs.Team2ID;
                 TeamBoxScore bs = bse.bs;
-                if (advtst.Values.All(ts => ts.name != team1))
+                if (!advtst.ContainsKey(team1ID))
                 {
-                    advTeamOrder.Add(team1, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst.Add(advTeamOrder[team1], new TeamStats {ID = advTeamOrder[team1], name = team1, displayName = team1});
-                    advtstopp.Add(advTeamOrder[team1], new TeamStats {ID = advTeamOrder[team1], name = team1, displayName = team1});
+                    advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    advtst.Add(team1ID,
+                               new TeamStats
+                               {
+                                   ID = team1ID,
+                                   name = MainWindow.tst[team1ID].name,
+                                   displayName = MainWindow.tst[team1ID].displayName
+                               });
+                    advtstopp.Add(team1ID,
+                               new TeamStats
+                               {
+                                   ID = team1ID,
+                                   name = MainWindow.tst[team1ID].name,
+                                   displayName = MainWindow.tst[team1ID].displayName
+                               });
                 }
-                TeamStats ts1 = advtst.Single(pair => pair.Value.name == team1).Value;
-                TeamStats ts1opp = advtstopp.Single(pair => pair.Value.name == team1).Value;
-                if (advtst.Values.All(ts => ts.name != team2))
+                TeamStats ts1 = advtst[team1ID];
+                TeamStats ts1opp = advtstopp[team1ID];
+                if (!advtst.ContainsKey(team2ID))
                 {
-                    advTeamOrder.Add(team2, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst.Add(advTeamOrder[team2], new TeamStats {ID = advTeamOrder[team2], name = team2, displayName = team2});
-                    advtstopp.Add(advTeamOrder[team2], new TeamStats {ID = advTeamOrder[team2], name = team2, displayName = team2});
+                    advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    advtst.Add(team2ID,
+                               new TeamStats
+                               {
+                                   ID = team2ID,
+                                   name = MainWindow.tst[team2ID].name,
+                                   displayName = MainWindow.tst[team2ID].displayName
+                               });
+                    advtstopp.Add(team2ID,
+                               new TeamStats
+                               {
+                                   ID = team2ID,
+                                   name = MainWindow.tst[team2ID].name,
+                                   displayName = MainWindow.tst[team2ID].displayName
+                               });
                 }
-                TeamStats ts2 = advtst.Single(pair => pair.Value.name == team2).Value;
-                TeamStats ts2opp = advtstopp.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2 = advtst[team2ID];
+                TeamStats ts2opp = advtstopp[team2ID];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
                 foreach (PlayerBoxScore pbs in bse.pbsList)
@@ -694,27 +718,49 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (BoxScoreEntry bse in notBsToCalculate)
             {
-                string team1 = bse.bs.Team1;
-                string team2 = bse.bs.Team2;
+                int team1ID = bse.bs.Team1ID;
+                int team2ID = bse.bs.Team2ID;
                 TeamBoxScore bs = bse.bs;
-                if (advtst_not.Values.All(ts => ts.name != team1))
+                if (!advtst_not.ContainsKey(team1ID))
                 {
-                    advTeamOrder_not.Add(team1, advTeamOrder_not.Any() ? advTeamOrder_not.Values.Max() + 1 : 0);
-                    advtst_not.Add(advTeamOrder_not[team1], new TeamStats {ID = advTeamOrder_not[team1], name = team1, displayName = team1});
-                    advtstopp_not.Add(advTeamOrder_not[team1],
-                                      new TeamStats {ID = advTeamOrder_not[team1], name = team1, displayName = team1});
+                    advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    advtst_not.Add(team1ID,
+                               new TeamStats
+                               {
+                                   ID = team1ID,
+                                   name = MainWindow.tst[team1ID].name,
+                                   displayName = MainWindow.tst[team1ID].displayName
+                               });
+                    advtstopp_not.Add(team1ID,
+                               new TeamStats
+                               {
+                                   ID = team1ID,
+                                   name = MainWindow.tst[team1ID].name,
+                                   displayName = MainWindow.tst[team1ID].displayName
+                               });
                 }
-                TeamStats ts1 = advtst_not.Single(pair => pair.Value.name == team1).Value;
-                TeamStats ts1opp = advtstopp_not.Single(pair => pair.Value.name == team1).Value;
-                if (advtst_not.Values.All(ts => ts.name != team2))
+                TeamStats ts1 = advtst[team1ID];
+                TeamStats ts1opp = advtstopp[team1ID];
+                if (!advtst_not.ContainsKey(team2ID))
                 {
-                    advTeamOrder_not.Add(team2, advTeamOrder_not.Any() ? advTeamOrder_not.Values.Max() + 1 : 0);
-                    advtst_not.Add(advTeamOrder_not[team2], new TeamStats {ID = advTeamOrder_not[team2], name = team2, displayName = team2});
-                    advtstopp_not.Add(advTeamOrder_not[team2],
-                                      new TeamStats {ID = advTeamOrder_not[team2], name = team2, displayName = team2});
+                    advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    advtst_not.Add(team2ID,
+                               new TeamStats
+                               {
+                                   ID = team2ID,
+                                   name = MainWindow.tst[team2ID].name,
+                                   displayName = MainWindow.tst[team2ID].displayName
+                               });
+                    advtstopp_not.Add(team2ID,
+                               new TeamStats
+                               {
+                                   ID = team2ID,
+                                   name = MainWindow.tst[team2ID].name,
+                                   displayName = MainWindow.tst[team2ID].displayName
+                               });
                 }
-                TeamStats ts2 = advtst_not.Single(pair => pair.Value.name == team2).Value;
-                TeamStats ts2opp = advtstopp_not.Single(pair => pair.Value.name == team2).Value;
+                TeamStats ts2 = advtst[team2ID];
+                TeamStats ts2opp = advtstopp[team2ID];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
                 foreach (PlayerBoxScore pbs in bse.pbsList)

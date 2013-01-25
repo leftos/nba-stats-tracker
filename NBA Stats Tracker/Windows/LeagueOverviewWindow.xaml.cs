@@ -27,7 +27,7 @@ using System.Windows.Input;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
@@ -232,21 +232,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
-        private string GetCurTeamFromDisplayName(string displayName)
+        private int GetTeamIDFromDisplayName(string displayName)
         {
-            return Misc.GetCurTeamFromDisplayName(_tst, displayName);
+            return Misc.GetTeamIDFromDisplayName(_tst, displayName);
         }
-
-        /// <summary>
-        ///     Finds the team's displayName by its name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        private string GetDisplayNameFromTeam(string name)
-        {
-            return Misc.GetDisplayNameFromTeam(_tst, name);
-        }
-
+        
         /// <summary>
         ///     Handles the SelectedDateChanged event of the dtpStart control.
         ///     Makes sure that the starting date isn't before the ending date, and reloads the current tab.
@@ -438,9 +428,9 @@ namespace NBA_Stats_Tracker.Windows
 
                                       if (psr.isActive)
                                       {
-                                          if (!InCurrentFilter(_tst[MainWindow.TeamOrder[psr.TeamF]]))
+                                          if (!InCurrentFilter(_tst[psr.TeamF]))
                                               continue;
-                                          psr.TeamFDisplay = _tst[MainWindow.TeamOrder[psr.TeamF]].displayName;
+                                          psr.TeamFDisplay = _tst[psr.TeamF].displayName;
                                           pl_psr.TeamFDisplay = psr.TeamFDisplay;
                                       }
                                       else
@@ -1020,7 +1010,7 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (BoxScoreEntry bse in _bshist)
             {
-                if (!InCurrentFilter(bse.bs.Team1) && !InCurrentFilter(bse.bs.Team2))
+                if (!InCurrentFilter(bse.bs.Team1ID) && !InCurrentFilter(bse.bs.Team2ID))
                 {
                     continue;
                 }
@@ -1040,9 +1030,9 @@ namespace NBA_Stats_Tracker.Windows
                 try
                 {
                     r["Date"] = bse.bs.gamedate.ToString().Split(' ')[0];
-                    r["Away"] = GetDisplayNameFromTeam(bse.bs.Team1);
+                    r["Away"] = MainWindow.tst[bse.bs.Team1ID].displayName;
                     r["AS"] = Convert.ToInt32(bse.bs.PTS1);
-                    r["Home"] = GetDisplayNameFromTeam(bse.bs.Team2);
+                    r["Home"] = MainWindow.tst[bse.bs.Team2ID].displayName;
                     r["HS"] = Convert.ToInt32(bse.bs.PTS2);
                     r["GameID"] = bse.bs.id;
                 }
@@ -1069,7 +1059,7 @@ namespace NBA_Stats_Tracker.Windows
             lssr = new List<TeamStatsRow>();
             oppTsrList = new List<TeamStatsRow>();
 
-            var ls = new TeamStats("League");
+            var ls = new TeamStats(-1, "League");
 
             foreach (int key in _tst.Keys)
             {
@@ -1096,7 +1086,7 @@ namespace NBA_Stats_Tracker.Windows
             pl_lssr = new List<TeamStatsRow>();
             pl_oppTsrList = new List<TeamStatsRow>();
 
-            var ls1 = new TeamStats("League");
+            var ls1 = new TeamStats(-1, "League");
 
             foreach (int key1 in _tst.Keys)
             {
@@ -1175,16 +1165,16 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         ///     Determines whether a specific team should be shown or not, based on the current filter.
         /// </summary>
-        /// <param name="teamName">Name of the team.</param>
+        /// <param name="teamID">Name of the team.</param>
         /// <returns>
         ///     true if it should be shown; otherwise, false
         /// </returns>
-        private bool InCurrentFilter(string teamName)
+        private bool InCurrentFilter(int teamID)
         {
             if (filterType == TeamFilter.League)
                 return true;
 
-            DataTable res = db.GetDataTable("SELECT Division FROM Teams WHERE Name LIKE \"" + teamName + "\"");
+            DataTable res = db.GetDataTable("SELECT Division FROM Teams WHERE ID = " + teamID);
             int divID = Tools.getInt(res.Rows[0], "Division");
 
             if (filterType == TeamFilter.Conference)

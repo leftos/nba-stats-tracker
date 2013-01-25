@@ -30,7 +30,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerBoxScore()
         {
             PlayerID = -1;
-            Team = "";
+            TeamID = -1;
             isStarter = false;
             playedInjured = false;
             isOut = false;
@@ -41,11 +41,25 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="r">The DataRow containing the player's box score.</param>
-        public PlayerBoxScore(DataRow r)
+        public PlayerBoxScore(DataRow r, Dictionary<int, TeamStats> tst)
         {
             PlayerID = Tools.getInt(r, "PlayerID");
             GameID = Tools.getInt(r, "GameID");
-            Team = r["Team"].ToString();
+            try
+            {
+                TeamID = Convert.ToInt32(r["TeamID"].ToString());
+            }
+            catch (Exception ex)
+            {
+                if (ex is ArgumentException || ex is KeyNotFoundException)
+                {
+                    TeamID = tst.Single(ts => ts.Value.name == Tools.getString(r, "Team")).Value.ID;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
             isStarter = Tools.getBoolean(r, "isStarter");
             playedInjured = Tools.getBoolean(r, "playedInjured");
             isOut = Tools.getBoolean(r, "isOut");
@@ -76,10 +90,10 @@ namespace NBA_Stats_Tracker.Data.Players
                 int T1PTS = Tools.getInt(r, "T1PTS");
                 int T2PTS = Tools.getInt(r, "T2PTS");
 
-                string Team1 = Tools.getString(r, "T1Name");
-                string Team2 = Tools.getString(r, "T2Name");
+                int Team1 = Tools.getInt(r, "Team1ID");
+                int Team2 = Tools.getInt(r, "Team2ID");
 
-                if (Team == Team1)
+                if (TeamID == Team1)
                 {
                     if (T1PTS > T2PTS)
                         Result = "W " + T1PTS.ToString() + "-" + T2PTS.ToString();
@@ -87,7 +101,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         Result = "L " + T1PTS.ToString() + "-" + T2PTS.ToString();
 
                     TeamPTS = T1PTS;
-                    OppTeam = Team2;
+                    OppTeamID = Team2;
                     OppTeamPTS = T2PTS;
                 }
                 else
@@ -98,7 +112,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         Result = "L " + T2PTS.ToString() + "-" + T1PTS.ToString();
 
                     TeamPTS = T2PTS;
-                    OppTeam = Team1;
+                    OppTeamID = Team1;
                     OppTeamPTS = T1PTS;
                 }
 
@@ -117,13 +131,13 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="brRow">The Basketball-Reference.com row containing the player's box score.</param>
-        /// <param name="team">The team.</param>
+        /// <param name="teamID">The team.</param>
         /// <param name="gameID">The game ID.</param>
         /// <param name="starter">
         ///     if set to <c>true</c>, the player is a starter.
         /// </param>
         /// <param name="playerStats">The player stats.</param>
-        public PlayerBoxScore(DataRow brRow, string team, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
+        public PlayerBoxScore(DataRow brRow, int teamID, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
         {
             string[] nameParts = brRow[0].ToString().Split(new[] {' '}, 2);
             try
@@ -131,7 +145,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
                                               {
                                                   if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0] &&
-                                                      kvp.Value.TeamF == team)
+                                                      kvp.Value.TeamF == teamID)
                                                       return true;
                                                   return false;
                                               }).Value.ID;
@@ -156,7 +170,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             GameID = gameID;
-            Team = team;
+            TeamID = teamID;
             isStarter = starter;
             playedInjured = false;
             isOut = false;
@@ -188,11 +202,11 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </summary>
         /// <param name="dict">The dictionary containing the player box score.</param>
         /// <param name="playerID">The player ID.</param>
-        /// <param name="team">The team.</param>
-        public PlayerBoxScore(Dictionary<string, string> dict, int playerID, string team)
+        /// <param name="teamID">The team.</param>
+        public PlayerBoxScore(Dictionary<string, string> dict, int playerID, int teamID)
         {
             PlayerID = playerID;
-            Team = team;
+            TeamID = teamID;
             isStarter = isStarter.TrySetValue(dict, "Starter", typeof (bool));
             playedInjured = playedInjured.TrySetValue(dict, "Injured", typeof (bool));
             isOut = isOut.TrySetValue(dict, "DNP", typeof (bool));
@@ -222,9 +236,9 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             PlayerID = lpbs.PlayerID;
             Name = lpbs.Name;
-            Team = lpbs.Team;
+            TeamID = lpbs.TeamID;
             TeamPTS = lpbs.TeamPTS;
-            OppTeam = lpbs.OppTeam;
+            OppTeamID = lpbs.OppTeamID;
             OppTeamPTS = lpbs.OppTeamPTS;
             isStarter = lpbs.isStarter;
             playedInjured = lpbs.playedInjured;
@@ -260,9 +274,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public int PlayerID { get; set; }
         public string Name { get; set; }
-        public string Team { get; set; }
+        public int TeamID { get; set; }
         public int TeamPTS { get; set; }
-        public string OppTeam { get; set; }
+        public int OppTeamID { get; set; }
         public int OppTeamPTS { get; set; }
         public bool isStarter { get; set; }
         public bool playedInjured { get; set; }
@@ -368,6 +382,9 @@ namespace NBA_Stats_Tracker.Data.Players
         public string Date { get; set; }
         public int GameID { get; set; }
 
+        public string DisplayTeam { get; set; }
+        public string DisplayOppTeam { get; set; }
+
         #region INotifyPropertyChanged Members
 
         [field: NonSerialized]
@@ -375,15 +392,17 @@ namespace NBA_Stats_Tracker.Data.Players
 
         #endregion
 
-        public void AddInfoFromTeamBoxScore(TeamBoxScore bs)
+        public void AddInfoFromTeamBoxScore(Dictionary<int, TeamStats> tst, TeamBoxScore bs)
         {
-            bs.PrepareForDisplay(Team);
+            bs.PrepareForDisplay(tst, TeamID);
             Result = bs.DisplayResult;
-            TeamPTS = Team == bs.Team1 ? bs.PTS1 : bs.PTS2;
-            OppTeam = Team == bs.Team1 ? bs.Team2 : bs.Team1;
-            OppTeamPTS = Team == bs.Team1 ? bs.PTS2 : bs.PTS1;
+            TeamPTS = TeamID == bs.Team1ID ? bs.PTS1 : bs.PTS2;
+            OppTeamID = TeamID == bs.Team1ID ? bs.Team2ID : bs.Team1ID;
+            OppTeamPTS = TeamID == bs.Team1ID ? bs.PTS2 : bs.PTS1;
             Date = bs.gamedate.ToString().Split(' ')[0];
             RealDate = bs.gamedate;
+            DisplayTeam = tst[TeamID].displayName;
+            DisplayOppTeam = tst[OppTeamID].displayName;
         }
 
         /// <summary>
@@ -392,15 +411,15 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
         public void CalcMetrics(DataRow r)
         {
-            var bs = new TeamBoxScore(r);
+            var bs = new TeamBoxScore(r, null);
 
-            var ts = new TeamStats(Team);
-            var tsopp = new TeamStats(OppTeam);
+            var ts = new TeamStats(TeamID);
+            var tsopp = new TeamStats(OppTeamID);
 
-            string Team1 = Tools.getString(r, "T1Name");
-            string Team2 = Tools.getString(r, "T2Name");
+            int Team1ID = Tools.getInt(r, "Team1ID");
+            int Team2ID = Tools.getInt(r, "Team2ID");
 
-            if (Team == Team1)
+            if (TeamID == Team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
             else
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
@@ -408,7 +427,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var ps = new PlayerStats();
             ps.ID = PlayerID;
             ps.AddBoxScore(this, bs.isPlayoff);
-            ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"), GmScOnly: true);
+            ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
             GmSc = ps.metrics["GmSc"];
             GmScE = ps.metrics["GmScE"];
@@ -421,13 +440,13 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
         public void CalcMetrics(TeamBoxScore bs)
         {
-            var ts = new TeamStats(Team);
-            var tsopp = new TeamStats(OppTeam);
+            var ts = new TeamStats(TeamID);
+            var tsopp = new TeamStats(OppTeamID);
 
-            string Team1 = bs.Team1;
-            string Team2 = bs.Team2;
+            int team1ID = bs.Team1ID;
+            int team2ID = bs.Team2ID;
 
-            if (Team == Team1)
+            if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
             else
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
@@ -435,7 +454,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var ps = new PlayerStats();
             ps.ID = PlayerID;
             ps.AddBoxScore(this, bs.isPlayoff);
-            ps.CalcMetrics(ts, tsopp, new TeamStats("$$Empty"), GmScOnly: true);
+            ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
             GmSc = ps.metrics["GmSc"];
             GmScE = ps.metrics["GmScE"];
@@ -462,58 +481,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            if (position.ToString().EndsWith("G"))
-            {
-                fgfactor = 0.4871;
-                tpfactor = 0.39302;
-                ftfactor = 0.86278;
-                orebfactor = 1.242;
-                rebfactor = 4.153;
-                astfactor = 6.324;
-                stlfactor = 1.619;
-                blkfactor = 0.424;
-                ptsfactor = 17.16;
-                ftrfactor = 0.271417;
-            }
-            else if (position.ToString().EndsWith("F"))
-            {
-                fgfactor = 0.52792;
-                tpfactor = 0.38034;
-                ftfactor = 0.82656;
-                orebfactor = 2.671;
-                rebfactor = 8.145;
-                astfactor = 3.037;
-                stlfactor = 1.209;
-                blkfactor = 1.24;
-                ptsfactor = 17.731;
-                ftrfactor = 0.307167;
-            }
-            else if (position.ToString().EndsWith("C"))
-            {
-                fgfactor = 0.52862;
-                tpfactor = 0.23014;
-                ftfactor = 0.75321;
-                orebfactor = 2.328;
-                rebfactor = 7.431;
-                astfactor = 1.688;
-                stlfactor = 0.68;
-                blkfactor = 1.536;
-                ptsfactor = 11.616;
-                ftrfactor = 0.302868;
-            }
-            else
-            {
-                fgfactor = 0.51454;
-                tpfactor = 0.3345;
-                ftfactor = 0.81418;
-                orebfactor = 2.0803;
-                rebfactor = 6.5763;
-                astfactor = 3.683;
-                stlfactor = 1.1693;
-                blkfactor = 1.0667;
-                ptsfactor = 15.5023;
-                ftrfactor = 0.385722;
-            }
+            GetFactors(position, out fgfactor, out tpfactor, out ftfactor, out orebfactor, out rebfactor, out astfactor, out stlfactor,
+                       out blkfactor, out ptsfactor, out ftrfactor);
 
             if (FGM > 4)
             {
@@ -527,7 +496,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("tpn", tpn);
 
-            if (FTM > 4)
+            if (FTM > 3)
             {
                 ftn = FTp/ftfactor;
             }
@@ -623,6 +592,64 @@ namespace NBA_Stats_Tracker.Data.Players
                 i++;
             }
             return s;
+        }
+
+        public static void GetFactors(Position position, out double fgfactor, out double tpfactor, out double ftfactor, out double orebfactor,
+                                      out double rebfactor, out double astfactor, out double stlfactor, out double blkfactor, out double ptsfactor,
+                                      out double ftrfactor)
+        {
+            if (position.ToString().EndsWith("G"))
+            {
+                fgfactor = 0.443707;
+                tpfactor = 0.361878;
+                ftfactor = 0.813468;
+                orebfactor = 0.800345;
+                rebfactor = 3.539908;
+                astfactor = 4.999772;
+                stlfactor = 1.251853;
+                blkfactor = 0.245448;
+                ptsfactor = 15.35178;
+                ftrfactor = 0.253303;
+            }
+            else if (position.ToString().EndsWith("F"))
+            {
+                fgfactor = 0.476727;
+                tpfactor = 0.346698;
+                ftfactor = 0.757107;
+                orebfactor = 1.982639;
+                rebfactor = 6.986424;
+                astfactor = 2.329346;
+                stlfactor = 0.964269;
+                blkfactor = 0.856456;
+                ptsfactor = 15.5138;
+                ftrfactor = 0.2671;
+            }
+            else if (position.ToString().EndsWith("C"))
+            {
+                fgfactor = 0.505723;
+                tpfactor = 0.261248;
+                ftfactor = 0.670934;
+                orebfactor = 2.115109;
+                rebfactor = 6.527221;
+                astfactor = 1.093232;
+                stlfactor = 0.531171;
+                blkfactor = 1.304965;
+                ptsfactor = 9.309844;
+                ftrfactor = 0.276999;
+            }
+            else
+            {
+                fgfactor = 0.474997;
+                tpfactor = 0.352848;
+                ftfactor = 0.769459;
+                orebfactor = 1.762842;
+                rebfactor = 6.640311;
+                astfactor = 3.901761;
+                stlfactor = 1.147817;
+                blkfactor = 0.899758;
+                ptsfactor = 17.78004;
+                ftrfactor = 0.290733;
+            }
         }
 
         /// <summary>

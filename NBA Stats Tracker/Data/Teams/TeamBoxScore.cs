@@ -16,7 +16,9 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Windows;
 
@@ -42,11 +44,26 @@ namespace NBA_Stats_Tracker.Data.Teams
         ///     Initializes a new instance of the <see cref="TeamBoxScore" /> class.
         /// </summary>
         /// <param name="r">The SQLite query result row which contains the required information.</param>
-        public TeamBoxScore(DataRow r)
+        public TeamBoxScore(DataRow r, Dictionary<int, TeamStats> tst)
         {
             id = Convert.ToInt32(r["GameID"].ToString());
-            Team1 = r["T1Name"].ToString();
-            Team2 = r["T2Name"].ToString();
+            try
+            {
+                Team1ID = Convert.ToInt32(r["Team1ID"].ToString());
+                Team2ID = Convert.ToInt32(r["Team2ID"].ToString());
+            }
+            catch (Exception ex)
+            {
+                if (ex is ArgumentException || ex is KeyNotFoundException)
+                {
+                    Team1ID = tst.Single(ts => ts.Value.name == Tools.getString(r, "T1Name")).Value.ID;
+                    Team2ID = tst.Single(ts => ts.Value.name == Tools.getString(r, "T2Name")).Value.ID;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
             gamedate = Convert.ToDateTime(r["Date"].ToString());
             SeasonNum = Convert.ToInt32(r["SeasonNum"].ToString());
             isPlayoff = Convert.ToBoolean(r["IsPlayoff"].ToString());
@@ -98,12 +115,12 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 if (dateParts[0].Contains(team.Key))
                 {
-                    Team1 = team.Key;
+                    Team1ID = team.Value;
                     done++;
                 }
                 if (dateParts[1].Contains(team.Key))
                 {
-                    Team2 = team.Key;
+                    Team2ID = team.Value;
                     done++;
                 }
                 if (done == 2)
@@ -111,8 +128,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             if (done != 2)
             {
-                Team1 = "$$Invalid";
-                Team2 = "$$Invalid";
+                Team1ID = -2;
+                Team2ID = -2;
                 return;
             }
             string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
@@ -187,8 +204,8 @@ namespace NBA_Stats_Tracker.Data.Teams
         public UInt16 TPA2 { get; set; }
         public UInt16 TPM1 { get; set; }
         public UInt16 TPM2 { get; set; }
-        public string Team1 { get; set; }
-        public string Team2 { get; set; }
+        public int Team1ID { get; set; }
+        public int Team2ID { get; set; }
         public int bshistid { get; set; }
         public bool doNotUpdate { get; set; }
         public bool done { get; set; }
@@ -215,13 +232,13 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <summary>
         ///     Prepares the presentation fields of the class.
         /// </summary>
-        /// <param name="team">The team.</param>
-        public void PrepareForDisplay(string team)
+        /// <param name="teamID">The team.</param>
+        public void PrepareForDisplay(Dictionary<int, TeamStats> tst, int teamID)
         {
-            if (team == Team1)
+            if (teamID == Team1ID)
             {
-                DisplayTeam = Team1;
-                DisplayOpponent = Team2;
+                DisplayTeam = tst[Team1ID].displayName;
+                DisplayOpponent = tst[Team2ID].displayName;
                 DisplayLocation = "Away";
                 if (PTS1 > PTS2)
                 {
@@ -251,8 +268,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             else
             {
-                DisplayTeam = Team2;
-                DisplayOpponent = Team1;
+                DisplayTeam = tst[Team2ID].displayName;
+                DisplayOpponent = tst[Team1ID].displayName;
                 DisplayLocation = "Home";
                 if (PTS1 < PTS2)
                 {

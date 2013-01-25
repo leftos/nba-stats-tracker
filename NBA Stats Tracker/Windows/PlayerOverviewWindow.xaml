@@ -128,11 +128,11 @@
                         <DataGrid Margin="0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
                                   FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True"
                                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                                  x:Name="dgvBoxScores" VerticalAlignment="Stretch">
+                                  x:Name="dgvBoxScores" VerticalAlignment="Stretch" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding RealDate, StringFormat=d}" Header="Date" />
-                                <DataGridTextColumn Binding="{Binding Team}" Header="Team" />
-                                <DataGridTextColumn Binding="{Binding OppTeam}" Header="Opponent" />
+                                <DataGridTextColumn Binding="{Binding DisplayTeam}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding DisplayOppTeam}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
                                 <DataGridTextColumn Binding="{Binding GmSc}" Header="GmSc" />
                                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />

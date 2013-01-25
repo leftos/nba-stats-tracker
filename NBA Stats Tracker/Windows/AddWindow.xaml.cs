@@ -77,7 +77,7 @@ namespace NBA_Stats_Tracker.Windows
                 int i = SQLiteIO.GetMaxPlayerID(MainWindow.currentDB);
                 foreach (Player p in Players)
                 {
-                    if (String.IsNullOrWhiteSpace(p.LastName) || String.IsNullOrWhiteSpace(p.Team))
+                    if (String.IsNullOrWhiteSpace(p.LastName) || p.Team == -1)
                     {
                         MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
                         return;

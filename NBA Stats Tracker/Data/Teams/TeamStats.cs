@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
@@ -59,6 +59,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// </summary>
         public TeamStats()
         {
+            ID = -1;
             prepareEmpty();
         }
 
@@ -66,10 +67,17 @@ namespace NBA_Stats_Tracker.Data.Teams
         ///     Initializes a new instance of the <see cref="TeamStats" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public TeamStats(string name) : this()
+        public TeamStats(int ID) : this()
         {
+            this.ID = ID;
+        }
+
+        public TeamStats(int ID, string name)
+            : this()
+        {
+            this.ID = ID;
             this.name = name;
-            displayName = name;
+            this.displayName = name;
         }
 
         public TeamStats(TeamStatsRow tsr, bool playoffs = false)
@@ -288,7 +296,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <returns></returns>
         public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, Span statRange)
         {
-            var ls = new TeamStats("League");
+            var ls = new TeamStats(-1, "League");
             uint teamCount = CountTeams(tst, statRange);
             for (int i = 0; i < tst.Count; i++)
             {
@@ -1067,12 +1075,12 @@ namespace NBA_Stats_Tracker.Data.Teams
         ///     Determines whether the team is hidden for the current season.
         /// </summary>
         /// <param name="file">The file.</param>
-        /// <param name="name">The name of the team.</param>
+        /// <param name="id">The name of the team.</param>
         /// <param name="season">The season ID.</param>
         /// <returns>
         ///     <c>true</c> if the team is hidden; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsTeamHiddenInSeason(string file, string name, int season)
+        public static bool IsTeamHiddenInSeason(string file, int id, int season)
         {
             var db = new SQLiteDatabase(file);
             int maxSeason = SQLiteIO.SQLiteIO.getMaxSeason(file);
@@ -1080,7 +1088,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             if (season != maxSeason)
                 teamsT += "S" + season;
 
-            string q = "select isHidden from " + teamsT + " where Name LIKE \"" + name + "\"";
+            string q = "select isHidden from " + teamsT + " where ID = " + id + "";
             bool isHidden = Tools.getBoolean(db.GetDataTable(q).Rows[0], "isHidden");
 
             return isHidden;
@@ -1111,10 +1119,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public static void AddTeamStatsFromBoxScore(TeamBoxScore bsToAdd, ref Dictionary<int, TeamStats> _tst,
                                                     ref Dictionary<int, TeamStats> _tstopp)
         {
-            int id1 = MainWindow.TeamOrder[bsToAdd.Team1];
-            int id2 = MainWindow.TeamOrder[bsToAdd.Team2];
-
-            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, id1, id2);
+            AddTeamStatsFromBoxScore(bsToAdd, ref _tst, ref _tstopp, bsToAdd.Team1ID, bsToAdd.Team2ID);
         }
 
         /// <summary>

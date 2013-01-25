@@ -1,4 +1,4 @@
-﻿namespace NBA_Stats_Tracker.Data.Misc
+﻿namespace NBA_Stats_Tracker.Data.Other
 {
     /// <summary>
     ///     Used to differentiate between available time-spans for stats.

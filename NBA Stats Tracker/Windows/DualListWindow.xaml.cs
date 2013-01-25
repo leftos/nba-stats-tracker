@@ -25,6 +25,7 @@ using System.Windows.Threading;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Helper.ListExtensions;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
 using SQLite_Database;
 
@@ -227,35 +228,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="displayName">The team's name.</param>
         /// <returns></returns>
-        private string GetCurTeamFromDisplayName(string displayName)
+        private int GetTeamIDFromDisplayName(string displayName)
         {
-            foreach (int key in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[key].displayName == displayName)
-                {
-                    return MainWindow.tst[key].name;
-                }
-            }
-            return "$$TEAMNOTFOUND: " + displayName;
+            return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
         }
-
-        /// <summary>
-        ///     Finds the specified team's displayName by its name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        private string GetDisplayNameFromTeam(string name)
-        {
-            foreach (int key in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[key].name == name)
-                {
-                    return MainWindow.tst[key].displayName;
-                }
-            }
-            return "$$TEAMNOTFOUND: " + name;
-        }
-
+        
         /// <summary>
         ///     Handles the Click event of the btnEnable control.
         ///     Adds one or more disabled items to the enabled list, and sorts.
@@ -379,8 +356,8 @@ namespace NBA_Stats_Tracker.Windows
 
                 foreach (string name in lstDisabled.Items)
                 {
-                    string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (T1Name LIKE \"" +
-                               GetCurTeamFromDisplayName(name) + "\" OR T2Name LIKE \"" + GetCurTeamFromDisplayName(name) + "\")";
+                    string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = " +
+                               GetTeamIDFromDisplayName(name) + " OR Team2ID = " + GetTeamIDFromDisplayName(name) + ")";
                     DataTable res = db.GetDataTable(q);
 
                     if (res.Rows.Count > 0)
@@ -484,13 +461,13 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (r == MessageBoxResult.Yes)
                 {
-                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
-                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
+                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
+                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
                 }
                 else
                 {
-                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[0].ToString())]);
-                    REDitor.pickedTeams.Add(MainWindow.TeamOrder[GetCurTeamFromDisplayName(lstEnabled.Items[1].ToString())]);
+                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
+                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
                 }
 
                 DialogResult = true;

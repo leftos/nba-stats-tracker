@@ -28,10 +28,11 @@ using System.Windows.Input;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
-using NBA_Stats_Tracker.Data.Misc;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Helper.EventHandlers;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 
 #endregion
 
@@ -188,33 +189,9 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
-        private string GetCurTeamFromDisplayName(string displayName)
+        private int GetTeamIDFromDisplayName(string displayName)
         {
-            foreach (int kvp in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[kvp].displayName == displayName)
-                {
-                    return MainWindow.tst[kvp].name;
-                }
-            }
-            return "$$TEAMNOTFOUND: " + displayName;
-        }
-
-        /// <summary>
-        ///     Finds a team's displayName by its name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        private string GetDisplayNameFromTeam(string name)
-        {
-            foreach (int kvp in MainWindow.tst.Keys)
-            {
-                if (MainWindow.tst[kvp].name == name)
-                {
-                    return MainWindow.tst[kvp].displayName;
-                }
-            }
-            return "$$TEAMNOTFOUND: " + name;
+            return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
         }
 
         /// <summary>
@@ -351,7 +328,7 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
                 chkIsActive.IsChecked.GetValueOrDefault() && cmbTeam.SelectedItem.ToString() != "- Any -")
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.TeamF == GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
+                filteredPST = filteredPST.Where(pair => pair.Value.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()));
             }
 
             var psrList = new List<PlayerStatsRow>();
@@ -898,7 +875,7 @@ namespace NBA_Stats_Tracker.Windows
                         break;
 
                     case "Team":
-                        cmbTeam.SelectedItem = GetDisplayNameFromTeam(parts[1]);
+                        cmbTeam.SelectedItem = MainWindow.tst[Convert.ToInt32(parts[1])].displayName;
                         break;
 
                     case "Season":
@@ -1000,7 +977,7 @@ namespace NBA_Stats_Tracker.Windows
             s += String.Format("AllStar\t{0}\n", chkIsAllStar.IsChecked.ToString());
             s += String.Format("Champion\t{0}\n", chkIsChampion.IsChecked.ToString());
             if (cmbTeam.SelectedItem != null)
-                s += String.Format("Team\t{0}\n", GetCurTeamFromDisplayName(cmbTeam.SelectedItem.ToString()));
+                s += String.Format("Team\t{0}\n", GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()));
             s += String.Format("Season\t{0}\n", curSeason);
             s += String.Format("Totals\n");
             foreach (string item in lstTotals.Items.Cast<string>())

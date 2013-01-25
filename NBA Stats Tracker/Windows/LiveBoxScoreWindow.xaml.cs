@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,6 +16,7 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
+using SQLite_Database;
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -127,12 +129,12 @@ namespace NBA_Stats_Tracker.Windows
         private void UpdateDataGrid(int team)
         {
             SortableBindingList<LivePlayerBoxScore> pbsList;
-            string TeamName;
+            int teamID;
             if (team == 1)
             {
                 try
                 {
-                    TeamName = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
                     pbsList = pbsAwayList;
                 }
                 catch (Exception)
@@ -144,7 +146,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    TeamName = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
                     pbsList = pbsHomeList;
                 }
                 catch (Exception)
@@ -154,7 +156,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             ObservableCollection<KeyValuePair<int, string>> PlayersList;
-            EventHandlers.UpdateBoxScoreDataGrid(TeamName, out PlayersList, ref pbsList, playersT, false);
+            UpdateLiveBoxScoreDataGrid(teamID, out PlayersList, ref pbsList, playersT, false);
 
             if (team == 1)
             {
@@ -377,8 +379,8 @@ namespace NBA_Stats_Tracker.Windows
                 bs.FOUL2 += pbs.FOUL;
             }
 
-            bs.Team1 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-            bs.Team2 = Misc.GetCurTeamFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+            bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+            bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
 
             bs.gamedate = DateTime.Today;
             bs.SeasonNum = MainWindow.curSeason;
@@ -388,13 +390,13 @@ namespace NBA_Stats_Tracker.Windows
             foreach (LivePlayerBoxScore lpbs in pbsAwayList)
             {
                 var pbs = new PlayerBoxScore(lpbs);
-                pbs.Team = bs.Team1;
+                pbs.TeamID = bs.Team1ID;
                 bse.pbsList.Add(pbs);
             }
             foreach (LivePlayerBoxScore lpbs in pbsHomeList)
             {
                 var pbs = new PlayerBoxScore(lpbs);
-                pbs.Team = bs.Team2;
+                pbs.TeamID = bs.Team2ID;
                 bse.pbsList.Add(pbs);
             }
 
@@ -560,5 +562,56 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         #endregion
+
+        /// <summary>
+        ///     Updates the live box score data grid.
+        /// </summary>
+        /// <param name="TeamID">Name of the team.</param>
+        /// <param name="PlayersList">The players list.</param>
+        /// <param name="pbsList">The player box score list.</param>
+        /// <param name="playersT">The players' SQLite table name.</param>
+        /// <param name="loading">
+        ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
+        /// </param>
+        private static void UpdateLiveBoxScoreDataGrid(int TeamID, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+                                                      ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
+        {
+            var db = new SQLiteDatabase(MainWindow.currentDB);
+            string q = "select * from " + playersT + " where TeamFin = \"" + TeamID + "\"";
+            q += " ORDER BY LastName ASC";
+            DataTable res = db.GetDataTable(q);
+
+            PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
+            if (!loading)
+                pbsList = new SortableBindingList<LivePlayerBoxScore>();
+
+            foreach (DataRow r in res.Rows)
+            {
+                var ps = new PlayerStats(r, MainWindow.tst);
+                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+            }
+
+            for (int i = 0; i < pbsList.Count; i++)
+            {
+                LivePlayerBoxScore cur = pbsList[i];
+                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                var player = new KeyValuePair<int, string>(cur.PlayerID, name);
+                cur.Name = name;
+                if (!PlayersList.Contains(player))
+                {
+                    PlayersList.Add(player);
+                }
+                pbsList[i] = cur;
+            }
+            PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
+
+            if (!loading)
+            {
+                foreach (var p in PlayersList)
+                {
+                    pbsList.Add(new LivePlayerBoxScore {PlayerID = p.Key});
+                }
+            }
+        }
     }
 }

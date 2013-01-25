@@ -29,17 +29,10 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     /// </summary>
     public static class Misc
     {
-        /// <summary>
-        ///     Finds a team's name based on its displayName.
-        /// </summary>
-        /// <param name="teamStats">The team stats dictionary..</param>
-        /// <param name="displayName">The display name.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Requested team that is hidden.</exception>
-        public static string GetCurTeamFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
+        public static int GetTeamIDFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
         {
             if (displayName == "- Inactive -")
-                return displayName;
+                return -1;
             for (int i = 0; i < MainWindow.tst.Count; i++)
             {
                 if (teamStats[i].displayName == displayName)
@@ -47,35 +40,12 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     if (teamStats[i].isHidden)
                         throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
 
-                    return teamStats[i].name;
+                    return teamStats[i].ID;
                 }
             }
             throw new Exception("Team not found: " + displayName);
         }
-
-        /// <summary>
-        ///     Finds a team's display name from its name.
-        /// </summary>
-        /// <param name="teamStats">The team stats dictionary.</param>
-        /// <param name="name">The display name.</param>
-        /// <exception cref="System.Exception">Requested team that is hidden.</exception>
-        public static string GetDisplayNameFromTeam(Dictionary<int, TeamStats> teamStats, string name)
-        {
-            if (name == "- Inactive -")
-                return name;
-            for (int i = 0; i < teamStats.Count; i++)
-            {
-                if (teamStats[i].name == name)
-                {
-                    if (teamStats[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
-
-                    return teamStats[i].displayName;
-                }
-            }
-            throw new Exception("Team not found: " + name);
-        }
-
+        
         /// <summary>
         ///     Loads an image into a BitmapImage object.
         /// </summary>

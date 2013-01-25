@@ -334,9 +334,9 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             get { return PlayerStats.PositionToString(Position2); }
         }
-        public string TeamF { get; set; }
+        public int TeamF { get; set; }
         public string TeamFDisplay { get; set; }
-        public string TeamS { get; set; }
+        public int TeamS { get; set; }
         public bool isActive { get; set; }
         public bool isHidden { get; set; }
         public bool isAllStar { get; set; }
@@ -517,7 +517,7 @@ namespace NBA_Stats_Tracker.Data.Players
             uint tGP = 0;
             try
             {
-                team = MainWindow.tst.Single(ts => ts.Value.name == TeamF).Value;
+                team = MainWindow.tst.Single(ts => ts.Value.ID == TeamF).Value;
                 tGP = playoffs ? team.getPlayoffGames() : team.getGames();
             }
             catch (InvalidOperationException)
@@ -676,58 +676,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            if (position.ToString().EndsWith("G"))
-            {
-                fgfactor = 0.4871;
-                tpfactor = 0.39302;
-                ftfactor = 0.86278;
-                orebfactor = 1.242;
-                rebfactor = 4.153;
-                astfactor = 6.324;
-                stlfactor = 1.619;
-                blkfactor = 0.424;
-                ptsfactor = 17.16;
-                ftrfactor = 0.271417;
-            }
-            else if (position.ToString().EndsWith("F"))
-            {
-                fgfactor = 0.52792;
-                tpfactor = 0.38034;
-                ftfactor = 0.82656;
-                orebfactor = 2.671;
-                rebfactor = 8.145;
-                astfactor = 3.037;
-                stlfactor = 1.209;
-                blkfactor = 1.24;
-                ptsfactor = 17.731;
-                ftrfactor = 0.307167;
-            }
-            else if (position.ToString().EndsWith("C"))
-            {
-                fgfactor = 0.52862;
-                tpfactor = 0.23014;
-                ftfactor = 0.75321;
-                orebfactor = 2.328;
-                rebfactor = 7.431;
-                astfactor = 1.688;
-                stlfactor = 0.68;
-                blkfactor = 1.536;
-                ptsfactor = 11.616;
-                ftrfactor = 0.302868;
-            }
-            else
-            {
-                fgfactor = 0.51454;
-                tpfactor = 0.3345;
-                ftfactor = 0.81418;
-                orebfactor = 2.0803;
-                rebfactor = 6.5763;
-                astfactor = 3.683;
-                stlfactor = 1.1693;
-                blkfactor = 1.0667;
-                ptsfactor = 15.5023;
-                ftrfactor = 0.385722;
-            }
+            PlayerBoxScore.GetFactors(position, out fgfactor, out tpfactor, out ftfactor, out orebfactor, out rebfactor, out astfactor,
+                                      out stlfactor, out blkfactor, out ptsfactor, out ftrfactor);
 
             if (FGM/GP > 4)
             {
@@ -741,7 +691,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("tpn", tpn);
 
-            if (FTM/GP > 4)
+            if (FTM/GP > 3)
             {
                 ftn = FTp/ftfactor;
             }
@@ -1202,8 +1152,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public PlayerStatsRow ConvertToMyLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            string team = TeamF;
-            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
+            TeamStats ts = teamStats[TeamF];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayer = GP;
             PlayerStatsRow newpsr = this.DeepClone();
@@ -1246,8 +1195,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns></returns>
         public PlayerStatsRow ConvertToLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            string team = TeamF;
-            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
+            TeamStats ts = teamStats[TeamF];
             uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
             uint gamesPlayer = GP;
             PlayerStatsRow newpsr = this.DeepClone();

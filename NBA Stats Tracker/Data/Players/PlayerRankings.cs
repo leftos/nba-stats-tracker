@@ -9,7 +9,7 @@ namespace NBA_Stats_Tracker.Data.Players
     /// </summary>
     public class PlayerRankings
     {
-        public int avgcount = (new PlayerStats(new Player(-1, "", "", "", Position.None, Position.None))).averages.Length;
+        public int avgcount = (new PlayerStats(new Player(-1, -1, "", "", Position.None, Position.None))).averages.Length;
         public Dictionary<int, Dictionary<string, int>> rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
 
         public Dictionary<int, int[]> rankingsPerGame = new Dictionary<int, int[]>();
