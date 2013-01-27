@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.6.0.1
+		- Fix: Fixed Injured checkbox behavior in Player Overview when the user clicks Cancel in the Player Injury window
+
 	v1.6
 		- Addition: Added detailed injuries information; you can now set injury type (including custom injury names other than the ones included by default), and an exact or approximate return timeframe
 

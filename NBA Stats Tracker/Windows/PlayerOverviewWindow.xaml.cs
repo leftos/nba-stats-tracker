@@ -2208,6 +2208,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void chkIsInjured_Click(object sender, RoutedEventArgs e)
         {
+            chkIsInjured.IsChecked = psr.IsInjured;
             var piw = new PlayerInjuryWindow(psr.Injury);
             if (piw.ShowDialog() == true)
             {
