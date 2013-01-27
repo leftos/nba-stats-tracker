@@ -2216,6 +2216,7 @@ namespace NBA_Stats_Tracker.Windows
                                     ? new PlayerInjury(PlayerInjuryWindow.InjuryType, PlayerInjuryWindow.InjuryDaysLeft)
                                     : new PlayerInjury(PlayerInjuryWindow.CustomInjuryName, PlayerInjuryWindow.InjuryDaysLeft);
             }
+            chkIsInjured.IsChecked = psr.IsInjured;
         }
     }
 }

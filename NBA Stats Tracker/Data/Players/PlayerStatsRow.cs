@@ -377,6 +377,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 OnPropertyChanged("InjuryApproxDaysLeft");
                 OnPropertyChanged("InjuryDaysLeft");
                 OnPropertyChanged("InjuryStatus");
+                OnPropertyChanged("IsInjured");
             }
         }
 
