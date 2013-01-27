@@ -964,6 +964,23 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                              curPlayer.Contract.GetYears(), curPlayer.Contract.GetTotal(), curPlayer.Contract.GetAverage());
                         importMessages.Add(msg);
                     }
+
+                    if (oldPlayer.Injury.InjuryName != curPlayer.Injury.InjuryName)
+                    {
+                        if (!oldPlayer.Injury.IsInjured)
+                        {
+                            importMessages.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
+                        }
+                        else if (!curPlayer.Injury.IsInjured)
+                        {
+                            importMessages.Add(name + " is no longer injured.");
+                        }
+                        else
+                        {
+                            importMessages.Add(name + " was injured with " + oldPlayer.Injury.InjuryName +
+                                               ", is now injured again. Status: " + curPlayer.Injury.Status);
+                        }
+                    }
                 }
             }
 
@@ -1046,7 +1063,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 importMessages.Add("");
                 CopyableMessageWindow cmw = new CopyableMessageWindow(importMessages.Aggregate((m1, m2) => m1 + "\n" + m2),
-                                                                      "League Transactions", TextAlignment.Left);
+                                                                      "League News", TextAlignment.Left);
                 cmw.ShowDialog();
             }
 

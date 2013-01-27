@@ -1,9 +1,12 @@
 NBA Stats Tracker - Version History
 
-	v1.6.0.1
+	v1.6.1 Beta
+		- Addition: User will be informed of updated injury statuses whenever importing using REDitor
+
+	v1.6.0.1 Beta
 		- Fix: Fixed Injured checkbox behavior in Player Overview when the user clicks Cancel in the Player Injury window
 
-	v1.6
+	v1.6 Beta
 		- Addition: Added detailed injuries information; you can now set injury type (including custom injury names other than the ones included by default), and an exact or approximate return timeframe
 
 	v1.5.1.3 Beta

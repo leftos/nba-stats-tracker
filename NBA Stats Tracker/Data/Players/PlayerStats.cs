@@ -1173,6 +1173,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             metrics.Clear();
 
+            Injury = new PlayerInjury();
+
             CalcAvg();
         }
 
