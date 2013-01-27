@@ -270,7 +270,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                             <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                            <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                            <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                             <DataGridTemplateColumn Header="PER" x:Name="dgvMetricAwayPERColumn" SortMemberPath="PER"
                                                     ClipboardContentBinding="{Binding PER}">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -636,7 +636,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                             <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                            <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                            <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                             <DataGridTemplateColumn Header="PER" x:Name="dgvMetricHomePERColumn" SortMemberPath="PER"
                                                     ClipboardContentBinding="{Binding PER}">
                                 <DataGridTemplateColumn.CellTemplate>

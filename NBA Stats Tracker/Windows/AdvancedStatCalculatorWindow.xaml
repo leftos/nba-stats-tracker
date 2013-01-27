@@ -111,7 +111,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                         <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                        <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                        <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                         <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                         <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
                         <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
@@ -568,7 +568,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                         <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                        <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                        <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                         <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                         <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
                         <DataGridTextColumn Binding="{Binding GP}" Header="GP" />

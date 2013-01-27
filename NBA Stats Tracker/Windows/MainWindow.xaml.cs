@@ -38,6 +38,7 @@ using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Players.Contracts;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
@@ -461,6 +462,8 @@ namespace NBA_Stats_Tracker.Windows
 
             txtFile.Text = ofd.FileName;
             currentDB = txtFile.Text;
+
+            ChangeSeason(SeasonList.First().Key);
 
             LoadRatingsCriteria();
             LoadMyLeadersCriteria();
@@ -1765,7 +1768,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    SQLiteIO.savePlayersToDatabase(currentDB, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
+                    SQLiteIO.SavePlayersToDatabase(currentDB, pst, curSeason, SQLiteIO.getMaxSeason(currentDB));
                     updateStatus("Players were added, database saved.");
                 }
             }
@@ -1845,6 +1848,7 @@ namespace NBA_Stats_Tracker.Windows
 
                     SQLiteIO.prepareNewDB(db, curSeason, curSeason, true);
                     db.Insert("SeasonNames", new Dictionary<string, string> {{"ID", curSeason.ToString()}, {"Name", seasonName}});
+                    SeasonList.Add(new KeyValuePair<int, string>(curSeason, seasonName));
 
                     foreach (int key in tst.Keys.ToList())
                     {
@@ -1906,8 +1910,8 @@ namespace NBA_Stats_Tracker.Windows
                         ps.Value.CalcAvg();
                     }
 
-                    SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
                     PopulateSeasonCombo();
+                    SQLiteIO.saveSeasonToDatabase(currentDB, tst, tstopp, pst, curSeason, curSeason);
                     ChangeSeason(curSeason);
                     tf = new Timeframe(curSeason);
                     UpdateAllData();

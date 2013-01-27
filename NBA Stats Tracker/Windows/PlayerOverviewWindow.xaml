@@ -42,7 +42,8 @@
                         <TextBlock Margin="0,11,8,0" HorizontalAlignment="Right" x:Name="txbID" Text="{Binding ID}"
                                    TextAlignment="Right" VerticalAlignment="Top" Visibility="Hidden" />
                         <CheckBox Height="16" Margin="6,44,0,0" Content="Injured" HorizontalAlignment="Left"
-                                  IsChecked="{Binding isInjured}" x:Name="chkIsInjured" VerticalAlignment="Top" />
+                                  IsChecked="{Binding IsInjured, Mode=OneWay}" ToolTip="{Binding InjuryStatus, Mode=OneWay}" x:Name="chkIsInjured" VerticalAlignment="Top" Click="chkIsInjured_Click" 
+                                   />
                         <CheckBox Height="16" Margin="0,44,6,0" Content="Active" HorizontalAlignment="Right"
                                   IsChecked="{Binding isActive}" x:Name="chkIsActive" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="73,44,0,0" Content="All-Star" HorizontalAlignment="Left"
@@ -408,7 +409,7 @@
                         <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                 			x:Name="dgvYearly"
                 			VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting"
-                			Margin="0,0,0,38">
+                			Margin="0,0,0,38" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                     <GroupStyle.Panel>
@@ -420,8 +421,8 @@
                             </DataGrid.GroupStyle>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Type}" Header="Type" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team at End" />
-                                <DataGridTextColumn Binding="{Binding TeamS}" Header="Team at Start" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team at End" />
+                                <DataGridTextColumn Binding="{Binding TeamSDisplay}" Header="Team at Start" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />

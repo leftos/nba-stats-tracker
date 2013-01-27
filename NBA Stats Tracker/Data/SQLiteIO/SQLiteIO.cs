@@ -176,7 +176,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #region Save Player Stats
 
-            savePlayersToDatabase(file, pstToSave, season, maxSeason, partialUpdate);
+            SavePlayersToDatabase(file, pstToSave, season, maxSeason, partialUpdate);
 
             #endregion
 
@@ -610,7 +610,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="partialUpdate">
         ///     if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current data).
         /// </param>
-        public static void savePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason,
+        public static void SavePlayersToDatabase(string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason,
                                                  bool partialUpdate = false)
         {
             var _db = new SQLiteDatabase(file);
@@ -660,7 +660,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"YearOfBirth", ps.YearOfBirth.ToString()},
                                {"YearsPro", ps.YearsPro.ToString()},
                                {"isHidden", ps.isHidden.ToString()},
-                               {"isInjured", ps.isInjured.ToString()},
+                               {"InjuryType", ps.Injury.InjuryType.ToString()},
+                               {"CustomInjuryName", ps.Injury.CustomInjuryName},
+                               {"InjuryDaysLeft", ps.Injury.InjuryDaysLeft.ToString()},
                                {"TeamFin", ps.TeamF.ToString()},
                                {"TeamSta", ps.TeamS.ToString()},
                                {"GP", ps.stats[p.GP].ToString()},
@@ -820,8 +822,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                {"SeasonName", pps.SeasonName},
                                {"SOrder", pps.Order.ToString()},
                                {"isPlayoff", pps.isPlayoff.ToString()},
-                               {"TeamFin", pps.TeamF},
-                               {"TeamSta", pps.TeamS},
+                               {"TeamFin", pps.TeamFName},
+                               {"TeamSta", pps.TeamSName},
                                {"GP", pps.GP.ToString()},
                                {"GS", pps.GS.ToString()},
                                {"MINS", pps.MINS.ToString()},
@@ -950,7 +952,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 db.ExecuteNonQuery(qr);
                 qr =
                     string.Format(
-                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""isInjured"" TEXT,""TeamFin"" INTEGER,""TeamSta"" INTEGER,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT, ""ContractY1"" INTEGER, ""ContractY2"" INTEGER, ""ContractY3"" INTEGER, ""ContractY4"" INTEGER, ""ContractY5"" INTEGER, ""ContractY6"" INTEGER, ""ContractY7"" INTEGER, ""ContractOption"" TEXT, ""Height"" REAL, ""Weight"" REAL)",
+                        @"CREATE TABLE ""{0}"" (""ID"" INTEGER PRIMARY KEY NOT NULL ,""LastName"" TEXT NOT NULL ,""FirstName"" TEXT NOT NULL ,""Position1"" TEXT,""Position2"" TEXT,""isActive"" TEXT,""YearOfBirth"" INTEGER,""YearsPro"" INTEGER, ""isHidden"" TEXT,""InjuryType"" INTEGER, ""CustomInjuryName"" TEXT, ""InjuryDaysLeft"" INTEGER,""TeamFin"" INTEGER,""TeamSta"" INTEGER,""GP"" INTEGER,""GS"" INTEGER,""MINS"" INTEGER NOT NULL DEFAULT (0) ,""PTS"" INTEGER NOT NULL ,""FGM"" INTEGER NOT NULL ,""FGA"" INTEGER NOT NULL ,""TPM"" INTEGER NOT NULL ,""TPA"" INTEGER NOT NULL ,""FTM"" INTEGER NOT NULL ,""FTA"" INTEGER NOT NULL ,""OREB"" INTEGER NOT NULL ,""DREB"" INTEGER NOT NULL ,""STL"" INTEGER NOT NULL ,""TOS"" INTEGER NOT NULL ,""BLK"" INTEGER NOT NULL ,""AST"" INTEGER NOT NULL ,""FOUL"" INTEGER NOT NULL ,""isAllStar"" TEXT,""isNBAChampion"" TEXT, ""ContractY1"" INTEGER, ""ContractY2"" INTEGER, ""ContractY3"" INTEGER, ""ContractY4"" INTEGER, ""ContractY5"" INTEGER, ""ContractY6"" INTEGER, ""ContractY7"" INTEGER, ""ContractOption"" TEXT, ""Height"" REAL, ""Weight"" REAL)",
                         playersT);
                 db.ExecuteNonQuery(qr);
 
@@ -1197,7 +1199,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
             else
             {
-                q = "select * from OpponentsS" + season.ToString() + " where where ID = " + teamID;
+                q = "select * from OpponentsS" + season.ToString() + " where ID = " + teamID;
             }
 
             res = _db.GetDataTable(q);
@@ -1407,9 +1409,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                        out MainWindow.SeasonPlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
                        out MainWindow.DisplayNames, season == 0 ? MainWindow.curSeason : season, doNotLoadBoxScores);
         }
-
-        private static bool teamsByName = false;
-
+        
         /// <summary>
         ///     Loads a specific season from the specified database.
         /// </summary>
@@ -1434,7 +1434,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             MainWindow.loadingSeason = true;
 
             bool mustSave = false;
-            teamsByName = false;
             if (!upgrading)
             {
                 mustSave = CheckIfDBNeedsUpgrade(file);
@@ -1634,10 +1633,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         {
                             mustSave = true;
                         }
-                        else if (dr["sql"].ToString().Contains("\"Team\""))
-                        {
-                            teamsByName = true;
-                        }
                         break;
                     }
                 }
@@ -1691,6 +1686,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                             mustSave = true;
                         }
                         else if (dr["sql"].ToString().Contains("\"TeamFin\" TEXT"))
+                        {
+                            mustSave = true;
+                        }
+                        else if (dr["sql"].ToString().Contains("\"isInjured\""))
                         {
                             mustSave = true;
                         }
@@ -1904,11 +1903,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return DisplayNames;
         }
 
-        private static Dictionary<int, string> GetTimeframedDisplayNames(string file, DateTime startDate, DateTime endDate)
+        public static Dictionary<int, string> GetTimeframedDisplayNames(string file, DateTime startDate, DateTime endDate)
         {
             var DisplayNames = new Dictionary<int, string>();
 
             List<int> seasons = GetSeasonsInTimeframe(startDate, endDate);
+            seasons.Reverse();
 
             foreach (int i in seasons)
             {
@@ -1936,7 +1936,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return seasons;
         }
 
-        private static void GetSeasonDisplayNames(string file, int curSeason, ref Dictionary<int, string> DisplayNames)
+        public static void GetSeasonDisplayNames(string file, int curSeason, ref Dictionary<int, string> DisplayNames)
         {
             string teamsT = "Teams";
             if (curSeason != getMaxSeason(file))
@@ -1954,8 +1954,19 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 foreach (DataRow r in res.Rows)
                 {
-                    if (!DisplayNames.Keys.Contains(Convert.ToInt32(r["ID"].ToString())))
-                        DisplayNames.Add(Convert.ToInt32(r["ID"].ToString()), r["DisplayName"].ToString());
+                    var id = Convert.ToInt32(r["ID"].ToString());
+                    var displayName = r["DisplayName"].ToString();
+                    if (!DisplayNames.Keys.Contains(id))
+                    {
+                        DisplayNames.Add(id, displayName);
+                    }
+                    else
+                    {
+                        var cur = DisplayNames[id];
+                        var parts = cur.Split(new[] {", "}, StringSplitOptions.None);
+                        if (!parts.Contains(displayName))
+                            DisplayNames[id] += ", " + displayName;
+                    }
                 }
             }
             catch
@@ -1965,8 +1976,19 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 foreach (DataRow r in res.Rows)
                 {
-                    if (!DisplayNames.Keys.Contains(Convert.ToInt32(r["ID"].ToString())))
-                        DisplayNames.Add(Convert.ToInt32(r["ID"].ToString()), r["Name"].ToString());
+                    var id = Convert.ToInt32(r["ID"].ToString());
+                    var displayName = r["Name"].ToString();
+                    if (!DisplayNames.Keys.Contains(id))
+                    {
+                        DisplayNames.Add(id, displayName);
+                    }
+                    else
+                    {
+                        var cur = DisplayNames[id];
+                        var parts = cur.Split(new[] { "/" }, StringSplitOptions.None);
+                        if (!parts.Contains(displayName))
+                            DisplayNames[id] += "/" + displayName;
+                    }
                 }
             }
         }
@@ -2178,6 +2200,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         public static int GetFreeID(string dbFile, string table, string columnName = "ID", List<int> used = null)
         {
             var db = new SQLiteDatabase(dbFile);
+            if (used == null)
+                used = new List<int>();
 
             string q = "select " + columnName + " from " + table + " ORDER BY " + columnName + " ASC;";
             DataTable res = db.GetDataTable(q);
@@ -2292,6 +2316,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     }
                 }
             }
+
+            DisplayNames.Add(-1, "");
 
             RepairDB(ref pst);
 

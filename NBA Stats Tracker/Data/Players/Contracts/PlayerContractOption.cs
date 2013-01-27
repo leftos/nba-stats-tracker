@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NBA_Stats_Tracker.Data.Players
+namespace NBA_Stats_Tracker.Data.Players.Contracts
 {
     [Serializable]
     public enum PlayerContractOption : byte

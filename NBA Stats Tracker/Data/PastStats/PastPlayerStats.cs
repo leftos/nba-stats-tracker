@@ -35,8 +35,8 @@ namespace NBA_Stats_Tracker.Data.PastStats
             SeasonName = Tools.getString(dr, "SeasonName");
             Order = Tools.getInt(dr, "SOrder");
             isPlayoff = Tools.getBoolean(dr, "isPlayoff");
-            TeamF = Tools.getString(dr, "TeamFin");
-            TeamS = Tools.getString(dr, "TeamSta");
+            TeamFName = Tools.getString(dr, "TeamFin");
+            TeamSName = Tools.getString(dr, "TeamSta");
             ID = Tools.getInt(dr, "ID");
         }
 
@@ -45,8 +45,8 @@ namespace NBA_Stats_Tracker.Data.PastStats
         public string SeasonName { get; set; }
         public int Order { get; set; }
         public bool isPlayoff { get; set; }
-        public string TeamF { get; set; }
-        public string TeamS { get; set; }
+        public string TeamFName { get; set; }
+        public string TeamSName { get; set; }
         public uint GP { get; set; }
         public uint GS { get; set; }
         public uint MINS { get; set; }

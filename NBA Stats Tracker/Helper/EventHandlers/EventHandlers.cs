@@ -20,9 +20,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
 
@@ -126,10 +128,36 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         /// <param name="e">
         ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
         /// </param>
-        public static void StatColumn_Sorting(DataGridSortingEventArgs e)
+        public static void StatColumn_Sorting(DataGrid sender, DataGridSortingEventArgs e)
         {
-            var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team"};
-            if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
+            var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team", "Returns", "Injury"};
+            if (e.Column.Header.ToString() == "Returns")
+            {
+                e.Handled = true;
+
+                e.Column.SortDirection = (e.Column.SortDirection != ListSortDirection.Ascending)
+                                             ? ListSortDirection.Ascending
+                                             : ListSortDirection.Descending;
+
+                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
+                                     ? new PlayerInjuryDaysComparer()
+                                     : new PlayerInjuryDaysComparerDesc();
+            }
+            else if (e.Column.Header.ToString() == "Injury")
+            {
+                e.Handled = true;
+
+                e.Column.SortDirection = (e.Column.SortDirection != ListSortDirection.Ascending)
+                                             ? ListSortDirection.Ascending
+                                             : ListSortDirection.Descending;
+
+                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
+                                     ? new PlayerInjuryNameComparer()
+                                     : new PlayerInjuryNameComparerDesc();
+            }
+            else if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
             {
                 if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false)
                     e.Column.SortDirection = ListSortDirection.Ascending;

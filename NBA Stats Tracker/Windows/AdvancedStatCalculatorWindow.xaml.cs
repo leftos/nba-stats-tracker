@@ -29,7 +29,7 @@ namespace NBA_Stats_Tracker.Windows
         };
 
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
-        private readonly List<string> Positions = new List<string> {"Any", " ", "PG", "SG", "SF", "PF", "C"};
+        private readonly List<string> Positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
 
         private readonly List<string> Totals = new List<string>
                                                {
@@ -554,12 +554,12 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dgvTeamStats_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
         private void dgvPlayerStats_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)

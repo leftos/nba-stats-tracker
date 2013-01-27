@@ -57,7 +57,7 @@
                                 <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
                                 <DataGridTextColumn Binding="{Binding DisplayHeight}" Header="Height" />
                                 <DataGridTextColumn Binding="{Binding DisplayWeight}" Header="Weight" />
-                                <DataGridCheckBoxColumn Binding="{Binding isInjured}" Header="Injured" />
+                                <DataGridTextColumn Binding="{Binding InjuryStatus, Mode=OneWay}" Header="Injury" />
                                 <DataGridTextColumn Binding="{Binding YearsPro}" Header="Years Pro" />
                                 <DataGridTextColumn Binding="{Binding YearOfBirth}" Header="Year of Birth" />
                                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
@@ -143,7 +143,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" Visibility="Collapsed" />
                                 <DataGridTemplateColumn Header="PER" x:Name="dgvMetricStatsPERColumn"
                                                         SortMemberPath="PER"
                                                         ClipboardContentBinding="{Binding PER}">
@@ -542,7 +542,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" Visibility="Collapsed" />
                                 <DataGridTemplateColumn Header="PER" x:Name="dgvPlayoffMetricStatsPERColumn"
                                                         SortMemberPath="PER" ClipboardContentBinding="{Binding PER}">
                                     <DataGridTemplateColumn.CellTemplate>

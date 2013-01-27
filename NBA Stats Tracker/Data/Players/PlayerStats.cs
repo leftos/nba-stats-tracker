@@ -8,6 +8,8 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
+using NBA_Stats_Tracker.Data.Players.Contracts;
+using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
@@ -35,7 +37,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool isActive;
         public bool isAllStar;
         public bool isHidden;
-        public bool isInjured;
+        public PlayerInjury Injury;
         public bool isNBAChampion;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
         public float[] pl_averages = new float[16];
@@ -77,7 +79,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Contract = new PlayerContract();
             isActive = false;
             isHidden = false;
-            isInjured = false;
+            Injury = new PlayerInjury();
             isAllStar = false;
             isNBAChampion = false;
             YearOfBirth = 0;
@@ -196,7 +198,19 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 //
 
-                isInjured = Tools.getBoolean(dataRow, "isInjured");
+                try
+                {
+                    var injType = Tools.getInt(dataRow, "InjuryType");
+                    var days = Tools.getInt(dataRow, "InjuryDaysLeft");
+                    Injury = injType != -1
+                                 ? new PlayerInjury(injType, days)
+                                 : new PlayerInjury(Tools.getString(dataRow, "CustomInjuryName"), days);
+                }
+                catch
+                {
+                    Injury = Tools.getBoolean(dataRow, "isInjured") ? new PlayerInjury("Unknown", -1) : new PlayerInjury();
+                }
+
                 isAllStar = Tools.getBoolean(dataRow, "isAllStar");
                 isNBAChampion = Tools.getBoolean(dataRow, "isNBAChampion");
                 Contract = new PlayerContract();
@@ -270,7 +284,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     if set to <c>true</c> the row is assumed to contain playoff stats.
         /// </param>
         public PlayerStats(int ID, string LastName, string FirstName, Position Position1, Position Position2, int YearOfBirth, int YearsPro,
-                           int TeamF, int TeamS, bool isActive, bool isHidden, bool isInjured, bool isAllStar, bool isNBAChampion,
+                           int TeamF, int TeamS, bool isActive, bool isHidden, PlayerInjury injury, bool isAllStar, bool isNBAChampion,
                            DataRow dataRow, bool playoffs = false) : this()
         {
             this.ID = ID;
@@ -285,7 +299,7 @@ namespace NBA_Stats_Tracker.Data.Players
             this.isActive = isActive;
             this.isHidden = isHidden;
             this.isAllStar = isAllStar;
-            this.isInjured = isInjured;
+            this.Injury = injury;
             this.isNBAChampion = isNBAChampion;
 
             try
@@ -470,7 +484,10 @@ namespace NBA_Stats_Tracker.Data.Players
             isActive = playerStatsRow.isActive;
             isHidden = playerStatsRow.isHidden;
             isAllStar = playerStatsRow.isAllStar;
-            isInjured = playerStatsRow.isInjured;
+            Injury = PlayerInjury.InjuryTypes.ContainsValue(playerStatsRow.InjuryName)
+                         ? new PlayerInjury(PlayerInjury.InjuryTypes.Single(pi => pi.Value == playerStatsRow.InjuryName).Key,
+                                            playerStatsRow.InjuryDaysLeft)
+                         : new PlayerInjury(playerStatsRow.InjuryName, playerStatsRow.InjuryDaysLeft);
             isNBAChampion = playerStatsRow.isNBAChampion;
 
             Contract.Option = playerStatsRow.ContractOption;

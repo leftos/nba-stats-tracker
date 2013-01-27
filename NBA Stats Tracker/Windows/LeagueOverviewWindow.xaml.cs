@@ -1400,7 +1400,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
         /// <summary>

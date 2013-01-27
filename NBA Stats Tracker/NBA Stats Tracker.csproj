@@ -80,10 +80,15 @@
     <Compile Include="Data\Other\Span.cs" />
     <Compile Include="Data\Other\Timeframe.cs" />
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
+    <Compile Include="Data\Players\Contracts\PlayerContract.cs" />
+    <Compile Include="Data\Players\Contracts\PlayerContractOption.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparer.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjury.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparer.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerDesc.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerDesc.cs" />
     <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
     <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
-    <Compile Include="Data\Players\PlayerContract.cs" />
-    <Compile Include="Data\Players\PlayerContractOption.cs" />
     <Compile Include="Data\Players\PlayerHighsRow.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
     <Compile Include="Data\Players\p.cs" />
@@ -132,6 +137,9 @@
     </Compile>
     <Compile Include="Windows\ConferenceEditWindow.xaml.cs">
       <DependentUpon>ConferenceEditWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\PlayerInjuryWindow.xaml.cs">
+      <DependentUpon>PlayerInjuryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\CopyableMessageWindow.xaml.cs">
       <DependentUpon>CopyableMessageWindow.xaml</DependentUpon>
@@ -208,6 +216,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\ConferenceEditWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\PlayerInjuryWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

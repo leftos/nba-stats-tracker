@@ -1259,7 +1259,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
                                 <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
@@ -1293,7 +1293,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
                                 <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
@@ -1316,7 +1316,7 @@
                         	Click="btnSetMyLeadersCriteria_Click" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="Player Contracts" Name="tabContracts">
+                <TabItem Header="Injuries &amp; Contracts" Name="tabContracts">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
@@ -1326,12 +1326,17 @@
                                   Margin="6" Name="dgvContracts"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   AlternatingRowBackground="#FFE5E5E5" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting">
+                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting"
+                                  d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
+                                <DataGridTextColumn Header="Health" />
+                                <DataGridTextColumn Binding="{Binding InjuryName, Mode=OneWay}" Header="Injury" />
+                                <DataGridTextColumn Binding="{Binding InjuryApproxDaysLeft, Mode=OneWay}" Header="Returns" />
+                                <DataGridTextColumn Header="Contract" />
                                 <DataGridComboBoxColumn SelectedValueBinding="{Binding ContractOption, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource OptionsList}}" Header="Option"/>
                                 <DataGridTextColumn Binding="{Binding ContractY1, StringFormat=C0}" Header="Year 1" />
                                 <DataGridTextColumn Binding="{Binding ContractY2, StringFormat=C0}" Header="Year 2" />
@@ -1367,7 +1372,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
@@ -1421,7 +1426,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
@@ -1488,7 +1493,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTemplateColumn Header="PER" x:Name="dgvMetricStatsPERColumn"
                                                         SortMemberPath="PER" ClipboardContentBinding="{Binding PER}">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -1825,7 +1830,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTemplateColumn x:Name="dgvLeagueMetricStatsPERColumn"
                                                         ClipboardContentBinding="{Binding PER}" Header="PER"
                                                         SortMemberPath="PER">
@@ -2255,7 +2260,7 @@
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
                                 <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
-                                <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
                                 <DataGridTextColumn Header="RatingsStart" Visibility="Collapsed" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NBA_Stats_Tracker.Data.Players
+namespace NBA_Stats_Tracker.Data.Players.Contracts
 {
     [Serializable]
     public class PlayerContract
@@ -33,7 +33,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public new string ToString()
         {
-            return string.Format("{0} year contract, {1} total, {2:0,0} per year on average", GetYears(), GetTotal(), GetAverage());
+            return string.Format("{0} year contract, {1:C} total, {2:C} per year on average", GetYears(), GetTotal(), GetAverage());
         }
 
         public int TryGetSalary(int year)

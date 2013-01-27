@@ -26,6 +26,8 @@ using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.PastStats;
 using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Players.Contracts;
+using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
@@ -408,15 +410,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                      {
                                          if (teamID1 != "-1")
                                          {
-                                             prevStats.TeamF = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                             prevStats.TeamFName = teams.Single(team => team["ID"] == teamID1)["Name"];
                                          }
                                      }
                                      else
                                      {
-                                         prevStats.TeamF = teams.Single(team => team["ID"] == teamID2)["Name"];
+                                         prevStats.TeamFName = teams.Single(team => team["ID"] == teamID2)["Name"];
                                          if (teamID1 != "-1")
                                          {
-                                             prevStats.TeamS = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                             prevStats.TeamSName = teams.Single(team => team["ID"] == teamID1)["Name"];
                                          }
                                      }
                                      prevStats.GP = Convert.ToUInt16(plStats["GamesP"]);
@@ -564,16 +566,21 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     if (TeamOrder.Values.Contains(REDid))
                     {
-                        tst[REDid].displayName = name;
+                        TeamOrder.Remove(TeamOrder.Single(to => to.Value == REDid).Key);
+                        var oldName = tst[REDid].name;
+                        tst[REDid].name = name;
+                        tstopp[REDid].name = name;
+                        if (oldName == tst[REDid].displayName)
+                        {
+                            tst[REDid].displayName = name;
+                            tstopp[REDid].displayName = name;
+                        }
                     }
                     TeamOrder.Add(name, REDid);
                 }
                 else
                 {
-                    if (TeamOrder[name] != REDid)
-                    {
-                        TeamOrder[name] = REDid;
-                    }
+                    TeamOrder[name] = REDid;
                 }
                 int id = TeamOrder[name];
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
@@ -852,6 +859,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     }
                     curPlayer.height = Convert.ToDouble(player["Height"]);
                     curPlayer.weight = Convert.ToDouble(player["Weight"]);
+                    curPlayer.Injury = new PlayerInjury(Convert.ToInt32(player["InjType"]), Convert.ToInt32(player["InjDaysLeft"]));
 
                     if (plStats != null)
                     {
@@ -901,7 +909,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.isAllStar = Convert.ToBoolean(Convert.ToInt32(plStats["IsAStar"]));
                         ps.isNBAChampion = Convert.ToBoolean(Convert.ToInt32(plStats["IsChamp"]));
 
-                        ps.isInjured = player["InjType"] != "0";
+                        ps.Injury = new PlayerInjury(Convert.ToInt32(player["InjType"]), Convert.ToInt32(player["InjDaysLeft"]));
 
                         ps.CalcAvg();
 
@@ -914,7 +922,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.TeamF = pTeam;
 
                         ps.isActive = player["IsFA"] != "1";
-                        ps.isInjured = player["InjType"] != "0";
+                        ps.Injury = new PlayerInjury(Convert.ToInt32(player["InjType"]), Convert.ToInt32(player["InjDaysLeft"]));
 
                         ps.CalcAvg();
 
@@ -1400,7 +1408,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.isAllStar = Convert.ToBoolean(Convert.ToInt32(plStats["IsAStar"]));
                         ps.isNBAChampion = Convert.ToBoolean(Convert.ToInt32(plStats["IsChamp"]));
 
-                        ps.isInjured = player["InjType"] != "0";
+                        ps.Injury = new PlayerInjury(Convert.ToInt32(player["InjType"]), Convert.ToInt32(player["InjDaysLeft"]));
 
                         ps.CalcAvg();
 
@@ -1473,7 +1481,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             pst.Add(playerID,
                     new PlayerStats(new Player
                                     {
-                                        ID = Convert.ToInt32(player["ID"]),
+                                        ID = playerID,
                                         FirstName = player["First_Name"],
                                         LastName = player["Last_Name"],
                                         Position1 = (Position) Enum.Parse(typeof (Position), Positions[player["Pos"]]),
@@ -1531,7 +1539,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                               PlayerID = newPlayer.ID,
                               TeamID = newPlayer.TeamF,
                               isStarter = (getDiff(newPlayer, oldPlayer, p.GS) == 1),
-                              playedInjured = newPlayer.isInjured,
+                              playedInjured = newPlayer.Injury.IsInjured,
                               MINS = getDiff(newPlayer, oldPlayer, p.MINS),
                               PTS = getDiff(newPlayer, oldPlayer, p.PTS),
                               OREB = getDiff(newPlayer, oldPlayer, p.OREB),

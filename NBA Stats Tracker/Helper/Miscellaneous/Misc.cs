@@ -191,5 +191,22 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                 return "th";
             }
         }
+
+        public static string GetDisplayName(Dictionary<int, string> DisplayNames, int id)
+        {
+            if (id == -1)
+                return "";
+            else
+            {
+                try
+                {
+                    return DisplayNames[id];
+                }
+                catch (KeyNotFoundException)
+                {
+                    return "Unknown";
+                }
+            }
+        }
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Annotations;
+using NBA_Stats_Tracker.Data.Players.Contracts;
+using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
@@ -26,7 +28,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true)
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null)
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -35,11 +37,34 @@ namespace NBA_Stats_Tracker.Data.Players
             Position1 = ps.Position1;
             Position2 = ps.Position2;
             TeamF = ps.TeamF;
+            if (teamName == null)
+            {
+                TeamFDisplay = MainWindow.DisplayNames[TeamF];
+            }
+            else
+            {
+                TeamFDisplay = teamName;
+            }
             TeamS = ps.TeamS;
+            if (TeamS == -1)
+            {
+                TeamSDisplay = "";
+            }
+            else
+            {
+                try
+                {
+                    TeamSDisplay = MainWindow.DisplayNames[TeamS];
+                }
+                catch (KeyNotFoundException)
+                {
+                    TeamSDisplay = "Unknown";
+                }
+            }
             isActive = ps.isActive;
             isHidden = ps.isHidden;
             isAllStar = ps.isAllStar;
-            isInjured = ps.isInjured;
+            Injury = ps.Injury.DeepClone(null);
             isNBAChampion = ps.isNBAChampion;
             YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
@@ -340,7 +365,37 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool isActive { get; set; }
         public bool isHidden { get; set; }
         public bool isAllStar { get; set; }
-        public bool isInjured { get; set; }
+
+        public PlayerInjury Injury
+        {
+            get { return _injury; }
+            set
+            {
+                _injury = value;
+                OnPropertyChanged("Injury");
+                OnPropertyChanged("InjuryName");
+                OnPropertyChanged("InjuryApproxDaysLeft");
+                OnPropertyChanged("InjuryDaysLeft");
+                OnPropertyChanged("InjuryStatus");
+            }
+        }
+
+        private PlayerInjury _injury;
+        public string InjuryName { get { return Injury.InjuryName; } }
+        public string InjuryApproxDaysLeft { get { return Injury.ApproximateDays; } }
+
+        public bool IsInjured
+        {
+            get { return Injury.IsInjured; }
+        }
+
+        public int InjuryDaysLeft { get { return Injury.InjuryDaysLeft; } }
+
+        public string InjuryStatus
+        {
+            get { return Injury.Status; }
+        }
+    
         public bool isNBAChampion { get; set; }
 
         public int YearOfBirth { get; set; }
@@ -502,6 +557,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public double OREBp { get; set; }
         public double REBp { get; set; }
         public double PPR { get; set; }
+
+        public string TeamSDisplay { get; set; }
 
         #endregion
 

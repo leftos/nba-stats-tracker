@@ -106,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void PopulateTeamsCombo()
         {
-            List<string> teams =
+            var teams =
                 (from kvp in MainWindow.TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
@@ -773,32 +773,32 @@ namespace NBA_Stats_Tracker.Windows
                 psr1 = templist[0];
                 text = psr1.GetBestStats(5);
                 txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")" +
-                                  (psr1.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr1.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
                 txbPlayer2.Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + ")" +
-                                  (psr2.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr2.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
                 txbPlayer3.Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + ")" +
-                                  (psr3.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr3.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
                 txbPlayer4.Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + ")" +
-                                  (psr4.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr4.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
                 txbPlayer5.Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + ")" +
-                                  (psr5.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr5.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
                 PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
                 txbPlayer6.Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + ")" +
-                                  (psr6.isInjured ? " (Injured)" : "") + "\n\n" + text;
+                                  (psr6.IsInjured ? " (Injured)" : "") + "\n\n" + text;
             }
             catch (Exception)
             {
@@ -838,27 +838,27 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             List<PlayerStatsRow> PGList =
-                psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG") && row.isInjured == false)
+                psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG") && row.IsInjured == false)
                        .ToList();
             PGList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
             PGList.Reverse();
             List<PlayerStatsRow> SGList =
-                psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG") && row.isInjured == false)
+                psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG") && row.IsInjured == false)
                        .ToList();
             SGList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
             SGList.Reverse();
             List<PlayerStatsRow> SFList =
-                psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF") && row.isInjured == false)
+                psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF") && row.IsInjured == false)
                        .ToList();
             SFList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
             SFList.Reverse();
             List<PlayerStatsRow> PFList =
-                psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF") && row.isInjured == false)
+                psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF") && row.IsInjured == false)
                        .ToList();
             PFList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
             PFList.Reverse();
             List<PlayerStatsRow> CList =
-                psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C") && row.isInjured == false)
+                psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C") && row.IsInjured == false)
                        .ToList();
             CList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
             CList.Reverse();
@@ -1054,12 +1054,12 @@ namespace NBA_Stats_Tracker.Windows
 
             DataRow drcur = dt_yea.NewRow();
             DataRow drcur_pl = dt_yea.NewRow();
-            CreateDataRowFromTeamStats(ts, ref drcur, "Season " + curSeason.ToString());
+            CreateDataRowFromTeamStats(ts, ref drcur, "Season " + MainWindow.GetSeasonName(curSeason));
 
             bool playedInPlayoffs = false;
             if (ts.pl_winloss[0] + ts.pl_winloss[1] > 0)
             {
-                CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + curSeason.ToString(), true);
+                CreateDataRowFromTeamStats(ts, ref drcur_pl, "Playoffs " + MainWindow.GetSeasonName(curSeason), true);
                 playedInPlayoffs = true;
             }
 
@@ -1843,7 +1843,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                      if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                          return true;
 
-                                                                     return (!psr.isInjured);
+                                                                     return (!psr.IsInjured);
                                                                  }
                                                                  return false;
                                                              }).ToList();
@@ -1857,7 +1857,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                    if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                        return true;
 
-                                                                   return (!psr.isInjured);
+                                                                   return (!psr.IsInjured);
                                                                }
                                                                return false;
                                                            }).ToList();
@@ -1871,7 +1871,7 @@ namespace NBA_Stats_Tracker.Windows
                                                                       if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                                           return true;
 
-                                                                      return (!psr.isInjured);
+                                                                      return (!psr.IsInjured);
                                                                   }
                                                                   return false;
                                                               }).ToList();
@@ -1881,17 +1881,17 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
                 var lines = text.Split('\n');
                 teamBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = fors[0].GetBestStats(5);
-                txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
                 lines = text.Split('\n');
                 teamBestF = string.Format("{0} {1}\n({2}, {3}, {4})\n", fors[0].FirstName, fors[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") + "\n\n" +
+                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") + "\n\n" +
                                 text;
                 lines = text.Split('\n');
                 teamBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1], lines[2]);
@@ -1907,7 +1907,7 @@ namespace NBA_Stats_Tracker.Windows
                                                if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                    return true;
 
-                                               return (!psr.isInjured);
+                                               return (!psr.IsInjured);
                                            }
                                            return false;
                                        }).ToList();
@@ -1921,7 +1921,7 @@ namespace NBA_Stats_Tracker.Windows
                                              if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                  return true;
 
-                                             return (!psr.isInjured);
+                                             return (!psr.IsInjured);
                                          }
                                          return false;
                                      }).ToList();
@@ -1935,7 +1935,7 @@ namespace NBA_Stats_Tracker.Windows
                                                 if (chkHTHHideInjured.IsChecked.GetValueOrDefault() == false)
                                                     return true;
 
-                                                return (!psr.isInjured);
+                                                return (!psr.IsInjured);
                                             }
                                             return false;
                                         }).ToList();
@@ -1945,17 +1945,17 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
                 var lines = text.Split('\n');
                 oppBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = fors[0].GetBestStats(5);
-                txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].isInjured ? " (Injured)" : "") + "\n\n" + text;
+                txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
                 lines = text.Split('\n');
                 oppBestF = string.Format("{0} {1}\n({2}, {3}, {4})\n", fors[0].FirstName, fors[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].isInjured ? " (Injured)" : "") + "\n\n" +
+                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") + "\n\n" +
                                 text;
                 lines = text.Split('\n');
                 oppBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1], lines[2]);
@@ -2528,9 +2528,9 @@ namespace NBA_Stats_Tracker.Windows
                 MainWindow.tf = new Timeframe(curSeason);
                 MainWindow.ChangeSeason(curSeason);
                 SQLiteIO.LoadSeason(curSeason);
-                PopulateTeamsCombo();
 
                 LinkInternalsToMainWindow();
+                PopulateTeamsCombo();
 
                 try
                 {
@@ -2658,7 +2658,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
         /// <summary>

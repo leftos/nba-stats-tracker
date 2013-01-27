@@ -31,6 +31,7 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
@@ -182,10 +183,9 @@ namespace NBA_Stats_Tracker.Windows
 
             PopulateSeasonCombo();
 
-            var Positions = new List<string> {" ", "PG", "SG", "SF", "PF", "C"};
-            var Positions2 = new List<string> {" ", "PG", "SG", "SF", "PF", "C"};
+            var Positions = Enum.GetNames(typeof (Position));
             cmbPosition1.ItemsSource = Positions;
-            cmbPosition2.ItemsSource = Positions2;
+            cmbPosition2.ItemsSource = Positions;
 
             PopulateTeamsCombo();
 
@@ -637,6 +637,8 @@ namespace NBA_Stats_Tracker.Windows
 
             for (int i = 1; i <= maxSeason; i++)
             {
+                Dictionary<int, string> DisplayNames = new Dictionary<int, string>();
+                SQLiteIO.GetSeasonDisplayNames(MainWindow.currentDB, i, ref DisplayNames);
                 string pT = "Players";
                 if (i != maxSeason)
                     pT += "S" + i;
@@ -648,6 +650,8 @@ namespace NBA_Stats_Tracker.Windows
                     var ps = new PlayerStats(res.Rows[0], MainWindow.tst);
                     PlayerStats.CalculateRates(ps.stats, ref ps.metrics);
                     var psr2 = new PlayerStatsRow(ps, "Season " + MainWindow.GetSeasonName(i));
+                    psr2.TeamFDisplay = Misc.GetDisplayName(DisplayNames, psr2.TeamF);
+                    psr2.TeamSDisplay = Misc.GetDisplayName(DisplayNames, psr2.TeamS);
                     psrList.Add(psr2);
                     psCareer.AddPlayerStats(ps);
                 }
@@ -665,6 +669,8 @@ namespace NBA_Stats_Tracker.Windows
                     {
                         PlayerStats.CalculateRates(ps.pl_stats, ref ps.pl_metrics);
                         var psr2 = new PlayerStatsRow(ps, "Playoffs " + MainWindow.GetSeasonName(i), true);
+                        psr2.TeamFDisplay = Misc.GetDisplayName(DisplayNames, psr2.TeamF);
+                        psr2.TeamSDisplay = Misc.GetDisplayName(DisplayNames, psr2.TeamS);
                         psrList.Add(psr2);
                         psCareer.AddPlayerStats(ps, true);
                     }
@@ -1153,6 +1159,12 @@ namespace NBA_Stats_Tracker.Windows
                     return;
                 }
 
+                PlayerStats ps = null;
+                if (cmbPlayer.SelectedIndex != -1)
+                {
+                    ps = CreatePlayerStatsFromCurrent();
+                }
+
                 if (!(MainWindow.tf.SeasonNum == curSeason && !MainWindow.tf.isBetween))
                 {
                     MainWindow.tf = new Timeframe(curSeason);
@@ -1166,8 +1178,6 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (cmbPlayer.SelectedIndex != -1)
                 {
-                    PlayerStats ps = CreatePlayerStatsFromCurrent();
-
                     teamOrder = MainWindow.TeamOrder;
 
                     GetActivePlayers();
@@ -1321,7 +1331,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var pslist = new Dictionary<int, PlayerStats> {{ps.ID, ps}};
 
-            SQLiteIO.savePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason, true);
+            SQLiteIO.SavePlayersToDatabase(MainWindow.currentDB, pslist, curSeason, maxSeason, true);
 
             MainWindow.pst = SQLiteIO.GetPlayersFromDatabase(MainWindow.currentDB, MainWindow.tst, MainWindow.tstopp, MainWindow.TeamOrder,
                                                              curSeason, maxSeason);
@@ -1371,9 +1381,9 @@ namespace NBA_Stats_Tracker.Windows
                                      (Position) Enum.Parse(typeof (Position), cmbPosition1.SelectedItem.ToString()),
                                      (Position) Enum.Parse(typeof (Position), cmbPosition2.SelectedItem.ToString()),
                                      Convert.ToInt32(txtYearOfBirth.Text), Convert.ToInt32(txtYearsPro.Text), TeamF, psr.TeamS,
-                                     chkIsActive.IsChecked.GetValueOrDefault(), false, chkIsInjured.IsChecked.GetValueOrDefault(),
-                                     chkIsAllStar.IsChecked.GetValueOrDefault(), chkIsNBAChampion.IsChecked.GetValueOrDefault(),
-                                     dt_ov.Rows[0]);
+                                     chkIsActive.IsChecked.GetValueOrDefault(), false,
+                                     psr.Injury, chkIsAllStar.IsChecked.GetValueOrDefault(),
+                                     chkIsNBAChampion.IsChecked.GetValueOrDefault(), dt_ov.Rows[0]);
             ps.height = psr.Height;
             ps.weight = psr.Weight;
             ps.UpdateCareerHighs(recordsList.Single(r => r.Type == "Career"));
@@ -1885,7 +1895,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            EventHandlers.StatColumn_Sorting(e);
+            EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
         /// <summary>
@@ -2194,6 +2204,17 @@ namespace NBA_Stats_Tracker.Windows
         private void btnCopyPlayoffsLeadersFacts_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(txbPlayoffsLeadersFacts.Text);
+        }
+
+        private void chkIsInjured_Click(object sender, RoutedEventArgs e)
+        {
+            var piw = new PlayerInjuryWindow(psr.Injury);
+            if (piw.ShowDialog() == true)
+            {
+                psr.Injury = PlayerInjuryWindow.InjuryType != -1
+                                    ? new PlayerInjury(PlayerInjuryWindow.InjuryType, PlayerInjuryWindow.InjuryDaysLeft)
+                                    : new PlayerInjury(PlayerInjuryWindow.CustomInjuryName, PlayerInjuryWindow.InjuryDaysLeft);
+            }
         }
     }
 }

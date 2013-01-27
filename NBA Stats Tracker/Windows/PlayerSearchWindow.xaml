@@ -245,14 +245,14 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                             <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                            <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                            <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                             <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                             <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
                             <DataGridTextColumn Binding="{Binding DisplayHeight}" Header="Height" />
                             <DataGridTextColumn Binding="{Binding DisplayWeight}" Header="Weight" />
                             <DataGridTextColumn Binding="{Binding YearOfBirth}" Header="Birth Year" />
                             <DataGridTextColumn Binding="{Binding YearsPro}" Header="Years Pro" />
-                            <DataGridTextColumn Binding="{Binding isInjured}" Header="Injured" />
+                            <DataGridTextColumn Binding="{Binding InjuryStatus, Mode=OneWay}" Header="Injury" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                             <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                             <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
@@ -659,18 +659,19 @@
                               Margin="6,6,6,0" Name="dgvPlayoffStats"
                               VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
                               IsReadOnly="True"
-                              MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" Sorting="dgvPlayerStats_Sorting">
+                              MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" Sorting="dgvPlayerStats_Sorting"
+                              d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                             <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                            <DataGridTextColumn Binding="{Binding TeamF}" Header="Team" />
+                            <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" />
                             <DataGridTextColumn Binding="{Binding Position1}" Header="Position" />
                             <DataGridTextColumn Binding="{Binding Position2}" Header="2nd Position" />
                             <DataGridTextColumn Binding="{Binding DisplayHeight}" Header="Height" />
                             <DataGridTextColumn Binding="{Binding DisplayWeight}" Header="Weight" />
                             <DataGridTextColumn Binding="{Binding YearOfBirth}" Header="Birth Year" />
                             <DataGridTextColumn Binding="{Binding YearsPro}" Header="Years Pro" />
-                            <DataGridTextColumn Binding="{Binding isInjured}" Header="Injured" />
+                            <DataGridTextColumn Binding="{Binding InjuryStatus, Mode=OneWay}" Header="Injury" />
                             <DataGridTextColumn Binding="{Binding GP}" Header="GP" />
                             <DataGridTextColumn Binding="{Binding GS}" Header="GS" />
                             <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
