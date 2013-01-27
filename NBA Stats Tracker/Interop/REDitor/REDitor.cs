@@ -112,6 +112,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var ccw = new ComboChoiceWindow("Add player stats staring from...", list);
             if (ccw.ShowDialog() != true)
             {
+                MainWindow.mwInstance.mainGrid.Visibility = Visibility.Visible;
                 return;
             }
 
@@ -122,7 +123,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     "Enter the current season (e.g. 2011-2012 by default in NBA 2K12, 2012 for a season" +
                     " taking place only in that year, etc.):", "2011-2012");
             if (ibw.ShowDialog() != true)
+            {
+                MainWindow.mwInstance.mainGrid.Visibility = Visibility.Visible;
                 return;
+            }
 
             int year;
             bool twoPartSeasonDesc = MainWindow.input.Contains("-");

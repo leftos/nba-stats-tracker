@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.6.1.2 Beta
+		- Fix: Fixed crash when trying to view a player with past stats added in Player Overview
+
 	v1.6.1.1 Beta
 		- Fix: Fixed another case where the Injured checkbox in Player Overview wouldn't update properly after setting/unsetting an injury
 

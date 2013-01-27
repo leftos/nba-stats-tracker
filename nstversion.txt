@@ -1,5 +1,8 @@
-1.6.0.1
+1.6.1.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
+
+	v1.6.1.1 Beta
+		- Fix: Fixed another case where the Injured checkbox in Player Overview wouldn't update properly after setting/unsetting an injury
 
 	v1.6.1 Beta
 		- Addition: User will be informed of updated injury statuses whenever importing using REDitor

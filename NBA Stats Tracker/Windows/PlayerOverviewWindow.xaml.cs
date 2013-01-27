@@ -624,12 +624,12 @@ namespace NBA_Stats_Tracker.Windows
                 var ps = new PlayerStats();
                 bool isPlayoff = Tools.getBoolean(dr, "isPlayoff");
                 ps.GetStatsFromDataRow(dr, isPlayoff);
-                ps.TeamF = Tools.getInt(dr, "TeamFin");
-                ps.TeamS = Tools.getInt(dr, "TeamSta");
                 var tempMetrics = isPlayoff ? ps.pl_metrics : ps.metrics;
                 PlayerStats.CalculateRates(isPlayoff ? ps.pl_stats : ps.stats, ref tempMetrics);
                 var curPSR = new PlayerStatsRow(ps, isPlayoff ? "Playoffs " + Tools.getString(dr, "SeasonName") : "Season " + Tools.getString(dr, "SeasonName"), isPlayoff);
-                
+                curPSR.TeamFDisplay = Tools.getString(dr, "TeamFin");
+                curPSR.TeamSDisplay = Tools.getString(dr, "TeamSta");
+
                 psrList.Add(curPSR);
                 
                 psCareer.AddPlayerStats(ps);
