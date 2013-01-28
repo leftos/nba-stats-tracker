@@ -1,8 +1,8 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
 // under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 

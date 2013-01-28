@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -54,6 +53,27 @@ namespace NBA_Stats_Tracker.Windows
         private static Semaphore sem;
         private readonly SQLiteDatabase db = new SQLiteDatabase(MainWindow.currentDB);
         private readonly DataTable dt_bs;
+
+        private Dictionary<string, string> REtoREDitor = new Dictionary<string, string>
+                                                         {
+                                                             {"RFT", "SShtFT"},
+                                                             {"RPass", "SPass"},
+                                                             {"RBlock", "SBlock"},
+                                                             {"RSteal", "SSteal"},
+                                                             {"ROffRbd", "SOReb"},
+                                                             {"RDefRbd", "SDReb"},
+                                                             {"TShotTnd", "TShtTend"},
+                                                             {"TDrawFoul", "TDrawFoul"},
+                                                             {"TTouch", "TTouches"},
+                                                             {"TCommitFl", "TCommFoul"}
+                                                         };
+
+        private List<PlayerStatsRow> _leadersList;
+        private List<PlayerStatsRow> _myLeadersList;
+        private List<PlayerStatsRow> _plLeadersList;
+        private List<PlayerStatsRow> _plMyLeadersList;
+        private List<PlayerStatsRow> _plPsrList;
+        private List<PlayerStatsRow> _psrList;
         private Dictionary<int, TeamStats> _tstopp;
         private string best1Text;
         private string best2Text;
@@ -69,14 +89,12 @@ namespace NBA_Stats_Tracker.Windows
         private string filterDescription;
         private TeamFilter filterType;
         private string pl_best1Text, pl_best2Text, pl_best3Text, pl_best4Text, pl_best5Text, pl_best6Text;
-        private List<PlayerStatsRow> _plPsrList;
         private string pl_sCText;
         private string pl_sPFText;
         private string pl_sPGText;
         private string pl_sSFText;
         private string pl_sSGText;
         private string pl_sSubsText;
-        private List<PlayerStatsRow> _psrList;
         private bool reload;
         private string sCText;
         private string sPFText;
@@ -84,6 +102,17 @@ namespace NBA_Stats_Tracker.Windows
         private string sSFText;
         private string sSGText;
         private string sSubsText;
+
+        private List<string> uTeamCriteria = new List<string> {"All Players", "League Leaders", "My League Leaders"};
+
+        private List<string> uTeamOptions = new List<string>
+                                            {
+                                                "All-League 1st Team",
+                                                "All-League 2nd Team",
+                                                "All-League 3rd Team",
+                                                "All-Rookies 1st Team",
+                                                "All-Rookies 2nd Team"
+                                            };
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
@@ -137,36 +166,6 @@ namespace NBA_Stats_Tracker.Windows
 
             sem = new Semaphore(1, 1);
         }
-        private List<string> uTeamOptions = new List<string>
-                          {
-                              "All-League 1st Team",
-                              "All-League 2nd Team",
-                              "All-League 3rd Team",
-                              "All-Rookies 1st Team",
-                              "All-Rookies 2nd Team"
-                          };
-
-        private List<string> uTeamCriteria = new List<string>
-                                             {
-                                                 "All Players",
-                                                 "League Leaders",
-                                                 "My League Leaders"
-                                             }; 
-
-        private void PopulateSituationalsCombo()
-        {
-            var prevSitValue = cmbSituational.SelectedIndex;
-            var prevCriValue = cmbUTCriteria.SelectedIndex;
-
-            cmbSituational.SelectedIndex = -1;
-            cmbUTCriteria.SelectedIndex = -1;
-
-            cmbSituational.ItemsSource = uTeamOptions;
-            cmbSituational.SelectedIndex = prevSitValue == -1 ? 0 : prevSitValue;
-
-            cmbUTCriteria.ItemsSource = uTeamCriteria;
-            cmbUTCriteria.SelectedIndex = prevCriValue == -1 ? 0 : prevCriValue;
-        }
 
         private DataView dv_ts { get; set; }
         private DataView dv_lts { get; set; }
@@ -180,6 +179,21 @@ namespace NBA_Stats_Tracker.Windows
 
         protected List<TeamStatsRow> tsrList { get; set; }
 
+        private void PopulateSituationalsCombo()
+        {
+            int prevSitValue = cmbSituational.SelectedIndex;
+            int prevCriValue = cmbUTCriteria.SelectedIndex;
+
+            cmbSituational.SelectedIndex = -1;
+            cmbUTCriteria.SelectedIndex = -1;
+
+            cmbSituational.ItemsSource = uTeamOptions;
+            cmbSituational.SelectedIndex = prevSitValue == -1 ? 0 : prevSitValue;
+
+            cmbUTCriteria.ItemsSource = uTeamCriteria;
+            cmbUTCriteria.SelectedIndex = prevCriValue == -1 ? 0 : prevCriValue;
+        }
+
         /// <summary>
         ///     Populates the division combo.
         /// </summary>
@@ -188,12 +202,12 @@ namespace NBA_Stats_Tracker.Windows
             var list = new List<ComboBoxItemWithIsEnabled>();
             list.Add(new ComboBoxItemWithIsEnabled("Whole League"));
             list.Add(new ComboBoxItemWithIsEnabled("-- Conferences --", false));
-            foreach (Conference conf in MainWindow.Conferences)
+            foreach (var conf in MainWindow.Conferences)
             {
                 list.Add(new ComboBoxItemWithIsEnabled(conf.Name));
             }
             list.Add(new ComboBoxItemWithIsEnabled("-- Divisions --", false));
-            foreach (Division div in MainWindow.Divisions)
+            foreach (var div in MainWindow.Divisions)
             {
                 Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
                 list.Add(new ComboBoxItemWithIsEnabled(String.Format("{0}: {1}", conf.Name, div.Name)));
@@ -236,7 +250,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             return Misc.GetTeamIDFromDisplayName(_tst, displayName);
         }
-        
+
         /// <summary>
         ///     Handles the SelectedDateChanged event of the dtpStart control.
         ///     Makes sure that the starting date isn't before the ending date, and reloads the current tab.
@@ -321,7 +335,7 @@ namespace NBA_Stats_Tracker.Windows
             //{
             if (reload || e.OriginalSource is TabControl)
             {
-                var currentTab = tbcLeagueOverview.SelectedItem;
+                object currentTab = tbcLeagueOverview.SelectedItem;
                 if (currentTab == tabTeamStats || currentTab == tabTeamMetricStats)
                 {
                     cmbDivConf.IsEnabled = true;
@@ -455,7 +469,7 @@ namespace NBA_Stats_Tracker.Windows
                                   _plPsrList.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
                                   _plPsrList.Reverse();
 
-                                  foreach (PlayerStatsRow psr in _psrList)
+                                  foreach (var psr in _psrList)
                                   {
                                       if (psr.isActive)
                                       {
@@ -463,7 +477,7 @@ namespace NBA_Stats_Tracker.Windows
                                           _myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst));
                                       }
                                   }
-                                  foreach (PlayerStatsRow psr in _plPsrList)
+                                  foreach (var psr in _plPsrList)
                                   {
                                       if (psr.isActive)
                                       {
@@ -691,29 +705,24 @@ namespace NBA_Stats_Tracker.Windows
             var tempList = new List<PlayerStatsRow>();
 
             List<PlayerStatsRow> PGList =
-                psrList.Where(row => (row.Position1 == Position.PG || row.Position2 == Position.PG))// && row.isInjured == false)
-                             .Take(10)
-                             .ToList();
+                psrList.Where(row => (row.Position1 == Position.PG || row.Position2 == Position.PG)) // && row.isInjured == false)
+                       .Take(10).ToList();
             PGList = PGList.OrderByDescending(ps => ps.GmSc).ToList();
             List<PlayerStatsRow> SGList =
-                psrList.Where(row => (row.Position1 == Position.SG || row.Position2 == Position.SG))// && row.isInjured == false)
-                             .Take(10)
-                             .ToList();
+                psrList.Where(row => (row.Position1 == Position.SG || row.Position2 == Position.SG)) // && row.isInjured == false)
+                       .Take(10).ToList();
             SGList = SGList.OrderByDescending(ps => ps.GmSc).ToList();
             List<PlayerStatsRow> SFList =
-                psrList.Where(row => (row.Position1 == Position.SF || row.Position2 == Position.SF))// && row.isInjured == false)
-                             .Take(10)
-                             .ToList();
+                psrList.Where(row => (row.Position1 == Position.SF || row.Position2 == Position.SF)) // && row.isInjured == false)
+                       .Take(10).ToList();
             SFList = SFList.OrderByDescending(ps => ps.GmSc).ToList();
             List<PlayerStatsRow> PFList =
-                psrList.Where(row => (row.Position1 == Position.PF || row.Position2 == Position.PF))// && row.isInjured == false)
-                             .Take(10)
-                             .ToList();
+                psrList.Where(row => (row.Position1 == Position.PF || row.Position2 == Position.PF)) // && row.isInjured == false)
+                       .Take(10).ToList();
             PFList = PFList.OrderByDescending(ps => ps.GmSc).ToList();
             List<PlayerStatsRow> CList =
-                psrList.Where(row => (row.Position1 == Position.C || row.Position2 == Position.C))// && row.isInjured == false)
-                             .Take(10)
-                             .ToList();
+                psrList.Where(row => (row.Position1 == Position.C || row.Position2 == Position.C)) // && row.isInjured == false)
+                       .Take(10).ToList();
             CList = CList.OrderByDescending(ps => ps.GmSc).ToList();
             var permutations = new List<StartingFivePermutation>();
 
@@ -770,9 +779,9 @@ namespace NBA_Stats_Tracker.Windows
                                 permutations.Add(new StartingFivePermutation {IDList = perm, PlayersInPrimaryPosition = _pInP, Sum = _sum});
                             }
 
-            StartingFivePermutation bestPerm = new StartingFivePermutation();
-            StartingFivePermutation benchPerm = new StartingFivePermutation();
-            StartingFivePermutation thirdPerm = new StartingFivePermutation();
+            var bestPerm = new StartingFivePermutation();
+            var benchPerm = new StartingFivePermutation();
+            var thirdPerm = new StartingFivePermutation();
             try
             {
                 bestPerm =
@@ -783,20 +792,22 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else
                 {
-                    benchPerm = permutations.Where(p => !(p.IDList.Any(id => bestPerm.IDList.Contains(id))))
-                                            .OrderByDescending(p => p.Sum)
-                                            .ThenByDescending(p => p.PlayersInPrimaryPosition)
-                                            .First();
+                    benchPerm =
+                        permutations.Where(p => !(p.IDList.Any(id => bestPerm.IDList.Contains(id))))
+                                    .OrderByDescending(p => p.Sum)
+                                    .ThenByDescending(p => p.PlayersInPrimaryPosition)
+                                    .First();
                     if (type.Contains("2nd"))
                     {
                         benchPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
                     }
                     else
                     {
-                        thirdPerm = permutations.Where(p => !(p.IDList.Any(id => bestPerm.IDList.Contains(id) || benchPerm.IDList.Contains(id))))
-                                                .OrderByDescending(p => p.Sum)
-                                                .ThenByDescending(p => p.PlayersInPrimaryPosition)
-                                                .First();
+                        thirdPerm =
+                            permutations.Where(p => !(p.IDList.Any(id => bestPerm.IDList.Contains(id) || benchPerm.IDList.Contains(id))))
+                                        .OrderByDescending(p => p.Sum)
+                                        .ThenByDescending(p => p.PlayersInPrimaryPosition)
+                                        .First();
                         thirdPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
                     }
                 }
@@ -902,7 +913,7 @@ namespace NBA_Stats_Tracker.Windows
                 usedIDs.AddRange(benchPerm.IDList);
                 usedIDs.AddRange(thirdPerm.IDList);
             }
-            var idCountToSkip = usedIDs.Count;
+            int idCountToSkip = usedIDs.Count;
             int i = 0;
             try
             {
@@ -1008,7 +1019,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             dt_bs.Clear();
 
-            foreach (BoxScoreEntry bse in _bshist)
+            foreach (var bse in _bshist)
             {
                 if (!InCurrentFilter(bse.bs.Team1ID) && !InCurrentFilter(bse.bs.Team2ID))
                 {
@@ -1061,7 +1072,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var ls = new TeamStats(-1, "League");
 
-            foreach (int key in _tst.Keys)
+            foreach (var key in _tst.Keys)
             {
                 if (_tst[key].isHidden)
                     continue;
@@ -1088,7 +1099,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var ls1 = new TeamStats(-1, "League");
 
-            foreach (int key1 in _tst.Keys)
+            foreach (var key1 in _tst.Keys)
             {
                 if (_tst[key1].isHidden)
                     continue;
@@ -1138,7 +1149,7 @@ namespace NBA_Stats_Tracker.Windows
             if (filterType == TeamFilter.Conference)
             {
                 int confID = -1;
-                foreach (Conference conf in MainWindow.Conferences)
+                foreach (var conf in MainWindow.Conferences)
                 {
                     if (conf.Name == filterDescription)
                     {
@@ -1180,7 +1191,7 @@ namespace NBA_Stats_Tracker.Windows
             if (filterType == TeamFilter.Conference)
             {
                 int confID = -1;
-                foreach (Conference conf in MainWindow.Conferences)
+                foreach (var conf in MainWindow.Conferences)
                 {
                     if (conf.Name == filterDescription)
                     {
@@ -1579,7 +1590,7 @@ namespace NBA_Stats_Tracker.Windows
                           .Select(c => c.Header.ToString())
                           .ToList();
 
-            foreach (PlayerStatsRow ps in plist)
+            foreach (var ps in plist)
             {
                 List<Dictionary<string, string>> pInsts =
                     dictList.FindAll(dict => dict["Name"].ToLowerInvariant() == (ps.FirstName + " " + ps.LastName).ToLowerInvariant())
@@ -1723,21 +1734,6 @@ namespace NBA_Stats_Tracker.Windows
                 dgvLeagueOpponentMetricStats.Columns[i].Width = dgvOpponentMetricStats.Columns[i].ActualWidth;
         }
 
-        #region Nested type: TeamFilter
-
-        /// <summary>
-        ///     Used to determine the filter that should be applied to which teams and players are included in the calculations
-        ///     and shown in the DataGrids.
-        /// </summary>
-        private enum TeamFilter
-        {
-            League,
-            Conference,
-            Division
-        }
-
-        #endregion
-
         private void btnSetRatingsCriteria_Click(object sender, RoutedEventArgs e)
         {
             var ibw =
@@ -1760,25 +1756,6 @@ namespace NBA_Stats_Tracker.Windows
 
             PreparePlayerStats();
         }
-
-        private Dictionary<string, string> REtoREDitor = new Dictionary<string, string>
-                                                         {
-                                                             {"RFT", "SShtFT"},
-                                                             {"RPass", "SPass"},
-                                                             {"RBlock", "SBlock"},
-                                                             {"RSteal", "SSteal"},
-                                                             {"ROffRbd", "SOReb"},
-                                                             {"RDefRbd", "SDReb"},
-                                                             {"TShotTnd", "TShtTend"},
-                                                             {"TDrawFoul", "TDrawFoul"},
-                                                             {"TTouch", "TTouches"},
-                                                             {"TCommitFl", "TCommFoul"}
-                                                         };
-
-        private List<PlayerStatsRow> _leadersList;
-        private List<PlayerStatsRow> _plLeadersList;
-        private List<PlayerStatsRow> _myLeadersList;
-        private List<PlayerStatsRow> _plMyLeadersList;
 
         private void btnExportLREDitorRatings_Click(object sender, RoutedEventArgs e)
         {
@@ -1803,7 +1780,7 @@ namespace NBA_Stats_Tracker.Windows
                           .Select(c => c.Header.ToString())
                           .ToList();
 
-            foreach (PlayerStatsRow ps in plist)
+            foreach (var ps in plist)
             {
                 List<Dictionary<string, string>> pInsts =
                     dictList.FindAll(
@@ -1907,5 +1884,20 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateBestPerformersTextboxes(rbSeason.IsChecked.GetValueOrDefault());
         }
+
+        #region Nested type: TeamFilter
+
+        /// <summary>
+        ///     Used to determine the filter that should be applied to which teams and players are included in the calculations
+        ///     and shown in the DataGrids.
+        /// </summary>
+        private enum TeamFilter
+        {
+            League,
+            Conference,
+            Division
+        }
+
+        #endregion
     }
 }

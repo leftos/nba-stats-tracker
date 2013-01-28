@@ -1,11 +1,49 @@
-﻿using System;
+﻿#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
     public class PlayerInjuryDaysComparer : IComparer
     {
+        protected static readonly Dictionary<string, int> DurationOrder = new Dictionary<string, int>
+                                                                          {
+                                                                              {"Active", 0},
+                                                                              {"Day-To-Day", 1},
+                                                                              {"1-2 weeks", 2},
+                                                                              {"2-4 weeks", 3},
+                                                                              {"4-6 weeks", 4},
+                                                                              {"6-8 weeks", 5},
+                                                                              {"2-4 months", 6},
+                                                                              {"4-6 months", 7},
+                                                                              {"6-8 months", 8},
+                                                                              {"8-10 months", 9},
+                                                                              {"10-12 months", 10},
+                                                                              {"More than a year", 11},
+                                                                              {"Unknown", 12},
+                                                                              {"Career-Ending", 13}
+                                                                          };
+
+        #region IComparer Members
+
         public virtual int Compare(object x, object y)
         {
             string s1;
@@ -22,21 +60,6 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
             return DurationOrder[s1].CompareTo(DurationOrder[s2]);
         }
 
-        protected static readonly Dictionary<string, int> DurationOrder = new Dictionary<string, int>
-                                                                          {
-                                                                              {"Career-Ending", 12},
-                                                                              {"Unknown", 11},
-                                                                              {"Active", 0},
-                                                                              {"Day-To-Day", 1},
-                                                                              {"1-2 weeks", 2},
-                                                                              {"3-4 weeks", 3},
-                                                                              {"1-2 months", 4},
-                                                                              {"3-4 months", 5},
-                                                                              {"4-6 months", 6},
-                                                                              {"6-8 months", 7},
-                                                                              {"8-10 months", 8},
-                                                                              {"10-12 months", 9},
-                                                                              {"More than a year", 10}
-                                                                          };
+        #endregion
     }
 }

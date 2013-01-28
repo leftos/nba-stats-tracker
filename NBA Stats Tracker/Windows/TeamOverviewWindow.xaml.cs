@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -23,7 +22,6 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
@@ -50,6 +48,7 @@ namespace NBA_Stats_Tracker.Windows
         private bool changingOppRange;
         private bool changingOppTeam;
         private bool changingTimeframe;
+        private int curOpp;
 
         private int curSeason = MainWindow.curSeason;
         private int curTeam;
@@ -64,20 +63,19 @@ namespace NBA_Stats_Tracker.Windows
         private DataTable dt_yea;
         private DataView dv_hth;
         private int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+        private string oppBestC = "";
+        private string oppBestF = "";
+        private string oppBestG = "";
         private ObservableCollection<PlayerStatsRow> pl_psrList;
         private TeamRankings playoffRankings;
         private ObservableCollection<PlayerStatsRow> psrList;
         private Dictionary<int, PlayerStats> pst;
         private TeamRankings seasonRankings;
+        private string teamBestC = "";
+        private string teamBestF = "";
+        private string teamBestG = "";
         private Dictionary<int, TeamStats> tst;
         private Dictionary<int, TeamStats> tstopp;
-        private int curOpp;
-        private string teamBestG = "";
-        private string teamBestF = "";
-        private string teamBestC = "";
-        private string oppBestG = "";
-        private string oppBestF = "";
-        private string oppBestC = "";
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -101,12 +99,14 @@ namespace NBA_Stats_Tracker.Windows
             teamToLoad = team;
         }
 
+        protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
+
         /// <summary>
         ///     Populates the teams combo.
         /// </summary>
         private void PopulateTeamsCombo()
         {
-            var teams =
+            List<string> teams =
                 (from kvp in MainWindow.TeamOrder where !tst[kvp.Value].isHidden select tst[kvp.Value].displayName).ToList();
 
             teams.Sort();
@@ -285,7 +285,7 @@ namespace NBA_Stats_Tracker.Windows
             IEnumerable<BoxScoreEntry> boxScoreEntries =
                 MainWindow.bshist.Where(bse => bse.bs.Team1ID == curTeam || bse.bs.Team2ID == curTeam);
 
-            foreach (BoxScoreEntry r in boxScoreEntries)
+            foreach (var r in boxScoreEntries)
             {
                 TeamBoxScore bsr = r.bs.DeepClone();
                 bsr.PrepareForDisplay(tst, curTeam);
@@ -728,8 +728,6 @@ namespace NBA_Stats_Tracker.Windows
             dgvHighs.ItemsSource = recordsList;
         }
 
-        protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
-
         /// <summary>
         ///     Finds the tam's name by its displayName.
         /// </summary>
@@ -739,7 +737,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             return Misc.GetTeamIDFromDisplayName(tst, displayName);
         }
-        
+
         /// <summary>
         ///     Determines the team's best players and their most significant stats and updates the corresponding tab.
         /// </summary>
@@ -891,7 +889,7 @@ namespace NBA_Stats_Tracker.Windows
                                     continue;
                                 }
                                 perm.Add(SFList[i3].ID);
-                                _sum +=Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SFList[i3], null));
+                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SFList[i3], null));
                                 if (SFList[i3].Position1.ToString() == "SF")
                                     _pInP++;
                                 if (perm.Contains(PFList[i4].ID))
@@ -1135,7 +1133,7 @@ namespace NBA_Stats_Tracker.Windows
 
             dgvYearly.DataContext = dv_yea;
         }
-        
+
         /// <summary>
         ///     Handles the Click event of the btnSaveCustomTeam control.
         ///     Saves the team's stats into the database.
@@ -1278,7 +1276,7 @@ namespace NBA_Stats_Tracker.Windows
 
             Dictionary<int, PlayerStats> playersToUpdate = psrList.Select(cur => new PlayerStats(cur)).ToDictionary(ps => ps.ID);
             List<int> playerIDs = playersToUpdate.Keys.ToList();
-            foreach (int playerID in playerIDs)
+            foreach (var playerID in playerIDs)
             {
                 playersToUpdate[playerID].UpdatePlayoffStats(pl_psrList.Single(pl_psr => pl_psr.ID == playerID));
                 playersToUpdate[playerID].UpdateCareerHighs(recordsList.Single(r => r.PlayerID == playerID));
@@ -1681,18 +1679,24 @@ namespace NBA_Stats_Tracker.Windows
                         break;
                     case t.FGeff:
                         msgDesc += "Field Goals";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FGMPG, tsr.FGAPG, tsr.FGp, seasonRankings.rankingsPerGame[iTeam][t.FGeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FGMPG, tsropp.FGAPG, tsropp.FGp, seasonRankings.rankingsPerGame[iOpp][t.FGeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FGMPG, tsr.FGAPG, tsr.FGp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.FGeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FGMPG, tsropp.FGAPG, tsropp.FGp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.FGeff]);
                         break;
                     case t.TPeff:
                         msgDesc += "3 Pointers";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.TPMPG, tsr.TPAPG, tsr.TPp, seasonRankings.rankingsPerGame[iTeam][t.TPeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.TPMPG, tsropp.TPAPG, tsropp.TPp, seasonRankings.rankingsPerGame[iOpp][t.TPeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.TPMPG, tsr.TPAPG, tsr.TPp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.TPeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.TPMPG, tsropp.TPAPG, tsropp.TPp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.TPeff]);
                         break;
                     case t.FTeff:
                         msgDesc += "Free Throws";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FTMPG, tsr.FTAPG, tsr.FTp, seasonRankings.rankingsPerGame[iTeam][t.FTeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FTMPG, tsropp.FTAPG, tsropp.FTp, seasonRankings.rankingsPerGame[iOpp][t.FTeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FTMPG, tsr.FTAPG, tsr.FTp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.FTeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FTMPG, tsropp.FTAPG, tsropp.FTp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.FTeff]);
                         break;
                     default:
                         j++;
@@ -1785,18 +1789,24 @@ namespace NBA_Stats_Tracker.Windows
                         break;
                     case t.FGeff:
                         msgDesc += "Field Goals";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FGMPG, tsr.FGAPG, tsr.FGp, seasonRankings.rankingsPerGame[iTeam][t.FGeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FGMPG, tsropp.FGAPG, tsropp.FGp, seasonRankings.rankingsPerGame[iOpp][t.FGeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FGMPG, tsr.FGAPG, tsr.FGp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.FGeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FGMPG, tsropp.FGAPG, tsropp.FGp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.FGeff]);
                         break;
                     case t.TPeff:
                         msgDesc += "3 Pointers";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.TPMPG, tsr.TPAPG, tsr.TPp, seasonRankings.rankingsPerGame[iTeam][t.TPeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.TPMPG, tsropp.TPAPG, tsropp.TPp, seasonRankings.rankingsPerGame[iOpp][t.TPeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.TPMPG, tsr.TPAPG, tsr.TPp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.TPeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.TPMPG, tsropp.TPAPG, tsropp.TPp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.TPeff]);
                         break;
                     case t.FTeff:
                         msgDesc += "Free Throws";
-                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FTMPG, tsr.FTAPG, tsr.FTp, seasonRankings.rankingsPerGame[iTeam][t.FTeff]);
-                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FTMPG, tsropp.FTAPG, tsropp.FTp, seasonRankings.rankingsPerGame[iOpp][t.FTeff]);
+                        msgTeam += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsr.FTMPG, tsr.FTAPG, tsr.FTp,
+                                                 seasonRankings.rankingsPerGame[iTeam][t.FTeff]);
+                        msgOpp += string.Format("{0:F1}-{1:F1} ({2:F3}) ({3})", tsropp.FTMPG, tsropp.FTAPG, tsropp.FTp,
+                                                seasonRankings.rankingsPerGame[iOpp][t.FTeff]);
                         break;
                     default:
                         j++;
@@ -1812,18 +1822,18 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 m++;
             }
-            var descParts = msgDesc.Split('\n');
-            var teamParts = msgTeam.Split('\n');
-            var oppParts = msgOpp.Split('\n');
-            var s0 = teamParts[0] + "\t" + descParts[0] + "\t" + oppParts[0];
-            var s1 = teamParts[1] + "\t" + descParts[1] + "\t" + oppParts[1];
-            var s2 = teamParts[2] + "\t" + descParts[2] + "\t" + oppParts[2];
-            var s3 = teamParts[3] + "\t" + descParts[3] + "\t" + oppParts[3];
+            string[] descParts = msgDesc.Split('\n');
+            string[] teamParts = msgTeam.Split('\n');
+            string[] oppParts = msgOpp.Split('\n');
+            string s0 = teamParts[0] + "\t" + descParts[0] + "\t" + oppParts[0];
+            string s1 = teamParts[1] + "\t" + descParts[1] + "\t" + oppParts[1];
+            string s2 = teamParts[2] + "\t" + descParts[2] + "\t" + oppParts[2];
+            string s3 = teamParts[3] + "\t" + descParts[3] + "\t" + oppParts[3];
             var list = new List<string> {s0, s1, s2, s3};
             list.Shuffle();
             list.ForEach(item =>
                          {
-                             var parts = item.Split('\t');
+                             string[] parts = item.Split('\t');
                              txbMPTeam.Text += parts[0] + "\n";
                              txbMPDesc.Text += parts[1] + "\n";
                              txbMPOpp.Text += parts[2] + "\n";
@@ -1881,9 +1891,11 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
-                var lines = text.Split('\n');
-                teamBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1], lines[2]);
+                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" +
+                                text;
+                string[] lines = text.Split('\n');
+                teamBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1],
+                                          lines[2]);
 
                 text = fors[0].GetBestStats(5);
                 txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
@@ -1891,10 +1903,11 @@ namespace NBA_Stats_Tracker.Windows
                 teamBestF = string.Format("{0} {1}\n({2}, {3}, {4})\n", fors[0].FirstName, fors[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") + "\n\n" +
-                                text;
+                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") +
+                                "\n\n" + text;
                 lines = text.Split('\n');
-                teamBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1], lines[2]);
+                teamBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1],
+                                          lines[2]);
             }
             catch
             {
@@ -1945,8 +1958,9 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" + text;
-                var lines = text.Split('\n');
+                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") + "\n\n" +
+                                text;
+                string[] lines = text.Split('\n');
                 oppBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = fors[0].GetBestStats(5);
@@ -1955,10 +1969,11 @@ namespace NBA_Stats_Tracker.Windows
                 oppBestF = string.Format("{0} {1}\n({2}, {3}, {4})\n", fors[0].FirstName, fors[0].LastName, lines[0], lines[1], lines[2]);
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") + "\n\n" +
-                                text;
+                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") +
+                                "\n\n" + text;
                 lines = text.Split('\n');
-                oppBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1], lines[2]);
+                oppBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1],
+                                         lines[2]);
             }
             catch
             {
@@ -1991,7 +2006,9 @@ namespace NBA_Stats_Tracker.Windows
             List<BoxScoreEntry> bshist = MainWindow.bshist;
 
             IEnumerable<BoxScoreEntry> BSEs =
-                bshist.Where(bse => (bse.bs.Team1ID == curTeam && bse.bs.Team2ID == curOpp) || (bse.bs.Team1ID == curOpp && bse.bs.Team2ID == curTeam));
+                bshist.Where(
+                    bse =>
+                    (bse.bs.Team1ID == curTeam && bse.bs.Team2ID == curOpp) || (bse.bs.Team1ID == curOpp && bse.bs.Team2ID == curTeam));
 
             if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
             {
@@ -2003,7 +2020,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (BoxScoreEntry bse in BSEs)
+                foreach (var bse in BSEs)
                 {
                     TeamStats.AddTeamStatsFromBoxScore(bse.bs, ref ts, ref tsopp, true);
                 }
@@ -2017,7 +2034,7 @@ namespace NBA_Stats_Tracker.Windows
             List<int> keys = pst.Keys.ToList();
             teamPMSRList = new List<PlayerStatsRow>();
             oppPMSRList = new List<PlayerStatsRow>();
-            foreach (int key in keys)
+            foreach (var key in keys)
             {
                 if (pst[key].TeamF == ts.ID)
                 {
@@ -2029,7 +2046,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            foreach (BoxScoreEntry bse in BSEs)
+            foreach (var bse in BSEs)
             {
                 int t1pts = bse.bs.PTS1;
                 int t2pts = bse.bs.PTS2;
@@ -2363,10 +2380,10 @@ namespace NBA_Stats_Tracker.Windows
             temp.AddRange(p.metricsNames);
             temp.AddRange(p.averages.Values);
             temp.AddRange(p.totals.Values);
-            var psrProps = typeof (PlayerStatsRow).GetProperties().Select(prop => prop.Name).ToList();
+            List<string> psrProps = typeof (PlayerStatsRow).GetProperties().Select(prop => prop.Name).ToList();
             for (int i = 0; i < temp.Count; i++)
             {
-                var realName = temp[i].Replace("%", "p").Replace("3", "T");
+                string realName = temp[i].Replace("%", "p").Replace("3", "T");
                 if (psrProps.Contains(realName))
                 {
                     situationals.Add(temp[i]);
@@ -2821,7 +2838,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             int teamid = curTeam;
             int i = 0;
-            foreach (Division div in MainWindow.Divisions)
+            foreach (var div in MainWindow.Divisions)
             {
                 if (tst[teamid].division == div.ID)
                 {
@@ -2905,17 +2922,17 @@ namespace NBA_Stats_Tracker.Windows
         private void btnCopyMPToClipboard_Click(object sender, RoutedEventArgs e)
         {
             string all = "";
-            var descHeader = txbMPDescHeader.Text.Split('\n');
-            var teamHeader = txbMPTeamHeader.Text.Split('\n');
-            var oppHeader = txbMPOppHeader.Text.Split('\n');
+            string[] descHeader = txbMPDescHeader.Text.Split('\n');
+            string[] teamHeader = txbMPTeamHeader.Text.Split('\n');
+            string[] oppHeader = txbMPOppHeader.Text.Split('\n');
             for (int i = 0; i < descHeader.Length; i++)
             {
                 all += String.Format("{0}\t{1}\t{2}\n", teamHeader[i], descHeader[i], oppHeader[i]);
             }
             all += "\n";
-            var descMsg = txbMPDesc.Text.Split('\n');
-            var teamMsg = txbMPTeam.Text.Split('\n');
-            var oppMsg = txbMPOpp.Text.Split('\n');
+            string[] descMsg = txbMPDesc.Text.Split('\n');
+            string[] teamMsg = txbMPTeam.Text.Split('\n');
+            string[] oppMsg = txbMPOpp.Text.Split('\n');
             for (int i = 0; i < descMsg.Length; i++)
             {
                 all += String.Format("{0}\t{1}\t{2}\n", teamMsg[i], descMsg[i], oppMsg[i]);

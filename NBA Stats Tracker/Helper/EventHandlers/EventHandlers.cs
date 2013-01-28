@@ -1,11 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -13,20 +12,21 @@
 
 #endregion
 
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using LeftosCommonLibrary.BeTimvwFramework;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Windows;
-using SQLite_Database;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Helper.EventHandlers
 {
@@ -139,7 +139,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
                                              ? ListSortDirection.Ascending
                                              : ListSortDirection.Descending;
 
-                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                var lcv = (ListCollectionView) CollectionViewSource.GetDefaultView((sender).ItemsSource);
                 lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
                                      ? new PlayerInjuryDaysComparer()
                                      : new PlayerInjuryDaysComparerDesc();
@@ -152,7 +152,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
                                              ? ListSortDirection.Ascending
                                              : ListSortDirection.Descending;
 
-                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                var lcv = (ListCollectionView) CollectionViewSource.GetDefaultView((sender).ItemsSource);
                 lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
                                      ? new PlayerInjuryNameComparer()
                                      : new PlayerInjuryNameComparerDesc();

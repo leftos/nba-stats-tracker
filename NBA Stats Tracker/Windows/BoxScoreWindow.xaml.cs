@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -76,6 +75,7 @@ namespace NBA_Stats_Tracker.Windows
         private bool minsUpdating;
         private string playersT;
         private List<PlayerStatsRow> pmsrListAway, pmsrListHome;
+        private bool clickedOK;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreWindow" /> class.
@@ -84,19 +84,21 @@ namespace NBA_Stats_Tracker.Windows
         public BoxScoreWindow(Mode curMode = Mode.Update)
         {
             InitializeComponent();
+            clickedOK = false;
 
             if (MainWindow.tf.isBetween)
             {
                 MainWindow.tf = new Timeframe(MainWindow.tf.SeasonNum);
                 MainWindow.UpdateAllData();
             }
+            pst = MainWindow.pst;
 
             /*
             tst = MainWindow.tst;
             pst = MainWindow.pst;
             tstopp = MainWindow.tstopp;
             */
-            
+
             _curMode = curMode;
             prepareWindow(curMode);
 
@@ -115,8 +117,6 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="id">The ID of the box score to be viewed.</param>
         public BoxScoreWindow(Mode curMode, int id) : this(curMode)
         {
-            pst = MainWindow.pst;
-
             LoadBoxScore(id);
         }
 
@@ -261,7 +261,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayersAway.ItemsSource = pbsAwayList;
             dgvPlayersHome.ItemsSource = pbsHomeList;
             loading = true;
-            foreach (PlayerBoxScore pbs in bse.pbsList)
+            foreach (var pbs in bse.pbsList)
             {
                 if (pbs.TeamID == bs.Team1ID)
                 {
@@ -527,6 +527,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
             }
+            clickedOK = true;
             Close();
         }
 
@@ -710,10 +711,10 @@ namespace NBA_Stats_Tracker.Windows
                 int Team1 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
                 int Team2 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
 
-                foreach (PlayerBoxScore pbs in pbsAwayList)
+                foreach (var pbs in pbsAwayList)
                     pbs.TeamID = Team1;
 
-                foreach (PlayerBoxScore pbs in pbsHomeList)
+                foreach (var pbs in pbsHomeList)
                     pbs.TeamID = Team2;
 
                 int starters = 0;
@@ -724,14 +725,20 @@ namespace NBA_Stats_Tracker.Windows
                 foreach (var pbsList in pbsLists)
                 {
                     starters = 0;
-                    foreach (PlayerBoxScore pbs in pbsList)
+                    foreach (var pbs in pbsList)
                     {
                         //pbs.PlayerID = 
                         if (pbs.PlayerID == -1)
                             continue;
 
                         if (pbs.MINS == 0)
+                        {
                             pbs.isOut = true;
+                        }
+                        else
+                        {
+                            pbs.isOut = false;
+                        }
 
                         if (pbs.isOut)
                         {
@@ -1120,7 +1127,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             ushort REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
 
-            foreach (PlayerBoxScore pbs in awayPBS)
+            foreach (var pbs in awayPBS)
             {
                 REB += pbs.REB;
                 AST += pbs.AST;
@@ -1167,7 +1174,7 @@ namespace NBA_Stats_Tracker.Windows
             OREB = 0;
             FOUL = 0;
 
-            foreach (PlayerBoxScore pbs in homePBS)
+            foreach (var pbs in homePBS)
             {
                 REB += pbs.REB;
                 AST += pbs.AST;
@@ -1352,7 +1359,7 @@ namespace NBA_Stats_Tracker.Windows
             if (skiphome || (!skipaway && Convert.ToInt32(txtPTS1.Text) > Convert.ToInt32(txtPTS2.Text)))
             {
                 int bestID = pmsrListAway[0].ID;
-                foreach (PlayerBoxScore pbs in pbsAwayList)
+                foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == bestID)
                     {
@@ -1366,7 +1373,7 @@ namespace NBA_Stats_Tracker.Windows
             else
             {
                 int bestID = pmsrListHome[0].ID;
-                foreach (PlayerBoxScore pbs in pbsHomeList)
+                foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == bestID)
                     {
@@ -1386,7 +1393,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListAway.Count > awayid)
             {
                 int id2 = pmsrListAway[awayid++].ID;
-                foreach (PlayerBoxScore pbs in pbsAwayList)
+                foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id2)
                     {
@@ -1402,7 +1409,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListAway.Count > awayid)
             {
                 int id3 = pmsrListAway[awayid++].ID;
-                foreach (PlayerBoxScore pbs in pbsAwayList)
+                foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id3)
                     {
@@ -1418,7 +1425,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListAway.Count > awayid)
             {
                 int id4 = pmsrListAway[awayid++].ID;
-                foreach (PlayerBoxScore pbs in pbsAwayList)
+                foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id4)
                     {
@@ -1434,7 +1441,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListHome.Count > homeid)
             {
                 int id2 = pmsrListHome[homeid++].ID;
-                foreach (PlayerBoxScore pbs in pbsHomeList)
+                foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id2)
                     {
@@ -1450,7 +1457,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListHome.Count > homeid)
             {
                 int id3 = pmsrListHome[homeid++].ID;
-                foreach (PlayerBoxScore pbs in pbsHomeList)
+                foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id3)
                     {
@@ -1466,7 +1473,7 @@ namespace NBA_Stats_Tracker.Windows
             if (pmsrListHome.Count > homeid)
             {
                 int id4 = pmsrListHome[homeid++].ID;
-                foreach (PlayerBoxScore pbs in pbsHomeList)
+                foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id4)
                     {
@@ -1506,7 +1513,7 @@ namespace NBA_Stats_Tracker.Windows
 
             SortableBindingList<PlayerBoxScore> pbsList = team == 1 ? pbsAwayList : pbsHomeList;
 
-            foreach (PlayerBoxScore pbs in pbsList)
+            foreach (var pbs in pbsList)
             {
                 if (pbs.PlayerID == -1)
                     continue;
@@ -1543,7 +1550,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnPaste_Click(object sender, RoutedEventArgs e)
         {
-            var text = Clipboard.GetText();
+            string text = Clipboard.GetText();
             string[] lines = Tools.SplitLinesToArray(text);
             int found = 0;
             for (int i = 0; i < lines.Length; i++)
@@ -1739,7 +1746,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
 
-            foreach (PlayerBoxScore pbs in pbsAwayList)
+            foreach (var pbs in pbsAwayList)
             {
                 REB += pbs.REB;
                 AST += pbs.AST;
@@ -1849,7 +1856,7 @@ namespace NBA_Stats_Tracker.Windows
             OREB = 0;
             FOUL = 0;
 
-            foreach (PlayerBoxScore pbs in pbsHomeList)
+            foreach (var pbs in pbsHomeList)
             {
                 REB += pbs.REB;
                 AST += pbs.AST;
@@ -1978,7 +1985,7 @@ namespace NBA_Stats_Tracker.Windows
         ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
         /// </param>
         private static void UpdateBoxScoreDataGrid(int TeamID, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
-                                                  ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
+                                                   ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.currentDB);
             string q = "select * from " + playersT + " where TeamFin = " + TeamID + "";
@@ -2013,6 +2020,14 @@ namespace NBA_Stats_Tracker.Windows
                 pbsList[i] = cur;
             }
             PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
+        }
+
+        private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!clickedOK)
+            {
+                MainWindow.bs.done = false;
+            }
         }
     }
 }

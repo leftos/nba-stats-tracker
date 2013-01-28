@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -40,10 +39,10 @@ namespace NBA_Stats_Tracker.Windows
 
             this.pst = pst;
 
-            Teams = new ObservableCollection<string>();
+            Teams = new ObservableCollection<KeyValuePair<string, int>>();
             foreach (var kvp in MainWindow.TeamOrder)
             {
-                Teams.Add(kvp.Key);
+                Teams.Add(new KeyValuePair<string, int>(kvp.Key, kvp.Value));
             }
 
             Players = new ObservableCollection<Player>();
@@ -57,7 +56,7 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         private ObservableCollection<Player> Players { get; set; }
-        private ObservableCollection<string> Teams { get; set; }
+        private ObservableCollection<KeyValuePair<string, int>> Teams { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
@@ -67,7 +66,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 List<string> lines = Tools.SplitLinesToList(txtTeams.Text, false);
                 MainWindow.addInfo = "";
-                foreach (string line in lines)
+                foreach (var line in lines)
                 {
                     MainWindow.addInfo += line + "\n";
                 }
@@ -75,15 +74,15 @@ namespace NBA_Stats_Tracker.Windows
             else if (tbcAdd.SelectedItem == tabPlayers)
             {
                 int i = SQLiteIO.GetMaxPlayerID(MainWindow.currentDB);
-                foreach (Player p in Players)
+                foreach (var p in Players)
                 {
                     if (String.IsNullOrWhiteSpace(p.LastName) || p.Team == -1)
                     {
-                        MessageBox.Show("You have to enter the Last Name, Position and Team for all players");
+                        MessageBox.Show("You have to enter the Last Name and Team for all players");
                         return;
                     }
                     p.ID = ++i;
-                    newpst.Add(p.ID, new PlayerStats(p));
+                    newpst.Add(p.ID, new PlayerStats(p, true));
                 }
                 MainWindow.pst = newpst;
                 MainWindow.addInfo = "$$NST Players Added";

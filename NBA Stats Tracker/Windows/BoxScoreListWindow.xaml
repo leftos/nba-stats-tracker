@@ -6,7 +6,7 @@
         <DataGrid Margin="6,6,6,44" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
                   FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True"
                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                  Name="dgvBoxScores" VerticalAlignment="Stretch" SelectionMode="Single">
+                  Name="dgvBoxScores" VerticalAlignment="Stretch">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding bs.GameID}" Header="GameID" Visibility="Collapsed" />
                 <DataGridTextColumn Binding="{Binding bs.SeasonNum}" Header="Season" />

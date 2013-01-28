@@ -1,20 +1,4 @@
-1.6.1.1
+1.6.2.2
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-	v1.6.1.1 Beta
-		- Fix: Fixed another case where the Injured checkbox in Player Overview wouldn't update properly after setting/unsetting an injury
-
-	v1.6.1 Beta
-		- Addition: User will be informed of updated injury statuses whenever importing using REDitor
-
-	v1.6.0.1 Beta
-		- Fix: Fixed Injured checkbox behavior in Player Overview when the user clicks Cancel in the Player Injury window
-
-	v1.6 Beta
-		- Addition: Added detailed injuries information; you can now set injury type (including custom injury names other than the ones included by default), and an exact or approximate return timeframe
-
-	v1.5.1.3 Beta
-		- Improvement: Tool now supports importing from REDitor after a team's been renamed (e.g. renaming the Kings to Supersonics between imports will not cause any problems anymore)
-		- Fix: Fixed crash introduced in v1.5.1.2 that would crash the tool when going to Team Overview in a multi-season database and trying to view a team
-		- Fix: When starting a new season, the name given to the season by the user would be left unused, using just the season number instead
-		- Fix: Fixed crash when saving a player in Player Overview
+	v1.6 added detailed injury information. Updates have been frequent as bugs are squashed out. Thanks for your support.

@@ -50,14 +50,14 @@
 AppName={#MyAppSetupName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
-AppCopyright=Copyright © Lefteris Aslanoglou 2011-2012
+AppCopyright=Copyright © Lefteris Aslanoglou 2011-2013
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany=Lefteris Aslanoglou
 AppPublisher=Lefteris Aslanoglou
 ;AppPublisherURL=http://...
 ;AppSupportURL=http://...
 ;AppUpdatesURL=http://...
-OutputBaseFilename=[Leftos] {#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
+OutputBaseFilename={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
 DefaultGroupName={#MyAppSetupName}
 DefaultDirName={pf32}\{#MyAppSetupName}
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe

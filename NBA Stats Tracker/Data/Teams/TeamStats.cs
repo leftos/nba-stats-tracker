@@ -1,3 +1,19 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,8 +23,11 @@ using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
+using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Windows;
 using SQLite_Database;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
@@ -18,6 +37,27 @@ namespace NBA_Stats_Tracker.Data.Teams
     [Serializable]
     public class TeamStats
     {
+        public static List<string> metricsNames = new List<string>
+                                                  {
+                                                      "Poss",
+                                                      "Pace",
+                                                      "ORTG",
+                                                      "DRTG",
+                                                      "AST%",
+                                                      "DREB%",
+                                                      "EFG%",
+                                                      "EFFd",
+                                                      "TOR",
+                                                      "OREB%",
+                                                      "FTR",
+                                                      "PW%",
+                                                      "TS%",
+                                                      "3PR",
+                                                      "PythW",
+                                                      "PythL",
+                                                      "GmSc"
+                                                  };
+
         public int ID;
         private int _division;
 
@@ -72,12 +112,11 @@ namespace NBA_Stats_Tracker.Data.Teams
             this.ID = ID;
         }
 
-        public TeamStats(int ID, string name)
-            : this()
+        public TeamStats(int ID, string name) : this()
         {
             this.ID = ID;
             this.name = name;
-            this.displayName = name;
+            displayName = name;
         }
 
         public TeamStats(TeamStatsRow tsr, bool playoffs = false)
@@ -215,27 +254,6 @@ namespace NBA_Stats_Tracker.Data.Teams
                                      pl_metrics.Add(name, double.NaN);
                                  });
         }
-
-        public static List<string> metricsNames = new List<string>
-                                                  {
-                                                      "Poss",
-                                                      "Pace",
-                                                      "ORTG",
-                                                      "DRTG",
-                                                      "AST%",
-                                                      "DREB%",
-                                                      "EFG%",
-                                                      "EFFd",
-                                                      "TOR",
-                                                      "OREB%",
-                                                      "FTR",
-                                                      "PW%",
-                                                      "TS%",
-                                                      "3PR",
-                                                      "PythW",
-                                                      "PythL",
-                                                      "GmSc"
-                                                  };
 
         /// <summary>
         ///     Calculates the averages of a team's stats.
@@ -685,7 +703,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 try
                 {
-                return pl_winloss[0]/getGames();
+                    return pl_winloss[0]/getGames();
                 }
                 catch (DivideByZeroException)
                 {
@@ -696,7 +714,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 try
                 {
-                return (winloss[0] + pl_winloss[0])/(getGames() + getPlayoffGames());
+                    return (winloss[0] + pl_winloss[0])/(getGames() + getPlayoffGames());
                 }
                 catch (DivideByZeroException)
                 {
@@ -780,7 +798,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             string msg = roster + "\n\n===================================================\n\n";
-            msg += String.Format("{0}, the {1}{2}", displayName, rating[ID][17], Helper.Miscellaneous.Misc.getRankingSuffix(rating[ID][17]));
+            msg += String.Format("{0}, the {1}{2}", displayName, rating[ID][17], Misc.getRankingSuffix(rating[ID][17]));
 
             int topThird = teamCount/3;
             int secondThird = teamCount/3*2;
@@ -1481,7 +1499,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
 
                 var tables = new List<string> {teamsT, pl_teamsT, oppT, pl_oppT};
-                foreach (string table in tables)
+                foreach (var table in tables)
                 {
                     string q = "SELECT ID, Name, Division FROM " + table;
                     DataTable res = db.GetDataTable(q);

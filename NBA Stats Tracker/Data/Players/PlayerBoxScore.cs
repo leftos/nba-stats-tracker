@@ -1,3 +1,19 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -5,6 +21,8 @@ using System.Data;
 using System.Linq;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Teams;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Players
 {
@@ -21,8 +39,6 @@ namespace NBA_Stats_Tracker.Data.Players
         private UInt16 _TPA;
         protected UInt16 _TPM;
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
-
-        public int SeasonNum { get; set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
@@ -270,6 +286,8 @@ namespace NBA_Stats_Tracker.Data.Players
             GameID = lpbs.GameID;
         }
 
+        public int SeasonNum { get; set; }
+
         public DateTime RealDate { get; set; }
 
         public int PlayerID { get; set; }
@@ -283,7 +301,27 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool isOut { get; set; }
         public double GmSc { get; set; }
         public double GmScE { get; set; }
-        public UInt16 MINS { get; set; }
+
+        public UInt16 MINS
+        {
+            get { return _mINS; }
+            set
+            {
+                _mINS = value;
+                if (value == 0)
+                {
+                    isOut = true;
+                }
+                else
+                {
+                    isOut = false;
+                }
+                NotifyPropertyChanged("MINS");
+                NotifyPropertyChanged("isOut");
+            }
+        }
+
+        private UInt16 _mINS;
         public UInt16 PTS { get; set; }
 
         public UInt16 FGM
@@ -536,7 +574,7 @@ namespace NBA_Stats_Tracker.Data.Players
             string s = "";
             s += String.Format("PTS: {0}\n", PTS);
             int i = 1;
-            foreach (string item in items)
+            foreach (var item in items)
             {
                 if (i == count)
                     break;
@@ -594,9 +632,9 @@ namespace NBA_Stats_Tracker.Data.Players
             return s;
         }
 
-        public static void GetFactors(Position position, out double fgfactor, out double tpfactor, out double ftfactor, out double orebfactor,
-                                      out double rebfactor, out double astfactor, out double stlfactor, out double blkfactor, out double ptsfactor,
-                                      out double ftrfactor)
+        public static void GetFactors(Position position, out double fgfactor, out double tpfactor, out double ftfactor,
+                                      out double orebfactor, out double rebfactor, out double astfactor, out double stlfactor,
+                                      out double blkfactor, out double ptsfactor, out double ftrfactor)
         {
             if (position.ToString().EndsWith("G"))
             {

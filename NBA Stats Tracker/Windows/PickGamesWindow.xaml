@@ -1,9 +1,10 @@
 ﻿<Window x:Class="NBA_Stats_Tracker.Windows.PickGamesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="PickGamesWindow" Height="506" Width="432" Loaded="Window_Loaded_1" WindowStartupLocation="CenterScreen">
+        Title="Pick Games" Height="506" Width="432" Loaded="Window_Loaded_1" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="5" />
             <RowDefinition Height="70" />
             <RowDefinition Height="10" />
             <RowDefinition Height="30" />
@@ -21,15 +22,15 @@
             <ColumnDefinition />
             <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="3" Grid.Column="1" Margin="0,3,0,0" TextWrapping="Wrap">
+        <TextBlock Grid.ColumnSpan="3" Grid.Column="1" Margin="0,3,0,0" TextWrapping="Wrap" Grid.Row="1">
             Select any games for which you want to calculate the box-score.<LineBreak /><LineBreak />Any games you don't select won't have their box scores calculated, but the teams' and players' stats will still be updated.
         </TextBlock>
-        <ListBox Name="lstAvailableHome" Grid.Row="6" Grid.Column="3" />
-        <ListBox Name="lstAvailableAway" Grid.Row="6" Grid.Column="1" />
-        <ListBox Name="lstSelectedGames" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"
+        <ListBox Name="lstAvailableHome" Grid.Row="7" Grid.Column="3" />
+        <ListBox Name="lstAvailableAway" Grid.Row="7" Grid.Column="1" />
+        <ListBox Name="lstSelectedGames" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
                  MouseDoubleClick="lstSelectedGames_MouseDoubleClick" />
-        <DatePicker Name="dtpToday" Grid.Row="2" Grid.Column="1" Margin="2" />
-        <Button x:Name="btnAddGame" Grid.Row="8" Grid.Column="1" Margin="6" Content="Add Game" Click="btnAddGame_Click" />
-        <Button Name="btnOK" Grid.Row="8" Grid.Column="3" Margin="6" Content="Done" Click="btnOK_Click" />
+        <DatePicker Name="dtpToday" Grid.Row="3" Grid.Column="1" Margin="2" />
+        <Button x:Name="btnAddGame" Grid.Row="9" Grid.Column="1" Margin="6" Content="Add Game" Click="btnAddGame_Click" />
+        <Button Name="btnOK" Grid.Row="9" Grid.Column="3" Margin="6" Content="Done" Click="btnOK_Click" />
     </Grid>
 </Window>

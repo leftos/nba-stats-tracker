@@ -1,3 +1,19 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +29,8 @@ using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
+#endregion
+
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
@@ -24,6 +42,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerContract Contract;
         public string FirstName;
         public int ID;
+        public PlayerInjury Injury;
         public string LastName;
         public Position Position1;
         public Position Position2;
@@ -37,7 +56,6 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool isActive;
         public bool isAllStar;
         public bool isHidden;
-        public PlayerInjury Injury;
         public bool isNBAChampion;
         public Dictionary<string, double> metrics = new Dictionary<string, double>();
         public float[] pl_averages = new float[16];
@@ -100,7 +118,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="player">A Player instance containing the information to initialize with.</param>
-        public PlayerStats(Player player) : this()
+        public PlayerStats(Player player, bool fromAddScreen = false) : this()
         {
             ID = player.ID;
             LastName = player.LastName;
@@ -109,6 +127,18 @@ namespace NBA_Stats_Tracker.Data.Players
             Position2 = player.Position2;
             TeamF = player.Team;
             isActive = TeamF != -1;
+            if (!fromAddScreen)
+            {
+                height = Convert.ToDouble(player.Height);
+                weight = player.Weight;
+            }
+            else
+            {
+                height = MainWindow.IsImperial ? PlayerStatsRow.ConvertImperialHeightToMetric(player.Height) : Convert.ToDouble(player.Height);
+                weight = MainWindow.IsImperial ? weight : PlayerStatsRow.ConvertMetricWeightToImperial(player.Weight);
+            }
+            YearOfBirth = player.YearOfBirth;
+            YearsPro = player.YearsPro;
         }
 
         /// <summary>
@@ -200,8 +230,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 try
                 {
-                    var injType = Tools.getInt(dataRow, "InjuryType");
-                    var days = Tools.getInt(dataRow, "InjuryDaysLeft");
+                    int injType = Tools.getInt(dataRow, "InjuryType");
+                    int days = Tools.getInt(dataRow, "InjuryDaysLeft");
                     Injury = injType != -1
                                  ? new PlayerInjury(injType, days)
                                  : new PlayerInjury(Tools.getString(dataRow, "CustomInjuryName"), days);
@@ -299,7 +329,7 @@ namespace NBA_Stats_Tracker.Data.Players
             this.isActive = isActive;
             this.isHidden = isHidden;
             this.isAllStar = isAllStar;
-            this.Injury = injury;
+            Injury = injury;
             this.isNBAChampion = isNBAChampion;
 
             try
@@ -519,7 +549,11 @@ namespace NBA_Stats_Tracker.Data.Players
             get { return PositionToString(Position2); }
         }
 
+        #region INotifyPropertyChanged Members
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         public static string PositionToString(Position position)
         {
@@ -618,7 +652,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 MainWindow.seasonHighs.Remove(ID);
             }
             MainWindow.seasonHighs.Add(ID, new Dictionary<int, ushort[]>());
-            foreach (int season in seasonsList)
+            foreach (var season in seasonsList)
             {
                 List<PlayerBoxScore> seasonPBSList = allTimePBSList.Where(pbs => pbs.SeasonNum == season).ToList();
                 MainWindow.seasonHighs[ID].Add(season, new ushort[18]);
@@ -975,7 +1009,7 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 if (pstats[p.GP] < gamesRequired)
                 {
-                    foreach (string name in temp_metrics.Keys.ToList())
+                    foreach (var name in temp_metrics.Keys.ToList())
                         temp_metrics[name] = Double.NaN;
                 }
             }
@@ -1187,7 +1221,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public static PlayerStats CalculateLeagueAverages(Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats)
         {
             var lps = new PlayerStats(new Player(-1, -1, "League", "Averages", Position.None, Position.None));
-            foreach (int key in playerStats.Keys)
+            foreach (var key in playerStats.Keys)
             {
                 lps.AddPlayerStats(playerStats[key]);
             }
@@ -1255,7 +1289,7 @@ namespace NBA_Stats_Tracker.Data.Players
             double totalMins = 0;
             double pl_totalMins = 0;
 
-            foreach (int playerid in playerStats.Keys.ToList())
+            foreach (var playerid in playerStats.Keys.ToList())
             {
                 if (playerStats[playerid].TeamF == -1)
                     continue;
@@ -1287,7 +1321,7 @@ namespace NBA_Stats_Tracker.Data.Players
             else
                 pl_lg_aPER /= pl_totalMins;
 
-            foreach (int playerid in playerStats.Keys.ToList())
+            foreach (var playerid in playerStats.Keys.ToList())
             {
                 if (playerStats[playerid].TeamF == -1)
                     continue;

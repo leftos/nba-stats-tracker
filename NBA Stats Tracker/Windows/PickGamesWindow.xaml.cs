@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Media;
@@ -6,6 +22,8 @@ using System.Windows;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -65,7 +83,7 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     string[] parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
-                    foreach (string part in parts)
+                    foreach (var part in parts)
                     {
                         REDitor.pickedTeams.Remove(Misc.GetTeamIDFromDisplayName(MainWindow.tst, part));
                         lstAvailableAway.Items.Add(part);
@@ -92,7 +110,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
-            foreach (int team in _teams)
+            foreach (var team in _teams)
             {
                 lstAvailableAway.Items.Add(MainWindow.tst[team].displayName);
                 lstAvailableHome.Items.Add(MainWindow.tst[team].displayName);

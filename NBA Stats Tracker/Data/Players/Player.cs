@@ -1,6 +1,24 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Data;
 using LeftosCommonLibrary;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Players
 {
@@ -20,6 +38,10 @@ namespace NBA_Stats_Tracker.Data.Players
             FirstName = "";
             Position1 = Position.None;
             Position2 = Position.None;
+            Height = "0";
+            Weight = 0;
+            YearOfBirth = 0;
+            YearsPro = 0;
         }
 
         /// <summary>
@@ -69,6 +91,10 @@ namespace NBA_Stats_Tracker.Data.Players
         public string FirstName { get; set; }
         public Position Position1 { get; set; }
         public Position Position2 { get; set; }
+        public string Height { get; set; }
+        public double Weight { get; set; }
+        public int YearsPro { get; set; }
+        public int YearOfBirth { get; set; }
         public bool AddToAll { get; set; }
     }
 }

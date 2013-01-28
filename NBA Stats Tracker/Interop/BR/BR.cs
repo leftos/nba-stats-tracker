@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -50,7 +49,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 HtmlDocument doc = htmlweb.Load(url);
 
                 HtmlNodeCollection divs = doc.DocumentNode.SelectNodes("//div");
-                foreach (HtmlNode cur in divs)
+                foreach (var cur in divs)
                 {
                     try
                     {
@@ -71,7 +70,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 }
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -88,7 +87,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         HtmlNodeCollection theadrows = thead.SelectNodes("tr");
 
                         IEnumerable<string> headers = theadrows[1].Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        foreach (var colheader in headers)
                         {
                             table.Columns.Add(colheader);
                         }
@@ -140,7 +139,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 recordparts[1] = recordparts[1].Split(',')[0];
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -157,7 +156,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         HtmlNodeCollection theadrows = thead.SelectNodes("tr");
 
                         IEnumerable<string> headers = theadrows[0].Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        foreach (var colheader in headers)
                         {
                             table.Columns.Add(colheader);
                         }
@@ -190,7 +189,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 HtmlDocument doc = htmlweb.Load(url);
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -211,7 +210,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         HtmlNode theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
 
                         IEnumerable<string> headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        foreach (var colheader in headers)
                         {
                             try
                             {
@@ -251,7 +250,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 HtmlDocument doc = htmlweb.Load(url);
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -272,7 +271,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         HtmlNode theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
 
                         IEnumerable<string> headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        foreach (var colheader in headers)
                         {
                             try
                             {

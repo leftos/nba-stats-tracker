@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -19,9 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
+using System.Windows.Controls;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 
 #endregion
@@ -42,9 +39,9 @@ namespace NBA_Stats_Tracker.Windows
 
             List<string> approx = PlayerInjury.ApproximateDurations.Keys.Skip(2).ToList();
             approx.AddRange(PlayerInjury.ApproximateDurations.Keys.Take(2).ToList());
-            
+
             cmbTFApproximateAmount.ItemsSource = approx;
-            cmbTFExactType.ItemsSource = new List<string>{"Days", "Weeks", "Months"};
+            cmbTFExactType.ItemsSource = new List<string> {"Days", "Weeks", "Months"};
 
             rbTFApproximate.IsChecked = true;
         }
@@ -64,7 +61,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbTFExactType.SelectedItem = "Days";
             txtTFExactAmount.Text = injury.InjuryDaysLeft.ToString();
         }
-        
+
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             InjuryType = PlayerInjury.InjuryTypes.Single(it => it.Value == cmbInjuryType.SelectedItem.ToString()).Key;
@@ -105,7 +102,7 @@ namespace NBA_Stats_Tracker.Windows
             Close();
         }
 
-        private void cmbInjuryType_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void cmbInjuryType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (cmbInjuryType.SelectedItem.ToString())
             {
@@ -121,7 +118,6 @@ namespace NBA_Stats_Tracker.Windows
                     grpTF.IsEnabled = true;
                     txtCustomInjuryName.IsEnabled = false;
                     break;
-
             }
         }
     }

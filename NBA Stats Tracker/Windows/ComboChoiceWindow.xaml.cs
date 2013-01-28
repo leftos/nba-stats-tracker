@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -53,8 +52,8 @@ namespace NBA_Stats_Tracker.Windows
         public ComboChoiceWindow(Mode mode, int index = 0)
         {
             InitializeComponent();
-            this._mode = mode;
-            
+            _mode = mode;
+
             if (mode == Mode.Versus)
             {
                 label1.Content = "Pick the two teams";
@@ -69,7 +68,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 label1.Content = "Pick the new division for the team:";
                 cmbSelection2.Visibility = Visibility.Hidden;
-                foreach (Division div in MainWindow.Divisions)
+                foreach (var div in MainWindow.Divisions)
                 {
                     Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
                     cmbSelection1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));

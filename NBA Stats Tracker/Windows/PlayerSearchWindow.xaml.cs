@@ -1,11 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -26,7 +25,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Ciloci.Flee;
-using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
@@ -62,6 +60,8 @@ namespace NBA_Stats_Tracker.Windows
                                                      "MPG"
                                                  };
 
+        private readonly List<string> ContractOptions = new List<string> {"Any", "None", "Team", "Player", "Team2Yr"};
+
         private readonly List<string> Metrics = new List<string>
                                                 {
                                                     "PER",
@@ -88,7 +88,6 @@ namespace NBA_Stats_Tracker.Windows
 
         private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> Positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
-        private readonly List<string> ContractOptions = new List<string>{"Any", "None", "Team", "Player", "Team2Yr"}; 
         private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
 
         private readonly List<string> Totals = new List<string>
@@ -179,7 +178,7 @@ namespace NBA_Stats_Tracker.Windows
 
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
-            
+
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
         }
@@ -333,7 +332,7 @@ namespace NBA_Stats_Tracker.Windows
 
             var psrList = new List<PlayerStatsRow>();
             var pl_psrList = new List<PlayerStatsRow>();
-            foreach (PlayerStats ps in filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value).Values)
+            foreach (var ps in filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value).Values)
             {
                 psrList.Add(new PlayerStatsRow(ps));
                 pl_psrList.Add(new PlayerStatsRow(ps, true));
@@ -349,14 +348,14 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayoffStats.ItemsSource = pl_psrView;
 
             string sortColumn;
-            foreach (string item in lstMetrics.Items.Cast<string>())
+            foreach (var item in lstMetrics.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
                 pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (string item in lstAvg.Items.Cast<string>())
+            foreach (var item in lstAvg.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
@@ -364,7 +363,7 @@ namespace NBA_Stats_Tracker.Windows
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
                 pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (string item in lstTotals.Items.Cast<string>())
+            foreach (var item in lstTotals.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
@@ -409,9 +408,9 @@ namespace NBA_Stats_Tracker.Windows
             }
             if (!String.IsNullOrWhiteSpace(txtHeightVal.Text))
             {
-                var metricHeight = MainWindow.IsImperial
-                                       ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
-                                       : Convert.ToDouble(txtHeightVal.Text);
+                double metricHeight = MainWindow.IsImperial
+                                          ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
+                                          : Convert.ToDouble(txtHeightVal.Text);
                 context = new ExpressionContext();
                 ige = context.CompileGeneric<bool>(psr.Height.ToString() + cmbHeightOp.SelectedItem + metricHeight.ToString());
                 if (ige.Evaluate() == false)
@@ -419,9 +418,9 @@ namespace NBA_Stats_Tracker.Windows
             }
             if (!String.IsNullOrWhiteSpace(txtWeightVal.Text))
             {
-                var imperialWeight = MainWindow.IsImperial
-                                         ? Convert.ToDouble(txtWeightVal.Text)
-                                         : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
+                double imperialWeight = MainWindow.IsImperial
+                                            ? Convert.ToDouble(txtWeightVal.Text)
+                                            : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
                 context = new ExpressionContext();
                 ige = context.CompileGeneric<bool>(psr.Weight.ToString() + cmbWeightOp.SelectedItem + imperialWeight.ToString());
                 if (ige.Evaluate() == false)
@@ -606,7 +605,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (string item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
+                foreach (var item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
                 {
                     lstTotals.Items.Remove(item);
                 }
@@ -664,7 +663,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (string item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
+                foreach (var item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
                 {
                     lstAvg.Items.Remove(item);
                 }
@@ -722,7 +721,7 @@ namespace NBA_Stats_Tracker.Windows
             }
             else
             {
-                foreach (string item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
+                foreach (var item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
                 {
                     lstMetrics.Items.Remove(item);
                 }
@@ -946,8 +945,6 @@ namespace NBA_Stats_Tracker.Windows
                             rbStatsAllTime.IsChecked = true;
                         }
                         break;
-
-                        
                 }
             }
         }
@@ -980,25 +977,25 @@ namespace NBA_Stats_Tracker.Windows
                 s += String.Format("Team\t{0}\n", GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()));
             s += String.Format("Season\t{0}\n", curSeason);
             s += String.Format("Totals\n");
-            foreach (string item in lstTotals.Items.Cast<string>())
+            foreach (var item in lstTotals.Items.Cast<string>())
             {
                 s += item + "\n";
             }
             s += "TotalsEND\n";
             s += String.Format("Avg\n");
-            foreach (string item in lstAvg.Items.Cast<string>())
+            foreach (var item in lstAvg.Items.Cast<string>())
             {
                 s += item + "\n";
             }
             s += "AvgEND\n";
             s += String.Format("Metrics\n");
-            foreach (string item in lstMetrics.Items.Cast<string>())
+            foreach (var item in lstMetrics.Items.Cast<string>())
             {
                 s += item + "\n";
             }
             s += "MetricsEND\n";
             s += String.Format("Contract\n");
-            foreach (string item in lstContract.Items.Cast<string>())
+            foreach (var item in lstContract.Items.Cast<string>())
             {
                 s += item + "\n";
             }

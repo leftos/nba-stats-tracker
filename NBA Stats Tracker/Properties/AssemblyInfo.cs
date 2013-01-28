@@ -1,8 +1,8 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
 // under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
@@ -29,9 +29,9 @@ using System.Windows;
 [assembly: AssemblyTitle("NBA Stats Tracker")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Lefteris Aslanoglou")]
 [assembly: AssemblyProduct("NBA Stats Tracker")]
-[assembly: AssemblyCopyright("Lefteris Aslanoglou")]
+[assembly: AssemblyCopyright("(c) 2011-2013 Lefteris Aslanoglou")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -72,4 +72,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.6.1.2")]
+[assembly: AssemblyVersion("1.6.2.3")]

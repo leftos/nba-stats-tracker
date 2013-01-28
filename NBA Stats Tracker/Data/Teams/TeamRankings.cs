@@ -1,4 +1,22 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System.Collections.Generic;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
@@ -13,7 +31,6 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public TeamRankings()
         {
-            
         }
 
         /// <summary>
@@ -74,14 +91,14 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
 
-            List<string> badMetrics = new List<string> {"DRTG", "TOR", "PythL"};
+            var badMetrics = new List<string> {"DRTG", "TOR", "PythL"};
             rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-            var metricsNames = TeamStats.metricsNames;
+            List<string> metricsNames = TeamStats.metricsNames;
             for (int i = 0; i < tst.Count; i++)
             {
                 rankingsMetrics[i] = new Dictionary<string, int>();
             }
-            foreach (string metricName in metricsNames)
+            foreach (var metricName in metricsNames)
             {
                 var metricStats = new Dictionary<int, double>();
                 for (int i = 0; i < tst.Count; i++)

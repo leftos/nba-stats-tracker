@@ -1,5 +1,20 @@
 NBA Stats Tracker - Version History
 
+	v1.6.2.3 Beta
+		- Fix: Fixed crash when trying to view a metric stats tab in the Box Score window when manually updating the database with a box score
+		- Fix: Fixed crash when resetting team stats
+		- Fix: Fixed player stats being reset accidentally because of the DNP flag being selected while the player had played more than 0 minutes when changing tabs in the Box Score window
+
+	v1.6.2.2 Beta
+		- Fix: Fixed recent bug that had broken the manual Add Players feature
+
+	v1.6.2.1 Beta
+		- Improvement: Small update to the approximate injury durations
+
+	v1.6.2 Beta
+		- Improvement: Improved stats filtering for League Leaders (both NBA-based and Custom rules)
+		- Addition: Player Facts in Player Overview's Scouting Report will now note metric stats' rankings in the "Against Leaders" sections as well
+
 	v1.6.1.2 Beta
 		- Fix: Fixed crash when trying to view a player with past stats added in Player Overview
 

@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -208,14 +207,14 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (candidates.Count > 2)
                 {
-                    foreach (int team in candidates)
+                    foreach (var team in candidates)
                     {
                         lstDisabled.Items.Add(MainWindow.tst[team].displayName);
                     }
                 }
                 else if (candidates.Count == 2)
                 {
-                    foreach (int team in candidates)
+                    foreach (var team in candidates)
                     {
                         lstEnabled.Items.Add(MainWindow.tst[team].displayName);
                     }
@@ -232,7 +231,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
         }
-        
+
         /// <summary>
         ///     Handles the Click event of the btnEnable control.
         ///     Adds one or more disabled items to the enabled list, and sorts.
@@ -248,13 +247,13 @@ namespace NBA_Stats_Tracker.Windows
                 var names = new string[lstDisabled.SelectedItems.Count];
                 lstDisabled.SelectedItems.CopyTo(names, 0);
 
-                foreach (string name in names)
+                foreach (var name in names)
                 {
                     lstEnabled.Items.Add(name);
                     lstDisabled.Items.Remove(name);
                 }
                 var items = new List<string>();
-                foreach (object item in lstEnabled.Items)
+                foreach (var item in lstEnabled.Items)
                 {
                     items.Add(item.ToString());
                 }
@@ -294,13 +293,13 @@ namespace NBA_Stats_Tracker.Windows
                 var names = new string[lstEnabled.SelectedItems.Count];
                 lstEnabled.SelectedItems.CopyTo(names, 0);
 
-                foreach (string name in names)
+                foreach (var name in names)
                 {
                     lstDisabled.Items.Add(name);
                     lstEnabled.Items.Remove(name);
                 }
                 var items = new List<string>();
-                foreach (object item in lstDisabled.Items)
+                foreach (var item in lstDisabled.Items)
                 {
                     items.Add(item.ToString());
                 }
@@ -507,12 +506,12 @@ namespace NBA_Stats_Tracker.Windows
 
                 string stg = File.ReadAllText(ofd.FileName);
                 string[] lines = stg.Split(new[] {'\n'});
-                foreach (string line in lines)
+                foreach (var line in lines)
                 {
                     if (line.StartsWith("Active$$"))
                     {
                         var enabledTeams = new List<string>(line.Substring(8).Split(new[] {"$%"}, StringSplitOptions.None));
-                        foreach (string team in enabledTeams)
+                        foreach (var team in enabledTeams)
                         {
                             bool found = false;
                             foreach (string dteam in lstDisabled.Items)
@@ -546,7 +545,7 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 var items = new List<string>();
-                foreach (object item in lstEnabled.Items)
+                foreach (var item in lstEnabled.Items)
                 {
                     items.Add(item.ToString());
                 }

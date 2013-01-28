@@ -1,3 +1,19 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,6 +23,8 @@ using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using SQLite_Database;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Windows
 {
@@ -68,7 +86,7 @@ namespace NBA_Stats_Tracker.Windows
             db.GetDataTable("SELECT ID FROM Divisions").Rows.Cast<DataRow>().ToList().ForEach(row => usedIDs.Add(Tools.getInt(row, "ID")));
 
             List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
-            foreach (string newDiv in list)
+            foreach (var newDiv in list)
             {
                 string newName = newDiv.Replace(':', '-');
                 int i = 0;
@@ -87,7 +105,7 @@ namespace NBA_Stats_Tracker.Windows
                 usedIDs.Add(i);
             }
 
-            foreach (Division div in MainWindow.Divisions.Where(division => division.ConferenceID == curConf.ID))
+            foreach (var div in MainWindow.Divisions.Where(division => division.ConferenceID == curConf.ID))
             {
                 db.Insert("Divisions",
                           new Dictionary<string, string>

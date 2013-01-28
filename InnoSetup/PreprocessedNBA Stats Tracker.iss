@@ -4,14 +4,14 @@
 AppName=NBA Stats Tracker
 AppVersion=
 AppVerName=NBA Stats Tracker  
-AppCopyright=Copyright © Lefteris Aslanoglou 2011-2012
+AppCopyright=Copyright © Lefteris Aslanoglou 2011-2013
 VersionInfoVersion=
 VersionInfoCompany=Lefteris Aslanoglou
 AppPublisher=Lefteris Aslanoglou
 ;AppPublisherURL=http://...
 ;AppSupportURL=http://...
 ;AppUpdatesURL=http://...
-OutputBaseFilename=[Leftos] NBA Stats Tracker  
+OutputBaseFilename=NBA Stats Tracker  
 DefaultGroupName=NBA Stats Tracker
 DefaultDirName={pf32}\NBA Stats Tracker
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe

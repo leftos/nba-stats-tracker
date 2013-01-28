@@ -1,10 +1,28 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
 using NBA_Stats_Tracker.Data.PastStats;
 using NBA_Stats_Tracker.Data.SQLiteIO;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Windows
 {

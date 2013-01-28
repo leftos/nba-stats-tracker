@@ -1,3 +1,19 @@
+#region Copyright Notice
+
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
+// "Application Development for Basketball Statistical Analysis in Natural Language"
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+// 
+// All rights reserved. Unless specifically stated otherwise, the code in this file should 
+// not be reproduced, edited and/or republished without explicit permission from the 
+// author.
+
+#endregion
+
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +26,8 @@ using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
+#endregion
+
 namespace NBA_Stats_Tracker.Data.Players
 {
     /// <summary>
@@ -17,6 +35,8 @@ namespace NBA_Stats_Tracker.Data.Players
     /// </summary>
     public class PlayerStatsRow : INotifyPropertyChanged
     {
+        private PlayerInjury _injury;
+
         public PlayerStatsRow()
         {
         }
@@ -72,13 +92,13 @@ namespace NBA_Stats_Tracker.Data.Players
             ContractOption = ps.Contract.Option;
             for (int i = 1; i <= 7; i++)
             {
-                typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
+                typeof (PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
             }
             ContractYears = ps.Contract.GetYears();
 
             Height = ps.height;
             Weight = ps.weight;
-            
+
             if (!playoffs)
             {
                 GP = ps.stats[p.GP];
@@ -251,8 +271,6 @@ namespace NBA_Stats_Tracker.Data.Players
                 Calculate2KRatings(playoffs);
         }
 
-        public int ContractYears { get; set; }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStatsRow" /> class.
         /// </summary>
@@ -280,6 +298,8 @@ namespace NBA_Stats_Tracker.Data.Players
             Type = type;
             Group = group;
         }
+
+        public int ContractYears { get; set; }
 
         public uint GP { get; set; }
         public uint GS { get; set; }
@@ -359,6 +379,7 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             get { return PlayerStats.PositionToString(Position2); }
         }
+
         public int TeamF { get; set; }
         public string TeamFDisplay { get; set; }
         public int TeamS { get; set; }
@@ -381,22 +402,31 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        private PlayerInjury _injury;
-        public string InjuryName { get { return Injury.InjuryName; } }
-        public string InjuryApproxDaysLeft { get { return Injury.ApproximateDays; } }
+        public string InjuryName
+        {
+            get { return Injury.InjuryName; }
+        }
+
+        public string InjuryApproxDaysLeft
+        {
+            get { return Injury.ApproximateDays; }
+        }
 
         public bool IsInjured
         {
             get { return Injury.IsInjured; }
         }
 
-        public int InjuryDaysLeft { get { return Injury.InjuryDaysLeft; } }
+        public int InjuryDaysLeft
+        {
+            get { return Injury.InjuryDaysLeft; }
+        }
 
         public string InjuryStatus
         {
             get { return Injury.Status; }
         }
-    
+
         public bool isNBAChampion { get; set; }
 
         public int YearOfBirth { get; set; }
@@ -437,7 +467,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 else
                 {
-                    var allInches = Height*0.393701;
+                    double allInches = Height*0.393701;
                     int feet = Convert.ToInt32(Math.Floor(allInches/12));
                     int inches = Convert.ToInt32(allInches)%12;
                     return String.Format("{0}\'{1}\"", feet, inches);
@@ -469,25 +499,6 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 OnPropertyChanged("DisplayHeight");
                 OnPropertyChanged("Height");
-            }
-        }
-
-        public static double ConvertImperialHeightToMetric(string value)
-        {
-            try
-            {
-                var parts = value.Split('\'');
-                if (parts.Length != 2)
-                {
-                    throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
-                }
-                parts[1] = parts[1].Replace("\"", "");
-                var allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
-                return ((double) allInches)/0.393701;
-            }
-            catch
-            {
-                throw new Exception(value + " is not a proper value for imperial height.");
             }
         }
 
@@ -533,6 +544,31 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        public static double ConvertImperialHeightToMetric(string value)
+        {
+            try
+            {
+                string[] parts = value.Split('\'');
+                if (parts.Length != 2)
+                {
+                    throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
+                }
+                parts[1] = parts[1].Replace("\"", "");
+                int allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
+                return (allInches)/0.393701;
+            }
+            catch
+            {
+                throw new Exception(value + " is not a proper value for imperial height.");
+            }
+        }
+
         public static double ConvertMetricWeightToImperial(string value)
         {
             try
@@ -550,28 +586,15 @@ namespace NBA_Stats_Tracker.Data.Players
             return value/0.453592;
         }
 
-        #region Metrics that require opponents' stats
-
-        public double PER { get; set; }
-        public double BLKp { get; set; }
-        public double DREBp { get; set; }
-        public double OREBp { get; set; }
-        public double REBp { get; set; }
-        public double PPR { get; set; }
-
-        public string TeamSDisplay { get; set; }
-
-        #endregion
-
         private void Calculate2KRatings(bool playoffs = false)
         {
-            var gpPctSetting = MainWindow.RatingsGPPctSetting;
-            var gpPCTreq = MainWindow.RatingsGPPctRequired;
-            var mpgSetting = MainWindow.RatingsMPGSetting;
-            var MPGreq = MainWindow.RatingsMPGRequired;
+            string gpPctSetting = MainWindow.RatingsGPPctSetting;
+            double gpPCTreq = MainWindow.RatingsGPPctRequired;
+            string mpgSetting = MainWindow.RatingsMPGSetting;
+            float MPGreq = MainWindow.RatingsMPGRequired;
 
-            var pGP = GP;
-            TeamStats team = new TeamStats();
+            uint pGP = GP;
+            var team = new TeamStats();
             uint tGP = 0;
             try
             {
@@ -611,7 +634,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var ASTp100 = ASTp*100;
+                double ASTp100 = ASTp*100;
                 reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891*ASTp100 + 4.34894327991171/(-0.702541953738967 - ASTp100));
                 if (reRPass > 99)
                     reRPass = 99;
@@ -623,9 +646,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var BLKp100 = BLKp*100;
+                double BLKp100 = BLKp*100;
                 reRBlock =
-                    Convert.ToInt32(25.76 + 17.03*BLKp100 + 0.8376*Math.Pow(BLKp100, 3) - 3.195*Math.Pow(BLKp100, 2) - 0.07319*Math.Pow(BLKp100, 4));
+                    Convert.ToInt32(25.76 + 17.03*BLKp100 + 0.8376*Math.Pow(BLKp100, 3) - 3.195*Math.Pow(BLKp100, 2) -
+                                    0.07319*Math.Pow(BLKp100, 4));
                 if (reRBlock > 99)
                     reRBlock = 99;
             }
@@ -636,8 +660,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var STLp100 = STLp*100;
-                reRSteal = Convert.ToInt32(29.92 + 14.57 * STLp100 - 0.1509 * Math.Pow(STLp100, 2));
+                double STLp100 = STLp*100;
+                reRSteal = Convert.ToInt32(29.92 + 14.57*STLp100 - 0.1509*Math.Pow(STLp100, 2));
                 if (reRSteal > 99)
                     reRSteal = 99;
             }
@@ -648,7 +672,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var OREBp100 = OREBp*100;
+                double OREBp100 = OREBp*100;
                 reROffRbd =
                     Convert.ToInt32(24.67 + 3.864*OREBp100 + 0.3523*Math.Pow(OREBp100, 2) + 0.0007358*Math.Pow(OREBp100, 4) -
                                     0.02796*Math.Pow(OREBp100, 3));
@@ -662,7 +686,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var DREBp100 = DREBp*100;
+                double DREBp100 = DREBp*100;
                 reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp100);
                 if (reRDefRbd > 99)
                     reRDefRbd = 99;
@@ -726,7 +750,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
         public string GetBestStats(int count)
         {
-            if (GP == 0) return "";
+            if (GP == 0)
+                return "";
 
             Position position = Position1;
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
@@ -789,7 +814,7 @@ namespace NBA_Stats_Tracker.Data.Players
             string s = "";
             int i = 1;
             s += String.Format("PPG: {0:F1}\n", PPG);
-            foreach (string item in items)
+            foreach (var item in items)
             {
                 if (i == count)
                     break;
@@ -882,7 +907,8 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             List<PlayerBoxScore> pbsList = pbsIList.ToList();
             string s = "";
-            s += String.Format("{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ", FirstName, LastName, Position1, YearOfBirth, DisplayHeight, MainWindow.IsImperial ? "" : "cm.", DateTime.Today.Year - YearOfBirth);
+            s += String.Format("{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ", FirstName, LastName, Position1,
+                               YearOfBirth, DisplayHeight, MainWindow.IsImperial ? "" : "cm.", DateTime.Today.Year - YearOfBirth);
             if (Position2 != Position.None)
                 s += String.Format("(alternatively {0})", Position2);
             s += ", ";
@@ -1198,12 +1224,10 @@ namespace NBA_Stats_Tracker.Data.Players
             psr = new PlayerStatsRow(new PlayerStats(psr));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -1215,28 +1239,67 @@ namespace NBA_Stats_Tracker.Data.Players
             uint gamesPlayer = GP;
             PlayerStatsRow newpsr = this.DeepClone();
 
-            var gpPctSetting = MainWindow.MyLeadersGPPctSetting;
-            var gpPctRequired = MainWindow.MyLeadersGPPctRequired;
-            var mpgSetting = MainWindow.MyLeadersMPGSetting;
-            var mpgRequired = MainWindow.MyLeadersMPGRequired;
+            string gpPctSetting = MainWindow.MyLeadersGPPctSetting;
+            double gpPctRequired = MainWindow.MyLeadersGPPctRequired;
+            string mpgSetting = MainWindow.MyLeadersMPGSetting;
+            float mpgRequired = MainWindow.MyLeadersMPGRequired;
 
             if ((gpPctSetting != "-1" && (double) gamesPlayer*100/gamesTeam < gpPctRequired) || (mpgSetting != "-1" && MPG < mpgRequired))
             {
+                newpsr.PTS = 0;
+                newpsr.FGM = 0;
+                newpsr.FGA = 0;
+                newpsr.TPM = 0;
+                newpsr.TPA = 0;
+                newpsr.FTM = 0;
+                newpsr.FTA = 0;
+                newpsr.REB = 0;
+                newpsr.OREB = 0;
+                newpsr.DREB = 0;
+                newpsr.BLK = 0;
+                newpsr.AST = 0;
+                newpsr.TOS = uint.MaxValue;
+                newpsr.STL = 0;
+                newpsr.FOUL = uint.MaxValue;
+
                 newpsr.FGp = float.NaN;
                 newpsr.FGeff = float.NaN;
                 newpsr.TPp = float.NaN;
-                newpsr.TPeff = float.NaN; 
+                newpsr.TPeff = float.NaN;
                 newpsr.FTp = float.NaN;
                 newpsr.FTeff = float.NaN;
-                newpsr.PPG = float.NaN; 
+                newpsr.PPG = float.NaN;
                 newpsr.RPG = float.NaN;
                 newpsr.DRPG = float.NaN;
                 newpsr.ORPG = float.NaN;
                 newpsr.APG = float.NaN;
                 newpsr.SPG = float.NaN;
                 newpsr.BPG = float.NaN;
-                newpsr.MPG = float.NaN;
-                newpsr.GmSc = float.NaN;
+
+                newpsr.GmSc = double.NaN;
+                newpsr.PTSR = double.NaN;
+                newpsr.REBR = double.NaN;
+                newpsr.OREBR = double.NaN;
+                newpsr.ASTR = double.NaN;
+                newpsr.BLKR = double.NaN;
+                newpsr.STLR = double.NaN;
+                newpsr.TOR = double.NaN;
+                newpsr.FTR = double.NaN;
+                newpsr.FTAR = double.NaN;
+                newpsr.GmScE = double.NaN;
+                newpsr.EFF = double.NaN;
+                newpsr.EFGp = double.NaN;
+                newpsr.TSp = double.NaN;
+                newpsr.ASTp = double.NaN;
+                newpsr.STLp = double.NaN;
+                newpsr.TOp = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PER = double.NaN;
+                newpsr.BLKp = double.NaN;
+                newpsr.DREBp = double.NaN;
+                newpsr.OREBp = double.NaN;
+                newpsr.REBp = double.NaN;
+                newpsr.PPR = double.NaN;
             }
 
             return newpsr;
@@ -1272,16 +1335,60 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (FGM < fgmRequired)
             {
+                newpsr.PTS = 0;
+                newpsr.FGM = 0;
+                newpsr.FGA = 0;
+                newpsr.TSp = double.NaN;
+                newpsr.EFGp = double.NaN;
+                newpsr.GmSc = double.NaN;
+                newpsr.GmScE = double.NaN;
+                newpsr.PTSR = double.NaN;
+                newpsr.EFF = double.NaN;
+                newpsr.FTR = double.NaN;
+                newpsr.FTAR = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PER = double.NaN;
+                newpsr.PPR = double.NaN;
+
                 newpsr.FGp = float.NaN;
                 newpsr.FGeff = float.NaN;
             }
             if (TPM < tpmRequired)
             {
+                newpsr.PTS = 0;
+                newpsr.TPM = 0;
+                newpsr.TPA = 0;
+                newpsr.TSp = double.NaN;
+                newpsr.EFGp = double.NaN;
+                newpsr.GmSc = double.NaN;
+                newpsr.GmScE = double.NaN;
+                newpsr.PTSR = double.NaN;
+                newpsr.EFF = double.NaN;
+                newpsr.FTR = double.NaN;
+                newpsr.FTAR = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PER = double.NaN;
+                newpsr.PPR = double.NaN;
+
                 newpsr.TPp = float.NaN;
                 newpsr.TPeff = float.NaN;
             }
             if (FTM < ftmRequired)
             {
+                newpsr.PTS = 0;
+                newpsr.FTM = 0;
+                newpsr.FTA = 0;
+                newpsr.TSp = double.NaN;
+                newpsr.GmSc = double.NaN;
+                newpsr.GmScE = double.NaN;
+                newpsr.PTSR = double.NaN;
+                newpsr.EFF = double.NaN;
+                newpsr.FTR = double.NaN;
+                newpsr.FTAR = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PER = double.NaN;
+                newpsr.PPR = double.NaN;
+
                 newpsr.FTp = float.NaN;
                 newpsr.FTeff = float.NaN;
             }
@@ -1293,25 +1400,80 @@ namespace NBA_Stats_Tracker.Data.Players
             else
             {
                 newpsr.GmSc = double.NaN;
+                newpsr.GmScE = double.NaN;
+                newpsr.EFF = double.NaN;
+                newpsr.PER = double.NaN;
+                newpsr.TOS = uint.MaxValue;
+                newpsr.FOUL = uint.MaxValue;
+                newpsr.TOR = double.NaN;
             }
 
             if (PTS < ptsRequired)
+            {
                 newpsr.PPG = float.NaN;
+                newpsr.PTS = 0;
+                newpsr.TSp = double.NaN;
+                newpsr.EFGp = double.NaN;
+                newpsr.PTSR = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PPR = double.NaN;
+            }
             if (REB < rebRequired)
             {
                 newpsr.RPG = float.NaN;
                 newpsr.DRPG = float.NaN;
                 newpsr.ORPG = float.NaN;
+
+                newpsr.REB = 0;
+                newpsr.OREB = 0;
+                newpsr.DREB = 0;
+                newpsr.REBR = double.NaN;
+                newpsr.OREBR = double.NaN;
+                newpsr.DREBp = double.NaN;
+                newpsr.OREBp = double.NaN;
+                newpsr.REBp = double.NaN;
             }
             if (AST < astRequired)
+            {
                 newpsr.APG = float.NaN;
+                newpsr.AST = 0;
+                newpsr.ASTp = double.NaN;
+                newpsr.ASTR = double.NaN;
+                newpsr.USGp = double.NaN;
+                newpsr.PPR = double.NaN;
+            }
             if (STL < stlRequired)
+            {
                 newpsr.SPG = float.NaN;
+                newpsr.STL = 0;
+                newpsr.STLp = double.NaN;
+                newpsr.STLR = double.NaN;
+            }
             if (BLK < blkRequired)
+            {
                 newpsr.BPG = float.NaN;
+                newpsr.BLK = 0;
+                newpsr.BLKp = double.NaN;
+                newpsr.BLKR = double.NaN;
+            }
             if (MINS < minRequired)
+            {
                 newpsr.MPG = float.NaN;
+            }
             return newpsr;
         }
+
+        #region Metrics that require opponents' stats
+
+        public double PER { get; set; }
+        public double BLKp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double REBp { get; set; }
+        public double PPR { get; set; }
+
+        public string TeamSDisplay { get; set; }
+
+        #endregion
     }
 }

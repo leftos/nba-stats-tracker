@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -17,6 +16,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data.BoxScores;
@@ -95,22 +95,24 @@ namespace NBA_Stats_Tracker.Windows
         {
             MessageBoxResult r =
                 MessageBox.Show(
-                    "Are you sure you want to delete this box score?\n" + "This action cannot be undone.\n\n" +
-                    "Any changes made to Team Stats by automatically adding this box score to them won't be reverted by its deletion.",
+                    "Are you sure you want to delete this/these box score(s)?\n" + "This action cannot be undone.\n\n" +
+                    "Any changes made to Team Stats by automatically adding this/these box score(s) to them won't be reverted by its deletion.",
                     "NBA Stats Tracker", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
-                var boxScoreEntry = dgvBoxScores.SelectedItem as BoxScoreEntry;
-                if (boxScoreEntry != null)
+                foreach (var bse in dgvBoxScores.SelectedItems.Cast<BoxScoreEntry>().ToList())
                 {
-                    int id = boxScoreEntry.bs.id;
+                    if (bse != null)
+                    {
+                        int id = bse.bs.id;
 
-                    db.Delete("GameResults", "GameID = " + id);
-                    db.Delete("PlayerResults", "GameID = " + id);
+                        db.Delete("GameResults", "GameID = " + id);
+                        db.Delete("PlayerResults", "GameID = " + id);
+                    }
+
+                    bshist.Remove(bse);
+                    MainWindow.bshist.Remove(bse);
                 }
-
-                bshist.Remove(boxScoreEntry);
-                MainWindow.bshist.Remove(boxScoreEntry);
             }
         }
     }

@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -17,7 +16,11 @@
 
 #endregion
 
+#region Using Directives
+
 using System.Collections.Generic;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Data.Players
 {
@@ -45,7 +48,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTA = 16;
 
         /// <summary>
-        /// Only to be used with CareerHighs
+        ///     Only to be used with CareerHighs
         /// </summary>
         public const int REB = 17; // REB used only for CareerHighs
 
@@ -66,7 +69,8 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTeff = 14,
                          RPG = 15;
 
-        public static Dictionary<int, string> totals = new Dictionary<int, string> {
+        public static Dictionary<int, string> totals = new Dictionary<int, string>
+                                                       {
                                                            {0, "GP"},
                                                            {1, "GS"},
                                                            {2, "MINS"},
@@ -86,7 +90,8 @@ namespace NBA_Stats_Tracker.Data.Players
                                                            {16, "FTA"}
                                                        };
 
-        public static Dictionary<int, string> averages = new Dictionary<int, string> {
+        public static Dictionary<int, string> averages = new Dictionary<int, string>
+                                                         {
                                                              {0, "MPG"},
                                                              {1, "PPG"},
                                                              {2, "DRPG"},
