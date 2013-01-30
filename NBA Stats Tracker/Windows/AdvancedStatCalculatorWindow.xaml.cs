@@ -654,7 +654,7 @@ namespace NBA_Stats_Tracker.Windows
                         {
                             pbs = bse.pbsList.Single(pbs1 => pbs1.PlayerID == filter.Key.ID);
                         }
-                        catch
+                        catch (InvalidOperationException)
                         {
                             keep = false;
                             break;
@@ -810,7 +810,8 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             TeamStats.CalculateAllMetrics(ref advtst, advtstopp, false);
-            advpst.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
+            //advpst.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
+            PlayerStats.CalculateAllMetrics(ref advpst, advtst, advtstopp, advTeamOrder);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
             advpst.ToList().ForEach(pair => psrList.Add(new PlayerStatsRow(pair.Value)));
@@ -867,5 +868,10 @@ namespace NBA_Stats_Tracker.Windows
         };
 
         #endregion
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

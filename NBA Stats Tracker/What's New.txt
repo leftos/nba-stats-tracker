@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.6.3 Beta
+		- Addition: Added Player Metric Stats to results of Advanced Stats Calculator
+		- Improvement: Divided the columns of the search results in Advanced Stats Calculator and Advanced Player Search into categories
+		- Fix: Fixed Close button in Advanced Stats Calculator doing nothing
+		- Fix: Fixed another bug which in some occurrences when calculating metrics in leagues where the active teams' IDs weren't continuous from 0 to 29 would cause the application to crash
+
 	v1.6.2.5 Beta
 		- Fix: Fixed crash related to using team points criteria in the Advanced Stats Calculator
 		- Fix: Fixed crash in some occurrences when calculating metrics in leagues where the active teams' IDs weren't continuous from 0 to 29

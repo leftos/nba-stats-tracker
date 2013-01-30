@@ -1267,19 +1267,21 @@ namespace NBA_Stats_Tracker.Data.Players
             int tCount = teamStats.Count;
 
             var ls = new TeamStats();
+            var tKeys = teamStats.Keys.ToList();
             for (int i = 0; i < tCount; i++)
             {
+                var key = tKeys[i];
                 if (!playoffs)
                 {
-                    ls.AddTeamStats(teamStats[i], Span.Season);
-                    teamStats[i].CalcMetrics(oppStats[i]);
-                    oppStats[i].CalcMetrics(teamStats[i]);
+                    ls.AddTeamStats(teamStats[key], Span.Season);
+                    teamStats[key].CalcMetrics(oppStats[key]);
+                    oppStats[key].CalcMetrics(teamStats[key]);
                 }
                 else
                 {
-                    ls.AddTeamStats(teamStats[i], Span.Playoffs);
-                    teamStats[i].CalcMetrics(oppStats[i], true);
-                    oppStats[i].CalcMetrics(teamStats[i], true);
+                    ls.AddTeamStats(teamStats[key], Span.Playoffs);
+                    teamStats[key].CalcMetrics(oppStats[key], true);
+                    oppStats[key].CalcMetrics(teamStats[key], true);
                 }
             }
             ls.CalcMetrics(ls, playoffs);
