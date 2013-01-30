@@ -1,5 +1,12 @@
 NBA Stats Tracker - Version History
 
+	v1.6.2.5 Beta
+		- Fix: Fixed crash related to using team points criteria in the Advanced Stats Calculator
+		- Fix: Fixed crash in some occurrences when calculating metrics in leagues where the active teams' IDs weren't continuous from 0 to 29
+
+	v1.6.2.4 Beta
+		- Fix: Fixed bug that would cause some of the Player Box Scores to be saved incorrectly in some rare occurrences
+
 	v1.6.2.3 Beta
 		- Fix: Fixed crash when trying to view a metric stats tab in the Box Score window when manually updating the database with a box score
 		- Fix: Fixed crash when resetting team stats

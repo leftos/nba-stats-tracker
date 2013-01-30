@@ -65,6 +65,7 @@ namespace NBA_Stats_Tracker.Windows
         public static readonly string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
+        public static Random random = new Random();
 
         public static string input = "";
 

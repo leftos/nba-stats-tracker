@@ -342,9 +342,11 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// </param>
         public static void CalculateAllMetrics(ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstopp, bool playoffs = false)
         {
-            for (int i = 0; i < tst.Count; i++)
+            var tstKeys = tst.Keys.ToList();
+            for (int i = 0; i < tst.Keys.Count; i++)
             {
-                tst[i].CalcMetrics(tstopp[i], playoffs);
+                var key = tstKeys[i];
+                tst[key].CalcMetrics(tstopp[key], playoffs);
             }
         }
 

@@ -46,7 +46,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             "\"AST\" INTEGER ,\"STL\" INTEGER ,\"BLK\" INTEGER ,\"TOS\" INTEGER ,\"FGM\" INTEGER ,\"FGA\" INTEGER ," +
             "\"TPM\" INTEGER ,\"TPA\" INTEGER ,\"FTM\" INTEGER ,\"FTA\" INTEGER ,\"OREB\" INTEGER , \"DREB\" INTEGER, " +
             "\"FOUL\" INTEGER, PRIMARY KEY (\"PlayerID\") )";
-
+        
         /// <summary>
         ///     Saves the database to a new file.
         /// </summary>
@@ -196,7 +196,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 for (int i = 0; i < MainWindow.bshist.Count; i++)
                 {
                     BoxScoreEntry bse = MainWindow.bshist[i];
-                    string md5 = Tools.GetMD5((new Random()).Next().ToString());
+                    string q2 = "select HASH from GameResults";
+                    var hashes = MainWindow.db.GetDataTable(q2).Rows.Cast<DataRow>().Select(dr => dr[0].ToString()).ToList();
+                    string md5;
+                    do
+                    {
+                        md5 = Tools.GetMD5(MainWindow.random.Next().ToString());
+                    } while (hashes.Contains(md5));
                     if ((!FileExists) || (bse.bs.id == -1) || (!idList.Contains(bse.bs.id)) || (bse.mustUpdate))
                     {
                         var dict2 = new Dictionary<string, string>
@@ -253,6 +259,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                         "GameID"].ToString());
                             bse.bs.id = lastid;
                         }
+                        hashes.Add(md5);
                         MainWindow.db.Delete("PlayerResults", "GameID = " + bse.bs.id);
 
                         //var used = new List<int>();
@@ -2125,6 +2132,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     ps.isActive = false;
                 }
             }
+
+
         }
 
         /// <summary>
@@ -2562,7 +2571,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             playerRankings = new PlayerRankings(pst);
             playoffPlayerRankings = new PlayerRankings(pst, true);
         }
-
+        
         private static void FindTeamByName(string teamName, DateTime startDate, DateTime endDate, out TeamStats ts, out TeamStats tsopp,
                                            out int lastInSeason)
         {

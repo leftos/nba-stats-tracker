@@ -869,50 +869,50 @@ namespace NBA_Stats_Tracker.Windows
                         for (int i4 = 0; i4 < PFList.Count; i4++)
                             for (int i5 = 0; i5 < CList.Count; i5++)
                             {
-                                double _sum = 0;
-                                int _pInP = 0;
+                                double sum = 0;
+                                int pInP = 0;
                                 var perm = new List<int>();
                                 perm.Add(PGList[i1].ID);
-                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(PGList[i1], null));
+                                sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(PGList[i1], null));
                                 if (PGList[i1].Position1.ToString() == "PG")
-                                    _pInP++;
+                                    pInP++;
                                 if (perm.Contains(SGList[i2].ID))
                                 {
                                     continue;
                                 }
                                 perm.Add(SGList[i2].ID);
-                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SGList[i2], null));
+                                sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SGList[i2], null));
                                 if (SGList[i2].Position1.ToString() == "SG")
-                                    _pInP++;
+                                    pInP++;
                                 if (perm.Contains(SFList[i3].ID))
                                 {
                                     continue;
                                 }
                                 perm.Add(SFList[i3].ID);
-                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SFList[i3], null));
+                                sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(SFList[i3], null));
                                 if (SFList[i3].Position1.ToString() == "SF")
-                                    _pInP++;
+                                    pInP++;
                                 if (perm.Contains(PFList[i4].ID))
                                 {
                                     continue;
                                 }
                                 perm.Add(PFList[i4].ID);
-                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(PFList[i4], null));
+                                sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(PFList[i4], null));
                                 if (PFList[i4].Position1.ToString() == "PF")
-                                    _pInP++;
+                                    pInP++;
                                 if (perm.Contains(CList[i5].ID))
                                 {
                                     continue;
                                 }
                                 perm.Add(CList[i5].ID);
-                                _sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(CList[i5], null));
+                                sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(CList[i5], null));
                                 if (CList[i5].Position1.ToString() == "C")
-                                    _pInP++;
+                                    pInP++;
 
-                                if (_sum > max)
-                                    max = _sum;
+                                if (sum > max)
+                                    max = sum;
 
-                                permutations.Add(new StartingFivePermutation {IDList = perm, PlayersInPrimaryPosition = _pInP, Sum = _sum});
+                                permutations.Add(new StartingFivePermutation {IDList = perm, PlayersInPrimaryPosition = pInP, Sum = sum});
                             }
 
             try

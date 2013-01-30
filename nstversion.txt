@@ -1,4 +1,6 @@
-1.6.2.2
+1.6.2.4
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
 	v1.6 added detailed injury information. Updates have been frequent as bugs are squashed out. Thanks for your support.
+	
+	NOTE: v1.2.6.4 contains an important bug-fix, please update to it immediatelly.

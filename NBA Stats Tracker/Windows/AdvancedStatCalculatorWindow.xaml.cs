@@ -610,18 +610,30 @@ namespace NBA_Stats_Tracker.Windows
                             break;
                         }
                         string p = bse.bs.Team1ID == filter.Key.ID ? "1" : "2";
+                        string oppP = p == "1" ? "2" : "1";
 
                         foreach (var option in filter.Value)
                         {
                             string parameter;
-                            parameter = option.Parameter.Replace("PTS (PF)", "PF");
+                            switch (option.Parameter)
+                            {
+                                case "PTS (PF)":
+                                    parameter = "PTS" + p;
+                                    break;
+                                case "PA":
+                                    parameter = "PTS" + oppP;
+                                    break;
+                                default:
+                                    parameter = option.Parameter + p;
+                                    break;
+                            }
                             parameter = parameter.Replace("3P", "TP");
                             parameter = parameter.Replace("TO", "TOS");
                             var context = new ExpressionContext();
                             IGenericExpression<bool> ige =
                                 context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
                                                                            bse.bs.GetType()
-                                                                              .GetProperty(parameter + p)
+                                                                              .GetProperty(parameter)
                                                                               .GetValue(bse.bs, null), option.Operator, option.Value));
                             if (ige.Evaluate() == false)
                             {
