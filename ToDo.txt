@@ -2,3 +2,4 @@
 - Go through all tables, check if they should have paste, implement OnExecutedPaste and database updates
 - More Split Stats (.500, FG%, REB, TO)
 - Paste box scores from B-R, NBA.com
+- AST/TO ratio

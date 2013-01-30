@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.6.3.2 Beta
+		- Fix: Minutes was missing as a parameter from the choices available in Advanced Stats Calculator
+
+	v1.6.3.1 Beta
+		- Fix: Fixed Player Stats (Unmet Criteria) tab in Advanced Stats Calculator not having metric stats calculated for it
+
 	v1.6.3 Beta
 		- Addition: Added Player Metric Stats to results of Advanced Stats Calculator
 		- Improvement: Divided the columns of the search results in Advanced Stats Calculator and Advanced Player Search into categories

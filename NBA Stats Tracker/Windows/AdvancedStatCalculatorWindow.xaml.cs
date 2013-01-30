@@ -70,7 +70,8 @@ namespace NBA_Stats_Tracker.Windows
                                                    "STL",
                                                    "BLK",
                                                    "TO",
-                                                   "FOUL"
+                                                   "FOUL",
+                                                   "MINS"
                                                };
 
         private readonly Dictionary<Selection, List<Filter>> filters = new Dictionary<Selection, List<Filter>>();
@@ -822,7 +823,8 @@ namespace NBA_Stats_Tracker.Windows
             dgvPlayerStats.ItemsSource = psrList;
 
             TeamStats.CalculateAllMetrics(ref advtst_not, advtstopp_not, false);
-            advpst_not.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
+            //advpst_not.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
+            PlayerStats.CalculateAllMetrics(ref advpst_not, advtst_not, advtstopp_not, advTeamOrder);
 
             psrList_not = new ObservableCollection<PlayerStatsRow>();
             advpst_not.ToList().ForEach(pair => psrList_not.Add(new PlayerStatsRow(pair.Value)));
