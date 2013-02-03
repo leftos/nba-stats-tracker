@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.Players.Contracts;
@@ -48,7 +49,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null)
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null) :this()
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -369,6 +370,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public string FirstName { get; set; }
         public Position Position1 { get; set; }
         public Position Position2 { get; set; }
+
+        public bool Highlight { get; set; }
 
         public string Position1S
         {

@@ -29,7 +29,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             ID = ts.ID;
             Name = ts.name;
             DisplayName = ts.displayName;
-            isHidden = ts.isHidden;
+            IsHidden = ts.isHidden;
 
             if (!playoffs)
             {
@@ -232,7 +232,9 @@ namespace NBA_Stats_Tracker.Data.Teams
         public double Poss { get; set; }
         public double Pace { get; set; }
 
-        public bool isHidden { get; set; }
+        public bool IsHidden { get; set; }
+
+        public bool Highlight { get; set; }
 
         public static void TryChangeTSR(ref TeamStatsRow tsr, Dictionary<string, string> dict)
         {

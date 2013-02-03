@@ -50,7 +50,7 @@
                                   IsChecked="{Binding isAllStar}" x:Name="chkIsAllStar" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="143,44,0,0" Content="Champion" HorizontalAlignment="Left"
                                   IsChecked="{Binding isNBAChampion}" x:Name="chkIsNBAChampion" VerticalAlignment="Top" />
-                        <DataGrid Margin="0,66,0,0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="True"
+                        <DataGrid Margin="0,66,0,0" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="True"
                                   FrozenColumnCount="1" ItemsSource="{Binding .}" x:Name="dgvOverviewStats"
                                   PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" CanUserSortColumns="False" />
                         <ComboBox Height="23" Margin="0,8,145,0" Width="40" HorizontalAlignment="Right"
@@ -87,7 +87,7 @@
                 </TabItem>
                 <TabItem Header="Split Stats" x:Name="tabSplitStats">
                     <Grid>
-                        <DataGrid Margin="0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
+                        <DataGrid Margin="0" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   CanUserAddRows="False" CanUserDeleteRows="False" FrozenColumnCount="1"
                                   HorizontalAlignment="Stretch"
                                   x:Name="dgvSplitStats" VerticalAlignment="Stretch" IsReadOnly="True">
@@ -126,7 +126,7 @@
                 </TabItem>
                 <TabItem Header="Box Scores" x:Name="tabBoxScores">
                     <Grid>
-                        <DataGrid Margin="0" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False"
+                        <DataGrid Margin="0" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True"
                                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
                                   x:Name="dgvBoxScores" VerticalAlignment="Stretch" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
@@ -217,7 +217,7 @@
                                 x:Name="btnPrevOppTeam" VerticalAlignment="Top" Click="btnPrevOppTeam_Click" />
                         <Button Height="23" Margin="203,6,0,0" Width="24" Content="&gt;" HorizontalAlignment="Left"
                                 x:Name="btnNextOppTeam" VerticalAlignment="Top" Click="btnNextOppTeam_Click" />
-                        <DataGrid Margin="6,0,6,6" AlternatingRowBackground="#FFE5E5E5"
+                        <DataGrid Margin="6,0,6,6" Style="{StaticResource DataGridStyle}"
                                   AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
                                   FrozenColumnCount="1" IsReadOnly="True"
                                   x:Name="dgvHTH" VerticalAlignment="Stretch" Grid.Row="1">
@@ -260,7 +260,7 @@
                                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <DataGrid Margin="6,0" AlternatingRowBackground="#FFE5E5E5"
+                        <DataGrid Margin="6,0" Style="{StaticResource DataGridStyle}"
                                   AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
                                   FrozenColumnCount="2"
                                   HorizontalAlignment="Stretch" IsReadOnly="True"
@@ -283,7 +283,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="60"/>
                         </Grid.RowDefinitions>
-                        <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                        <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                                   x:Name="dgvHighs" CanUserAddRows="False" CanUserDeleteRows="False"
                                   VerticalAlignment="Stretch" Sorting="StatColumn_Sorting" Margin="0,0,0,3">
                             <DataGrid.GroupStyle>
@@ -317,7 +317,7 @@
                                                     Visibility="Collapsed" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <DataGrid Name="dgvContract" Grid.Row="1" AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                        <DataGrid Name="dgvContract" Grid.Row="1" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                                   CanUserAddRows="False" CanUserDeleteRows="False"
                                   VerticalAlignment="Stretch" Sorting="StatColumn_Sorting"
                                   d:DataContext="{d:DesignInstance players:PlayerStatsRow}" Margin="0,3,0,0">
@@ -406,7 +406,7 @@
                 </TabItem>
                 <TabItem Header="Yearly Report" x:Name="tabYearly">
                     <Grid>
-                        <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
+                        <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                 			x:Name="dgvYearly"
                 			VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting"
                 			Margin="0,0,0,38" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">

@@ -204,7 +204,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             ID = tsr.ID;
-            isHidden = tsr.isHidden;
+            isHidden = tsr.IsHidden;
 
             CalcAvg();
         }

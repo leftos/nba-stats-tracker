@@ -2036,7 +2036,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             Dictionary<int, PlayerStats> _pst =
                 (from DataRow r in res.Rows.AsParallel() select new PlayerStats(r, _tst)).ToDictionary(ps => ps.ID);
-            PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder);
+            PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp);
 
             if (curSeason == maxSeason)
             {
@@ -2084,7 +2084,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, _TeamOrder, playoffs: true);
+            PlayerStats.CalculateAllMetrics(ref _pst, _tst, _tstopp, playoffs: true);
 
             return _pst;
         }
@@ -2472,8 +2472,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 TeamStats.CalculateAllMetrics(ref tstopp, tst);
                 TeamStats.CalculateAllMetrics(ref tstopp, tst, playoffs: true);
                 */
-                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder);
-                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, TeamOrder, playoffs: true);
+                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp);
+                PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, playoffs: true);
             }
 
             foreach (var bse in bshist)

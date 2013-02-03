@@ -21,7 +21,7 @@ Quick notes
 Installation Notes
 	NBA Stats Tracker requires the .NET Framework 4 Client Profile. The installer should download and install it automatically.
 
-Features in a glance
+Features in a glance (outdated)
 	Team Overview
 		Overview
 			The Overview Tab offers you just that, a quick overview over each team's stats, averages, and rankings during the season and playoffs. You can edit and save each team's stats from this tab.
@@ -156,6 +156,10 @@ Additional Features
 
 	Real NBA Stats
 		This feature allows you to automatically grab the real league's team stats, player stats and box scores, and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
+
+
+Known Issues
+	- Certain undetected scenarios cause the tool not to add to a team's opponents stats when adding a box score. You can use the "Recalculate Teams' Opponent Stats" feature under "Tools > Fix/Reset Stats" if you notice a discrepancy. If you've found certain steps that consistently reproduce this issue, please contact me via the Dicussion/Support Thread URL at the end of this Readme.
 		
 
 Disclaimer
@@ -180,6 +184,7 @@ Special thanks
 	- Lagoa, for his suggestions and help with debugging
 	- intruda, for his donation
 	- WBT99, for his extensive suggestions
+	- Pitar, for his extensive suggestions and bug reports
 	- Everyone at the NLSC community, for their continued support
 
 
@@ -206,6 +211,7 @@ Development Credits
 		Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
 		Uses a Sortable Binding List implementation by Tim Van Wassenhove (http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/)
 		Uses Swordfish Charts by John Stewien (https://sourceforge.net/projects/swordfishcharts)
+		Uses an optimized implementation of DataTable.Load based on Amit Choudhary's work (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
 	
 	
 Discussion/Support Thread

@@ -2525,21 +2525,23 @@ namespace NBA_Stats_Tracker.Windows
                                                    var psr = new PlayerStatsRow(ps, calcRatings: false);
                                                    leadersPSRList.Add(psr);
                                                });
-            var psrList = new List<PlayerStatsRow>();
+            var psrList = new Dictionary<int, PlayerStatsRow>();
             pst.Values.ToList().ForEach(delegate(PlayerStats ps)
             {
                 var psr = new PlayerStatsRow(ps, calcRatings: false);
-                psrList.Add(psr);
+                psrList.Add(psr.ID, psr);
             });
 
-            PlayerStatsRow curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.PPG).First().ID);
+            //PlayerStatsRow curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.PPG).First().ID);
+            var curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.PPG][1]];
 
             string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 3, p.PPG);
             string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
                                      tst[curL.TeamF].displayName, curL.PPG, m);
             notables.Add(s);
 
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FGp).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FGp).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.FGp][1]];
             float ppg = double.IsNaN(curL.PPG) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FGp);
@@ -2547,7 +2549,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.FGp, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.RPG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.RPG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.RPG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.RPG);
@@ -2555,7 +2558,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.RPG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.BPG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.BPG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.BPG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.BPG);
@@ -2563,7 +2567,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.BPG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.APG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.APG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.APG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.APG);
@@ -2571,7 +2576,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.APG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.SPG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.SPG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.SPG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.SPG);
@@ -2579,7 +2585,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.SPG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.ORPG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.ORPG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.ORPG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.ORPG);
@@ -2587,7 +2594,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.ORPG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.DRPG).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.DRPG).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.DRPG][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.DRPG);
@@ -2595,7 +2603,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.DRPG, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.TPp).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.TPp).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.TPp][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.TPp);
@@ -2603,7 +2612,8 @@ namespace NBA_Stats_Tracker.Windows
                               tst[curL.TeamF].displayName, curL.TPp, m, ppg);
             notables.Add(s);
             
-            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FTp).First().ID);
+            //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FTp).First().ID);
+            curL = psrList[SeasonLeadersRankings.revRankingsPerGame[p.FTp][1]];
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FTp);

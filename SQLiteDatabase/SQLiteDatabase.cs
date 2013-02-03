@@ -50,6 +50,7 @@ namespace SQLite_Database
         public SQLiteDatabase(String inputFile)
         {
             dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
+            //ExecuteNonQuery("ANALYZE;");
         }
 
         /// <summary>
@@ -70,29 +71,65 @@ namespace SQLite_Database
         /// <returns>A DataTable containing the result set.</returns>
         public DataTable GetDataTable(string sql)
         {
-            using (var dt = new DataTable())
+            var dt = new DataTable();
+            
+            try
             {
-                try
+                using (var cnn = new SQLiteConnection(dbConnection))
                 {
-                    using (var cnn = new SQLiteConnection(dbConnection))
+                    cnn.Open();
+                    SQLiteDataReader reader;
+                    using (var mycommand = new SQLiteCommand(cnn))
                     {
-                        cnn.Open();
-                        SQLiteDataReader reader;
-                        using (var mycommand = new SQLiteCommand(cnn))
-                        {
-                            mycommand.CommandText = sql;
-                            reader = mycommand.ExecuteReader();
-                        }
-                        dt.Load(reader);
-                        reader.Close();
+                        mycommand.CommandText = sql;
+                        reader = mycommand.ExecuteReader();
                     }
+                    //dt.Load(reader);
+                    dt = GetDataTableFromDataReader(reader);
+                    reader.Close();
                 }
-                catch (Exception e)
-                {
-                    throw new Exception(e.Message + "\n\nQuery: " + sql);
-                }
-                return dt;
             }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "\n\nQuery: " + sql);
+            }
+            return dt;
+        }
+        /// <summary>
+        /// Parses the information in an IDataReader, returning a DataTable.
+        /// Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
+        /// (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <returns></returns>
+        public DataTable GetDataTableFromDataReader(IDataReader dataReader)
+        {
+            DataTable schemaTable = dataReader.GetSchemaTable();
+            DataTable resultTable = new DataTable();
+
+            foreach (DataRow dataRow in schemaTable.Rows)
+            {
+                DataColumn dataColumn = new DataColumn();
+                dataColumn.ColumnName = dataRow["ColumnName"].ToString();
+                dataColumn.DataType = Type.GetType(dataRow["DataType"].ToString());
+                dataColumn.ReadOnly = (bool)dataRow["IsReadOnly"];
+                dataColumn.AutoIncrement = (bool)dataRow["IsAutoIncrement"];
+                dataColumn.Unique = (bool)dataRow["IsUnique"];
+
+                resultTable.Columns.Add(dataColumn);
+            }
+
+            while (dataReader.Read())
+            {
+                DataRow dataRow = resultTable.NewRow();
+                for (int i = 0; i < resultTable.Columns.Count; i++)
+                {
+                    dataRow[i] = dataReader[i];
+                }
+                resultTable.Rows.Add(dataRow);
+            }
+
+            return resultTable;
         }
 
         /// <summary>

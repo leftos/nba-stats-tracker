@@ -263,7 +263,7 @@
             </TabItem>
             <TabItem Header="Away Metric Stats" Name="tabAwayMetric">
                 <Grid>
-                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
+                    <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="2"
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricAway"
                               VerticalAlignment="Stretch" IsReadOnly="True"
                               Sorting="StatColumn_Sorting">
@@ -629,7 +629,7 @@
             </TabItem>
             <TabItem Header="Home Metric Stats" Name="tabHomeMetric">
                 <Grid>
-                    <DataGrid AlternatingRowBackground="#FFE5E5E5" AutoGenerateColumns="False" FrozenColumnCount="2"
+                    <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="2"
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricHome"
                               VerticalAlignment="Stretch" IsReadOnly="True"
                               Sorting="StatColumn_Sorting">

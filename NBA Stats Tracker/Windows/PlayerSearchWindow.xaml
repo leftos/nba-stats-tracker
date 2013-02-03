@@ -238,7 +238,7 @@
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
                               Margin="6,6,6,0" Name="dgvPlayerStats"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                              VerticalAlignment="Stretch" FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
                               IsReadOnly="True"
                               MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" Sorting="dgvPlayerStats_Sorting"
                               d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
@@ -663,7 +663,7 @@
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
                               Margin="6,6,6,0" Name="dgvPlayoffStats"
-                              VerticalAlignment="Stretch" FrozenColumnCount="2" AlternatingRowBackground="#FFE5E5E5"
+                              VerticalAlignment="Stretch" FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
                               IsReadOnly="True"
                               MouseDoubleClick="dgvPlayerStats_MouseDoubleClick" Sorting="dgvPlayerStats_Sorting"
                               d:DataContext="{d:DesignInstance players:PlayerStatsRow}">

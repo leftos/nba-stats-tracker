@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
@@ -583,17 +584,13 @@ namespace NBA_Stats_Tracker.Windows
             EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
+        private List<int> playersToHighlight = new List<int>(); 
+        private List<int> teamsToHighlight = new List<int>(); 
+
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var advtst = new Dictionary<int, TeamStats>();
-            var advtstopp = new Dictionary<int, TeamStats>();
-            var advpst = new Dictionary<int, PlayerStats>();
-            var advTeamOrder = new SortedDictionary<string, int>();
-
-            var advtst_not = new Dictionary<int, TeamStats>();
-            var advtstopp_not = new Dictionary<int, TeamStats>();
-            var advpst_not = new Dictionary<int, PlayerStats>();
-            var advTeamOrder_not = new SortedDictionary<string, int>();
+            playersToHighlight.Clear();
+            teamsToHighlight.Clear();
 
             var bsToCalculate = new List<BoxScoreEntry>();
             var notBsToCalculate = new List<BoxScoreEntry>();
@@ -604,6 +601,10 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     if (filter.Key.SelectionType == SelectionType.Team)
                     {
+                        if (!teamsToHighlight.Contains(filter.Key.ID))
+                        {
+                            teamsToHighlight.Add(filter.Key.ID);
+                        }
                         //string teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
                         if (bse.bs.Team1ID != filter.Key.ID && bse.bs.Team2ID != filter.Key.ID)
                         {
@@ -650,6 +651,10 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     else
                     {
+                        if (!playersToHighlight.Contains(filter.Key.ID))
+                        {
+                            playersToHighlight.Add(filter.Key.ID);
+                        }
                         PlayerBoxScore pbs;
                         try
                         {
@@ -691,6 +696,25 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
+            CalculateAdvancedStats(bsToCalculate, notBsToCalculate);
+
+            tbcAdv.SelectedItem = tabPlayerStats;
+        }
+
+        private void CalculateAdvancedStats(List<BoxScoreEntry> bsToCalculate, List<BoxScoreEntry> notBsToCalculate)
+        {
+            var advtst = new Dictionary<int, TeamStats>();
+            var advtstopp = new Dictionary<int, TeamStats>();
+            var advpst = new Dictionary<int, PlayerStats>();
+            var advPPtst = new Dictionary<int, TeamStats>();
+            var advPPtstopp = new Dictionary<int, TeamStats>();
+
+            var advtst_not = new Dictionary<int, TeamStats>();
+            var advtstopp_not = new Dictionary<int, TeamStats>();
+            var advpst_not = new Dictionary<int, PlayerStats>();
+            var advPPtst_not = new Dictionary<int, TeamStats>();
+            var advPPtstopp_not = new Dictionary<int, TeamStats>();
+
             foreach (var bse in bsToCalculate)
             {
                 int team1ID = bse.bs.Team1ID;
@@ -698,14 +722,8 @@ namespace NBA_Stats_Tracker.Windows
                 TeamBoxScore bs = bse.bs;
                 if (!advtst.ContainsKey(team1ID))
                 {
-                    advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst.Add(team1ID,
-                               new TeamStats
-                               {
-                                   ID = team1ID,
-                                   name = MainWindow.tst[team1ID].name,
-                                   displayName = MainWindow.tst[team1ID].displayName
-                               });
+                               new TeamStats {ID = team1ID, name = MainWindow.tst[team1ID].name, displayName = MainWindow.tst[team1ID].displayName});
                     advtstopp.Add(team1ID,
                                   new TeamStats
                                   {
@@ -718,14 +736,9 @@ namespace NBA_Stats_Tracker.Windows
                 TeamStats ts1opp = advtstopp[team1ID];
                 if (!advtst.ContainsKey(team2ID))
                 {
-                    advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst.Add(team2ID,
-                               new TeamStats
-                               {
-                                   ID = team2ID,
-                                   name = MainWindow.tst[team2ID].name,
-                                   displayName = MainWindow.tst[team2ID].displayName
-                               });
+                               new TeamStats {ID = team2ID, name = MainWindow.tst[team2ID].name, displayName = MainWindow.tst[team2ID].displayName});
                     advtstopp.Add(team2ID,
                                   new TeamStats
                                   {
@@ -746,6 +759,38 @@ namespace NBA_Stats_Tracker.Windows
                         advpst[pbs.PlayerID].ResetStats();
                     }
                     advpst[pbs.PlayerID].AddBoxScore(pbs, false);
+
+                    var teamID = pbs.TeamID;
+                    if (!advPPtst.ContainsKey(pbs.PlayerID))
+                    {
+                        advPPtst.Add(pbs.PlayerID,
+                                     new TeamStats
+                                     {
+                                         ID = teamID,
+                                         name = MainWindow.tst[teamID].name,
+                                         displayName = MainWindow.tst[teamID].displayName
+                                     });
+                    }
+                    if (!advPPtstopp.ContainsKey(pbs.PlayerID))
+                    {
+                        advPPtstopp.Add(pbs.PlayerID,
+                                        new TeamStats
+                                        {
+                                            ID = teamID,
+                                            name = MainWindow.tst[teamID].name,
+                                            displayName = MainWindow.tst[teamID].displayName
+                                        });
+                    }
+                    TeamStats ts = advPPtst[pbs.PlayerID];
+                    TeamStats tsopp = advPPtstopp[pbs.PlayerID];
+                    if (team1ID == pbs.TeamID)
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
+                    }
+                    else
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
+                    }
                 }
             }
 
@@ -756,7 +801,7 @@ namespace NBA_Stats_Tracker.Windows
                 TeamBoxScore bs = bse.bs;
                 if (!advtst_not.ContainsKey(team1ID))
                 {
-                    advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    //advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst_not.Add(team1ID,
                                    new TeamStats
                                    {
@@ -772,11 +817,11 @@ namespace NBA_Stats_Tracker.Windows
                                           displayName = MainWindow.tst[team1ID].displayName
                                       });
                 }
-                TeamStats ts1 = advtst[team1ID];
-                TeamStats ts1opp = advtstopp[team1ID];
+                TeamStats ts1 = advtst_not[team1ID];
+                TeamStats ts1opp = advtstopp_not[team1ID];
                 if (!advtst_not.ContainsKey(team2ID))
                 {
-                    advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                    //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst_not.Add(team2ID,
                                    new TeamStats
                                    {
@@ -792,8 +837,8 @@ namespace NBA_Stats_Tracker.Windows
                                           displayName = MainWindow.tst[team2ID].displayName
                                       });
                 }
-                TeamStats ts2 = advtst[team2ID];
-                TeamStats ts2opp = advtstopp[team2ID];
+                TeamStats ts2 = advtst_not[team2ID];
+                TeamStats ts2opp = advtstopp_not[team2ID];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
                 foreach (var pbs in bse.pbsList)
@@ -807,34 +852,88 @@ namespace NBA_Stats_Tracker.Windows
                         advpst_not[pbs.PlayerID].ResetStats();
                     }
                     advpst_not[pbs.PlayerID].AddBoxScore(pbs, false);
+
+                    var teamID = pbs.TeamID;
+                    if (!advPPtst_not.ContainsKey(pbs.PlayerID))
+                    {
+                        advPPtst_not.Add(pbs.PlayerID,
+                                         new TeamStats
+                                         {
+                                             ID = teamID,
+                                             name = MainWindow.tst[teamID].name,
+                                             displayName = MainWindow.tst[teamID].displayName
+                                         });
+                    }
+                    if (!advPPtstopp_not.ContainsKey(pbs.PlayerID))
+                    {
+                        advPPtstopp_not.Add(pbs.PlayerID,
+                                            new TeamStats
+                                            {
+                                                ID = teamID,
+                                                name = MainWindow.tst[teamID].name,
+                                                displayName = MainWindow.tst[teamID].displayName
+                                            });
+                    }
+                    TeamStats ts = advPPtst_not[pbs.PlayerID];
+                    TeamStats tsopp = advPPtstopp_not[pbs.PlayerID];
+                    if (team1ID == pbs.TeamID)
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
+                    }
+                    else
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
+                    }
                 }
             }
 
             TeamStats.CalculateAllMetrics(ref advtst, advtstopp, false);
             //advpst.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
-            PlayerStats.CalculateAllMetrics(ref advpst, advtst, advtstopp, advTeamOrder);
+            PlayerStats.CalculateAllMetrics(ref advpst, advPPtst, advPPtstopp, teamsPerPlayer: true);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
-            advpst.ToList().ForEach(pair => psrList.Add(new PlayerStatsRow(pair.Value)));
+            advpst.ToList().ForEach(pair =>
+                                    {
+                                        var psr = new PlayerStatsRow(pair.Value);
+                                        if (playersToHighlight.Contains(psr.ID))
+                                        {
+                                            psr.Highlight = true;
+                                        }
+                                        psrList.Add(psr);
+                                    });
             tsrList = new ObservableCollection<TeamStatsRow>();
-            advtst.ToList().ForEach(pair => tsrList.Add(new TeamStatsRow(pair.Value)));
+            advtst.ToList().ForEach(pair =>
+                                    {
+                                        var tsr = new TeamStatsRow(pair.Value);
+                                        if (teamsToHighlight.Contains(tsr.ID))
+                                        {
+                                            tsr.Highlight = true;
+                                        }
+                                        tsrList.Add(tsr);
+                                    });
 
             dgvTeamStats.ItemsSource = tsrList;
             dgvPlayerStats.ItemsSource = psrList;
 
             TeamStats.CalculateAllMetrics(ref advtst_not, advtstopp_not, false);
             //advpst_not.ToList().ForEach(pair => PlayerStats.CalculateRates(pair.Value.stats, ref pair.Value.metrics));
-            PlayerStats.CalculateAllMetrics(ref advpst_not, advtst_not, advtstopp_not, advTeamOrder);
+            PlayerStats.CalculateAllMetrics(ref advpst_not, advPPtst_not, advPPtstopp_not, teamsPerPlayer: true);
 
             psrList_not = new ObservableCollection<PlayerStatsRow>();
-            advpst_not.ToList().ForEach(pair => psrList_not.Add(new PlayerStatsRow(pair.Value)));
+            advpst_not.ToList().ForEach(pair =>
+                                        {
+                                            var psr = new PlayerStatsRow(pair.Value);
+                                            if (playersToHighlight.Contains(psr.ID))
+                                            {
+                                                psr.Highlight = true;
+                                            }
+                                            psrList_not.Add(psr);
+                                        });
             tsrList_not = new ObservableCollection<TeamStatsRow>();
             advtst_not.ToList().ForEach(pair => tsrList_not.Add(new TeamStatsRow(pair.Value)));
 
             dgvTeamStatsOpposite.ItemsSource = tsrList_not;
             dgvPlayerStatsOpposite.ItemsSource = psrList_not;
-
-            tbcAdv.SelectedItem = tabPlayerStats;
         }
 
         #region Nested type: Filter
@@ -874,6 +973,16 @@ namespace NBA_Stats_Tracker.Windows
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void btnShowAll_Click(object sender, RoutedEventArgs e)
+        {
+            playersToHighlight.Clear();
+            teamsToHighlight.Clear();
+
+            CalculateAdvancedStats(MainWindow.bshist, new List<BoxScoreEntry>());
+
+            tbcAdv.SelectedItem = tabPlayerStats;
         }
     }
 }

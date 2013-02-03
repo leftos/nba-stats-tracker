@@ -27,11 +27,13 @@ namespace NBA_Stats_Tracker.Data.Players
     /// </summary>
     public class PlayerRankings
     {
-        public int avgcount = (new PlayerStats(new Player(-1, -1, "", "", Position.None, Position.None))).averages.Length;
+        public int avgcount = new PlayerStats().averages.Length;
         public Dictionary<int, Dictionary<string, int>> rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-
         public Dictionary<int, int[]> rankingsPerGame = new Dictionary<int, int[]>();
         public Dictionary<int, int[]> rankingsTotal = new Dictionary<int, int[]>();
+        public Dictionary<string, Dictionary<int, int>> revRankingsMetrics = new Dictionary<string, Dictionary<int, int>>(); 
+        public Dictionary<int, Dictionary<int, int>> revRankingsPerGame = new Dictionary<int, Dictionary<int, int>>(); 
+        public Dictionary<int, Dictionary<int, int>> revRankingsTotals = new Dictionary<int, Dictionary<int, int>>(); 
 
         public PlayerRankings()
         {
@@ -59,6 +61,18 @@ namespace NBA_Stats_Tracker.Data.Players
                 rankingsTotal.Add(kvp.Key, new int[totalsCount]);
                 rankingsMetrics.Add(kvp.Key, new Dictionary<string, int>());
             }
+            foreach (var metricName in p.metricsNames)
+            {
+                revRankingsMetrics.Add(metricName, new Dictionary<int, int>());
+            }
+            for (int i = 0; i < avgcount; i++)
+            {
+                revRankingsPerGame.Add(i, new Dictionary<int, int>());
+            }
+            for (int i = 0; i < totalsCount; i++)
+            {
+                revRankingsTotals.Add(i, new Dictionary<int, int>());
+            }
 
             for (int j = 0; j < avgcount; j++)
             {
@@ -77,6 +91,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 foreach (var kvp in tempList)
                 {
                     rankingsPerGame[kvp.Key][j] = k;
+                    revRankingsPerGame[j].Add(k, kvp.Key);
                     k++;
                 }
             }
@@ -107,6 +122,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 foreach (var kvp in tempList)
                 {
                     rankingsTotal[kvp.Key][j] = k;
+                    revRankingsTotals[j].Add(k, kvp.Key);
                     k++;
                 }
             }
@@ -138,6 +154,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 foreach (var kvp in tempList)
                 {
                     rankingsMetrics[kvp.Key][metricsNames[j]] = k;
+                    revRankingsMetrics[metricsNames[j]].Add(k, kvp.Key);
                     k++;
                 }
             }

@@ -12,5 +12,8 @@
                     <x:Type TypeName="contracts:PlayerContractOption" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="AlternatingRowBackground" Value="#FFE5E5E5"/>
+        </Style>
     </Application.Resources>
 </Application>

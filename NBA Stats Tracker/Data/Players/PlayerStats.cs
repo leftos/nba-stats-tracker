@@ -1253,7 +1253,6 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playerStats">The player stats.</param>
         /// <param name="teamStats">The team stats.</param>
         /// <param name="oppStats">The opposing team stats.</param>
-        /// <param name="TeamOrder">The team order.</param>
         /// <param name="leagueOv">
         ///     set to <c>true</c> if calling from the LeagueOverview window.
         /// </param>
@@ -1261,8 +1260,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     if set to <c>true</c>, the metrics will be calculated for the playoff stats.
         /// </param>
         public static void CalculateAllMetrics(ref Dictionary<int, PlayerStats> playerStats, Dictionary<int, TeamStats> teamStats,
-                                               Dictionary<int, TeamStats> oppStats, SortedDictionary<string, int> TeamOrder,
-                                               bool leagueOv = false, bool playoffs = false)
+                                               Dictionary<int, TeamStats> oppStats, bool leagueOv = false, bool playoffs = false, bool teamsPerPlayer = false)
         {
             int tCount = teamStats.Count;
 
@@ -1297,8 +1295,18 @@ namespace NBA_Stats_Tracker.Data.Players
                     continue;
 
                 int teamid = playerStats[playerid].TeamF;
-                TeamStats ts = teamStats[teamid];
-                TeamStats tsopp = oppStats[teamid];
+                TeamStats ts;
+                TeamStats tsopp;
+                if (!teamsPerPlayer)
+                {
+                    ts = teamStats[teamid];
+                    tsopp = oppStats[teamid];
+                }
+                else
+                {
+                    ts = teamStats[playerid];
+                    tsopp = oppStats[playerid];
+                }
 
                 playerStats[playerid].CalcMetrics(ts, tsopp, ls, leagueOv, playoffs: playoffs);
                 if (!playoffs)

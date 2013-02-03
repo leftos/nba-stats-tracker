@@ -1,8 +1,14 @@
 NBA Stats Tracker - Version History
 
-	v1.6.3.4 Beta
+	v1.6.4 Beta
+		- Improvement: Player metrics in Advanced Stats Calculator are no longer calculated based on the team the player is currently in, but rather by the total team performances in the games the player participated
+		- Fix: Fixed various scenarios that would cause the tool to crash when using Advanced Stats Calculator
+		- Improvement: Advanced Stats Calculator highlights the players and teams used as part of the filtering
+		- Addition: Added Show All option in Advanced Stats Calculator, which calculates all the player and team stats based on the available box scores, using the player metrics calculation method implemented in this release
+		- Improvement: Optimized League Notables calculation speed, which in turn should decrease the delay when opening a database
 		- Fix: Fixed some cases where a player in League Leaders or Notables would have 0 points per game due to incorrect criteria on the calculation
 		- Fix: Fixed some stats showing up as NaN in League Notables
+		- Improvement: Transitioned to an optimized implementation of the code that reads any information from the database, which should improve the performance of the program all around
 
 	v1.6.3.3 Beta
 		- Fix: Recommended 2K Ratings table wouldn't copy its headers
