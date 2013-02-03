@@ -163,6 +163,7 @@ namespace NBA_Stats_Tracker.Windows
             dgvTeamMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvLeagueTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvLeagueTeamMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvRatings.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
             sem = new Semaphore(1, 1);
         }

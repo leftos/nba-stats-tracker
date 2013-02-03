@@ -78,7 +78,7 @@ namespace LeftosCommonLibrary
 
         public static List<string[]> ArrayListFromCSVString(string text, bool hasHeaders = true, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StringReader(text), true,
+            var cr = new CsvReader(new StringReader(text), hasHeaders,
                                    useCultureSeparator ? listSeparator : DetectSeparator(new StringReader(text), 1, new char[] { ',', ';' }));
             var arrayList = ArrayListFromCSV(cr);
 

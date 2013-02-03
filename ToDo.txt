@@ -3,3 +3,8 @@
 - More Split Stats (.500, FG%, REB, TO)
 - Paste box scores from B-R, NBA.com
 - AST/TO ratio
+- Complex queries in ASC
+- Opponent Stats in ASC
+- Shooting averages in ASC
+- Career and Season Highs in Box Scores
+- Milestones in Box Scores & Matchup Preview

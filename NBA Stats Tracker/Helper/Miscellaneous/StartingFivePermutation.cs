@@ -28,5 +28,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public List<int> IDList = new List<int>(5);
         public int PlayersInPrimaryPosition = 0;
         public double Sum = 0;
+        public int BestPermCount = 0;
     }
 }

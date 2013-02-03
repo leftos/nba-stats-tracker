@@ -231,7 +231,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             // TODO: Re-enable downloading NBA stats when possible
-            //mnuFileGetRealStats.IsEnabled = false;
+            mnuFileGetRealStats.IsEnabled = false;
             btnDownloadBoxScore.IsEnabled = false;
             btnGrabNBAStats.IsEnabled = false;
             //
@@ -1458,7 +1458,10 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             foreach (var key in tstopp.Keys)
-                tstopp[key].ResetStats(Span.SeasonAndPlayoffsToSeason);
+            {
+                temptst[key].ResetStats(Span.SeasonAndPlayoffs);
+                tstopp[key].ResetStats(Span.SeasonAndPlayoffs);
+            }
 
             foreach (var bse in bshist)
             {

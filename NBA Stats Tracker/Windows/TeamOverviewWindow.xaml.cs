@@ -918,18 +918,34 @@ namespace NBA_Stats_Tracker.Windows
             try
             {
                 StartingFivePermutation bestPerm =
-                    permutations.Where(perm1 => perm1.Sum.Equals(max)).OrderByDescending(perm2 => perm2.PlayersInPrimaryPosition).First();
+                    permutations.Where(perm => perm.Sum.Equals(max)).OrderByDescending(perm => perm.PlayersInPrimaryPosition).First();
                 if (!doBench)
                 {
                     bestPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
                 }
                 else
                 {
+                    var benchPerms = permutations.Where(perm => !(perm.IDList.Any(id => bestPerm.IDList.Contains(id)))).ToList();
+                    if (benchPerms.Count == 0)
+                    {
+                        for (int i = 0; i < permutations.Count; i++)
+                        {
+                            var perm = permutations[i];
+                            for (int j = 0; j < perm.IDList.Count; j++)
+                            {
+                                if (bestPerm.IDList.Contains(perm.IDList[j]))
+                                {
+                                    perm.BestPermCount++;
+                                }
+                            }
+                        }
+                        benchPerms = permutations;
+                    }
                     StartingFivePermutation benchPerm =
-                        permutations.Where(p => !(p.IDList.Any(id => bestPerm.IDList.Contains(id))))
-                                    .OrderByDescending(p => p.Sum)
-                                    .ThenByDescending(p => p.PlayersInPrimaryPosition)
-                                    .First();
+                        benchPerms.OrderBy(perm => perm.BestPermCount)
+                                  .ThenByDescending(perm => perm.Sum)
+                                  .ThenByDescending(perm => perm.PlayersInPrimaryPosition)
+                                  .First();
                     benchPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
                 }
             }
