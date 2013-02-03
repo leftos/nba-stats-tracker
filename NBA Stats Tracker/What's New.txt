@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.6.3.4 Beta
+		- Fix: Fixed some cases where a player in League Leaders or Notables would have 0 points per game due to incorrect criteria on the calculation
+		- Fix: Fixed some stats showing up as NaN in League Notables
+
 	v1.6.3.3 Beta
 		- Fix: Recommended 2K Ratings table wouldn't copy its headers
 		- Fix: Fixed Bench situational showing nothing in cases where the team didn't have enough players available for one or more positions that weren't also in the recommended Starters situational

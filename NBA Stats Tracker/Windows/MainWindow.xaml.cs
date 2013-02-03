@@ -2519,85 +2519,91 @@ namespace NBA_Stats_Tracker.Windows
             if (pstLeaders.Count == 0)
                 return;
 
-            var psrList = new List<PlayerStatsRow>();
+            var leadersPSRList = new List<PlayerStatsRow>();
             pstLeaders.Values.ToList().ForEach(delegate(PlayerStats ps)
                                                {
                                                    var psr = new PlayerStatsRow(ps, calcRatings: false);
-                                                   psrList.Add(psr);
+                                                   leadersPSRList.Add(psr);
                                                });
+            var psrList = new List<PlayerStatsRow>();
+            pst.Values.ToList().ForEach(delegate(PlayerStats ps)
+            {
+                var psr = new PlayerStatsRow(ps, calcRatings: false);
+                psrList.Add(psr);
+            });
 
-            PlayerStatsRow curL = psrList.OrderByDescending(pair => pair.PPG).First();
+            PlayerStatsRow curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.PPG).First().ID);
 
             string m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 3, p.PPG);
             string s = String.Format("PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})", curL.FirstName, curL.LastName,
                                      tst[curL.TeamF].displayName, curL.PPG, m);
             notables.Add(s);
 
-            curL = psrList.OrderByDescending(pair => pair.FGp).First();
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FGp).First().ID);
             float ppg = double.IsNaN(curL.PPG) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FGp);
             s = String.Format("FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.FGp, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.RPG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.RPG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.RPG);
-            s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {5:F1} PPG,{4})", curL.FirstName, curL.LastName,
+            s = String.Format("RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.RPG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.BPG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.BPG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.BPG);
             s = String.Format("BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.BPG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.APG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.APG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.APG);
             s = String.Format("APG Leader: {0} {1} ({2}) ({3:F1} APG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.APG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.SPG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.SPG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.SPG);
             s = String.Format("SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.SPG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.ORPG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.ORPG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.ORPG);
             s = String.Format("ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.ORPG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.DRPG).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.DRPG).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.DRPG);
             s = String.Format("DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.DRPG, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.TPp).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.TPp).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.TPp);
             s = String.Format("3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {5:F1} PPG, {4})", curL.FirstName, curL.LastName,
                               tst[curL.TeamF].displayName, curL.TPp, m, ppg);
             notables.Add(s);
-
-            curL = psrList.OrderByDescending(pair => pair.FTp).First();
+            
+            curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FTp).First().ID);
             ppg = double.IsNaN(ppg) ? pst[curL.ID].averages[p.PPG] : curL.PPG;
 
             m = GetBestStatsForMarquee(curL, SeasonLeadersRankings, 2, p.FTp);

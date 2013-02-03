@@ -1335,7 +1335,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (FGM < fgmRequired)
             {
-                newpsr.PTS = 0;
+                //newpsr.PTS = 0;
                 newpsr.FGM = 0;
                 newpsr.FGA = 0;
                 newpsr.TSp = double.NaN;
@@ -1355,7 +1355,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             if (TPM < tpmRequired)
             {
-                newpsr.PTS = 0;
+                //newpsr.PTS = 0;
                 newpsr.TPM = 0;
                 newpsr.TPA = 0;
                 newpsr.TSp = double.NaN;
@@ -1375,7 +1375,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             if (FTM < ftmRequired)
             {
-                newpsr.PTS = 0;
+                //newpsr.PTS = 0;
                 newpsr.FTM = 0;
                 newpsr.FTA = 0;
                 newpsr.TSp = double.NaN;
