@@ -24,6 +24,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Players.Injuries;
+using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
 
 #endregion
@@ -141,7 +142,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
 
                 var lcv = (ListCollectionView) CollectionViewSource.GetDefaultView((sender).ItemsSource);
                 lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
-                                     ? new PlayerInjuryDaysComparer()
+                                     ? new PlayerInjuryDaysComparerAsc()
                                      : new PlayerInjuryDaysComparerDesc();
             }
             else if (e.Column.Header.ToString() == "Injury")
@@ -154,8 +155,21 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
 
                 var lcv = (ListCollectionView) CollectionViewSource.GetDefaultView((sender).ItemsSource);
                 lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
-                                     ? new PlayerInjuryNameComparer()
+                                     ? new PlayerInjuryNameComparerAsc()
                                      : new PlayerInjuryNameComparerDesc();
+            }
+            else if (e.Column.Header.ToString() == "Team")
+            {
+                e.Handled = true;
+
+                e.Column.SortDirection = (e.Column.SortDirection != ListSortDirection.Ascending)
+                                             ? ListSortDirection.Ascending
+                                             : ListSortDirection.Descending;
+
+                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
+                                     ? new TeamNameComparerAsc()
+                                     : new TeamNameComparerDesc();
             }
             else if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
             {

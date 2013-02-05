@@ -1115,10 +1115,16 @@ namespace NBA_Stats_Tracker.Windows
 
             #region Opponents
 
-            foreach (var ss in split[psr.ID].Where(pair => pair.Key.StartsWith("vs ")))
+            foreach (
+                var ss in
+                    split[psr.ID].Where(
+                        pair => pair.Key.StartsWith("vs ") && pair.Key.Substring(3, 3) != ">= " && pair.Key.Substring(3, 2) != "< "))
             {
                 splitPSRs.Add(new PlayerStatsRow(split[psr.ID][ss.Key], ss.Key, "Team Played Against"));
             }
+
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["vs >= .500"], "vs >= .500", "Opp Win %"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["vs < .500"], "vs < .500", "Opp Win %"));
 
             #endregion
 

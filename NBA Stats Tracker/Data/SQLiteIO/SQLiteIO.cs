@@ -2340,6 +2340,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #region Prepare Split Dictionaries
 
+            var better500 = "vs >= .500";
+            var worse500 = "vs < .500";
             foreach (var id in TeamOrder.Values)
             {
                 splitTeamStats.Add(id, new Dictionary<string, TeamStats>());
@@ -2385,6 +2387,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
+                splitTeamStats[id].Add(better500, new TeamStats());
+                splitTeamStats[id].Add(worse500, new TeamStats());
+                splitTeamStats[id].Add("Division", new TeamStats());
+                splitTeamStats[id].Add("Conference", new TeamStats());
             }
 
             foreach (var id in pst.Keys)
@@ -2436,6 +2442,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                     }
                 }
+
+                splitPlayerStats[id].Add(better500, new PlayerStats { ID = id });
+                splitPlayerStats[id].Add(worse500, new PlayerStats {ID = id});
             }
 
             #endregion
@@ -2502,10 +2511,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     TeamStats tsSA = splitTeamStats[t1ID]["Playoffs"];
                     TeamStats.AddTeamStatsFromBoxScore(bs, ref tsSA, ref tsSH, true);
                 }
+                TeamStats ts1;
+                TeamStats ts2;
                 if (bs.PTS1 > bs.PTS2)
                 {
-                    TeamStats ts2 = splitTeamStats[t2ID]["Losses"];
-                    TeamStats ts1 = splitTeamStats[t1ID]["Wins"];
+                    ts2 = splitTeamStats[t2ID]["Losses"];
+                    ts1 = splitTeamStats[t1ID]["Wins"];
                     TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
 
                     foreach (var pbs in bse.pbsList)
@@ -2522,8 +2533,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
                 else
                 {
-                    TeamStats ts1 = splitTeamStats[t1ID]["Losses"];
-                    TeamStats ts2 = splitTeamStats[t2ID]["Wins"];
+                    ts1 = splitTeamStats[t1ID]["Losses"];
+                    ts2 = splitTeamStats[t2ID]["Wins"];
                     TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
 
                     foreach (var pbs in bse.pbsList)
@@ -2538,6 +2549,43 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         }
                     }
                 }
+
+                if (tst[bs.Team1ID].conference == tst[bs.Team2ID].conference)
+                {
+                    ts1 = splitTeamStats[t1ID]["Conference"];
+                    ts2 = splitTeamStats[t2ID]["Conference"];
+                    TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2);
+                    if (tst[bs.Team1ID].division == tst[bs.Team2ID].division)
+                    {
+                        ts1 = splitTeamStats[t1ID]["Division"];
+                        ts2 = splitTeamStats[t2ID]["Division"];
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2);
+                    }
+                }
+
+                string forTeam1, forTeam2;
+                if (tst[bs.Team1ID].GetWinningPercentage(Span.Season) >= 0.5)
+                {
+                    ts2 = splitTeamStats[t2ID][better500];
+                    forTeam2 = better500;
+                }
+                else
+                {
+                    ts2 = splitTeamStats[t2ID][worse500];
+                    forTeam2 = worse500;
+                }
+                if (tst[bs.Team2ID].GetWinningPercentage(Span.Season) >= 0.5)
+                {
+                    ts1 = splitTeamStats[t1ID][better500];
+                    forTeam1 = better500;
+                }
+                else
+                {
+                    ts1 = splitTeamStats[t1ID][worse500];
+                    forTeam1 = worse500;
+                }
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
+
                 foreach (var pbs in bse.pbsList)
                 {
                     if (pbs.TeamID == t1ID)
@@ -2545,12 +2593,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         splitPlayerStats[pbs.PlayerID]["Away"].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[t2ID]].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["with " + DisplayNames[t1ID]].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID][forTeam1].AddBoxScore(pbs);
                     }
                     else
                     {
                         splitPlayerStats[pbs.PlayerID]["Home"].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["vs " + DisplayNames[t1ID]].AddBoxScore(pbs);
                         splitPlayerStats[pbs.PlayerID]["with " + DisplayNames[t2ID]].AddBoxScore(pbs);
+                        splitPlayerStats[pbs.PlayerID][forTeam2].AddBoxScore(pbs);
                     }
                     splitPlayerStats[pbs.PlayerID][bs.isPlayoff ? "Playoffs" : "Season"].AddBoxScore(pbs);
 

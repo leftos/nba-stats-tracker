@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
@@ -113,6 +114,8 @@ namespace NBA_Stats_Tracker.Windows
                                                 "All-Rookies 1st Team",
                                                 "All-Rookies 2nd Team"
                                             };
+
+        private Dictionary<int, Dictionary<string, TeamStats>> _splitTeamStats;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
@@ -1081,7 +1084,7 @@ namespace NBA_Stats_Tracker.Windows
                 if (!InCurrentFilter(_tst[key]))
                     continue;
 
-                tsrList.Add(new TeamStatsRow(_tst[key]));
+                tsrList.Add(new TeamStatsRow(_tst[key], _pst, _splitTeamStats));
                 oppTsrList.Add(new TeamStatsRow(_tstopp[key]));
             }
 
@@ -1135,6 +1138,8 @@ namespace NBA_Stats_Tracker.Windows
 
             dgvOpponentMetricStats.ItemsSource = isSeason ? oppTsrList : pl_oppTsrList;
             dgvLeagueOpponentMetricStats.ItemsSource = isSeason ? lssr : pl_lssr;
+
+            dgvTeamInfo.ItemsSource = tsrList;
         }
 
         /// <summary>
@@ -1309,6 +1314,7 @@ namespace NBA_Stats_Tracker.Windows
             _tstopp = MainWindow.tstopp;
             _pst = MainWindow.pst;
             _bshist = MainWindow.bshist;
+            _splitTeamStats = MainWindow.splitTeamStats;
         }
 
         /// <summary>
@@ -1900,5 +1906,19 @@ namespace NBA_Stats_Tracker.Windows
         }
 
         #endregion
+
+        private void chkOnlyInjured_Click(object sender, RoutedEventArgs e)
+        {
+            if (chkOnlyInjured.IsChecked.GetValueOrDefault())
+            {
+                ICollectionView pView = CollectionViewSource.GetDefaultView(_psrList);
+                pView.Filter = o => ((PlayerStatsRow) o).IsInjured;
+                dgvContracts.ItemsSource = pView;
+            }
+            else
+            {
+                dgvContracts.ItemsSource = _psrList;
+            }
+        }
     }
 }

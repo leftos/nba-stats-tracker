@@ -1020,7 +1020,14 @@ namespace NBA_Stats_Tracker.Windows
             if (String.IsNullOrWhiteSpace(sfd.FileName))
                 return;
 
-            File.WriteAllText(sfd.FileName, s);
+            try
+            {
+                File.WriteAllText(sfd.FileName, s);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Couldn't save filters file.\n\n", ex.Message);
+            }
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)

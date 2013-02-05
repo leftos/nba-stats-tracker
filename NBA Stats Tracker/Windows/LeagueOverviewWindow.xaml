@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data" xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen" Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
         Loaded="Window_Loaded"
@@ -29,14 +30,22 @@
                                   Margin="6" Name="dgvTeamStats" VerticalAlignment="Stretch"
                                   MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
                                   Sorting="StatColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
-                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown">
+                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding Games}" Header="Games" />
-                                <DataGridTextColumn Binding="{Binding Wins}" Header="Wins" />
-                                <DataGridTextColumn Binding="{Binding Losses}" Header="Losses" />
+                                <DataGridTextColumn Binding="{Binding Wins}" Header="W" />
+                                <DataGridTextColumn Binding="{Binding Losses}" Header="L" />
+                                <DataGridTextColumn />
+                                <DataGridTextColumn Binding="{Binding DivW}" Header="Div W" />
+                                <DataGridTextColumn Binding="{Binding DivL}" Header="Div L" />
+                                <DataGridTextColumn />
+                                <DataGridTextColumn Binding="{Binding ConfW}" Header="Conf W" />
+                                <DataGridTextColumn Binding="{Binding ConfL}" Header="Conf L" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding Wp, StringFormat=F3}" Header="W%" />
                                 <DataGridTextColumn Binding="{Binding Weff, StringFormat=F2}" Header="Weff" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
                                 <DataGridTextColumn Binding="{Binding PAPG, StringFormat=F1}" Header="PAPG" />
                                 <DataGridTextColumn Binding="{Binding FGMPG, StringFormat=F1}" Header="FGM/G" />
@@ -60,6 +69,7 @@
                                 <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
                                 <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding PF}" Header="PF" />
                                 <DataGridTextColumn Binding="{Binding PA}" Header="PA" />
                                 <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
@@ -77,6 +87,7 @@
                                 <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
@@ -84,12 +95,19 @@
                                   AutoGenerateColumns="False"
                                   HorizontalAlignment="Stretch" IsReadOnly="True" Margin="6,0,6,6"
                                   Name="dgvLeagueTeamStats" RowHeaderWidth="25" VerticalAlignment="Stretch"
-                                  Grid.Row="1" LoadingRow="dgLeague_LoadingRow">
+                                  Grid.Row="1" LoadingRow="dgLeague_LoadingRow" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding Games}" Header="Games" />
-                                <DataGridTextColumn Binding="{Binding Wins}" Header="Wins" />
-                                <DataGridTextColumn Binding="{Binding Losses}" Header="Losses" />
+                                <DataGridTextColumn Binding="{Binding Wins}" Header="W" />
+                                <DataGridTextColumn Binding="{Binding Losses}" Header="L" />
+                                <DataGridTextColumn />
+                                <DataGridTextColumn Binding="{Binding DivW}" Header="Div W" />
+                                <DataGridTextColumn Binding="{Binding DivL}" Header="Div L" />
+                                <DataGridTextColumn />
+                                <DataGridTextColumn Binding="{Binding ConfW}" Header="Conf W" />
+                                <DataGridTextColumn Binding="{Binding ConfL}" Header="Conf L" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding Wp, StringFormat=F3}" Header="W%" />
                                 <DataGridTextColumn Binding="{Binding Weff, StringFormat=F2}" Header="Weff" />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
@@ -115,6 +133,7 @@
                                 <DataGridTextColumn Binding="{Binding TPG, StringFormat=F1}" Header="TPG" />
                                 <DataGridTextColumn Binding="{Binding FPG, StringFormat=F1}" Header="FPG" />
                                 <DataGridTextColumn Binding="{Binding MPG, StringFormat=F1}" Header="MPG" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding PF}" Header="PF" />
                                 <DataGridTextColumn Binding="{Binding PA}" Header="PA" />
                                 <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
@@ -132,6 +151,7 @@
                                 <DataGridTextColumn Binding="{Binding TOS}" Header="TO" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
                                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
@@ -1246,6 +1266,37 @@
                         </DataGrid>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Team Information" Name="tabTeamInfo">
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" Style="{StaticResource DataGridStyle}"
+                                  FrozenColumnCount="1" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
+                                  Margin="6" Name="dgvTeamInfo" VerticalAlignment="Stretch"
+                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
+                                  Sorting="StatColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
+                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
+                                <DataGridTextColumn Header="Players" />
+                                <DataGridTextColumn Binding="{Binding PGCount}" Header="PG" />
+                                <DataGridTextColumn Binding="{Binding SGCount}" Header="SG" />
+                                <DataGridTextColumn Binding="{Binding SFCount}" Header="SF" />
+                                <DataGridTextColumn Binding="{Binding PFCount}" Header="PF" />
+                                <DataGridTextColumn Binding="{Binding CCount}" Header="C" />
+                                <DataGridTextColumn Header="Contracts" />
+                                <DataGridTextColumn Binding="{Binding ContractsY1, StringFormat=C0}" Header="Year 1" />
+                                <DataGridTextColumn Binding="{Binding ContractsY2, StringFormat=C0}" Header="Year 2" />
+                                <DataGridTextColumn Binding="{Binding ContractsY3, StringFormat=C0}" Header="Year 3" />
+                                <DataGridTextColumn Binding="{Binding ContractsY4, StringFormat=C0}" Header="Year 4" />
+                                <DataGridTextColumn Binding="{Binding ContractsY5, StringFormat=C0}" Header="Year 5" />
+                                <DataGridTextColumn Binding="{Binding ContractsY6, StringFormat=C0}" Header="Year 6" />
+                                <DataGridTextColumn Binding="{Binding ContractsY7, StringFormat=C0}" Header="Year 7" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
                 <TabItem Header="League Leaders" x:Name="tabLeaders">
                     <Grid VerticalAlignment="Stretch">
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
@@ -1968,10 +2019,11 @@
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                                   CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
-                                  Margin="6" Name="dgvContracts"
+                                  Margin="6,6,6,0" Name="dgvContracts"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
                                   MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting"
@@ -1995,6 +2047,8 @@
                                 <DataGridTextColumn Binding="{Binding ContractY7, StringFormat=C0}" Header="Year 7" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        <CheckBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,6" 
+                                  Content="Only show injured players" Name="chkOnlyInjured" Click="chkOnlyInjured_Click"/>
                     </Grid>
                 </TabItem>
                     <TabItem Header="Player Stats" Name="tabPlayerStats">

@@ -1,5 +1,19 @@
 NBA Stats Tracker - Version History
 
+	v1.7 Beta
+		- Addition: Added "Only show injured players" option in Injuries & Contracts tab of League Overview
+		- Improvement: Sorting by a column displaying the Team of a player will now place active players above inactive ones (i.e. free agents) when doing an ascending sort, and vice-versa when doing a descending sort
+		- Addition: Opponent Stats added as parameters when filtering by team in Advanced Stats Calculator
+		- Addition: Shooting percentages added as parameters in Advanced Stats Calculator
+		- Addition: Can now save Advanced Stats Calculator filters for later use
+		- Fix: Teams and Players will be highlighted in the Unmet Criteria tabs of Advanced Stats Calculator as well
+		- Fix: Fixed using Advanced Stats Calculator causing the tool to crash after closing the window and trying to use most other features
+		- Addition: Added Team Information tab in League Overview, showing the player count per position and total contracts per year
+		- Addition: Added team & player split stats against opponents with a record better or equal to .500, and against those with a record worse than .500
+		- Addition: Added Division & Conference records in the Team Stats tab in League Overview
+		- Addition: Can now also compare a statistic against another instead of a value in Advanced Stats Calculator
+		- Addition: Added Opponent Stats & Box Scores tabs to Advanced Stats Calculator
+
 	v1.6.4 Beta
 		- Improvement: Player metrics in Advanced Stats Calculator are no longer calculated based on the team the player is currently in, but rather by the total team performances in the games the player participated
 		- Fix: Fixed various scenarios that would cause the tool to crash when using Advanced Stats Calculator

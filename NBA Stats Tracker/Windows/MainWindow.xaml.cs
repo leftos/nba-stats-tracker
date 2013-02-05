@@ -62,6 +62,9 @@ namespace NBA_Stats_Tracker.Windows
         public static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                                                     @"\NBA Stats Tracker\";
 
+        public static readonly string PSFiltersPath = AppDocsPath + @"Search Filters\";
+        public static readonly string ASCFiltersPath = AppDocsPath + @"Advanced Stats Filters\";
+
         public static readonly string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
@@ -187,6 +190,10 @@ namespace NBA_Stats_Tracker.Windows
 
             if (Directory.Exists(AppDocsPath) == false)
                 Directory.CreateDirectory(AppDocsPath);
+            if (Directory.Exists(PSFiltersPath) == false)
+                Directory.CreateDirectory(PSFiltersPath);
+            if (Directory.Exists(ASCFiltersPath) == false)
+                Directory.CreateDirectory(ASCFiltersPath);
             if (Directory.Exists(AppTempPath) == false)
                 Directory.CreateDirectory(AppTempPath);
 

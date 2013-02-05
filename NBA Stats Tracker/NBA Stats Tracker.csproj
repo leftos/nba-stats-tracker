@@ -82,9 +82,9 @@
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContract.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContractOption.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparer.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerAsc.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjury.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparer.cs" />
+    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerAsc.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerDesc.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerDesc.cs" />
     <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
@@ -92,6 +92,8 @@
     <Compile Include="Data\Players\PlayerHighsRow.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
     <Compile Include="Data\Players\p.cs" />
+    <Compile Include="Data\Teams\TeamNameComparerDesc.cs" />
+    <Compile Include="Data\Teams\TeamNameComparerAsc.cs" />
     <Compile Include="Data\Teams\TeamBoxScore.cs" />
     <Compile Include="Data\Other\Division.cs" />
     <Compile Include="Data\PastStats\PastTeamStats.cs" />

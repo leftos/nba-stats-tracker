@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LeftosCommonLibrary;
+using NBA_Stats_Tracker.Data.Players;
 
 #endregion
 
@@ -164,6 +166,28 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
+        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false) : this(ts, playoffs)
+        {
+            CalculateTotalContracts(pst);
+            CalculatePlayerCounts(pst);
+        }
+
+        public TeamStatsRow(TeamStats ts, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+                            bool playoffs = false) : this(ts, playoffs)
+        {
+            DivW = splitTeamStats[ID]["Division"].winloss[0];
+            DivL = splitTeamStats[ID]["Division"].winloss[1];
+            ConfW = splitTeamStats[ID]["Conference"].winloss[0];
+            ConfL = splitTeamStats[ID]["Conference"].winloss[1];
+        }
+
+        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+                            bool playoffs = false) : this(ts, splitTeamStats, playoffs)
+        {
+            CalculateTotalContracts(pst);
+            CalculatePlayerCounts(pst);
+        }
+
         public int ID { get; set; }
         public uint Games { get; set; }
         public uint Wins { get; set; }
@@ -232,6 +256,26 @@ namespace NBA_Stats_Tracker.Data.Teams
         public double Poss { get; set; }
         public double Pace { get; set; }
 
+        public int ContractsY1 { get; set; }
+        public int ContractsY2 { get; set; }
+        public int ContractsY3 { get; set; }
+        public int ContractsY4 { get; set; }
+        public int ContractsY5 { get; set; }
+        public int ContractsY6 { get; set; }
+        public int ContractsY7 { get; set; }
+
+        public int PGCount { get; set; }
+        public int SGCount { get; set; }
+        public int SFCount { get; set; }
+        public int PFCount { get; set; }
+        public int CCount { get; set; }
+        public int PlCount { get; set; }
+
+        public uint DivW { get; set; }
+        public uint DivL { get; set; }
+        public uint ConfW { get; set; }
+        public uint ConfL { get; set; }
+
         public bool IsHidden { get; set; }
 
         public bool Highlight { get; set; }
@@ -263,5 +307,31 @@ namespace NBA_Stats_Tracker.Data.Teams
         {
             tsr = new TeamStatsRow(new TeamStats(tsr));
         }
+
+        public void CalculateTotalContracts(Dictionary<int, PlayerStats> pst)
+        {
+            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            ContractsY1 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(1)).Sum();
+            ContractsY2 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(2)).Sum();
+            ContractsY3 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(3)).Sum();
+            ContractsY4 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(4)).Sum();
+            ContractsY5 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(5)).Sum();
+            ContractsY6 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(6)).Sum();
+            ContractsY7 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(7)).Sum();
+        }
+
+        public void CalculatePlayerCounts(Dictionary<int, PlayerStats> pst)
+        {
+            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            PlCount = teamPlayers.Count;
+            PGCount = teamPlayers.Count(ps => ps.Position1 == Position.PG);
+            SGCount = teamPlayers.Count(ps => ps.Position1 == Position.SG);
+            SFCount = teamPlayers.Count(ps => ps.Position1 == Position.SF);
+            PFCount = teamPlayers.Count(ps => ps.Position1 == Position.PF);
+            CCount = teamPlayers.Count(ps => ps.Position1 == Position.C);
+            InjuredCount = teamPlayers.Count(ps => ps.Injury.IsInjured);
+        }
+
+        public int InjuredCount { get; set; }
     }
 }

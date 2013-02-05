@@ -20,7 +20,7 @@ using System;
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
-    internal class PlayerInjuryDaysComparerDesc : PlayerInjuryDaysComparer
+    internal class PlayerInjuryDaysComparerDesc : PlayerInjuryDaysComparerAsc
     {
         public override int Compare(object x, object y)
         {

@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
-    public class PlayerInjuryDaysComparer : IComparer
+    public class PlayerInjuryDaysComparerAsc : IComparer
     {
         protected static readonly Dictionary<string, int> DurationOrder = new Dictionary<string, int>
                                                                           {

@@ -232,6 +232,17 @@ namespace NBA_Stats_Tracker.Data.Teams
         ///     Prepares the presentation fields of the class.
         /// </summary>
         /// <param name="teamID">The team.</param>
+        public void PrepareForDisplay(Dictionary<int, TeamStats> tst)
+        {
+            DisplayTeam = tst[Team2ID].displayName;
+            DisplayOpponent = tst[Team1ID].displayName;
+            DisplayResult = PTS1 + "-" + PTS2;
+        }
+
+        /// <summary>
+        ///     Prepares the presentation fields of the class.
+        /// </summary>
+        /// <param name="teamID">The team.</param>
         public void PrepareForDisplay(Dictionary<int, TeamStats> tst, int teamID)
         {
             if (teamID == Team1ID)

@@ -688,13 +688,13 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// </summary>
         /// <param name="span">The span.</param>
         /// <returns></returns>
-        public float getWinningPercentage(Span span)
+        public double GetWinningPercentage(Span span)
         {
             if (span == Span.Season)
             {
                 try
                 {
-                    return winloss[0]/getGames();
+                    return ((double)winloss[0])/getGames();
                 }
                 catch (DivideByZeroException)
                 {
@@ -705,7 +705,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 try
                 {
-                    return pl_winloss[0]/getGames();
+                    return ((double)pl_winloss[0])/getGames();
                 }
                 catch (DivideByZeroException)
                 {
@@ -716,7 +716,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 try
                 {
-                    return (winloss[0] + pl_winloss[0])/(getGames() + getPlayoffGames());
+                    return ((double)(winloss[0] + pl_winloss[0]))/(getGames() + getPlayoffGames());
                 }
                 catch (DivideByZeroException)
                 {
@@ -777,7 +777,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             int confpos = 0;
 
             List<KeyValuePair<int, TeamStats>> divTeams = tst.Where(pair => pair.Value.division == division).ToList();
-            divTeams.Sort((t1, t2) => t1.Value.getWinningPercentage(Span.Season).CompareTo(t2.Value.getWinningPercentage(Span.Season)));
+            divTeams.Sort((t1, t2) => t1.Value.GetWinningPercentage(Span.Season).CompareTo(t2.Value.GetWinningPercentage(Span.Season)));
             divTeams.Reverse();
             for (int i = 0; i < divTeams.Count; i++)
             {
@@ -788,7 +788,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
             List<KeyValuePair<int, TeamStats>> confTeams = tst.Where(pair => pair.Value.conference == conference).ToList();
-            confTeams.Sort((t1, t2) => t1.Value.getWinningPercentage(Span.Season).CompareTo(t2.Value.getWinningPercentage(Span.Season)));
+            confTeams.Sort((t1, t2) => t1.Value.GetWinningPercentage(Span.Season).CompareTo(t2.Value.GetWinningPercentage(Span.Season)));
             confTeams.Reverse();
             for (int i = 0; i < confTeams.Count; i++)
             {

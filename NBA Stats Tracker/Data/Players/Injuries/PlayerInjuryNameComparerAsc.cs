@@ -21,7 +21,7 @@ using System.Collections;
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
-    public class PlayerInjuryNameComparer : IComparer
+    public class PlayerInjuryNameComparerAsc : IComparer
     {
         #region IComparer Members
 
