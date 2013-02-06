@@ -96,6 +96,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 typeof (PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
             }
             ContractYears = ps.Contract.GetYears();
+            ContractYearsMinusOption = ps.Contract.GetYearsMinusOption();
 
             Height = ps.height;
             Weight = ps.weight;
@@ -301,6 +302,7 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         public int ContractYears { get; set; }
+        public int ContractYearsMinusOption { get; set; }
 
         public uint GP { get; set; }
         public uint GS { get; set; }

@@ -429,7 +429,11 @@ namespace NBA_Stats_Tracker.Windows
             if (!String.IsNullOrWhiteSpace(txtContractYLeftVal.Text))
             {
                 context = new ExpressionContext();
-                ige = context.CompileGeneric<bool>(psr.ContractYears.ToString() + cmbContractYLeftOp.SelectedItem + txtContractYLeftVal.Text);
+                ige =
+                    context.CompileGeneric<bool>((chkExcludeOption.IsChecked.GetValueOrDefault()
+                                                      ? psr.ContractYearsMinusOption.ToString()
+                                                      : psr.ContractYears.ToString()) + cmbContractYLeftOp.SelectedItem +
+                                                 txtContractYLeftVal.Text);
                 if (ige.Evaluate() == false)
                     return false;
             }

@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.7.1 Beta
+		- Addition: Added "Exclude Option Years" option in Advanced Player Search, which makes sure any contract years included in the contract option aren't considered when filtering by contract years remaining
+		- Improvement: Contract messages after a REDitor import will distinguish between clear contract years and option years
+
 	v1.7 Beta
 		- Addition: Added "Only show injured players" option in Injuries & Contracts tab of League Overview
 		- Improvement: Sorting by a column displaying the Team of a player will now place active players above inactive ones (i.e. free agents) when doing an ascending sort, and vice-versa when doing a descending sort

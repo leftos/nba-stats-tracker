@@ -45,7 +45,7 @@ namespace LeftosCommonLibrary
             var s = (DataGrid)sender;
             // parse the clipboard data
             List<string[]> rowData = CSV.ParseClipboardData();
-            bool hasAddedNewRow = false;
+            //bool hasAddedNewRow = false;
 
             // call OnPastingCellClipboardContent for each cell
             int minRowIndex = Math.Max(s.Items.IndexOf(s.CurrentItem), 0);
@@ -63,7 +63,7 @@ namespace LeftosCommonLibrary
                     IEditableCollectionView iecv = cv as IEditableCollectionView;
                     if (iecv != null)
                     {
-                        hasAddedNewRow = true;
+                        //hasAddedNewRow = true;
                         iecv.AddNew();
                         if (rowDataIndex + 1 < rowData.Count)
                         {

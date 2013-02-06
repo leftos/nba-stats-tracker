@@ -39,6 +39,44 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
             return ContractSalaryPerYear.Count;
         }
 
+        public int GetYearsMinusOption()
+        {
+            int total = GetYears();
+            switch (Option)
+            {
+                case PlayerContractOption.None:
+                    return total;
+                case PlayerContractOption.Team:
+                case PlayerContractOption.Player:
+                    return total - 1;
+                case PlayerContractOption.Team2Yr:
+                    return total - 2;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public string GetYearsDesc()
+        {
+            int total = ContractSalaryPerYear.Count;
+            switch (Option)
+            {
+                case PlayerContractOption.Player:
+                    return String.Format("{0}+1 years (Player Option)", GetYearsMinusOption());
+                case PlayerContractOption.Team:
+                    return String.Format("{0}+1 years (Team Option)", GetYearsMinusOption());
+                case PlayerContractOption.Team2Yr:
+                    return String.Format("{0}+2 years (Team Option)", GetYearsMinusOption());
+                default:
+                    if (total == 0)
+                        return "Not signed";
+                    else if (total == 1)
+                        return String.Format("{0} year", total);
+                    else
+                        return String.Format("{0} years", total);
+            }
+        }
+
         public int GetTotal()
         {
             return ContractSalaryPerYear.Sum();
@@ -51,7 +89,7 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
 
         public new string ToString()
         {
-            return string.Format("{0} year contract, {1:C} total, {2:C} per year on average", GetYears(), GetTotal(), GetAverage());
+            return string.Format("{0}, {1:C} total, {2:C} per year on average", GetYearsDesc(), GetTotal(), GetAverage());
         }
 
         public int TryGetSalary(int year)

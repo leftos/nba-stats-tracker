@@ -128,10 +128,10 @@
                                 <TextBox Height="23" HorizontalAlignment="Left" Margin="491,96,0,0"
                                          x:Name="txtContractYLeftVal"
                                          VerticalAlignment="Top" Width="38" />
-                                <ComboBox Height="23" HorizontalAlignment="Left" Margin="634,96,0,0"
+                                <ComboBox Height="23" HorizontalAlignment="Left" Margin="847,96,0,0"
                                           x:Name="cmbContractOpt"
                                           VerticalAlignment="Top" Width="79" />
-                                <Label Content="Contract Option" HorizontalAlignment="Left" Margin="534,94,0,0"
+                                <Label Content="Contract Option" HorizontalAlignment="Left" Margin="747,94,0,0"
                                        VerticalAlignment="Top" Height="26" Width="95" />
                                 <GroupBox Header="Contract" Margin="10,10,626,10" Grid.Row="1">
                                     <Grid>
@@ -153,6 +153,7 @@
                                 			Click="btnTotalsDel_Click" />
                                     </Grid>
                                 </GroupBox>
+                                <CheckBox x:Name="chkExcludeOption" Content="Exclude Option Years" HorizontalAlignment="Left" Margin="534,99,0,0" VerticalAlignment="Top"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="Stats">

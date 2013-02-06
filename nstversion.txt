@@ -1,6 +1,6 @@
-1.6.4.0
+1.7.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 
-	v1.6 added detailed injury information. Updates have been frequent as bugs are squashed out. Thanks for your support.
+	v1.7 adds a lot of enhancements to the Advanced Stats Calculator, and more.
 	
 	NOTE: v1.6.2.4 contains an important bug-fix, please update immediatelly. Using versions older than that may result in hard-to-repair corruption of the Player Box Scores part of your databases.

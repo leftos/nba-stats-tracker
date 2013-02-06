@@ -964,8 +964,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             msg += " re-signed ";
                         }
-                        msg += String.Format("with the {0} on a {1}yr/{2:C0} ({3:C0} per year) contract.", tst[curPlayer.TeamF].displayName,
-                                             curPlayer.Contract.GetYears(), curPlayer.Contract.GetTotal(), curPlayer.Contract.GetAverage());
+                        msg += String.Format("with the {0} on a {1}/{2:C0} ({3:C0} per year) contract.", tst[curPlayer.TeamF].displayName,
+                                             curPlayer.Contract.GetYearsDesc(), curPlayer.Contract.GetTotal(), curPlayer.Contract.GetAverage());
                         importMessages.Add(msg);
                     }
 
