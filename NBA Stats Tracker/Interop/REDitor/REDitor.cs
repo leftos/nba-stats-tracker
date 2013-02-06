@@ -501,6 +501,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return -1;
 
             var importMessages = new List<string>();
+            var tradeMessages = new List<string>();
+            var injuryMessages = new List<string>();
 
             #region Import Teams & Team Stats
 
@@ -944,12 +946,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             msg = String.Format("{0} was traded from the {1} to the {2}.", name, tst[oldPlayer.TeamF].displayName,
                                                 tst[curPlayer.TeamF].displayName);
-                            importMessages.Add(msg);
+                            tradeMessages.Add(msg);
                         }
                         else if (oldPlayer.isActive)
                         {
                             msg = String.Format("{0} was released from the {1}.", name, tst[oldPlayer.TeamF].displayName);
-                            importMessages.Add(msg);
+                            tradeMessages.Add(msg);
                         }
                     }
 
@@ -966,22 +968,22 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                         msg += String.Format("with the {0} on a {1}/{2:C0} ({3:C0} per year) contract.", tst[curPlayer.TeamF].displayName,
                                              curPlayer.Contract.GetYearsDesc(), curPlayer.Contract.GetTotal(), curPlayer.Contract.GetAverage());
-                        importMessages.Add(msg);
+                        tradeMessages.Add(msg);
                     }
 
                     if (oldPlayer.Injury.InjuryName != curPlayer.Injury.InjuryName)
                     {
                         if (!oldPlayer.Injury.IsInjured)
                         {
-                            importMessages.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
+                            injuryMessages.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
                         }
                         else if (!curPlayer.Injury.IsInjured)
                         {
-                            importMessages.Add(name + " is no longer injured.");
+                            injuryMessages.Add(name + " is no longer injured.");
                         }
                         else
                         {
-                            importMessages.Add(name + " was injured with " + oldPlayer.Injury.InjuryName +
+                            injuryMessages.Add(name + " was injured with " + oldPlayer.Injury.InjuryName +
                                                ", is now injured again. Status: " + curPlayer.Injury.Status);
                         }
                     }
@@ -1063,6 +1065,21 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             #endregion
+
+            if (tradeMessages.Count > 0)
+            {
+                importMessages.Add("League Transactions");
+                importMessages.Add("========================================");
+                importMessages.AddRange(tradeMessages);
+                importMessages.Add("");
+                importMessages.Add("");
+            }
+            if (injuryMessages.Count > 0)
+            {
+                importMessages.Add("Injury Updates");
+                importMessages.Add("========================================");
+                importMessages.AddRange(injuryMessages);
+            }
 
             if (importMessages.Count > 0)
             {
