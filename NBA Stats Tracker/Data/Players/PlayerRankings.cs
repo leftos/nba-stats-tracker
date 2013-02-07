@@ -27,13 +27,13 @@ namespace NBA_Stats_Tracker.Data.Players
     /// </summary>
     public class PlayerRankings
     {
-        public int avgcount = new PlayerStats().averages.Length;
-        public Dictionary<int, Dictionary<string, int>> rankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-        public Dictionary<int, int[]> rankingsPerGame = new Dictionary<int, int[]>();
-        public Dictionary<int, int[]> rankingsTotal = new Dictionary<int, int[]>();
-        public Dictionary<string, Dictionary<int, int>> revRankingsMetrics = new Dictionary<string, Dictionary<int, int>>(); 
-        public Dictionary<int, Dictionary<int, int>> revRankingsPerGame = new Dictionary<int, Dictionary<int, int>>(); 
-        public Dictionary<int, Dictionary<int, int>> revRankingsTotals = new Dictionary<int, Dictionary<int, int>>(); 
+        public int PerGameCount = new PlayerStats().PerGame.Length;
+        public Dictionary<int, Dictionary<string, int>> RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
+        public Dictionary<int, int[]> RankingsPerGame = new Dictionary<int, int[]>();
+        public Dictionary<int, int[]> RankingsTotal = new Dictionary<int, int[]>();
+        public Dictionary<string, Dictionary<int, int>> RevRankingsMetrics = new Dictionary<string, Dictionary<int, int>>();
+        public Dictionary<int, Dictionary<int, int>> RevRankingsPerGame = new Dictionary<int, Dictionary<int, int>>();
+        public Dictionary<int, Dictionary<int, int>> RevRankingsTotals = new Dictionary<int, Dictionary<int, int>>();
 
         public PlayerRankings()
         {
@@ -48,102 +48,98 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </param>
         public PlayerRankings(Dictionary<int, PlayerStats> pst, bool playoffs = false)
         {
-            Dictionary<int, PlayerStats> validPlayers = pst.Where(ps => ps.Value.stats[p.GP] > 0).ToDictionary(a => a.Key, a => a.Value);
+            Dictionary<int, PlayerStats> validPlayers = pst.Where(ps => ps.Value.Totals[PAbbr.GP] > 0)
+                                                           .ToDictionary(a => a.Key, a => a.Value);
 
             var dummyPS = new PlayerStats();
             //int firstPlayerID = validPlayers.Keys.ToList()[0];
-            int totalsCount = dummyPS.stats.Length;
-            int metricsCount = dummyPS.metrics.Count;
+            int totalsCount = dummyPS.Totals.Length;
+            int metricsCount = dummyPS.Metrics.Count;
 
             foreach (var kvp in validPlayers)
             {
-                rankingsPerGame.Add(kvp.Key, new int[avgcount]);
-                rankingsTotal.Add(kvp.Key, new int[totalsCount]);
-                rankingsMetrics.Add(kvp.Key, new Dictionary<string, int>());
+                RankingsPerGame.Add(kvp.Key, new int[PerGameCount]);
+                RankingsTotal.Add(kvp.Key, new int[totalsCount]);
+                RankingsMetrics.Add(kvp.Key, new Dictionary<string, int>());
             }
-            foreach (var metricName in p.metricsNames)
+            foreach (var metricName in PAbbr.MetricsNames)
             {
-                revRankingsMetrics.Add(metricName, new Dictionary<int, int>());
+                RevRankingsMetrics.Add(metricName, new Dictionary<int, int>());
             }
-            for (int i = 0; i < avgcount; i++)
+            for (int i = 0; i < PerGameCount; i++)
             {
-                revRankingsPerGame.Add(i, new Dictionary<int, int>());
+                RevRankingsPerGame.Add(i, new Dictionary<int, int>());
             }
             for (int i = 0; i < totalsCount; i++)
             {
-                revRankingsTotals.Add(i, new Dictionary<int, int>());
+                RevRankingsTotals.Add(i, new Dictionary<int, int>());
             }
 
-            for (int j = 0; j < avgcount; j++)
+            for (int j = 0; j < PerGameCount; j++)
             {
-                Dictionary<int, float> averages;
-                if (!playoffs)
-                    averages = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.averages[j]);
-                else
-                    averages = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.pl_averages[j]);
+                Dictionary<int, float> perGame = !playoffs
+                                                     ? validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PerGame[j])
+                                                     : validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PlPerGame[j]);
 
-                var tempList = new List<KeyValuePair<int, float>>(averages);
+                var tempList = new List<KeyValuePair<int, float>>(perGame);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != p.FPG && j != p.TPG)
+                if (j != PAbbr.FPG && j != PAbbr.TPG)
                     tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
                 {
-                    rankingsPerGame[kvp.Key][j] = k;
-                    revRankingsPerGame[j].Add(k, kvp.Key);
+                    RankingsPerGame[kvp.Key][j] = k;
+                    RevRankingsPerGame[j].Add(k, kvp.Key);
                     k++;
                 }
             }
             int plCount = pst.Count;
-            foreach (var kvp in pst.Where(ps => ps.Value.stats[p.GP] == 0))
+            foreach (var kvp in pst.Where(ps => ps.Value.Totals[PAbbr.GP] == 0))
             {
-                rankingsPerGame.Add(kvp.Key, new int[avgcount]);
-                for (int i = 0; i < avgcount; i++)
+                RankingsPerGame.Add(kvp.Key, new int[PerGameCount]);
+                for (int i = 0; i < PerGameCount; i++)
                 {
-                    rankingsPerGame[kvp.Key][i] = plCount;
+                    RankingsPerGame[kvp.Key][i] = plCount;
                 }
             }
 
             for (int j = 0; j < totalsCount; j++)
             {
-                Dictionary<int, uint> totals;
-                if (!playoffs)
-                    totals = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.stats[j]);
-                else
-                    totals = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.pl_stats[j]);
+                Dictionary<int, uint> totals = !playoffs
+                                                   ? validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Totals[j])
+                                                   : validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PlTotals[j]);
 
                 var tempList = new List<KeyValuePair<int, uint>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != p.FOUL && j != p.TOS)
+                if (j != PAbbr.FOUL && j != PAbbr.TOS)
                     tempList.Reverse();
 
                 int k = 1;
                 foreach (var kvp in tempList)
                 {
-                    rankingsTotal[kvp.Key][j] = k;
-                    revRankingsTotals[j].Add(k, kvp.Key);
+                    RankingsTotal[kvp.Key][j] = k;
+                    RevRankingsTotals[j].Add(k, kvp.Key);
                     k++;
                 }
             }
-            foreach (var kvp in pst.Where(ps => ps.Value.stats[p.GP] == 0))
+            foreach (var kvp in pst.Where(ps => ps.Value.Totals[PAbbr.GP] == 0))
             {
-                rankingsTotal.Add(kvp.Key, new int[totalsCount]);
+                RankingsTotal.Add(kvp.Key, new int[totalsCount]);
                 for (int i = 0; i < totalsCount; i++)
                 {
-                    rankingsTotal[kvp.Key][i] = plCount;
+                    RankingsTotal[kvp.Key][i] = plCount;
                 }
             }
 
             var badMetrics = new List<string> {"TO%", "TOR"};
-            List<string> metricsNames = p.metricsNames;
+            List<string> metricsNames = PAbbr.MetricsNames;
             for (int j = 0; j < metricsCount; j++)
             {
-                Dictionary<int, double> metrics;
-                if (!playoffs)
-                    metrics = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.metrics[metricsNames[j]]);
-                else
-                    metrics = validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.pl_metrics[metricsNames[j]]);
+                Dictionary<int, double> metrics = !playoffs
+                                                      ? validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Metrics[metricsNames[j]])
+                                                      : validPlayers.ToDictionary(kvp => kvp.Key,
+                                                                                  kvp => kvp.Value.PlMetrics[metricsNames[j]]);
 
                 var tempList = new List<KeyValuePair<int, double>>(metrics);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
@@ -153,17 +149,17 @@ namespace NBA_Stats_Tracker.Data.Players
                 int k = 1;
                 foreach (var kvp in tempList)
                 {
-                    rankingsMetrics[kvp.Key][metricsNames[j]] = k;
-                    revRankingsMetrics[metricsNames[j]].Add(k, kvp.Key);
+                    RankingsMetrics[kvp.Key][metricsNames[j]] = k;
+                    RevRankingsMetrics[metricsNames[j]].Add(k, kvp.Key);
                     k++;
                 }
             }
-            foreach (var kvp in pst.Where(ps => ps.Value.stats[p.GP] == 0))
+            foreach (var kvp in pst.Where(ps => ps.Value.Totals[PAbbr.GP] == 0))
             {
-                rankingsMetrics.Add(kvp.Key, new Dictionary<string, int>());
+                RankingsMetrics.Add(kvp.Key, new Dictionary<string, int>());
                 for (int i = 0; i < metricsCount; i++)
                 {
-                    rankingsMetrics[kvp.Key][metricsNames[i]] = plCount;
+                    RankingsMetrics[kvp.Key][metricsNames[i]] = plCount;
                 }
             }
         }
@@ -171,20 +167,20 @@ namespace NBA_Stats_Tracker.Data.Players
         public static PlayerRankings CalculateActiveRankings(bool playoffs = false)
         {
             var cumRankingsActive = new PlayerRankings(
-                MainWindow.pst.Where(ps => ps.Value.isActive).ToDictionary(r => r.Key, r => r.Value), playoffs);
+                MainWindow.PST.Where(ps => ps.Value.IsActive).ToDictionary(r => r.Key, r => r.Value), playoffs);
             return cumRankingsActive;
         }
 
         public static PlayerRankings CalculateLeadersRankings(out Dictionary<int, PlayerStats> pstLeaders, bool playoffs = false)
         {
-            Dictionary<int, PlayerStats> pstActive = MainWindow.pst.Where(ps => ps.Value.isActive)
+            Dictionary<int, PlayerStats> pstActive = MainWindow.PST.Where(ps => ps.Value.IsActive)
                                                                .ToDictionary(ps => ps.Key, ps => ps.Value);
             List<int> listOfKeys = pstActive.Keys.ToList();
             foreach (var key in listOfKeys)
             {
                 pstActive[key] = MainWindow.LeadersPrefSetting == "NBA"
-                                     ? pstActive[key].ConvertToLeagueLeader(MainWindow.tst, playoffs)
-                                     : pstActive[key].ConvertToMyLeagueLeader(MainWindow.tst, playoffs);
+                                     ? pstActive[key].ConvertToLeagueLeader(MainWindow.TST, playoffs)
+                                     : pstActive[key].ConvertToMyLeagueLeader(MainWindow.TST, playoffs);
             }
             var cumRankingsActive = new PlayerRankings(pstActive, playoffs);
             pstLeaders = pstActive;

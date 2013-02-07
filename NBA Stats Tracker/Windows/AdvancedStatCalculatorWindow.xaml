@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d"
-        Title="Advanced Stats Calculator" Height="535" Width="892" Loaded="Window_Loaded_1" WindowStartupLocation="CenterScreen">
+        Title="Advanced Stats Calculator" Height="535" Width="892" Loaded="window_Loaded" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         
     </Window.Resources>

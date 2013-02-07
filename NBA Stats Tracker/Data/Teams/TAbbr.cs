@@ -23,7 +23,7 @@ namespace NBA_Stats_Tracker.Data.Teams
     /// <summary>
     ///     A list of constant pseudonyms for specific entries in the teams' stats arrays.
     /// </summary>
-    public static class t
+    public static class TAbbr
     {
         public const int MINS = 0,
                          PF = 1,
@@ -63,7 +63,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                          PD = 18,
                          MPG = 19;
 
-        public static Dictionary<int, string> totals = new Dictionary<int, string>
+        public static Dictionary<int, string> Totals = new Dictionary<int, string>
                                                        {
                                                            {0, "MINS"},
                                                            {1, "PF"},
@@ -83,28 +83,28 @@ namespace NBA_Stats_Tracker.Data.Teams
                                                            {16, "FOUL"}
                                                        };
 
-        public static Dictionary<int, string> averages = new Dictionary<int, string>
-                                                         {
-                                                             {0, "PPG"},
-                                                             {1, "PAPG"},
-                                                             {2, "FG%"},
-                                                             {3, "FGeff"},
-                                                             {4, "3P%"},
-                                                             {5, "3Peff"},
-                                                             {6, "FT%"},
-                                                             {7, "FTeff"},
-                                                             {8, "RPG"},
-                                                             {9, "ORPG"},
-                                                             {10, "DRPG"},
-                                                             {11, "SPG"},
-                                                             {12, "BPG"},
-                                                             {13, "TPG"},
-                                                             {14, "APG"},
-                                                             {15, "FPG"},
-                                                             {16, "WP"},
-                                                             {17, "Weff"},
-                                                             {18, "PD"},
-                                                             {19, "MPG"}
-                                                         };
+        public static Dictionary<int, string> PerGame = new Dictionary<int, string>
+                                                        {
+                                                            {0, "PPG"},
+                                                            {1, "PAPG"},
+                                                            {2, "FG%"},
+                                                            {3, "FGeff"},
+                                                            {4, "3P%"},
+                                                            {5, "3Peff"},
+                                                            {6, "FT%"},
+                                                            {7, "FTeff"},
+                                                            {8, "RPG"},
+                                                            {9, "ORPG"},
+                                                            {10, "DRPG"},
+                                                            {11, "SPG"},
+                                                            {12, "BPG"},
+                                                            {13, "TPG"},
+                                                            {14, "APG"},
+                                                            {15, "FPG"},
+                                                            {16, "WP"},
+                                                            {17, "Weff"},
+                                                            {18, "PD"},
+                                                            {19, "MPG"}
+                                                        };
     }
 }

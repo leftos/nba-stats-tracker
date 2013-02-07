@@ -41,7 +41,36 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class PlayerSearchWindow
     {
-        private readonly List<string> Averages = new List<string>
+        private readonly List<string> _contractOptions = new List<string> {"Any", "None", "Team", "Player", "Team2Yr"};
+        private readonly string _folder = App.AppDocsPath + @"\Search Filters";
+
+        private readonly List<string> _metrics = new List<string>
+                                                 {
+                                                     "PER",
+                                                     "EFF",
+                                                     "GmSc",
+                                                     "TS%",
+                                                     "PPR",
+                                                     "OREB%",
+                                                     "DREB%",
+                                                     "AST%",
+                                                     "STL%",
+                                                     "BLK%",
+                                                     "TO%",
+                                                     "USG%",
+                                                     "PTSR",
+                                                     "REBR",
+                                                     "OREBR",
+                                                     "ASTR",
+                                                     "BLKR",
+                                                     "STLR",
+                                                     "TOR",
+                                                     "FTR"
+                                                 };
+
+        private readonly List<string> _numericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+
+        private readonly List<string> _perGame = new List<string>
                                                  {
                                                      "PPG",
                                                      "FG%",
@@ -60,62 +89,32 @@ namespace NBA_Stats_Tracker.Windows
                                                      "MPG"
                                                  };
 
-        private readonly List<string> ContractOptions = new List<string> {"Any", "None", "Team", "Player", "Team2Yr"};
+        private readonly List<string> _positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
+        private readonly List<string> _stringOptions = new List<string> {"Contains", "Is"};
 
-        private readonly List<string> Metrics = new List<string>
+        private readonly List<string> _totals = new List<string>
                                                 {
-                                                    "PER",
-                                                    "EFF",
-                                                    "GmSc",
-                                                    "TS%",
-                                                    "PPR",
-                                                    "OREB%",
-                                                    "DREB%",
-                                                    "AST%",
-                                                    "STL%",
-                                                    "BLK%",
-                                                    "TO%",
-                                                    "USG%",
-                                                    "PTSR",
-                                                    "REBR",
-                                                    "OREBR",
-                                                    "ASTR",
-                                                    "BLKR",
-                                                    "STLR",
-                                                    "TOR",
-                                                    "FTR"
+                                                    "GP",
+                                                    "GS",
+                                                    "PTS",
+                                                    "FGM",
+                                                    "FGA",
+                                                    "3PM",
+                                                    "3PA",
+                                                    "FTM",
+                                                    "FTA",
+                                                    "REB",
+                                                    "OREB",
+                                                    "AST",
+                                                    "STL",
+                                                    "BLK",
+                                                    "TO",
+                                                    "FOUL",
+                                                    "MINS"
                                                 };
 
-        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
-        private readonly List<string> Positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
-        private readonly List<string> StringOptions = new List<string> {"Contains", "Is"};
-
-        private readonly List<string> Totals = new List<string>
-                                               {
-                                                   "GP",
-                                                   "GS",
-                                                   "PTS",
-                                                   "FGM",
-                                                   "FGA",
-                                                   "3PM",
-                                                   "3PA",
-                                                   "FTM",
-                                                   "FTA",
-                                                   "REB",
-                                                   "OREB",
-                                                   "AST",
-                                                   "STL",
-                                                   "BLK",
-                                                   "TO",
-                                                   "FOUL",
-                                                   "MINS"
-                                               };
-
-        private readonly string folder = App.AppDocsPath + @"\Search Filters";
-
-        private readonly int maxSeason;
-        private bool changingTimeframe;
-        private int curSeason;
+        private bool _changingTimeframe;
+        private int _curSeason;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class.
@@ -125,55 +124,55 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            cmbFirstNameSetting.ItemsSource = StringOptions;
+            cmbFirstNameSetting.ItemsSource = _stringOptions;
             cmbFirstNameSetting.SelectedIndex = 0;
-            cmbLastNameSetting.ItemsSource = StringOptions;
+            cmbLastNameSetting.ItemsSource = _stringOptions;
             cmbLastNameSetting.SelectedIndex = 0;
 
-            cmbPosition1.ItemsSource = Positions;
+            cmbPosition1.ItemsSource = _positions;
             cmbPosition1.SelectedIndex = 0;
-            cmbPosition2.ItemsSource = Positions;
+            cmbPosition2.ItemsSource = _positions;
             cmbPosition2.SelectedIndex = 0;
 
-            cmbYOBOp.ItemsSource = NumericOptions;
+            cmbYOBOp.ItemsSource = _numericOptions;
             cmbYOBOp.SelectedIndex = 3;
 
-            cmbYearsProOp.ItemsSource = NumericOptions;
+            cmbYearsProOp.ItemsSource = _numericOptions;
             cmbYearsProOp.SelectedIndex = 3;
 
-            curSeason = MainWindow.curSeason;
-            PopulateSeasonCombo();
-            maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
+            _curSeason = MainWindow.CurSeason;
+            populateSeasonCombo();
+            SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
 
-            cmbTotalsPar.ItemsSource = Totals;
-            cmbTotalsOp.ItemsSource = NumericOptions;
+            cmbTotalsPar.ItemsSource = _totals;
+            cmbTotalsOp.ItemsSource = _numericOptions;
             cmbTotalsOp.SelectedIndex = 3;
 
-            cmbAvgPar.ItemsSource = Averages;
-            cmbAvgOp.ItemsSource = NumericOptions;
+            cmbAvgPar.ItemsSource = _perGame;
+            cmbAvgOp.ItemsSource = _numericOptions;
             cmbAvgOp.SelectedIndex = 3;
 
-            cmbMetricsPar.ItemsSource = Metrics;
-            cmbMetricsOp.ItemsSource = NumericOptions;
+            cmbMetricsPar.ItemsSource = _metrics;
+            cmbMetricsOp.ItemsSource = _numericOptions;
             cmbMetricsOp.SelectedIndex = 3;
 
             for (int i = 1; i <= 7; i++)
             {
                 cmbContractPar.Items.Add("Year " + i);
             }
-            cmbContractOp.ItemsSource = NumericOptions;
+            cmbContractOp.ItemsSource = _numericOptions;
             cmbContractOp.SelectedIndex = 1;
 
-            cmbHeightOp.ItemsSource = NumericOptions;
+            cmbHeightOp.ItemsSource = _numericOptions;
             cmbHeightOp.SelectedIndex = 3;
 
-            cmbWeightOp.ItemsSource = NumericOptions;
+            cmbWeightOp.ItemsSource = _numericOptions;
             cmbWeightOp.SelectedIndex = 3;
 
-            cmbContractYLeftOp.ItemsSource = NumericOptions;
+            cmbContractYLeftOp.ItemsSource = _numericOptions;
             cmbContractYLeftOp.SelectedIndex = 1;
 
-            cmbContractOpt.ItemsSource = ContractOptions;
+            cmbContractOpt.ItemsSource = _contractOptions;
             cmbContractOpt.SelectedIndex = 0;
 
             //chkIsActive.IsChecked = null;
@@ -190,19 +189,19 @@ namespace NBA_Stats_Tracker.Windows
         /// <returns></returns>
         private int GetTeamIDFromDisplayName(string displayName)
         {
-            return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
+            return Misc.GetTeamIDFromDisplayName(MainWindow.TST, displayName);
         }
 
         /// <summary>
         ///     Populates the season combo.
         /// </summary>
-        private void PopulateSeasonCombo()
+        private void populateSeasonCombo()
         {
             cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
             cmbTFSeason.ItemsSource = MainWindow.SeasonList;
 
-            cmbSeasonNum.SelectedValue = curSeason;
-            cmbTFSeason.SelectedValue = curSeason;
+            cmbSeasonNum.SelectedValue = _curSeason;
+            cmbTFSeason.SelectedValue = _curSeason;
         }
 
         /// <summary>
@@ -215,33 +214,33 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!changingTimeframe)
+            if (!_changingTimeframe)
             {
-                changingTimeframe = true;
+                _changingTimeframe = true;
                 if (cmbSeasonNum.SelectedIndex == -1)
                     return;
 
                 cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
 
-                curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
-                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
-                    MainWindow.tf = new Timeframe(curSeason);
-                    MainWindow.ChangeSeason(curSeason);
+                    MainWindow.Tf = new Timeframe(_curSeason);
+                    MainWindow.ChangeSeason(_curSeason);
                     SQLiteIO.LoadSeason();
                 }
 
-                List<string> teams =
-                    (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
-                        .ToList();
+                List<string> teams = (from kvp in MainWindow.TeamOrder
+                                      where !MainWindow.TST[kvp.Value].IsHidden
+                                      select MainWindow.TST[kvp.Value].DisplayName).ToList();
 
                 teams.Sort();
                 teams.Insert(0, "- Any -");
 
                 cmbTeam.ItemsSource = teams;
                 cmbTeam_SelectionChanged(sender, null);
-                changingTimeframe = false;
+                _changingTimeframe = false;
             }
         }
 
@@ -256,7 +255,7 @@ namespace NBA_Stats_Tracker.Windows
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             dgvPlayerStats.ItemsSource = null;
-            Dictionary<int, PlayerStats> pst = MainWindow.pst;
+            Dictionary<int, PlayerStats> pst = MainWindow.PST;
             IEnumerable<KeyValuePair<int, PlayerStats>> filteredPST = pst.AsEnumerable();
 
             if (!String.IsNullOrWhiteSpace(txtLastName.Text))
@@ -290,11 +289,11 @@ namespace NBA_Stats_Tracker.Windows
 
             if (chkIsActive.IsChecked.GetValueOrDefault())
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.isActive);
+                filteredPST = filteredPST.Where(pair => pair.Value.IsActive);
             }
             else if (chkIsActive.IsChecked != null)
             {
-                filteredPST = filteredPST.Where(pair => !pair.Value.isActive);
+                filteredPST = filteredPST.Where(pair => !pair.Value.IsActive);
             }
 
             if (chkIsInjured.IsChecked.GetValueOrDefault())
@@ -308,20 +307,20 @@ namespace NBA_Stats_Tracker.Windows
 
             if (chkIsAllStar.IsChecked.GetValueOrDefault())
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.isAllStar);
+                filteredPST = filteredPST.Where(pair => pair.Value.IsAllStar);
             }
             else if (chkIsAllStar.IsChecked != null)
             {
-                filteredPST = filteredPST.Where(pair => !pair.Value.isAllStar);
+                filteredPST = filteredPST.Where(pair => !pair.Value.IsAllStar);
             }
 
             if (chkIsChampion.IsChecked.GetValueOrDefault())
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.isNBAChampion);
+                filteredPST = filteredPST.Where(pair => pair.Value.IsNBAChampion);
             }
             else if (chkIsChampion.IsChecked != null)
             {
-                filteredPST = filteredPST.Where(pair => !pair.Value.isNBAChampion);
+                filteredPST = filteredPST.Where(pair => !pair.Value.IsNBAChampion);
             }
 
             if (cmbTeam.SelectedItem != null && !String.IsNullOrEmpty(cmbTeam.SelectedItem.ToString()) &&
@@ -331,21 +330,21 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             var psrList = new List<PlayerStatsRow>();
-            var pl_psrList = new List<PlayerStatsRow>();
+            var plPSRList = new List<PlayerStatsRow>();
             foreach (var ps in filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value).Values)
             {
                 psrList.Add(new PlayerStatsRow(ps));
-                pl_psrList.Add(new PlayerStatsRow(ps, true));
+                plPSRList.Add(new PlayerStatsRow(ps, true));
             }
 
             ICollectionView psrView = CollectionViewSource.GetDefaultView(psrList);
-            psrView.Filter = Filter;
+            psrView.Filter = filter;
 
-            ICollectionView pl_psrView = CollectionViewSource.GetDefaultView(pl_psrList);
-            pl_psrView.Filter = Filter;
+            ICollectionView plPSRView = CollectionViewSource.GetDefaultView(plPSRList);
+            plPSRView.Filter = filter;
 
             dgvPlayerStats.ItemsSource = psrView;
-            dgvPlayoffStats.ItemsSource = pl_psrView;
+            dgvPlayoffStats.ItemsSource = plPSRView;
 
             string sortColumn;
             foreach (var item in lstMetrics.Items.Cast<string>())
@@ -353,7 +352,7 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (var item in lstAvg.Items.Cast<string>())
             {
@@ -361,7 +360,7 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (var item in lstTotals.Items.Cast<string>())
             {
@@ -369,13 +368,13 @@ namespace NBA_Stats_Tracker.Windows
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("TO", "TOS");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                pl_psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
 
             if (psrView.SortDescriptions.Count == 0)
             {
                 psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
-                pl_psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+                plPSRView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
             }
 
             tbcPlayerSearch.SelectedItem = tabResults;
@@ -386,7 +385,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="o">The o.</param>
         /// <returns></returns>
-        private bool Filter(object o)
+        private bool filter(object o)
         {
             var psr = (PlayerStatsRow) o;
             var ps = new PlayerStats(psr);
@@ -495,10 +494,10 @@ namespace NBA_Stats_Tracker.Windows
                                                                   parts[0] = parts[0].Replace("%", "p");
                                                                   //double val = Convert.ToDouble(parts[2]);
                                                                   context = new ExpressionContext();
-                                                                  if (!double.IsNaN(ps.metrics[parts[0]]))
+                                                                  if (!double.IsNaN(ps.Metrics[parts[0]]))
                                                                   {
                                                                       ige =
-                                                                          context.CompileGeneric<bool>(ps.metrics[parts[0]] + parts[1] +
+                                                                          context.CompileGeneric<bool>(ps.Metrics[parts[0]] + parts[1] +
                                                                                                        parts[2]);
                                                                       keep = ige.Evaluate();
                                                                   }
@@ -757,7 +756,7 @@ namespace NBA_Stats_Tracker.Windows
         {
             var sfd = new OpenFileDialog
                       {
-                          InitialDirectory = Path.GetFullPath(folder),
+                          InitialDirectory = Path.GetFullPath(_folder),
                           Filter = "NST Search Filters (*.nsf)|*.nsf",
                           DefaultExt = "nsf"
                       };
@@ -878,7 +877,7 @@ namespace NBA_Stats_Tracker.Windows
                         break;
 
                     case "Team":
-                        cmbTeam.SelectedItem = MainWindow.tst[Convert.ToInt32(parts[1])].displayName;
+                        cmbTeam.SelectedItem = MainWindow.TST[Convert.ToInt32(parts[1])].DisplayName;
                         break;
 
                     case "Season":
@@ -979,42 +978,30 @@ namespace NBA_Stats_Tracker.Windows
             s += String.Format("Champion\t{0}\n", chkIsChampion.IsChecked.ToString());
             if (cmbTeam.SelectedItem != null)
                 s += String.Format("Team\t{0}\n", GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()));
-            s += String.Format("Season\t{0}\n", curSeason);
+            s += String.Format("Season\t{0}\n", _curSeason);
             s += String.Format("Totals\n");
-            foreach (var item in lstTotals.Items.Cast<string>())
-            {
-                s += item + "\n";
-            }
+            s = lstTotals.Items.Cast<string>().Aggregate(s, (current, item) => current + (item + "\n"));
             s += "TotalsEND\n";
             s += String.Format("Avg\n");
-            foreach (var item in lstAvg.Items.Cast<string>())
-            {
-                s += item + "\n";
-            }
+            s = lstAvg.Items.Cast<string>().Aggregate(s, (current, item) => current + (item + "\n"));
             s += "AvgEND\n";
             s += String.Format("Metrics\n");
-            foreach (var item in lstMetrics.Items.Cast<string>())
-            {
-                s += item + "\n";
-            }
+            s = lstMetrics.Items.Cast<string>().Aggregate(s, (current, item) => current + (item + "\n"));
             s += "MetricsEND\n";
             s += String.Format("Contract\n");
-            foreach (var item in lstContract.Items.Cast<string>())
-            {
-                s += item + "\n";
-            }
+            s = lstContract.Items.Cast<string>().Aggregate(s, (current, item) => current + (item + "\n"));
             s += "ContractEND\n";
             bool isBetween = rbStatsBetween.IsChecked.GetValueOrDefault();
             s += String.Format("TF\t{0}\t{1}\t{2}", isBetween.ToString(),
                                isBetween ? dtpStart.SelectedDate.GetValueOrDefault().ToString() : cmbTFSeason.SelectedItem.ToString(),
                                isBetween ? dtpEnd.SelectedDate.GetValueOrDefault().ToString() : "");
 
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
+            if (!Directory.Exists(_folder))
+                Directory.CreateDirectory(_folder);
 
             var sfd = new SaveFileDialog
                       {
-                          InitialDirectory = Path.GetFullPath(folder),
+                          InitialDirectory = Path.GetFullPath(_folder),
                           Filter = "NST Search Filters (*.nsf)|*.nsf",
                           DefaultExt = "nsf"
                       };
@@ -1036,51 +1023,51 @@ namespace NBA_Stats_Tracker.Windows
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (changingTimeframe)
+            if (_changingTimeframe)
                 return;
-            changingTimeframe = true;
+            _changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            changingTimeframe = false;
+            _changingTimeframe = false;
             MainWindow.UpdateAllData();
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (changingTimeframe)
+            if (_changingTimeframe)
                 return;
-            changingTimeframe = true;
+            _changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            changingTimeframe = false;
+            _changingTimeframe = false;
             MainWindow.UpdateAllData();
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-            if (!changingTimeframe)
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            if (!_changingTimeframe)
             {
                 MainWindow.UpdateAllData();
-                PopulateTeamsCombo();
+                populateTeamsCombo();
             }
         }
 
-        private void PopulateTeamsCombo()
+        private void populateTeamsCombo()
         {
-            List<string> teams =
-                (from kvp in MainWindow.TeamOrder where !MainWindow.tst[kvp.Value].isHidden select MainWindow.tst[kvp.Value].displayName)
-                    .ToList();
+            List<string> teams = (from kvp in MainWindow.TeamOrder
+                                  where !MainWindow.TST[kvp.Value].IsHidden
+                                  select MainWindow.TST[kvp.Value].DisplayName).ToList();
 
             teams.Sort();
             teams.Insert(0, "- Any -");
@@ -1091,48 +1078,48 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbTFSeason_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!changingTimeframe)
+            if (!_changingTimeframe)
             {
-                changingTimeframe = true;
+                _changingTimeframe = true;
                 if (cmbTFSeason.SelectedIndex == -1)
                     return;
 
                 cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
                 rbStatsAllTime.IsChecked = true;
 
-                curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
 
-                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
-                    MainWindow.tf = new Timeframe(curSeason);
-                    MainWindow.ChangeSeason(curSeason);
+                    MainWindow.Tf = new Timeframe(_curSeason);
+                    MainWindow.ChangeSeason(_curSeason);
                     SQLiteIO.LoadSeason();
                 }
 
-                PopulateTeamsCombo();
-                changingTimeframe = false;
+                populateTeamsCombo();
+                _changingTimeframe = false;
             }
         }
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.tf = new Timeframe(curSeason);
-            if (!changingTimeframe)
+            MainWindow.Tf = new Timeframe(_curSeason);
+            if (!_changingTimeframe)
             {
                 MainWindow.UpdateAllData();
                 cmbSeasonNum_SelectionChanged(null, null);
             }
         }
 
-        private void Window_Loaded_1(object sender, RoutedEventArgs e)
+        private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            changingTimeframe = true;
-            dtpEnd.SelectedDate = MainWindow.tf.EndDate;
-            dtpStart.SelectedDate = MainWindow.tf.StartDate;
-            PopulateSeasonCombo();
-            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.tf.SeasonNum);
+            _changingTimeframe = true;
+            dtpEnd.SelectedDate = MainWindow.Tf.EndDate;
+            dtpStart.SelectedDate = MainWindow.Tf.StartDate;
+            populateSeasonCombo();
+            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.Tf.SeasonNum);
             cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
-            if (MainWindow.tf.isBetween)
+            if (MainWindow.Tf.IsBetween)
             {
                 rbStatsBetween.IsChecked = true;
             }
@@ -1140,7 +1127,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 rbStatsAllTime.IsChecked = true;
             }
-            changingTimeframe = false;
+            _changingTimeframe = false;
         }
     }
 }

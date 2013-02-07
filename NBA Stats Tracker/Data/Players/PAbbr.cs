@@ -27,7 +27,7 @@ namespace NBA_Stats_Tracker.Data.Players
     /// <summary>
     ///     A list of constant pseudonyms for specific entries in the players' stats arrays.
     /// </summary>
-    public static class p
+    public static class PAbbr
     {
         public const int GP = 0,
                          GS = 1,
@@ -69,7 +69,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTeff = 14,
                          RPG = 15;
 
-        public static Dictionary<int, string> totals = new Dictionary<int, string>
+        public static Dictionary<int, string> Totals = new Dictionary<int, string>
                                                        {
                                                            {0, "GP"},
                                                            {1, "GS"},
@@ -90,27 +90,27 @@ namespace NBA_Stats_Tracker.Data.Players
                                                            {16, "FTA"}
                                                        };
 
-        public static Dictionary<int, string> averages = new Dictionary<int, string>
-                                                         {
-                                                             {0, "MPG"},
-                                                             {1, "PPG"},
-                                                             {2, "DRPG"},
-                                                             {3, "ORPG"},
-                                                             {4, "APG"},
-                                                             {5, "SPG"},
-                                                             {6, "BPG"},
-                                                             {7, "TPG"},
-                                                             {8, "FPG"},
-                                                             {9, "FG%"},
-                                                             {10, "FGeff"},
-                                                             {11, "3P%"},
-                                                             {12, "3Peff"},
-                                                             {13, "FT%"},
-                                                             {14, "FTeff"},
-                                                             {15, "RPG"}
-                                                         };
+        public static Dictionary<int, string> PerGame = new Dictionary<int, string>
+                                                        {
+                                                            {0, "MPG"},
+                                                            {1, "PPG"},
+                                                            {2, "DRPG"},
+                                                            {3, "ORPG"},
+                                                            {4, "APG"},
+                                                            {5, "SPG"},
+                                                            {6, "BPG"},
+                                                            {7, "TPG"},
+                                                            {8, "FPG"},
+                                                            {9, "FG%"},
+                                                            {10, "FGeff"},
+                                                            {11, "3P%"},
+                                                            {12, "3Peff"},
+                                                            {13, "FT%"},
+                                                            {14, "FTeff"},
+                                                            {15, "RPG"}
+                                                        };
 
-        public static List<string> metricsNames = new List<string>
+        public static List<string> MetricsNames = new List<string>
                                                   {
                                                       "GmSc",
                                                       "GmScE",

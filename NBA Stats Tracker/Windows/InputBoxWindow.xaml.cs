@@ -51,14 +51,14 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.input = txtInput.Text;
+            MainWindow.Input = txtInput.Text;
             DialogResult = true;
             Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.input = "";
+            MainWindow.Input = "";
             DialogResult = false;
             Close();
         }

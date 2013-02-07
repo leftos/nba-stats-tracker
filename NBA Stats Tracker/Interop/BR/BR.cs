@@ -40,7 +40,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="url">The URL.</param>
         /// <param name="parts">The resulting date parts.</param>
         /// <returns></returns>
-        private static DataSet GetBoxScore(string url, out string[] parts)
+        private static DataSet getBoxScore(string url, out string[] parts)
         {
             parts = new string[1];
             using (var dataset = new DataSet())
@@ -102,10 +102,11 @@ namespace NBA_Stats_Tracker.Interop.BR
                         HtmlNode tfoot = cur.SelectSingleNode("tfoot");
                         HtmlNode frow = tfoot.SelectSingleNode("tr");
                         IEnumerable<HtmlNode> elements = frow.Elements("td");
-                        var erow = new string[elements.Count()];
-                        for (int i = 0; i < elements.Count(); i++)
+                        IList<HtmlNode> htmlNodes = elements as IList<HtmlNode> ?? elements.ToList();
+                        var erow = new object[htmlNodes.Count()];
+                        for (int i = 0; i < htmlNodes.Count(); i++)
                         {
-                            erow[i] = elements.ElementAt(i).InnerText;
+                            erow[i] = htmlNodes.ElementAt(i).InnerText;
                         }
                         table.Rows.Add(erow);
 
@@ -122,7 +123,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="url">The URL.</param>
         /// <param name="recordparts">The parts of the team's record string.</param>
         /// <returns></returns>
-        private static DataSet GetSeasonTeamStats(string url, out string[] recordparts)
+        private static DataSet getSeasonTeamStats(string url, out string[] recordparts)
         {
             using (var dataset = new DataSet())
             {
@@ -181,7 +182,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
-        private static DataSet GetPlayerStats(string url)
+        private static DataSet getPlayerStats(string url)
         {
             using (var dataset = new DataSet())
             {
@@ -242,7 +243,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
-        private static DataSet GetPlayoffTeamStats(string url)
+        private static DataSet getPlayoffTeamStats(string url)
         {
             using (var dataset = new DataSet())
             {
@@ -306,52 +307,52 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="recordparts">The parts of the team's record string.</param>
         /// <param name="ts">The resulting team stats instance.</param>
         /// <param name="tsopp">The resulting opposing team stats instance.</param>
-        private static void TeamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
+        private static void teamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
             ts = new TeamStats(MainWindow.TeamOrder[name], name);
             tsopp = new TeamStats(MainWindow.TeamOrder[name], name);
 
-            tsopp.winloss[1] = ts.winloss[0] = Convert.ToByte(recordparts[0]);
-            tsopp.winloss[0] = ts.winloss[1] = Convert.ToByte(recordparts[1]);
+            tsopp.Record[1] = ts.Record[0] = Convert.ToByte(recordparts[0]);
+            tsopp.Record[0] = ts.Record[1] = Convert.ToByte(recordparts[1]);
 
             DataRow tr = dt.Rows[0];
             DataRow toppr = dt.Rows[2];
 
-            ts.stats[t.MINS] = (ushort) (Tools.getUInt16(tr, "MP")/5);
-            ts.stats[t.FGM] = Tools.getUInt16(tr, "FG");
-            ts.stats[t.FGA] = Tools.getUInt16(tr, "FGA");
-            ts.stats[t.TPM] = Tools.getUInt16(tr, "3P");
-            ts.stats[t.TPA] = Tools.getUInt16(tr, "3PA");
-            ts.stats[t.FTM] = Tools.getUInt16(tr, "FT");
-            ts.stats[t.FTA] = Tools.getUInt16(tr, "FTA");
-            ts.stats[t.OREB] = Tools.getUInt16(tr, "ORB");
-            ts.stats[t.DREB] = Tools.getUInt16(tr, "DRB");
-            ts.stats[t.AST] = Tools.getUInt16(tr, "AST");
-            ts.stats[t.STL] = Tools.getUInt16(tr, "STL");
-            ts.stats[t.BLK] = Tools.getUInt16(tr, "BLK");
-            ts.stats[t.TOS] = Tools.getUInt16(tr, "TOV");
-            ts.stats[t.FOUL] = Tools.getUInt16(tr, "PF");
-            ts.stats[t.PF] = Tools.getUInt16(tr, "PTS");
-            ts.stats[t.PA] = Tools.getUInt16(toppr, "PTS");
+            ts.Totals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(tr, "MP")/5);
+            ts.Totals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(tr, "FG");
+            ts.Totals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(tr, "FGA");
+            ts.Totals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(tr, "3P");
+            ts.Totals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(tr, "3PA");
+            ts.Totals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(tr, "FT");
+            ts.Totals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(tr, "FTA");
+            ts.Totals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(tr, "ORB");
+            ts.Totals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(tr, "DRB");
+            ts.Totals[TAbbr.AST] = DataRowCellParsers.GetUInt16(tr, "AST");
+            ts.Totals[TAbbr.STL] = DataRowCellParsers.GetUInt16(tr, "STL");
+            ts.Totals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(tr, "BLK");
+            ts.Totals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(tr, "TOV");
+            ts.Totals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(tr, "PF");
+            ts.Totals[TAbbr.PF] = DataRowCellParsers.GetUInt16(tr, "PTS");
+            ts.Totals[TAbbr.PA] = DataRowCellParsers.GetUInt16(toppr, "PTS");
 
             ts.CalcAvg();
 
-            tsopp.stats[t.MINS] = (ushort) (Tools.getUInt16(toppr, "MP")/5);
-            tsopp.stats[t.FGM] = Tools.getUInt16(toppr, "FG");
-            tsopp.stats[t.FGA] = Tools.getUInt16(toppr, "FGA");
-            tsopp.stats[t.TPM] = Tools.getUInt16(toppr, "3P");
-            tsopp.stats[t.TPA] = Tools.getUInt16(toppr, "3PA");
-            tsopp.stats[t.FTM] = Tools.getUInt16(toppr, "FT");
-            tsopp.stats[t.FTA] = Tools.getUInt16(toppr, "FTA");
-            tsopp.stats[t.OREB] = Tools.getUInt16(toppr, "ORB");
-            tsopp.stats[t.DREB] = Tools.getUInt16(toppr, "DRB");
-            tsopp.stats[t.AST] = Tools.getUInt16(toppr, "AST");
-            tsopp.stats[t.STL] = Tools.getUInt16(toppr, "STL");
-            tsopp.stats[t.BLK] = Tools.getUInt16(toppr, "BLK");
-            tsopp.stats[t.TOS] = Tools.getUInt16(toppr, "TOV");
-            tsopp.stats[t.FOUL] = Tools.getUInt16(toppr, "PF");
-            tsopp.stats[t.PF] = Tools.getUInt16(toppr, "PTS");
-            tsopp.stats[t.PA] = Tools.getUInt16(tr, "PTS");
+            tsopp.Totals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(toppr, "MP")/5);
+            tsopp.Totals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(toppr, "FG");
+            tsopp.Totals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(toppr, "FGA");
+            tsopp.Totals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(toppr, "3P");
+            tsopp.Totals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(toppr, "3PA");
+            tsopp.Totals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(toppr, "FT");
+            tsopp.Totals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(toppr, "FTA");
+            tsopp.Totals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(toppr, "ORB");
+            tsopp.Totals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(toppr, "DRB");
+            tsopp.Totals[TAbbr.AST] = DataRowCellParsers.GetUInt16(toppr, "AST");
+            tsopp.Totals[TAbbr.STL] = DataRowCellParsers.GetUInt16(toppr, "STL");
+            tsopp.Totals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(toppr, "BLK");
+            tsopp.Totals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(toppr, "TOV");
+            tsopp.Totals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(toppr, "PF");
+            tsopp.Totals[TAbbr.PF] = DataRowCellParsers.GetUInt16(toppr, "PTS");
+            tsopp.Totals[TAbbr.PA] = DataRowCellParsers.GetUInt16(tr, "PTS");
 
             tsopp.CalcAvg();
         }
@@ -361,9 +362,9 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// </summary>
         /// <param name="ds">The dataset.</param>
         /// <param name="tst">The team stats dictionary.</param>
-        /// <param name="tstopp">The opposing team stats dictionary.</param>
-        private static void PlayoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst,
-                                                        ref Dictionary<int, TeamStats> tstopp)
+        /// <param name="tstOpp">The opposing team stats dictionary.</param>
+        private static void playoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst,
+                                                        ref Dictionary<int, TeamStats> tstOpp)
         {
             DataTable dt = ds.Tables["team"];
             DataTable dtopp = ds.Tables["opponent"];
@@ -379,7 +380,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
                 for (int j = 0; j < dt.Rows.Count; j++)
                 {
-                    if (dt.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    if (dt.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
                         tr = dt.Rows[j];
                         found = true;
@@ -392,7 +393,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
                 for (int j = 0; j < dtopp.Rows.Count; j++)
                 {
-                    if (dtopp.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    if (dtopp.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
                         toppr = dtopp.Rows[j];
                         break;
@@ -401,50 +402,50 @@ namespace NBA_Stats_Tracker.Interop.BR
 
                 for (int j = 0; j < dtmisc.Rows.Count; j++)
                 {
-                    if (dtmisc.Rows[j]["Team"].ToString().EndsWith(tst[i].name))
+                    if (dtmisc.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
                         tmiscr = dtmisc.Rows[j];
                         break;
                     }
                 }
 
-                tst[i].pl_winloss[0] = (byte) Tools.getUInt16(tmiscr, "W");
-                tst[i].pl_winloss[1] = (byte) Tools.getUInt16(tmiscr, "L");
-                tst[i].pl_stats[t.MINS] = (ushort) (Tools.getUInt16(tr, "MP")/5);
-                tst[i].pl_stats[t.FGM] = Tools.getUInt16(tr, "FG");
-                tst[i].pl_stats[t.FGA] = Tools.getUInt16(tr, "FGA");
-                tst[i].pl_stats[t.TPM] = Tools.getUInt16(tr, "3P");
-                tst[i].pl_stats[t.TPA] = Tools.getUInt16(tr, "3PA");
-                tst[i].pl_stats[t.FTM] = Tools.getUInt16(tr, "FT");
-                tst[i].pl_stats[t.FTA] = Tools.getUInt16(tr, "FTA");
-                tst[i].pl_stats[t.OREB] = Tools.getUInt16(tr, "ORB");
-                tst[i].pl_stats[t.DREB] = Tools.getUInt16(tr, "DRB");
-                tst[i].pl_stats[t.AST] = Tools.getUInt16(tr, "AST");
-                tst[i].pl_stats[t.STL] = Tools.getUInt16(tr, "STL");
-                tst[i].pl_stats[t.BLK] = Tools.getUInt16(tr, "BLK");
-                tst[i].pl_stats[t.TOS] = Tools.getUInt16(tr, "TOV");
-                tst[i].pl_stats[t.FOUL] = Tools.getUInt16(tr, "PF");
-                tst[i].pl_stats[t.PF] = Tools.getUInt16(tr, "PTS");
-                tst[i].pl_stats[t.PA] = Tools.getUInt16(toppr, "PTS");
+                tst[i].PlRecord[0] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "W");
+                tst[i].PlRecord[1] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "L");
+                tst[i].PlTotals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(tr, "MP")/5);
+                tst[i].PlTotals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(tr, "FG");
+                tst[i].PlTotals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(tr, "FGA");
+                tst[i].PlTotals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(tr, "3P");
+                tst[i].PlTotals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(tr, "3PA");
+                tst[i].PlTotals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(tr, "FT");
+                tst[i].PlTotals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(tr, "FTA");
+                tst[i].PlTotals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(tr, "ORB");
+                tst[i].PlTotals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(tr, "DRB");
+                tst[i].PlTotals[TAbbr.AST] = DataRowCellParsers.GetUInt16(tr, "AST");
+                tst[i].PlTotals[TAbbr.STL] = DataRowCellParsers.GetUInt16(tr, "STL");
+                tst[i].PlTotals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(tr, "BLK");
+                tst[i].PlTotals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(tr, "TOV");
+                tst[i].PlTotals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(tr, "PF");
+                tst[i].PlTotals[TAbbr.PF] = DataRowCellParsers.GetUInt16(tr, "PTS");
+                tst[i].PlTotals[TAbbr.PA] = DataRowCellParsers.GetUInt16(toppr, "PTS");
 
-                tstopp[i].pl_winloss[0] = (byte) Tools.getUInt16(tmiscr, "L");
-                tstopp[i].pl_winloss[1] = (byte) Tools.getUInt16(tmiscr, "W");
-                tstopp[i].pl_stats[t.MINS] = (ushort) (Tools.getUInt16(toppr, "MP")/5);
-                tstopp[i].pl_stats[t.FGM] = Tools.getUInt16(toppr, "FG");
-                tstopp[i].pl_stats[t.FGA] = Tools.getUInt16(toppr, "FGA");
-                tstopp[i].pl_stats[t.TPM] = Tools.getUInt16(toppr, "3P");
-                tstopp[i].pl_stats[t.TPA] = Tools.getUInt16(toppr, "3PA");
-                tstopp[i].pl_stats[t.FTM] = Tools.getUInt16(toppr, "FT");
-                tstopp[i].pl_stats[t.FTA] = Tools.getUInt16(toppr, "FTA");
-                tstopp[i].pl_stats[t.OREB] = Tools.getUInt16(toppr, "ORB");
-                tstopp[i].pl_stats[t.DREB] = Tools.getUInt16(toppr, "DRB");
-                tstopp[i].pl_stats[t.AST] = Tools.getUInt16(toppr, "AST");
-                tstopp[i].pl_stats[t.STL] = Tools.getUInt16(toppr, "STL");
-                tstopp[i].pl_stats[t.BLK] = Tools.getUInt16(toppr, "BLK");
-                tstopp[i].pl_stats[t.TOS] = Tools.getUInt16(toppr, "TOV");
-                tstopp[i].pl_stats[t.FOUL] = Tools.getUInt16(toppr, "PF");
-                tstopp[i].pl_stats[t.PF] = Tools.getUInt16(toppr, "PTS");
-                tstopp[i].pl_stats[t.PA] = Tools.getUInt16(tr, "PTS");
+                tstOpp[i].PlRecord[0] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "L");
+                tstOpp[i].PlRecord[1] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "W");
+                tstOpp[i].PlTotals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(toppr, "MP")/5);
+                tstOpp[i].PlTotals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(toppr, "FG");
+                tstOpp[i].PlTotals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(toppr, "FGA");
+                tstOpp[i].PlTotals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(toppr, "3P");
+                tstOpp[i].PlTotals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(toppr, "3PA");
+                tstOpp[i].PlTotals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(toppr, "FT");
+                tstOpp[i].PlTotals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(toppr, "FTA");
+                tstOpp[i].PlTotals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(toppr, "ORB");
+                tstOpp[i].PlTotals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(toppr, "DRB");
+                tstOpp[i].PlTotals[TAbbr.AST] = DataRowCellParsers.GetUInt16(toppr, "AST");
+                tstOpp[i].PlTotals[TAbbr.STL] = DataRowCellParsers.GetUInt16(toppr, "STL");
+                tstOpp[i].PlTotals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(toppr, "BLK");
+                tstOpp[i].PlTotals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(toppr, "TOV");
+                tstOpp[i].PlTotals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(toppr, "PF");
+                tstOpp[i].PlTotals[TAbbr.PF] = DataRowCellParsers.GetUInt16(toppr, "PTS");
+                tstOpp[i].PlTotals[TAbbr.PA] = DataRowCellParsers.GetUInt16(tr, "PTS");
             }
         }
 
@@ -455,7 +456,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="teamID">The player's team.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <exception cref="System.Exception">Don't recognize the position </exception>
-        private static void PlayerStatsFromDataSet(DataSet ds, int teamID, out Dictionary<int, PlayerStats> pst)
+        private static void playerStatsFromDataSet(DataSet ds, int teamID, out Dictionary<int, PlayerStats> pst)
         {
             var pstnames = new Dictionary<string, PlayerStats>();
 
@@ -463,63 +464,63 @@ namespace NBA_Stats_Tracker.Interop.BR
 
             foreach (DataRow r in dt.Rows)
             {
-                Position Position1;
-                Position Position2;
+                Position position1;
+                Position position2;
                 switch (r["Pos"].ToString())
                 {
                     case "C":
-                        Position1 = Position.C;
-                        Position2 = Position.None;
+                        position1 = Position.C;
+                        position2 = Position.None;
                         break;
 
                     case "G":
-                        Position1 = Position.PG;
-                        Position2 = Position.SG;
+                        position1 = Position.PG;
+                        position2 = Position.SG;
                         break;
 
                     case "F":
-                        Position1 = Position.SF;
-                        Position2 = Position.PF;
+                        position1 = Position.SF;
+                        position2 = Position.PF;
                         break;
 
                     case "G-F":
-                        Position1 = Position.SG;
-                        Position2 = Position.SF;
+                        position1 = Position.SG;
+                        position2 = Position.SF;
                         break;
 
                     case "F-G":
-                        Position1 = Position.SF;
-                        Position2 = Position.SG;
+                        position1 = Position.SF;
+                        position2 = Position.SG;
                         break;
 
                     case "F-C":
-                        Position1 = Position.PF;
-                        Position2 = Position.C;
+                        position1 = Position.PF;
+                        position2 = Position.C;
                         break;
 
                     case "C-F":
-                        Position1 = Position.C;
-                        Position2 = Position.PF;
+                        position1 = Position.C;
+                        position2 = Position.PF;
                         break;
 
                     case "PG":
-                        Position1 = Position.PG;
-                        Position2 = Position.None;
+                        position1 = Position.PG;
+                        position2 = Position.None;
                         break;
 
                     case "SG":
-                        Position1 = Position.SG;
-                        Position2 = Position.None;
+                        position1 = Position.SG;
+                        position2 = Position.None;
                         break;
 
                     case "SF":
-                        Position1 = Position.SF;
-                        Position2 = Position.None;
+                        position1 = Position.SF;
+                        position2 = Position.None;
                         break;
 
                     case "PF":
-                        Position1 = Position.PF;
-                        Position2 = Position.None;
+                        position1 = Position.PF;
+                        position2 = Position.None;
                         break;
 
                     default:
@@ -527,7 +528,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 }
                 var ps =
                     new PlayerStats(new Player(pstnames.Count, teamID, r["Player"].ToString().Split(' ')[1],
-                                               r["Player"].ToString().Split(' ')[0], Position1, Position2));
+                                               r["Player"].ToString().Split(' ')[0], position1, position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
             }
@@ -537,23 +538,23 @@ namespace NBA_Stats_Tracker.Interop.BR
             foreach (DataRow r in dt.Rows)
             {
                 string name = r["Player"].ToString();
-                pstnames[name].stats[p.GP] = Tools.getUInt16(r, "G");
-                pstnames[name].stats[p.GS] = Tools.getUInt16(r, "GS");
-                pstnames[name].stats[p.MINS] = Tools.getUInt16(r, "MP");
-                pstnames[name].stats[p.FGM] = Tools.getUInt16(r, "FG");
-                pstnames[name].stats[p.FGA] = Tools.getUInt16(r, "FGA");
-                pstnames[name].stats[p.TPM] = Tools.getUInt16(r, "3P");
-                pstnames[name].stats[p.TPA] = Tools.getUInt16(r, "3PA");
-                pstnames[name].stats[p.FTM] = Tools.getUInt16(r, "FT");
-                pstnames[name].stats[p.FTA] = Tools.getUInt16(r, "FTA");
-                pstnames[name].stats[p.OREB] = Tools.getUInt16(r, "ORB");
-                pstnames[name].stats[p.DREB] = Tools.getUInt16(r, "DRB");
-                pstnames[name].stats[p.AST] = Tools.getUInt16(r, "AST");
-                pstnames[name].stats[p.STL] = Tools.getUInt16(r, "STL");
-                pstnames[name].stats[p.BLK] = Tools.getUInt16(r, "BLK");
-                pstnames[name].stats[p.TOS] = Tools.getUInt16(r, "TOV");
-                pstnames[name].stats[p.FOUL] = Tools.getUInt16(r, "PF");
-                pstnames[name].stats[p.PTS] = Tools.getUInt16(r, "PTS");
+                pstnames[name].Totals[PAbbr.GP] = DataRowCellParsers.GetUInt16(r, "G");
+                pstnames[name].Totals[PAbbr.GS] = DataRowCellParsers.GetUInt16(r, "GS");
+                pstnames[name].Totals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(r, "MP");
+                pstnames[name].Totals[PAbbr.FGM] = DataRowCellParsers.GetUInt16(r, "FG");
+                pstnames[name].Totals[PAbbr.FGA] = DataRowCellParsers.GetUInt16(r, "FGA");
+                pstnames[name].Totals[PAbbr.TPM] = DataRowCellParsers.GetUInt16(r, "3P");
+                pstnames[name].Totals[PAbbr.TPA] = DataRowCellParsers.GetUInt16(r, "3PA");
+                pstnames[name].Totals[PAbbr.FTM] = DataRowCellParsers.GetUInt16(r, "FT");
+                pstnames[name].Totals[PAbbr.FTA] = DataRowCellParsers.GetUInt16(r, "FTA");
+                pstnames[name].Totals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(r, "ORB");
+                pstnames[name].Totals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(r, "DRB");
+                pstnames[name].Totals[PAbbr.AST] = DataRowCellParsers.GetUInt16(r, "AST");
+                pstnames[name].Totals[PAbbr.STL] = DataRowCellParsers.GetUInt16(r, "STL");
+                pstnames[name].Totals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(r, "BLK");
+                pstnames[name].Totals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(r, "TOV");
+                pstnames[name].Totals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(r, "PF");
+                pstnames[name].Totals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(r, "PTS");
             }
 
             dt = ds.Tables["playoffs"];
@@ -563,29 +564,31 @@ namespace NBA_Stats_Tracker.Interop.BR
                 foreach (DataRow r in dt.Rows)
                 {
                     string name = r["Player"].ToString();
-                    pstnames[name].pl_stats[p.GP] += Tools.getUInt16(r, "G");
+                    pstnames[name].PlTotals[PAbbr.GP] += DataRowCellParsers.GetUInt16(r, "G");
                     //pstnames[name].pl_stats[p.GS] += NSTHelper.getUShort(r, "GS");
-                    pstnames[name].pl_stats[p.MINS] += Tools.getUInt16(r, "MP");
-                    pstnames[name].pl_stats[p.FGM] += Tools.getUInt16(r, "FG");
-                    pstnames[name].pl_stats[p.FGA] += Tools.getUInt16(r, "FGA");
-                    pstnames[name].pl_stats[p.TPM] += Tools.getUInt16(r, "3P");
-                    pstnames[name].pl_stats[p.TPA] += Tools.getUInt16(r, "3PA");
-                    pstnames[name].pl_stats[p.FTM] += Tools.getUInt16(r, "FT");
-                    pstnames[name].pl_stats[p.FTA] += Tools.getUInt16(r, "FTA");
-                    pstnames[name].pl_stats[p.OREB] += Tools.getUInt16(r, "ORB");
-                    pstnames[name].pl_stats[p.DREB] += (ushort) (Tools.getUInt16(r, "TRB") - Tools.getUInt16(r, "ORB"));
-                    pstnames[name].pl_stats[p.AST] += Tools.getUInt16(r, "AST");
-                    pstnames[name].pl_stats[p.STL] += Tools.getUInt16(r, "STL");
-                    pstnames[name].pl_stats[p.BLK] += Tools.getUInt16(r, "BLK");
-                    pstnames[name].pl_stats[p.TOS] += Tools.getUInt16(r, "TOV");
-                    pstnames[name].pl_stats[p.FOUL] += Tools.getUInt16(r, "PF");
-                    pstnames[name].pl_stats[p.PTS] += Tools.getUInt16(r, "PTS");
+                    pstnames[name].PlTotals[PAbbr.MINS] += DataRowCellParsers.GetUInt16(r, "MP");
+                    pstnames[name].PlTotals[PAbbr.FGM] += DataRowCellParsers.GetUInt16(r, "FG");
+                    pstnames[name].PlTotals[PAbbr.FGA] += DataRowCellParsers.GetUInt16(r, "FGA");
+                    pstnames[name].PlTotals[PAbbr.TPM] += DataRowCellParsers.GetUInt16(r, "3P");
+                    pstnames[name].PlTotals[PAbbr.TPA] += DataRowCellParsers.GetUInt16(r, "3PA");
+                    pstnames[name].PlTotals[PAbbr.FTM] += DataRowCellParsers.GetUInt16(r, "FT");
+                    pstnames[name].PlTotals[PAbbr.FTA] += DataRowCellParsers.GetUInt16(r, "FTA");
+                    pstnames[name].PlTotals[PAbbr.OREB] += DataRowCellParsers.GetUInt16(r, "ORB");
+                    pstnames[name].PlTotals[PAbbr.DREB] +=
+                        (ushort) (DataRowCellParsers.GetUInt16(r, "TRB") - DataRowCellParsers.GetUInt16(r, "ORB"));
+                    pstnames[name].PlTotals[PAbbr.AST] += DataRowCellParsers.GetUInt16(r, "AST");
+                    pstnames[name].PlTotals[PAbbr.STL] += DataRowCellParsers.GetUInt16(r, "STL");
+                    pstnames[name].PlTotals[PAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "BLK");
+                    pstnames[name].PlTotals[PAbbr.TOS] += DataRowCellParsers.GetUInt16(r, "TOV");
+                    pstnames[name].PlTotals[PAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "PF");
+                    pstnames[name].PlTotals[PAbbr.PTS] += DataRowCellParsers.GetUInt16(r, "PTS");
 
                     pstnames[name].CalcAvg();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Exception while trying to parse playoff table: " + ex.Message);
             }
 
             pst = new Dictionary<int, PlayerStats>();
@@ -603,39 +606,37 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="parts">The parts of the split date string.</param>
         /// <param name="bse">The resulting BoxScoreEntry.</param>
         /// <returns>0 if every required player was found in the database; otherwise, -1.</returns>
-        private static int BoxScoreFromDataSet(DataSet ds, string[] parts, out BoxScoreEntry bse)
+        private static int boxScoreFromDataSet(DataSet ds, string[] parts, out BoxScoreEntry bse)
         {
             DataTable awayDT = ds.Tables[0];
             DataTable homeDT = ds.Tables[1];
 
             var bs = new TeamBoxScore(ds, parts);
-            bse = new BoxScoreEntry(bs);
-            bse.date = bs.gamedate;
-            bse.pbsList = new List<PlayerBoxScore>();
+            bse = new BoxScoreEntry(bs) {Date = bs.GameDate, PBSList = new List<PlayerBoxScore>()};
             int result = 0;
             for (int i = 0; i < awayDT.Rows.Count - 1; i++)
             {
                 if (i == 5)
                     continue;
-                var pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1ID, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(awayDT.Rows[i], bs.Team1ID, bs.ID, (i < 5), MainWindow.PST);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;
                     continue;
                 }
-                bse.pbsList.Add(pbs);
+                bse.PBSList.Add(pbs);
             }
             for (int i = 0; i < homeDT.Rows.Count - 1; i++)
             {
                 if (i == 5)
                     continue;
-                var pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2ID, bs.id, (i < 5), MainWindow.pst);
+                var pbs = new PlayerBoxScore(homeDT.Rows[i], bs.Team2ID, bs.ID, (i < 5), MainWindow.PST);
                 if (pbs.PlayerID == -1)
                 {
                     result = -1;
                     continue;
                 }
-                bse.pbsList.Add(pbs);
+                bse.PBSList.Add(pbs);
             }
             return result;
         }
@@ -651,11 +652,11 @@ namespace NBA_Stats_Tracker.Interop.BR
                                            out Dictionary<int, PlayerStats> pst)
         {
             string[] recordparts;
-            DataSet ds = GetSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
-            TeamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
+            DataSet ds = getSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
+            teamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
-            ds = GetPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");
-            PlayerStatsFromDataSet(ds, ts.ID, out pst);
+            ds = getPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");
+            playerStatsFromDataSet(ds, ts.ID, out pst);
         }
 
         /// <summary>
@@ -666,11 +667,11 @@ namespace NBA_Stats_Tracker.Interop.BR
         public static int ImportBoxScore(string url)
         {
             string[] parts;
-            DataSet ds = GetBoxScore(url, out parts);
+            DataSet ds = getBoxScore(url, out parts);
             BoxScoreEntry bse;
-            int result = BoxScoreFromDataSet(ds, parts, out bse);
+            int result = boxScoreFromDataSet(ds, parts, out bse);
 
-            MainWindow.bshist.Add(bse);
+            MainWindow.BSHist.Add(bse);
 
             return result;
         }
@@ -679,11 +680,11 @@ namespace NBA_Stats_Tracker.Interop.BR
         ///     Adds the playoff team stats to the current database.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
-        /// <param name="tstopp">The opposing team stats dictionary.</param>
-        public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstopp)
+        /// <param name="tstOpp">The opposing team stats dictionary.</param>
+        public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)
         {
-            DataSet ds = GetPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
-            PlayoffTeamStatsFromDataSet(ds, ref tst, ref tstopp);
+            DataSet ds = getPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
+            playoffTeamStatsFromDataSet(ds, ref tst, ref tstOpp);
         }
     }
 }

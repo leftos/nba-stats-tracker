@@ -25,17 +25,17 @@ namespace NBA_Stats_Tracker.Data.Other
 {
     public struct DBData
     {
+        public List<BoxScoreEntry> BSHist;
         public Dictionary<string, string> DisplayNames;
+        public Dictionary<int, PlayerStats> PST;
+        public PlayerRankings PlayerRankings;
+        public PlayerRankings PlayoffPlayerRankings;
+        public TeamRankings PlayoffTeamRankings;
+        public Dictionary<int, Dictionary<string, PlayerStats>> SplitPlayerStats;
+        public Dictionary<int, Dictionary<string, TeamStats>> SplitTeamStats;
+        public Dictionary<int, TeamStats> TST;
+        public Dictionary<int, TeamStats> TSTOpp;
         public SortedDictionary<string, int> TeamOrder;
-        public List<BoxScoreEntry> bshist;
-        public PlayerRankings playerRankings;
-        public PlayerRankings playoffPlayerRankings;
-        public TeamRankings playoffTeamRankings;
-        public Dictionary<int, PlayerStats> pst;
-        public Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats;
-        public Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats;
-        public TeamRankings teamRankings;
-        public Dictionary<int, TeamStats> tst;
-        public Dictionary<int, TeamStats> tstopp;
+        public TeamRankings TeamRankings;
     }
 }

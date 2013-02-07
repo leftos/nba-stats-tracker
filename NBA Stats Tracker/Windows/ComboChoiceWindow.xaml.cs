@@ -108,11 +108,11 @@ namespace NBA_Stats_Tracker.Windows
             {
                 if (cmbSelection1.SelectedIndex == -1)
                     return;
-                PlayerOverviewWindow.askedTeam = cmbSelection1.SelectedItem.ToString();
+                PlayerOverviewWindow.AskedTeam = cmbSelection1.SelectedItem.ToString();
             }
             else if (_mode == Mode.Division || _mode == Mode.Generic)
             {
-                MainWindow.input = cmbSelection1.SelectedItem.ToString();
+                MainWindow.Input = cmbSelection1.SelectedItem.ToString();
             }
             DialogResult = true;
             Close();

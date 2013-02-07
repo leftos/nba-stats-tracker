@@ -28,9 +28,9 @@ namespace NBA_Stats_Tracker.Data.BoxScores
     /// </summary>
     public class BoxScoreEntry
     {
-        public DateTime date;
-        public bool mustUpdate;
-        public List<PlayerBoxScore> pbsList;
+        public DateTime Date;
+        public bool MustUpdate;
+        public List<PlayerBoxScore> PBSList;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
@@ -38,8 +38,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         /// <param name="bs">The TeamBoxScore to initialize with.</param>
         public BoxScoreEntry(TeamBoxScore bs)
         {
-            this.bs = bs;
-            date = DateTime.Now;
+            BS = bs;
+            Date = DateTime.Now;
         }
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         /// <param name="pbsList">The PlayerBoxScore list.</param>
         public BoxScoreEntry(TeamBoxScore bs, DateTime date, List<PlayerBoxScore> pbsList)
         {
-            this.bs = bs;
-            this.date = date;
-            this.pbsList = pbsList;
+            BS = bs;
+            Date = date;
+            PBSList = pbsList;
         }
 
-        public TeamBoxScore bs { get; set; }
+        public TeamBoxScore BS { get; set; }
         public string Team1Display { get; set; }
         public string Team2Display { get; set; }
     }

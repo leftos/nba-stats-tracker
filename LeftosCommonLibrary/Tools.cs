@@ -1,11 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -36,7 +35,7 @@ namespace LeftosCommonLibrary
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns>The extension of the file.</returns>
-        public static string getExtension(string path)
+        public static string GetExtension(string path)
         {
             return Path.GetExtension(path);
         }
@@ -46,9 +45,20 @@ namespace LeftosCommonLibrary
         /// </summary>
         /// <param name="f">The path to the file.</param>
         /// <returns>The safe filename of the file.</returns>
-        public static string getSafeFilename(string f)
+        public static string GetSafeFilename(string f)
         {
             return Path.GetFileName(f);
+        }
+
+        public static string GetFullPathWithoutExtension(string f)
+        {
+            string fullpath = Path.GetFullPath(f);
+            string ext = Path.GetExtension(f);
+            if (!String.IsNullOrEmpty(ext))
+            {
+                fullpath = fullpath.Replace(ext, "");
+            }
+            return fullpath;
         }
 
         /// <summary>
@@ -56,7 +66,7 @@ namespace LeftosCommonLibrary
         /// </summary>
         /// <param name="filename">The path to the file.</param>
         /// <returns>The hex representation of the CRC32 of the file.</returns>
-        public static String getCRC(string filename)
+        public static String GetCRC(string filename)
         {
             return Crc32.CalculateCRC(filename);
         }
@@ -84,9 +94,9 @@ namespace LeftosCommonLibrary
         /// <returns>The corresponding byte array.</returns>
         public static byte[] HexStringToByteArray(String hex)
         {
-            int NumberChars = hex.Length;
-            var bytes = new byte[NumberChars/2];
-            for (int i = 0; i < NumberChars; i += 2)
+            int numberChars = hex.Length;
+            var bytes = new byte[numberChars/2];
+            for (int i = 0; i < numberChars; i += 2)
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
@@ -136,63 +146,6 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        ///     Gets an unsigned 16-bit integer from the specified column of the given DataRow.
-        /// </summary>
-        /// <param name="r">The row.</param>
-        /// <param name="ColumnName">Name of the column.</param>
-        /// <returns></returns>
-        public static UInt16 getUInt16(DataRow r, string ColumnName)
-        {
-            return Convert.ToUInt16(r[ColumnName].ToString());
-        }
-
-        /// <summary>
-        ///     Gets an unsigned 32-bit integer from the specified column of the given DataRow.
-        /// </summary>
-        /// <param name="r">The row.</param>
-        /// <param name="ColumnName">Name of the column.</param>
-        /// <returns></returns>
-        public static UInt32 getUInt32(DataRow r, string ColumnName)
-        {
-            return Convert.ToUInt32(r[ColumnName].ToString());
-        }
-
-        /// <summary>
-        ///     Gets a signed 32-bit integer from the specified column of the given DataRow.
-        /// </summary>
-        /// <param name="r">The row.</param>
-        /// <param name="ColumnName">Name of the column.</param>
-        /// <returns></returns>
-        public static int getInt(DataRow r, string ColumnName)
-        {
-            return Convert.ToInt32(r[ColumnName].ToString());
-        }
-
-        /// <summary>
-        ///     Gets a boolean from the specified column of the given DataRow.
-        /// </summary>
-        /// <param name="r">The row.</param>
-        /// <param name="ColumnName">Name of the column.</param>
-        /// <returns></returns>
-        public static Boolean getBoolean(DataRow r, string ColumnName)
-        {
-            string s = r[ColumnName].ToString();
-            s = s.ToLower();
-            return Convert.ToBoolean(s);
-        }
-
-        /// <summary>
-        ///     Gets a string from the specified column of the given DataRow.
-        /// </summary>
-        /// <param name="r">The row.</param>
-        /// <param name="ColumnName">Name of the column.</param>
-        /// <returns></returns>
-        public static string getString(DataRow r, string ColumnName)
-        {
-            return r[ColumnName].ToString();
-        }
-
-        /// <summary>
         ///     Splits a multi-line string to an array of its lines.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -218,7 +171,7 @@ namespace LeftosCommonLibrary
             else
             {
                 var list = new List<string>();
-                foreach (string item in arr)
+                foreach (var item in arr)
                 {
                     if (!list.Contains(item))
                         list.Add(item);
@@ -227,14 +180,14 @@ namespace LeftosCommonLibrary
             }
         }
 
-        public static double getReal(DataRow r, string ColumnName)
-        {
-            return Convert.ToSingle(r[ColumnName].ToString());
-        }
-
         public static void WriteToTrace(string msg)
         {
             Trace.WriteLine(string.Format("{0}: {1}", DateTime.Now, msg));
+        }
+
+        public static void WriteToTraceWithException(string msg, Exception ex)
+        {
+            Trace.WriteLine(string.Format("{0}: {1} ({2})", DateTime.Now, msg, ex.Message));
         }
     }
 }

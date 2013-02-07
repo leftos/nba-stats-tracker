@@ -92,7 +92,7 @@
     <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
     <Compile Include="Data\Players\PlayerHighsRow.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
-    <Compile Include="Data\Players\p.cs" />
+    <Compile Include="Data\Players\PAbbr.cs" />
     <Compile Include="Data\Teams\TeamNameComparerDesc.cs" />
     <Compile Include="Data\Teams\TeamNameComparerAsc.cs" />
     <Compile Include="Data\Teams\TeamBoxScore.cs" />
@@ -104,7 +104,7 @@
     <Compile Include="Data\Players\PlayerStats.cs" />
     <Compile Include="Data\Players\PlayerStatsRow.cs" />
     <Compile Include="Data\Players\Position.cs" />
-    <Compile Include="Data\Teams\t.cs" />
+    <Compile Include="Data\Teams\TAbbr.cs" />
     <Compile Include="Data\Teams\TeamRankings.cs" />
     <Compile Include="Data\Teams\TeamStats.cs" />
     <Compile Include="Data\Teams\TeamStatsRow.cs" />

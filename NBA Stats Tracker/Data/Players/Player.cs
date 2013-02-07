@@ -47,20 +47,20 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <summary>
         ///     Initializes a new instance of the <see cref="Player" /> class.
         /// </summary>
-        /// <param name="ID">The ID.</param>
-        /// <param name="Team">The team.</param>
-        /// <param name="LastName">The last name.</param>
-        /// <param name="FirstName">The first name.</param>
-        /// <param name="Position1">The primary position.</param>
-        /// <param name="Position2">The secondary position.</param>
-        public Player(int ID, int Team, string LastName, string FirstName, Position Position1, Position Position2)
+        /// <param name="id">The ID.</param>
+        /// <param name="team">The team.</param>
+        /// <param name="lastName">The last name.</param>
+        /// <param name="firstName">The first name.</param>
+        /// <param name="position1">The primary position.</param>
+        /// <param name="position2">The secondary position.</param>
+        public Player(int id, int team, string lastName, string firstName, Position position1, Position position2)
         {
-            this.ID = ID;
-            this.Team = Team;
-            this.LastName = LastName;
-            this.FirstName = FirstName;
-            this.Position1 = Position1;
-            this.Position2 = Position2;
+            ID = id;
+            Team = team;
+            LastName = lastName;
+            FirstName = firstName;
+            Position1 = position1;
+            Position2 = position2;
         }
 
         /// <summary>
@@ -69,16 +69,16 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dataRow">The data row containing the player information.</param>
         public Player(DataRow dataRow)
         {
-            ID = Tools.getInt(dataRow, "ID");
-            Team = Tools.getInt(dataRow, "TeamFin");
-            LastName = Tools.getString(dataRow, "LastName");
-            FirstName = Tools.getString(dataRow, "FirstName");
-            string p1 = Tools.getString(dataRow, "Position1");
+            ID = DataRowCellParsers.GetInt32(dataRow, "ID");
+            Team = DataRowCellParsers.GetInt32(dataRow, "TeamFin");
+            LastName = DataRowCellParsers.GetString(dataRow, "LastName");
+            FirstName = DataRowCellParsers.GetString(dataRow, "FirstName");
+            string p1 = DataRowCellParsers.GetString(dataRow, "Position1");
             if (String.IsNullOrWhiteSpace(p1))
                 Position1 = Position.None;
             else
                 Position1 = (Position) Enum.Parse(typeof (Position), p1);
-            string p2 = Tools.getString(dataRow, "Position2");
+            string p2 = DataRowCellParsers.GetString(dataRow, "Position2");
             if (String.IsNullOrWhiteSpace(p2))
                 Position1 = Position.None;
             else

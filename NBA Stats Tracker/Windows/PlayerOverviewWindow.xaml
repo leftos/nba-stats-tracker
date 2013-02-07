@@ -8,7 +8,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib" mc:Ignorable="d"
         Height="557" Width="791"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" MinWidth="791" Title="Player Overview"
-        WindowStartupLocation="CenterScreen" Closing="Window_Closing_1">
+        WindowStartupLocation="CenterScreen" Closing="window_Closing">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
@@ -45,11 +45,11 @@
                                   IsChecked="{Binding IsInjured, Mode=OneWay}" ToolTip="{Binding InjuryStatus, Mode=OneWay}" x:Name="chkIsInjured" VerticalAlignment="Top" Click="chkIsInjured_Click" 
                                    />
                         <CheckBox Height="16" Margin="0,44,6,0" Content="Active" HorizontalAlignment="Right"
-                                  IsChecked="{Binding isActive}" x:Name="chkIsActive" VerticalAlignment="Top" />
+                                  IsChecked="{Binding IsActive}" x:Name="chkIsActive" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="73,44,0,0" Content="All-Star" HorizontalAlignment="Left"
-                                  IsChecked="{Binding isAllStar}" x:Name="chkIsAllStar" VerticalAlignment="Top" />
+                                  IsChecked="{Binding IsAllStar}" x:Name="chkIsAllStar" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="143,44,0,0" Content="Champion" HorizontalAlignment="Left"
-                                  IsChecked="{Binding isNBAChampion}" x:Name="chkIsNBAChampion" VerticalAlignment="Top" />
+                                  IsChecked="{Binding IsNBAChampion}" x:Name="chkIsNBAChampion" VerticalAlignment="Top" />
                         <DataGrid Margin="0,66,0,0" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="True"
                                   FrozenColumnCount="1" ItemsSource="{Binding .}" x:Name="dgvOverviewStats"
                                   PreviewKeyDown="dgvOverviewStats_PreviewKeyDown" CanUserSortColumns="False" />
@@ -285,7 +285,7 @@
                         </Grid.RowDefinitions>
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                                   x:Name="dgvHighs" CanUserAddRows="False" CanUserDeleteRows="False"
-                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting" Margin="0,0,0,3">
+                                  VerticalAlignment="Stretch" Sorting="statColumn_Sorting" Margin="0,0,0,3">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                                     <GroupStyle.Panel>
@@ -319,7 +319,7 @@
                         </DataGrid>
                         <DataGrid Name="dgvContract" Grid.Row="1" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                                   CanUserAddRows="False" CanUserDeleteRows="False"
-                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting"
+                                  VerticalAlignment="Stretch" Sorting="statColumn_Sorting"
                                   d:DataContext="{d:DesignInstance players:PlayerStatsRow}" Margin="0,3,0,0">
                             <DataGrid.Columns>
                                 <DataGridComboBoxColumn SelectedValueBinding="{Binding ContractOption, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource OptionsList}}" Header="Option"/>
@@ -408,7 +408,7 @@
                     <Grid>
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False" FrozenColumnCount="1" HorizontalAlignment="Stretch"
                 			x:Name="dgvYearly"
-                			VerticalAlignment="Stretch" IsReadOnly="True" Sorting="StatColumn_Sorting"
+                			VerticalAlignment="Stretch" IsReadOnly="True" Sorting="statColumn_Sorting"
                 			Margin="0,0,0,38" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                             <DataGrid.GroupStyle>
                                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">

@@ -1,11 +1,10 @@
 #region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2012
+// Created by Lefteris Aslanoglou, (c) 2011-2013
 // 
-// Implementation of thesis
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -42,7 +41,7 @@ namespace LeftosCommonLibrary
         {
             bool noErrors = true;
 
-            var s = (DataGrid)sender;
+            var s = (DataGrid) sender;
             // parse the clipboard data
             List<string[]> rowData = CSV.ParseClipboardData();
             //bool hasAddedNewRow = false;
@@ -60,7 +59,7 @@ namespace LeftosCommonLibrary
                 {
                     // add a new row to be pasted to
                     ICollectionView cv = CollectionViewSource.GetDefaultView(s.Items);
-                    IEditableCollectionView iecv = cv as IEditableCollectionView;
+                    var iecv = cv as IEditableCollectionView;
                     if (iecv != null)
                     {
                         //hasAddedNewRow = true;
@@ -95,7 +94,7 @@ namespace LeftosCommonLibrary
                     object item = s.Items[i];
                     object value = rowData[rowDataIndex][columnDataIndex];
                     object[] index = null;
-                    var originalPropertyName = propertyName;
+                    string originalPropertyName = propertyName;
                     if (propertyName.Contains("[") && propertyName.Contains("]"))
                     {
                         index = new object[1];
@@ -103,66 +102,67 @@ namespace LeftosCommonLibrary
                         propertyName = propertyName.Split('[')[0];
                     }
                     PropertyInfo pi = item.GetType().GetProperty(propertyName);
+                    if (pi == null)
+                        continue;
+
                     //PropertyInfo opi = item.GetType().GetProperty(originalPropertyName);
                     Type pType = index != null ? pi.PropertyType.GetGenericArguments()[0] : pi.PropertyType;
-                    if (pi != null)
+
+                    object convertedValue;
+                    try
                     {
-                        object convertedValue = null;
-                        try
+                        convertedValue = Convert.ChangeType(value, pType); // Try to convert to proper type
+                    }
+                    catch // Could be enum, or completely improper data
+                    {
+                        if (pType.BaseType != null)
                         {
-                            convertedValue = Convert.ChangeType(value, pType); // Try to convert to proper type
-                        }
-                        catch // Could be enum, or completely improper data
-                        {
-                            if (pType.BaseType != null)
+                            if (pType.BaseType == typeof (Enum))
                             {
-                                if (pType.BaseType == typeof(Enum))
+                                try
                                 {
-                                    try
-                                    {
-                                        convertedValue = Enum.Parse(pType, value.ToString()); // Try to parse enum
-                                    }
-                                    catch (ArgumentException)
-                                    {
-                                        Tools.WriteToTrace(String.Format("\"{0}\" is not a valid member of \"{1}\"", value, pType.Name));
-                                        noErrors = false;
-                                        continue;
-                                    }
+                                    convertedValue = Enum.Parse(pType, value.ToString()); // Try to parse enum
                                 }
-                                else // What else could be there?
+                                catch (ArgumentException)
                                 {
-                                    Tools.WriteToTrace(String.Format("\"{0}\" couldn't be converted to {1}", value, pType.Name));
+                                    Tools.WriteToTrace(String.Format("\"{0}\" is not a valid member of \"{1}\"", value, pType.Name));
                                     noErrors = false;
                                     continue;
                                 }
                             }
-                            else
+                            else // What else could be there?
                             {
                                 Tools.WriteToTrace(String.Format("\"{0}\" couldn't be converted to {1}", value, pType.Name));
                                 noErrors = false;
                                 continue;
                             }
                         }
-
-                        try
+                        else
                         {
-                            if (index == null) // No index, so no list/observable to update
-                            {
-                                item.GetType().GetProperty(propertyName).SetValue(item, convertedValue, null);
-                            }
-                            else // We have an index, so try to actually update the list's item
-                            {
-                                var collection = pi.GetValue(item, null);
-                                collection.GetType().GetProperty("Item") // Item is the normal name for an indexer
-                                          .SetValue(collection, convertedValue, index);
-                            }
-                        }
-                        catch
-                        {
-                            Tools.WriteToTrace(String.Format("Couldn't update parameter {0} with value \"{1}\"", propertyName, value));
+                            Tools.WriteToTrace(String.Format("\"{0}\" couldn't be converted to {1}", value, pType.Name));
                             noErrors = false;
                             continue;
                         }
+                    }
+
+                    try
+                    {
+                        if (index == null) // No index, so no list/observable to update
+                        {
+                            item.GetType().GetProperty(propertyName).SetValue(item, convertedValue, null);
+                        }
+                        else // We have an index, so try to actually update the list's item
+                        {
+                            object collection = pi.GetValue(item, null);
+                            collection.GetType().GetProperty("Item") // Item is the normal name for an indexer
+                                      .SetValue(collection, convertedValue, index);
+                        }
+                    }
+                    catch
+                    {
+                        Tools.WriteToTrace(String.Format("Couldn't update parameter {0} with value \"{1}\"", propertyName, value));
+                        noErrors = false;
+                        continue;
                     }
                     //column.OnPastingCellClipboardContent(item, rowData[rowDataIndex][columnDataIndex]);
                 }

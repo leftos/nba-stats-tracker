@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d" Title="Team Overview"
         Height="606" Width="870"
-        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
-        MinWidth="698" Closing="Window_Closing">
+        MinWidth="698" Closing="window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35" />
@@ -47,9 +47,9 @@
                     <Grid VerticalAlignment="Stretch">
                         <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                                   Name="dgvTeamRoster" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
                                   FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
-                                  Sorting="StatColumn_Sorting">
+                                  Sorting="statColumn_Sorting">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -81,10 +81,10 @@
                     <Grid VerticalAlignment="Stretch">
                         <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                                   Name="dgvPlayerStats" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
                                   FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
-                                  Sorting="StatColumn_Sorting"
-                                  PreviewKeyDown="AnyPlayerDataGrid_PreviewKeyDown">
+                                  Sorting="statColumn_Sorting"
+                                  PreviewKeyDown="anyPlayerDataGrid_PreviewKeyDown">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -139,7 +139,7 @@
                                   FrozenColumnCount="2"
                                   HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvMetricStats"
                                   VerticalAlignment="Stretch" IsReadOnly="True"
-                                  Sorting="StatColumn_Sorting" MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick">
+                                  Sorting="statColumn_Sorting" MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -479,10 +479,10 @@
                     <Grid VerticalAlignment="Stretch">
                         <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                                   x:Name="dgvPlayerPlayoffStats" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
                                   FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
-                                  Sorting="StatColumn_Sorting"
-                                  PreviewKeyDown="AnyPlayerDataGrid_PreviewKeyDown">
+                                  Sorting="statColumn_Sorting"
+                                  PreviewKeyDown="anyPlayerDataGrid_PreviewKeyDown">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -537,8 +537,8 @@
                                   FrozenColumnCount="2"
                                   HorizontalAlignment="Stretch" Margin="6,6,6,0" x:Name="dgvPlayoffMetricStats"
                                   VerticalAlignment="Stretch"
-                                  IsReadOnly="True" Sorting="StatColumn_Sorting"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick">
+                                  IsReadOnly="True" Sorting="statColumn_Sorting"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -952,7 +952,7 @@
                                   FrozenColumnCount="1"
                                   HorizontalAlignment="Stretch"
                                   x:Name="dgvHighs"
-                                  VerticalAlignment="Stretch" Sorting="StatColumn_Sorting">
+                                  VerticalAlignment="Stretch" Sorting="statColumn_Sorting">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Type}" Header="Name" />
                                 <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
@@ -1144,7 +1144,7 @@
                         <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,38"
                                   ItemsSource="{Binding Path=.}" Name="dgvYearly" VerticalAlignment="Stretch"
                                   Style="{StaticResource DataGridStyle}"
-                                  FrozenColumnCount="1" IsReadOnly="True" Sorting="StatColumn_Sorting" />
+                                  FrozenColumnCount="1" IsReadOnly="True" Sorting="statColumn_Sorting" />
                         <Button Content="Add Past Stats" Height="23" HorizontalAlignment="Right"
                                 Margin="0,0,6,10" x:Name="btnAddPastStats" VerticalAlignment="Bottom" Width="143"
                                 Click="btnAddPastStats_Click" />

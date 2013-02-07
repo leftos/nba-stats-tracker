@@ -18,7 +18,7 @@ using System;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Annotations
+namespace NBA_Stats_Tracker.Properties
 {
     /// <summary>
     ///     Indicates that marked element should be localized or not.
@@ -323,11 +323,7 @@ namespace NBA_Stats_Tracker.Annotations
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public sealed class ContractAnnotationAttribute : Attribute
     {
-        public ContractAnnotationAttribute([NotNull] string fdt) : this(fdt, false)
-        {
-        }
-
-        public ContractAnnotationAttribute([NotNull] string fdt, bool forceFullStates)
+        public ContractAnnotationAttribute([NotNull] string fdt, bool forceFullStates = false)
         {
             FDT = fdt;
             ForceFullStates = forceFullStates;
@@ -416,15 +412,11 @@ namespace NBA_Stats_Tracker.Annotations
         }
 
         [UsedImplicitly]
-        public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
+        public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags,
+                                       ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
         {
             UseKindFlags = useKindFlags;
             TargetFlags = targetFlags;
-        }
-
-        [UsedImplicitly]
-        public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags) : this(useKindFlags, ImplicitUseTargetFlags.Default)
-        {
         }
 
         [UsedImplicitly]
@@ -455,15 +447,11 @@ namespace NBA_Stats_Tracker.Annotations
         }
 
         [UsedImplicitly]
-        public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
+        public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags,
+                                         ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
         {
             UseKindFlags = useKindFlags;
             TargetFlags = targetFlags;
-        }
-
-        [UsedImplicitly]
-        public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags) : this(useKindFlags, ImplicitUseTargetFlags.Default)
-        {
         }
 
         [UsedImplicitly]

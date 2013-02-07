@@ -38,6 +38,7 @@ namespace NBA_Stats_Tracker.Data.Players
         private UInt16 _FTM;
         private UInt16 _TPA;
         protected UInt16 _TPM;
+        private UInt16 _mins;
         //public ObservableCollection<KeyValuePair<int, string>> PlayersList { get; set; }
 
         /// <summary>
@@ -47,9 +48,9 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             PlayerID = -1;
             TeamID = -1;
-            isStarter = false;
-            playedInjured = false;
-            isOut = false;
+            IsStarter = false;
+            PlayedInjured = false;
+            IsOut = false;
             ResetStats();
         }
 
@@ -59,8 +60,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="r">The DataRow containing the player's box score.</param>
         public PlayerBoxScore(DataRow r, Dictionary<int, TeamStats> tst)
         {
-            PlayerID = Tools.getInt(r, "PlayerID");
-            GameID = Tools.getInt(r, "GameID");
+            PlayerID = DataRowCellParsers.GetInt32(r, "PlayerID");
+            GameID = DataRowCellParsers.GetInt32(r, "GameID");
             try
             {
                 TeamID = Convert.ToInt32(r["TeamID"].ToString());
@@ -69,16 +70,16 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 if (ex is ArgumentException || ex is KeyNotFoundException)
                 {
-                    TeamID = tst.Single(ts => ts.Value.name == Tools.getString(r, "Team")).Value.ID;
+                    TeamID = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(r, "Team")).Value.ID;
                 }
                 else
                 {
-                    throw ex;
+                    throw;
                 }
             }
-            isStarter = Tools.getBoolean(r, "isStarter");
-            playedInjured = Tools.getBoolean(r, "playedInjured");
-            isOut = Tools.getBoolean(r, "isOut");
+            IsStarter = DataRowCellParsers.GetBoolean(r, "isStarter");
+            PlayedInjured = DataRowCellParsers.GetBoolean(r, "playedInjured");
+            IsOut = DataRowCellParsers.GetBoolean(r, "isOut");
             MINS = Convert.ToUInt16(r["MINS"].ToString());
             PTS = Convert.ToUInt16(r["PTS"].ToString());
             REB = Convert.ToUInt16(r["REB"].ToString());
@@ -103,43 +104,44 @@ namespace NBA_Stats_Tracker.Data.Players
             // Only works for INNER JOIN'ed rows
             try
             {
-                int T1PTS = Tools.getInt(r, "T1PTS");
-                int T2PTS = Tools.getInt(r, "T2PTS");
+                int t1PTS = DataRowCellParsers.GetInt32(r, "T1PTS");
+                int t2PTS = DataRowCellParsers.GetInt32(r, "T2PTS");
 
-                int Team1 = Tools.getInt(r, "Team1ID");
-                int Team2 = Tools.getInt(r, "Team2ID");
+                int team1 = DataRowCellParsers.GetInt32(r, "Team1ID");
+                int team2 = DataRowCellParsers.GetInt32(r, "Team2ID");
 
-                if (TeamID == Team1)
+                if (TeamID == team1)
                 {
-                    if (T1PTS > T2PTS)
-                        Result = "W " + T1PTS.ToString() + "-" + T2PTS.ToString();
+                    if (t1PTS > t2PTS)
+                        Result = "W " + t1PTS.ToString() + "-" + t2PTS.ToString();
                     else
-                        Result = "L " + T1PTS.ToString() + "-" + T2PTS.ToString();
+                        Result = "L " + t1PTS.ToString() + "-" + t2PTS.ToString();
 
-                    TeamPTS = T1PTS;
-                    OppTeamID = Team2;
-                    OppTeamPTS = T2PTS;
+                    TeamPTS = t1PTS;
+                    OppTeamID = team2;
+                    OppTeamPTS = t2PTS;
                 }
                 else
                 {
-                    if (T2PTS > T1PTS)
-                        Result = "W " + T2PTS.ToString() + "-" + T1PTS.ToString();
+                    if (t2PTS > t1PTS)
+                        Result = "W " + t2PTS.ToString() + "-" + t1PTS.ToString();
                     else
-                        Result = "L " + T2PTS.ToString() + "-" + T1PTS.ToString();
+                        Result = "L " + t2PTS.ToString() + "-" + t1PTS.ToString();
 
-                    TeamPTS = T2PTS;
-                    OppTeamID = Team1;
-                    OppTeamPTS = T1PTS;
+                    TeamPTS = t2PTS;
+                    OppTeamID = team1;
+                    OppTeamPTS = t1PTS;
                 }
 
-                Date = Tools.getString(r, "Date").Split(' ')[0];
+                Date = DataRowCellParsers.GetString(r, "Date").Split(' ')[0];
                 RealDate = Convert.ToDateTime(Date);
-                SeasonNum = Tools.getInt(r, "SeasonNum");
+                SeasonNum = DataRowCellParsers.GetInt32(r, "SeasonNum");
 
                 CalcMetrics(r);
             }
-            catch (Exception)
+            catch
             {
+                Console.WriteLine("Call to PlayerBoxScore constructor without inner-joined TeamBoxScore information.");
             }
         }
 
@@ -187,10 +189,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
             GameID = gameID;
             TeamID = teamID;
-            isStarter = starter;
-            playedInjured = false;
-            isOut = false;
-            PTS = Tools.getUInt16(brRow, "PTS");
+            IsStarter = starter;
+            PlayedInjured = false;
+            IsOut = false;
+            PTS = DataRowCellParsers.GetUInt16(brRow, "PTS");
             REB = Convert.ToUInt16(brRow["TRB"].ToString());
             AST = Convert.ToUInt16(brRow["AST"].ToString());
             STL = Convert.ToUInt16(brRow["STL"].ToString());
@@ -223,9 +225,9 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             PlayerID = playerID;
             TeamID = teamID;
-            isStarter = isStarter.TrySetValue(dict, "Starter", typeof (bool));
-            playedInjured = playedInjured.TrySetValue(dict, "Injured", typeof (bool));
-            isOut = isOut.TrySetValue(dict, "DNP", typeof (bool));
+            IsStarter = IsStarter.TrySetValue(dict, "Starter", typeof (bool));
+            PlayedInjured = PlayedInjured.TrySetValue(dict, "Injured", typeof (bool));
+            IsOut = IsOut.TrySetValue(dict, "DNP", typeof (bool));
             MINS = MINS.TrySetValue(dict, "MINS", typeof (UInt16));
             PTS = PTS.TrySetValue(dict, "PTS", typeof (UInt16));
             REB = REB.TrySetValue(dict, "REB", typeof (UInt16));
@@ -256,9 +258,9 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamPTS = lpbs.TeamPTS;
             OppTeamID = lpbs.OppTeamID;
             OppTeamPTS = lpbs.OppTeamPTS;
-            isStarter = lpbs.isStarter;
-            playedInjured = lpbs.playedInjured;
-            isOut = lpbs.isOut;
+            IsStarter = lpbs.IsStarter;
+            PlayedInjured = lpbs.PlayedInjured;
+            IsOut = lpbs.IsOut;
             GmSc = lpbs.GmSc;
             GmScE = lpbs.GmScE;
             MINS = lpbs.MINS;
@@ -296,32 +298,24 @@ namespace NBA_Stats_Tracker.Data.Players
         public int TeamPTS { get; set; }
         public int OppTeamID { get; set; }
         public int OppTeamPTS { get; set; }
-        public bool isStarter { get; set; }
-        public bool playedInjured { get; set; }
-        public bool isOut { get; set; }
+        public bool IsStarter { get; set; }
+        public bool PlayedInjured { get; set; }
+        public bool IsOut { get; set; }
         public double GmSc { get; set; }
         public double GmScE { get; set; }
 
         public UInt16 MINS
         {
-            get { return _mINS; }
+            get { return _mins; }
             set
             {
-                _mINS = value;
-                if (value == 0)
-                {
-                    isOut = true;
-                }
-                else
-                {
-                    isOut = false;
-                }
+                _mins = value;
+                IsOut = value == 0;
                 NotifyPropertyChanged("MINS");
                 NotifyPropertyChanged("isOut");
             }
         }
 
-        private UInt16 _mINS;
         public UInt16 PTS { get; set; }
 
         public UInt16 FGM
@@ -437,10 +431,10 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamPTS = TeamID == bs.Team1ID ? bs.PTS1 : bs.PTS2;
             OppTeamID = TeamID == bs.Team1ID ? bs.Team2ID : bs.Team1ID;
             OppTeamPTS = TeamID == bs.Team1ID ? bs.PTS2 : bs.PTS1;
-            Date = bs.gamedate.ToString().Split(' ')[0];
-            RealDate = bs.gamedate;
-            DisplayTeam = tst[TeamID].displayName;
-            DisplayOppTeam = tst[OppTeamID].displayName;
+            Date = bs.GameDate.ToString().Split(' ')[0];
+            RealDate = bs.GameDate;
+            DisplayTeam = tst[TeamID].DisplayName;
+            DisplayOppTeam = tst[OppTeamID].DisplayName;
         }
 
         /// <summary>
@@ -454,21 +448,20 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = new TeamStats(TeamID);
             var tsopp = new TeamStats(OppTeamID);
 
-            int Team1ID = Tools.getInt(r, "Team1ID");
-            int Team2ID = Tools.getInt(r, "Team2ID");
+            int team1ID = DataRowCellParsers.GetInt32(r, "Team1ID");
+            int team2ID = DataRowCellParsers.GetInt32(r, "Team2ID");
 
-            if (TeamID == Team1ID)
+            if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
             else
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
 
-            var ps = new PlayerStats();
-            ps.ID = PlayerID;
-            ps.AddBoxScore(this, bs.isPlayoff);
+            var ps = new PlayerStats {ID = PlayerID};
+            ps.AddBoxScore(this, bs.IsPlayoff);
             ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
-            GmSc = ps.metrics["GmSc"];
-            GmScE = ps.metrics["GmScE"];
+            GmSc = ps.Metrics["GmSc"];
+            GmScE = ps.Metrics["GmScE"];
         }
 
         /// <summary>
@@ -482,20 +475,18 @@ namespace NBA_Stats_Tracker.Data.Players
             var tsopp = new TeamStats(OppTeamID);
 
             int team1ID = bs.Team1ID;
-            int team2ID = bs.Team2ID;
 
             if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
             else
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
 
-            var ps = new PlayerStats();
-            ps.ID = PlayerID;
-            ps.AddBoxScore(this, bs.isPlayoff);
+            var ps = new PlayerStats {ID = PlayerID};
+            ps.AddBoxScore(this, bs.IsPlayoff);
             ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
-            GmSc = ps.metrics["GmSc"];
-            GmScE = ps.metrics["GmScE"];
+            GmSc = ps.Metrics["GmSc"];
+            GmScE = ps.Metrics["GmScE"];
         }
 
         /// <summary>
@@ -569,7 +560,9 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftrn", ftrn);
 
-            IOrderedEnumerable<string> items = from k in statsn.Keys orderby statsn[k] descending select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys
+                                               orderby statsn[k] descending
+                                               select k;
 
             string s = "";
             s += String.Format("PTS: {0}\n", PTS);

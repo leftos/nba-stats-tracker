@@ -1,10 +1,8 @@
 <Application x:Class="NBA_Stats_Tracker.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
              xmlns:contracts="clr-namespace:NBA_Stats_Tracker.Data.Players.Contracts"
              StartupUri="Windows\MainWindow.xaml"
-             DispatcherUnhandledException="App_DispatcherUnhandledException">
+             DispatcherUnhandledException="app_DispatcherUnhandledException">
     <Application.Resources>
             <ObjectDataProvider x:Key="OptionsList" MethodName="GetValues"
                             ObjectType="{x:Type contracts:PlayerContractOption}">

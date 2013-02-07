@@ -26,16 +26,16 @@ namespace NBA_Stats_Tracker.Data.Players
     [Serializable]
     public class LivePlayerBoxScore : PlayerBoxScore
     {
-        private ushort _OREB;
-        private ushort _TwoPM;
+        private ushort _oreb;
+        private ushort _twoPM;
 
         public UInt16 TwoPM
         {
-            get { return _TwoPM; }
+            get { return _twoPM; }
             set
             {
-                _TwoPM = value;
-                FGM = (ushort) (TPM + _TwoPM);
+                _twoPM = value;
+                FGM = (ushort) (TPM + _twoPM);
                 CalculatePoints();
                 NotifyPropertyChanged("FGM");
                 NotifyPropertyChanged("PTS");
@@ -48,7 +48,7 @@ namespace NBA_Stats_Tracker.Data.Players
             set
             {
                 _TPM = value;
-                FGM = (ushort) (TPM + _TwoPM);
+                FGM = (ushort) (TPM + _twoPM);
                 CalculatePoints();
                 NotifyPropertyChanged("FGM");
                 NotifyPropertyChanged("PTS");
@@ -57,14 +57,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public new UInt16 OREB
         {
-            get { return _OREB; }
+            get { return _oreb; }
             set
             {
-                if (_OREB < value)
+                if (_oreb < value)
                     REB++;
-                else if (_OREB > value)
+                else if (_oreb > value)
                     REB--;
-                _OREB = value;
+                _oreb = value;
                 NotifyPropertyChanged("REB");
             }
         }

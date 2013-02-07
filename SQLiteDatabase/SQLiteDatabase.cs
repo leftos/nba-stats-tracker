@@ -1,16 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by brennydoogles, (c) 2010
-// Source: http://www.dreamincode.net/forums/topic/157830-using-sqlite-with-c%23/
-// Adapted from Mike Duncan's tutorial
-// Source: http://www.mikeduncan.com/sqlite-on-dotnet-in-3-mins/
-//
-//
-// Improved by Lefteris Aslanoglou, (c) 2011-2012
-// as a Class Library for the implementation of thesis
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -33,14 +27,14 @@ namespace SQLite_Database
 {
     public class SQLiteDatabase
     {
-        private readonly String dbConnection;
+        private readonly String _dbConnection;
 
         /// <summary>
         ///     Default Constructor for SQLiteDatabase Class. Connects to the "D:\test.sqlite" database file.
         /// </summary>
         public SQLiteDatabase()
         {
-            dbConnection = @"Data Source=D:\test.sqlite";
+            _dbConnection = @"Data Source=D:\test.sqlite";
         }
 
         /// <summary>
@@ -49,7 +43,7 @@ namespace SQLite_Database
         /// <param name="inputFile">The File containing the DB</param>
         public SQLiteDatabase(String inputFile)
         {
-            dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
+            _dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
             //ExecuteNonQuery("ANALYZE;");
         }
 
@@ -61,7 +55,7 @@ namespace SQLite_Database
         {
             String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
-            dbConnection = str;
+            _dbConnection = str;
         }
 
         /// <summary>
@@ -72,10 +66,10 @@ namespace SQLite_Database
         public DataTable GetDataTable(string sql)
         {
             var dt = new DataTable();
-            
+
             try
             {
-                using (var cnn = new SQLiteConnection(dbConnection))
+                using (var cnn = new SQLiteConnection(_dbConnection))
                 {
                     cnn.Open();
                     SQLiteDataReader reader;
@@ -95,26 +89,33 @@ namespace SQLite_Database
             }
             return dt;
         }
+
         /// <summary>
-        /// Parses the information in an IDataReader, returning a DataTable.
-        /// Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
-        /// (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
+        ///     Parses the information in an IDataReader, returning a DataTable.
+        ///     Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
+        ///     (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
         /// </summary>
         /// <param name="dataReader"></param>
         /// <returns></returns>
         public DataTable GetDataTableFromDataReader(IDataReader dataReader)
         {
             DataTable schemaTable = dataReader.GetSchemaTable();
-            DataTable resultTable = new DataTable();
+            if (schemaTable == null)
+            {
+                throw new Exception("SQLiteDatabase.GetDataTableFromDataReader called with but the DataReader returned null.");
+            }
+            var resultTable = new DataTable();
 
             foreach (DataRow dataRow in schemaTable.Rows)
             {
-                DataColumn dataColumn = new DataColumn();
-                dataColumn.ColumnName = dataRow["ColumnName"].ToString();
-                dataColumn.DataType = Type.GetType(dataRow["DataType"].ToString());
-                dataColumn.ReadOnly = (bool)dataRow["IsReadOnly"];
-                dataColumn.AutoIncrement = (bool)dataRow["IsAutoIncrement"];
-                dataColumn.Unique = (bool)dataRow["IsUnique"];
+                var dataColumn = new DataColumn
+                                 {
+                                     ColumnName = dataRow["ColumnName"].ToString(),
+                                     DataType = Type.GetType(dataRow["DataType"].ToString()),
+                                     ReadOnly = (bool) dataRow["IsReadOnly"],
+                                     AutoIncrement = (bool) dataRow["IsAutoIncrement"],
+                                     Unique = (bool) dataRow["IsUnique"]
+                                 };
 
                 resultTable.Columns.Add(dataColumn);
             }
@@ -141,7 +142,7 @@ namespace SQLite_Database
         {
             SQLiteConnection cnn;
             int rowsUpdated;
-            using (cnn = new SQLiteConnection(dbConnection))
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 SQLiteTransaction sqLiteTransaction = cnn.BeginTransaction();
@@ -166,7 +167,7 @@ namespace SQLite_Database
         public string ExecuteScalar(string sql)
         {
             object value;
-            using (var cnn = new SQLiteConnection(dbConnection))
+            using (var cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var mycommand = new SQLiteCommand(cnn))
@@ -222,7 +223,7 @@ namespace SQLite_Database
         {
             SQLiteConnection cnn;
             String vals = "";
-            using (cnn = new SQLiteConnection(dbConnection))
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
@@ -314,7 +315,7 @@ namespace SQLite_Database
         public void InsertManyTransaction(String tableName, List<Dictionary<String, String>> dataList)
         {
             SQLiteConnection cnn;
-            using (cnn = new SQLiteConnection(dbConnection))
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))

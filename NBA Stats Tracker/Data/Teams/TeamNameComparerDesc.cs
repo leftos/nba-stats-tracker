@@ -15,7 +15,6 @@
 #region Using Directives
 
 using System;
-using System.Collections;
 using NBA_Stats_Tracker.Data.Players;
 
 #endregion
@@ -24,8 +23,6 @@ namespace NBA_Stats_Tracker.Data.Teams
 {
     public class TeamNameComparerDesc : TeamNameComparerAsc
     {
-        #region IComparer Members
-
         public override int Compare(object x, object y)
         {
             string s1;
@@ -49,7 +46,5 @@ namespace NBA_Stats_Tracker.Data.Teams
             else
                 return String.Compare(s2, s1, StringComparison.Ordinal);
         }
-
-        #endregion
     }
 }

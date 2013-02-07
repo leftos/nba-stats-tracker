@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 #endregion
 
@@ -43,10 +44,10 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
-        /// <param name="p_Comparer">The comparer.</param>
-        public static void Sort<T>(this BindingList<T> bl, IComparer<T> p_Comparer)
+        /// <param name="pComparer">The comparer.</param>
+        public static void Sort<T>(this BindingList<T> bl, IComparer<T> pComparer)
         {
-            sort(bl, p_Comparer, null);
+            sort(bl, pComparer, null);
         }
 
         /// <summary>
@@ -54,10 +55,10 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
-        /// <param name="p_Comparison">The comparison.</param>
-        public static void Sort<T>(this BindingList<T> bl, Comparison<T> p_Comparison)
+        /// <param name="pComparison">The comparison.</param>
+        public static void Sort<T>(this BindingList<T> bl, Comparison<T> pComparison)
         {
-            sort(bl, null, p_Comparison);
+            sort(bl, null, pComparison);
         }
 
         /// <summary>
@@ -65,23 +66,19 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="bl">The binding list to be sorted.</param>
-        /// <param name="p_Comparer">The comparer.</param>
-        /// <param name="p_Comparison">The comparison.</param>
-        private static void sort<T>(this BindingList<T> bl, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
+        /// <param name="pComparer">The comparer.</param>
+        /// <param name="pComparison">The comparison.</param>
+        private static void sort<T>(this BindingList<T> bl, IComparer<T> pComparer, Comparison<T> pComparison)
         {
             //Extract items and sort separately
-            var sortList = new List<T>();
-            foreach (var item in bl)
+            List<T> sortList = bl.ToList();
+            if (pComparison == null)
             {
-                sortList.Add(item);
-            }
-            if (p_Comparison == null)
-            {
-                sortList.Sort(p_Comparer);
+                sortList.Sort(pComparer);
             } //if
             else
             {
-                sortList.Sort(p_Comparison);
+                sortList.Sort(pComparison);
             } //else
 
             //Disable notifications, rebuild, and re-enable notifications
@@ -90,7 +87,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
             try
             {
                 bl.Clear();
-                sortList.ForEach(item => bl.Add(item));
+                sortList.ForEach(bl.Add);
             }
             finally
             {
@@ -110,41 +107,37 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         /// <summary>
         ///     Sorts the specified ObservableCollection using a custom IComparer.
         /// </summary>
-        public static void Sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer)
+        public static void Sort<T>(this ObservableCollection<T> oc, IComparer<T> pComparer)
         {
-            sort(oc, p_Comparer, null);
+            sort(oc, pComparer, null);
         }
 
         /// <summary>
         ///     Sorts the specified ObservableCollection using a custom Comparison.
         /// </summary>
-        public static void Sort<T>(this ObservableCollection<T> oc, Comparison<T> p_Comparison)
+        public static void Sort<T>(this ObservableCollection<T> oc, Comparison<T> pComparison)
         {
-            sort(oc, null, p_Comparison);
+            sort(oc, null, pComparison);
         }
 
         /// <summary>
         ///     Sorts the specified ObservableCollection using a custom IComparer and Comparison.
         /// </summary>
-        private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> p_Comparer, Comparison<T> p_Comparison)
+        private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> pComparer, Comparison<T> pComparison)
         {
             //Extract items and sort separately
-            var sortList = new List<T>();
-            foreach (var item in oc)
+            List<T> sortList = oc.ToList();
+            if (pComparison == null)
             {
-                sortList.Add(item);
-            }
-            if (p_Comparison == null)
-            {
-                sortList.Sort(p_Comparer);
+                sortList.Sort(pComparer);
             } //if
             else
             {
-                sortList.Sort(p_Comparison);
+                sortList.Sort(pComparison);
             } //else
 
             oc.Clear();
-            sortList.ForEach(item => oc.Add(item));
+            sortList.ForEach(oc.Add);
         }
 
         /// <summary>

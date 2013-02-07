@@ -29,39 +29,39 @@ namespace NBA_Stats_Tracker.Data.PastStats
 
         public PastTeamStats(DataRow dr)
         {
-            Wins = Tools.getUInt32(dr, "WIN");
-            Losses = Tools.getUInt32(dr, "LOSS");
-            TeamID = Tools.getInt(dr, "TeamID");
+            Wins = DataRowCellParsers.GetUInt32(dr, "WIN");
+            Losses = DataRowCellParsers.GetUInt32(dr, "LOSS");
+            TeamID = DataRowCellParsers.GetInt32(dr, "TeamID");
 
-            MINS = Tools.getUInt32(dr, "MINS");
-            PF = Tools.getUInt32(dr, "PF");
-            PA = Tools.getUInt32(dr, "PA");
-            FGM = Tools.getUInt32(dr, "FGM");
-            FGA = Tools.getUInt32(dr, "FGA");
-            TPM = Tools.getUInt32(dr, "TPM");
-            TPA = Tools.getUInt32(dr, "TPA");
-            FTM = Tools.getUInt32(dr, "FTM");
-            FTA = Tools.getUInt32(dr, "FTA");
-            OREB = Tools.getUInt32(dr, "OREB");
-            DREB = Tools.getUInt32(dr, "DREB");
+            MINS = DataRowCellParsers.GetUInt32(dr, "MINS");
+            PF = DataRowCellParsers.GetUInt32(dr, "PF");
+            PA = DataRowCellParsers.GetUInt32(dr, "PA");
+            FGM = DataRowCellParsers.GetUInt32(dr, "FGM");
+            FGA = DataRowCellParsers.GetUInt32(dr, "FGA");
+            TPM = DataRowCellParsers.GetUInt32(dr, "TPM");
+            TPA = DataRowCellParsers.GetUInt32(dr, "TPA");
+            FTM = DataRowCellParsers.GetUInt32(dr, "FTM");
+            FTA = DataRowCellParsers.GetUInt32(dr, "FTA");
+            OREB = DataRowCellParsers.GetUInt32(dr, "OREB");
+            DREB = DataRowCellParsers.GetUInt32(dr, "DREB");
             REB = OREB + DREB;
-            STL = Tools.getUInt32(dr, "STL");
-            TOS = Tools.getUInt32(dr, "TOS");
-            BLK = Tools.getUInt32(dr, "BLK");
-            AST = Tools.getUInt32(dr, "AST");
-            FOUL = Tools.getUInt32(dr, "FOUL");
+            STL = DataRowCellParsers.GetUInt32(dr, "STL");
+            TOS = DataRowCellParsers.GetUInt32(dr, "TOS");
+            BLK = DataRowCellParsers.GetUInt32(dr, "BLK");
+            AST = DataRowCellParsers.GetUInt32(dr, "AST");
+            FOUL = DataRowCellParsers.GetUInt32(dr, "FOUL");
 
-            SeasonName = Tools.getString(dr, "SeasonName");
-            Order = Tools.getInt(dr, "SOrder");
-            isPlayoff = Tools.getBoolean(dr, "isPlayoff");
-            ID = Tools.getInt(dr, "ID");
+            SeasonName = DataRowCellParsers.GetString(dr, "SeasonName");
+            Order = DataRowCellParsers.GetInt32(dr, "SOrder");
+            IsPlayoff = DataRowCellParsers.GetBoolean(dr, "isPlayoff");
+            ID = DataRowCellParsers.GetInt32(dr, "ID");
         }
 
         public int TeamID { get; set; }
         public int ID { get; set; }
         public string SeasonName { get; set; }
         public int Order { get; set; }
-        public bool isPlayoff { get; set; }
+        public bool IsPlayoff { get; set; }
         public uint Wins { get; set; }
         public uint Losses { get; set; }
         public uint MINS { get; set; }

@@ -31,65 +31,65 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class AddStatsWindow : Window
     {
-        private readonly int id;
-        private readonly bool isTeam;
+        private readonly int _id;
+        private readonly bool _isTeam;
 
         public AddStatsWindow(bool isTeam, int id)
         {
             InitializeComponent();
 
-            this.isTeam = isTeam;
-            this.id = id;
+            _isTeam = isTeam;
+            _id = id;
 
             if (isTeam)
             {
-                ptsList = new ObservableCollection<PastTeamStats>();
+                PTSList = new ObservableCollection<PastTeamStats>();
                 dgGamesPlayedColumn.Visibility = Visibility.Collapsed;
                 dgGamesStartedColumn.Visibility = Visibility.Collapsed;
                 dgPlayerPointsColumn.Visibility = Visibility.Collapsed;
                 dgTeamFColumn.Visibility = Visibility.Collapsed;
                 dgTeamSColumn.Visibility = Visibility.Collapsed;
                 string qr = "SELECT * FROM PastTeamStats WHERE TeamID = " + id + " ORDER BY \"SOrder\"";
-                DataTable dt = MainWindow.db.GetDataTable(qr);
-                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ptsList.Add(new PastTeamStats(dr)));
-                dgStats.ItemsSource = ptsList;
+                DataTable dt = MainWindow.DB.GetDataTable(qr);
+                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => PTSList.Add(new PastTeamStats(dr)));
+                dgStats.ItemsSource = PTSList;
             }
             else
             {
-                ppsList = new ObservableCollection<PastPlayerStats>();
+                PPSList = new ObservableCollection<PastPlayerStats>();
                 dgWinsColumn.Visibility = Visibility.Collapsed;
                 dgLossesColumn.Visibility = Visibility.Collapsed;
                 dgTeamPointsAgainstColumn.Visibility = Visibility.Collapsed;
                 dgTeamPointsForColumn.Visibility = Visibility.Collapsed;
                 string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + id + " ORDER BY \"SOrder\"";
-                DataTable dt = MainWindow.db.GetDataTable(qr);
-                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
-                dgStats.ItemsSource = ppsList;
+                DataTable dt = MainWindow.DB.GetDataTable(qr);
+                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => PPSList.Add(new PastPlayerStats(dr)));
+                dgStats.ItemsSource = PPSList;
             }
         }
 
-        public static ObservableCollection<PastTeamStats> ptsList { get; set; }
-        public static ObservableCollection<PastPlayerStats> ppsList { get; set; }
+        public static ObservableCollection<PastTeamStats> PTSList { get; set; }
+        public static ObservableCollection<PastPlayerStats> PPSList { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (isTeam)
+            if (_isTeam)
             {
-                for (int i = 0; i < ptsList.Count; i++)
+                foreach (var pts in PTSList)
                 {
-                    ptsList[i].EndEdit();
-                    ptsList[i].TeamID = id;
+                    pts.EndEdit();
+                    pts.TeamID = _id;
                 }
-                SQLiteIO.SavePastTeamStatsToDatabase(MainWindow.db, new List<PastTeamStats>(ptsList));
+                SQLiteIO.SavePastTeamStatsToDatabase(MainWindow.DB, new List<PastTeamStats>(PTSList));
             }
             else
             {
-                for (int i = 0; i < ppsList.Count; i++)
+                foreach (var pps in PPSList)
                 {
-                    ppsList[i].EndEdit();
-                    ppsList[i].PlayerID = id;
+                    pps.EndEdit();
+                    pps.PlayerID = _id;
                 }
-                SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.db, new List<PastPlayerStats>(ppsList));
+                SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.DB, new List<PastPlayerStats>(PPSList));
             }
 
             DialogResult = true;

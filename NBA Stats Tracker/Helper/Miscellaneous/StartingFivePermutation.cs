@@ -25,9 +25,9 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     /// </summary>
     public class StartingFivePermutation
     {
+        public int BestPermCount = 0;
         public List<int> IDList = new List<int>(5);
         public int PlayersInPrimaryPosition = 0;
         public double Sum = 0;
-        public int BestPermCount = 0;
     }
 }

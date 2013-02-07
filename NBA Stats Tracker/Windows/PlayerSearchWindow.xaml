@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d" Title="Player Search" Height="489.089" Width="961.717"
         ResizeMode="NoResize" Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
-        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1">
+        WindowStartupLocation="CenterScreen" Loaded="window_Loaded">
     <Grid>
         <TabControl Name="tbcPlayerSearch">
             <TabItem Header="Query" Name="tabQuery">

@@ -33,7 +33,7 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class ConferenceEditWindow
     {
-        private readonly Conference curConf;
+        private readonly Conference _curConf;
 
         private ConferenceEditWindow()
         {
@@ -46,7 +46,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="conf">The conference to be edited.</param>
         public ConferenceEditWindow(Conference conf) : this()
         {
-            curConf = conf;
+            _curConf = conf;
             txtName.Text = conf.Name;
             txtDivisions.Text = "";
             MainWindow.Divisions.Where(division => division.ConferenceID == conf.ID)
@@ -57,7 +57,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            ListWindow.mustUpdate = false;
+            ListWindow.MustUpdate = false;
             Close();
         }
 
@@ -72,18 +72,21 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            var db = new SQLiteDatabase(MainWindow.currentDB);
+            var db = new SQLiteDatabase(MainWindow.CurrentDB);
             if (String.IsNullOrWhiteSpace(txtName.Text))
                 txtName.Text = "League";
 
-            MainWindow.Conferences.Single(conference => conference.ID == curConf.ID).Name = txtName.Text;
-            db.Update("Conferences", new Dictionary<string, string> {{"Name", txtName.Text}}, "ID = " + curConf.ID);
+            MainWindow.Conferences.Single(conference => conference.ID == _curConf.ID).Name = txtName.Text;
+            db.Update("Conferences", new Dictionary<string, string> {{"Name", txtName.Text}}, "ID = " + _curConf.ID);
 
-            MainWindow.Divisions.RemoveAll(division => division.ConferenceID == curConf.ID);
-            db.Delete("Divisions", "Conference = " + curConf.ID);
+            MainWindow.Divisions.RemoveAll(division => division.ConferenceID == _curConf.ID);
+            db.Delete("Divisions", "Conference = " + _curConf.ID);
 
             var usedIDs = new List<int>();
-            db.GetDataTable("SELECT ID FROM Divisions").Rows.Cast<DataRow>().ToList().ForEach(row => usedIDs.Add(Tools.getInt(row, "ID")));
+            db.GetDataTable("SELECT ID FROM Divisions")
+              .Rows.Cast<DataRow>()
+              .ToList()
+              .ForEach(row => usedIDs.Add(DataRowCellParsers.GetInt32(row, "ID")));
 
             List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
             foreach (var newDiv in list)
@@ -92,20 +95,20 @@ namespace NBA_Stats_Tracker.Windows
                 int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
-                MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = curConf.ID});
+                MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = _curConf.ID});
                 usedIDs.Add(i);
             }
 
-            if (MainWindow.Divisions.Any(division => division.ConferenceID == curConf.ID) == false)
+            if (MainWindow.Divisions.Any(division => division.ConferenceID == _curConf.ID) == false)
             {
                 int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
-                MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = curConf.ID});
+                MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = _curConf.ID});
                 usedIDs.Add(i);
             }
 
-            foreach (var div in MainWindow.Divisions.Where(division => division.ConferenceID == curConf.ID))
+            foreach (var div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
             {
                 db.Insert("Divisions",
                           new Dictionary<string, string>
@@ -118,7 +121,7 @@ namespace NBA_Stats_Tracker.Windows
 
             TeamStats.CheckForInvalidDivisions();
 
-            ListWindow.mustUpdate = true;
+            ListWindow.MustUpdate = true;
             Close();
         }
     }

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using LeftosCommonLibrary;
@@ -52,20 +53,19 @@ namespace NBA_Stats_Tracker.Windows
 
         #endregion
 
-        private readonly List<Dictionary<string, string>> _activeTeams;
         private readonly int _curSeason;
         private readonly string _currentDB;
+
+        private readonly BindingList<KeyValuePair<int, string>> _hiddenPlayers = new BindingList<KeyValuePair<int, string>>();
         private readonly int _maxSeason;
+
+        private readonly Mode _mode;
         private readonly string _playersT;
+
+        private readonly BindingList<KeyValuePair<int, string>> _shownPlayers = new BindingList<KeyValuePair<int, string>>();
         private readonly List<Dictionary<string, string>> _validTeams;
 
-        private readonly BindingList<KeyValuePair<int, string>> hiddenPlayers = new BindingList<KeyValuePair<int, string>>();
-
-        private readonly Mode mode;
-
-        private readonly BindingList<KeyValuePair<int, string>> shownPlayers = new BindingList<KeyValuePair<int, string>>();
-
-        private bool changed = true;
+        private bool _changed = true;
 
         private DualListWindow()
         {
@@ -81,8 +81,7 @@ namespace NBA_Stats_Tracker.Windows
         public DualListWindow(List<Dictionary<string, string>> validTeams, List<Dictionary<string, string>> activeTeams) : this()
         {
             _validTeams = validTeams;
-            _activeTeams = activeTeams;
-            mode = Mode.REDitor;
+            _mode = Mode.REDitor;
 
             lblCurSeason.Content = "NST couldn't determine all the teams in your save. Please enable them.";
 
@@ -112,7 +111,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="mode">The mode.</param>
         public DualListWindow(string currentDB, int curSeason, int maxSeason, Mode mode) : this()
         {
-            this.mode = mode;
+            _mode = mode;
 
             _currentDB = currentDB;
             _curSeason = curSeason;
@@ -139,13 +138,13 @@ namespace NBA_Stats_Tracker.Windows
 
                 foreach (DataRow r in res.Rows)
                 {
-                    if (!Tools.getBoolean(r, "isHidden"))
+                    if (!DataRowCellParsers.GetBoolean(r, "isHidden"))
                     {
-                        lstEnabled.Items.Add(Tools.getString(r, "DisplayName"));
+                        lstEnabled.Items.Add(DataRowCellParsers.GetString(r, "DisplayName"));
                     }
                     else
                     {
-                        lstDisabled.Items.Add(Tools.getString(r, "DisplayName"));
+                        lstDisabled.Items.Add(DataRowCellParsers.GetString(r, "DisplayName"));
                     }
                 }
                 btnLoadList.Visibility = Visibility.Hidden;
@@ -163,26 +162,26 @@ namespace NBA_Stats_Tracker.Windows
 
                 foreach (DataRow r in res.Rows)
                 {
-                    string s = Tools.getString(r, "Name");
-                    if (!Tools.getBoolean(r, "isHidden"))
+                    string s = DataRowCellParsers.GetString(r, "Name");
+                    if (!DataRowCellParsers.GetBoolean(r, "isHidden"))
                     {
-                        shownPlayers.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"), s));
+                        _shownPlayers.Add(new KeyValuePair<int, string>(DataRowCellParsers.GetInt32(r, "ID"), s));
                     }
                     else
                     {
-                        hiddenPlayers.Add(new KeyValuePair<int, string>(Tools.getInt(r, "ID"), s));
+                        _hiddenPlayers.Add(new KeyValuePair<int, string>(DataRowCellParsers.GetInt32(r, "ID"), s));
                     }
                 }
 
-                shownPlayers.RaiseListChangedEvents = true;
+                _shownPlayers.RaiseListChangedEvents = true;
                 lstEnabled.DisplayMemberPath = "Value";
                 lstEnabled.SelectedValuePath = "Key";
-                lstEnabled.ItemsSource = shownPlayers;
+                lstEnabled.ItemsSource = _shownPlayers;
 
-                hiddenPlayers.RaiseListChangedEvents = true;
+                _hiddenPlayers.RaiseListChangedEvents = true;
                 lstDisabled.DisplayMemberPath = "Value";
                 lstDisabled.SelectedValuePath = "Key";
-                lstDisabled.ItemsSource = hiddenPlayers;
+                lstDisabled.ItemsSource = _hiddenPlayers;
 
                 btnLoadList.Visibility = Visibility.Hidden;
             }
@@ -197,26 +196,26 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            this.mode = mode;
+            _mode = mode;
 
             if (mode == Mode.PickBoxScore)
             {
                 btnLoadList.Visibility = Visibility.Hidden;
-                List<int> candidates = REDitor.teamsThatPlayedAGame;
+                List<int> candidates = REDitor.TeamsThatPlayedAGame;
                 lblCurSeason.Content = "Select the two teams that you want to extract the box score for";
 
                 if (candidates.Count > 2)
                 {
                     foreach (var team in candidates)
                     {
-                        lstDisabled.Items.Add(MainWindow.tst[team].displayName);
+                        lstDisabled.Items.Add(MainWindow.TST[team].DisplayName);
                     }
                 }
                 else if (candidates.Count == 2)
                 {
                     foreach (var team in candidates)
                     {
-                        lstEnabled.Items.Add(MainWindow.tst[team].displayName);
+                        lstEnabled.Items.Add(MainWindow.TST[team].DisplayName);
                     }
                 }
             }
@@ -227,9 +226,9 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         /// <param name="displayName">The team's name.</param>
         /// <returns></returns>
-        private int GetTeamIDFromDisplayName(string displayName)
+        private static int getTeamIDFromDisplayName(string displayName)
         {
-            return Misc.GetTeamIDFromDisplayName(MainWindow.tst, displayName);
+            return Misc.GetTeamIDFromDisplayName(MainWindow.TST, displayName);
         }
 
         /// <summary>
@@ -242,7 +241,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnEnable_Click(object sender, RoutedEventArgs e)
         {
-            if (mode != Mode.HiddenPlayers)
+            if (_mode != Mode.HiddenPlayers)
             {
                 var names = new string[lstDisabled.SelectedItems.Count];
                 lstDisabled.SelectedItems.CopyTo(names, 0);
@@ -252,29 +251,22 @@ namespace NBA_Stats_Tracker.Windows
                     lstEnabled.Items.Add(name);
                     lstDisabled.Items.Remove(name);
                 }
-                var items = new List<string>();
-                foreach (var item in lstEnabled.Items)
-                {
-                    items.Add(item.ToString());
-                }
+                List<string> items = (from object item in lstEnabled.Items
+                                      select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));
-                changed = true;
+                _changed = true;
             }
             else
             {
-                var list = new List<KeyValuePair<int, string>>();
-                for (int i = 0; i < lstDisabled.SelectedItems.Count; i++)
-                {
-                    list.Add((KeyValuePair<int, string>) lstDisabled.SelectedItems[i]);
-                }
+                List<KeyValuePair<int, string>> list = lstDisabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
                 foreach (var item in list)
                 {
-                    shownPlayers.Add(item);
-                    hiddenPlayers.Remove(item);
+                    _shownPlayers.Add(item);
+                    _hiddenPlayers.Remove(item);
                 }
-                shownPlayers.Sort(ListExtensions.KVPStringComparison);
+                _shownPlayers.Sort(ListExtensions.KVPStringComparison);
             }
         }
 
@@ -288,7 +280,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnDisable_Click(object sender, RoutedEventArgs e)
         {
-            if (mode != Mode.HiddenPlayers)
+            if (_mode != Mode.HiddenPlayers)
             {
                 var names = new string[lstEnabled.SelectedItems.Count];
                 lstEnabled.SelectedItems.CopyTo(names, 0);
@@ -298,65 +290,58 @@ namespace NBA_Stats_Tracker.Windows
                     lstDisabled.Items.Add(name);
                     lstEnabled.Items.Remove(name);
                 }
-                var items = new List<string>();
-                foreach (var item in lstDisabled.Items)
-                {
-                    items.Add(item.ToString());
-                }
+                List<string> items = (from object item in lstDisabled.Items
+                                      select item.ToString()).ToList();
                 items.Sort();
                 lstDisabled.Items.Clear();
                 items.ForEach(item => lstDisabled.Items.Add(item));
 
-                changed = true;
+                _changed = true;
             }
             else
             {
-                var list = new List<KeyValuePair<int, string>>();
-                for (int i = 0; i < lstEnabled.SelectedItems.Count; i++)
-                {
-                    list.Add((KeyValuePair<int, string>) lstEnabled.SelectedItems[i]);
-                }
+                List<KeyValuePair<int, string>> list = lstEnabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
                 foreach (var item in list)
                 {
-                    hiddenPlayers.Add(item);
-                    shownPlayers.Remove(item);
+                    _hiddenPlayers.Add(item);
+                    _shownPlayers.Remove(item);
                 }
-                hiddenPlayers.Sort(ListExtensions.KVPStringComparison);
+                _hiddenPlayers.Sort(ListExtensions.KVPStringComparison);
             }
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (mode == Mode.HiddenTeams)
+            if (_mode == Mode.HiddenTeams)
             {
                 var db = new SQLiteDatabase(_currentDB);
 
                 string teamsT = "Teams";
-                string pl_teamsT = "PlayoffTeams";
+                string plTeamsT = "PlayoffTeams";
                 string oppT = "Opponents";
-                string pl_oppT = "PlayoffOpponents";
+                string plOppT = "PlayoffOpponents";
                 if (_curSeason != _maxSeason)
                 {
                     string s = "S" + _curSeason;
                     teamsT += s;
-                    pl_teamsT += s;
+                    plTeamsT += s;
                     oppT += s;
-                    pl_oppT += s;
+                    plOppT += s;
                 }
 
                 foreach (string name in lstEnabled.Items)
                 {
                     var dict = new Dictionary<string, string> {{"isHidden", "False"}};
                     db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
-                    db.Update(pl_teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                    db.Update(plTeamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
-                    db.Update(pl_oppT, dict, "DisplayName LIKE \"" + name + "\"");
+                    db.Update(plOppT, dict, "DisplayName LIKE \"" + name + "\"");
                 }
 
                 foreach (string name in lstDisabled.Items)
                 {
                     string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = " +
-                               GetTeamIDFromDisplayName(name) + " OR Team2ID = " + GetTeamIDFromDisplayName(name) + ")";
+                               getTeamIDFromDisplayName(name) + " OR Team2ID = " + getTeamIDFromDisplayName(name) + ")";
                     DataTable res = db.GetDataTable(q);
 
                     if (res.Rows.Count > 0)
@@ -371,15 +356,15 @@ namespace NBA_Stats_Tracker.Windows
 
                     var dict = new Dictionary<string, string> {{"isHidden", "True"}};
                     db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
-                    db.Update(pl_teamsT, dict, "DisplayName LIKE \"" + name + "\"");
+                    db.Update(plTeamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
-                    db.Update(pl_oppT, dict, "DisplayName LIKE \"" + name + "\"");
+                    db.Update(plOppT, dict, "DisplayName LIKE \"" + name + "\"");
                 }
 
-                MainWindow.addInfo = "$$TEAMSENABLED";
+                MainWindow.AddInfo = "$$TEAMSENABLED";
                 Close();
             }
-            else if (mode == Mode.HiddenPlayers)
+            else if (_mode == Mode.HiddenPlayers)
             {
                 var db = new SQLiteDatabase(_currentDB);
 
@@ -419,10 +404,10 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 db.UpdateManyTransaction(_playersT, dataList, whereList);
 
-                MainWindow.addInfo = "$$PLAYERSENABLED";
+                MainWindow.AddInfo = "$$PLAYERSENABLED";
                 Close();
             }
-            else if (mode == Mode.REDitor)
+            else if (_mode == Mode.REDitor)
             {
                 if (lstEnabled.Items.Count != 30)
                 {
@@ -431,22 +416,22 @@ namespace NBA_Stats_Tracker.Windows
                 }
 
                 //MainWindow.selectedTeams = new List<Dictionary<string, string>>(_activeTeams);
-                MainWindow.selectedTeams = new List<Dictionary<string, string>>();
+                MainWindow.SelectedTeams = new List<Dictionary<string, string>>();
                 foreach (string team in lstEnabled.Items)
                 {
                     string teamName = team.Split(new[] {" (ID: "}, StringSplitOptions.None)[0];
-                    MainWindow.selectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
+                    MainWindow.SelectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
                                                                   {
                                                                       if (t["Name"] == teamName)
                                                                           return true;
                                                                       return false;
                                                                   }));
                 }
-                MainWindow.selectedTeamsChanged = changed;
+                MainWindow.SelectedTeamsChanged = _changed;
                 DialogResult = true;
                 Close();
             }
-            else if (mode == Mode.PickBoxScore)
+            else if (_mode == Mode.PickBoxScore)
             {
                 if (lstEnabled.Items.Count != 2)
                     return;
@@ -456,17 +441,17 @@ namespace NBA_Stats_Tracker.Windows
                 if (r == MessageBoxResult.Cancel)
                     return;
 
-                REDitor.pickedTeams = new List<int>();
+                REDitor.PickedTeams = new List<int>();
 
                 if (r == MessageBoxResult.Yes)
                 {
-                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
-                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
+                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
+                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
                 }
                 else
                 {
-                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
-                    REDitor.pickedTeams.Add(GetTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
+                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
+                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
                 }
 
                 DialogResult = true;
@@ -476,7 +461,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.addInfo = "";
+            MainWindow.AddInfo = "";
             DialogResult = false;
             Close();
         }
@@ -491,7 +476,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnLoadList_Click(object sender, RoutedEventArgs e)
         {
-            if (mode == Mode.REDitor)
+            if (_mode == Mode.REDitor)
             {
                 var ofd = new OpenFileDialog
                           {
@@ -526,13 +511,9 @@ namespace NBA_Stats_Tracker.Windows
                             }
                             if (!found)
                             {
-                                foreach (string eteam in lstEnabled.Items)
+                                if (lstEnabled.Items.Cast<string>().Any(eteam => eteam.Contains("(ID: " + team + ")")))
                                 {
-                                    if (eteam.Contains("(ID: " + team + ")"))
-                                    {
-                                        found = true;
-                                        break;
-                                    }
+                                    found = true;
                                 }
                                 if (found)
                                     continue;
@@ -544,16 +525,13 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                var items = new List<string>();
-                foreach (var item in lstEnabled.Items)
-                {
-                    items.Add(item.ToString());
-                }
+                List<string> items = (from object item in lstEnabled.Items
+                                      select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));
 
-                changed = false;
+                _changed = false;
             }
         }
 
@@ -565,11 +543,11 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void window_Loaded(object sender, RoutedEventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(() =>
                                                                               {
-                                                                                  if (mode == Mode.PickBoxScore &&
+                                                                                  if (_mode == Mode.PickBoxScore &&
                                                                                       lstEnabled.Items.Count == 2)
                                                                                   {
                                                                                       btnOK_Click(null, null);

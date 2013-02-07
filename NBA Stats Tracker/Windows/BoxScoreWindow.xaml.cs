@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -64,18 +65,17 @@ namespace NBA_Stats_Tracker.Windows
         private static Mode _curMode = Mode.Update;
 
         private static TeamBoxScore _curTeamBoxScore;
-        private readonly int maxSeason = SQLiteIO.getMaxSeason(MainWindow.currentDB);
-        private readonly bool onImport;
-        private readonly Dictionary<int, PlayerStats> pst;
-        protected SortedDictionary<string, int> TeamOrder;
-        private List<string> Teams;
-        private int curSeason;
-        private Brush defaultBackground;
-        private bool loading;
-        private bool minsUpdating;
-        private string playersT;
-        private List<PlayerStatsRow> pmsrListAway, pmsrListHome;
-        private bool clickedOK;
+        private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
+        private readonly bool _onImport;
+        private readonly Dictionary<int, PlayerStats> _pst;
+        private bool _clickedOK;
+        private int _curSeason;
+        private Brush _defaultBackground;
+        private bool _loading;
+        private bool _minsUpdating;
+        private string _playersT;
+        private List<PlayerStatsRow> _pmsrListAway, _pmsrListHome;
+        private List<string> _teams;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreWindow" /> class.
@@ -84,25 +84,25 @@ namespace NBA_Stats_Tracker.Windows
         public BoxScoreWindow(Mode curMode = Mode.Update)
         {
             InitializeComponent();
-            clickedOK = false;
+            _clickedOK = false;
 
-            if (MainWindow.tf.isBetween)
+            if (MainWindow.Tf.IsBetween)
             {
-                MainWindow.tf = new Timeframe(MainWindow.tf.SeasonNum);
+                MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
                 MainWindow.UpdateAllData();
             }
-            pst = MainWindow.pst;
+            _pst = MainWindow.PST;
 
             /*
             tst = MainWindow.tst;
             pst = MainWindow.pst;
-            tstopp = MainWindow.tstopp;
+            tstOpp = MainWindow.tstOpp;
             */
 
             _curMode = curMode;
             prepareWindow(curMode);
 
-            MainWindow.bs = new TeamBoxScore();
+            MainWindow.BS = new TeamBoxScore();
 
             if (curMode == Mode.Update)
             {
@@ -117,7 +117,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="id">The ID of the box score to be viewed.</param>
         public BoxScoreWindow(Mode curMode, int id) : this(curMode)
         {
-            LoadBoxScore(id);
+            loadBoxScore(id);
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         public BoxScoreWindow(BoxScoreEntry bse, bool onImport = false) : this()
         {
-            LoadBoxScore(bse);
-            this.onImport = onImport;
+            loadBoxScore(bse);
+            _onImport = onImport;
 
             if (onImport)
             {
@@ -152,14 +152,14 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         public BoxScoreWindow(BoxScoreEntry bse, Dictionary<int, PlayerStats> pst, bool onImport) : this()
         {
-            this.pst = pst;
+            _pst = pst;
 
-            LoadBoxScore(bse);
-            this.onImport = onImport;
+            loadBoxScore(bse);
+            _onImport = onImport;
 
             if (onImport)
             {
-                MainWindow.bs = bse.bs;
+                MainWindow.BS = bse.BS;
                 chkDoNotUpdate.IsEnabled = false;
                 cmbSeasonNum.IsEnabled = false;
                 cmbTeam1.IsEnabled = false;
@@ -172,46 +172,46 @@ namespace NBA_Stats_Tracker.Windows
 
         private SortableBindingList<PlayerBoxScore> pbsAwayList { get; set; }
         private SortableBindingList<PlayerBoxScore> pbsHomeList { get; set; }
-        private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
-        private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> playersListAway { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
 
         /// <summary>
         ///     Finds the requested box score and loads it.
         /// </summary>
         /// <param name="id">The ID of the box score.</param>
-        private void LoadBoxScore(int id)
+        private void loadBoxScore(int id)
         {
-            int bshistid = -1;
+            int bsHistID = -1;
 
-            for (int i = 0; i < MainWindow.bshist.Count; i++)
+            for (int i = 0; i < MainWindow.BSHist.Count; i++)
             {
-                if (MainWindow.bshist[i].bs.id == id)
+                if (MainWindow.BSHist[i].BS.ID == id)
                 {
-                    bshistid = i;
+                    bsHistID = i;
                     break;
                 }
             }
 
-            BoxScoreEntry bse = MainWindow.bshist[bshistid];
-            _curTeamBoxScore = MainWindow.bshist[bshistid].bs;
-            _curTeamBoxScore.bshistid = bshistid;
-            LoadBoxScore(bse);
+            BoxScoreEntry bse = MainWindow.BSHist[bsHistID];
+            _curTeamBoxScore = MainWindow.BSHist[bsHistID].BS;
+            _curTeamBoxScore.BSHistID = bsHistID;
+            loadBoxScore(bse);
         }
 
         /// <summary>
         ///     Loads the given box score.
         /// </summary>
         /// <param name="bse">The BoxScoreEntry to load.</param>
-        private void LoadBoxScore(BoxScoreEntry bse)
+        private void loadBoxScore(BoxScoreEntry bse)
         {
-            TeamBoxScore bs = bse.bs;
-            MainWindow.bs = bse.bs;
+            TeamBoxScore bs = bse.BS;
+            MainWindow.BS = bse.BS;
             txtPTS1.Text = bs.PTS1.ToString();
             txtREB1.Text = bs.REB1.ToString();
             txtAST1.Text = bs.AST1.ToString();
             txtSTL1.Text = bs.STL1.ToString();
             txtBLK1.Text = bs.BLK1.ToString();
-            txtTO1.Text = bs.TO1.ToString();
+            txtTO1.Text = bs.TOS1.ToString();
             txtFGM1.Text = bs.FGM1.ToString();
             txtFGA1.Text = bs.FGA1.ToString();
             txt3PM1.Text = bs.TPM1.ToString();
@@ -226,7 +226,7 @@ namespace NBA_Stats_Tracker.Windows
             txtAST2.Text = bs.AST2.ToString();
             txtSTL2.Text = bs.STL2.ToString();
             txtBLK2.Text = bs.BLK2.ToString();
-            txtTO2.Text = bs.TO2.ToString();
+            txtTO2.Text = bs.TOS2.ToString();
             txtFGM2.Text = bs.FGM2.ToString();
             txtFGA2.Text = bs.FGA2.ToString();
             txt3PM2.Text = bs.TPM2.ToString();
@@ -237,10 +237,10 @@ namespace NBA_Stats_Tracker.Windows
             txtFOUL2.Text = bs.FOUL2.ToString();
             txtMINS2.Text = bs.MINS2.ToString();
 
-            dtpGameDate.SelectedDate = bs.gamedate;
-            curSeason = bs.SeasonNum;
+            dtpGameDate.SelectedDate = bs.GameDate;
+            _curSeason = bs.SeasonNum;
             //LinkInternalsToMainWindow();
-            chkIsPlayoff.IsChecked = bs.isPlayoff;
+            chkIsPlayoff.IsChecked = bs.IsPlayoff;
 
             calculateScoreAway();
             calculateScoreHome();
@@ -260,8 +260,8 @@ namespace NBA_Stats_Tracker.Windows
 
             dgvPlayersAway.ItemsSource = pbsAwayList;
             dgvPlayersHome.ItemsSource = pbsHomeList;
-            loading = true;
-            foreach (var pbs in bse.pbsList)
+            _loading = true;
+            foreach (var pbs in bse.PBSList)
             {
                 if (pbs.TeamID == bs.Team1ID)
                 {
@@ -278,8 +278,8 @@ namespace NBA_Stats_Tracker.Windows
 
             try
             {
-                cmbTeam1.SelectedItem = MainWindow.tst[bs.Team1ID].displayName;
-                cmbTeam2.SelectedItem = MainWindow.tst[bs.Team2ID].displayName;
+                cmbTeam1.SelectedItem = MainWindow.TST[bs.Team1ID].DisplayName;
+                cmbTeam2.SelectedItem = MainWindow.TST[bs.Team2ID].DisplayName;
             }
             catch
             {
@@ -287,17 +287,17 @@ namespace NBA_Stats_Tracker.Windows
                                 "To be able to see this box score, enable the teams included in it.");
                 Close();
             }
-            PopulateSeasonCombo();
+            populateSeasonCombo();
 
 
-            loading = false;
+            _loading = false;
         }
 
         /*
         private void LinkInternalsToMainWindow()
         {
             tst = MainWindow.tst;
-            tstopp = MainWindow.tstopp;
+            tstOpp = MainWindow.tstOpp;
             pst = MainWindow.pst;
             TeamOrder = MainWindow.TeamOrder;
         }
@@ -307,7 +307,7 @@ namespace NBA_Stats_Tracker.Windows
         ///     Updates the player box score data grid for the specified team.
         /// </summary>
         /// <param name="team">1 for the away team, anything else for the home team.</param>
-        private void UpdateDataGrid(int team)
+        private void updateDataGrid(int team)
         {
             SortableBindingList<PlayerBoxScore> pbsList;
             int teamID;
@@ -315,7 +315,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
                     pbsList = pbsAwayList;
                 }
                 catch (Exception)
@@ -327,7 +327,7 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
                     pbsList = pbsHomeList;
                 }
                 catch (Exception)
@@ -336,21 +336,21 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            ObservableCollection<KeyValuePair<int, string>> PlayersList;
-            UpdateBoxScoreDataGrid(teamID, out PlayersList, ref pbsList, playersT, loading);
+            ObservableCollection<KeyValuePair<int, string>> playersList;
+            updateBoxScoreDataGrid(teamID, out playersList, ref pbsList, _playersT, _loading);
 
             if (team == 1)
             {
-                colPlayerAway.ItemsSource = PlayersList;
-                PlayersListAway = PlayersList;
+                colPlayerAway.ItemsSource = playersList;
+                playersListAway = playersList;
                 pbsAwayList = pbsList;
                 dgvPlayersAway.ItemsSource = pbsAwayList;
                 //dgvPlayersAway.CanUserAddRows = false;
             }
             else
             {
-                colPlayerHome.ItemsSource = PlayersList;
-                PlayersListHome = PlayersList;
+                colPlayerHome.ItemsSource = playersList;
+                playersListHome = playersList;
                 pbsHomeList = pbsList;
                 dgvPlayersHome.ItemsSource = pbsHomeList;
                 //dgvPlayersHome.CanUserAddRows = false;
@@ -363,13 +363,13 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="curMode">The Mode enum instance which determines the function for which the window is opened.</param>
         private void prepareWindow(Mode curMode)
         {
-            curSeason = MainWindow.curSeason;
+            _curSeason = MainWindow.CurSeason;
 
-            PopulateSeasonCombo();
+            populateSeasonCombo();
 
-            PopulateTeamsCombo();
+            populateTeamsCombo();
 
-            defaultBackground = cmbTeam1.Background;
+            _defaultBackground = cmbTeam1.Background;
 
             pbsAwayList = new SortableBindingList<PlayerBoxScore>();
             pbsHomeList = new SortableBindingList<PlayerBoxScore>();
@@ -412,7 +412,7 @@ namespace NBA_Stats_Tracker.Windows
             cmbTeam1.SelectedIndex = 0;
             cmbTeam2.SelectedIndex = 1;
 
-            MainWindow.bs.done = false;
+            MainWindow.BS.Done = false;
 
             dtpGameDate.SelectedDate = DateTime.Today;
 
@@ -443,41 +443,41 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         ///     Populates the teams combo-box.
         /// </summary>
-        private void PopulateTeamsCombo()
+        private void populateTeamsCombo()
         {
-            Teams = new List<string>();
+            _teams = new List<string>();
             foreach (var kvp in MainWindow.TeamOrder)
             {
-                if (!MainWindow.tst[kvp.Value].isHidden)
-                    Teams.Add(MainWindow.tst[kvp.Value].displayName);
+                if (!MainWindow.TST[kvp.Value].IsHidden)
+                    _teams.Add(MainWindow.TST[kvp.Value].DisplayName);
             }
 
-            Teams.Sort();
+            _teams.Sort();
 
-            cmbTeam1.ItemsSource = Teams;
-            cmbTeam2.ItemsSource = Teams;
+            cmbTeam1.ItemsSource = _teams;
+            cmbTeam2.ItemsSource = _teams;
         }
 
         /// <summary>
         ///     Populates the season combo-box.
         /// </summary>
-        private void PopulateSeasonCombo()
+        private void populateSeasonCombo()
         {
             cmbSeasonNum.Items.Clear();
 
-            for (int i = maxSeason; i > 0; i--)
+            for (int i = _maxSeason; i > 0; i--)
             {
                 bool addIt = true;
                 if (cmbTeam1.SelectedItem != null)
                 {
-                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
-                                                       Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString()), i))
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.CurrentDB,
+                                                       Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (cmbTeam2.SelectedItem != null)
                 {
-                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.currentDB,
-                                                       Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString()), i))
+                    if (TeamStats.IsTeamHiddenInSeason(MainWindow.CurrentDB,
+                                                       Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString()), i))
                         addIt = false;
                 }
                 if (addIt)
@@ -485,7 +485,7 @@ namespace NBA_Stats_Tracker.Windows
             }
 
             cmbSeasonNum.SelectedIndex = -1;
-            cmbSeasonNum.SelectedItem = curSeason.ToString();
+            cmbSeasonNum.SelectedItem = _curSeason.ToString();
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -493,14 +493,14 @@ namespace NBA_Stats_Tracker.Windows
             if (_curMode == Mode.Update)
             {
                 tryParseBS();
-                if (MainWindow.bs.done == false)
+                if (MainWindow.BS.Done == false)
                     return;
             }
             else
             {
                 if (_curMode == Mode.View)
                 {
-                    if (_curTeamBoxScore.bshistid != -1)
+                    if (_curTeamBoxScore.BSHistID != -1)
                     {
                         MessageBoxResult r = MessageBox.Show("Do you want to save any changes to this Box Score?", "NBA Stats Tracker",
                                                              MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -510,7 +510,7 @@ namespace NBA_Stats_Tracker.Windows
                         if (r == MessageBoxResult.Yes)
                         {
                             tryParseBS();
-                            if (MainWindow.bs.done == false)
+                            if (MainWindow.BS.Done == false)
                                 return;
 
                             MainWindow.UpdateBoxScore();
@@ -518,16 +518,16 @@ namespace NBA_Stats_Tracker.Windows
                         }
                         else
                         {
-                            MainWindow.bs.done = false;
+                            MainWindow.BS.Done = false;
                         }
                     }
                     else
                     {
-                        MainWindow.bs.done = false;
+                        MainWindow.BS.Done = false;
                     }
                 }
             }
-            clickedOK = true;
+            _clickedOK = true;
             Close();
         }
 
@@ -556,140 +556,140 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    MainWindow.bs.id = _curTeamBoxScore.id;
-                    MainWindow.bs.bshistid = _curTeamBoxScore.bshistid;
+                    MainWindow.BS.ID = _curTeamBoxScore.ID;
+                    MainWindow.BS.BSHistID = _curTeamBoxScore.BSHistID;
                 }
                 catch
                 {
-                    MainWindow.bs.id = -1;
-                    MainWindow.bs.bshistid = -1;
+                    MainWindow.BS.ID = -1;
+                    MainWindow.BS.BSHistID = -1;
                 }
-                MainWindow.bs.isPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
-                MainWindow.bs.gamedate = dtpGameDate.SelectedDate.GetValueOrDefault();
-                MainWindow.bs.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
-                MainWindow.bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-                MainWindow.bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
-                MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
+                MainWindow.BS.IsPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
+                MainWindow.BS.GameDate = dtpGameDate.SelectedDate.GetValueOrDefault();
+                MainWindow.BS.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+                MainWindow.BS.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
+                MainWindow.BS.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
+                MainWindow.BS.MINS2 = MainWindow.BS.MINS1 = Convert.ToUInt16(txtMINS1.Text);
 
-                if (MainWindow.bs.MINS1 <= 0)
+                if (MainWindow.BS.MINS1 <= 0)
                 {
                     throwErrorWithMessage(
                         "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
                 }
 
-                MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
-                MainWindow.bs.REB1 = Convert.ToUInt16(txtREB1.Text);
-                MainWindow.bs.AST1 = Convert.ToUInt16(txtAST1.Text);
-                MainWindow.bs.STL1 = Convert.ToUInt16(txtSTL1.Text);
-                MainWindow.bs.BLK1 = Convert.ToUInt16(txtBLK1.Text);
-                MainWindow.bs.TO1 = Convert.ToUInt16(txtTO1.Text);
-                MainWindow.bs.FGM1 = Convert.ToUInt16(txtFGM1.Text);
-                MainWindow.bs.FGA1 = Convert.ToUInt16(txtFGA1.Text);
-                MainWindow.bs.TPM1 = Convert.ToUInt16(txt3PM1.Text);
-                MainWindow.bs.TPA1 = Convert.ToUInt16(txt3PA1.Text);
+                MainWindow.BS.PTS1 = Convert.ToUInt16(txtPTS1.Text);
+                MainWindow.BS.REB1 = Convert.ToUInt16(txtREB1.Text);
+                MainWindow.BS.AST1 = Convert.ToUInt16(txtAST1.Text);
+                MainWindow.BS.STL1 = Convert.ToUInt16(txtSTL1.Text);
+                MainWindow.BS.BLK1 = Convert.ToUInt16(txtBLK1.Text);
+                MainWindow.BS.TOS1 = Convert.ToUInt16(txtTO1.Text);
+                MainWindow.BS.FGM1 = Convert.ToUInt16(txtFGM1.Text);
+                MainWindow.BS.FGA1 = Convert.ToUInt16(txtFGA1.Text);
+                MainWindow.BS.TPM1 = Convert.ToUInt16(txt3PM1.Text);
+                MainWindow.BS.TPA1 = Convert.ToUInt16(txt3PA1.Text);
 
-                if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
+                if (MainWindow.BS.FGA1 < MainWindow.BS.FGM1)
                 {
                     throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
-                if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
+                if (MainWindow.BS.TPA1 < MainWindow.BS.TPM1)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
-                if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
+                if (MainWindow.BS.FGM1 < MainWindow.BS.TPM1)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
 
-                MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
-                MainWindow.bs.FTA1 = Convert.ToUInt16(txtFTA1.Text);
-                if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
+                MainWindow.BS.FTM1 = Convert.ToUInt16(txtFTM1.Text);
+                MainWindow.BS.FTA1 = Convert.ToUInt16(txtFTA1.Text);
+                if (MainWindow.BS.FTA1 < MainWindow.BS.FTM1)
                 {
                     throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
-                MainWindow.bs.OREB1 = Convert.ToUInt16(txtOREB1.Text);
-                if (MainWindow.bs.OREB1 > MainWindow.bs.REB1)
+                MainWindow.BS.OREB1 = Convert.ToUInt16(txtOREB1.Text);
+                if (MainWindow.BS.OREB1 > MainWindow.BS.REB1)
                 {
                     throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
-                if (MainWindow.bs.FGA1 < MainWindow.bs.TPA1)
+                if (MainWindow.BS.FGA1 < MainWindow.BS.TPA1)
                 {
                     throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
-                MainWindow.bs.FOUL1 = Convert.ToUInt16(txtFOUL1.Text);
-                MainWindow.bs.PTS2 = Convert.ToUInt16(txtPTS2.Text);
-                MainWindow.bs.REB2 = Convert.ToUInt16(txtREB2.Text);
-                MainWindow.bs.AST2 = Convert.ToUInt16(txtAST2.Text);
-                MainWindow.bs.STL2 = Convert.ToUInt16(txtSTL2.Text);
-                MainWindow.bs.BLK2 = Convert.ToUInt16(txtBLK2.Text);
-                MainWindow.bs.TO2 = Convert.ToUInt16(txtTO2.Text);
-                MainWindow.bs.FGM2 = Convert.ToUInt16(txtFGM2.Text);
-                MainWindow.bs.FGA2 = Convert.ToUInt16(txtFGA2.Text);
-                MainWindow.bs.TPM2 = Convert.ToUInt16(txt3PM2.Text);
-                MainWindow.bs.TPA2 = Convert.ToUInt16(txt3PA2.Text);
+                MainWindow.BS.FOUL1 = Convert.ToUInt16(txtFOUL1.Text);
+                MainWindow.BS.PTS2 = Convert.ToUInt16(txtPTS2.Text);
+                MainWindow.BS.REB2 = Convert.ToUInt16(txtREB2.Text);
+                MainWindow.BS.AST2 = Convert.ToUInt16(txtAST2.Text);
+                MainWindow.BS.STL2 = Convert.ToUInt16(txtSTL2.Text);
+                MainWindow.BS.BLK2 = Convert.ToUInt16(txtBLK2.Text);
+                MainWindow.BS.TOS2 = Convert.ToUInt16(txtTO2.Text);
+                MainWindow.BS.FGM2 = Convert.ToUInt16(txtFGM2.Text);
+                MainWindow.BS.FGA2 = Convert.ToUInt16(txtFGA2.Text);
+                MainWindow.BS.TPM2 = Convert.ToUInt16(txt3PM2.Text);
+                MainWindow.BS.TPA2 = Convert.ToUInt16(txt3PA2.Text);
 
-                if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
+                if (MainWindow.BS.FGA2 < MainWindow.BS.FGM2)
                 {
                     throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
-                if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
+                if (MainWindow.BS.TPA2 < MainWindow.BS.TPM2)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
-                if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
+                if (MainWindow.BS.FGM2 < MainWindow.BS.TPM2)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
-                if (MainWindow.bs.FGA2 < MainWindow.bs.TPA2)
+                if (MainWindow.BS.FGA2 < MainWindow.BS.TPA2)
                 {
                     throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
-                MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
-                MainWindow.bs.FTA2 = Convert.ToUInt16(txtFTA2.Text);
-                if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
+                MainWindow.BS.FTM2 = Convert.ToUInt16(txtFTM2.Text);
+                MainWindow.BS.FTA2 = Convert.ToUInt16(txtFTA2.Text);
+                if (MainWindow.BS.FTA2 < MainWindow.BS.FTM2)
                 {
                     throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
-                MainWindow.bs.OREB2 = Convert.ToUInt16(txtOREB2.Text);
+                MainWindow.BS.OREB2 = Convert.ToUInt16(txtOREB2.Text);
 
-                if (MainWindow.bs.OREB2 > MainWindow.bs.REB2)
+                if (MainWindow.BS.OREB2 > MainWindow.BS.REB2)
                 {
                     throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
 
-                MainWindow.bs.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
+                MainWindow.BS.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
 
                 #region Additional Box Score Checks
 
-                if (MainWindow.bs.AST1 > MainWindow.bs.FGM1 || MainWindow.bs.AST2 > MainWindow.bs.FGM2)
+                if (MainWindow.BS.AST1 > MainWindow.BS.FGM1 || MainWindow.BS.AST2 > MainWindow.BS.FGM2)
                 {
                     throwErrorWithMessage("The AST stat can't be higher than the FGM stat.");
                 }
 
-                if (MainWindow.bs.BLK1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
-                    MainWindow.bs.BLK2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                if (MainWindow.BS.BLK1 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2 ||
+                    MainWindow.BS.BLK2 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1)
                 {
                     throwErrorWithMessage("The BLK stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.bs.REB1 - MainWindow.bs.OREB1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
-                    MainWindow.bs.REB2 - MainWindow.bs.OREB2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
+                if (MainWindow.BS.REB1 - MainWindow.BS.OREB1 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2 ||
+                    MainWindow.BS.REB2 - MainWindow.BS.OREB2 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1)
                 {
                     throwErrorWithMessage(
                         "The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.bs.OREB1 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1 ||
-                    MainWindow.bs.OREB2 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2)
+                if (MainWindow.BS.OREB1 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1 ||
+                    MainWindow.BS.OREB2 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2)
                 {
                     throwErrorWithMessage("The OREB stat cant' be higher than the missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.bs.STL1 > MainWindow.bs.TO2 || MainWindow.bs.STL2 > MainWindow.bs.TO1)
+                if (MainWindow.BS.STL1 > MainWindow.BS.TOS2 || MainWindow.BS.STL2 > MainWindow.BS.TOS1)
                 {
                     throwErrorWithMessage("The STL stat for one team can't be higher than the other team's TO.");
                 }
@@ -704,23 +704,23 @@ namespace NBA_Stats_Tracker.Windows
 
                 #endregion
 
-                MainWindow.bs.doNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
+                MainWindow.BS.DoNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
 
                 #region Player Box Scores Check
 
-                int Team1 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-                int Team2 = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+                int team1 = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
+                int team2 = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
 
                 foreach (var pbs in pbsAwayList)
-                    pbs.TeamID = Team1;
+                    pbs.TeamID = team1;
 
                 foreach (var pbs in pbsHomeList)
-                    pbs.TeamID = Team2;
+                    pbs.TeamID = team2;
 
                 int starters = 0;
                 var pbsLists = new List<SortableBindingList<PlayerBoxScore>>(2) {pbsAwayList, pbsHomeList};
-                Dictionary<int, string> allPlayers = PlayersListAway.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                foreach (var kvp in PlayersListHome)
+                Dictionary<int, string> allPlayers = playersListAway.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                foreach (var kvp in playersListHome)
                     allPlayers.Add(kvp.Key, kvp.Value);
                 foreach (var pbsList in pbsLists)
                 {
@@ -731,22 +731,15 @@ namespace NBA_Stats_Tracker.Windows
                         if (pbs.PlayerID == -1)
                             continue;
 
-                        if (pbs.MINS == 0)
-                        {
-                            pbs.isOut = true;
-                        }
-                        else
-                        {
-                            pbs.isOut = false;
-                        }
+                        pbs.IsOut = pbs.MINS == 0;
 
-                        if (pbs.isOut)
+                        if (pbs.IsOut)
                         {
                             pbs.ResetStats();
                             continue;
                         }
 
-                        if (pbs.isStarter)
+                        if (pbs.IsStarter)
                         {
                             starters++;
                             if (starters > 5)
@@ -806,7 +799,7 @@ namespace NBA_Stats_Tracker.Windows
                             throw (new Exception());
                         }
 
-                        if (pbs.isStarter && pbs.MINS == 0)
+                        if (pbs.IsStarter && pbs.MINS == 0)
                         {
                             string s = "A player can't be a starter but not have any minutes played.";
                             s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
@@ -817,16 +810,16 @@ namespace NBA_Stats_Tracker.Windows
                         pbs.DREB = (UInt16) (pbs.REB - pbs.OREB);
                     }
                 }
-                MainWindow.pbsLists = pbsLists;
+                MainWindow.PBSLists = pbsLists;
 
                 #endregion
 
-                MainWindow.bs.done = true;
+                MainWindow.BS.Done = true;
             }
             catch
             {
                 MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
-                MainWindow.bs.done = false;
+                MainWindow.BS.Done = false;
             }
         }
 
@@ -854,7 +847,7 @@ namespace NBA_Stats_Tracker.Windows
             tabTeam1.Header = cmbTeam1.SelectedItem;
             tabAwayMetric.Header = cmbTeam1.SelectedItem + " Metric Stats";
             grpAway.Header = cmbTeam1.SelectedItem;
-            UpdateDataGrid(1);
+            updateDataGrid(1);
         }
 
         /// <summary>
@@ -870,7 +863,7 @@ namespace NBA_Stats_Tracker.Windows
             tabTeam2.Header = cmbTeam2.SelectedItem;
             tabHomeMetric.Header = cmbTeam2.SelectedItem + " Metric Stats";
             grpHome.Header = cmbTeam2.SelectedItem;
-            UpdateDataGrid(2);
+            updateDataGrid(2);
         }
 
         /// <summary>
@@ -878,11 +871,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void checkIfSameTeams()
         {
-            string Team1, Team2;
+            string team1, team2;
             try
             {
-                Team1 = cmbTeam1.SelectedItem.ToString();
-                Team2 = cmbTeam2.SelectedItem.ToString();
+                team1 = cmbTeam1.SelectedItem.ToString();
+                team2 = cmbTeam2.SelectedItem.ToString();
             }
             catch (Exception)
             {
@@ -890,19 +883,19 @@ namespace NBA_Stats_Tracker.Windows
             }
 
 
-            if (Team1 == Team2)
+            if (team1 == team2)
             {
                 cmbTeam1.Background = Brushes.Red;
                 cmbTeam2.Background = Brushes.Red;
                 return;
             }
 
-            cmbTeam1.Background = defaultBackground;
-            cmbTeam2.Background = defaultBackground;
+            cmbTeam1.Background = _defaultBackground;
+            cmbTeam2.Background = _defaultBackground;
         }
 
         /// <summary>
-        ///     Tries to calculate the score and averages for the Away team.
+        ///     Tries to calculate the score and PerGame for the Away team.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">
@@ -910,8 +903,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void calculateScoreAway(object sender = null, TextChangedEventArgs e = null)
         {
-            int PTS1;
-            string T1Avg;
+            int pts1;
+            string t1Avg;
             int ftm;
             int tpm;
             int fgm;
@@ -932,18 +925,18 @@ namespace NBA_Stats_Tracker.Windows
                 int tpa = Convert.ToInt32(txt3PA1.Text);
                 int fta = Convert.ToInt32(txtFTA1.Text);
 
-                EventHandlers.calculateScore(fgm, fga, tpm, tpa, ftm, fta, out PTS1, out T1Avg);
+                EventHandlers.CalculateScore(fgm, fga, tpm, tpa, ftm, fta, out pts1, out t1Avg);
             }
             catch
             {
-                EventHandlers.calculateScore(fgm, null, tpm, null, ftm, null, out PTS1, out T1Avg);
+                EventHandlers.CalculateScore(fgm, null, tpm, null, ftm, null, out pts1, out t1Avg);
             }
-            txtPTS1.Text = PTS1.ToString();
-            txbT1Avg.Text = T1Avg;
+            txtPTS1.Text = pts1.ToString();
+            txbT1Avg.Text = t1Avg;
         }
 
         /// <summary>
-        ///     Tries to calculate the score and averages for the Home team.
+        ///     Tries to calculate the score and PerGame for the Home team.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">
@@ -951,8 +944,8 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void calculateScoreHome(object sender = null, TextChangedEventArgs e = null)
         {
-            int PTS2;
-            string T2Avg;
+            int pts2;
+            string t2Avg;
             int ftm;
             int tpm;
             int fgm;
@@ -973,14 +966,14 @@ namespace NBA_Stats_Tracker.Windows
                 int tpa = Convert.ToInt32(txt3PA2.Text);
                 int fta = Convert.ToInt32(txtFTA2.Text);
 
-                EventHandlers.calculateScore(fgm, fga, tpm, tpa, ftm, fta, out PTS2, out T2Avg);
+                EventHandlers.CalculateScore(fgm, fga, tpm, tpa, ftm, fta, out pts2, out t2Avg);
             }
             catch
             {
-                EventHandlers.calculateScore(fgm, null, tpm, null, ftm, null, out PTS2, out T2Avg);
+                EventHandlers.CalculateScore(fgm, null, tpm, null, ftm, null, out pts2, out t2Avg);
             }
-            txtPTS2.Text = PTS2.ToString();
-            txbT2Avg.Text = T2Avg;
+            txtPTS2.Text = pts2.ToString();
+            txbT2Avg.Text = t2Avg;
         }
 
         /// <summary>
@@ -993,25 +986,25 @@ namespace NBA_Stats_Tracker.Windows
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             tryParseBS();
-            if (MainWindow.bs.done)
+            if (MainWindow.BS.Done)
             {
                 string data1 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1,
-                        MainWindow.bs.REB1 - MainWindow.bs.OREB1, MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1,
-                        MainWindow.bs.TO1, MainWindow.bs.FGM1, MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1,
-                        MainWindow.bs.TPM1, MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1, MainWindow.bs.FTM1,
-                        MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1, MainWindow.bs.FOUL1, MainWindow.bs.MINS1);
+                        cmbTeam1.SelectedItem, MainWindow.BS.PTS1, MainWindow.BS.REB1, MainWindow.BS.OREB1,
+                        MainWindow.BS.REB1 - MainWindow.BS.OREB1, MainWindow.BS.AST1, MainWindow.BS.STL1, MainWindow.BS.BLK1,
+                        MainWindow.BS.TOS1, MainWindow.BS.FGM1, MainWindow.BS.FGA1, MainWindow.BS.FGM1/(float) MainWindow.BS.FGA1,
+                        MainWindow.BS.TPM1, MainWindow.BS.TPA1, MainWindow.BS.TPM1/(float) MainWindow.BS.TPA1, MainWindow.BS.FTM1,
+                        MainWindow.BS.FTA1, MainWindow.BS.FTM1/(float) MainWindow.BS.FTA1, MainWindow.BS.FOUL1, MainWindow.BS.MINS1);
 
                 string data2 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2,
-                        MainWindow.bs.REB2 - MainWindow.bs.OREB2, MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2,
-                        MainWindow.bs.TO2, MainWindow.bs.FGM2, MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2,
-                        MainWindow.bs.TPM2, MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2, MainWindow.bs.FTM2,
-                        MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2, MainWindow.bs.FOUL2, MainWindow.bs.MINS2);
+                        cmbTeam2.SelectedItem, MainWindow.BS.PTS2, MainWindow.BS.REB2, MainWindow.BS.OREB2,
+                        MainWindow.BS.REB2 - MainWindow.BS.OREB2, MainWindow.BS.AST2, MainWindow.BS.STL2, MainWindow.BS.BLK2,
+                        MainWindow.BS.TOS2, MainWindow.BS.FGM2, MainWindow.BS.FGA2, MainWindow.BS.FGM2/(float) MainWindow.BS.FGA2,
+                        MainWindow.BS.TPM2, MainWindow.BS.TPA2, MainWindow.BS.TPM2/(float) MainWindow.BS.TPA2, MainWindow.BS.FTM2,
+                        MainWindow.BS.FTA2, MainWindow.BS.FTM2/(float) MainWindow.BS.FTA2, MainWindow.BS.FOUL2, MainWindow.BS.MINS2);
 
                 dgvPlayersAway.SelectAllCells();
                 ApplicationCommands.Copy.Execute(null, dgvPlayersAway);
@@ -1029,7 +1022,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.bs.done = false;
+            MainWindow.BS.Done = false;
             Close();
         }
 
@@ -1041,7 +1034,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void _bsAnyTextbox_GotFocus(object sender, RoutedEventArgs e)
+        private void bsAnyTextbox_GotFocus(object sender, RoutedEventArgs e)
         {
             var tb = (TextBox) sender;
             tb.SelectAll();
@@ -1060,21 +1053,21 @@ namespace NBA_Stats_Tracker.Windows
             if (cmbSeasonNum.SelectedIndex == -1)
                 return;
 
-            curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+            _curSeason = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
             //MainWindow.ChangeSeason(curSeason, MainWindow.getMaxSeason(MainWindow.currentDB));
 
-            if (!onImport)
+            if (!_onImport)
             {
-                SQLiteIO.LoadSeason(MainWindow.currentDB, curSeason, doNotLoadBoxScores: true);
+                SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
 
-                playersT = "Players";
+                _playersT = "Players";
 
-                if (curSeason != maxSeason)
+                if (_curSeason != _maxSeason)
                 {
-                    playersT += "S" + curSeason;
+                    _playersT += "S" + _curSeason;
                 }
             }
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         /// <summary>
@@ -1094,7 +1087,7 @@ namespace NBA_Stats_Tracker.Windows
             txtAST1.Text = bs.AST1.ToString();
             txtSTL1.Text = bs.STL1.ToString();
             txtBLK1.Text = bs.BLK1.ToString();
-            txtTO1.Text = bs.TO1.ToString();
+            txtTO1.Text = bs.TOS1.ToString();
             txtFGM1.Text = bs.FGM1.ToString();
             txtFGA1.Text = bs.FGA1.ToString();
             txt3PM1.Text = bs.TPM1.ToString();
@@ -1108,7 +1101,7 @@ namespace NBA_Stats_Tracker.Windows
             txtAST2.Text = bs.AST2.ToString();
             txtSTL2.Text = bs.STL2.ToString();
             txtBLK2.Text = bs.BLK2.ToString();
-            txtTO2.Text = bs.TO2.ToString();
+            txtTO2.Text = bs.TOS2.ToString();
             txtFGM2.Text = bs.FGM2.ToString();
             txtFGA2.Text = bs.FGA2.ToString();
             txt3PM2.Text = bs.TPM2.ToString();
@@ -1125,85 +1118,85 @@ namespace NBA_Stats_Tracker.Windows
         public static void CalculateTeamsFromPlayers(ref TeamBoxScore bs, IEnumerable<PlayerBoxScore> awayPBS,
                                                      IEnumerable<PlayerBoxScore> homePBS)
         {
-            ushort REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
+            ushort reb = 0, ast = 0, stl = 0, tos = 0, blk = 0, fgm = 0, fga = 0, tpm = 0, tpa = 0, ftm = 0, fta = 0, oreb = 0, foul = 0;
 
             foreach (var pbs in awayPBS)
             {
-                REB += pbs.REB;
-                AST += pbs.AST;
-                STL += pbs.STL;
-                TOS += pbs.TOS;
-                BLK += pbs.BLK;
-                FGM += pbs.FGM;
-                FGA += pbs.FGA;
-                TPM += pbs.TPM;
-                TPA += pbs.TPA;
-                FTM += pbs.FTM;
-                FTA += pbs.FTA;
-                OREB += pbs.OREB;
-                FOUL += pbs.FOUL;
+                reb += pbs.REB;
+                ast += pbs.AST;
+                stl += pbs.STL;
+                tos += pbs.TOS;
+                blk += pbs.BLK;
+                fgm += pbs.FGM;
+                fga += pbs.FGA;
+                tpm += pbs.TPM;
+                tpa += pbs.TPA;
+                ftm += pbs.FTM;
+                fta += pbs.FTA;
+                oreb += pbs.OREB;
+                foul += pbs.FOUL;
             }
 
-            bs.REB1 = REB;
-            bs.AST1 = AST;
-            bs.STL1 = STL;
-            bs.BLK1 = BLK;
-            bs.TO1 = TOS;
-            bs.FGM1 = FGM;
-            bs.FGA1 = FGA;
-            bs.TPM1 = TPM;
-            bs.TPA1 = TPA;
-            bs.FTM1 = FTM;
-            bs.FTA1 = FTA;
-            bs.OREB1 = OREB;
-            bs.FOUL1 = FOUL;
+            bs.REB1 = reb;
+            bs.AST1 = ast;
+            bs.STL1 = stl;
+            bs.BLK1 = blk;
+            bs.TOS1 = tos;
+            bs.FGM1 = fgm;
+            bs.FGA1 = fga;
+            bs.TPM1 = tpm;
+            bs.TPA1 = tpa;
+            bs.FTM1 = ftm;
+            bs.FTA1 = fta;
+            bs.OREB1 = oreb;
+            bs.FOUL1 = foul;
 
             bs.PTS1 = (ushort) (bs.FGM1*2 + bs.TPM1 + bs.FTM1);
 
-            REB = 0;
-            AST = 0;
-            STL = 0;
-            TOS = 0;
-            BLK = 0;
-            FGM = 0;
-            FGA = 0;
-            TPM = 0;
-            TPA = 0;
-            FTM = 0;
-            FTA = 0;
-            OREB = 0;
-            FOUL = 0;
+            reb = 0;
+            ast = 0;
+            stl = 0;
+            tos = 0;
+            blk = 0;
+            fgm = 0;
+            fga = 0;
+            tpm = 0;
+            tpa = 0;
+            ftm = 0;
+            fta = 0;
+            oreb = 0;
+            foul = 0;
 
             foreach (var pbs in homePBS)
             {
-                REB += pbs.REB;
-                AST += pbs.AST;
-                STL += pbs.STL;
-                TOS += pbs.TOS;
-                BLK += pbs.BLK;
-                FGM += pbs.FGM;
-                FGA += pbs.FGA;
-                TPM += pbs.TPM;
-                TPA += pbs.TPA;
-                FTM += pbs.FTM;
-                FTA += pbs.FTA;
-                OREB += pbs.OREB;
-                FOUL += pbs.FOUL;
+                reb += pbs.REB;
+                ast += pbs.AST;
+                stl += pbs.STL;
+                tos += pbs.TOS;
+                blk += pbs.BLK;
+                fgm += pbs.FGM;
+                fga += pbs.FGA;
+                tpm += pbs.TPM;
+                tpa += pbs.TPA;
+                ftm += pbs.FTM;
+                fta += pbs.FTA;
+                oreb += pbs.OREB;
+                foul += pbs.FOUL;
             }
 
-            bs.REB2 = REB;
-            bs.AST2 = AST;
-            bs.STL2 = STL;
-            bs.BLK2 = BLK;
-            bs.TO2 = TOS;
-            bs.FGM2 = FGM;
-            bs.FGA2 = FGA;
-            bs.TPM2 = TPM;
-            bs.TPA2 = TPA;
-            bs.FTM2 = FTM;
-            bs.FTA2 = FTA;
-            bs.OREB2 = OREB;
-            bs.FOUL2 = FOUL;
+            bs.REB2 = reb;
+            bs.AST2 = ast;
+            bs.STL2 = stl;
+            bs.BLK2 = blk;
+            bs.TOS2 = tos;
+            bs.FGM2 = fgm;
+            bs.FGA2 = fga;
+            bs.TPM2 = tpm;
+            bs.TPA2 = tpa;
+            bs.FTM2 = ftm;
+            bs.FTA2 = fta;
+            bs.OREB2 = oreb;
+            bs.FOUL2 = foul;
 
             bs.PTS2 = (ushort) (bs.FGM2*2 + bs.TPM2 + bs.FTM2);
         }
@@ -1218,7 +1211,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void colPlayerAway_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
-            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListAway);
+            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, playersListAway);
         }
 
         /// <summary>
@@ -1231,7 +1224,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void colPlayerHome_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
-            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListHome);
+            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, playersListHome);
         }
 
         /// <summary>
@@ -1242,7 +1235,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.
         /// </param>
-        private void PercentageColumn_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
+        private void percentageColumn_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
             EventHandlers.PercentageColumn_CopyingCellClipboardContent(e);
         }
@@ -1257,11 +1250,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void txtMINS1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!minsUpdating)
+            if (!_minsUpdating)
             {
-                minsUpdating = true;
+                _minsUpdating = true;
                 txtMINS2.Text = txtMINS1.Text;
-                minsUpdating = false;
+                _minsUpdating = false;
             }
         }
 
@@ -1275,11 +1268,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void txtMINS2_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!minsUpdating)
+            if (!_minsUpdating)
             {
-                minsUpdating = true;
+                _minsUpdating = true;
                 txtMINS1.Text = txtMINS2.Text;
-                minsUpdating = false;
+                _minsUpdating = false;
             }
         }
 
@@ -1295,19 +1288,19 @@ namespace NBA_Stats_Tracker.Windows
         {
             if (e.OriginalSource is TabControl)
             {
-                if (tabControl1.SelectedItem == tabAwayMetric)
+                if (Equals(tabControl1.SelectedItem, tabAwayMetric))
                 {
-                    UpdateMetric(1);
+                    updateMetric(1);
                 }
-                else if (tabControl1.SelectedItem == tabHomeMetric)
+                else if (Equals(tabControl1.SelectedItem, tabHomeMetric))
                 {
-                    UpdateMetric(2);
+                    updateMetric(2);
                 }
-                else if (tabControl1.SelectedItem == tabBest)
+                else if (Equals(tabControl1.SelectedItem, tabBest))
                 {
-                    UpdateMetric(1);
-                    UpdateMetric(2);
-                    UpdateBest();
+                    updateMetric(1);
+                    updateMetric(2);
+                    updateBest();
                 }
             }
         }
@@ -1315,25 +1308,25 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         ///     Calculates the best performers from each team, and their most significant stats.
         /// </summary>
-        private void UpdateBest()
+        private void updateBest()
         {
             try
             {
-                if (pmsrListAway.Count == 0 && pmsrListHome.Count == 0)
+                if (_pmsrListAway.Count == 0 && _pmsrListHome.Count == 0)
                     return;
 
-                pmsrListAway.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                pmsrListAway.Reverse();
+                _pmsrListAway.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                _pmsrListAway.Reverse();
 
-                pmsrListHome.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                pmsrListHome.Reverse();
+                _pmsrListHome.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                _pmsrListHome.Reverse();
             }
             catch (Exception)
             {
                 return;
             }
 
-            string TeamBest;
+            string teamBest;
             int awayid, homeid;
             var pbsBest = new PlayerBoxScore();
             PlayerBoxScore pbsAway1 = new PlayerBoxScore(),
@@ -1352,13 +1345,13 @@ namespace NBA_Stats_Tracker.Windows
             txbHome2.Text = "";
             txbHome3.Text = "";
 
-            bool skipaway = pmsrListAway.Count == 0;
-            bool skiphome = pmsrListHome.Count == 0;
+            bool skipaway = _pmsrListAway.Count == 0;
+            bool skiphome = _pmsrListHome.Count == 0;
 
             //if (skiphome || (!skipaway && pmsrListAway[0].GmSc > pmsrListHome[0].GmSc))
             if (skiphome || (!skipaway && Convert.ToInt32(txtPTS1.Text) > Convert.ToInt32(txtPTS2.Text)))
             {
-                int bestID = pmsrListAway[0].ID;
+                int bestID = _pmsrListAway[0].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == bestID)
@@ -1366,13 +1359,13 @@ namespace NBA_Stats_Tracker.Windows
                         pbsBest = pbs;
                     }
                 }
-                TeamBest = cmbTeam1.SelectedItem.ToString();
+                teamBest = cmbTeam1.SelectedItem.ToString();
                 awayid = 1;
                 homeid = 0;
             }
             else
             {
-                int bestID = pmsrListHome[0].ID;
+                int bestID = _pmsrListHome[0].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == bestID)
@@ -1380,19 +1373,19 @@ namespace NBA_Stats_Tracker.Windows
                         pbsBest = pbs;
                     }
                 }
-                TeamBest = cmbTeam2.SelectedItem.ToString();
+                teamBest = cmbTeam2.SelectedItem.ToString();
                 awayid = 0;
                 homeid = 1;
             }
 
-            PlayerStats ps = pst[pbsBest.PlayerID];
+            PlayerStats ps = _pst[pbsBest.PlayerID];
             string text = pbsBest.GetBestStats(5, ps.Position1);
             txbMVP.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")";
-            txbMVPStats.Text = TeamBest + "\n\n" + text;
+            txbMVPStats.Text = teamBest + "\n\n" + text;
 
-            if (pmsrListAway.Count > awayid)
+            if (_pmsrListAway.Count > awayid)
             {
-                int id2 = pmsrListAway[awayid++].ID;
+                int id2 = _pmsrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id2)
@@ -1401,14 +1394,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsAway1.PlayerID];
+                ps = _pst[pbsAway1.PlayerID];
                 text = pbsAway1.GetBestStats(5, ps.Position1);
                 txbAway1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (pmsrListAway.Count > awayid)
+            if (_pmsrListAway.Count > awayid)
             {
-                int id3 = pmsrListAway[awayid++].ID;
+                int id3 = _pmsrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id3)
@@ -1417,14 +1410,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsAway2.PlayerID];
+                ps = _pst[pbsAway2.PlayerID];
                 text = pbsAway2.GetBestStats(5, ps.Position1);
                 txbAway2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (pmsrListAway.Count > awayid)
+            if (_pmsrListAway.Count > awayid)
             {
-                int id4 = pmsrListAway[awayid++].ID;
+                int id4 = _pmsrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id4)
@@ -1433,14 +1426,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsAway3.PlayerID];
+                ps = _pst[pbsAway3.PlayerID];
                 text = pbsAway3.GetBestStats(5, ps.Position1);
                 txbAway3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (pmsrListHome.Count > homeid)
+            if (_pmsrListHome.Count > homeid)
             {
-                int id2 = pmsrListHome[homeid++].ID;
+                int id2 = _pmsrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id2)
@@ -1449,14 +1442,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsHome1.PlayerID];
+                ps = _pst[pbsHome1.PlayerID];
                 text = pbsHome1.GetBestStats(5, ps.Position1);
                 txbHome1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (pmsrListHome.Count > homeid)
+            if (_pmsrListHome.Count > homeid)
             {
-                int id3 = pmsrListHome[homeid++].ID;
+                int id3 = _pmsrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id3)
@@ -1465,14 +1458,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsHome2.PlayerID];
+                ps = _pst[pbsHome2.PlayerID];
                 text = pbsHome2.GetBestStats(5, ps.Position1);
                 txbHome2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (pmsrListHome.Count > homeid)
+            if (_pmsrListHome.Count > homeid)
             {
-                int id4 = pmsrListHome[homeid++].ID;
+                int id4 = _pmsrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id4)
@@ -1481,7 +1474,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ps = pst[pbsHome3.PlayerID];
+                ps = _pst[pbsHome3.PlayerID];
                 text = pbsHome3.GetBestStats(5, ps.Position1);
                 txbHome3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
@@ -1491,16 +1484,16 @@ namespace NBA_Stats_Tracker.Windows
         ///     Updates the metric stats for the specified team's players.
         /// </summary>
         /// <param name="team">1 if the away team's players' metric stats should be updated; anything else for the home team.</param>
-        private void UpdateMetric(int team)
+        private void updateMetric(int team)
         {
             var ts = new TeamStats(-1, cmbTeam1.SelectedItem.ToString());
             var tsopp = new TeamStats(-1, cmbTeam2.SelectedItem.ToString());
 
             tryParseBS();
-            if (!MainWindow.bs.done)
+            if (!MainWindow.BS.Done)
                 return;
 
-            TeamBoxScore bs = MainWindow.bs;
+            TeamBoxScore bs = MainWindow.BS;
 
             if (team == 1)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
@@ -1518,9 +1511,9 @@ namespace NBA_Stats_Tracker.Windows
                 if (pbs.PlayerID == -1)
                     continue;
 
-                PlayerStats ps = pst[pbs.PlayerID].Clone();
+                PlayerStats ps = _pst[pbs.PlayerID].Clone();
                 ps.ResetStats();
-                ps.AddBoxScore(pbs, bs.isPlayoff);
+                ps.AddBoxScore(pbs, bs.IsPlayoff);
                 ps.CalcMetrics(ts, tsopp, new TeamStats(-1));
                 pmsrList.Add(new PlayerStatsRow(ps));
             }
@@ -1530,13 +1523,13 @@ namespace NBA_Stats_Tracker.Windows
 
             if (team == 1)
             {
-                pmsrListAway = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricAway.ItemsSource = pmsrListAway;
+                _pmsrListAway = new List<PlayerStatsRow>(pmsrList);
+                dgvMetricAway.ItemsSource = _pmsrListAway;
             }
             else
             {
-                pmsrListHome = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricHome.ItemsSource = pmsrListHome;
+                _pmsrListHome = new List<PlayerStatsRow>(pmsrList);
+                dgvMetricHome.ItemsSource = _pmsrListHome;
             }
         }
 
@@ -1603,25 +1596,21 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (status == 0)
                 {
-                    for (int i = 0; i < PlayersListAway.Count; i++)
+                    foreach (var pair in playersListAway)
                     {
-                        if (PlayersListAway[i].Value == name)
+                        if (pair.Value == name)
                         {
                             try
                             {
-                                pbsAwayList.Remove(pbsAwayList.Single(delegate(PlayerBoxScore pbs)
-                                                                      {
-                                                                          if (PlayersListAway[i].Key == pbs.PlayerID)
-                                                                              return true;
-                                                                          return false;
-                                                                      }));
+                                pbsAwayList.Remove(pbsAwayList.Single(pbs => pair.Key == pbs.PlayerID));
                             }
                             catch (Exception)
                             {
+                                Console.WriteLine("A player being pasted wasn't previously in the box-score.");
                             }
 
-                            pbsAwayList.Add(new PlayerBoxScore(dict, PlayersListAway[i].Key,
-                                                               Misc.GetTeamIDFromDisplayName(MainWindow.tst,
+                            pbsAwayList.Add(new PlayerBoxScore(dict, pair.Key,
+                                                               Misc.GetTeamIDFromDisplayName(MainWindow.TST,
                                                                                              cmbTeam1.SelectedItem.ToString())));
                             break;
                         }
@@ -1648,25 +1637,21 @@ namespace NBA_Stats_Tracker.Windows
                 }
                 else if (status == 2)
                 {
-                    for (int i = 0; i < PlayersListHome.Count; i++)
+                    foreach (var pair in playersListHome)
                     {
-                        if (PlayersListHome[i].Value == name)
+                        if (pair.Value == name)
                         {
                             try
                             {
-                                pbsHomeList.Remove(pbsHomeList.Single(delegate(PlayerBoxScore pbs)
-                                                                      {
-                                                                          if (PlayersListHome[i].Key == pbs.PlayerID)
-                                                                              return true;
-                                                                          return false;
-                                                                      }));
+                                pbsHomeList.Remove(pbsHomeList.Single(pbs => pair.Key == pbs.PlayerID));
                             }
                             catch (Exception)
                             {
+                                Console.WriteLine("A player being pasted wasn't previously in the box-score.");
                             }
 
-                            pbsHomeList.Add(new PlayerBoxScore(dict, PlayersListHome[i].Key,
-                                                               Misc.GetTeamIDFromDisplayName(MainWindow.tst,
+                            pbsHomeList.Add(new PlayerBoxScore(dict, pair.Key,
+                                                               Misc.GetTeamIDFromDisplayName(MainWindow.TST,
                                                                                              cmbTeam2.SelectedItem.ToString())));
                             break;
                         }
@@ -1716,7 +1701,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
         /// </param>
-        private void StatColumn_Sorting(object sender, DataGridSortingEventArgs e)
+        private void statColumn_Sorting(object sender, DataGridSortingEventArgs e)
         {
             EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
@@ -1729,7 +1714,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void Any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
+        private void any_ShowToolTip(object sender, DependencyPropertyChangedEventArgs e)
         {
             GenericEventHandlers.Any_ShowToolTip(sender, e);
         }
@@ -1744,209 +1729,209 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void btnCompareTeamAndPlayerStats_Click(object sender, RoutedEventArgs e)
         {
-            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, FGA = 0, TPM = 0, TPA = 0, FTM = 0, FTA = 0, OREB = 0, FOUL = 0;
+            int reb = 0, ast = 0, stl = 0, tos = 0, blk = 0, fgm = 0, fga = 0, tpm = 0, tpa = 0, ftm = 0, fta = 0, oreb = 0, foul = 0;
 
             foreach (var pbs in pbsAwayList)
             {
-                REB += pbs.REB;
-                AST += pbs.AST;
-                STL += pbs.STL;
-                TOS += pbs.TOS;
-                BLK += pbs.BLK;
-                FGM += pbs.FGM;
-                FGA += pbs.FGA;
-                TPM += pbs.TPM;
-                TPA += pbs.TPA;
-                FTM += pbs.FTM;
-                FTA += pbs.FTA;
-                OREB += pbs.OREB;
-                FOUL += pbs.FOUL;
+                reb += pbs.REB;
+                ast += pbs.AST;
+                stl += pbs.STL;
+                tos += pbs.TOS;
+                blk += pbs.BLK;
+                fgm += pbs.FGM;
+                fga += pbs.FGA;
+                tpm += pbs.TPM;
+                tpa += pbs.TPA;
+                ftm += pbs.FTM;
+                fta += pbs.FTA;
+                oreb += pbs.OREB;
+                foul += pbs.FOUL;
             }
 
             string team = cmbTeam1.SelectedItem.ToString();
 
-            if (txtREB1.Text != REB.ToString())
+            if (txtREB1.Text != reb.ToString())
             {
                 comparisonError("REB", team);
                 return;
             }
-            if (txtAST1.Text != AST.ToString())
+            if (txtAST1.Text != ast.ToString())
             {
                 comparisonError("AST", team);
                 return;
             }
 
-            if (txtSTL1.Text != STL.ToString())
+            if (txtSTL1.Text != stl.ToString())
             {
                 comparisonError("STL", team);
                 return;
             }
 
-            if (txtBLK1.Text != BLK.ToString())
+            if (txtBLK1.Text != blk.ToString())
             {
                 comparisonError("BLK", team);
                 return;
             }
 
-            if (txtTO1.Text != TOS.ToString())
+            if (txtTO1.Text != tos.ToString())
             {
                 comparisonError("TO", team);
                 return;
             }
 
-            if (txtFGM1.Text != FGM.ToString())
+            if (txtFGM1.Text != fgm.ToString())
             {
                 comparisonError("FGM", team);
                 return;
             }
 
-            if (txtFGA1.Text != FGA.ToString())
+            if (txtFGA1.Text != fga.ToString())
             {
                 comparisonError("FGA", team);
                 return;
             }
 
-            if (txt3PM1.Text != TPM.ToString())
+            if (txt3PM1.Text != tpm.ToString())
             {
                 comparisonError("3PM", team);
                 return;
             }
 
-            if (txt3PA1.Text != TPA.ToString())
+            if (txt3PA1.Text != tpa.ToString())
             {
                 comparisonError("3PA", team);
                 return;
             }
 
-            if (txtFTM1.Text != FTM.ToString())
+            if (txtFTM1.Text != ftm.ToString())
             {
                 comparisonError("FTM", team);
                 return;
             }
 
-            if (txtFTA1.Text != FTA.ToString())
+            if (txtFTA1.Text != fta.ToString())
             {
                 comparisonError("FTA", team);
                 return;
             }
 
-            if (txtOREB1.Text != OREB.ToString())
+            if (txtOREB1.Text != oreb.ToString())
             {
                 comparisonError("OREB", team);
                 return;
             }
 
-            if (txtFOUL1.Text != FOUL.ToString())
+            if (txtFOUL1.Text != foul.ToString())
             {
                 comparisonError("FOUL", team);
                 return;
             }
 
-            REB = 0;
-            AST = 0;
-            STL = 0;
-            TOS = 0;
-            BLK = 0;
-            FGM = 0;
-            FGA = 0;
-            TPM = 0;
-            TPA = 0;
-            FTM = 0;
-            FTA = 0;
-            OREB = 0;
-            FOUL = 0;
+            reb = 0;
+            ast = 0;
+            stl = 0;
+            tos = 0;
+            blk = 0;
+            fgm = 0;
+            fga = 0;
+            tpm = 0;
+            tpa = 0;
+            ftm = 0;
+            fta = 0;
+            oreb = 0;
+            foul = 0;
 
             foreach (var pbs in pbsHomeList)
             {
-                REB += pbs.REB;
-                AST += pbs.AST;
-                STL += pbs.STL;
-                TOS += pbs.TOS;
-                BLK += pbs.BLK;
-                FGM += pbs.FGM;
-                FGA += pbs.FGA;
-                TPM += pbs.TPM;
-                TPA += pbs.TPA;
-                FTM += pbs.FTM;
-                FTA += pbs.FTA;
-                OREB += pbs.OREB;
-                FOUL += pbs.FOUL;
+                reb += pbs.REB;
+                ast += pbs.AST;
+                stl += pbs.STL;
+                tos += pbs.TOS;
+                blk += pbs.BLK;
+                fgm += pbs.FGM;
+                fga += pbs.FGA;
+                tpm += pbs.TPM;
+                tpa += pbs.TPA;
+                ftm += pbs.FTM;
+                fta += pbs.FTA;
+                oreb += pbs.OREB;
+                foul += pbs.FOUL;
             }
 
             team = cmbTeam2.SelectedItem.ToString();
 
-            if (txtREB2.Text != REB.ToString())
+            if (txtREB2.Text != reb.ToString())
             {
                 comparisonError("REB", team);
                 return;
             }
-            if (txtAST2.Text != AST.ToString())
+            if (txtAST2.Text != ast.ToString())
             {
                 comparisonError("AST", team);
                 return;
             }
 
-            if (txtSTL2.Text != STL.ToString())
+            if (txtSTL2.Text != stl.ToString())
             {
                 comparisonError("STL", team);
                 return;
             }
 
-            if (txtBLK2.Text != BLK.ToString())
+            if (txtBLK2.Text != blk.ToString())
             {
                 comparisonError("BLK", team);
                 return;
             }
 
-            if (txtTO2.Text != TOS.ToString())
+            if (txtTO2.Text != tos.ToString())
             {
                 comparisonError("TO", team);
                 return;
             }
 
-            if (txtFGM2.Text != FGM.ToString())
+            if (txtFGM2.Text != fgm.ToString())
             {
                 comparisonError("FGM", team);
                 return;
             }
 
-            if (txtFGA2.Text != FGA.ToString())
+            if (txtFGA2.Text != fga.ToString())
             {
                 comparisonError("FGA", team);
                 return;
             }
 
-            if (txt3PM2.Text != TPM.ToString())
+            if (txt3PM2.Text != tpm.ToString())
             {
                 comparisonError("3PM", team);
                 return;
             }
 
-            if (txt3PA2.Text != TPA.ToString())
+            if (txt3PA2.Text != tpa.ToString())
             {
                 comparisonError("3PA", team);
                 return;
             }
 
-            if (txtFTM2.Text != FTM.ToString())
+            if (txtFTM2.Text != ftm.ToString())
             {
                 comparisonError("FTM", team);
                 return;
             }
 
-            if (txtFTA2.Text != FTA.ToString())
+            if (txtFTA2.Text != fta.ToString())
             {
                 comparisonError("FTA", team);
                 return;
             }
 
-            if (txtOREB2.Text != OREB.ToString())
+            if (txtOREB2.Text != oreb.ToString())
             {
                 comparisonError("OREB", team);
                 return;
             }
 
-            if (txtFOUL2.Text != FOUL.ToString())
+            if (txtFOUL2.Text != foul.ToString())
             {
                 comparisonError("FOUL", team);
                 return;
@@ -1977,32 +1962,32 @@ namespace NBA_Stats_Tracker.Windows
         /// <summary>
         ///     Updates the box score data grid.
         /// </summary>
-        /// <param name="TeamID">Name of the team.</param>
-        /// <param name="PlayersList">The players list.</param>
+        /// <param name="teamID">Name of the team.</param>
+        /// <param name="playersList">The players list.</param>
         /// <param name="pbsList">The player box score list.</param>
         /// <param name="playersT">The players' SQLite table name.</param>
         /// <param name="loading">
         ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
         /// </param>
-        private static void UpdateBoxScoreDataGrid(int TeamID, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+        private static void updateBoxScoreDataGrid(int teamID, out ObservableCollection<KeyValuePair<int, string>> playersList,
                                                    ref SortableBindingList<PlayerBoxScore> pbsList, string playersT, bool loading)
         {
-            var db = new SQLiteDatabase(MainWindow.currentDB);
-            string q = "select * from " + playersT + " where TeamFin = " + TeamID + "";
+            var db = new SQLiteDatabase(MainWindow.CurrentDB);
+            string q = "select * from " + playersT + " where TeamFin = " + teamID + "";
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
-            PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
+            playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
                 pbsList = new SortableBindingList<PlayerBoxScore>();
 
             foreach (DataRow r in res.Rows)
             {
-                var ps = new PlayerStats(r, MainWindow.tst);
-                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+                var ps = new PlayerStats(r, MainWindow.TST);
+                playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
                 if (!loading)
                 {
-                    var pbs = new PlayerBoxScore {PlayerID = ps.ID, TeamID = TeamID};
+                    var pbs = new PlayerBoxScore {PlayerID = ps.ID, TeamID = teamID};
                     pbsList.Add(pbs);
                 }
             }
@@ -2010,23 +1995,23 @@ namespace NBA_Stats_Tracker.Windows
             for (int i = 0; i < pbsList.Count; i++)
             {
                 PlayerBoxScore cur = pbsList[i];
-                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                string name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
-                if (!PlayersList.Contains(player))
+                if (!playersList.Contains(player))
                 {
-                    PlayersList.Add(player);
+                    playersList.Add(player);
                 }
                 pbsList[i] = cur;
             }
-            PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
+            playersList = new ObservableCollection<KeyValuePair<int, string>>(playersList.OrderBy(item => item.Value));
         }
 
-        private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
+        private void window_Closing(object sender, CancelEventArgs e)
         {
-            if (!clickedOK)
+            if (!_clickedOK)
             {
-                MainWindow.bs.done = false;
+                MainWindow.BS.Done = false;
             }
         }
     }

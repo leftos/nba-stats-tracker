@@ -8,8 +8,8 @@
         xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen" Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
-        Loaded="Window_Loaded"
-        Closing="Window_Closing" MinWidth="800" MinHeight="469">
+        Loaded="window_Loaded"
+        Closing="window_Closing" MinWidth="800" MinHeight="469">
     <Grid>
         <Grid Margin="0,0,0,25">
             <TabControl Margin="0,0,250,12" Name="tbcLeagueOverview" Padding="0"
@@ -28,9 +28,9 @@
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" Style="{StaticResource DataGridStyle}"
                                   FrozenColumnCount="1" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
                                   Margin="6" Name="dgvTeamStats" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
-                                  Sorting="StatColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
-                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
+                                  Sorting="statColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
+                                  PreviewKeyDown="anyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding Games}" Header="Games" />
@@ -175,10 +175,10 @@
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   FrozenColumnCount="1" HorizontalAlignment="Stretch" Margin="6"
                                   Name="dgvTeamMetricStats" VerticalAlignment="Stretch"
-                                  IsReadOnly="True" Sorting="StatColumn_Sorting"
+                                  IsReadOnly="True" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvTeamMetricStats_LayoutUpdated"
                                   LoadingRow="dg_LoadingRow" RowHeaderWidth="25"
-                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick">
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Name}" Header="Team" />
                                 <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
@@ -667,9 +667,9 @@
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" Style="{StaticResource DataGridStyle}"
                                   FrozenColumnCount="1" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
                                   Margin="6" Name="dgvOpponentStats" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
-                                  Sorting="StatColumn_Sorting"
-                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown"
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
+                                  Sorting="statColumn_Sorting"
+                                  PreviewKeyDown="anyTeamDataGrid_PreviewKeyDown"
                                   LayoutUpdated="dgvOpponentStats_LayoutUpdated">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
@@ -792,10 +792,10 @@
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   FrozenColumnCount="1" HorizontalAlignment="Stretch" Margin="6"
                                   Name="dgvOpponentMetricStats" VerticalAlignment="Stretch"
-                                  IsReadOnly="True" Sorting="StatColumn_Sorting"
+                                  IsReadOnly="True" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvOpponentMetricStats_LayoutUpdated"
                                   LoadingRow="dg_LoadingRow" RowHeaderWidth="25"
-                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick">
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Name}" Header="Team" />
                                 <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
@@ -1278,9 +1278,9 @@
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" Style="{StaticResource DataGridStyle}"
                                   FrozenColumnCount="1" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
                                   Margin="6" Name="dgvTeamInfo" VerticalAlignment="Stretch"
-                                  MouseDoubleClick="AnyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
-                                  Sorting="StatColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
-                                  PreviewKeyDown="AnyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick" IsReadOnly="True"
+                                  Sorting="statColumn_Sorting" LayoutUpdated="dgvTeamStats_LayoutUpdated"
+                                  PreviewKeyDown="anyTeamDataGrid_PreviewKeyDown" d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DisplayName}" Header="Team" />
                                 <DataGridTextColumn Header="Players" />
@@ -1308,8 +1308,8 @@
                                   Margin="6,6,6,0" x:Name="dgvLeaders"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Grid.ColumnSpan="2"
-                                  Sorting="StatColumn_Sorting">
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick" Grid.ColumnSpan="2"
+                                  Sorting="statColumn_Sorting">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -1666,8 +1666,8 @@
                                   Margin="6,6,6,0" x:Name="dgvMyLeaders"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Grid.ColumnSpan="2"
-                                  Sorting="StatColumn_Sorting">
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick" Grid.ColumnSpan="2"
+                                  Sorting="statColumn_Sorting">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -2030,7 +2030,7 @@
                                   Margin="6,6,6,0" Name="dgvContracts"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick" Sorting="statColumn_Sorting"
                                   d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
@@ -2071,7 +2071,7 @@
                                   Margin="6" Name="dgvPlayerStats"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvPlayerStats_LayoutUpdated"
                                   PreviewKeyDown="dgvPlayerStats_PreviewKeyDown">
                             <DataGrid.Columns>
@@ -2192,9 +2192,9 @@
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   FrozenColumnCount="2" HorizontalAlignment="Stretch" Margin="6" Name="dgvMetricStats"
                                   VerticalAlignment="Stretch"
-                                  IsReadOnly="True" Sorting="StatColumn_Sorting"
+                                  IsReadOnly="True" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvMetricStats_LayoutUpdated" LoadingRow="dg_LoadingRow"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick">
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -2959,7 +2959,7 @@
                                   Margin="6,6,6,0" Name="dgvRatings"
                                   VerticalAlignment="Stretch" FrozenColumnCount="2"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  MouseDoubleClick="AnyPlayerDataGrid_MouseDoubleClick" Sorting="StatColumn_Sorting"
+                                  MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvPlayerStats_LayoutUpdated">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />

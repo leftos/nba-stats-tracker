@@ -47,7 +47,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         public static bool AnyPlayerDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var s = sender as DataGrid;
-            if (s.SelectedCells.Count > 0)
+            if (s != null && s.SelectedCells.Count > 0)
             {
                 var psr = (PlayerStatsRow) s.SelectedItems[0];
 
@@ -69,7 +69,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         public static void AnyTeamDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var s = sender as DataGrid;
-            if (s.SelectedCells.Count > 0)
+            if (s != null && s.SelectedCells.Count > 0)
             {
                 var row = (DataRowView) s.SelectedItems[0];
                 string team = row["Name"].ToString();
@@ -91,8 +91,9 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             {
                 e.Content = String.Format("{0:F3}", e.Content);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Tried to format percentage column on copy: " + ex.Message);
             }
         }
 
@@ -103,13 +104,13 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         /// <param name="e">
         ///     The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.
         /// </param>
-        /// <param name="PlayersList">The players list.</param>
+        /// <param name="playersList">The players list.</param>
         public static void PlayerColumn_CopyingCellClipboardContent(DataGridCellClipboardEventArgs e,
-                                                                    IEnumerable<KeyValuePair<int, string>> PlayersList)
+                                                                    IEnumerable<KeyValuePair<int, string>> playersList)
         {
             try
             {
-                foreach (var p in PlayersList)
+                foreach (var p in playersList)
                 {
                     if (Convert.ToInt32(e.Content) == p.Key)
                     {
@@ -118,8 +119,9 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Tried to format player column on copy: " + ex.Message);
             }
         }
 
@@ -166,7 +168,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
                                              ? ListSortDirection.Ascending
                                              : ListSortDirection.Descending;
 
-                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                var lcv = (ListCollectionView) CollectionViewSource.GetDefaultView((sender).ItemsSource);
                 lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
                                      ? new TeamNameComparerAsc()
                                      : new TeamNameComparerDesc();
@@ -187,17 +189,17 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         /// <param name="tpa">The 3PA.</param>
         /// <param name="ftm">The FTM.</param>
         /// <param name="fta">The FTA.</param>
-        /// <param name="PTS">The PTS.</param>
+        /// <param name="pts">The PTS.</param>
         /// <param name="percentages">The percentages.</param>
-        public static void calculateScore(int fgm, int? fga, int tpm, int? tpa, int ftm, int? fta, out int PTS, out string percentages)
+        public static void CalculateScore(int fgm, int? fga, int tpm, int? tpa, int ftm, int? fta, out int pts, out string percentages)
         {
             try
             {
-                PTS = ((fgm - tpm)*2 + tpm*3 + ftm);
+                pts = ((fgm - tpm)*2 + tpm*3 + ftm);
             }
             catch
             {
-                PTS = 0;
+                pts = 0;
                 percentages = "";
                 return;
             }

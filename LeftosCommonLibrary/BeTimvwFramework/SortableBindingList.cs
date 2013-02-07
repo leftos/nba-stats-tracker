@@ -1,13 +1,10 @@
 #region Copyright Notice
 
-// Created by Tim Van Wassenhove
-// Source: http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/
-//
-// Included in LeftosCommonLibrary by Lefteris Aslanoglou (c) 2011-2012, as part of
-// implementation of thesis
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -15,27 +12,31 @@
 
 #endregion
 
+#region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+
+#endregion
 
 namespace LeftosCommonLibrary.BeTimvwFramework
 {
     public class SortableBindingList<T> : BindingList<T>
     {
-        private readonly Dictionary<Type, PropertyComparer<T>> comparers;
-        private bool isSorted;
-        private ListSortDirection listSortDirection;
-        private PropertyDescriptor propertyDescriptor;
+        private readonly Dictionary<Type, PropertyComparer<T>> _comparers;
+        private bool _isSorted;
+        private ListSortDirection _listSortDirection;
+        private PropertyDescriptor _propertyDescriptor;
 
         public SortableBindingList() : base(new List<T>())
         {
-            comparers = new Dictionary<Type, PropertyComparer<T>>();
+            _comparers = new Dictionary<Type, PropertyComparer<T>>();
         }
 
         public SortableBindingList(IEnumerable<T> enumeration) : base(new List<T>(enumeration))
         {
-            comparers = new Dictionary<Type, PropertyComparer<T>>();
+            _comparers = new Dictionary<Type, PropertyComparer<T>>();
         }
 
         protected override bool SupportsSortingCore
@@ -45,17 +46,17 @@ namespace LeftosCommonLibrary.BeTimvwFramework
 
         protected override bool IsSortedCore
         {
-            get { return isSorted; }
+            get { return _isSorted; }
         }
 
         protected override PropertyDescriptor SortPropertyCore
         {
-            get { return propertyDescriptor; }
+            get { return _propertyDescriptor; }
         }
 
         protected override ListSortDirection SortDirectionCore
         {
-            get { return listSortDirection; }
+            get { return _listSortDirection; }
         }
 
         protected override bool SupportsSearchingCore
@@ -69,27 +70,27 @@ namespace LeftosCommonLibrary.BeTimvwFramework
 
             Type propertyType = property.PropertyType;
             PropertyComparer<T> comparer;
-            if (!comparers.TryGetValue(propertyType, out comparer))
+            if (!_comparers.TryGetValue(propertyType, out comparer))
             {
                 comparer = new PropertyComparer<T>(property, direction);
-                comparers.Add(propertyType, comparer);
+                _comparers.Add(propertyType, comparer);
             }
 
             comparer.SetPropertyAndDirection(property, direction);
             itemsList.Sort(comparer);
 
-            propertyDescriptor = property;
-            listSortDirection = direction;
-            isSorted = true;
+            _propertyDescriptor = property;
+            _listSortDirection = direction;
+            _isSorted = true;
 
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
 
         protected override void RemoveSortCore()
         {
-            isSorted = false;
-            propertyDescriptor = base.SortPropertyCore;
-            listSortDirection = base.SortDirectionCore;
+            _isSorted = false;
+            _propertyDescriptor = base.SortPropertyCore;
+            _listSortDirection = base.SortDirectionCore;
 
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
@@ -100,7 +101,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             for (int i = 0; i < count; ++i)
             {
                 T element = this[i];
-                if (property.GetValue(element).Equals(key))
+                object value = property.GetValue(element);
+                if (value != null && value.Equals(key))
                 {
                     return i;
                 }

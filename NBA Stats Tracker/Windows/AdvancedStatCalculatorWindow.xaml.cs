@@ -17,12 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
 using Microsoft.Win32;
@@ -53,84 +51,66 @@ namespace NBA_Stats_Tracker.Windows
 
         #endregion
 
-        private readonly List<string> NumericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
-        private readonly List<string> Positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
+        private readonly Dictionary<Selection, List<Filter>> _filters = new Dictionary<Selection, List<Filter>>();
+        private readonly string _folder = App.AppDocsPath + @"\Advanced Stats Filters";
 
-        private readonly List<string> Totals = new List<string>
-                                               {
-                                                   " ",
-                                                   "PTS (PF)",
-                                                   "PA",
-                                                   "FGM",
-                                                   "FGA",
-                                                   "FG%",
-                                                   "3PM",
-                                                   "3PA",
-                                                   "3P%",
-                                                   "FTM",
-                                                   "FTA",
-                                                   "FT%",
-                                                   "REB",
-                                                   "OREB",
-                                                   "AST",
-                                                   "STL",
-                                                   "BLK",
-                                                   "TO",
-                                                   "FOUL",
-                                                   "MINS"
-                                               };
+        private readonly List<string> _numericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+        private readonly List<string> _positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
 
-        private readonly Dictionary<Selection, List<Filter>> filters = new Dictionary<Selection, List<Filter>>();
-        private ObservableCollection<KeyValuePair<int, string>> _playersList;
+        private readonly List<string> _totals = new List<string>
+                                                {
+                                                    " ",
+                                                    "PTS (PF)",
+                                                    "PA",
+                                                    "FGM",
+                                                    "FGA",
+                                                    "FG%",
+                                                    "3PM",
+                                                    "3PA",
+                                                    "3P%",
+                                                    "FTM",
+                                                    "FTA",
+                                                    "FT%",
+                                                    "REB",
+                                                    "OREB",
+                                                    "AST",
+                                                    "STL",
+                                                    "BLK",
+                                                    "TO",
+                                                    "FOUL",
+                                                    "MINS"
+                                                };
 
-        private bool changingTimeframe;
-        private int curSeason;
-        private bool loading;
+        private bool _changingTimeframe;
+        private int _curSeason;
+        private bool _loading;
+        private List<int> _playersToHighlight = new List<int>();
+        private List<int> _teamsToHighlight = new List<int>();
 
         public AdvancedStatCalculatorWindow()
         {
             InitializeComponent();
         }
 
-        private ObservableCollection<KeyValuePair<int, string>> PlayersList
-        {
-            get { return _playersList; }
-            set
-            {
-                _playersList = value;
-                OnPropertyChanged("PlayersList");
-            }
-        }
-
+        private ObservableCollection<KeyValuePair<int, string>> playersList { get; set; }
         private ObservableCollection<PlayerStatsRow> psrList { get; set; }
         private ObservableCollection<TeamStatsRow> tsrList { get; set; }
-        protected ObservableCollection<TeamStatsRow> tsrList_not { get; set; }
+        private ObservableCollection<TeamStatsRow> tsrList_Not { get; set; }
+        private ObservableCollection<PlayerStatsRow> psrList_Not { get; set; }
+        private ObservableCollection<TeamStatsRow> tsrOppList { get; set; }
+        private ObservableCollection<TeamStatsRow> tsrOppList_Not { get; set; }
 
-        protected ObservableCollection<PlayerStatsRow> psrList_not { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
+        private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        private void Window_Loaded_1(object sender, RoutedEventArgs e)
-        {
-            changingTimeframe = true;
-            dtpEnd.SelectedDate = MainWindow.tf.EndDate;
-            dtpStart.SelectedDate = MainWindow.tf.StartDate;
-            cmbSeasonNum.ItemsSource = MainWindow.mwInstance.cmbSeasonNum.ItemsSource;
-            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.tf.SeasonNum);
-            curSeason = MainWindow.tf.SeasonNum;
-            cmbTFSeason.ItemsSource = MainWindow.mwInstance.cmbSeasonNum.ItemsSource;
+            _changingTimeframe = true;
+            dtpEnd.SelectedDate = MainWindow.Tf.EndDate;
+            dtpStart.SelectedDate = MainWindow.Tf.StartDate;
+            cmbSeasonNum.ItemsSource = MainWindow.MWInstance.cmbSeasonNum.ItemsSource;
+            cmbSeasonNum.SelectedItem = MainWindow.SeasonList.Single(pair => pair.Key == MainWindow.Tf.SeasonNum);
+            _curSeason = MainWindow.Tf.SeasonNum;
+            cmbTFSeason.ItemsSource = MainWindow.MWInstance.cmbSeasonNum.ItemsSource;
             cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
-            if (MainWindow.tf.isBetween)
+            if (MainWindow.Tf.IsBetween)
             {
                 rbStatsBetween.IsChecked = true;
             }
@@ -138,26 +118,26 @@ namespace NBA_Stats_Tracker.Windows
             {
                 rbStatsAllTime.IsChecked = true;
             }
-            changingTimeframe = false;
+            _changingTimeframe = false;
 
-            loading = true;
-            cmbPosition1Filter.ItemsSource = Positions;
-            cmbPosition2Filter.ItemsSource = Positions;
+            _loading = true;
+            cmbPosition1Filter.ItemsSource = _positions;
+            cmbPosition2Filter.ItemsSource = _positions;
             cmbPosition1Filter.SelectedIndex = 0;
             cmbPosition2Filter.SelectedIndex = 0;
             formatTotalsForTeams();
-            cmbTotalsOp.ItemsSource = NumericOptions;
+            cmbTotalsOp.ItemsSource = _numericOptions;
             cmbTotalsPar.SelectedIndex = 0;
             cmbTotalsOp.SelectedIndex = 3;
             cmbTotalsPar2.SelectedIndex = 0;
-            loading = false;
+            _loading = false;
 
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         private void formatTotalsForTeams()
         {
-            var newTotals = Totals.ToList();
+            List<string> newTotals = _totals.ToList();
             for (int i = 0; i < newTotals.Count; i++)
             {
                 if (newTotals[i] == "PTS (PF)")
@@ -166,14 +146,15 @@ namespace NBA_Stats_Tracker.Windows
                     break;
                 }
             }
-            Totals.Skip(3).ToList().ForEach(item => newTotals.Add("Opp" + item));
+            _totals.Skip(3).ToList().ForEach(item => newTotals.Add("Opp" + item));
             cmbTotalsPar.ItemsSource = newTotals;
             cmbTotalsPar2.ItemsSource = newTotals;
         }
 
         private void formatTotalsForPlayers()
         {
-            var newTotals = Totals.ToList(); for (int i = 0; i < newTotals.Count; i++)
+            List<string> newTotals = _totals.ToList();
+            for (int i = 0; i < newTotals.Count; i++)
             {
                 if (newTotals[i] == "PTS (PF)")
                 {
@@ -185,12 +166,12 @@ namespace NBA_Stats_Tracker.Windows
             cmbTotalsPar2.ItemsSource = newTotals;
         }
 
-        private void PopulateTeamsCombo()
+        private void populateTeamsCombo()
         {
             cmbTeamFilter.Items.Clear();
             cmbSelectedTeam.Items.Clear();
             var teams = new List<string>();
-            MainWindow.tst.Values.ToList().ForEach(ts => teams.Add(ts.displayName));
+            MainWindow.TST.Values.ToList().ForEach(ts => teams.Add(ts.DisplayName));
             teams.Sort();
             cmbTeamFilter.Items.Add("- Any -");
             teams.ForEach(delegate(string i)
@@ -207,13 +188,13 @@ namespace NBA_Stats_Tracker.Windows
 
         private void cmbTeamFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PopulatePlayersCombo();
+            populatePlayersCombo();
         }
 
-        private void PopulatePlayersCombo()
+        private void populatePlayersCombo()
         {
-            PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
-            List<PlayerStats> list = MainWindow.pst.Values.ToList();
+            playersList = new ObservableCollection<KeyValuePair<int, string>>();
+            List<PlayerStats> list = MainWindow.PST.Values.ToList();
             if (cmbPosition1Filter.SelectedItem != null && cmbPosition1Filter.SelectedItem.ToString() != "Any")
             {
                 list = list.Where(ps => ps.Position1.ToString() == cmbPosition1Filter.SelectedItem.ToString()).ToList();
@@ -228,88 +209,88 @@ namespace NBA_Stats_Tracker.Windows
                 list =
                     list.Where(
                         ps =>
-                        ps.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeamFilter.SelectedItem.ToString()) && ps.isActive)
+                        ps.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeamFilter.SelectedItem.ToString()) && ps.IsActive)
                         .ToList();
             }
             else if (chkIsActive.IsChecked == false)
             {
-                list = list.Where(ps => !ps.isActive).ToList();
+                list = list.Where(ps => !ps.IsActive).ToList();
             }
             list.ForEach(
                 ps =>
-                PlayersList.Add(new KeyValuePair<int, string>(ps.ID,
+                playersList.Add(new KeyValuePair<int, string>(ps.ID,
                                                               String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName,
                                                                             ps.Position1.ToString()))));
 
-            cmbSelectedPlayer.ItemsSource = PlayersList;
+            cmbSelectedPlayer.ItemsSource = playersList;
         }
 
         private void cmbPosition1Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!loading)
-                PopulatePlayersCombo();
+            if (!_loading)
+                populatePlayersCombo();
         }
 
         private void cmbPosition2Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!loading)
-                PopulatePlayersCombo();
+            if (!_loading)
+                populatePlayersCombo();
         }
 
         private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!changingTimeframe)
+            if (!_changingTimeframe)
             {
-                changingTimeframe = true;
+                _changingTimeframe = true;
                 if (cmbSeasonNum.SelectedIndex == -1)
                     return;
 
                 cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
 
-                curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
-                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
-                    MainWindow.tf = new Timeframe(curSeason);
-                    MainWindow.ChangeSeason(curSeason);
+                    MainWindow.Tf = new Timeframe(_curSeason);
+                    MainWindow.ChangeSeason(_curSeason);
                     SQLiteIO.LoadSeason();
                 }
 
-                PopulateTeamsCombo();
-                changingTimeframe = false;
+                populateTeamsCombo();
+                _changingTimeframe = false;
             }
         }
 
         private void cmbTFSeason_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!changingTimeframe)
+            if (!_changingTimeframe)
             {
-                changingTimeframe = true;
+                _changingTimeframe = true;
                 if (cmbTFSeason.SelectedIndex == -1)
                     return;
 
                 cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
                 rbStatsAllTime.IsChecked = true;
 
-                curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
 
-                if (MainWindow.tf.SeasonNum != curSeason || MainWindow.tf.isBetween)
+                if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
-                    MainWindow.tf = new Timeframe(curSeason);
-                    MainWindow.ChangeSeason(curSeason);
+                    MainWindow.Tf = new Timeframe(_curSeason);
+                    MainWindow.ChangeSeason(_curSeason);
                     SQLiteIO.LoadSeason();
                 }
 
-                PopulateTeamsCombo();
+                populateTeamsCombo();
 
-                changingTimeframe = false;
+                _changingTimeframe = false;
             }
         }
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.tf = new Timeframe(curSeason);
-            if (!changingTimeframe)
+            MainWindow.Tf = new Timeframe(_curSeason);
+            if (!_changingTimeframe)
             {
                 MainWindow.UpdateAllData();
                 cmbSeasonNum_SelectionChanged(null, null);
@@ -318,44 +299,44 @@ namespace NBA_Stats_Tracker.Windows
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-            if (!changingTimeframe)
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            if (!_changingTimeframe)
             {
                 MainWindow.UpdateAllData();
-                PopulateTeamsCombo();
+                populateTeamsCombo();
             }
         }
 
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (changingTimeframe)
+            if (_changingTimeframe)
                 return;
-            changingTimeframe = true;
+            _changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
             }
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            changingTimeframe = false;
+            _changingTimeframe = false;
             MainWindow.UpdateAllData();
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (changingTimeframe)
+            if (_changingTimeframe)
                 return;
-            changingTimeframe = true;
+            _changingTimeframe = true;
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
             }
-            MainWindow.tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
+            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            changingTimeframe = false;
+            _changingTimeframe = false;
             MainWindow.UpdateAllData();
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
         private void chkIsActive_Click(object sender, RoutedEventArgs e)
@@ -364,7 +345,7 @@ namespace NBA_Stats_Tracker.Windows
                 cmbTeamFilter.SelectedIndex = 0;
             else
                 cmbTeamFilter.SelectedIndex = -1;
-            PopulatePlayersCombo();
+            populatePlayersCombo();
         }
 
         private void btnTotalsAdd_Click(object sender, RoutedEventArgs e)
@@ -385,16 +366,16 @@ namespace NBA_Stats_Tracker.Windows
                         txtTotalsVal.Text = "";
                     }
 
-                    int teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbSelectedTeam.SelectedItem.ToString());
+                    int teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbSelectedTeam.SelectedItem.ToString());
                     KeyValuePair<Selection, List<Filter>> filter;
                     try
                     {
-                        filter = filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
+                        filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
                     }
                     catch
                     {
-                        filters.Add(new Selection(SelectionType.Team, teamID), new List<Filter>());
-                        filter = filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
+                        _filters.Add(new Selection(SelectionType.Team, teamID), new List<Filter>());
+                        filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
                     }
                     try
                     {
@@ -405,6 +386,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch
                     {
+                        Console.WriteLine("Didn't find a previous filter matching the properties of the one being inserted.");
                     }
                     finally
                     {
@@ -422,12 +404,12 @@ namespace NBA_Stats_Tracker.Windows
                 KeyValuePair<Selection, List<Filter>> filter;
                 try
                 {
-                    filter = filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
+                    filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
                 }
                 catch
                 {
-                    filters.Add(new Selection(SelectionType.Player, playerID), new List<Filter>());
-                    filter = filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
+                    _filters.Add(new Selection(SelectionType.Player, playerID), new List<Filter>());
+                    filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
                 }
                 if (cmbTotalsPar.SelectedIndex > 0)
                 {
@@ -443,6 +425,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch
                     {
+                        Console.WriteLine("Didn't find a previous filter matching the properties of the one being inserted.");
                     }
                     finally
                     {
@@ -458,6 +441,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch
                     {
+                        Console.WriteLine("Didn't find a previous filter matching the property isStarter.");
                     }
                     finally
                     {
@@ -483,6 +467,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch
                     {
+                        Console.WriteLine("Didn't find a previous filter matching the property isInjured.");
                     }
                     finally
                     {
@@ -508,6 +493,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     catch
                     {
+                        Console.WriteLine("Didn't find a previous filter matching the property isOut.");
                     }
                     finally
                     {
@@ -528,26 +514,26 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
             }
-            PopulateTotalsList();
+            populateTotalsList();
         }
 
-        private void PopulateTotalsList()
+        private void populateTotalsList()
         {
             lstTotals.Items.Clear();
-            foreach (var filter in filters)
+            foreach (var filter in _filters)
             {
                 string s;
                 if (filter.Key.SelectionType == SelectionType.Team)
                 {
-                    s = string.Format("(#T{0}) {1}: ", filter.Key.ID, MainWindow.tst.Values.Single(ts => ts.ID == filter.Key.ID).displayName);
+                    s = string.Format("(#T{0}) {1}: ", filter.Key.ID, MainWindow.TST.Values.Single(ts => ts.ID == filter.Key.ID).DisplayName);
                 }
                 else
                 {
-                    PlayerStats player = MainWindow.pst.Values.Single(ps => ps.ID == filter.Key.ID);
+                    PlayerStats player = MainWindow.PST.Values.Single(ps => ps.ID == filter.Key.ID);
                     string teamName;
                     try
                     {
-                        teamName = MainWindow.tst[player.TeamF].displayName;
+                        teamName = MainWindow.TST[player.TeamF].DisplayName;
                     }
                     catch (Exception)
                     {
@@ -592,22 +578,18 @@ namespace NBA_Stats_Tracker.Windows
             foreach (string item in lstTotals.SelectedItems)
             {
                 int id = Convert.ToInt32(item.Substring(3).Split(')')[0]);
-                var criterion = item.Split(':')[1].Trim().Split(' ');
+                string[] criterion = item.Split(':')[1].Trim().Split(' ');
                 string parameter = criterion[0];
                 string op = criterion[1];
-                KeyValuePair<Selection, List<Filter>> filter;
-                if (item.Substring(2, 1) == "T")
-                {
-                    filter = filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
-                }
-                else
-                {
-                    filter = filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
-                }
+                KeyValuePair<Selection, List<Filter>> filter = item.Substring(2, 1) == "T"
+                                                                   ? _filters.Single(
+                                                                       f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id)
+                                                                   : _filters.Single(
+                                                                       f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
                 filter.Value.Remove(filter.Value.Single(o => o.Parameter == parameter && o.Operator == op));
             }
 
-            PopulateTotalsList();
+            populateTotalsList();
         }
 
         /// <summary>
@@ -632,35 +614,31 @@ namespace NBA_Stats_Tracker.Windows
             EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
-        private List<int> playersToHighlight = new List<int>(); 
-        private List<int> teamsToHighlight = new List<int>();
-        private readonly string folder = App.AppDocsPath + @"\Advanced Stats Filters";
-
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            playersToHighlight.Clear();
-            teamsToHighlight.Clear();
+            _playersToHighlight.Clear();
+            _teamsToHighlight.Clear();
 
             var bsToCalculate = new List<BoxScoreEntry>();
             var notBsToCalculate = new List<BoxScoreEntry>();
-            foreach (var bse in MainWindow.bshist)
+            foreach (var bse in MainWindow.BSHist)
             {
                 bool keep = true;
-                foreach (var filter in filters)
+                foreach (var filter in _filters)
                 {
                     if (filter.Key.SelectionType == SelectionType.Team)
                     {
-                        if (!teamsToHighlight.Contains(filter.Key.ID))
+                        if (!_teamsToHighlight.Contains(filter.Key.ID))
                         {
-                            teamsToHighlight.Add(filter.Key.ID);
+                            _teamsToHighlight.Add(filter.Key.ID);
                         }
                         //string teamName = MainWindow.TeamOrder.Single(pair => pair.Value == filter.Key.ID).Key;
-                        if (bse.bs.Team1ID != filter.Key.ID && bse.bs.Team2ID != filter.Key.ID)
+                        if (bse.BS.Team1ID != filter.Key.ID && bse.BS.Team2ID != filter.Key.ID)
                         {
                             keep = false;
                             break;
                         }
-                        string p = bse.bs.Team1ID == filter.Key.ID ? "1" : "2";
+                        string p = bse.BS.Team1ID == filter.Key.ID ? "1" : "2";
                         string oppP = p == "1" ? "2" : "1";
 
                         foreach (var option in filter.Value)
@@ -719,19 +697,19 @@ namespace NBA_Stats_Tracker.Windows
                                 {
                                     ige =
                                         context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
-                                                                                   bse.bs.GetType()
+                                                                                   bse.BS.GetType()
                                                                                       .GetProperty(parameter)
-                                                                                      .GetValue(bse.bs, null), option.Operator, option.Value));
+                                                                                      .GetValue(bse.BS, null), option.Operator, option.Value));
                                 }
                                 else
                                 {
-                                    var par1 = parameter.Replace("%", "M");
-                                    var par2 = parameter.Replace("%", "A");
+                                    string par1 = parameter.Replace("%", "M");
+                                    string par2 = parameter.Replace("%", "A");
                                     ige =
                                         context.CompileGeneric<bool>(
                                             string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
-                                                          bse.bs.GetType().GetProperty(par1).GetValue(bse.bs, null),
-                                                          bse.bs.GetType().GetProperty(par2).GetValue(bse.bs, null), option.Operator,
+                                                          bse.BS.GetType().GetProperty(par1).GetValue(bse.BS, null),
+                                                          bse.BS.GetType().GetProperty(par2).GetValue(bse.BS, null), option.Operator,
                                                           option.Value));
                                 }
                             }
@@ -742,14 +720,13 @@ namespace NBA_Stats_Tracker.Windows
                                     if (!parameter2.Contains("%"))
                                     {
                                         ige =
-                                            context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
-                                                                                       getValue(bse, parameter), option.Operator,
-                                                                                       getValue(bse, parameter2)));
+                                            context.CompileGeneric<bool>(string.Format("{0} {1} {2}", getValue(bse, parameter),
+                                                                                       option.Operator, getValue(bse, parameter2)));
                                     }
                                     else
                                     {
-                                        var par2Part1 = parameter2.Replace("%", "M");
-                                        var par2Part2 = parameter2.Replace("%", "A");
+                                        string par2Part1 = parameter2.Replace("%", "M");
+                                        string par2Part2 = parameter2.Replace("%", "A");
                                         ige =
                                             context.CompileGeneric<bool>(
                                                 string.Format("Cast({0}, double) {1} (Cast({2}, double) / Cast({3}, double))",
@@ -761,8 +738,8 @@ namespace NBA_Stats_Tracker.Windows
                                 {
                                     if (!parameter2.Contains("%"))
                                     {
-                                        var par1Part1 = parameter.Replace("%", "M");
-                                        var par1Part2 = parameter.Replace("%", "A");
+                                        string par1Part1 = parameter.Replace("%", "M");
+                                        string par1Part2 = parameter.Replace("%", "A");
                                         ige =
                                             context.CompileGeneric<bool>(
                                                 string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
@@ -771,10 +748,10 @@ namespace NBA_Stats_Tracker.Windows
                                     }
                                     else
                                     {
-                                        var par1Part1 = parameter.Replace("%", "M");
-                                        var par1Part2 = parameter.Replace("%", "A"); 
-                                        var par2Part1 = parameter2.Replace("%", "M");
-                                        var par2Part2 = parameter2.Replace("%", "A");
+                                        string par1Part1 = parameter.Replace("%", "M");
+                                        string par1Part2 = parameter.Replace("%", "A");
+                                        string par2Part1 = parameter2.Replace("%", "M");
+                                        string par2Part2 = parameter2.Replace("%", "A");
                                         ige =
                                             context.CompileGeneric<bool>(
                                                 string.Format(
@@ -798,14 +775,14 @@ namespace NBA_Stats_Tracker.Windows
                     }
                     else
                     {
-                        if (!playersToHighlight.Contains(filter.Key.ID))
+                        if (!_playersToHighlight.Contains(filter.Key.ID))
                         {
-                            playersToHighlight.Add(filter.Key.ID);
+                            _playersToHighlight.Add(filter.Key.ID);
                         }
                         PlayerBoxScore pbs;
                         try
                         {
-                            pbs = bse.pbsList.Single(pbs1 => pbs1.PlayerID == filter.Key.ID);
+                            pbs = bse.PBSList.Single(pbs1 => pbs1.PlayerID == filter.Key.ID);
                         }
                         catch (InvalidOperationException)
                         {
@@ -819,26 +796,24 @@ namespace NBA_Stats_Tracker.Windows
                             parameter = parameter.Replace("3P", "TP");
                             parameter = parameter.Replace("TO", "TOS");
                             var context = new ExpressionContext();
-                            
+
                             IGenericExpression<bool> ige;
                             if (!parameter.Contains("%"))
                             {
                                 ige =
                                     context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
-                                                                               pbs.GetType()
-                                                                                  .GetProperty(parameter)
-                                                                                  .GetValue(pbs, null), option.Operator, option.Value));
+                                                                               pbs.GetType().GetProperty(parameter).GetValue(pbs, null),
+                                                                               option.Operator, option.Value));
                             }
                             else
                             {
-                                var par1 = parameter.Replace("%", "M");
-                                var par2 = parameter.Replace("%", "A");
+                                string par1 = parameter.Replace("%", "M");
+                                string par2 = parameter.Replace("%", "A");
                                 ige =
                                     context.CompileGeneric<bool>(
                                         string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
                                                       pbs.GetType().GetProperty(par1).GetValue(pbs, null),
-                                                      pbs.GetType().GetProperty(par2).GetValue(pbs, null), option.Operator,
-                                                      option.Value));
+                                                      pbs.GetType().GetProperty(par2).GetValue(pbs, null), option.Operator, option.Value));
                             }
                             if (ige.Evaluate() == false)
                             {
@@ -859,100 +834,108 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            CalculateAdvancedStats(bsToCalculate, notBsToCalculate);
+            calculateAdvancedStats(bsToCalculate, notBsToCalculate);
 
             tbcAdv.SelectedItem = tabPlayerStats;
         }
 
         private static object getValue(BoxScoreEntry bse, string parameter)
         {
-            return bse.bs.GetType()
-                      .GetProperty(parameter)
-                      .GetValue(bse.bs, null);
+            return bse.BS.GetType().GetProperty(parameter).GetValue(bse.BS, null);
         }
 
-        private void CalculateAdvancedStats(List<BoxScoreEntry> bsToCalculate, List<BoxScoreEntry> notBsToCalculate)
+        private void calculateAdvancedStats(List<BoxScoreEntry> bsToCalculate, List<BoxScoreEntry> notBsToCalculate)
         {
             var advtst = new Dictionary<int, TeamStats>();
-            var advtstopp = new Dictionary<int, TeamStats>();
+            var advtstOpp = new Dictionary<int, TeamStats>();
             var advpst = new Dictionary<int, PlayerStats>();
             var advPPtst = new Dictionary<int, TeamStats>();
-            var advPPtstopp = new Dictionary<int, TeamStats>();
+            var advPPtstOpp = new Dictionary<int, TeamStats>();
 
-            var advtst_not = new Dictionary<int, TeamStats>();
-            var advtstopp_not = new Dictionary<int, TeamStats>();
-            var advpst_not = new Dictionary<int, PlayerStats>();
-            var advPPtst_not = new Dictionary<int, TeamStats>();
-            var advPPtstopp_not = new Dictionary<int, TeamStats>();
+            var advtstNot = new Dictionary<int, TeamStats>();
+            var advtstOppNot = new Dictionary<int, TeamStats>();
+            var advpstNot = new Dictionary<int, PlayerStats>();
+            var advPPtstNot = new Dictionary<int, TeamStats>();
+            var advPPtstOppNot = new Dictionary<int, TeamStats>();
 
             foreach (var bse in bsToCalculate)
             {
-                int team1ID = bse.bs.Team1ID;
-                int team2ID = bse.bs.Team2ID;
-                TeamBoxScore bs = bse.bs;
+                int team1ID = bse.BS.Team1ID;
+                int team2ID = bse.BS.Team2ID;
+                TeamBoxScore bs = bse.BS;
                 if (!advtst.ContainsKey(team1ID))
                 {
                     advtst.Add(team1ID,
-                               new TeamStats {ID = team1ID, name = MainWindow.tst[team1ID].name, displayName = MainWindow.tst[team1ID].displayName});
-                    advtstopp.Add(team1ID,
+                               new TeamStats
+                               {
+                                   ID = team1ID,
+                                   Name = MainWindow.TST[team1ID].Name,
+                                   DisplayName = MainWindow.TST[team1ID].DisplayName
+                               });
+                    advtstOpp.Add(team1ID,
                                   new TeamStats
                                   {
                                       ID = team1ID,
-                                      name = MainWindow.tst[team1ID].name,
-                                      displayName = MainWindow.tst[team1ID].displayName
+                                      Name = MainWindow.TST[team1ID].Name,
+                                      DisplayName = MainWindow.TST[team1ID].DisplayName
                                   });
                 }
                 TeamStats ts1 = advtst[team1ID];
-                TeamStats ts1opp = advtstopp[team1ID];
+                TeamStats ts1Opp = advtstOpp[team1ID];
                 if (!advtst.ContainsKey(team2ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
                     advtst.Add(team2ID,
-                               new TeamStats {ID = team2ID, name = MainWindow.tst[team2ID].name, displayName = MainWindow.tst[team2ID].displayName});
-                    advtstopp.Add(team2ID,
+                               new TeamStats
+                               {
+                                   ID = team2ID,
+                                   Name = MainWindow.TST[team2ID].Name,
+                                   DisplayName = MainWindow.TST[team2ID].DisplayName
+                               });
+                    advtstOpp.Add(team2ID,
                                   new TeamStats
                                   {
                                       ID = team2ID,
-                                      name = MainWindow.tst[team2ID].name,
-                                      displayName = MainWindow.tst[team2ID].displayName
+                                      Name = MainWindow.TST[team2ID].Name,
+                                      DisplayName = MainWindow.TST[team2ID].DisplayName
                                   });
                 }
                 TeamStats ts2 = advtst[team2ID];
-                TeamStats ts2opp = advtstopp[team2ID];
+                TeamStats ts2Opp = advtstOpp[team2ID];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
-                foreach (var pbs in bse.pbsList)
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2Opp, ref ts1Opp, true);
+                foreach (var pbs in bse.PBSList)
                 {
                     if (advpst.All(pair => pair.Key != pbs.PlayerID))
                     {
-                        advpst.Add(pbs.PlayerID, MainWindow.pst[pbs.PlayerID].DeepClone());
+                        advpst.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
                         advpst[pbs.PlayerID].ResetStats();
                     }
                     advpst[pbs.PlayerID].AddBoxScore(pbs, false);
 
-                    var teamID = pbs.TeamID;
+                    int teamID = pbs.TeamID;
                     if (!advPPtst.ContainsKey(pbs.PlayerID))
                     {
                         advPPtst.Add(pbs.PlayerID,
                                      new TeamStats
                                      {
                                          ID = teamID,
-                                         name = MainWindow.tst[teamID].name,
-                                         displayName = MainWindow.tst[teamID].displayName
+                                         Name = MainWindow.TST[teamID].Name,
+                                         DisplayName = MainWindow.TST[teamID].DisplayName
                                      });
                     }
-                    if (!advPPtstopp.ContainsKey(pbs.PlayerID))
+                    if (!advPPtstOpp.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtstopp.Add(pbs.PlayerID,
+                        advPPtstOpp.Add(pbs.PlayerID,
                                         new TeamStats
                                         {
                                             ID = teamID,
-                                            name = MainWindow.tst[teamID].name,
-                                            displayName = MainWindow.tst[teamID].displayName
+                                            Name = MainWindow.TST[teamID].Name,
+                                            DisplayName = MainWindow.TST[teamID].DisplayName
                                         });
                     }
                     TeamStats ts = advPPtst[pbs.PlayerID];
-                    TeamStats tsopp = advPPtstopp[pbs.PlayerID];
+                    TeamStats tsopp = advPPtstOpp[pbs.PlayerID];
                     if (team1ID == pbs.TeamID)
                     {
                         TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
@@ -966,86 +949,86 @@ namespace NBA_Stats_Tracker.Windows
 
             foreach (var bse in notBsToCalculate)
             {
-                int team1ID = bse.bs.Team1ID;
-                int team2ID = bse.bs.Team2ID;
-                TeamBoxScore bs = bse.bs;
-                if (!advtst_not.ContainsKey(team1ID))
+                int team1ID = bse.BS.Team1ID;
+                int team2ID = bse.BS.Team2ID;
+                TeamBoxScore bs = bse.BS;
+                if (!advtstNot.ContainsKey(team1ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst_not.Add(team1ID,
-                                   new TeamStats
-                                   {
-                                       ID = team1ID,
-                                       name = MainWindow.tst[team1ID].name,
-                                       displayName = MainWindow.tst[team1ID].displayName
-                                   });
-                    advtstopp_not.Add(team1ID,
-                                      new TeamStats
-                                      {
-                                          ID = team1ID,
-                                          name = MainWindow.tst[team1ID].name,
-                                          displayName = MainWindow.tst[team1ID].displayName
-                                      });
+                    advtstNot.Add(team1ID,
+                                  new TeamStats
+                                  {
+                                      ID = team1ID,
+                                      Name = MainWindow.TST[team1ID].Name,
+                                      DisplayName = MainWindow.TST[team1ID].DisplayName
+                                  });
+                    advtstOppNot.Add(team1ID,
+                                     new TeamStats
+                                     {
+                                         ID = team1ID,
+                                         Name = MainWindow.TST[team1ID].Name,
+                                         DisplayName = MainWindow.TST[team1ID].DisplayName
+                                     });
                 }
-                TeamStats ts1 = advtst_not[team1ID];
-                TeamStats ts1opp = advtstopp_not[team1ID];
-                if (!advtst_not.ContainsKey(team2ID))
+                TeamStats ts1 = advtstNot[team1ID];
+                TeamStats ts1Opp = advtstOppNot[team1ID];
+                if (!advtstNot.ContainsKey(team2ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst_not.Add(team2ID,
-                                   new TeamStats
-                                   {
-                                       ID = team2ID,
-                                       name = MainWindow.tst[team2ID].name,
-                                       displayName = MainWindow.tst[team2ID].displayName
-                                   });
-                    advtstopp_not.Add(team2ID,
-                                      new TeamStats
-                                      {
-                                          ID = team2ID,
-                                          name = MainWindow.tst[team2ID].name,
-                                          displayName = MainWindow.tst[team2ID].displayName
-                                      });
+                    advtstNot.Add(team2ID,
+                                  new TeamStats
+                                  {
+                                      ID = team2ID,
+                                      Name = MainWindow.TST[team2ID].Name,
+                                      DisplayName = MainWindow.TST[team2ID].DisplayName
+                                  });
+                    advtstOppNot.Add(team2ID,
+                                     new TeamStats
+                                     {
+                                         ID = team2ID,
+                                         Name = MainWindow.TST[team2ID].Name,
+                                         DisplayName = MainWindow.TST[team2ID].DisplayName
+                                     });
                 }
-                TeamStats ts2 = advtst_not[team2ID];
-                TeamStats ts2opp = advtstopp_not[team2ID];
+                TeamStats ts2 = advtstNot[team2ID];
+                TeamStats ts2Opp = advtstOppNot[team2ID];
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2opp, ref ts1opp, true);
-                foreach (var pbs in bse.pbsList)
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2Opp, ref ts1Opp, true);
+                foreach (var pbs in bse.PBSList)
                 {
-                    if (pbs.isOut)
+                    if (pbs.IsOut)
                         continue;
 
-                    if (advpst_not.All(pair => pair.Key != pbs.PlayerID))
+                    if (advpstNot.All(pair => pair.Key != pbs.PlayerID))
                     {
-                        advpst_not.Add(pbs.PlayerID, MainWindow.pst[pbs.PlayerID].DeepClone());
-                        advpst_not[pbs.PlayerID].ResetStats();
+                        advpstNot.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
+                        advpstNot[pbs.PlayerID].ResetStats();
                     }
-                    advpst_not[pbs.PlayerID].AddBoxScore(pbs, false);
+                    advpstNot[pbs.PlayerID].AddBoxScore(pbs, false);
 
-                    var teamID = pbs.TeamID;
-                    if (!advPPtst_not.ContainsKey(pbs.PlayerID))
+                    int teamID = pbs.TeamID;
+                    if (!advPPtstNot.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtst_not.Add(pbs.PlayerID,
-                                         new TeamStats
-                                         {
-                                             ID = teamID,
-                                             name = MainWindow.tst[teamID].name,
-                                             displayName = MainWindow.tst[teamID].displayName
-                                         });
+                        advPPtstNot.Add(pbs.PlayerID,
+                                        new TeamStats
+                                        {
+                                            ID = teamID,
+                                            Name = MainWindow.TST[teamID].Name,
+                                            DisplayName = MainWindow.TST[teamID].DisplayName
+                                        });
                     }
-                    if (!advPPtstopp_not.ContainsKey(pbs.PlayerID))
+                    if (!advPPtstOppNot.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtstopp_not.Add(pbs.PlayerID,
-                                            new TeamStats
-                                            {
-                                                ID = teamID,
-                                                name = MainWindow.tst[teamID].name,
-                                                displayName = MainWindow.tst[teamID].displayName
-                                            });
+                        advPPtstOppNot.Add(pbs.PlayerID,
+                                           new TeamStats
+                                           {
+                                               ID = teamID,
+                                               Name = MainWindow.TST[teamID].Name,
+                                               DisplayName = MainWindow.TST[teamID].DisplayName
+                                           });
                     }
-                    TeamStats ts = advPPtst_not[pbs.PlayerID];
-                    TeamStats tsopp = advPPtstopp_not[pbs.PlayerID];
+                    TeamStats ts = advPPtstNot[pbs.PlayerID];
+                    TeamStats tsopp = advPPtstOppNot[pbs.PlayerID];
                     if (team1ID == pbs.TeamID)
                     {
                         TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
@@ -1057,55 +1040,52 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            TeamStats.CalculateAllMetrics(ref advtst, advtstopp, false);
-            TeamStats.CalculateAllMetrics(ref advtstopp, advtst, false);
-            PlayerStats.CalculateAllMetrics(ref advpst, advPPtst, advPPtstopp, teamsPerPlayer: true);
+            TeamStats.CalculateAllMetrics(ref advtst, advtstOpp, false);
+            TeamStats.CalculateAllMetrics(ref advtstOpp, advtst, false);
+            PlayerStats.CalculateAllMetrics(ref advpst, advPPtst, advPPtstOpp, teamsPerPlayer: true);
 
             psrList = new ObservableCollection<PlayerStatsRow>();
-            var playerStatsRows = psrList;
+            ObservableCollection<PlayerStatsRow> playerStatsRows = psrList;
             advpst.ToList().ForEach(item => highlightAndAddPlayers(item, ref playerStatsRows));
             tsrList = new ObservableCollection<TeamStatsRow>();
-            var teamStatsRows = tsrList;
+            ObservableCollection<TeamStatsRow> teamStatsRows = tsrList;
             advtst.ToList().ForEach(item => highlightAndAddTeams(item, ref teamStatsRows));
             tsrOppList = new ObservableCollection<TeamStatsRow>();
-            var oppStatsRows = tsrOppList;
-            advtstopp.ToList().ForEach(item => highlightAndAddTeams(item, ref oppStatsRows));
+            ObservableCollection<TeamStatsRow> oppStatsRows = tsrOppList;
+            advtstOpp.ToList().ForEach(item => highlightAndAddTeams(item, ref oppStatsRows));
 
             dgvTeamStats.ItemsSource = tsrList;
             dgvOppStats.ItemsSource = tsrOppList;
             dgvPlayerStats.ItemsSource = psrList;
 
-            TeamStats.CalculateAllMetrics(ref advtst_not, advtstopp_not, false);
-            TeamStats.CalculateAllMetrics(ref advtstopp_not, advtst_not, false);
-            PlayerStats.CalculateAllMetrics(ref advpst_not, advPPtst_not, advPPtstopp_not, teamsPerPlayer: true);
+            TeamStats.CalculateAllMetrics(ref advtstNot, advtstOppNot, false);
+            TeamStats.CalculateAllMetrics(ref advtstOppNot, advtstNot, false);
+            PlayerStats.CalculateAllMetrics(ref advpstNot, advPPtstNot, advPPtstOppNot, teamsPerPlayer: true);
 
-            psrList_not = new ObservableCollection<PlayerStatsRow>();
-            var playerStatsRows_not = psrList_not;
-            advpst_not.ToList().ForEach(item => highlightAndAddPlayers(item, ref playerStatsRows_not));
-            tsrList_not = new ObservableCollection<TeamStatsRow>();
-            var teamStatsRows_not = tsrList_not;
-            advtst_not.ToList().ForEach(item => highlightAndAddTeams(item, ref teamStatsRows_not));
-            tsrOppList_not = new ObservableCollection<TeamStatsRow>();
-            var oppStatsRows_not = tsrOppList_not;
-            advtstopp_not.ToList().ForEach(item => highlightAndAddTeams(item, ref oppStatsRows_not));
+            psrList_Not = new ObservableCollection<PlayerStatsRow>();
+            ObservableCollection<PlayerStatsRow> playerStatsRowsNot = psrList_Not;
+            advpstNot.ToList().ForEach(item => highlightAndAddPlayers(item, ref playerStatsRowsNot));
+            tsrList_Not = new ObservableCollection<TeamStatsRow>();
+            ObservableCollection<TeamStatsRow> teamStatsRowsNot = tsrList_Not;
+            advtstNot.ToList().ForEach(item => highlightAndAddTeams(item, ref teamStatsRowsNot));
+            tsrOppList_Not = new ObservableCollection<TeamStatsRow>();
+            ObservableCollection<TeamStatsRow> oppStatsRowsNot = tsrOppList_Not;
+            advtstOppNot.ToList().ForEach(item => highlightAndAddTeams(item, ref oppStatsRowsNot));
 
-            dgvTeamStatsUnmet.ItemsSource = tsrList_not;
-            dgvOppStatsUnmet.ItemsSource = tsrOppList_not;
-            dgvPlayerStatsUnmet.ItemsSource = psrList_not;
+            dgvTeamStatsUnmet.ItemsSource = tsrList_Not;
+            dgvOppStatsUnmet.ItemsSource = tsrOppList_Not;
+            dgvPlayerStatsUnmet.ItemsSource = psrList_Not;
 
-            bsToCalculate.ForEach(bse => bse.bs.PrepareForDisplay(advtst));
-            notBsToCalculate.ForEach(bse => bse.bs.PrepareForDisplay(advtst_not));
-            dgvBoxScores.ItemsSource = bsToCalculate.Select(bse => bse.bs);
-            dgvBoxScoresUnmet.ItemsSource = notBsToCalculate.Select(bse => bse.bs);
+            bsToCalculate.ForEach(bse => bse.BS.PrepareForDisplay(advtst));
+            notBsToCalculate.ForEach(bse => bse.BS.PrepareForDisplay(advtstNot));
+            dgvBoxScores.ItemsSource = bsToCalculate.Select(bse => bse.BS);
+            dgvBoxScoresUnmet.ItemsSource = notBsToCalculate.Select(bse => bse.BS);
         }
-
-        protected ObservableCollection<TeamStatsRow> tsrOppList { get; set; }
-        protected ObservableCollection<TeamStatsRow> tsrOppList_not { get; set; }
 
         private void highlightAndAddTeams(KeyValuePair<int, TeamStats> pair, ref ObservableCollection<TeamStatsRow> tsrObservable)
         {
             var tsr = new TeamStatsRow(pair.Value);
-            if (teamsToHighlight.Contains(tsr.ID))
+            if (_teamsToHighlight.Contains(tsr.ID))
             {
                 tsr.Highlight = true;
             }
@@ -1115,48 +1095,12 @@ namespace NBA_Stats_Tracker.Windows
         private void highlightAndAddPlayers(KeyValuePair<int, PlayerStats> pair, ref ObservableCollection<PlayerStatsRow> psrObservable)
         {
             var psr = new PlayerStatsRow(pair.Value);
-            if (playersToHighlight.Contains(psr.ID))
+            if (_playersToHighlight.Contains(psr.ID))
             {
                 psr.Highlight = true;
             }
             psrObservable.Add(psr);
         }
-
-        #region Nested type: Filter
-
-        public struct Filter
-        {
-            public string Operator;
-            public string Parameter;
-            public string Parameter2;
-            public string Value;
-
-            public Filter(string parameter, string oper, string parameter2, string value)
-            {
-                Parameter = parameter;
-                Operator = oper;
-                Parameter2 = parameter2;
-                Value = value;
-            }
-        }
-
-        #endregion
-
-        #region Nested type: Selection
-
-        public struct Selection
-        {
-            public int ID;
-            public SelectionType SelectionType;
-
-            public Selection(SelectionType selectionType, int ID)
-            {
-                SelectionType = selectionType;
-                this.ID = ID;
-            }
-        };
-
-        #endregion
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -1165,10 +1109,10 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnShowAll_Click(object sender, RoutedEventArgs e)
         {
-            playersToHighlight.Clear();
-            teamsToHighlight.Clear();
+            _playersToHighlight.Clear();
+            _teamsToHighlight.Clear();
 
-            CalculateAdvancedStats(MainWindow.bshist, new List<BoxScoreEntry>());
+            calculateAdvancedStats(MainWindow.BSHist, new List<BoxScoreEntry>());
 
             tbcAdv.SelectedItem = tabPlayerStats;
         }
@@ -1180,13 +1124,13 @@ namespace NBA_Stats_Tracker.Windows
 
         private void btnLoadFilters_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog
-                                 {
-                                     InitialDirectory = Path.GetFullPath(folder),
-                                     Title = "Select the filters file you want to load...",
-                                     Filter = "NST Advanced Stats Filters (*.naf)|*.naf",
-                                     DefaultExt = "naf"
-                                 };
+            var ofd = new OpenFileDialog
+                      {
+                          InitialDirectory = Path.GetFullPath(_folder),
+                          Title = "Select the filters file you want to load...",
+                          Filter = "NST Advanced Stats Filters (*.naf)|*.naf",
+                          DefaultExt = "naf"
+                      };
 
             ofd.ShowDialog();
 
@@ -1202,16 +1146,16 @@ namespace NBA_Stats_Tracker.Windows
 
                 if (mbr == MessageBoxResult.Yes)
                 {
-                    filters.Clear();
+                    _filters.Clear();
                     lstTotals.Items.Clear();
                 }
             }
 
             string[] lines = File.ReadAllLines(ofd.FileName);
-            foreach (string item in lines)
+            foreach (var item in lines)
             {
                 int id = Convert.ToInt32(item.Substring(3).Split(')')[0]);
-                var criterion = item.Split(':')[1].Trim().Split(' ');
+                string[] criterion = item.Split(':')[1].Trim().Split(' ');
                 string parameter = criterion[0];
                 string op = criterion[1];
                 string par2;
@@ -1235,30 +1179,30 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     try
                     {
-                        filter = filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
                     }
                     catch (InvalidOperationException)
                     {
-                        filters.Add(new Selection(SelectionType.Team, id), new List<Filter>());
-                        filter = filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        _filters.Add(new Selection(SelectionType.Team, id), new List<Filter>());
+                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
                     }
                 }
                 else
                 {
                     try
                     {
-                        filter = filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
                     }
                     catch (InvalidOperationException)
                     {
-                        filters.Add(new Selection(SelectionType.Player, id), new List<Filter>());
-                        filter = filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                        _filters.Add(new Selection(SelectionType.Player, id), new List<Filter>());
+                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
                     }
                 }
                 filter.Value.Add(new Filter(parameter, op, par2, val));
             }
 
-            PopulateTotalsList();
+            populateTotalsList();
         }
 
         private void btnSaveFilters_Click(object sender, RoutedEventArgs e)
@@ -1266,13 +1210,13 @@ namespace NBA_Stats_Tracker.Windows
             if (lstTotals.Items.Count == 0)
                 return;
 
-            SaveFileDialog sfd = new SaveFileDialog
-                                 {
-                                     InitialDirectory = Path.GetFullPath(folder),
-                                     Title = "Save Filters As",
-                                     Filter = "NST Advanced Stats Filters (*.naf)|*.naf",
-                                     DefaultExt = "naf"
-                                 };
+            var sfd = new SaveFileDialog
+                      {
+                          InitialDirectory = Path.GetFullPath(_folder),
+                          Title = "Save Filters As",
+                          Filter = "NST Advanced Stats Filters (*.naf)|*.naf",
+                          DefaultExt = "naf"
+                      };
 
             sfd.ShowDialog();
 
@@ -1304,5 +1248,41 @@ namespace NBA_Stats_Tracker.Windows
                 txtTotalsVal.IsEnabled = false;
             }
         }
+
+        #region Nested type: Filter
+
+        public struct Filter
+        {
+            public string Operator;
+            public string Parameter;
+            public string Parameter2;
+            public string Value;
+
+            public Filter(string parameter, string oper, string parameter2, string value)
+            {
+                Parameter = parameter;
+                Operator = oper;
+                Parameter2 = parameter2;
+                Value = value;
+            }
+        }
+
+        #endregion
+
+        #region Nested type: Selection
+
+        public struct Selection
+        {
+            public int ID;
+            public SelectionType SelectionType;
+
+            public Selection(SelectionType selectionType, int id)
+            {
+                SelectionType = selectionType;
+                ID = id;
+            }
+        };
+
+        #endregion
     }
 }

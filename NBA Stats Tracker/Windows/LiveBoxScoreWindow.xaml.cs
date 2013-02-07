@@ -43,12 +43,12 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class LiveBoxScoreWindow
     {
-        private readonly Brush defaultBackground;
-        private readonly string playersT;
-        private List<string> Teams;
-        private SortableBindingList<LivePlayerBoxScore> pbsAwayList = new SortableBindingList<LivePlayerBoxScore>();
-        private SortableBindingList<LivePlayerBoxScore> pbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
-        private DataRowView rowBeingEdited;
+        private readonly Brush _defaultBackground;
+        private readonly string _playersT;
+        private SortableBindingList<LivePlayerBoxScore> _pbsAwayList = new SortableBindingList<LivePlayerBoxScore>();
+        private SortableBindingList<LivePlayerBoxScore> _pbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
+        private DataRowView _rowBeingEdited;
+        private List<string> _teams;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LiveBoxScoreWindow" /> class.
@@ -57,20 +57,20 @@ namespace NBA_Stats_Tracker.Windows
         {
             InitializeComponent();
 
-            defaultBackground = cmbTeam1.Background;
+            _defaultBackground = cmbTeam1.Background;
 
-            playersT = "Players";
+            _playersT = "Players";
 
-            if (MainWindow.curSeason != SQLiteIO.getMaxSeason(MainWindow.currentDB))
+            if (MainWindow.CurSeason != SQLiteIO.GetMaxSeason(MainWindow.CurrentDB))
             {
-                playersT += "S" + MainWindow.curSeason;
+                _playersT += "S" + MainWindow.CurSeason;
             }
 
-            PopulateTeamsCombo();
+            populateTeamsCombo();
         }
 
-        private ObservableCollection<KeyValuePair<int, string>> PlayersListAway { get; set; }
-        private ObservableCollection<KeyValuePair<int, string>> PlayersListHome { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> playersListAway { get; set; }
+        private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
 
         /// <summary>
         ///     Handles the CopyingCellClipboardContent event of the colPlayerAway control.
@@ -82,7 +82,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void colPlayerAway_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
-            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListAway);
+            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, playersListAway);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void colPlayerHome_CopyingCellClipboardContent(object sender, DataGridCellClipboardEventArgs e)
         {
-            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, PlayersListHome);
+            EventHandlers.PlayerColumn_CopyingCellClipboardContent(e, playersListHome);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace NBA_Stats_Tracker.Windows
         private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
-            UpdateDataGrid(1);
+            updateDataGrid(1);
         }
 
         /// <summary>
@@ -117,11 +117,11 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void checkIfSameTeams()
         {
-            string Team1, Team2;
+            string team1, team2;
             try
             {
-                Team1 = cmbTeam1.SelectedItem.ToString();
-                Team2 = cmbTeam2.SelectedItem.ToString();
+                team1 = cmbTeam1.SelectedItem.ToString();
+                team2 = cmbTeam2.SelectedItem.ToString();
             }
             catch (Exception)
             {
@@ -129,22 +129,22 @@ namespace NBA_Stats_Tracker.Windows
             }
 
 
-            if (Team1 == Team2)
+            if (team1 == team2)
             {
                 cmbTeam1.Background = Brushes.Red;
                 cmbTeam2.Background = Brushes.Red;
                 return;
             }
 
-            cmbTeam1.Background = defaultBackground;
-            cmbTeam2.Background = defaultBackground;
+            cmbTeam1.Background = _defaultBackground;
+            cmbTeam2.Background = _defaultBackground;
         }
 
         /// <summary>
         ///     Updates the data grid for the specified team, filling it with all the team's players.
         /// </summary>
         /// <param name="team">1 for the away team; anything else for the home team.</param>
-        private void UpdateDataGrid(int team)
+        private void updateDataGrid(int team)
         {
             SortableBindingList<LivePlayerBoxScore> pbsList;
             int teamID;
@@ -152,8 +152,8 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-                    pbsList = pbsAwayList;
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
+                    pbsList = _pbsAwayList;
                 }
                 catch (Exception)
                 {
@@ -164,8 +164,8 @@ namespace NBA_Stats_Tracker.Windows
             {
                 try
                 {
-                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
-                    pbsList = pbsHomeList;
+                    teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
+                    pbsList = _pbsHomeList;
                 }
                 catch (Exception)
                 {
@@ -173,39 +173,39 @@ namespace NBA_Stats_Tracker.Windows
                 }
             }
 
-            ObservableCollection<KeyValuePair<int, string>> PlayersList;
-            UpdateLiveBoxScoreDataGrid(teamID, out PlayersList, ref pbsList, playersT, false);
+            ObservableCollection<KeyValuePair<int, string>> playersList;
+            updateLiveBoxScoreDataGrid(teamID, out playersList, ref pbsList, _playersT, false);
 
             if (team == 1)
             {
-                colPlayerAway.ItemsSource = PlayersList;
-                pbsAwayList = pbsList;
-                dgvPlayersAway.ItemsSource = pbsAwayList;
+                colPlayerAway.ItemsSource = playersList;
+                _pbsAwayList = pbsList;
+                dgvPlayersAway.ItemsSource = _pbsAwayList;
             }
             else
             {
-                colPlayerHome.ItemsSource = PlayersList;
-                pbsHomeList = pbsList;
-                dgvPlayersHome.ItemsSource = pbsHomeList;
+                colPlayerHome.ItemsSource = playersList;
+                _pbsHomeList = pbsList;
+                dgvPlayersHome.ItemsSource = _pbsHomeList;
             }
         }
 
         /// <summary>
         ///     Populates the teams combo.
         /// </summary>
-        private void PopulateTeamsCombo()
+        private void populateTeamsCombo()
         {
-            Teams = new List<string>();
+            _teams = new List<string>();
             foreach (var kvp in MainWindow.TeamOrder)
             {
-                if (!MainWindow.tst[kvp.Value].isHidden)
-                    Teams.Add(MainWindow.tst[kvp.Value].displayName);
+                if (!MainWindow.TST[kvp.Value].IsHidden)
+                    _teams.Add(MainWindow.TST[kvp.Value].DisplayName);
             }
 
-            Teams.Sort();
+            _teams.Sort();
 
-            cmbTeam1.ItemsSource = Teams;
-            cmbTeam2.ItemsSource = Teams;
+            cmbTeam1.ItemsSource = _teams;
+            cmbTeam2.ItemsSource = _teams;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace NBA_Stats_Tracker.Windows
         private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var rowView = e.Row.Item as DataRowView;
-            rowBeingEdited = rowView;
+            _rowBeingEdited = rowView;
         }
 
         /// <summary>
@@ -232,9 +232,9 @@ namespace NBA_Stats_Tracker.Windows
         /// </param>
         private void dataGrid_CurrentCellChanged(object sender, EventArgs e)
         {
-            if (rowBeingEdited != null)
+            if (_rowBeingEdited != null)
             {
-                rowBeingEdited.EndEdit();
+                _rowBeingEdited.EndEdit();
             }
         }
 
@@ -249,7 +249,7 @@ namespace NBA_Stats_Tracker.Windows
         private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             checkIfSameTeams();
-            UpdateDataGrid(2);
+            updateDataGrid(2);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void calculateAwayTeam()
         {
-            txbAwayStats.Text = calculateTeam(pbsAwayList);
+            txbAwayStats.Text = calculateTeam(_pbsAwayList);
             compareScores();
         }
 
@@ -299,7 +299,7 @@ namespace NBA_Stats_Tracker.Windows
         /// </summary>
         private void calculateHomeTeam()
         {
-            txbHomeStats.Text = calculateTeam(pbsHomeList);
+            txbHomeStats.Text = calculateTeam(_pbsHomeList);
             compareScores();
         }
 
@@ -310,25 +310,22 @@ namespace NBA_Stats_Tracker.Windows
         /// <returns>A well-formatted string displaying all the calculated stats for the team.</returns>
         private string calculateTeam(IEnumerable<LivePlayerBoxScore> pbsList)
         {
-            int REB = 0, AST = 0, STL = 0, TOS = 0, BLK = 0, FGM = 0, TPM = 0, FTM = 0, OREB = 0, FOUL = 0, PTS = 0;
+            int reb = 0, ast = 0, stl = 0, tos = 0, blk = 0, oreb = 0, foul = 0, pts = 0;
 
             foreach (var pbs in pbsList)
             {
-                PTS += pbs.PTS;
-                REB += pbs.REB;
-                AST += pbs.AST;
-                STL += pbs.STL;
-                TOS += pbs.TOS;
-                BLK += pbs.BLK;
-                FGM += pbs.FGM;
-                TPM += pbs.TPM;
-                FTM += pbs.FTM;
-                OREB += pbs.OREB;
-                FOUL += pbs.FOUL;
+                pts += pbs.PTS;
+                reb += pbs.REB;
+                ast += pbs.AST;
+                stl += pbs.STL;
+                tos += pbs.TOS;
+                blk += pbs.BLK;
+                oreb += pbs.OREB;
+                foul += pbs.FOUL;
             }
 
-            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", PTS, REB,
-                                        OREB, AST, BLK, STL, TOS, FOUL);
+            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb,
+                                        oreb, ast, blk, stl, tos, foul);
 
             return resp;
         }
@@ -344,7 +341,7 @@ namespace NBA_Stats_Tracker.Windows
                          REB1 = 0,
                          AST1 = 0,
                          STL1 = 0,
-                         TO1 = 0,
+                         TOS1 = 0,
                          BLK1 = 0,
                          FGM1 = 0,
                          TPM1 = 0,
@@ -352,11 +349,11 @@ namespace NBA_Stats_Tracker.Windows
                          OREB1 = 0,
                          FOUL1 = 0,
                          PTS1 = 0,
-                         MINS1 = (ushort) MainWindow.gameLength,
+                         MINS1 = (ushort) MainWindow.GameLength,
                          REB2 = 0,
                          AST2 = 0,
                          STL2 = 0,
-                         TO2 = 0,
+                         TOS2 = 0,
                          BLK2 = 0,
                          FGM2 = 0,
                          TPM2 = 0,
@@ -364,16 +361,16 @@ namespace NBA_Stats_Tracker.Windows
                          OREB2 = 0,
                          FOUL2 = 0,
                          PTS2 = 0,
-                         MINS2 = (ushort) MainWindow.gameLength
+                         MINS2 = (ushort) MainWindow.GameLength
                      };
 
-            foreach (var pbs in pbsAwayList)
+            foreach (var pbs in _pbsAwayList)
             {
                 bs.PTS1 += pbs.PTS;
                 bs.REB1 += pbs.REB;
                 bs.AST1 += pbs.AST;
                 bs.STL1 += pbs.STL;
-                bs.TO1 += pbs.TOS;
+                bs.TOS1 += pbs.TOS;
                 bs.BLK1 += pbs.BLK;
                 bs.FGM1 += pbs.FGM;
                 bs.TPM1 += pbs.TPM;
@@ -382,13 +379,13 @@ namespace NBA_Stats_Tracker.Windows
                 bs.FOUL1 += pbs.FOUL;
             }
 
-            foreach (var pbs in pbsHomeList)
+            foreach (var pbs in _pbsHomeList)
             {
                 bs.PTS2 += pbs.PTS;
                 bs.REB2 += pbs.REB;
                 bs.AST2 += pbs.AST;
                 bs.STL2 += pbs.STL;
-                bs.TO2 += pbs.TOS;
+                bs.TOS2 += pbs.TOS;
                 bs.BLK2 += pbs.BLK;
                 bs.FGM2 += pbs.FGM;
                 bs.TPM2 += pbs.TPM;
@@ -397,25 +394,23 @@ namespace NBA_Stats_Tracker.Windows
                 bs.FOUL2 += pbs.FOUL;
             }
 
-            bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam1.SelectedItem.ToString());
-            bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.tst, cmbTeam2.SelectedItem.ToString());
+            bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
+            bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
 
-            bs.gamedate = DateTime.Today;
-            bs.SeasonNum = MainWindow.curSeason;
-            bs.done = false;
+            bs.GameDate = DateTime.Today;
+            bs.SeasonNum = MainWindow.CurSeason;
+            bs.Done = false;
 
-            var bse = new BoxScoreEntry(bs) {pbsList = new List<PlayerBoxScore>()};
-            foreach (var lpbs in pbsAwayList)
+            var bse = new BoxScoreEntry(bs) {PBSList = new List<PlayerBoxScore>()};
+            foreach (var lpbs in _pbsAwayList)
             {
-                var pbs = new PlayerBoxScore(lpbs);
-                pbs.TeamID = bs.Team1ID;
-                bse.pbsList.Add(pbs);
+                var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team1ID};
+                bse.PBSList.Add(pbs);
             }
-            foreach (var lpbs in pbsHomeList)
+            foreach (var lpbs in _pbsHomeList)
             {
-                var pbs = new PlayerBoxScore(lpbs);
-                pbs.TeamID = bs.Team2ID;
-                bse.pbsList.Add(pbs);
+                var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team2ID};
+                bse.PBSList.Add(pbs);
             }
 
             bse.Team1Display = cmbTeam1.SelectedItem.ToString();
@@ -432,7 +427,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DataTransferEventArgs" /> instance containing the event data.
         /// </param>
-        private void IntegerUpDown_SourceUpdated(object sender, DataTransferEventArgs e)
+        private void integerUpDown_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             calculateAwayTeam();
             calculateHomeTeam();
@@ -459,55 +454,55 @@ namespace NBA_Stats_Tracker.Windows
 
             BoxScoreEntry bse = calculateBoxScoreEntry();
             DialogResult = true;
-            MainWindow.tempbse = bse;
+            MainWindow.TempBSE = bse;
             Close();
         }
 
         /// <summary>
         ///     Updates the live box score data grid.
         /// </summary>
-        /// <param name="TeamID">Name of the team.</param>
-        /// <param name="PlayersList">The players list.</param>
+        /// <param name="teamID">Name of the team.</param>
+        /// <param name="playersList">The players list.</param>
         /// <param name="pbsList">The player box score list.</param>
         /// <param name="playersT">The players' SQLite table name.</param>
         /// <param name="loading">
         ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
         /// </param>
-        private static void UpdateLiveBoxScoreDataGrid(int TeamID, out ObservableCollection<KeyValuePair<int, string>> PlayersList,
+        private static void updateLiveBoxScoreDataGrid(int teamID, out ObservableCollection<KeyValuePair<int, string>> playersList,
                                                        ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
         {
-            var db = new SQLiteDatabase(MainWindow.currentDB);
-            string q = "select * from " + playersT + " where TeamFin = \"" + TeamID + "\"";
+            var db = new SQLiteDatabase(MainWindow.CurrentDB);
+            string q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
             q += " ORDER BY LastName ASC";
             DataTable res = db.GetDataTable(q);
 
-            PlayersList = new ObservableCollection<KeyValuePair<int, string>>();
+            playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
                 pbsList = new SortableBindingList<LivePlayerBoxScore>();
 
             foreach (DataRow r in res.Rows)
             {
-                var ps = new PlayerStats(r, MainWindow.tst);
-                PlayersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+                var ps = new PlayerStats(r, MainWindow.TST);
+                playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
             for (int i = 0; i < pbsList.Count; i++)
             {
                 LivePlayerBoxScore cur = pbsList[i];
-                string name = MainWindow.pst[cur.PlayerID].LastName + ", " + MainWindow.pst[cur.PlayerID].FirstName;
+                string name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
-                if (!PlayersList.Contains(player))
+                if (!playersList.Contains(player))
                 {
-                    PlayersList.Add(player);
+                    playersList.Add(player);
                 }
                 pbsList[i] = cur;
             }
-            PlayersList = new ObservableCollection<KeyValuePair<int, string>>(PlayersList.OrderBy(item => item.Value));
+            playersList = new ObservableCollection<KeyValuePair<int, string>>(playersList.OrderBy(item => item.Value));
 
             if (!loading)
             {
-                foreach (var p in PlayersList)
+                foreach (var p in playersList)
                 {
                     pbsList.Add(new LivePlayerBoxScore {PlayerID = p.Key});
                 }
@@ -526,15 +521,15 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="MouseEventArgs" /> instance containing the event data.
         /// </param>
-        private void DataGrid_MouseMove(object sender, MouseEventArgs e)
+        private void dataGrid_MouseMove(object sender, MouseEventArgs e)
         {
-            BindingList<LivePlayerBoxScore> pbsList = sender == dgvPlayersAway ? pbsAwayList : pbsHomeList;
+            BindingList<LivePlayerBoxScore> pbsList = Equals(sender, dgvPlayersAway) ? _pbsAwayList : _pbsHomeList;
             // This is what we're using as a cue to start a drag, but this can be 
             // customized as needed for an application. 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 // Find the row and only drag it if it is already selected. 
-                var row = FindVisualParent<DataGridRow>(e.OriginalSource as FrameworkElement);
+                var row = findVisualParent<DataGridRow>(e.OriginalSource as FrameworkElement);
                 if ((row != null) && row.IsSelected)
                 {
                     // Perform the drag operation 
@@ -569,9 +564,9 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DragEventArgs" /> instance containing the event data.
         /// </param>
-        private void DataGrid_CheckDropTarget(object sender, DragEventArgs e)
+        private void dataGrid_CheckDropTarget(object sender, DragEventArgs e)
         {
-            var row = FindVisualParent<DataGridRow>(e.OriginalSource as UIElement);
+            var row = findVisualParent<DataGridRow>(e.OriginalSource as UIElement);
             if ((row == null) || !(row.Item is LivePlayerBoxScore))
             {
                 // Not over a DataGridRow that contains a LivePlayerBoxScore object 
@@ -589,13 +584,13 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="DragEventArgs" /> instance containing the event data.
         /// </param>
-        private void DataGrid_Drop(object sender, DragEventArgs e)
+        private void dataGrid_Drop(object sender, DragEventArgs e)
         {
             e.Effects = DragDropEffects.None;
             e.Handled = true;
 
             // Verify that this is a valid drop and then store the drop target 
-            var row = FindVisualParent<DataGridRow>(e.OriginalSource as UIElement);
+            var row = findVisualParent<DataGridRow>(e.OriginalSource as UIElement);
             if (row != null)
             {
                 _targetPerson = row.Item as LivePlayerBoxScore;
@@ -613,7 +608,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <typeparam name="UIE">The type of the UI element.</typeparam>
         /// <param name="element">The UI element.</param>
         /// <returns></returns>
-        private static UIE FindVisualParent<UIE>(UIElement element) where UIE : UIElement
+        private static UIE findVisualParent<UIE>(UIElement element) where UIE : UIElement
         {
             UIElement parent = element;
             while (parent != null)

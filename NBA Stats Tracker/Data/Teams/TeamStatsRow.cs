@@ -29,140 +29,140 @@ namespace NBA_Stats_Tracker.Data.Teams
         public TeamStatsRow(TeamStats ts, bool playoffs = false)
         {
             ID = ts.ID;
-            Name = ts.name;
-            DisplayName = ts.displayName;
-            IsHidden = ts.isHidden;
+            Name = ts.Name;
+            DisplayName = ts.DisplayName;
+            IsHidden = ts.IsHidden;
 
             if (!playoffs)
             {
-                Games = ts.getGames();
-                Wins = ts.winloss[0];
-                Losses = ts.winloss[1];
-                MINS = ts.stats[t.MINS];
-                PF = ts.stats[t.PF];
-                PA = ts.stats[t.PA];
-                FGM = ts.stats[t.FGM];
+                Games = ts.GetGames();
+                Wins = ts.Record[0];
+                Losses = ts.Record[1];
+                MINS = ts.Totals[TAbbr.MINS];
+                PF = ts.Totals[TAbbr.PF];
+                PA = ts.Totals[TAbbr.PA];
+                FGM = ts.Totals[TAbbr.FGM];
                 FGMPG = ((float) FGM/Games);
-                FGA = ts.stats[t.FGA];
+                FGA = ts.Totals[TAbbr.FGA];
                 FGAPG = ((float) FGA/Games);
-                TPM = ts.stats[t.TPM];
+                TPM = ts.Totals[TAbbr.TPM];
                 TPMPG = ((float) TPM/Games);
-                TPA = ts.stats[t.TPA];
+                TPA = ts.Totals[TAbbr.TPA];
                 TPAPG = ((float) TPA/Games);
-                FTM = ts.stats[t.FTM];
+                FTM = ts.Totals[TAbbr.FTM];
                 FTMPG = ((float) FTM/Games);
-                FTA = ts.stats[t.FTA];
+                FTA = ts.Totals[TAbbr.FTA];
                 FTAPG = ((float) FTA/Games);
-                OREB = ts.stats[t.OREB];
-                DREB = ts.stats[t.DREB];
+                OREB = ts.Totals[TAbbr.OREB];
+                DREB = ts.Totals[TAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
-                STL = ts.stats[t.STL];
-                TOS = ts.stats[t.TOS];
-                BLK = ts.stats[t.BLK];
-                AST = ts.stats[t.AST];
-                FOUL = ts.stats[t.FOUL];
+                STL = ts.Totals[TAbbr.STL];
+                TOS = ts.Totals[TAbbr.TOS];
+                BLK = ts.Totals[TAbbr.BLK];
+                AST = ts.Totals[TAbbr.AST];
+                FOUL = ts.Totals[TAbbr.FOUL];
 
-                Wp = ts.averages[t.Wp];
-                Weff = ts.averages[t.Weff];
-                MPG = ts.averages[t.MPG];
-                PPG = ts.averages[t.PPG];
-                PAPG = ts.averages[t.PAPG];
-                FGp = ts.averages[t.FGp];
-                FGeff = ts.averages[t.FGeff];
-                TPp = ts.averages[t.TPp];
-                TPeff = ts.averages[t.TPeff];
-                FTp = ts.averages[t.FTp];
-                FTeff = ts.averages[t.FTeff];
-                RPG = ts.averages[t.RPG];
-                ORPG = ts.averages[t.ORPG];
-                DRPG = ts.averages[t.DRPG];
-                SPG = ts.averages[t.SPG];
-                TPG = ts.averages[t.TPG];
-                BPG = ts.averages[t.BPG];
-                APG = ts.averages[t.APG];
-                FPG = ts.averages[t.FPG];
+                Wp = ts.PerGame[TAbbr.Wp];
+                Weff = ts.PerGame[TAbbr.Weff];
+                MPG = ts.PerGame[TAbbr.MPG];
+                PPG = ts.PerGame[TAbbr.PPG];
+                PAPG = ts.PerGame[TAbbr.PAPG];
+                FGp = ts.PerGame[TAbbr.FGp];
+                FGeff = ts.PerGame[TAbbr.FGeff];
+                TPp = ts.PerGame[TAbbr.TPp];
+                TPeff = ts.PerGame[TAbbr.TPeff];
+                FTp = ts.PerGame[TAbbr.FTp];
+                FTeff = ts.PerGame[TAbbr.FTeff];
+                RPG = ts.PerGame[TAbbr.RPG];
+                ORPG = ts.PerGame[TAbbr.ORPG];
+                DRPG = ts.PerGame[TAbbr.DRPG];
+                SPG = ts.PerGame[TAbbr.SPG];
+                TPG = ts.PerGame[TAbbr.TPG];
+                BPG = ts.PerGame[TAbbr.BPG];
+                APG = ts.PerGame[TAbbr.APG];
+                FPG = ts.PerGame[TAbbr.FPG];
 
-                Poss = ts.metrics["PossPG"];
-                Pace = ts.metrics["Pace"];
-                ORTG = ts.metrics["ORTG"];
-                DRTG = ts.metrics["DRTG"];
-                ASTp = ts.metrics["AST%"];
-                DREBp = ts.metrics["DREB%"];
-                EFGp = ts.metrics["EFG%"];
-                EFFd = ts.metrics["EFFd"];
-                TOR = ts.metrics["TOR"];
-                OREBp = ts.metrics["OREB%"];
-                FTR = ts.metrics["FTR"];
-                PWp = ts.metrics["PW%"];
-                TSp = ts.metrics["TS%"];
-                TPR = ts.metrics["3PR"];
-                PythW = ts.metrics["PythW"];
-                PythL = ts.metrics["PythL"];
+                Poss = ts.Metrics["PossPG"];
+                Pace = ts.Metrics["Pace"];
+                ORTG = ts.Metrics["ORTG"];
+                DRTG = ts.Metrics["DRTG"];
+                ASTp = ts.Metrics["AST%"];
+                DREBp = ts.Metrics["DREB%"];
+                EFGp = ts.Metrics["EFG%"];
+                EFFd = ts.Metrics["EFFd"];
+                TOR = ts.Metrics["TOR"];
+                OREBp = ts.Metrics["OREB%"];
+                FTR = ts.Metrics["FTR"];
+                PWp = ts.Metrics["PW%"];
+                TSp = ts.Metrics["TS%"];
+                TPR = ts.Metrics["3PR"];
+                PythW = ts.Metrics["PythW"];
+                PythL = ts.Metrics["PythL"];
             }
             else
             {
-                Games = ts.getPlayoffGames();
-                Wins = ts.pl_winloss[0];
-                Losses = ts.pl_winloss[1];
-                MINS = ts.pl_stats[t.MINS];
-                PF = ts.pl_stats[t.PF];
-                PA = ts.pl_stats[t.PA];
-                FGM = ts.pl_stats[t.FGM];
+                Games = ts.GetPlayoffGames();
+                Wins = ts.PlRecord[0];
+                Losses = ts.PlRecord[1];
+                MINS = ts.PlTotals[TAbbr.MINS];
+                PF = ts.PlTotals[TAbbr.PF];
+                PA = ts.PlTotals[TAbbr.PA];
+                FGM = ts.PlTotals[TAbbr.FGM];
                 FGMPG = ((float) FGM/Games);
-                FGA = ts.pl_stats[t.FGA];
+                FGA = ts.PlTotals[TAbbr.FGA];
                 FGAPG = ((float) FGA/Games);
-                TPM = ts.pl_stats[t.TPM];
+                TPM = ts.PlTotals[TAbbr.TPM];
                 TPMPG = ((float) TPM/Games);
-                TPA = ts.pl_stats[t.TPA];
+                TPA = ts.PlTotals[TAbbr.TPA];
                 TPAPG = ((float) TPA/Games);
-                FTM = ts.pl_stats[t.FTM];
+                FTM = ts.PlTotals[TAbbr.FTM];
                 FTMPG = ((float) FTM/Games);
-                FTA = ts.pl_stats[t.FTA];
+                FTA = ts.PlTotals[TAbbr.FTA];
                 FTAPG = ((float) FTA/Games);
-                OREB = ts.pl_stats[t.OREB];
-                DREB = ts.pl_stats[t.DREB];
+                OREB = ts.PlTotals[TAbbr.OREB];
+                DREB = ts.PlTotals[TAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
-                STL = ts.pl_stats[t.STL];
-                TOS = ts.pl_stats[t.TOS];
-                BLK = ts.pl_stats[t.BLK];
-                AST = ts.pl_stats[t.AST];
-                FOUL = ts.pl_stats[t.FOUL];
+                STL = ts.PlTotals[TAbbr.STL];
+                TOS = ts.PlTotals[TAbbr.TOS];
+                BLK = ts.PlTotals[TAbbr.BLK];
+                AST = ts.PlTotals[TAbbr.AST];
+                FOUL = ts.PlTotals[TAbbr.FOUL];
 
-                Wp = ts.pl_averages[t.Wp];
-                Weff = ts.pl_averages[t.Weff];
-                PPG = ts.pl_averages[t.PPG];
-                PAPG = ts.pl_averages[t.PAPG];
-                FGp = ts.pl_averages[t.FGp];
-                FGeff = ts.pl_averages[t.FGeff];
-                TPp = ts.pl_averages[t.TPp];
-                TPeff = ts.pl_averages[t.TPeff];
-                FTp = ts.pl_averages[t.FTp];
-                FTeff = ts.pl_averages[t.FTeff];
-                RPG = ts.pl_averages[t.RPG];
-                ORPG = ts.pl_averages[t.ORPG];
-                DRPG = ts.pl_averages[t.DRPG];
-                SPG = ts.pl_averages[t.SPG];
-                TPG = ts.pl_averages[t.TPG];
-                BPG = ts.pl_averages[t.BPG];
-                APG = ts.pl_averages[t.APG];
-                FPG = ts.pl_averages[t.FPG];
+                Wp = ts.PlPerGame[TAbbr.Wp];
+                Weff = ts.PlPerGame[TAbbr.Weff];
+                PPG = ts.PlPerGame[TAbbr.PPG];
+                PAPG = ts.PlPerGame[TAbbr.PAPG];
+                FGp = ts.PlPerGame[TAbbr.FGp];
+                FGeff = ts.PlPerGame[TAbbr.FGeff];
+                TPp = ts.PlPerGame[TAbbr.TPp];
+                TPeff = ts.PlPerGame[TAbbr.TPeff];
+                FTp = ts.PlPerGame[TAbbr.FTp];
+                FTeff = ts.PlPerGame[TAbbr.FTeff];
+                RPG = ts.PlPerGame[TAbbr.RPG];
+                ORPG = ts.PlPerGame[TAbbr.ORPG];
+                DRPG = ts.PlPerGame[TAbbr.DRPG];
+                SPG = ts.PlPerGame[TAbbr.SPG];
+                TPG = ts.PlPerGame[TAbbr.TPG];
+                BPG = ts.PlPerGame[TAbbr.BPG];
+                APG = ts.PlPerGame[TAbbr.APG];
+                FPG = ts.PlPerGame[TAbbr.FPG];
 
-                Poss = ts.pl_metrics["PossPG"];
-                Pace = ts.pl_metrics["Pace"];
-                ORTG = ts.pl_metrics["ORTG"];
-                DRTG = ts.pl_metrics["DRTG"];
-                ASTp = ts.pl_metrics["AST%"];
-                DREBp = ts.pl_metrics["DREB%"];
-                EFGp = ts.pl_metrics["EFG%"];
-                EFFd = ts.pl_metrics["EFFd"];
-                TOR = ts.pl_metrics["TOR"];
-                OREBp = ts.pl_metrics["OREB%"];
-                FTR = ts.pl_metrics["FTR"];
-                PWp = ts.pl_metrics["PW%"];
-                TSp = ts.pl_metrics["TS%"];
-                TPR = ts.pl_metrics["3PR"];
-                PythW = ts.pl_metrics["PythW"];
-                PythL = ts.pl_metrics["PythL"];
+                Poss = ts.PlMetrics["PossPG"];
+                Pace = ts.PlMetrics["Pace"];
+                ORTG = ts.PlMetrics["ORTG"];
+                DRTG = ts.PlMetrics["DRTG"];
+                ASTp = ts.PlMetrics["AST%"];
+                DREBp = ts.PlMetrics["DREB%"];
+                EFGp = ts.PlMetrics["EFG%"];
+                EFFd = ts.PlMetrics["EFFd"];
+                TOR = ts.PlMetrics["TOR"];
+                OREBp = ts.PlMetrics["OREB%"];
+                FTR = ts.PlMetrics["FTR"];
+                PWp = ts.PlMetrics["PW%"];
+                TSp = ts.PlMetrics["TS%"];
+                TPR = ts.PlMetrics["3PR"];
+                PythW = ts.PlMetrics["PythW"];
+                PythL = ts.PlMetrics["PythL"];
             }
 
             CurStreak = ts.CurStreak;
@@ -174,15 +174,15 @@ namespace NBA_Stats_Tracker.Data.Teams
             CalculatePlayerCounts(pst);
         }
 
-        public TeamStatsRow(TeamStats ts, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
-                            bool playoffs = false) : this(ts, playoffs)
+        public TeamStatsRow(TeamStats ts, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, bool playoffs = false)
+            : this(ts, playoffs)
         {
-            DivW = splitTeamStats[ID]["Division"].winloss[0];
-            DivL = splitTeamStats[ID]["Division"].winloss[1];
-            ConfW = splitTeamStats[ID]["Conference"].winloss[0];
-            ConfL = splitTeamStats[ID]["Conference"].winloss[1];
-            L10W = splitTeamStats[ID]["Last 10"].winloss[0];
-            L10L = splitTeamStats[ID]["Last 10"].winloss[1];
+            DivW = splitTeamStats[ID]["Division"].Record[0];
+            DivL = splitTeamStats[ID]["Division"].Record[1];
+            ConfW = splitTeamStats[ID]["Conference"].Record[0];
+            ConfL = splitTeamStats[ID]["Conference"].Record[1];
+            L10W = splitTeamStats[ID]["Last 10"].Record[0];
+            L10L = splitTeamStats[ID]["Last 10"].Record[1];
         }
 
         public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
@@ -277,18 +277,34 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public uint DivW { get; set; }
         public uint DivL { get; set; }
-        public string DivRecord { get { return String.Format("{0}-{1}", DivW, DivL); } }
+
+        public string DivRecord
+        {
+            get { return String.Format("{0}-{1}", DivW, DivL); }
+        }
+
         public uint ConfW { get; set; }
         public uint ConfL { get; set; }
-        public string ConfRecord { get { return String.Format("{0}-{1}", ConfW, ConfL); } }
+
+        public string ConfRecord
+        {
+            get { return String.Format("{0}-{1}", ConfW, ConfL); }
+        }
+
         public uint L10W { get; set; }
         public uint L10L { get; set; }
-        public string L10Record { get { return String.Format("{0}-{1}", L10W, L10L); } }
+
+        public string L10Record
+        {
+            get { return String.Format("{0}-{1}", L10W, L10L); }
+        }
+
         public string CurStreak { get; set; }
 
         public bool IsHidden { get; set; }
 
         public bool Highlight { get; set; }
+        public int InjuredCount { get; set; }
 
         public static void TryChangeTSR(ref TeamStatsRow tsr, Dictionary<string, string> dict)
         {
@@ -320,7 +336,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public void CalculateTotalContracts(Dictionary<int, PlayerStats> pst)
         {
-            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            List<PlayerStats> teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
             ContractsY1 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(1)).Sum();
             ContractsY2 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(2)).Sum();
             ContractsY3 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(3)).Sum();
@@ -332,7 +348,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public void CalculatePlayerCounts(Dictionary<int, PlayerStats> pst)
         {
-            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            List<PlayerStats> teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
             PlCount = teamPlayers.Count;
             PGCount = teamPlayers.Count(ps => ps.Position1 == Position.PG);
             SGCount = teamPlayers.Count(ps => ps.Position1 == Position.SG);
@@ -341,7 +357,5 @@ namespace NBA_Stats_Tracker.Data.Teams
             CCount = teamPlayers.Count(ps => ps.Position1 == Position.C);
             InjuredCount = teamPlayers.Count(ps => ps.Injury.IsInjured);
         }
-
-        public int InjuredCount { get; set; }
     }
 }

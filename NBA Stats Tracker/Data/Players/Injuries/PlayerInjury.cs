@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -141,10 +142,7 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
             InjuryType = type;
             InjuryDaysLeft = days;
 
-            if (InjuryType == -1)
-                CustomInjuryName = "Unknown";
-            else
-                CustomInjuryName = "";
+            CustomInjuryName = InjuryType == -1 ? "Unknown" : "";
         }
 
         public PlayerInjury(string customName, int days) : this(-1, days)
@@ -170,11 +168,9 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
         {
             get
             {
-                foreach (var dur in ApproximateDurations)
-                {
-                    if (InjuryDaysLeft <= dur.Value)
-                        return dur.Key;
-                }
+                return (from dur in ApproximateDurations
+                        where InjuryDaysLeft <= dur.Value
+                        select dur.Key).FirstOrDefault();
 
                 #region Old matching code
 
@@ -201,8 +197,6 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
                 */
 
                 #endregion
-
-                return null; // This shouldn't happen.
             }
         }
 

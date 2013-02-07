@@ -31,7 +31,7 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class ListWindow
     {
-        public static bool mustUpdate;
+        public static bool MustUpdate;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ListWindow" /> class.
@@ -62,19 +62,19 @@ namespace NBA_Stats_Tracker.Windows
                 return;
 
             var conf = (Conference) lstData.SelectedItem;
-            ShowEditConferenceWindow(conf);
+            showEditConferenceWindow(conf);
         }
 
         /// <summary>
         ///     Shows the edit conference window, and reloads the conferences the window is closed, if required.
         /// </summary>
         /// <param name="conf">The conf.</param>
-        private void ShowEditConferenceWindow(Conference conf)
+        private void showEditConferenceWindow(Conference conf)
         {
             var cew = new ConferenceEditWindow(conf);
             cew.ShowDialog();
 
-            if (mustUpdate)
+            if (MustUpdate)
             {
                 lstData.ItemsSource = null;
                 lstData.ItemsSource = MainWindow.Conferences;
@@ -99,7 +99,7 @@ namespace NBA_Stats_Tracker.Windows
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                string name = MainWindow.input.Replace(':', '-');
+                string name = MainWindow.Input.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
@@ -113,7 +113,7 @@ namespace NBA_Stats_Tracker.Windows
 
                 MainWindow.Conferences.Add(new Conference {ID = i, Name = name});
 
-                var db = new SQLiteDatabase(MainWindow.currentDB);
+                var db = new SQLiteDatabase(MainWindow.CurrentDB);
                 db.Insert("Conferences", new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", name}});
                 lstData.ItemsSource = null;
                 lstData.ItemsSource = MainWindow.Conferences;
@@ -128,7 +128,7 @@ namespace NBA_Stats_Tracker.Windows
                     }
                 }
 
-                ShowEditConferenceWindow(confToEdit);
+                showEditConferenceWindow(confToEdit);
             }
         }
 
@@ -151,7 +151,7 @@ namespace NBA_Stats_Tracker.Windows
             if (r == MessageBoxResult.No)
                 return;
 
-            var db = new SQLiteDatabase(MainWindow.currentDB);
+            var db = new SQLiteDatabase(MainWindow.CurrentDB);
 
             MainWindow.Conferences.Remove(conf);
             db.Delete("Conferences", "ID = " + conf.ID);

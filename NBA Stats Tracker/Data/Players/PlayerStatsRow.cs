@@ -19,12 +19,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Annotations;
 using NBA_Stats_Tracker.Data.Players.Contracts;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
+using NBA_Stats_Tracker.Properties;
 using NBA_Stats_Tracker.Windows;
 
 #endregion
@@ -49,7 +48,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null) :this()
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null) : this()
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -58,14 +57,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Position1 = ps.Position1;
             Position2 = ps.Position2;
             TeamF = ps.TeamF;
-            if (teamName == null)
-            {
-                TeamFDisplay = MainWindow.DisplayNames[TeamF];
-            }
-            else
-            {
-                TeamFDisplay = teamName;
-            }
+            TeamFDisplay = teamName ?? MainWindow.DisplayNames[TeamF];
             TeamS = ps.TeamS;
             if (TeamS == -1)
             {
@@ -82,11 +74,11 @@ namespace NBA_Stats_Tracker.Data.Players
                     TeamSDisplay = "Unknown";
                 }
             }
-            isActive = ps.isActive;
-            isHidden = ps.isHidden;
-            isAllStar = ps.isAllStar;
+            IsActive = ps.IsActive;
+            IsHidden = ps.IsHidden;
+            IsAllStar = ps.IsAllStar;
             Injury = ps.Injury.DeepClone(null);
-            isNBAChampion = ps.isNBAChampion;
+            IsNBAChampion = ps.IsNBAChampion;
             YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
 
@@ -98,88 +90,88 @@ namespace NBA_Stats_Tracker.Data.Players
             ContractYears = ps.Contract.GetYears();
             ContractYearsMinusOption = ps.Contract.GetYearsMinusOption();
 
-            Height = ps.height;
-            Weight = ps.weight;
+            Height = ps.Height;
+            Weight = ps.Weight;
 
             if (!playoffs)
             {
-                GP = ps.stats[p.GP];
-                GS = ps.stats[p.GS];
-                MINS = ps.stats[p.MINS];
-                PTS = ps.stats[p.PTS];
-                FGM = ps.stats[p.FGM];
+                GP = ps.Totals[PAbbr.GP];
+                GS = ps.Totals[PAbbr.GS];
+                MINS = ps.Totals[PAbbr.MINS];
+                PTS = ps.Totals[PAbbr.PTS];
+                FGM = ps.Totals[PAbbr.FGM];
                 FGMPG = ((float) FGM/GP);
-                FGA = ps.stats[p.FGA];
+                FGA = ps.Totals[PAbbr.FGA];
                 FGAPG = ((float) FGA/GP);
-                TPM = ps.stats[p.TPM];
+                TPM = ps.Totals[PAbbr.TPM];
                 TPMPG = ((float) TPM/GP);
-                TPA = ps.stats[p.TPA];
+                TPA = ps.Totals[PAbbr.TPA];
                 TPAPG = ((float) TPA/GP);
-                FTM = ps.stats[p.FTM];
+                FTM = ps.Totals[PAbbr.FTM];
                 FTMPG = ((float) FTM/GP);
-                FTA = ps.stats[p.FTA];
+                FTA = ps.Totals[PAbbr.FTA];
                 FTAPG = ((float) FTA/GP);
-                OREB = ps.stats[p.OREB];
-                DREB = ps.stats[p.DREB];
+                OREB = ps.Totals[PAbbr.OREB];
+                DREB = ps.Totals[PAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
-                STL = ps.stats[p.STL];
-                TOS = ps.stats[p.TOS];
-                BLK = ps.stats[p.BLK];
-                AST = ps.stats[p.AST];
-                FOUL = ps.stats[p.FOUL];
+                STL = ps.Totals[PAbbr.STL];
+                TOS = ps.Totals[PAbbr.TOS];
+                BLK = ps.Totals[PAbbr.BLK];
+                AST = ps.Totals[PAbbr.AST];
+                FOUL = ps.Totals[PAbbr.FOUL];
 
-                MPG = ps.averages[p.MPG];
-                PPG = ps.averages[p.PPG];
-                FGp = ps.averages[p.FGp];
-                FGeff = ps.averages[p.FGeff];
-                TPp = ps.averages[p.TPp];
-                TPeff = ps.averages[p.TPeff];
-                FTp = ps.averages[p.FTp];
-                FTeff = ps.averages[p.FTeff];
-                RPG = ps.averages[p.RPG];
-                ORPG = ps.averages[p.ORPG];
-                DRPG = ps.averages[p.DRPG];
-                SPG = ps.averages[p.SPG];
-                TPG = ps.averages[p.TPG];
-                BPG = ps.averages[p.BPG];
-                APG = ps.averages[p.APG];
-                FPG = ps.averages[p.FPG];
+                MPG = ps.PerGame[PAbbr.MPG];
+                PPG = ps.PerGame[PAbbr.PPG];
+                FGp = ps.PerGame[PAbbr.FGp];
+                FGeff = ps.PerGame[PAbbr.FGeff];
+                TPp = ps.PerGame[PAbbr.TPp];
+                TPeff = ps.PerGame[PAbbr.TPeff];
+                FTp = ps.PerGame[PAbbr.FTp];
+                FTeff = ps.PerGame[PAbbr.FTeff];
+                RPG = ps.PerGame[PAbbr.RPG];
+                ORPG = ps.PerGame[PAbbr.ORPG];
+                DRPG = ps.PerGame[PAbbr.DRPG];
+                SPG = ps.PerGame[PAbbr.SPG];
+                TPG = ps.PerGame[PAbbr.TPG];
+                BPG = ps.PerGame[PAbbr.BPG];
+                APG = ps.PerGame[PAbbr.APG];
+                FPG = ps.PerGame[PAbbr.FPG];
 
                 try
                 {
-                    PTSR = ps.metrics["PTSR"];
-                    REBR = ps.metrics["REBR"];
-                    OREBR = ps.metrics["OREBR"];
-                    ASTR = ps.metrics["ASTR"];
-                    BLKR = ps.metrics["BLKR"];
-                    STLR = ps.metrics["STLR"];
-                    TOR = ps.metrics["TOR"];
-                    FTR = ps.metrics["FTR"];
-                    FTAR = ps.metrics["FTAR"];
-                    GmSc = ps.metrics["GmSc"];
-                    GmScE = ps.metrics["GmScE"];
-                    EFF = ps.metrics["EFF"];
-                    EFGp = ps.metrics["EFG%"];
-                    TSp = ps.metrics["TS%"];
-                    ASTp = ps.metrics["AST%"];
-                    STLp = ps.metrics["STL%"];
-                    TOp = ps.metrics["TO%"];
-                    USGp = ps.metrics["USG%"];
+                    PTSR = ps.Metrics["PTSR"];
+                    REBR = ps.Metrics["REBR"];
+                    OREBR = ps.Metrics["OREBR"];
+                    ASTR = ps.Metrics["ASTR"];
+                    BLKR = ps.Metrics["BLKR"];
+                    STLR = ps.Metrics["STLR"];
+                    TOR = ps.Metrics["TOR"];
+                    FTR = ps.Metrics["FTR"];
+                    FTAR = ps.Metrics["FTAR"];
+                    GmSc = ps.Metrics["GmSc"];
+                    GmScE = ps.Metrics["GmScE"];
+                    EFF = ps.Metrics["EFF"];
+                    EFGp = ps.Metrics["EFG%"];
+                    TSp = ps.Metrics["TS%"];
+                    ASTp = ps.Metrics["AST%"];
+                    STLp = ps.Metrics["STL%"];
+                    TOp = ps.Metrics["TO%"];
+                    USGp = ps.Metrics["USG%"];
 
                     try
                     {
-                        PER = ps.metrics["PER"];
+                        PER = ps.Metrics["PER"];
                     }
                     catch (Exception)
                     {
                         PER = Double.NaN;
                     }
 
-                    BLKp = ps.metrics["BLK%"];
-                    DREBp = ps.metrics["DREB%"];
-                    OREBp = ps.metrics["OREB%"];
-                    REBp = ps.metrics["REB%"];
-                    PPR = ps.metrics["PPR"];
+                    BLKp = ps.Metrics["BLK%"];
+                    DREBp = ps.Metrics["DREB%"];
+                    OREBp = ps.Metrics["OREB%"];
+                    REBp = ps.Metrics["REB%"];
+                    PPR = ps.Metrics["PPR"];
                 }
                 catch (KeyNotFoundException)
                 {
@@ -187,90 +179,90 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             else
             {
-                GP = ps.pl_stats[p.GP];
-                GS = ps.pl_stats[p.GS];
-                MINS = ps.pl_stats[p.MINS];
-                PTS = ps.pl_stats[p.PTS];
-                FGM = ps.pl_stats[p.FGM];
+                GP = ps.PlTotals[PAbbr.GP];
+                GS = ps.PlTotals[PAbbr.GS];
+                MINS = ps.PlTotals[PAbbr.MINS];
+                PTS = ps.PlTotals[PAbbr.PTS];
+                FGM = ps.PlTotals[PAbbr.FGM];
                 FGMPG = ((float) FGM/GP);
-                FGA = ps.pl_stats[p.FGA];
+                FGA = ps.PlTotals[PAbbr.FGA];
                 FGAPG = ((float) FGA/GP);
-                TPM = ps.pl_stats[p.TPM];
+                TPM = ps.PlTotals[PAbbr.TPM];
                 TPMPG = ((float) TPM/GP);
-                TPA = ps.pl_stats[p.TPA];
+                TPA = ps.PlTotals[PAbbr.TPA];
                 TPAPG = (uint) ((double) TPA/GP);
-                FTM = ps.pl_stats[p.FTM];
+                FTM = ps.PlTotals[PAbbr.FTM];
                 FTMPG = ((float) FTM/GP);
-                FTA = ps.pl_stats[p.FTA];
+                FTA = ps.PlTotals[PAbbr.FTA];
                 FTAPG = ((float) FTA/GP);
-                OREB = ps.pl_stats[p.OREB];
-                DREB = ps.pl_stats[p.DREB];
+                OREB = ps.PlTotals[PAbbr.OREB];
+                DREB = ps.PlTotals[PAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
-                STL = ps.pl_stats[p.STL];
-                TOS = ps.pl_stats[p.TOS];
-                BLK = ps.pl_stats[p.BLK];
-                AST = ps.pl_stats[p.AST];
-                FOUL = ps.pl_stats[p.FOUL];
+                STL = ps.PlTotals[PAbbr.STL];
+                TOS = ps.PlTotals[PAbbr.TOS];
+                BLK = ps.PlTotals[PAbbr.BLK];
+                AST = ps.PlTotals[PAbbr.AST];
+                FOUL = ps.PlTotals[PAbbr.FOUL];
 
-                MPG = ps.pl_averages[p.MPG];
-                PPG = ps.pl_averages[p.PPG];
-                FGp = ps.pl_averages[p.FGp];
-                FGeff = ps.pl_averages[p.FGeff];
-                TPp = ps.pl_averages[p.TPp];
-                TPeff = ps.pl_averages[p.TPeff];
-                FTp = ps.pl_averages[p.FTp];
-                FTeff = ps.pl_averages[p.FTeff];
-                RPG = ps.pl_averages[p.RPG];
-                ORPG = ps.pl_averages[p.ORPG];
-                DRPG = ps.pl_averages[p.DRPG];
-                SPG = ps.pl_averages[p.SPG];
-                TPG = ps.pl_averages[p.TPG];
-                BPG = ps.pl_averages[p.BPG];
-                APG = ps.pl_averages[p.APG];
-                FPG = ps.pl_averages[p.FPG];
+                MPG = ps.PlPerGame[PAbbr.MPG];
+                PPG = ps.PlPerGame[PAbbr.PPG];
+                FGp = ps.PlPerGame[PAbbr.FGp];
+                FGeff = ps.PlPerGame[PAbbr.FGeff];
+                TPp = ps.PlPerGame[PAbbr.TPp];
+                TPeff = ps.PlPerGame[PAbbr.TPeff];
+                FTp = ps.PlPerGame[PAbbr.FTp];
+                FTeff = ps.PlPerGame[PAbbr.FTeff];
+                RPG = ps.PlPerGame[PAbbr.RPG];
+                ORPG = ps.PlPerGame[PAbbr.ORPG];
+                DRPG = ps.PlPerGame[PAbbr.DRPG];
+                SPG = ps.PlPerGame[PAbbr.SPG];
+                TPG = ps.PlPerGame[PAbbr.TPG];
+                BPG = ps.PlPerGame[PAbbr.BPG];
+                APG = ps.PlPerGame[PAbbr.APG];
+                FPG = ps.PlPerGame[PAbbr.FPG];
 
                 try
                 {
-                    PTSR = ps.pl_metrics["PTSR"];
-                    REBR = ps.pl_metrics["REBR"];
-                    OREBR = ps.pl_metrics["OREBR"];
-                    ASTR = ps.pl_metrics["ASTR"];
-                    BLKR = ps.pl_metrics["BLKR"];
-                    STLR = ps.pl_metrics["STLR"];
-                    TOR = ps.pl_metrics["TOR"];
-                    FTR = ps.pl_metrics["FTR"];
-                    FTAR = ps.pl_metrics["FTAR"];
-                    GmSc = ps.pl_metrics["GmSc"];
-                    GmScE = ps.pl_metrics["GmScE"];
-                    EFF = ps.pl_metrics["EFF"];
-                    EFGp = ps.pl_metrics["EFG%"];
-                    TSp = ps.pl_metrics["TS%"];
-                    ASTp = ps.pl_metrics["AST%"];
-                    STLp = ps.pl_metrics["STL%"];
-                    TOp = ps.pl_metrics["TO%"];
-                    USGp = ps.pl_metrics["USG%"];
+                    PTSR = ps.PlMetrics["PTSR"];
+                    REBR = ps.PlMetrics["REBR"];
+                    OREBR = ps.PlMetrics["OREBR"];
+                    ASTR = ps.PlMetrics["ASTR"];
+                    BLKR = ps.PlMetrics["BLKR"];
+                    STLR = ps.PlMetrics["STLR"];
+                    TOR = ps.PlMetrics["TOR"];
+                    FTR = ps.PlMetrics["FTR"];
+                    FTAR = ps.PlMetrics["FTAR"];
+                    GmSc = ps.PlMetrics["GmSc"];
+                    GmScE = ps.PlMetrics["GmScE"];
+                    EFF = ps.PlMetrics["EFF"];
+                    EFGp = ps.PlMetrics["EFG%"];
+                    TSp = ps.PlMetrics["TS%"];
+                    ASTp = ps.PlMetrics["AST%"];
+                    STLp = ps.PlMetrics["STL%"];
+                    TOp = ps.PlMetrics["TO%"];
+                    USGp = ps.PlMetrics["USG%"];
 
                     try
                     {
-                        PER = ps.pl_metrics["PER"];
+                        PER = ps.PlMetrics["PER"];
                     }
                     catch (Exception)
                     {
                         PER = Double.NaN;
                     }
 
-                    BLKp = ps.pl_metrics["BLK%"];
-                    DREBp = ps.pl_metrics["DREB%"];
-                    OREBp = ps.pl_metrics["OREB%"];
-                    REBp = ps.pl_metrics["REB%"];
-                    PPR = ps.pl_metrics["PPR"];
+                    BLKp = ps.PlMetrics["BLK%"];
+                    DREBp = ps.PlMetrics["DREB%"];
+                    OREBp = ps.PlMetrics["OREB%"];
+                    REBp = ps.PlMetrics["REB%"];
+                    PPR = ps.PlMetrics["PPR"];
                 }
                 catch (KeyNotFoundException)
                 {
                 }
             }
             if (calcRatings)
-                Calculate2KRatings(playoffs);
+                calculate2KRatings(playoffs);
         }
 
         /// <summary>
@@ -388,9 +380,9 @@ namespace NBA_Stats_Tracker.Data.Players
         public int TeamF { get; set; }
         public string TeamFDisplay { get; set; }
         public int TeamS { get; set; }
-        public bool isActive { get; set; }
-        public bool isHidden { get; set; }
-        public bool isAllStar { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsHidden { get; set; }
+        public bool IsAllStar { get; set; }
 
         public PlayerInjury Injury
         {
@@ -432,7 +424,7 @@ namespace NBA_Stats_Tracker.Data.Players
             get { return Injury.Status; }
         }
 
-        public bool isNBAChampion { get; set; }
+        public bool IsNBAChampion { get; set; }
 
         public int YearOfBirth { get; set; }
         public int YearsPro { get; set; }
@@ -591,7 +583,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return value/0.453592;
         }
 
-        private void Calculate2KRatings(bool playoffs = false)
+        private void calculate2KRatings(bool playoffs = false)
         {
             string gpPctSetting = MainWindow.RatingsGPPctSetting;
             double gpPCTreq = MainWindow.RatingsGPPctRequired;
@@ -603,8 +595,8 @@ namespace NBA_Stats_Tracker.Data.Players
             uint tGP = 0;
             try
             {
-                team = MainWindow.tst.Single(ts => ts.Value.ID == TeamF).Value;
-                tGP = playoffs ? team.getPlayoffGames() : team.getGames();
+                team = MainWindow.TST.Single(ts => ts.Value.ID == TeamF).Value;
+                tGP = playoffs ? team.GetPlayoffGames() : team.GetGames();
             }
             catch (InvalidOperationException)
             {
@@ -814,7 +806,9 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftrn", ftrn);
 
-            IOrderedEnumerable<string> items = from k in statsn.Keys orderby statsn[k] descending select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys
+                                               orderby statsn[k] descending
+                                               select k;
 
             string s = "";
             int i = 1;
@@ -918,7 +912,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 s += String.Format("(alternatively {0})", Position2);
             s += ", ";
 
-            if (isActive)
+            if (IsActive)
                 s += String.Format("who currently plays for the {0}.", TeamF);
             else
                 s += String.Format("who is currently a Free Agent.");
@@ -930,17 +924,17 @@ namespace NBA_Stats_Tracker.Data.Players
 
             s += "\n\n";
 
-            s += String.Format("He averages {0:F1} PPG on {1:F1} MPG, making for {2:F1} points per 36 minutes. ", PPG, MPG, PTSR);
+            s += String.Format("He PerGame {0:F1} PPG on {1:F1} MPG, making for {2:F1} points per 36 minutes. ", PPG, MPG, PTSR);
 
-            if (rankingsTeam.rankingsPerGame[ID][p.PPG] <= 3)
+            if (rankingsTeam.RankingsPerGame[ID][PAbbr.PPG] <= 3)
                 s += String.Format("One of the best scorers in the team, #{0} among his teammates. ",
-                                   rankingsTeam.rankingsPerGame[ID][p.PPG]);
-            if (rankingsPosition.rankingsPerGame[ID][p.PPG] <= 10)
+                                   rankingsTeam.RankingsPerGame[ID][PAbbr.PPG]);
+            if (rankingsPosition.RankingsPerGame[ID][PAbbr.PPG] <= 10)
                 s += String.Format("His performance has got him to become one of the best at his position in scoring, #{0} among {1}'s. ",
-                                   rankingsPosition.rankingsPerGame[ID][p.PPG], Position1);
-            if (rankingsActive.rankingsPerGame[ID][p.PPG] <= 20)
+                                   rankingsPosition.RankingsPerGame[ID][PAbbr.PPG], Position1);
+            if (rankingsActive.RankingsPerGame[ID][PAbbr.PPG] <= 20)
                 s += String.Format("He's actually one of the best in the league in scoring, rated #{0} overall. ",
-                                   rankingsActive.rankingsPerGame[ID][p.PPG]);
+                                   rankingsActive.RankingsPerGame[ID][PAbbr.PPG]);
 
             Dictionary<string, string> statList = GetBestStatsList(5);
 
@@ -954,97 +948,98 @@ namespace NBA_Stats_Tracker.Data.Players
                         s +=
                             String.Format(
                                 "Shooting, one of his main strengths. He's averaging {0} as far as field goals go. Percentage-wise, his performance " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.FGp]);
-                        if (rankingsTeam.rankingsPerGame[ID][p.FGp] <= 3)
-                            s += String.Format("Top from the floor in his team, ranks at #{0} ", rankingsTeam.rankingsPerGame[ID][p.FGp]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.FGp] <= 10)
+                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.FGp]);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.FGp] <= 3)
+                            s += String.Format("Top from the floor in his team, ranks at #{0} ", rankingsTeam.RankingsPerGame[ID][PAbbr.FGp]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.FGp] <= 10)
                             s += String.Format("Definitely dominating among {0}'s on scoring percentage, ranked at #{1}. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.FGp]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.FGp]);
                         break;
                     case "3P":
                         s +=
                             String.Format(
-                                "His 3-point shooting is another area of focus. His three-point shooting averages {0}. #{1} in the league in 3P%. ",
-                                stat.Value, rankingsActive.rankingsPerGame[ID][p.TPp]);
-                        if (rankingsTeam.rankingsPerGame[ID][p.TPp] <= 3)
+                                "His 3-point shooting is another area of focus. His three-point shooting PerGame {0}. #{1} in the league in 3P%. ",
+                                stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.TPp]);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.TPp] <= 3)
                             s += String.Format("One of the best guys from the arc in his team, ranks at #{0} ",
-                                               rankingsTeam.rankingsPerGame[ID][p.TPp]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.TPp] <= 10)
+                                               rankingsTeam.RankingsPerGame[ID][PAbbr.TPp]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.TPp] <= 10)
                             s += String.Format("Not many {0}'s do better than him, as he's ranked at #{1}. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.TPp]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.TPp]);
                         break;
                     case "FT":
                         s +=
                             String.Format(
                                 "Take a look at his free throw stats: He's averaging {0} from the line, which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.FTp]);
-                        if (rankingsTeam.rankingsPerGame[ID][p.FTp] <= 3)
+                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.FTp]);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.FTp] <= 3)
                             s +=
                                 String.Format(
                                     "Coach might prefer him to get all the fouls late in the game, as he ranks #{0} in his team. ",
-                                    rankingsTeam.rankingsPerGame[ID][p.FTp]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.FTp] <= 10)
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.FTp]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.FTp] <= 10)
                             s += String.Format("Most {0}'s in the league struggle to keep up with him, he's ranked at #{1}. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.FTp]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.FTp]);
                         break;
                     case "ORPG":
                         s +=
                             String.Format(
                                 "Crashing the offensive glass, one of his main strengths. His average offensive boards per game are at {0}, which " +
                                 "ranks him at #{1} overall. He grabs {2:F1} offensive rebounds every 36 minutes. ", stat.Value,
-                                rankingsActive.rankingsPerGame[ID][p.ORPG], OREBR);
-                        if (rankingsTeam.rankingsPerGame[ID][p.ORPG] <= 3)
+                                rankingsActive.RankingsPerGame[ID][PAbbr.ORPG], OREBR);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG] <= 3)
                             s += String.Format("One of the main guys to worry about below your basket, #{0} in his team. ",
-                                               rankingsTeam.rankingsPerGame[ID][p.ORPG]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.ORPG] <= 10)
+                                               rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG] <= 10)
                             s += String.Format("He's ranked at #{1} among {0}'s in grabbing those second chance opportunities. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.ORPG]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG]);
                         break;
                     case "RPG":
                         s +=
                             String.Format(
                                 "He makes a point of crashing the boards. His RPG are at {0} ({2:F1} per 36 minutes), which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.RPG], REBR);
-                        if (rankingsTeam.rankingsPerGame[ID][p.RPG] <= 3)
+                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.RPG], REBR);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.RPG] <= 3)
                             s += String.Format("One of the top rebounders in his team, #{0} actually. ",
-                                               rankingsTeam.rankingsPerGame[ID][p.RPG]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.RPG] <= 10)
+                                               rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.RPG] <= 10)
                             s += String.Format("He's ranked at #{1} among {0}'s in crashing the boards. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.RPG]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.RPG]);
                         break;
                     case "BPG":
                         s +=
                             String.Format(
                                 "Keep him in mind when he's in your face. His BPG are at {0} ({2:F1} per 36 minutes), which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.BPG], BLKR);
-                        if (rankingsTeam.rankingsPerGame[ID][p.BPG] <= 3)
+                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.BPG], BLKR);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.BPG] <= 3)
                             s += String.Format("Among the top blockers in the team, ranked at #{0}. ",
-                                               rankingsTeam.rankingsPerGame[ID][p.BPG]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.BPG] <= 10)
+                                               rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.BPG] <= 10)
                             s += String.Format("One of the best {0}'s (#{1}) at blocking shots. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.BPG]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.BPG]);
                         break;
                     case "APG":
                         s +=
                             String.Format(
                                 "Assisting the ball, an important aspect of his game. He does {0} APG ({2:F1} per 36 minutes), ranking him at #{1} overall. ",
-                                stat.Value, rankingsActive.rankingsPerGame[ID][p.APG], ASTR);
-                        if (rankingsTeam.rankingsPerGame[ID][p.APG] <= 3)
-                            s += String.Format("#{0} as far as playmakers in the team go. ", rankingsTeam.rankingsPerGame[ID][p.APG]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.APG] <= 10)
+                                stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.APG], ASTR);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.APG] <= 3)
+                            s += String.Format("#{0} as far as playmakers in the team go. ", rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.APG] <= 10)
                             s += String.Format("One of the league's best {0}'s (#{1}) at setting up teammates for a shot. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.APG]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.APG]);
                         break;
                     case "SPG":
                         s +=
                             String.Format(
                                 "Tries to keep his hands active; keep in mind his {0} SPG ({2:F1} per 36 minutes). His performance in taking the ball away has " +
-                                "ranked him at #{1} in the league. ", stat.Value, rankingsActive.rankingsPerGame[ID][p.SPG], STLR);
-                        if (rankingsTeam.rankingsPerGame[ID][p.SPG] <= 3)
-                            s += String.Format("#{0} in taking the ball away among his teammates. ", rankingsTeam.rankingsPerGame[ID][p.SPG]);
-                        if (rankingsPosition.rankingsPerGame[ID][p.SPG] <= 10)
+                                "ranked him at #{1} in the league. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.SPG], STLR);
+                        if (rankingsTeam.RankingsPerGame[ID][PAbbr.SPG] <= 3)
+                            s += String.Format("#{0} in taking the ball away among his teammates. ",
+                                               rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
+                        if (rankingsPosition.RankingsPerGame[ID][PAbbr.SPG] <= 10)
                             s += String.Format("One of the league's best {0}'s (#{1}) in this aspect. ", Position1,
-                                               rankingsPosition.rankingsPerGame[ID][p.SPG]);
+                                               rankingsPosition.RankingsPerGame[ID][PAbbr.SPG]);
                         break;
                     case "FTM/FGA":
                         s += String.Format("He fights through contact to get to the line. His FTM/FGA rate is at {0}. ", stat.Value);
@@ -1130,14 +1125,16 @@ namespace NBA_Stats_Tracker.Data.Players
 
             s += "\n\nAccording to his rankings in the league, his best areas are ";
             var dict = new Dictionary<int, int>();
-            for (int k = 0; k < rankingsActive.rankingsPerGame[ID].Length; k++)
+            for (int k = 0; k < rankingsActive.RankingsPerGame[ID].Length; k++)
             {
-                dict.Add(k, rankingsActive.rankingsPerGame[ID][k]);
+                dict.Add(k, rankingsActive.RankingsPerGame[ID][k]);
             }
-            dict[t.FPG] = pst.Count + 1 - dict[t.FPG];
-            dict[t.TPG] = pst.Count + 1 - dict[t.TPG];
-            dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
-            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            dict[TAbbr.FPG] = pst.Count + 1 - dict[TAbbr.FPG];
+            dict[TAbbr.TPG] = pst.Count + 1 - dict[TAbbr.TPG];
+            dict[TAbbr.PAPG] = pst.Count + 1 - dict[TAbbr.PAPG];
+            List<int> strengths = (from entry in dict
+                                   orderby entry.Value ascending
+                                   select entry.Key).ToList();
             int m = 0;
             int j = 3;
             while (true)
@@ -1146,44 +1143,44 @@ namespace NBA_Stats_Tracker.Data.Players
                     break;
                 switch (strengths[m])
                 {
-                    case p.APG:
-                        s += String.Format("assists (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.APG], APG);
+                    case PAbbr.APG:
+                        s += String.Format("assists (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.APG], APG);
                         break;
-                    case p.BPG:
-                        s += String.Format("blocks (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.BPG], BPG);
+                    case PAbbr.BPG:
+                        s += String.Format("blocks (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.BPG], BPG);
                         break;
-                    case p.DRPG:
-                        s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.DRPG], DRPG);
+                    case PAbbr.DRPG:
+                        s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.DRPG], DRPG);
                         break;
-                    case p.FGeff:
-                        s += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.rankingsPerGame[ID][p.FGeff],
-                                           (double) FGM/GP, FGp);
+                    case PAbbr.FGeff:
+                        s += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ",
+                                           rankingsActive.RankingsPerGame[ID][PAbbr.FGeff], (double) FGM/GP, FGp);
                         break;
-                    case p.FPG:
-                        s += String.Format("fouls (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.FPG], FPG);
+                    case PAbbr.FPG:
+                        s += String.Format("fouls (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.FPG], FPG);
                         break;
-                    case p.FTeff:
-                        s += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.rankingsPerGame[ID][p.FTeff],
-                                           (double) FTM/GP, FTp);
+                    case PAbbr.FTeff:
+                        s += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ",
+                                           rankingsActive.RankingsPerGame[ID][PAbbr.FTeff], (double) FTM/GP, FTp);
                         break;
-                    case p.ORPG:
-                        s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.ORPG], ORPG);
+                    case PAbbr.ORPG:
+                        s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.ORPG], ORPG);
                         break;
-                    case p.PPG:
-                        s += String.Format("scoring (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.PPG], PPG);
+                    case PAbbr.PPG:
+                        s += String.Format("scoring (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.PPG], PPG);
                         break;
-                    case p.RPG:
-                        s += String.Format("rebounds (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.RPG], RPG);
+                    case PAbbr.RPG:
+                        s += String.Format("rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.RPG], RPG);
                         break;
-                    case p.SPG:
-                        s += String.Format("steals (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.SPG], SPG);
+                    case PAbbr.SPG:
+                        s += String.Format("steals (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.SPG], SPG);
                         break;
-                    case p.TPG:
-                        s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsActive.rankingsPerGame[ID][p.TPG], TPG);
+                    case PAbbr.TPG:
+                        s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.TPG], TPG);
                         break;
-                    case p.TPeff:
-                        s += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ", rankingsActive.rankingsPerGame[ID][p.TPeff],
-                                           (double) TPM/GP, TPp);
+                    case PAbbr.TPeff:
+                        s += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ",
+                                           rankingsActive.RankingsPerGame[ID][PAbbr.TPeff], (double) TPM/GP, TPp);
                         break;
                     default:
                         j++;
@@ -1240,7 +1237,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerStatsRow ConvertToMyLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
             TeamStats ts = teamStats[TeamF];
-            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
+            uint gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
             uint gamesPlayer = GP;
             PlayerStatsRow newpsr = this.DeepClone();
 
@@ -1322,7 +1319,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public PlayerStatsRow ConvertToLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
             TeamStats ts = teamStats[TeamF];
-            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
+            uint gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
             uint gamesPlayer = GP;
             PlayerStatsRow newpsr = this.DeepClone();
 

@@ -1,13 +1,10 @@
 ﻿#region Copyright Notice
 
-// Created by Damien Guard (c) 2006-2012
-// Source: http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net
-//
-// Included in LeftosCommonLibrary by Lefteris Aslanoglou (c) 2011-2012, as part of
-// implementation of thesis
+// Created by Lefteris Aslanoglou, (c) 2011-2013
+// 
+// Initial development until v1.0 done as part of the implementation of thesis
 // "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
 // 
 // All rights reserved. Unless specifically stated otherwise, the code in this file should 
 // not be reproduced, edited and/or republished without explicit permission from the 
@@ -33,19 +30,19 @@ namespace LeftosCommonLibrary
     {
         private const UInt32 DefaultPolynomial = 0xedb88320;
         private const UInt32 DefaultSeed = 0xffffffff;
-        private static UInt32[] defaultTable;
+        private static UInt32[] _defaultTable;
 
-        private readonly UInt32 seed;
-        private readonly UInt32[] table;
-        private UInt32 hash;
+        private readonly UInt32 _seed;
+        private readonly UInt32[] _table;
+        private UInt32 _hash;
 
         /// <summary>
         ///     Default constructor for the Crc32 class, using the default polynomial and seed.
         /// </summary>
         public Crc32()
         {
-            table = InitializeTable(DefaultPolynomial);
-            seed = DefaultSeed;
+            _table = initializeTable(DefaultPolynomial);
+            _seed = DefaultSeed;
             Initialize();
         }
 
@@ -56,8 +53,8 @@ namespace LeftosCommonLibrary
         /// <param name="seed">The seed used to calculate the hash.</param>
         public Crc32(UInt32 polynomial, UInt32 seed)
         {
-            table = InitializeTable(polynomial);
-            this.seed = seed;
+            _table = initializeTable(polynomial);
+            _seed = seed;
             Initialize();
         }
 
@@ -71,40 +68,40 @@ namespace LeftosCommonLibrary
 
         public override void Initialize()
         {
-            hash = seed;
+            _hash = _seed;
         }
 
         protected override void HashCore(byte[] buffer, int start, int length)
         {
-            hash = CalculateHash(table, hash, buffer, start, length);
+            _hash = calculateHash(_table, _hash, buffer, start, length);
         }
 
         protected override byte[] HashFinal()
         {
-            byte[] hashBuffer = UInt32ToBigEndianBytes(~hash);
+            byte[] hashBuffer = UInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
 
         public static UInt32 Compute(byte[] buffer)
         {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
+            return ~calculateHash(initializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
         }
 
         public static UInt32 Compute(UInt32 seed, byte[] buffer)
         {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
+            return ~calculateHash(initializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
         }
 
         public static UInt32 Compute(UInt32 polynomial, UInt32 seed, byte[] buffer)
         {
-            return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
+            return ~calculateHash(initializeTable(polynomial), seed, buffer, 0, buffer.Length);
         }
 
-        private static UInt32[] InitializeTable(UInt32 polynomial)
+        private static UInt32[] initializeTable(UInt32 polynomial)
         {
-            if (polynomial == DefaultPolynomial && defaultTable != null)
-                return defaultTable;
+            if (polynomial == DefaultPolynomial && _defaultTable != null)
+                return _defaultTable;
 
             var createTable = new UInt32[256];
             for (int i = 0; i < 256; i++)
@@ -119,12 +116,12 @@ namespace LeftosCommonLibrary
             }
 
             if (polynomial == DefaultPolynomial)
-                defaultTable = createTable;
+                _defaultTable = createTable;
 
             return createTable;
         }
 
-        private static UInt32 CalculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
+        private static UInt32 calculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
         {
             UInt32 crc = seed;
             for (int i = start; i < size; i++)
@@ -135,7 +132,7 @@ namespace LeftosCommonLibrary
             return crc;
         }
 
-        private byte[] UInt32ToBigEndianBytes(UInt32 x)
+        private static byte[] UInt32ToBigEndianBytes(UInt32 x)
         {
             return new[] {(byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff)};
         }
@@ -152,14 +149,7 @@ namespace LeftosCommonLibrary
             String hash = String.Empty;
 
             byte[] file;
-            if (!ignoreFirst4Bytes)
-            {
-                file = File.ReadAllBytes(path);
-            }
-            else
-            {
-                file = File.ReadAllBytes(path).Skip(4).ToArray();
-            }
+            file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();
             return CalculateCRC(file);
         }
 
@@ -171,12 +161,8 @@ namespace LeftosCommonLibrary
         public static String CalculateCRC(byte[] file)
         {
             var crc32 = new Crc32();
-            String hash = String.Empty;
 
-            foreach (byte b in crc32.ComputeHash(file))
-                hash += b.ToString("x2").ToLower();
-
-            return hash;
+            return crc32.ComputeHash(file).Aggregate(String.Empty, (current, b) => current + b.ToString("x2").ToLower());
         }
     }
 }

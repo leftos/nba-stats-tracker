@@ -32,14 +32,14 @@ namespace NBA_Stats_Tracker.Windows
     /// </summary>
     public partial class BoxScoreListWindow
     {
-        private readonly ObservableCollection<BoxScoreEntry> bshist;
-        private readonly SQLiteDatabase db;
+        private readonly ObservableCollection<BoxScoreEntry> _bsHist;
+        private readonly SQLiteDatabase _db;
 
         public BoxScoreListWindow()
         {
             InitializeComponent();
 
-            db = new SQLiteDatabase(MainWindow.currentDB);
+            _db = new SQLiteDatabase(MainWindow.CurrentDB);
             /*
             string q = "select * from GameResults ORDER BY Date DESC";
             res = db.GetDataTable(q);
@@ -48,10 +48,10 @@ namespace NBA_Stats_Tracker.Windows
             */
 
 
-            MainWindow.bshist = SQLiteIO.GetAllBoxScoresFromDatabase(MainWindow.currentDB, MainWindow.tst);
-            bshist = new ObservableCollection<BoxScoreEntry>(MainWindow.bshist);
+            MainWindow.BSHist = SQLiteIO.GetAllBoxScoresFromDatabase(MainWindow.CurrentDB, MainWindow.TST);
+            _bsHist = new ObservableCollection<BoxScoreEntry>(MainWindow.BSHist);
 
-            dgvBoxScores.ItemsSource = bshist;
+            dgvBoxScores.ItemsSource = _bsHist;
         }
 
         /// <summary>
@@ -66,15 +66,16 @@ namespace NBA_Stats_Tracker.Windows
             var boxScoreEntry = dgvBoxScores.SelectedItem as BoxScoreEntry;
             if (boxScoreEntry != null)
             {
-                int id = boxScoreEntry.bs.id;
+                int id = boxScoreEntry.BS.ID;
 
                 var bw = new BoxScoreWindow(BoxScoreWindow.Mode.ViewAndIgnore, id);
                 try
                 {
                     bw.ShowDialog();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine("Exception thrown while trying to open Box Score dialog: " + ex.Message);
                 }
             }
         }
@@ -104,14 +105,14 @@ namespace NBA_Stats_Tracker.Windows
                 {
                     if (bse != null)
                     {
-                        int id = bse.bs.id;
+                        int id = bse.BS.ID;
 
-                        db.Delete("GameResults", "GameID = " + id);
-                        db.Delete("PlayerResults", "GameID = " + id);
+                        _db.Delete("GameResults", "GameID = " + id);
+                        _db.Delete("PlayerResults", "GameID = " + id);
                     }
 
-                    bshist.Remove(bse);
-                    MainWindow.bshist.Remove(bse);
+                    _bsHist.Remove(bse);
+                    MainWindow.BSHist.Remove(bse);
                 }
             }
         }

@@ -30,13 +30,13 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class App
     {
-        public static bool realNBAonly;
-        public static int openWindows = 1;
+        public static bool RealNBAOnly;
+        public static int OpenWindows = 1;
 
         public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath;
         public static string SavesPath = NBA_Stats_Tracker.Windows.MainWindow.SavesPath;
         public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainWindow.AppTempPath;
-        public static string mode = "";
+        public static string Mode = "";
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control.
@@ -46,7 +46,7 @@ namespace NBA_Stats_Tracker
         /// <param name="e">
         ///     The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.
         /// </param>
-        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace NBA_Stats_Tracker
         /// </summary>
         /// <param name="e">The e.</param>
         /// <param name="additional">The additional.</param>
-        public static void errorReport(Exception e, string additional = "")
+        public static void ErrorReport(Exception e, string additional = "")
         {
             try
             {
@@ -115,7 +115,7 @@ namespace NBA_Stats_Tracker
 
         /// <summary>
         ///     Raises the <see cref="E:System.Windows.Application.Startup" /> event.
-        ///     Checks if the program is called with the -realnbaonly argument, which makes the program download the latest NBA stats and exit.
+        ///     Checks if the program is called with the -RealNBAOnly argument, which makes the program download the latest NBA stats and exit.
         /// </summary>
         /// <param name="e">
         ///     A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.
@@ -138,9 +138,9 @@ namespace NBA_Stats_Tracker
 
             if (e.Args.Length > 0)
             {
-                if (e.Args[0] == "-realnbaonly")
+                if (e.Args[0] == "-RealNBAOnly")
                 {
-                    realNBAonly = true;
+                    RealNBAOnly = true;
                 }
             }
         }

@@ -36,12 +36,12 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         {
             if (displayName == "- Inactive -")
                 return -1;
-            for (int i = 0; i < MainWindow.tst.Count; i++)
+            for (int i = 0; i < MainWindow.TST.Count; i++)
             {
-                if (teamStats[i].displayName == displayName)
+                if (teamStats[i].DisplayName == displayName)
                 {
-                    if (teamStats[i].isHidden)
-                        throw new Exception("Requested team that is hidden: " + MainWindow.tst[i].name);
+                    if (teamStats[i].IsHidden)
+                        throw new Exception("Requested team that is hidden: " + MainWindow.TST[i].Name);
 
                     return teamStats[i].ID;
                 }
@@ -154,7 +154,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             return settingValue;
         }
 
-        public static string getRankingSuffix(int rank)
+        public static string GetRankingSuffix(int rank)
         {
             if (rank%10 == 1)
             {
@@ -195,7 +195,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             }
         }
 
-        public static string GetDisplayName(Dictionary<int, string> DisplayNames, int id)
+        public static string GetDisplayName(Dictionary<int, string> displayNames, int id)
         {
             if (id == -1)
                 return "";
@@ -203,7 +203,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             {
                 try
                 {
-                    return DisplayNames[id];
+                    return displayNames[id];
                 }
                 catch (KeyNotFoundException)
                 {
