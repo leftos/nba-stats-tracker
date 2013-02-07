@@ -643,6 +643,18 @@ namespace NBA_Stats_Tracker.Windows
             CreateDataRowFromTeamStats(splitTeamStats[ID]["vs < .500"], ref dr, "vs < .500");
             dt_ss.Rows.Add(dr);
 
+            dr = dt_ss.NewRow();
+            dr["Type"] = " ";
+            dt_ss.Rows.Add(dr);
+
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(splitTeamStats[ID]["Last 10"], ref dr, "Last 10");
+            dt_ss.Rows.Add(dr);
+
+            dr = dt_ss.NewRow();
+            CreateDataRowFromTeamStats(splitTeamStats[ID]["Before"], ref dr, "Before");
+            dt_ss.Rows.Add(dr);
+
             #region Monthly split stats
 
             dr = dt_ss.NewRow();

@@ -93,6 +93,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public uint[] stats = new uint[17];
 
         public uint[] winloss = new uint[2];
+        public string CurStreak;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamStats" /> class.

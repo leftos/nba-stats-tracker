@@ -1128,6 +1128,9 @@ namespace NBA_Stats_Tracker.Windows
 
             #endregion
 
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Last 10"], "Last 10", "IsLast10"));
+            splitPSRs.Add(new PlayerStatsRow(split[psr.ID]["Before"], "Before", "IsLast10"));
+
             #region Monthly Split Stats
 
             foreach (var ss in split[psr.ID].Where(pair => pair.Key.StartsWith("M ")))

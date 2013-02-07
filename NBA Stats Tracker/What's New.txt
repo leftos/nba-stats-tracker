@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.7.2 Beta
+		- Addition: Added Last 10 Games split stats to Team and Player Overview
+		- Addition: Added Last 10 Games record for teams in League Overview
+		- Addition: Added current streak for teams in League Overview
+
 	v1.7.1 Beta
 		- Addition: Added "Exclude Option Years" option in Advanced Player Search, which makes sure any contract years included in the contract option aren't considered when filtering by contract years remaining
 		- Improvement: Contract messages after a REDitor import will distinguish between clear contract years and option years

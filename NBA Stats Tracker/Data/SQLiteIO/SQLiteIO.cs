@@ -2391,6 +2391,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 splitTeamStats[id].Add(worse500, new TeamStats());
                 splitTeamStats[id].Add("Division", new TeamStats());
                 splitTeamStats[id].Add("Conference", new TeamStats());
+                splitTeamStats[id].Add("Last 10", new TeamStats());
+                splitTeamStats[id].Add("Before", new TeamStats());
             }
 
             foreach (var id in pst.Keys)
@@ -2444,7 +2446,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
 
                 splitPlayerStats[id].Add(better500, new PlayerStats { ID = id });
-                splitPlayerStats[id].Add(worse500, new PlayerStats {ID = id});
+                splitPlayerStats[id].Add(worse500, new PlayerStats { ID = id });
+                splitPlayerStats[id].Add("Last 10", new PlayerStats { ID = id });
+                splitPlayerStats[id].Add("Before", new PlayerStats { ID = id });
             }
 
             #endregion
@@ -2483,6 +2487,96 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 */
                 PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp);
                 PlayerStats.CalculateAllMetrics(ref pst, tst, tstopp, playoffs: true);
+            }
+
+            var last10GamesTeams = new Dictionary<int, List<int>>();
+            foreach (var pair in TeamOrder)
+            {
+                KeyValuePair<string, int> teamPair = pair;
+                var teamBSEs = bshist.Where(bse => bse.bs.Team1ID == teamPair.Value || bse.bs.Team2ID == teamPair.Value).ToList();
+                last10GamesTeams.Add(pair.Value, teamBSEs.Select(bse => bse.bs.id).Take(10).ToList());
+                string type = "";
+                int length = 0;
+                foreach (var bse in teamBSEs)
+                {
+                    if (bse.bs.Team1ID == teamPair.Value)
+                    {
+                        if (bse.bs.PTS1 > bse.bs.PTS2)
+                        {
+                            if (type == "")
+                            {
+                                type = "W";
+                                length = 1;
+                            }
+                            else if (type == "W")
+                            {
+                                length++;
+                            }
+                            else if (type == "L")
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (type == "")
+                            {
+                                type = "L";
+                                length = 1;
+                            }
+                            else if (type == "W")
+                            {
+                                break;
+                            }
+                            else if (type == "L")
+                            {
+                                length++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (bse.bs.PTS1 < bse.bs.PTS2)
+                        {
+                            if (type == "")
+                            {
+                                type = "W";
+                                length = 1;
+                            }
+                            else if (type == "W")
+                            {
+                                length++;
+                            }
+                            else if (type == "L")
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (type == "")
+                            {
+                                type = "L";
+                                length = 1;
+                            }
+                            else if (type == "W")
+                            {
+                                break;
+                            }
+                            else if (type == "L")
+                            {
+                                length++;
+                            }
+                        }
+                    }
+                }
+                tst[teamPair.Value].CurStreak = type + length;
+            }
+            var last10GamesPlayers = new Dictionary<int, List<int>>();
+            foreach (var playerID in pst.Keys.ToList())
+            {
+                var playerBSEs = bshist.Where(bse => bse.pbsList.Any(pbs => pbs.PlayerID == playerID)).ToList();
+                last10GamesPlayers.Add(playerID, playerBSEs.Select(bse => bse.bs.id).Take(10).ToList());
             }
 
             foreach (var bse in bshist)
@@ -2563,6 +2657,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     }
                 }
 
+                ts1 = last10GamesTeams[bs.Team1ID].Contains(bs.id) ? splitTeamStats[t1ID]["Last 10"] : splitTeamStats[t1ID]["Before"];
+                ts2 = last10GamesTeams[bs.Team2ID].Contains(bs.id) ? splitTeamStats[t2ID]["Last 10"] : splitTeamStats[t2ID]["Before"];
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2);
+
                 string forTeam1, forTeam2;
                 if (tst[bs.Team1ID].GetWinningPercentage(Span.Season) >= 0.5)
                 {
@@ -2606,6 +2704,15 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                     splitPlayerStats[pbs.PlayerID]["M " + bs.gamedate.Year + " " + bs.gamedate.Month.ToString().PadLeft(2, '0')].AddBoxScore
                         (pbs);
+
+                    if (last10GamesPlayers[pbs.PlayerID].Contains(bs.id))
+                    {
+                        splitPlayerStats[pbs.PlayerID]["Last 10"].AddBoxScore(pbs);
+                    }
+                    else
+                    {
+                        splitPlayerStats[pbs.PlayerID]["Before"].AddBoxScore(pbs);
+                    }
                 }
             }
 

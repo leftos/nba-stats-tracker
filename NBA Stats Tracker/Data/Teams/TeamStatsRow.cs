@@ -164,6 +164,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PythW = ts.pl_metrics["PythW"];
                 PythL = ts.pl_metrics["PythL"];
             }
+
+            CurStreak = ts.CurStreak;
         }
 
         public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false) : this(ts, playoffs)
@@ -179,6 +181,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             DivL = splitTeamStats[ID]["Division"].winloss[1];
             ConfW = splitTeamStats[ID]["Conference"].winloss[0];
             ConfL = splitTeamStats[ID]["Conference"].winloss[1];
+            L10W = splitTeamStats[ID]["Last 10"].winloss[0];
+            L10L = splitTeamStats[ID]["Last 10"].winloss[1];
         }
 
         public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
@@ -273,8 +277,14 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public uint DivW { get; set; }
         public uint DivL { get; set; }
+        public string DivRecord { get { return String.Format("{0}-{1}", DivW, DivL); } }
         public uint ConfW { get; set; }
         public uint ConfL { get; set; }
+        public string ConfRecord { get { return String.Format("{0}-{1}", ConfW, ConfL); } }
+        public uint L10W { get; set; }
+        public uint L10L { get; set; }
+        public string L10Record { get { return String.Format("{0}-{1}", L10W, L10L); } }
+        public string CurStreak { get; set; }
 
         public bool IsHidden { get; set; }
 
