@@ -1,14 +1,18 @@
 ﻿#region Copyright Notice
 
-// Created by Lefteris Aslanoglou, (c) 2011-2013
+//    Copyright 2011-2013 Eleftherios Aslanoglou
 // 
-// Initial development until v1.0 done as part of the implementation of thesis
-// "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
 // 
-// All rights reserved. Unless specifically stated otherwise, the code in this file should 
-// not be reproduced, edited and/or republished without explicit permission from the 
-// author.
+//        http://www.apache.org/licenses/LICENSE-2.0
+// 
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
 
 #endregion
 
@@ -31,6 +35,9 @@ namespace Updater
     /// </summary>
     public partial class App
     {
+        private static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                                     @"\NBA Stats Tracker\";
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -84,12 +91,9 @@ namespace Updater
             return settingValue;
         }
 
-        private static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                                    @"\NBA Stats Tracker\";
-
         private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var updErrorLog = AppDocsPath + @"updater_errorlog.txt";
+            string updErrorLog = AppDocsPath + @"updater_errorlog.txt";
             try
             {
                 var f = new StreamWriter(updErrorLog);
@@ -110,8 +114,9 @@ namespace Updater
                 MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + ex.InnerException);
             }
 
-            MessageBox.Show("NBA Stats Tracker Updater encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                            AppDocsPath + @"updater_errorlog.txt");
+            MessageBox.Show(
+                "NBA Stats Tracker Updater encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                AppDocsPath + @"updater_errorlog.txt");
 
             Process.Start(updErrorLog);
 
