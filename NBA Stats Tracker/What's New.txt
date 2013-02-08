@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.8.0.1 Beta
+		- Fix: Fixed bug that would cause the installer, when ran from inside the application, to throw an error because it was trying to update a file that was in-use
+
 	v1.8 Beta
 		- Addition: Added Last 10 Games split stats to Team and Player Overview
 		- Addition: Added Last 10 Games record for teams in League Overview

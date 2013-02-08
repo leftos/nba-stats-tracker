@@ -1,9 +1,7 @@
-1.7.1.0
+1.8.0.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
 http://forums.nba-live.com/viewtopic.php?f=143&t=84110
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
 
-	v1.7 adds a lot of enhancements to the Advanced Stats Calculator, and more.
-	
-	NOTE: v1.6.2.4 contains an important bug-fix, please update immediatelly. Using versions older than that may result in hard-to-repair corruption of the Player Box Scores part of your databases.
+	Introduced in v1.8 is the new update mechanism, which allows you to download and install the latest NBA Stats Tracker version from inside the program, making it a much faster and easier process. Make sure to update!

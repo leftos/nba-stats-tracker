@@ -113,9 +113,11 @@ namespace NBA_Stats_Tracker.Windows
                                                            return;
                                                        }
 
-                                                       Process.Start(
+                                                       var newUpdaterPath = App.AppTempPath + "\\Updater.exe";
+                                                       File.Copy(
                                                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Updater.exe",
-                                                           "\"" + localInstallerPath + "\"");
+                                                           newUpdaterPath);
+                                                       Process.Start(newUpdaterPath, "\"" + localInstallerPath + "\"");
                                                        Environment.Exit(0);
                                                    };
                 webClient.DownloadFileAsync(new Uri(_installerURL), localInstallerPath);

@@ -1603,6 +1603,15 @@ namespace NBA_Stats_Tracker.Windows
             {
                 mnuOptionsCheckForUpdates.IsChecked = false;
             }
+
+            try
+            {
+                Directory.GetFiles(App.AppTempPath).ToList().ForEach(File.Delete);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Couldn't delete temp files: " + ex.Message);
+            }
         }
 
         /// <summary>
