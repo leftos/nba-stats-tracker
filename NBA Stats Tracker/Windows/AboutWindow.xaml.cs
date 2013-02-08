@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 
@@ -62,6 +63,13 @@ namespace NBA_Stats_Tracker.Windows
         private void btnCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.CheckForUpdates(true);
+        }
+
+        private void btnLicense_Click(object sender, RoutedEventArgs e)
+        {
+            var newLicensePath = App.AppTempPath + "license.txt";
+            File.Copy("LICENSE", newLicensePath);
+            Process.Start(newLicensePath);
         }
     }
 }

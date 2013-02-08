@@ -217,6 +217,9 @@ Development Credits
 	
 Discussion/Support Thread
 	http://forums.nba-live.com/viewtopic.php?f=143&t=84106
+
+GitHub Page
+	https://github.com/leftos/nba-stats-tracker
 	
 Donations Page
     http://students.ceid.upatras.gr/~aslanoglou/donate.html

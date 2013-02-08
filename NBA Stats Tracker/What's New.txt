@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.8.0.5 Beta
+		- Improvement: Upgraded to version 1.9 of the Extended WPF Toolkit
+		- Change: NBA Stats Tracker is now open-source software provided under the Apache License v2.0
+
 	v1.8.0.4 Beta
 		- Fix: Fixed Streak sorting in League Overview
 
