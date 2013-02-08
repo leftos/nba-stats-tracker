@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.8.0.4 Beta
+		- Fix: Fixed Streak sorting in League Overview
+
 	v1.8.0.3 Beta
 		- Fix: Fixed minor bug in updater
 

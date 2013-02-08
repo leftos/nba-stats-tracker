@@ -94,7 +94,7 @@ namespace Updater
             {
                 var f = new StreamWriter(updErrorLog);
 
-                f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker");
+                f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker Updater");
                 f.WriteLine("Version " + Assembly.GetExecutingAssembly().GetName().Version);
                 f.WriteLine();
                 f.Write(e.Exception.ToString());
@@ -110,7 +110,7 @@ namespace Updater
                 MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + ex.InnerException);
             }
 
-            MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+            MessageBox.Show("NBA Stats Tracker Updater encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
                             AppDocsPath + @"updater_errorlog.txt");
 
             Process.Start(updErrorLog);

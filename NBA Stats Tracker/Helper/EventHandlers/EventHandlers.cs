@@ -173,6 +173,19 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
                                      ? new TeamNameComparerAsc()
                                      : new TeamNameComparerDesc();
             }
+            else if (e.Column.Header.ToString() == "Streak")
+            {
+                e.Handled = true;
+
+                e.Column.SortDirection = (e.Column.SortDirection != ListSortDirection.Descending)
+                                             ? ListSortDirection.Descending
+                                             : ListSortDirection.Ascending;
+
+                var lcv = (ListCollectionView)CollectionViewSource.GetDefaultView((sender).ItemsSource);
+                lcv.CustomSort = e.Column.SortDirection == ListSortDirection.Ascending
+                                     ? new TeamStreakComparerAsc()
+                                     : new TeamStreakComparerDesc();
+            }
             else if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
             {
                 if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false)
