@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.8.0.3 Beta
+		- Fix: Fixed minor bug in updater
+
+	v1.8.0.2 Beta
+		- Fix: Fixed bug that would cause the application to crash when trying to update from inside the application in certain scenarios
+
 	v1.8.0.1 Beta
 		- Fix: Fixed bug that would cause the installer, when ran from inside the application, to throw an error because it was trying to update a file that was in-use
 

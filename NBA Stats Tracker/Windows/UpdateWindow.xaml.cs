@@ -114,9 +114,17 @@ namespace NBA_Stats_Tracker.Windows
                                                        }
 
                                                        var newUpdaterPath = App.AppTempPath + "\\Updater.exe";
-                                                       File.Copy(
-                                                           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Updater.exe",
-                                                           newUpdaterPath);
+                                                       try
+                                                       {
+                                                           File.Copy(
+                                                               Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                                               "\\Updater.exe", newUpdaterPath, true);
+                                                       }
+                                                       catch (Exception ex)
+                                                       {
+                                                           MessageBox.Show("Couldn't run the Updater. " + ex.Message);
+                                                           return;
+                                                       }
                                                        Process.Start(newUpdaterPath, "\"" + localInstallerPath + "\"");
                                                        Environment.Exit(0);
                                                    };
