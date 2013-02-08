@@ -26,9 +26,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LeftosCommonLibrary")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CEID, University of Patras")]
-[assembly: AssemblyProduct("LeftosCommonLibrary")]
-[assembly: AssemblyCopyright("Copyright © CEID, University of Patras 2012")]
+[assembly: AssemblyCompany("Lefteris Aslanoglou")]
+[assembly: AssemblyProduct("Leftos' Library of Commonly Used Tools")]
+[assembly: AssemblyCopyright("(c) 2011-2013 Lefteris Aslanoglou")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

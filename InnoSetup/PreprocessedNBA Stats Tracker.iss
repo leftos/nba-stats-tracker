@@ -13,7 +13,7 @@ AppPublisher=Lefteris Aslanoglou
 ;AppUpdatesURL=http://...
 OutputBaseFilename=NBA Stats Tracker  
 DefaultGroupName=NBA Stats Tracker
-DefaultDirName={pf32}\NBA Stats Tracker
+DefaultDirName={code:GetDefaultDir}
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe
 UninstallDisplayName=NBA Stats Tracker
 Uninstallable=true
@@ -44,6 +44,7 @@ Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats 
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Updater.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"
@@ -56,6 +57,7 @@ Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; Flags: nowait post
 Type: filesandordirs; Name: "{app}"
 [Registry]
 Root: "HKCU"; Subkey: "Software\Lefteris Aslanoglou\NBA Stats Tracker"; Flags: uninsdeletekey
+Root: "HKCU"; Subkey: "Software\Lefteris Aslanoglou\NBA Stats Tracker"; ValueType: string; ValueName: "InstallDir"; ValueData: "{app}"
 [Dirs]
 Name: "{app}\Images"
 [Files]

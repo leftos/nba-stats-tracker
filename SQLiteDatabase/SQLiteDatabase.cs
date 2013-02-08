@@ -63,7 +63,7 @@ namespace SQLite_Database
         /// </summary>
         /// <param name="sql">The SQL to run</param>
         /// <returns>A DataTable containing the result set.</returns>
-        public DataTable GetDataTable(string sql)
+        public DataTable GetDataTable(string sql, bool queryHasDuplicateColumns = false)
         {
             var dt = new DataTable();
 
@@ -79,7 +79,7 @@ namespace SQLite_Database
                         reader = mycommand.ExecuteReader();
                     }
                     //dt.Load(reader);
-                    dt = GetDataTableFromDataReader(reader);
+                    dt = GetDataTableFromDataReader(reader, queryHasDuplicateColumns);
                     reader.Close();
                 }
             }
@@ -97,7 +97,7 @@ namespace SQLite_Database
         /// </summary>
         /// <param name="dataReader"></param>
         /// <returns></returns>
-        public DataTable GetDataTableFromDataReader(IDataReader dataReader)
+        public DataTable GetDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
         {
             DataTable schemaTable = dataReader.GetSchemaTable();
             if (schemaTable == null)
@@ -117,7 +117,27 @@ namespace SQLite_Database
                                      Unique = (bool) dataRow["IsUnique"]
                                  };
 
-                resultTable.Columns.Add(dataColumn);
+                try
+                {
+                    resultTable.Columns.Add(dataColumn);
+                }
+                catch (DuplicateNameException)
+                {
+                    if (queryHasDuplicateColumns)
+                    {
+                        int i = 2;
+                        while (resultTable.Columns.Contains(dataColumn.ColumnName + i))
+                        {
+                            i++;
+                        }
+                        dataColumn.ColumnName += i.ToString();
+                        resultTable.Columns.Add(dataColumn);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
 
             while (dataReader.Read())

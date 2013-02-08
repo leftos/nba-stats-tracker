@@ -14,9 +14,13 @@
             <TextBlock HorizontalAlignment="Center" Margin="0" Name="txbMsg" Text="txbMsg" VerticalAlignment="Top"
                    MaxWidth="800" TextWrapping="Wrap" TextAlignment="Center" />
         </ScrollViewer>
-        <Button Grid.Row="1" Content="OK" Height="23" HorizontalAlignment="Left" Name="btnOK" VerticalAlignment="Bottom" Width="75"
-                Margin="9,0,0,9" Click="btnOK_Click" IsDefault="True"/>
-        <Button Grid.Row="1" Content="Copy To Clipboard" Height="23" HorizontalAlignment="Right" Margin="0,0,9,9"
-                Name="btnCopyToClip" VerticalAlignment="Bottom" Width="122" Click="btnCopyToClip_Click" />
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="OK" Height="23" HorizontalAlignment="Left" Name="btnOK" VerticalAlignment="Center " Width="75"
+                Margin="5,0" Click="btnOK_Click" IsDefault="True"/>
+                <Button Content="Copy To Clipboard" Height="23" HorizontalAlignment="Left" Margin="5,0"
+                Name="btnCopyToClip" VerticalAlignment="Center" Width="122" Click="btnCopyToClip_Click" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

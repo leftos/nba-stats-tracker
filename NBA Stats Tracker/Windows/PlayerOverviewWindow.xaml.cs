@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -208,6 +209,8 @@ namespace NBA_Stats_Tracker.Windows
             grpSeasonFacts.Visibility = Visibility.Collapsed;
             grpSeasonLeadersFacts.Visibility = Visibility.Collapsed;
             grpSeasonScoutingReport.Visibility = Visibility.Collapsed;
+
+            chkIsActive.SetBinding(ToggleButton.IsCheckedProperty, new Binding("IsActive") {Source = _psr});
 
             getActivePlayers();
             populateGraphStatCombo();
@@ -1613,9 +1616,9 @@ namespace NBA_Stats_Tracker.Windows
                     oppPSR.Type = oppPSR.FirstName + " " + oppPSR.LastName;
                     psrList.Add(oppPSR);
 
-                    q = "select * from PlayerResults INNER JOIN GameResults ON (PlayerResults.GameID = GameResults.GameID) " +
-                        "where PlayerID = " + selectedOppPlayerID + " AND SeasonNum = " + _curSeason + " AND isOut = \"False\"";
-                    res = _db.GetDataTable(q);
+                    q = "select * " + "FROM PlayerResults INNER JOIN GameResults " + "ON (PlayerResults.GameID = GameResults.GameID) " +
+                        "WHERE PlayerID = " + selectedOppPlayerID + " AND SeasonNum = " + _curSeason + " AND isOut = \"False\"";
+                    res = _db.GetDataTable(q, true);
 
                     _hthOppPBS = new List<PlayerBoxScore>();
                     foreach (DataRow r in res.Rows)
@@ -1645,7 +1648,7 @@ namespace NBA_Stats_Tracker.Windows
                             "WHERE PlayerID = {0} AND isOut = \"False\"" + "AND PlayerResults.GameID IN " +
                             "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\"" +
                             "AND SeasonNum = {2}) ORDER BY Date DESC", _selectedPlayerID, selectedOppPlayerID, _curSeason);
-                    res = _db.GetDataTable(q);
+                    res = _db.GetDataTable(q, true);
 
                     var p = new Player(_psr.ID, _psr.TeamF, _psr.LastName, _psr.FirstName, _psr.Position1, _psr.Position2);
                     var ps = new PlayerStats(p);
@@ -1672,7 +1675,7 @@ namespace NBA_Stats_Tracker.Windows
                             "WHERE PlayerID = {0} AND isOut = \"False\" " + "AND PlayerResults.GameID IN " +
                             "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\" " +
                             "AND SeasonNum = {2}) ORDER BY Date DESC", selectedOppPlayerID, _selectedPlayerID, _curSeason);
-                    res = _db.GetDataTable(q);
+                    res = _db.GetDataTable(q, true);
 
                     ps = new PlayerStats(p);
 
@@ -1724,7 +1727,7 @@ namespace NBA_Stats_Tracker.Windows
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
-                    res = _db.GetDataTable(q);
+                    res = _db.GetDataTable(q, true);
 
                     var p = new Player(_psr.ID, _psr.TeamF, _psr.LastName, _psr.FirstName, _psr.Position1, _psr.Position2);
                     var ps = new PlayerStats(p);
@@ -1754,7 +1757,7 @@ namespace NBA_Stats_Tracker.Windows
                     q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
                                                               dtpEnd.SelectedDate.GetValueOrDefault());
                     q += ") ORDER BY Date DESC";
-                    res = _db.GetDataTable(q);
+                    res = _db.GetDataTable(q, true);
 
                     ps = new PlayerStats(p);
 

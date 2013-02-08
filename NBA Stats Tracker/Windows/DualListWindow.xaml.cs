@@ -386,7 +386,7 @@ namespace NBA_Stats_Tracker.Windows
                     string q =
                         "select * from PlayerResults INNER JOIN GameResults ON GameResults.GameID = PlayerResults.GameID where SeasonNum = " +
                         _curSeason + " AND PlayerID = " + item.Key;
-                    DataTable res = db.GetDataTable(q);
+                    DataTable res = db.GetDataTable(q, true);
 
                     if (res.Rows.Count > 0)
                     {

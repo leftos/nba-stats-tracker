@@ -1,9 +1,12 @@
 NBA Stats Tracker - Version History
 
-	v1.7.2 Beta
+	v1.8 Beta
 		- Addition: Added Last 10 Games split stats to Team and Player Overview
 		- Addition: Added Last 10 Games record for teams in League Overview
 		- Addition: Added current streak for teams in League Overview
+		- Fix: Fixed crash when sorting teams by name in non-player-related tables
+		- Fix: Fixed crash when trying to compare two players in the Head-To-Head tab of Player Overview
+		- Addition: When an update is available, you will be able to download and install it directly from inside NBA Stats Tracker
 
 	v1.7.1 Beta
 		- Addition: Added "Exclude Option Years" option in Advanced Player Search, which makes sure any contract years included in the contract option aren't considered when filtering by contract years remaining

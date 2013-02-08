@@ -667,7 +667,8 @@ namespace NBA_Stats_Tracker.Windows
             {
                 return;
             }
-            string[] curVersionParts = Assembly.GetExecutingAssembly().GetName().Version.ToString().Split('.');
+            string curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            string[] curVersionParts = curVersion.Split('.');
             var iVP = new int[versionParts.Length];
             var iCVP = new int[versionParts.Length];
             for (int i = 0; i < versionParts.Length; i++)
@@ -678,29 +679,34 @@ namespace NBA_Stats_Tracker.Windows
                     break;
                 if (iVP[i] > iCVP[i])
                 {
-                    string changelog = "\n\nVersion " + String.Join(".", versionParts);
+                    string changelog = "";
                     try
                     {
-                        for (int j = 2; j < updateInfo.Length; j++)
+                        for (int j = 6; j < updateInfo.Length; j++)
                         {
-                            changelog += "\n" + updateInfo[j].Replace('\t', ' ');
+                            changelog += updateInfo[j].Replace('\t', ' ') + "\n";
                         }
                     }
                     catch
                     {
                     }
-                    MessageBoxResult mbr = MessageBox.Show("A new version is available! Would you like to download it?" + changelog,
-                                                           "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                    if (mbr == MessageBoxResult.Yes)
-                    {
-                        Process.Start(updateInfo[1]);
-                        break;
-                    }
+                    var uio = new UpdateInfoContainer {CurVersion = curVersion, UpdateInfo = updateInfo, Changelog = changelog};
+                    MWInstance.Dispatcher.BeginInvoke(new Action<object>(showUpdateWindow), uio);
                     return;
                 }
             }
             if (_showUpdateMessage)
                 MessageBox.Show("No updates found!");
+        }
+
+        private static void showUpdateWindow(object o)
+        {
+            var uio = (UpdateInfoContainer) o;
+            string curVersion = uio.CurVersion;
+            string[] updateInfo = uio.UpdateInfo;
+            string changelog = uio.Changelog;
+            var uw = new UpdateWindow(curVersion, updateInfo[0], changelog, updateInfo[2], updateInfo[1], updateInfo[3], updateInfo[4]);
+            uw.ShowDialog();
         }
 
         /// <summary>
@@ -2194,7 +2200,7 @@ namespace NBA_Stats_Tracker.Windows
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        internal void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
             Misc.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
@@ -2958,5 +2964,16 @@ namespace NBA_Stats_Tracker.Windows
 
             UpdateStatus("Erased all past player stats. Database saved.");
         }
+
+        #region Nested type: UpdateInfoContainer
+
+        private struct UpdateInfoContainer
+        {
+            public string Changelog;
+            public string CurVersion;
+            public string[] UpdateInfo;
+        }
+
+        #endregion
     }
 }

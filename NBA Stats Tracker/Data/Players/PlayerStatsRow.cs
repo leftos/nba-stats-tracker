@@ -380,9 +380,9 @@ namespace NBA_Stats_Tracker.Data.Players
         public int TeamF { get; set; }
         public string TeamFDisplay { get; set; }
         public int TeamS { get; set; }
-        public bool IsActive { get; set; }
         public bool IsHidden { get; set; }
         public bool IsAllStar { get; set; }
+
 
         public PlayerInjury Injury
         {
@@ -540,6 +540,8 @@ namespace NBA_Stats_Tracker.Data.Players
                 OnPropertyChanged("Weight");
             }
         }
+
+        public bool IsActive { get; set; }
 
         #region INotifyPropertyChanged Members
 

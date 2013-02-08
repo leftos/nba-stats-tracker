@@ -2384,7 +2384,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     qrTeams += s;
                 }
                 qrTeams += " GROUP BY TeamID";
-                res = db.GetDataTable(qrTeams);
+                res = db.GetDataTable(qrTeams, true);
                 foreach (DataRow r in res.Rows)
                 {
                     splitPlayerStats[id].Add("with " + displayNames[DataRowCellParsers.GetInt32(r, "TeamID")], new PlayerStats {ID = id});

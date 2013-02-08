@@ -29,12 +29,24 @@ namespace NBA_Stats_Tracker.Data.Teams
             string s2;
             try
             {
-                s1 = ((PlayerStatsRow) x).TeamFDisplay;
-                s2 = ((PlayerStatsRow) y).TeamFDisplay;
+                if (x is PlayerStatsRow)
+                {
+                    s1 = ((PlayerStatsRow) x).TeamFDisplay;
+                    s2 = ((PlayerStatsRow) y).TeamFDisplay;
+                }
+                else if (x is TeamStatsRow)
+                {
+                    s1 = ((TeamStatsRow) x).DisplayName;
+                    s2 = ((TeamStatsRow) y).DisplayName;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
             }
             catch (InvalidCastException)
             {
-                throw new InvalidCastException("TeamNameComparer can only compare PlayerStatsRow instances.");
+                throw new InvalidCastException("TeamNameComparer can only compare PlayerStatsRow or TeamStatsRow instances.");
             }
 
             if (s1 == s2)

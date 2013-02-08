@@ -16,18 +16,21 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 #endregion
+
+#region Other Info
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("SQLiteDatabase")]
+[assembly: AssemblyTitle("Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lefteris Aslanoglou")]
-[assembly: AssemblyProduct("SQLite Wrapper for C#")]
+[assembly: AssemblyProduct("NBA Stats Tracker Updater")]
 [assembly: AssemblyCopyright("(c) 2011-2013 Lefteris Aslanoglou")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -38,9 +41,25 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
+//In order to begin building localizable applications, set 
+//<UICulture>CultureYouAreCodingWith</UICulture> in your .csproj file
+//inside a <PropertyGroup>.  For example, if you are using US english
+//in your source files, set the <UICulture> to en-US.  Then uncomment
+//the NeutralResourceLanguage attribute below.  Update the "en-US" in
+//the line below to match the UICulture setting in the project file.
 
-[assembly: Guid("d2a6935e-2007-40a0-b900-3d25d6ae661b")]
+//[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
+
+
+[assembly: ThemeInfo(ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
+    //(used if a resource is not found in the page, 
+    // or application resource dictionaries)
+    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+    //(used if a resource is not found in the page, 
+    // app, or any theme specific resource dictionaries)
+    )]
+
+#endregion
 
 // Version information for an assembly consists of the following four values:
 //

@@ -122,18 +122,6 @@ namespace NBA_Stats_Tracker
         /// </param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            /*
-            // Get Reference to the current Process
-            Process thisProc = Process.GetCurrentProcess();
-            // Check how many total processes have the same name as the current one
-            if (Process.GetProcessesByName(thisProc.ProcessName).Length > 1)
-            {
-                // If ther is more than one, than it is already running.
-                MessageBox.Show("Application is already running.");
-                Environment.Exit(-1);
-            }
-			*/
-
             base.OnStartup(e);
 
             if (e.Args.Length > 0)
