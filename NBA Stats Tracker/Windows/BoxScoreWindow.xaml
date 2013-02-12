@@ -956,7 +956,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
-                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -1011,7 +1011,8 @@
                         </Grid>
                     </GroupBox>
                     <Grid Grid.Row="2" Grid.ColumnSpan="3">
-                        <Button x:Name="btnCopyBestToClipboard" Content="Copy To Clipboard" HorizontalAlignment="Right" Margin="6" VerticalAlignment="Center" Width="150" Click="btnCopyBestToClipboard_Click" />
+                        <Button x:Name="btnCopyBestToClipboard" Content="Copy To Clipboard" HorizontalAlignment="Right"
+                                Margin="6" VerticalAlignment="Center" Width="150" Click="btnCopyBestToClipboard_Click" />
                     </Grid>
                 </Grid>
             </TabItem>

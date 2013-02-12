@@ -50,7 +50,8 @@
                     </MenuItem>
                     <MenuItem Header="_Check For Updates on start" Name="mnuOptionsCheckForUpdates"
                               Click="mnuOptionsCheckForUpdates_Click" IsCheckable="True" />
-                    <MenuItem Header="_Use Imperial Measurements" Name="mnuOptionsIsImperial" IsCheckable="True" Click="mnuOptionsIsImperial_Click" />
+                    <MenuItem Header="_Use Imperial Measurements" Name="mnuOptionsIsImperial" IsCheckable="True"
+                              Click="mnuOptionsIsImperial_Click" />
                 </MenuItem>
                 <MenuItem x:Name="mnuTools" Header="_Tools">
                     <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason"
@@ -65,8 +66,10 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="NBA _2K Tools">
-                        <MenuItem Header="Import _Last Season's Stats..." Name="mnuMiscImportPrevYear2K12" Click="mnuMiscImportPrevYear2K12_Click" />
-                        <MenuItem Header="Import _Previous Years' Player Stats..." Name="mnuMiscImportOldPlayerStats2K12" Click="mnuMiscImportOldPlayerStats2K12_Click" />
+                        <MenuItem Header="Import _Last Season's Stats..." Name="mnuMiscImportPrevYear2K12"
+                                  Click="mnuMiscImportPrevYear2K12_Click" />
+                        <MenuItem Header="Import _Previous Years' Player Stats..."
+                                  Name="mnuMiscImportOldPlayerStats2K12" Click="mnuMiscImportOldPlayerStats2K12_Click" />
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="_Import Box Scores..." Name="mnuMiscImportBoxScores"
@@ -81,9 +84,11 @@
                                   Click="mnuMiscResetTeamStats_Click" />
                         <MenuItem Header="Reset All _Player Stats" Name="mnuMiscResetPlayerStats"
                                   Click="mnuMiscResetPlayerStats_Click" />
-                        <MenuItem Header ="Erase All Past T_eam Stats" Name="mnuMiscErasePastTeamStats" Click="mnuMiscErasePastTeamStats_Click" />
-                        <MenuItem Header ="Erase All Past P_layer Stats" Name="mnuMiscErasePastPlayerStats" Click="mnuMiscErasePastPlayerStats_Click" />
-                        <Separator/>
+                        <MenuItem Header="Erase All Past T_eam Stats" Name="mnuMiscErasePastTeamStats"
+                                  Click="mnuMiscErasePastTeamStats_Click" />
+                        <MenuItem Header="Erase All Past P_layer Stats" Name="mnuMiscErasePastPlayerStats"
+                                  Click="mnuMiscErasePastPlayerStats_Click" />
+                        <Separator />
                         <MenuItem Header="Recalculate _Opponent Team Stats" Name="mnuMiscRecalculateOppStats"
                                   Click="mnuMiscRecalculateOppStats_Click" />
                         <MenuItem Header="Recalculate Player Career _Highs from Season Highs"
@@ -99,8 +104,10 @@
                         <MenuItem Header="Edit _Season Length..." Name="mnuMiscEditSeasonLength"
                                   Click="mnuMiscEditSeasonLength_Click" />
                         <MenuItem Header="_Preferred League Leaders">
-                            <MenuItem Header="_NBA Rules" Name="mnuMiscPreferNBALeaders" IsCheckable="True" Checked="mnuMiscPreferNBALeaders_Checked"/>
-                            <MenuItem Header="_Custom Rules" Name="mnuMiscPreferMyLeaders" IsCheckable="True" Checked="mnuMiscPreferMyLeaders_Checked"/>
+                            <MenuItem Header="_NBA Rules" Name="mnuMiscPreferNBALeaders" IsCheckable="True"
+                                      Checked="mnuMiscPreferNBALeaders_Checked" />
+                            <MenuItem Header="_Custom Rules" Name="mnuMiscPreferMyLeaders" IsCheckable="True"
+                                      Checked="mnuMiscPreferMyLeaders_Checked" />
                         </MenuItem>
                     </MenuItem>
                 </MenuItem>

@@ -143,7 +143,8 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team"
+                                                    Visibility="Collapsed" />
                                 <DataGridTemplateColumn Header="PER" x:Name="dgvMetricStatsPERColumn"
                                                         SortMemberPath="PER"
                                                         ClipboardContentBinding="{Binding PER}">
@@ -542,7 +543,8 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team"
+                                                    Visibility="Collapsed" />
                                 <DataGridTemplateColumn Header="PER" x:Name="dgvPlayoffMetricStatsPERColumn"
                                                         SortMemberPath="PER" ClipboardContentBinding="{Binding PER}">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -982,7 +984,8 @@
                         <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True" Name="dgvBoxScores"
                                   VerticalAlignment="Stretch" Margin="6,6,6,0"
                                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                                  Style="{StaticResource DataGridStyle}" IsReadOnly="True" Sorting="dgvBoxScores_Sorting">
+                                  Style="{StaticResource DataGridStyle}" IsReadOnly="True"
+                                  Sorting="dgvBoxScores_Sorting">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
                                 <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent" />
@@ -1105,35 +1108,40 @@
                                     x:Name="btnMPNextOpp" VerticalAlignment="Top" Width="24" Margin="3,0" />
                         </StackPanel>
                         <ScrollViewer Grid.Row="1">
-                            <Grid><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="35"/></Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="85" />
-                                    <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="20" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="1">
-                                    <TextBlock Name="txbMPTeamHeader" FontWeight="Bold" FontSize="16"
-                                               TextAlignment="Center" Margin="0,0,0,6" />
-                                    <TextBlock Name="txbMPTeam" TextAlignment="Center" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="3">
-                                    <TextBlock Name="txbMPDescHeader" FontWeight="Bold" FontSize="16"
-                                               TextAlignment="Center" Margin="0,0,0,6" />
-                                    <TextBlock Name="txbMPDesc" TextAlignment="Center" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="5">
-                                    <TextBlock Name="txbMPOppHeader" FontWeight="Bold" FontSize="16"
-                                               TextAlignment="Center" Margin="0,0,0,6" />
-                                    <TextBlock Name="txbMPOpp" TextAlignment="Center" />
-                                </StackPanel>
-                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition /><RowDefinition Height="35" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="85" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="20" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Name="txbMPTeamHeader" FontWeight="Bold" FontSize="16"
+                                                   TextAlignment="Center" Margin="0,0,0,6" />
+                                        <TextBlock Name="txbMPTeam" TextAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3">
+                                        <TextBlock Name="txbMPDescHeader" FontWeight="Bold" FontSize="16"
+                                                   TextAlignment="Center" Margin="0,0,0,6" />
+                                        <TextBlock Name="txbMPDesc" TextAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5">
+                                        <TextBlock Name="txbMPOppHeader" FontWeight="Bold" FontSize="16"
+                                                   TextAlignment="Center" Margin="0,0,0,6" />
+                                        <TextBlock Name="txbMPOpp" TextAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <Grid Grid.Row="1">
-                                    <Button x:Name="btnCopyMPToClipboard" Content="Copy To Clipboard" HorizontalAlignment="Right" Margin="6" VerticalAlignment="Center" Width="150" Click="btnCopyMPToClipboard_Click"/>
+                                    <Button x:Name="btnCopyMPToClipboard" Content="Copy To Clipboard"
+                                            HorizontalAlignment="Right" Margin="6" VerticalAlignment="Center"
+                                            Width="150" Click="btnCopyMPToClipboard_Click" />
                                 </Grid>
                             </Grid>
                         </ScrollViewer>

@@ -72,10 +72,11 @@ namespace NBA_Stats_Tracker
                 f.WriteLine();
                 f.WriteLine("Inner Exception information:");
                 f.Write(innerExceptionString);
-                f.Close(); 
+                f.Close();
 
-                MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                             errorReportPath, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
+                    errorReportPath, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
             }
@@ -119,8 +120,9 @@ namespace NBA_Stats_Tracker
                 f.WriteLine();
                 f.Close();
 
-                MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                                NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
+                MessageBox.Show(
+                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                    NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
             }
             catch (Exception ex)
             {

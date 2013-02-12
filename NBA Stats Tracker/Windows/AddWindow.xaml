@@ -29,7 +29,7 @@
                             <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
                             <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
                             <DataGridComboBoxColumn x:Name="teamColumn" Header="Team" DisplayMemberPath="Key"
-                                                    SelectedValueBinding="{Binding Team}" SelectedValuePath="Value"/>
+                                                    SelectedValueBinding="{Binding Team}" SelectedValuePath="Value" />
                             <DataGridComboBoxColumn Header="Position"
                                                     SelectedValueBinding="{Binding Position1, Mode=TwoWay}"
                                                     ItemsSource="{Binding Source={StaticResource PositionsList}}" />

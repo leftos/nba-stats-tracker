@@ -683,18 +683,18 @@ namespace NBA_Stats_Tracker.Windows
                     break;
                 if (iVP[i] > iCVP[i])
                 {
-                    string changelog = "";
+                    string message = "";
                     try
                     {
                         for (int j = 6; j < updateInfo.Length; j++)
                         {
-                            changelog += updateInfo[j].Replace('\t', ' ') + "\n";
+                            message += updateInfo[j].Replace('\t', ' ') + "\n";
                         }
                     }
                     catch
                     {
                     }
-                    var uio = new UpdateInfoContainer {CurVersion = curVersion, UpdateInfo = updateInfo, Changelog = changelog};
+                    var uio = new UpdateInfoContainer {CurVersion = curVersion, UpdateInfo = updateInfo, Message = message};
                     MWInstance.Dispatcher.BeginInvoke(new Action<object>(showUpdateWindow), uio);
                     return;
                 }
@@ -708,8 +708,8 @@ namespace NBA_Stats_Tracker.Windows
             var uio = (UpdateInfoContainer) o;
             string curVersion = uio.CurVersion;
             string[] updateInfo = uio.UpdateInfo;
-            string changelog = uio.Changelog;
-            var uw = new UpdateWindow(curVersion, updateInfo[0], changelog, updateInfo[2], updateInfo[1], updateInfo[3], updateInfo[4]);
+            string message = uio.Message;
+            var uw = new UpdateWindow(curVersion, updateInfo[0], message, updateInfo[2], updateInfo[1], updateInfo[3], updateInfo[4]);
             uw.ShowDialog();
         }
 
@@ -1460,8 +1460,7 @@ namespace NBA_Stats_Tracker.Windows
             var lbsw = new LiveBoxScoreWindow();
             lbsw.ShowDialog();
             */
-
-            recalculateOpponentStats();
+            throw new Exception("Test exception");
         }
 
         /// <summary>
@@ -2982,7 +2981,7 @@ namespace NBA_Stats_Tracker.Windows
 
         private struct UpdateInfoContainer
         {
-            public string Changelog;
+            public string Message;
             public string CurVersion;
             public string[] UpdateInfo;
         }

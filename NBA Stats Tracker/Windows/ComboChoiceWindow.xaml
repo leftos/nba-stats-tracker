@@ -10,6 +10,6 @@
                 VerticalAlignment="Bottom" Width="76" Click="btnOK_Click" />
         <ComboBox Height="23" Margin="12,70,12,0" Name="cmbSelection2" VerticalAlignment="Top" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,10" x:Name="btnCancel"
-        	VerticalAlignment="Bottom" Width="76" Click="btnCancel_Click" />
+                VerticalAlignment="Bottom" Width="76" Click="btnCancel_Click" />
     </Grid>
 </Window>

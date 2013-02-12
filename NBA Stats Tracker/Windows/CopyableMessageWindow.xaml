@@ -7,19 +7,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignHeight="120" d:DesignWidth="245"
         MinWidth="245" WindowStyle="ToolWindow">
     <Grid>
-        <Grid.RowDefinitions><RowDefinition/>
-            <RowDefinition Height="40"/>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <ScrollViewer MaxHeight="550" Grid.Row="0" Margin="12" VerticalScrollBarVisibility="Auto">
             <TextBlock HorizontalAlignment="Center" Margin="0" Name="txbMsg" Text="txbMsg" VerticalAlignment="Top"
-                   MaxWidth="800" TextWrapping="Wrap" TextAlignment="Center" />
+                       MaxWidth="800" TextWrapping="Wrap" TextAlignment="Center" />
         </ScrollViewer>
         <Grid Grid.Row="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="OK" Height="23" HorizontalAlignment="Left" Name="btnOK" VerticalAlignment="Center " Width="75"
-                Margin="5,0" Click="btnOK_Click" IsDefault="True"/>
+                <Button Content="OK" Height="23" HorizontalAlignment="Left" Name="btnOK" VerticalAlignment="Center "
+                        Width="75"
+                        Margin="5,0" Click="btnOK_Click" IsDefault="True" />
                 <Button Content="Copy To Clipboard" Height="23" HorizontalAlignment="Left" Margin="5,0"
-                Name="btnCopyToClip" VerticalAlignment="Center" Width="122" Click="btnCopyToClip_Click" />
+                        Name="btnCopyToClip" VerticalAlignment="Center" Width="122" Click="btnCopyToClip_Click" />
             </StackPanel>
         </Grid>
     </Grid>
