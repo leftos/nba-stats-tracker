@@ -65,17 +65,17 @@ namespace NBA_Stats_Tracker
                 f.Write(e.Exception.InnerException == null ? "None" : e.Exception.InnerException.Message);
                 f.WriteLine();
                 f.WriteLine();
-                f.Close();
+                f.Close(); 
+
+                MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                             NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
+
+                Process.Start(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + ex.InnerException);
             }
-
-            MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                            NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
-
-            Process.Start(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog_unh.txt");
 
             // Prevent default unhandled exception processing
             e.Handled = true;
@@ -105,14 +105,14 @@ namespace NBA_Stats_Tracker
                 f.WriteLine();
                 f.WriteLine();
                 f.Close();
+
+                MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
+                                NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + (e.InnerException == null ? "None" : e.InnerException.Message));
             }
-
-            MessageBox.Show("NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                            NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
 
             Environment.Exit(-1);
         }
