@@ -5,5 +5,4 @@
 - Career and Season Highs in Box Scores
 - Milestones in Box Scores & Matchup Preview
 - Average age
-- Silent installer (Horizontal StackPanel)
 - More Copy To Clipboard

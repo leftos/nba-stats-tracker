@@ -496,8 +496,13 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return -1;
 
             var importMessages = new List<string>();
-            var tradeMessages = new List<string>();
-            var injuryMessages = new List<string>();
+            var tradesList = new List<string>();
+            var faSigningsList = new List<string>();
+            var reSigningsList = new List<string>();
+            var waiversList = new List<string>();
+            var injuredList = new List<string>();
+            var reInjuredList = new List<string>();
+            var recoveredList = new List<string>();
 
             #region Import Teams & Team Stats
 
@@ -921,6 +926,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         pst[playerID] = ps;
                     }
 
+                    #region Import Messsages
+
                     string name = String.Format("{0} {1}", curPlayer.FirstName, curPlayer.LastName);
                     if (oldPlayer.TeamF != curPlayer.TeamF)
                     {
@@ -929,48 +936,56 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             msg = String.Format("{0} was traded from the {1} to the {2}.", name, tst[oldPlayer.TeamF].DisplayName,
                                                 tst[curPlayer.TeamF].DisplayName);
-                            tradeMessages.Add(msg);
+                            tradesList.Add(msg);
                         }
                         else if (oldPlayer.IsActive)
                         {
                             msg = String.Format("{0} was released from the {1}.", name, tst[oldPlayer.TeamF].DisplayName);
-                            tradeMessages.Add(msg);
+                            waiversList.Add(msg);
                         }
                     }
 
                     if (oldPlayer.Contract.GetYears() < curPlayer.Contract.GetYears() && curPlayer.IsActive)
                     {
                         string msg = name;
+                        bool reSigned;
                         if (!oldPlayer.IsActive && curPlayer.IsActive)
                         {
+                            reSigned = false;
                             msg += " signed ";
                         }
                         else
                         {
+                            reSigned = true;
                             msg += " re-signed ";
                         }
                         msg += String.Format("with the {0} on a {1}/{2:C0} ({3:C0} per year) contract.", tst[curPlayer.TeamF].DisplayName,
                                              curPlayer.Contract.GetYearsDesc(), curPlayer.Contract.GetTotal(),
                                              curPlayer.Contract.GetAverage());
-                        tradeMessages.Add(msg);
+                        if (reSigned)
+                            reSigningsList.Add(msg);
+                        else
+                            faSigningsList.Add(msg);
                     }
 
                     if (oldPlayer.Injury.InjuryName != curPlayer.Injury.InjuryName)
                     {
                         if (!oldPlayer.Injury.IsInjured)
                         {
-                            injuryMessages.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
+                            injuredList.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
                         }
                         else if (!curPlayer.Injury.IsInjured)
                         {
-                            injuryMessages.Add(name + " is no longer injured.");
+                            recoveredList.Add(name + " is no longer injured.");
                         }
                         else
                         {
-                            injuryMessages.Add(name + " was injured with " + oldPlayer.Injury.InjuryName +
-                                               ", is now injured again. Status: " + curPlayer.Injury.Status);
+                            reInjuredList.Add(name + " was injured with " + oldPlayer.Injury.InjuryName + ", is now injured again. Status: " +
+                                              curPlayer.Injury.Status);
                         }
                     }
+
+                    #endregion
                 }
             }
 
@@ -1050,19 +1065,75 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             #endregion
 
-            if (tradeMessages.Count > 0)
+            if (tradesList.Count + faSigningsList.Count + reSigningsList.Count + waiversList.Count > 0)
             {
                 importMessages.Add("League Transactions");
                 importMessages.Add("========================================");
-                importMessages.AddRange(tradeMessages);
+                importMessages.Add("");
+                if (tradesList.Count > 0)
+                {
+                    importMessages.Add("Players traded");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(tradesList);
+                    importMessages.Add("");
+                }
+                if (faSigningsList.Count > 0)
+                {
+                    importMessages.Add("Players signed from free-agency");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(faSigningsList);
+                    importMessages.Add("");
+                }
+                if (reSigningsList.Count > 0)
+                {
+                    importMessages.Add("Players that signed an extension");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(reSigningsList);
+                    importMessages.Add("");
+                }
+                if (waiversList.Count > 0)
+                {
+                    importMessages.Add("Players waived");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(waiversList);
+                    importMessages.Add("");
+                }
                 importMessages.Add("");
                 importMessages.Add("");
             }
-            if (injuryMessages.Count > 0)
+            if (injuredList.Count + reInjuredList.Count + recoveredList.Count > 0)
             {
                 importMessages.Add("Injury Updates");
                 importMessages.Add("========================================");
-                importMessages.AddRange(injuryMessages);
+                importMessages.Add("");
+                if (injuredList.Count > 0)
+                {
+                    importMessages.Add("Players injured");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(injuredList);
+                    importMessages.Add("");
+                }
+                if (reInjuredList.Count > 0)
+                {
+                    importMessages.Add("Players that got injured again after recovery");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(reInjuredList);
+                    importMessages.Add("");
+                }
+                if (recoveredList.Count > 0)
+                {
+                    importMessages.Add("Players recovered");
+                    importMessages.Add("=========================");
+                    importMessages.Add("");
+                    importMessages.AddRange(recoveredList);
+                    importMessages.Add("");
+                }
             }
 
             if (importMessages.Count > 0)

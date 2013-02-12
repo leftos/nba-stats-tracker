@@ -83,7 +83,7 @@ namespace SQLite_Database
                         reader = mycommand.ExecuteReader();
                     }
                     //dt.Load(reader);
-                    dt = GetDataTableFromDataReader(reader, queryHasDuplicateColumns);
+                    dt = getDataTableFromDataReader(reader, queryHasDuplicateColumns);
                     reader.Close();
                 }
             }
@@ -101,7 +101,7 @@ namespace SQLite_Database
         /// </summary>
         /// <param name="dataReader"></param>
         /// <returns></returns>
-        public DataTable GetDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
+        private static DataTable getDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
         {
             DataTable schemaTable = dataReader.GetSchemaTable();
             if (schemaTable == null)
