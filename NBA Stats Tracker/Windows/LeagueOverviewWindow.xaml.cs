@@ -736,7 +736,7 @@ namespace NBA_Stats_Tracker.Windows
                             {
                                 double sum = 0;
                                 int pInP = 0;
-                                var perm = new List<int> {pg.ID};
+                                var perm = new List<int>(5) {pg.ID};
                                 sum += pg.GmSc;
                                 if (pg.Position1S == "PG")
                                     pInP++;

@@ -899,7 +899,7 @@ namespace NBA_Stats_Tracker.Windows
                             {
                                 double sum = 0;
                                 int pInP = 0;
-                                var perm = new List<int> {pg.ID};
+                                var perm = new List<int>(5) {pg.ID};
                                 sum += Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(property).GetValue(pg, null));
                                 if (pg.Position1.ToString() == "PG")
                                     pInP++;
