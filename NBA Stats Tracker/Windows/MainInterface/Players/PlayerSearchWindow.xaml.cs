@@ -23,12 +23,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Ciloci.Flee;
+using LeftosCommonLibrary;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
@@ -48,74 +50,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private readonly List<string> _contractOptions = new List<string> {"Any", "None", "Team", "Player", "Team2Yr"};
         private readonly string _folder = App.AppDocsPath + @"\Search Filters";
 
-        private readonly List<string> _metrics = new List<string>
-                                                 {
-                                                     "PER",
-                                                     "EFF",
-                                                     "GmSc",
-                                                     "TS%",
-                                                     "PPR",
-                                                     "OREB%",
-                                                     "DREB%",
-                                                     "AST%",
-                                                     "STL%",
-                                                     "BLK%",
-                                                     "TO%",
-                                                     "USG%",
-                                                     "PTSR",
-                                                     "REBR",
-                                                     "OREBR",
-                                                     "ASTR",
-                                                     "BLKR",
-                                                     "STLR",
-                                                     "TOR",
-                                                     "FTR"
-                                                 };
+        private readonly List<string> _metrics = PAbbr.MetricsNames;
 
         private readonly List<string> _numericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+        private readonly List<string> _numericOperators = new List<string> {"+", "-", "*", "/", "(" + ")"};
 
-        private readonly List<string> _perGame = new List<string>
-                                                 {
-                                                     "PPG",
-                                                     "FG%",
-                                                     "FGeff",
-                                                     "3P%",
-                                                     "3Peff",
-                                                     "FT%",
-                                                     "FTeff",
-                                                     "RPG",
-                                                     "ORPG",
-                                                     "APG",
-                                                     "SPG",
-                                                     "BPG",
-                                                     "TPG",
-                                                     "FPG",
-                                                     "MPG"
-                                                 };
+        private readonly List<string> _perGame = PAbbr.ExtendedPerGame;
 
-        private readonly List<string> _positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
-        private readonly List<string> _stringOptions = new List<string> {"Contains", "Is"};
+        private readonly List<string> _positions = new List<string> { "Any", "None", "PG", "SG", "SF", "PF", "C" };
+        private readonly List<string> _numericPSRPropertyNames = new List<string>();
+        private readonly List<string> _stringOptions = new List<string> { "Contains", "Is" };
+        private readonly List<string> _customExpressions = new List<string>(); 
 
-        private readonly List<string> _totals = new List<string>
-                                                {
-                                                    "GP",
-                                                    "GS",
-                                                    "PTS",
-                                                    "FGM",
-                                                    "FGA",
-                                                    "3PM",
-                                                    "3PA",
-                                                    "FTM",
-                                                    "FTA",
-                                                    "REB",
-                                                    "OREB",
-                                                    "AST",
-                                                    "STL",
-                                                    "BLK",
-                                                    "TO",
-                                                    "FOUL",
-                                                    "MINS"
-                                                };
+        private readonly List<string> _totals = PAbbr.ExtendedTotals;
 
         private bool _changingTimeframe;
         private int _curSeason;
@@ -178,6 +125,39 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             cmbContractOpt.ItemsSource = _contractOptions;
             cmbContractOpt.SelectedIndex = 0;
+
+            var hiddenProperties = new List<string> { "ID", "TeamF", "TeamS" };
+            var psrProperties = (typeof (PlayerStatsRow)).GetProperties();
+            foreach (PropertyInfo property in psrProperties)
+            {
+                if (Tools.IsNumericType(property.PropertyType) && !(typeof (Enum).IsAssignableFrom(property.PropertyType)))
+                {
+                    var name = property.Name;
+                    name = name.Replace("p", "%");
+                    if (name != "TPG")
+                    {
+                        name = name.Replace("TP", "3P");
+                    }
+                    name = name.Replace("TOS", "TO");
+                    if (!hiddenProperties.Contains(name))
+                    {
+                        _numericPSRPropertyNames.Add(name);
+                    }
+                }
+            }
+            _numericPSRPropertyNames.Sort();
+            var otherPropertyNames =
+                _numericPSRPropertyNames.Where(
+                    propertyName =>
+                    !_totals.Contains(propertyName) && !_perGame.Contains(propertyName) && !_metrics.Contains(propertyName) &&
+                    !hiddenProperties.Contains(propertyName)).ToList();
+            cmbCustomOther.ItemsSource = otherPropertyNames;
+            cmbCustomTotals.ItemsSource = _totals;
+            cmbCustomPerGame.ItemsSource = _perGame;
+            cmbCustomMetrics.ItemsSource = _metrics;
+
+            _splitOn = _numericOperators;
+            _splitOn.Add(" ");
 
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
@@ -347,6 +327,90 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             ICollectionView plPSRView = CollectionViewSource.GetDefaultView(plPSRList);
             plPSRView.Filter = filter;
 
+            var includedIDs = (from PlayerStatsRow fpsr in psrView
+                               select fpsr.ID).ToList();
+
+            dgvPlayerStats.Columns.SkipWhile(col => col.Header.ToString() != "Custom")
+                          .Skip(1)
+                          .TakeWhile(col => col.Header.ToString() != "ID")
+                          .ToList()
+                          .ForEach(col => dgvPlayerStats.Columns.Remove(col));
+
+            var context = new ExpressionContext();
+            var j = 0;
+            foreach (var itemS in _customExpressions)
+            {
+                var expByPlayer = includedIDs.ToDictionary(id => id, id => "");
+                var itemSParts = itemS.Split(new string[] {": "}, StringSplitOptions.None);
+                var name = itemSParts[0];
+                var item = itemSParts[1];
+                var parts = item.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                int k = 0;
+                
+                List<int> ignoredIDs = new List<int>();
+                for (int i = 0; i < item.Length; i++)
+                {
+                    var c = item[i];
+                    if (_numericOperators.Contains(c.ToString()))
+                    {
+                        foreach (var id in includedIDs)
+                        {
+                            if (ignoredIDs.Contains(id))
+                            {
+                                continue;
+                            }
+                            expByPlayer[id] += c;
+                        }
+                    }
+                    else if (c == '$')
+                    {
+                        var part = parts[k++].Substring(1);
+                        foreach (var id in includedIDs)
+                        {
+                            if (ignoredIDs.Contains(id))
+                            {
+                                continue;
+                            }
+                            var val = (typeof (PlayerStatsRow)).GetProperty(part).GetValue(psrList.Single(psr => psr.ID == id), null).ToString();
+                            if (val != "NaN")
+                            {
+                                expByPlayer[id] += val;
+                            }
+                            else
+                            {
+                                ignoredIDs.Add(id);
+                                expByPlayer[id] = "$$INVALID";
+                            }
+                        }
+                        i += part.Length;
+                    }
+                }
+                foreach (var id in includedIDs)
+                {
+                    if (!ignoredIDs.Contains(id))
+                    {
+                        var compiled = context.CompileGeneric<double>(expByPlayer[id]);
+                        psrList.Single(psr => psr.ID == id).Custom.Add(compiled.Evaluate());
+                    }
+                    else
+                    {
+                        psrList.Single(psr => psr.ID == id).Custom.Add(double.NaN);
+                    }
+                }
+                dgvPlayerStats.Columns.Add(new DataGridTextColumn
+                                           {
+                                               Header = name,
+                                               Binding =
+                                                   new Binding
+                                                   {
+                                                       Path =
+                                                           new PropertyPath(string.Format("Custom[{0}]", j++)),
+                                                       Mode = BindingMode.OneWay,
+                                                       StringFormat = "{0:F3}"
+                                                   }
+                                           });
+            }
+            
             dgvPlayerStats.ItemsSource = psrView;
             dgvPlayoffStats.ItemsSource = plPSRView;
 
@@ -1132,6 +1196,148 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 rbStatsAllTime.IsChecked = true;
             }
             _changingTimeframe = false;
+        }
+
+        private void cmbCustomTotals_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCustomTotals.SelectedIndex == -1)
+                return;
+
+            cmbCustomPerGame.SelectedIndex = -1;
+            cmbCustomMetrics.SelectedIndex = -1;
+            cmbCustomOther.SelectedIndex = -1;
+            cmbCustomOp.SelectedIndex = -1;
+        }
+
+        private void cmbCustomPerGame_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCustomPerGame.SelectedIndex == -1)
+                return;
+
+            cmbCustomTotals.SelectedIndex = -1;
+            cmbCustomMetrics.SelectedIndex = -1;
+            cmbCustomOther.SelectedIndex = -1;
+            cmbCustomOp.SelectedIndex = -1;
+        }
+
+        private void cmbCustomMetrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCustomMetrics.SelectedIndex == -1)
+                return;
+
+            cmbCustomTotals.SelectedIndex = -1;
+            cmbCustomPerGame.SelectedIndex = -1;
+            cmbCustomOther.SelectedIndex = -1;
+            cmbCustomOp.SelectedIndex = -1;
+        }
+
+        private void cmbCustomOther_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCustomOther.SelectedIndex == -1)
+                return;
+
+            cmbCustomTotals.SelectedIndex = -1;
+            cmbCustomPerGame.SelectedIndex = -1;
+            cmbCustomMetrics.SelectedIndex = -1;
+            cmbCustomOp.SelectedIndex = -1;
+        }
+
+        private void cmbCustomOp_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCustomOp.SelectedIndex == -1)
+                return;
+
+            cmbCustomTotals.SelectedIndex = -1;
+            cmbCustomPerGame.SelectedIndex = -1;
+            cmbCustomMetrics.SelectedIndex = -1;
+            cmbCustomOther.SelectedIndex = -1;
+        }
+
+        private void btnCustomExpAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var exp = txtCustomExp.Text;
+            if (!Tools.CheckForBalancedBracketing(exp))
+            {
+                MessageBox.Show("The parentheses aren't balanced.");
+                return;
+            }
+            var parts = exp.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in parts)
+            {
+                var known = false;
+                if (part.StartsWith("$"))
+                {
+                    if (_numericPSRPropertyNames.Contains(part.Substring(1)))
+                    {
+                        known = true;
+                    }
+                }
+
+                if (!known)
+                {
+                    MessageBox.Show("Unknown property: ", part);
+                    return;
+                }
+            }
+
+            txtCustomExp.Text = "";
+
+            _customExpressions.Add(txtCustomName.Text + ": " + exp);
+
+            lstCustom.ItemsSource = null;
+            lstCustom.ItemsSource = _customExpressions;
+        }
+
+        private List<string> _splitOn = new List<string>(); 
+
+        private void btnCustomAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbCustomTotals.SelectedIndex == -1 && cmbCustomPerGame.SelectedIndex == -1 && cmbCustomMetrics.SelectedIndex == -1 &&
+                cmbCustomOther.SelectedIndex == -1 && cmbCustomOp.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            if (cmbCustomOp.SelectedIndex != -1)
+            {
+                txtCustomExp.Text += cmbCustomOp.SelectedItem;
+            }
+            else
+            {
+                txtCustomExp.Text += "$";
+                if (cmbCustomTotals.SelectedIndex != -1)
+                {
+                    txtCustomExp.Text += cmbCustomTotals.SelectedItem;
+                }
+                else if (cmbCustomPerGame.SelectedIndex != -1)
+                {
+                    txtCustomExp.Text += cmbCustomPerGame.SelectedItem;
+                }
+                else if (cmbCustomMetrics.SelectedIndex != -1)
+                {
+                    txtCustomExp.Text += cmbCustomMetrics.SelectedItem;
+                }
+                else if (cmbCustomOther.SelectedIndex != -1)
+                {
+                    txtCustomExp.Text += cmbCustomOther.SelectedItem;
+                }
+            }
+        }
+
+        private void btnCustomExpDel_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstCustom.SelectedItems.Count == 1)
+            {
+                txtCustomExp.Text = lstCustom.SelectedItem.ToString().Split(new[] {": "}, StringSplitOptions.None)[1];
+            }
+            
+            foreach (var item in lstCustom.SelectedItems.Cast<string>().ToList())
+            {
+                _customExpressions.Remove(item);
+
+                lstCustom.ItemsSource = null;
+                lstCustom.ItemsSource = _customExpressions;
+            }
         }
     }
 }

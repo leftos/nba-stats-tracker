@@ -95,6 +95,8 @@ namespace NBA_Stats_Tracker.Data.Players
             ContractYears = ps.Contract.GetYears();
             ContractYearsMinusOption = ps.Contract.GetYearsMinusOption();
 
+            Custom = new List<double>();
+
             Height = ps.Height;
             Weight = ps.Weight;
 
@@ -1482,6 +1484,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public double PPR { get; set; }
 
         public string TeamSDisplay { get; set; }
+
+        public List<double> Custom { get; set; } 
 
         #endregion
     }

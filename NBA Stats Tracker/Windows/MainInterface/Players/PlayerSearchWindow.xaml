@@ -14,13 +14,15 @@
             <TabItem Header="Query" Name="tabQuery">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition /><RowDefinition Height="35" />
+                        <RowDefinition />
+                        <RowDefinition Height="35" />
                     </Grid.RowDefinitions>
                     <TabControl Name="tbcQuery">
                         <TabItem Header="General">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="130" /><RowDefinition Height="*" />
+                                    <RowDefinition Height="130" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Label Content="Last Name" HorizontalAlignment="Left" Margin="10,10,0,0"
                                        VerticalAlignment="Top" Height="26" Width="66" />
@@ -222,6 +224,34 @@
                                                 Click="btnMetricsDel_Click" />
                                     </Grid>
                                 </GroupBox>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Custom Columns">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <ComboBox x:Name="cmbCustomOther" HorizontalAlignment="Right" Margin="0,96,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomOther_SelectionChanged"/>
+                                    <Button x:Name="btnCustomAdd" Content="Add" HorizontalAlignment="Right" Margin="0,150,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomAdd_Click"/>
+                                    <ComboBox x:Name="cmbCustomTotals" HorizontalAlignment="Right" Margin="0,14,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomTotals_SelectionChanged"/>
+                                    <ComboBox x:Name="cmbCustomPerGame" HorizontalAlignment="Right" Margin="0,42,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomPerGame_SelectionChanged"/>
+                                    <ComboBox x:Name="cmbCustomMetrics" HorizontalAlignment="Right" Margin="0,69,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomMetrics_SelectionChanged"/>
+                                    <Label Content="Totals" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
+                                    <Label Content="Per Game" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
+                                    <Label Content="Metrics" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top"/>
+                                    <Label Content="Other" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top"/>
+                                    <ComboBox x:Name="cmbCustomOp" HorizontalAlignment="Right" Margin="0,123,10,0" VerticalAlignment="Top" Width="58" SelectionChanged="cmbCustomOp_SelectionChanged"/>
+                                    <Label Content="Operators" HorizontalAlignment="Left" Margin="11,119,0,0" VerticalAlignment="Top"/>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <TextBox x:Name="txtCustomExp" Height="23" Margin="113,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <ListBox x:Name="lstCustom" Margin="10,65,10,10"></ListBox>
+                                    <Button x:Name="btnCustomExpAdd" Content="Add" HorizontalAlignment="Right" Margin="0,38,90,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpAdd_Click"/>
+                                    <Button x:Name="btnCustomExpDel" Content="Remove" HorizontalAlignment="Right" Margin="0,38,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpDel_Click"/>
+                                    <TextBox x:Name="txtCustomName" Height="23" Margin="10,10,608,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                </Grid>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -658,7 +688,7 @@
                             <DataGridTextColumn Binding="{Binding reTDrawFoul}" Header="TDrawFoul" />
                             <DataGridTextColumn Binding="{Binding reTTouch}" Header="TTouch" />
                             <DataGridTextColumn Binding="{Binding reTCommitFl}" Header="TCommitFl" />
-                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Custom" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

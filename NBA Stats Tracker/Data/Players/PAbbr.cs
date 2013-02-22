@@ -73,7 +73,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTeff = 14,
                          RPG = 15;
 
-        public static Dictionary<int, string> Totals = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> Totals = new Dictionary<int, string>
                                                        {
                                                            {0, "GP"},
                                                            {1, "GS"},
@@ -94,7 +94,7 @@ namespace NBA_Stats_Tracker.Data.Players
                                                            {16, "FTA"}
                                                        };
 
-        public static Dictionary<int, string> PerGame = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> PerGame = new Dictionary<int, string>
                                                         {
                                                             {0, "MPG"},
                                                             {1, "PPG"},
@@ -114,7 +114,55 @@ namespace NBA_Stats_Tracker.Data.Players
                                                             {15, "RPG"}
                                                         };
 
-        public static List<string> MetricsNames = new List<string>
+        public static readonly List<string> ExtendedTotals = new List<string>
+                                                {
+                                                    "GP",
+                                                    "GS",
+                                                    "PTS",
+                                                    "FGM",
+                                                    "FGA",
+                                                    "3PM",
+                                                    "3PA",
+                                                    "FTM",
+                                                    "FTA",
+                                                    "REB",
+                                                    "OREB",
+                                                    "DREB",
+                                                    "AST",
+                                                    "STL",
+                                                    "BLK",
+                                                    "TO",
+                                                    "FOUL",
+                                                    "MINS"
+                                                };
+
+        public static readonly List<string> ExtendedPerGame = new List<string>
+                                                 {
+                                                     "PPG",
+                                                     "FGMPG",
+                                                     "FGAPG",
+                                                     "FG%",
+                                                     "FGeff",
+                                                     "3PMPG",
+                                                     "3PAPG",
+                                                     "3P%",
+                                                     "3Peff",
+                                                     "FTMPG",
+                                                     "FTAPG",
+                                                     "FT%",
+                                                     "FTeff",
+                                                     "RPG",
+                                                     "ORPG",
+                                                     "DRPG",
+                                                     "APG",
+                                                     "SPG",
+                                                     "BPG",
+                                                     "TPG",
+                                                     "FPG",
+                                                     "MPG"
+                                                 };
+
+        public static readonly List<string> MetricsNames = new List<string>
                                                   {
                                                       "GmSc",
                                                       "GmScE",

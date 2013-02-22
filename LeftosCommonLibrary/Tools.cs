@@ -186,12 +186,90 @@ namespace LeftosCommonLibrary
 
         public static void WriteToTrace(string msg)
         {
-            Trace.WriteLine(string.Format("{0}: {1}", DateTime.Now, msg));
+            Trace.WriteLine(String.Format("{0}: {1}", DateTime.Now, msg));
         }
 
         public static void WriteToTraceWithException(string msg, Exception ex)
         {
-            Trace.WriteLine(string.Format("{0}: {1} ({2})", DateTime.Now, msg, ex.Message));
+            Trace.WriteLine(String.Format("{0}: {1} ({2})", DateTime.Now, msg, ex.Message));
         }
+
+        /// <summary>
+        /// Determines if a type is numeric.  Nullable numeric types are considered numeric.
+        /// </summary>
+        /// <remarks>
+        /// Boolean is not considered numeric.
+        /// </remarks>
+        public static bool IsNumericType(Type type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.SByte:
+                case TypeCode.Single:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    return true;
+                case TypeCode.Object:
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        return IsNumericType(Nullable.GetUnderlyingType(type));
+                    }
+                    return false;
+            }
+            return false;
+        }
+
+        public static bool CheckForBalancedBracketing(string incomingString)
+        {
+            const char leftParenthesis = '(';
+            const char rightParenthesis = ')';
+            uint bracketCount = 0;
+
+            try
+            {
+                checked  // Turns on overflow checking.
+                {
+                    foreach (char t in incomingString)
+                    {
+                        switch (t)
+                        {
+                            case leftParenthesis:
+                                bracketCount++;
+                                continue;
+                            case rightParenthesis:
+                                bracketCount--;
+                                continue;
+                            default:
+                                continue;
+                        }
+                    }
+                }
+            }
+
+            catch (OverflowException)
+            {
+                return false;
+            }
+
+            if (bracketCount == 0)
+            {
+                return true;
+            }
+
+            return false;
+
+        } 
     }
 }
