@@ -35,12 +35,10 @@ namespace NBA_Stats_Tracker
     public partial class App
     {
         public static bool RealNBAOnly;
-        public static int OpenWindows = 1;
 
-        public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath;
-        public static string SavesPath = NBA_Stats_Tracker.Windows.MainWindow.SavesPath;
-        public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainWindow.AppTempPath;
-        public static string Mode = "";
+        public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath;
+        public static string SavesPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.SavesPath;
+        public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppTempPath;
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control.
@@ -60,7 +58,7 @@ namespace NBA_Stats_Tracker
 
             try
             {
-                var errorReportPath = NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"errorlog_unh.txt";
+                var errorReportPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"errorlog_unh.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker");
@@ -106,7 +104,7 @@ namespace NBA_Stats_Tracker
         {
             try
             {
-                var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
+                var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"\errorlog.txt");
 
                 f.WriteLine("Forced Exception Error Report for NBA Stats Tracker");
                 f.WriteLine("Version " + Assembly.GetExecutingAssembly().GetName().Version);
@@ -122,7 +120,7 @@ namespace NBA_Stats_Tracker
 
                 MessageBox.Show(
                     "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                    NBA_Stats_Tracker.Windows.MainWindow.AppDocsPath + @"\errorlog.txt");
+                    NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"\errorlog.txt");
             }
             catch (Exception ex)
             {

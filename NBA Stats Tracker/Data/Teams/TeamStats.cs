@@ -29,6 +29,7 @@ using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Windows;
+using NBA_Stats_Tracker.Windows.MainInterface;
 using SQLite_Database;
 
 #endregion

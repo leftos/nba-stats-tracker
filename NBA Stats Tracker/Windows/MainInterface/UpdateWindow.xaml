@@ -1,0 +1,47 @@
+﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Update available!" MinHeight="220" MinWidth="500"
+        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition /><RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="10">
+                <TextBlock Text="There is an update available for NBA Stats Tracker!" TextAlignment="Center" />
+                <TextBlock />
+                <TextBlock Text="Your current version is: " Name="txbCurrentVersion" TextAlignment="Center" />
+                <TextBlock Text="The latest version is: " Name="txbLatestVersion" TextAlignment="Center" />
+                <TextBlock />
+                <ScrollViewer MaxHeight="550" VerticalScrollBarVisibility="Auto">
+                    <TextBlock HorizontalAlignment="Center" Margin="0" Name="txbMessage" Text="txbMsg"
+                               VerticalAlignment="Top"
+                               MaxWidth="600" TextWrapping="Wrap" TextAlignment="Center" />
+                </ScrollViewer>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <StackPanel VerticalAlignment="Center" Margin="0,0,0,5">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+                            Margin="0,5,0,5">
+                    <Button Content="Visit Download Page" Padding="10,2" Margin="5,0" Name="btnVisitDownload"
+                            Click="btnVisitDownload_Click" />
+                    <Button Content="Visit Support Page" Padding="10,2" Margin="5,0" Name="btnVisitSupport"
+                            Click="btnVisitSupport_Click" />
+                    <Button Content="View Changelog" Padding="10,2" Margin="5,0" Name="btnViewChangelog"
+                            Click="btnViewChangelog_Click" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+                            Margin="0,5,0,5">
+                    <Button Content="Install Now" FontWeight="Bold" Padding="10,2" Margin="5,0" Name="btnInstallNow"
+                            Click="btnInstallNow_Click" />
+                    <Button Content="Remind Me Later" Padding="10,2" Margin="5,0" Name="btnRemindMeLater"
+                            Click="btnRemindMeLater_Click" />
+                    <Button Content="Never Show This Again" Padding="10,2" Margin="5,0" Name="btnDisableNotifications"
+                            Click="btnDisableNotifications_Click" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

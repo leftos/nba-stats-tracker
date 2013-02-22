@@ -36,6 +36,9 @@ using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
+using NBA_Stats_Tracker.Windows.MainInterface;
+using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
+using NBA_Stats_Tracker.Windows.MiscTools;
 using MessageBox = System.Windows.MessageBox;
 
 #endregion

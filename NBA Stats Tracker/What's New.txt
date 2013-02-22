@@ -1,6 +1,6 @@
 NBA Stats Tracker - Version History
 
-	v1.8.1.0 Beta
+	v1.8.1 Beta
 		- Improvement: League Transactions & Injury Updates shown after a REDitor import are now split further into categories (e.g. "Players signed from free agency", "Players recovered", "Players traded", etc.)
 
 	v1.8.0.5 Beta

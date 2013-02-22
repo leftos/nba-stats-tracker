@@ -26,6 +26,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows;
+using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
 

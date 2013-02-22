@@ -1,0 +1,30 @@
+<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.Players.PlayerInjuryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Injury Details" Height="274" Width="292"
+        WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+    <Grid>
+        <Label Content="Set the details of the player's injury" Margin="12,12,12,0" Name="lblMessage"
+               VerticalAlignment="Top" />
+        <ComboBox Height="23" Margin="12,41,12,0" Name="cmbInjuryType" VerticalAlignment="Top"
+                  SelectionChanged="cmbInjuryType_SelectionChanged" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,10" x:Name="btnOK"
+                VerticalAlignment="Bottom" Width="76" Click="btnOK_Click" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,10" x:Name="btnCancel"
+                VerticalAlignment="Bottom" Width="76" Click="btnCancel_Click" />
+        <GroupBox x:Name="grpTF" Header="Timeframe of Return" Margin="12,104,12,0" VerticalAlignment="Top" Height="89">
+            <Grid>
+                <ComboBox Height="23" Margin="110,6,10,0" x:Name="cmbTFApproximateAmount" VerticalAlignment="Top" />
+                <RadioButton x:Name="rbTFApproximate" Content="Approximate" HorizontalAlignment="Left"
+                             Margin="10,10,0,0" VerticalAlignment="Top" />
+                <RadioButton x:Name="rbTFExact" Content="Exact" HorizontalAlignment="Left" Margin="10,37,0,0"
+                             VerticalAlignment="Top" />
+                <TextBox x:Name="txtTFExactAmount" HorizontalAlignment="Left" Height="23" Margin="110,34,0,0"
+                         TextWrapping="Wrap" VerticalAlignment="Top" Width="55" />
+                <ComboBox x:Name="cmbTFExactType" HorizontalAlignment="Left" Margin="170,35,0,0"
+                          VerticalAlignment="Top" Width="68" />
+            </Grid>
+        </GroupBox>
+        <TextBox x:Name="txtCustomInjuryName" Height="23" Margin="12,69,12,0" TextWrapping="Wrap" Text=""
+                 VerticalAlignment="Top" />
+    </Grid>
+</Window>
