@@ -31,19 +31,24 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
     /// </summary>
     public partial class CopyableMessageWindow
     {
+        private bool _beep;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="CopyableMessageWindow" /> class.
         /// </summary>
         /// <param name="msg">The message to display.</param>
         /// <param name="title">The title of the window.</param>
         /// <param name="align">The text alignment to be used for the message.</param>
-        public CopyableMessageWindow(String msg, String title, TextAlignment align)
+        /// <param name="beep">If true, the system sound Beep will be played after the window is loaded.</param>
+        public CopyableMessageWindow(String msg, String title = "NBA Stats Tracker", TextAlignment align = TextAlignment.Left, bool beep = false)
         {
             InitializeComponent();
 
             txbMsg.Text = msg;
             txbMsg.TextAlignment = align;
             Title = title;
+
+            _beep = beep;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -63,6 +68,14 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
         {
             Clipboard.SetText(txbMsg.Text);
             Title += " (copied to clipboard)";
+        }
+
+        private void window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_beep)
+            {
+                System.Media.SystemSounds.Beep.Play();
+            }
         }
     }
 }

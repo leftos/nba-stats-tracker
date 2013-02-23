@@ -37,6 +37,7 @@ using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
+using NBA_Stats_Tracker.Windows.MiscTools;
 
 #endregion
 
@@ -340,6 +341,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var includedIDs = pstDict.Keys.ToList();
             var context = new ExpressionContext();
             var j = 0;
+            string message = "";
             foreach (var itemS in _customExpressions)
             {
                 var expByPlayer = includedIDs.ToDictionary(id => id, id => "");
@@ -434,8 +436,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     curPlPSR = plPSRList.Single(psr => psr.ID == id);
                     if (!ignoredIDs.Contains(id))
                     {
-                        var compiled = context.CompileGeneric<double>(expByPlayer[id]);
-                        curPSR.Custom.Add(compiled.Evaluate());
+                        try
+                        {
+                            var compiled = context.CompileGeneric<double>(expByPlayer[id]);
+                            curPSR.Custom.Add(compiled.Evaluate());
+                        }
+                        catch (Exception ex)
+                        {
+                            message = string.Format("Expression {0}:\n{1}\nevaluated to\n{2}\n\nError: {3}", (j + 1), item, expByPlayer[id],
+                                                    ex.Message);
+                            curPSR.Custom.Add(double.NaN);
+                        }
                     }
                     else
                     {
@@ -443,8 +454,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     }
                     if (!ignoredPlIDs.Contains(id))
                     {
-                        var compiled = context.CompileGeneric<double>(plExpByPlayer[id]);
-                        curPlPSR.Custom.Add(compiled.Evaluate());
+                        try
+                        {
+                            var compiled = context.CompileGeneric<double>(plExpByPlayer[id]);
+                            curPlPSR.Custom.Add(compiled.Evaluate());
+                        }
+                        catch (Exception ex)
+                        {
+                            message = string.Format("Expression {0}:\n{1}\nevaluated to\n{2}\n\nError: {3}", (j + 1), item, plExpByPlayer[id],
+                                                    ex.Message);
+                            curPlPSR.Custom.Add(double.NaN);
+                        }
                     }
                     else
                     {
@@ -519,6 +539,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             tbcPlayerSearch.SelectedItem = tabResults;
+
+            if (!String.IsNullOrWhiteSpace(message))
+            {
+                const string warning = "An error occurred while trying to evaluate one or more of the custom column expressions:\n\n";
+                const string contact =
+                    "\n\nIf you believe your expression is correct and that you shouldn't be getting this error, contact the developer " +
+                    "and give them this information.";
+                var cmw = new CopyableMessageWindow(warning + message + contact, "Error while evaluating expression", beep: true);
+                cmw.ShowDialog();
+            }
         }
 
         /// <summary>

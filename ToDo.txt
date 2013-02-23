@@ -11,4 +11,4 @@
 - Split Shooting Stats
 - Anonymous Usage Information
 - Play-by-play analysis
-- Custom columns tool (+-*/)
+- Add custom columns to all Metrics tabs
