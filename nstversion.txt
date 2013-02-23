@@ -1,7 +1,7 @@
-1.8.1.0
+1.9.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
 http://forums.nba-live.com/viewtopic.php?f=143&t=84110
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
 
-	Introduced in v1.8 is the new update mechanism, which allows you to download and install the latest NBA Stats Tracker version from inside the program, making it a much faster and easier process. Make sure to update!
+	Introduced in v1.9 is the new Custom Columns feature in Advanced Player Search which allows you to build your own functions (e.g. metrics) out of all the stats and information available in your database!

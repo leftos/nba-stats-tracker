@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.9 Beta
+		- Addition: Custom Columns added to Advanced Player Search; add your own functions using any of the available stats and other information for the players
+		- Fix: Fixed crash when loading filters in Advanced Player Search and the season selected when the filters were saved no longer exists
+
 	v1.8.1 Beta
 		- Improvement: League Transactions & Injury Updates shown after a REDitor import are now split further into categories (e.g. "Players signed from free agency", "Players recovered", "Players traded", etc.)
 

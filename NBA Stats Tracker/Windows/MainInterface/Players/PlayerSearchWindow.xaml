@@ -15,9 +15,9 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        <RowDefinition Height="35" />
+                        <RowDefinition Height="40" />
                     </Grid.RowDefinitions>
-                    <TabControl Name="tbcQuery">
+                    <TabControl Name="tbcQuery" Margin="0,0,0,3">
                         <TabItem Header="General">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -246,23 +246,33 @@
                                     <Label Content="Operators" HorizontalAlignment="Left" Margin="11,119,0,0" VerticalAlignment="Top"/>
                                 </Grid>
                                 <Grid Grid.Column="1">
-                                    <TextBox x:Name="txtCustomExp" Height="23" Margin="113,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                                    <ListBox x:Name="lstCustom" Margin="10,65,10,10"></ListBox>
-                                    <Button x:Name="btnCustomExpAdd" Content="Add" HorizontalAlignment="Right" Margin="0,38,90,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpAdd_Click"/>
-                                    <Button x:Name="btnCustomExpDel" Content="Remove" HorizontalAlignment="Right" Margin="0,38,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpDel_Click"/>
-                                    <TextBox x:Name="txtCustomName" Height="23" Margin="10,10,608,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="txtCustomExp" Height="23" Margin="113,36,311,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <ListBox x:Name="lstCustom" Margin="10,91,10,10"></ListBox>
+                                    <Button x:Name="btnCustomExpAdd" Content="Add" HorizontalAlignment="Right" Margin="0,64,90,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpAdd_Click"/>
+                                    <Button x:Name="btnCustomExpDel" Content="Remove" HorizontalAlignment="Right" Margin="0,64,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpDel_Click"/>
+                                    <TextBox x:Name="txtCustomName" Height="23" Margin="15,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="93"/>
+                                    <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="txtCustomDP" Height="23" Margin="0,36,10,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Width="88"/>
+                                    <Label Content="Expression" HorizontalAlignment="Left" Margin="108,10,0,0" VerticalAlignment="Top"/>
+                                    <Label Content="Decimal Points" HorizontalAlignment="Right" Margin="0,10,15,0" VerticalAlignment="Top"/>
+                                    <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,36,265,0"
+                                    	x:Name="cmbCustomComp"
+                                    	VerticalAlignment="Top" Width="41" />
+                                    <TextBox Height="23" Margin="0,36,103,0" x:Name="txtCustomVal"
+                                    	VerticalAlignment="Top" HorizontalAlignment="Right" Width="156" />
+                                    <Label Content="Filter" HorizontalAlignment="Left" Margin="405,10,0,0" VerticalAlignment="Top"/>
                                 </Grid>
                             </Grid>
                         </TabItem>
                     </TabControl>
                     <Button Content="Search" Height="23" HorizontalAlignment="Right" x:Name="btnSearch"
                             VerticalAlignment="Bottom" Width="75" Click="btnSearch_Click"
-                            Margin="0,0,16,7" Grid.Row="1" />
-                    <Button Content="Load Filters" Height="23" HorizontalAlignment="Left" Margin="14,0,0,7"
+                            Margin="0,0,10,10" Grid.Row="1" />
+                    <Button Content="Load Filters" Height="23" HorizontalAlignment="Left" Margin="10,0,0,10"
                             x:Name="btnLoadFilters" VerticalAlignment="Bottom" Width="75"
                             Click="btnLoadFilters_Click" Grid.Row="1" />
                     <Button Content="Save Filters" Height="23" HorizontalAlignment="Left"
-                            Margin="95,0,0,7" x:Name="btnSaveFilters" VerticalAlignment="Bottom" Width="75"
+                            Margin="90,0,0,10" x:Name="btnSaveFilters" VerticalAlignment="Bottom" Width="75"
                             Click="btnSaveFilters_Click" Grid.Row="1" />
                 </Grid>
             </TabItem>
@@ -1115,7 +1125,7 @@
                             <DataGridTextColumn Binding="{Binding reTDrawFoul}" Header="TDrawFoul" />
                             <DataGridTextColumn Binding="{Binding reTTouch}" Header="TTouch" />
                             <DataGridTextColumn Binding="{Binding reTCommitFl}" Header="TCommitFl" />
-                            <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Custom" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
