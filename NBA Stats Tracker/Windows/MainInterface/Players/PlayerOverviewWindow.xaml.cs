@@ -235,7 +235,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             DataTable res = _db.GetDataTable(q);
             foreach (DataRow r in res.Rows)
             {
-                string q2 = "select * from " + _plPlayersT + " where ID = " + DataRowCellParsers.GetInt32(r, "ID");
+                string q2 = "select * from " + _plPlayersT + " where ID = " + ParseCell.GetInt32(r, "ID");
                 DataTable plRes = _db.GetDataTable(q2);
 
                 var ps = new PlayerStats(r, MainWindow.TST);
@@ -593,17 +593,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             foreach (DataRow dr in dt.Rows)
             {
                 var ps = new PlayerStats();
-                bool isPlayoff = DataRowCellParsers.GetBoolean(dr, "isPlayoff");
+                bool isPlayoff = ParseCell.GetBoolean(dr, "isPlayoff");
                 ps.GetStatsFromDataRow(dr, isPlayoff);
                 Dictionary<string, double> tempMetrics = isPlayoff ? ps.PlMetrics : ps.Metrics;
                 PlayerStats.CalculateRates(isPlayoff ? ps.PlTotals : ps.Totals, ref tempMetrics);
                 string type = isPlayoff
-                                  ? "Playoffs " + DataRowCellParsers.GetString(dr, "SeasonName")
-                                  : "Season " + DataRowCellParsers.GetString(dr, "SeasonName");
+                                  ? "Playoffs " + ParseCell.GetString(dr, "SeasonName")
+                                  : "Season " + ParseCell.GetString(dr, "SeasonName");
                 var curPSR = new PlayerStatsRow(ps, type, isPlayoff)
                              {
-                                 TeamFDisplay = DataRowCellParsers.GetString(dr, "TeamFin"),
-                                 TeamSDisplay = DataRowCellParsers.GetString(dr, "TeamSta")
+                                 TeamFDisplay = ParseCell.GetString(dr, "TeamFin"),
+                                 TeamSDisplay = ParseCell.GetString(dr, "TeamSta")
                              };
 
                 psrList.Add(curPSR);
@@ -1173,7 +1173,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                     if (res.Rows.Count > 0)
                     {
-                        bool nowActive = DataRowCellParsers.GetBoolean(res.Rows[0], "isActive");
+                        bool nowActive = ParseCell.GetBoolean(res.Rows[0], "isActive");
                         int newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
                         cmbTeam.SelectedIndex = -1;
                         if (nowActive)
@@ -1209,7 +1209,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                             if (res.Rows.Count > 0)
                             {
-                                nowActive = DataRowCellParsers.GetBoolean(res.Rows[0], "isActive");
+                                nowActive = ParseCell.GetBoolean(res.Rows[0], "isActive");
                                 newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
                                 cmbOppTeam.SelectedIndex = -1;
                                 if (nowActive)
@@ -1316,7 +1316,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             SQLiteIO.SavePlayersToDatabase(MainWindow.CurrentDB, pslist, _curSeason, _maxSeason, true);
 
-            MainWindow.PST = SQLiteIO.GetPlayersFromDatabase(MainWindow.CurrentDB, MainWindow.TST, MainWindow.TSTOpp, MainWindow.TeamOrder,
+            MainWindow.PST = SQLiteIO.GetPlayersFromDatabase(MainWindow.CurrentDB, MainWindow.TST, MainWindow.TSTOpp,
                                                              _curSeason, _maxSeason);
 
             getActivePlayers();
@@ -1557,10 +1557,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             foreach (DataRow r in res.Rows)
             {
-                _oppPlayersList.Add(new KeyValuePair<int, string>(DataRowCellParsers.GetInt32(r, "ID"),
-                                                                  DataRowCellParsers.GetString(r, "LastName") + ", " +
-                                                                  DataRowCellParsers.GetString(r, "FirstName") + " (" +
-                                                                  DataRowCellParsers.GetString(r, "Position1") + ")"));
+                _oppPlayersList.Add(new KeyValuePair<int, string>(ParseCell.GetInt32(r, "ID"),
+                                                                  ParseCell.GetString(r, "LastName") + ", " +
+                                                                  ParseCell.GetString(r, "FirstName") + " (" +
+                                                                  ParseCell.GetString(r, "Position1") + ")"));
             }
 
             cmbOppPlayer.ItemsSource = _oppPlayersList;

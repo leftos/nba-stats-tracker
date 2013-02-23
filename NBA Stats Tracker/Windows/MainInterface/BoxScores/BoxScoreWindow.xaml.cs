@@ -106,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             _curMode = curMode;
             prepareWindow(curMode);
 
-            MainWindow.BS = new TeamBoxScore();
+            MainWindow.bs = new TeamBoxScore();
 
             if (curMode == Mode.Update)
             {
@@ -163,7 +163,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             if (onImport)
             {
-                MainWindow.BS = bse.BS;
+                MainWindow.bs = bse.BS;
                 chkDoNotUpdate.IsEnabled = false;
                 cmbSeasonNum.IsEnabled = false;
                 cmbTeam1.IsEnabled = false;
@@ -209,7 +209,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void loadBoxScore(BoxScoreEntry bse)
         {
             TeamBoxScore bs = bse.BS;
-            MainWindow.BS = bse.BS;
+            MainWindow.bs = bse.BS;
             txtPTS1.Text = bs.PTS1.ToString();
             txtREB1.Text = bs.REB1.ToString();
             txtAST1.Text = bs.AST1.ToString();
@@ -416,7 +416,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbTeam1.SelectedIndex = 0;
             cmbTeam2.SelectedIndex = 1;
 
-            MainWindow.BS.Done = false;
+            MainWindow.bs.Done = false;
 
             dtpGameDate.SelectedDate = DateTime.Today;
 
@@ -497,7 +497,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (_curMode == Mode.Update)
             {
                 tryParseBS();
-                if (MainWindow.BS.Done == false)
+                if (MainWindow.bs.Done == false)
                     return;
             }
             else
@@ -514,7 +514,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         if (r == MessageBoxResult.Yes)
                         {
                             tryParseBS();
-                            if (MainWindow.BS.Done == false)
+                            if (MainWindow.bs.Done == false)
                                 return;
 
                             MainWindow.UpdateBoxScore();
@@ -522,12 +522,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         }
                         else
                         {
-                            MainWindow.BS.Done = false;
+                            MainWindow.bs.Done = false;
                         }
                     }
                     else
                     {
-                        MainWindow.BS.Done = false;
+                        MainWindow.bs.Done = false;
                     }
                 }
             }
@@ -560,140 +560,140 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 try
                 {
-                    MainWindow.BS.ID = _curTeamBoxScore.ID;
-                    MainWindow.BS.BSHistID = _curTeamBoxScore.BSHistID;
+                    MainWindow.bs.ID = _curTeamBoxScore.ID;
+                    MainWindow.bs.BSHistID = _curTeamBoxScore.BSHistID;
                 }
                 catch
                 {
-                    MainWindow.BS.ID = -1;
-                    MainWindow.BS.BSHistID = -1;
+                    MainWindow.bs.ID = -1;
+                    MainWindow.bs.BSHistID = -1;
                 }
-                MainWindow.BS.IsPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
-                MainWindow.BS.GameDate = dtpGameDate.SelectedDate.GetValueOrDefault();
-                MainWindow.BS.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
-                MainWindow.BS.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
-                MainWindow.BS.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
-                MainWindow.BS.MINS2 = MainWindow.BS.MINS1 = Convert.ToUInt16(txtMINS1.Text);
+                MainWindow.bs.IsPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
+                MainWindow.bs.GameDate = dtpGameDate.SelectedDate.GetValueOrDefault();
+                MainWindow.bs.SeasonNum = Convert.ToInt32(cmbSeasonNum.SelectedItem.ToString());
+                MainWindow.bs.Team1ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
+                MainWindow.bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
+                MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
 
-                if (MainWindow.BS.MINS1 <= 0)
+                if (MainWindow.bs.MINS1 <= 0)
                 {
                     throwErrorWithMessage(
                         "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
                 }
 
-                MainWindow.BS.PTS1 = Convert.ToUInt16(txtPTS1.Text);
-                MainWindow.BS.REB1 = Convert.ToUInt16(txtREB1.Text);
-                MainWindow.BS.AST1 = Convert.ToUInt16(txtAST1.Text);
-                MainWindow.BS.STL1 = Convert.ToUInt16(txtSTL1.Text);
-                MainWindow.BS.BLK1 = Convert.ToUInt16(txtBLK1.Text);
-                MainWindow.BS.TOS1 = Convert.ToUInt16(txtTO1.Text);
-                MainWindow.BS.FGM1 = Convert.ToUInt16(txtFGM1.Text);
-                MainWindow.BS.FGA1 = Convert.ToUInt16(txtFGA1.Text);
-                MainWindow.BS.TPM1 = Convert.ToUInt16(txt3PM1.Text);
-                MainWindow.BS.TPA1 = Convert.ToUInt16(txt3PA1.Text);
+                MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
+                MainWindow.bs.REB1 = Convert.ToUInt16(txtREB1.Text);
+                MainWindow.bs.AST1 = Convert.ToUInt16(txtAST1.Text);
+                MainWindow.bs.STL1 = Convert.ToUInt16(txtSTL1.Text);
+                MainWindow.bs.BLK1 = Convert.ToUInt16(txtBLK1.Text);
+                MainWindow.bs.TOS1 = Convert.ToUInt16(txtTO1.Text);
+                MainWindow.bs.FGM1 = Convert.ToUInt16(txtFGM1.Text);
+                MainWindow.bs.FGA1 = Convert.ToUInt16(txtFGA1.Text);
+                MainWindow.bs.TPM1 = Convert.ToUInt16(txt3PM1.Text);
+                MainWindow.bs.TPA1 = Convert.ToUInt16(txt3PA1.Text);
 
-                if (MainWindow.BS.FGA1 < MainWindow.BS.FGM1)
+                if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
                 {
                     throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
-                if (MainWindow.BS.TPA1 < MainWindow.BS.TPM1)
+                if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
-                if (MainWindow.BS.FGM1 < MainWindow.BS.TPM1)
+                if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
 
-                MainWindow.BS.FTM1 = Convert.ToUInt16(txtFTM1.Text);
-                MainWindow.BS.FTA1 = Convert.ToUInt16(txtFTA1.Text);
-                if (MainWindow.BS.FTA1 < MainWindow.BS.FTM1)
+                MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
+                MainWindow.bs.FTA1 = Convert.ToUInt16(txtFTA1.Text);
+                if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
                 {
                     throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
-                MainWindow.BS.OREB1 = Convert.ToUInt16(txtOREB1.Text);
-                if (MainWindow.BS.OREB1 > MainWindow.BS.REB1)
+                MainWindow.bs.OREB1 = Convert.ToUInt16(txtOREB1.Text);
+                if (MainWindow.bs.OREB1 > MainWindow.bs.REB1)
                 {
                     throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
-                if (MainWindow.BS.FGA1 < MainWindow.BS.TPA1)
+                if (MainWindow.bs.FGA1 < MainWindow.bs.TPA1)
                 {
                     throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
-                MainWindow.BS.FOUL1 = Convert.ToUInt16(txtFOUL1.Text);
-                MainWindow.BS.PTS2 = Convert.ToUInt16(txtPTS2.Text);
-                MainWindow.BS.REB2 = Convert.ToUInt16(txtREB2.Text);
-                MainWindow.BS.AST2 = Convert.ToUInt16(txtAST2.Text);
-                MainWindow.BS.STL2 = Convert.ToUInt16(txtSTL2.Text);
-                MainWindow.BS.BLK2 = Convert.ToUInt16(txtBLK2.Text);
-                MainWindow.BS.TOS2 = Convert.ToUInt16(txtTO2.Text);
-                MainWindow.BS.FGM2 = Convert.ToUInt16(txtFGM2.Text);
-                MainWindow.BS.FGA2 = Convert.ToUInt16(txtFGA2.Text);
-                MainWindow.BS.TPM2 = Convert.ToUInt16(txt3PM2.Text);
-                MainWindow.BS.TPA2 = Convert.ToUInt16(txt3PA2.Text);
+                MainWindow.bs.FOUL1 = Convert.ToUInt16(txtFOUL1.Text);
+                MainWindow.bs.PTS2 = Convert.ToUInt16(txtPTS2.Text);
+                MainWindow.bs.REB2 = Convert.ToUInt16(txtREB2.Text);
+                MainWindow.bs.AST2 = Convert.ToUInt16(txtAST2.Text);
+                MainWindow.bs.STL2 = Convert.ToUInt16(txtSTL2.Text);
+                MainWindow.bs.BLK2 = Convert.ToUInt16(txtBLK2.Text);
+                MainWindow.bs.TOS2 = Convert.ToUInt16(txtTO2.Text);
+                MainWindow.bs.FGM2 = Convert.ToUInt16(txtFGM2.Text);
+                MainWindow.bs.FGA2 = Convert.ToUInt16(txtFGA2.Text);
+                MainWindow.bs.TPM2 = Convert.ToUInt16(txt3PM2.Text);
+                MainWindow.bs.TPA2 = Convert.ToUInt16(txt3PA2.Text);
 
-                if (MainWindow.BS.FGA2 < MainWindow.BS.FGM2)
+                if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
                 {
                     throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
                 }
-                if (MainWindow.BS.TPA2 < MainWindow.BS.TPM2)
+                if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
                 }
-                if (MainWindow.BS.FGM2 < MainWindow.BS.TPM2)
+                if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
                 {
                     throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
                 }
-                if (MainWindow.BS.FGA2 < MainWindow.BS.TPA2)
+                if (MainWindow.bs.FGA2 < MainWindow.bs.TPA2)
                 {
                     throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
                 }
 
-                MainWindow.BS.FTM2 = Convert.ToUInt16(txtFTM2.Text);
-                MainWindow.BS.FTA2 = Convert.ToUInt16(txtFTA2.Text);
-                if (MainWindow.BS.FTA2 < MainWindow.BS.FTM2)
+                MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
+                MainWindow.bs.FTA2 = Convert.ToUInt16(txtFTA2.Text);
+                if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
                 {
                     throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
                 }
 
-                MainWindow.BS.OREB2 = Convert.ToUInt16(txtOREB2.Text);
+                MainWindow.bs.OREB2 = Convert.ToUInt16(txtOREB2.Text);
 
-                if (MainWindow.BS.OREB2 > MainWindow.BS.REB2)
+                if (MainWindow.bs.OREB2 > MainWindow.bs.REB2)
                 {
                     throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
                 }
 
-                MainWindow.BS.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
+                MainWindow.bs.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
 
                 #region Additional Box Score Checks
 
-                if (MainWindow.BS.AST1 > MainWindow.BS.FGM1 || MainWindow.BS.AST2 > MainWindow.BS.FGM2)
+                if (MainWindow.bs.AST1 > MainWindow.bs.FGM1 || MainWindow.bs.AST2 > MainWindow.bs.FGM2)
                 {
                     throwErrorWithMessage("The AST stat can't be higher than the FGM stat.");
                 }
 
-                if (MainWindow.BS.BLK1 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2 ||
-                    MainWindow.BS.BLK2 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1)
+                if (MainWindow.bs.BLK1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
+                    MainWindow.bs.BLK2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
                 {
                     throwErrorWithMessage("The BLK stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.BS.REB1 - MainWindow.BS.OREB1 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2 ||
-                    MainWindow.BS.REB2 - MainWindow.BS.OREB2 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1)
+                if (MainWindow.bs.REB1 - MainWindow.bs.OREB1 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2 ||
+                    MainWindow.bs.REB2 - MainWindow.bs.OREB2 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1)
                 {
                     throwErrorWithMessage(
                         "The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.BS.OREB1 > MainWindow.BS.FGA1 - MainWindow.BS.FGM1 ||
-                    MainWindow.BS.OREB2 > MainWindow.BS.FGA2 - MainWindow.BS.FGM2)
+                if (MainWindow.bs.OREB1 > MainWindow.bs.FGA1 - MainWindow.bs.FGM1 ||
+                    MainWindow.bs.OREB2 > MainWindow.bs.FGA2 - MainWindow.bs.FGM2)
                 {
                     throwErrorWithMessage("The OREB stat cant' be higher than the missed FGA (i.e. FGA - FGM).");
                 }
 
-                if (MainWindow.BS.STL1 > MainWindow.BS.TOS2 || MainWindow.BS.STL2 > MainWindow.BS.TOS1)
+                if (MainWindow.bs.STL1 > MainWindow.bs.TOS2 || MainWindow.bs.STL2 > MainWindow.bs.TOS1)
                 {
                     throwErrorWithMessage("The STL stat for one team can't be higher than the other team's TO.");
                 }
@@ -708,7 +708,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 #endregion
 
-                MainWindow.BS.DoNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
+                MainWindow.bs.DoNotUpdate = chkDoNotUpdate.IsChecked.GetValueOrDefault();
 
                 #region Player Box Scores Check
 
@@ -818,12 +818,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 #endregion
 
-                MainWindow.BS.Done = true;
+                MainWindow.bs.Done = true;
             }
             catch
             {
                 MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
-                MainWindow.BS.Done = false;
+                MainWindow.bs.Done = false;
             }
         }
 
@@ -990,25 +990,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             tryParseBS();
-            if (MainWindow.BS.Done)
+            if (MainWindow.bs.Done)
             {
                 string data1 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam1.SelectedItem, MainWindow.BS.PTS1, MainWindow.BS.REB1, MainWindow.BS.OREB1,
-                        MainWindow.BS.REB1 - MainWindow.BS.OREB1, MainWindow.BS.AST1, MainWindow.BS.STL1, MainWindow.BS.BLK1,
-                        MainWindow.BS.TOS1, MainWindow.BS.FGM1, MainWindow.BS.FGA1, MainWindow.BS.FGM1/(float) MainWindow.BS.FGA1,
-                        MainWindow.BS.TPM1, MainWindow.BS.TPA1, MainWindow.BS.TPM1/(float) MainWindow.BS.TPA1, MainWindow.BS.FTM1,
-                        MainWindow.BS.FTA1, MainWindow.BS.FTM1/(float) MainWindow.BS.FTA1, MainWindow.BS.FOUL1, MainWindow.BS.MINS1);
+                        cmbTeam1.SelectedItem, MainWindow.bs.PTS1, MainWindow.bs.REB1, MainWindow.bs.OREB1,
+                        MainWindow.bs.REB1 - MainWindow.bs.OREB1, MainWindow.bs.AST1, MainWindow.bs.STL1, MainWindow.bs.BLK1,
+                        MainWindow.bs.TOS1, MainWindow.bs.FGM1, MainWindow.bs.FGA1, MainWindow.bs.FGM1/(float) MainWindow.bs.FGA1,
+                        MainWindow.bs.TPM1, MainWindow.bs.TPA1, MainWindow.bs.TPM1/(float) MainWindow.bs.TPA1, MainWindow.bs.FTM1,
+                        MainWindow.bs.FTA1, MainWindow.bs.FTM1/(float) MainWindow.bs.FTA1, MainWindow.bs.FOUL1, MainWindow.bs.MINS1);
 
                 string data2 =
                     String.Format(
                         "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
-                        cmbTeam2.SelectedItem, MainWindow.BS.PTS2, MainWindow.BS.REB2, MainWindow.BS.OREB2,
-                        MainWindow.BS.REB2 - MainWindow.BS.OREB2, MainWindow.BS.AST2, MainWindow.BS.STL2, MainWindow.BS.BLK2,
-                        MainWindow.BS.TOS2, MainWindow.BS.FGM2, MainWindow.BS.FGA2, MainWindow.BS.FGM2/(float) MainWindow.BS.FGA2,
-                        MainWindow.BS.TPM2, MainWindow.BS.TPA2, MainWindow.BS.TPM2/(float) MainWindow.BS.TPA2, MainWindow.BS.FTM2,
-                        MainWindow.BS.FTA2, MainWindow.BS.FTM2/(float) MainWindow.BS.FTA2, MainWindow.BS.FOUL2, MainWindow.BS.MINS2);
+                        cmbTeam2.SelectedItem, MainWindow.bs.PTS2, MainWindow.bs.REB2, MainWindow.bs.OREB2,
+                        MainWindow.bs.REB2 - MainWindow.bs.OREB2, MainWindow.bs.AST2, MainWindow.bs.STL2, MainWindow.bs.BLK2,
+                        MainWindow.bs.TOS2, MainWindow.bs.FGM2, MainWindow.bs.FGA2, MainWindow.bs.FGM2/(float) MainWindow.bs.FGA2,
+                        MainWindow.bs.TPM2, MainWindow.bs.TPA2, MainWindow.bs.TPM2/(float) MainWindow.bs.TPA2, MainWindow.bs.FTM2,
+                        MainWindow.bs.FTA2, MainWindow.bs.FTM2/(float) MainWindow.bs.FTA2, MainWindow.bs.FOUL2, MainWindow.bs.MINS2);
 
                 dgvPlayersAway.SelectAllCells();
                 ApplicationCommands.Copy.Execute(null, dgvPlayersAway);
@@ -1026,7 +1026,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.BS.Done = false;
+            MainWindow.bs.Done = false;
             Close();
         }
 
@@ -1494,10 +1494,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             var tsopp = new TeamStats(-1, cmbTeam2.SelectedItem.ToString());
 
             tryParseBS();
-            if (!MainWindow.BS.Done)
+            if (!MainWindow.bs.Done)
                 return;
 
-            TeamBoxScore bs = MainWindow.BS;
+            TeamBoxScore bs = MainWindow.bs;
 
             if (team == 1)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
@@ -2015,7 +2015,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             if (!_clickedOK)
             {
-                MainWindow.BS.Done = false;
+                MainWindow.bs.Done = false;
             }
         }
     }

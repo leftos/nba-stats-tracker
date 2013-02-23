@@ -46,7 +46,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataRowCellParsers.cs" />
+    <Compile Include="ParseCell.cs" />
     <Compile Include="BeTimvwFramework\PropertyComparer.cs" />
     <Compile Include="BeTimvwFramework\SortableBindingList.cs" />
     <Compile Include="Crc32.cs" />

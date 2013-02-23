@@ -60,8 +60,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 if (ex is ArgumentException || ex is KeyNotFoundException)
                 {
-                    Team1ID = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(r, "T1Name")).Value.ID;
-                    Team2ID = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(r, "T2Name")).Value.ID;
+                    Team1ID = tst.Single(ts => ts.Value.Name == ParseCell.GetString(r, "T1Name")).Value.ID;
+                    Team2ID = tst.Single(ts => ts.Value.Name == ParseCell.GetString(r, "T2Name")).Value.ID;
                 }
                 else
                 {
@@ -143,7 +143,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             SeasonNum = MainWindow.CurSeason;
 
             DataRow rt = away.Rows[away.Rows.Count - 1];
-            PTS1 = DataRowCellParsers.GetUInt16(rt, "PTS");
+            PTS1 = ParseCell.GetUInt16(rt, "PTS");
             REB1 = Convert.ToUInt16(rt["TRB"].ToString());
             AST1 = Convert.ToUInt16(rt["AST"].ToString());
             STL1 = Convert.ToUInt16(rt["STL"].ToString());
@@ -160,7 +160,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             MINS1 = (ushort) (Convert.ToUInt16(rt["MP"].ToString())/5);
 
             rt = home.Rows[home.Rows.Count - 1];
-            PTS2 = DataRowCellParsers.GetUInt16(rt, "PTS");
+            PTS2 = ParseCell.GetUInt16(rt, "PTS");
             REB2 = Convert.ToUInt16(rt["TRB"].ToString());
             AST2 = Convert.ToUInt16(rt["AST"].ToString());
             STL2 = Convert.ToUInt16(rt["STL"].ToString());

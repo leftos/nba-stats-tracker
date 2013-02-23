@@ -30,6 +30,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -104,7 +105,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static Timeframe Tf = new Timeframe(0);
 
         private static readonly Dictionary<int, TeamStats> RealTST = new Dictionary<int, TeamStats>();
-        public static TeamBoxScore BS;
+        public static TeamBoxScore bs;
         public static string CurrentDB = "";
         public static string AddInfo;
         private static int _curSeason;
@@ -178,6 +179,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private double _progress;
         private Semaphore _sem;
         private BackgroundWorker _worker1 = new BackgroundWorker();
+        public readonly TaskScheduler UIScheduler;
+        private DispatcherTimer dt;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -188,7 +191,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             InitializeComponent();
 
             MWInstance = this;
-            BS = new TeamBoxScore();
+            bs = new TeamBoxScore();
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
@@ -199,8 +202,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             btnTest.Visibility = Visibility.Hidden;
             #endif
 
-            if (Directory.Exists(AppDocsPath) == false)
-                Directory.CreateDirectory(AppDocsPath);
             if (Directory.Exists(PSFiltersPath) == false)
                 Directory.CreateDirectory(PSFiltersPath);
             if (Directory.Exists(ASCFiltersPath) == false)
@@ -317,6 +318,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     }
                     Misc.SetRegistrySetting("TimesStarted", timesStarted + 1);
                 }
+            }
+            UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
+            var metricsNames = PAbbr.MetricsNames;
+            for (int i = 0; i < metricsNames.Count; i++)
+            {
+                var name = metricsNames[i];
+                PAbbr.MetricsDict.Add(name, double.NaN);
             }
 
             #region Keyboard Shortcuts
@@ -490,13 +499,42 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             MWInstance.mnuMiscPreferNBALeaders.IsChecked = preferNBALeaders;
             MWInstance.mnuMiscPreferMyLeaders.IsChecked = !preferNBALeaders;
 
-            SQLiteIO.LoadSeason();
-
             txtFile.Text = ofd.FileName;
 
+            mainGrid.Visibility = Visibility.Hidden;
+
+            DoWork().ContinueWith(FinishLoadingDatabase, UIScheduler);
+
+            dt = new DispatcherTimer();
+            //dt.Interval = new TimeSpan(100);
+            dt.Tick += updateBasedOnProgress;
+            dt.Start();
+
+            //SQLiteIO.LoadSeason();
+        }
+
+        private void updateBasedOnProgress(object o, EventArgs args)
+        {
+            var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage, SQLiteIO.Progress.Message);
+            if (SQLiteIO.Progress.Percentage > 0)
+            {
+                newStatus += " (" + SQLiteIO.Progress.Percentage + "%)";
+            }
+            UpdateStatus(newStatus);
+        }
+
+        private Task<bool> DoWork()
+        {
+            return Task.Factory.StartNew(() => SQLiteIO.LoadSeasonInThread());
+        }
+
+        public void FinishLoadingDatabase(Task<bool> task)
+        {
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
 
+            Interlocked.Exchange(ref SQLiteIO.Progress, new ProgressInfo(SQLiteIO.Progress, "Updating notables..."));
+            //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
             UpdateNotables();
 
             if (_notables.Count > 0)
@@ -510,6 +548,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             mnuTools.IsEnabled = true;
             grdAnalysis.IsEnabled = true;
             grdUpdate.IsEnabled = true;
+
+            dt.Stop();
+            SQLiteIO.Progress.Timing.Stop();
+
+            mainGrid.Visibility = Visibility.Visible;
         }
 
         public static void LoadMyLeadersCriteria()
@@ -579,7 +622,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            BS = new TeamBoxScore();
+            bs = new TeamBoxScore();
             var bsW = new BoxScoreWindow();
             bsW.ShowDialog();
 
@@ -591,36 +634,36 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </summary>
         private void parseBoxScoreResult()
         {
-            if (BS.Done == false)
+            if (bs.Done == false)
                 return;
 
-            int id1 = BS.Team1ID;
-            int id2 = BS.Team2ID;
+            int id1 = bs.Team1ID;
+            int id2 = bs.Team2ID;
 
-            SQLiteIO.LoadSeason(BS.SeasonNum);
+            SQLiteIO.LoadSeason(bs.SeasonNum);
 
             List<PlayerBoxScore> list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
-            if (!BS.DoNotUpdate)
+            if (!bs.DoNotUpdate)
             {
-                TeamStats.AddTeamStatsFromBoxScore(BS, ref TST, ref TSTOpp, id1, id2);
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref TST, ref TSTOpp, id1, id2);
 
                 foreach (var pbs in list)
                 {
                     if (pbs.PlayerID == -1)
                         continue;
-                    PST[pbs.PlayerID].AddBoxScore(pbs, BS.IsPlayoff);
+                    PST[pbs.PlayerID].AddBoxScore(pbs, bs.IsPlayoff);
                 }
             }
 
-            if (BS.BSHistID == -1)
+            if (bs.BSHistID == -1)
             {
-                var bse = new BoxScoreEntry(BS, BS.GameDate, list);
+                var bse = new BoxScoreEntry(bs, bs.GameDate, list);
                 BSHist.Add(bse);
             }
             else
             {
-                BSHist[BS.BSHistID].BS = BS;
+                BSHist[bs.BSHistID].BS = bs;
             }
 
             SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
@@ -1377,8 +1420,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             SeasonList.Clear();
             foreach (DataRow row in dataTable.Rows)
             {
-                int id = DataRowCellParsers.GetInt32(row, "ID");
-                string name = DataRowCellParsers.GetString(row, "Name");
+                int id = ParseCell.GetInt32(row, "ID");
+                string name = ParseCell.GetString(row, "Name");
                 SeasonList.Add(new KeyValuePair<int, string>(id, name));
             }
 
@@ -1505,7 +1548,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (SQLiteIO.IsTSTEmpty())
                 return;
 
-            BS = new TeamBoxScore();
+            bs = new TeamBoxScore();
             var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View);
             bsw.ShowDialog();
 
@@ -1517,16 +1560,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </summary>
         public static void UpdateBoxScore()
         {
-            if (BS.BSHistID != -1)
+            if (bs.BSHistID != -1)
             {
-                if (BS.Done)
+                if (bs.Done)
                 {
                     List<PlayerBoxScore> list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
-                    BSHist[BS.BSHistID].BS = BS;
-                    BSHist[BS.BSHistID].PBSList = list;
-                    BSHist[BS.BSHistID].Date = BS.GameDate;
-                    BSHist[BS.BSHistID].MustUpdate = true;
+                    BSHist[bs.BSHistID].BS = bs;
+                    BSHist[bs.BSHistID].PBSList = list;
+                    BSHist[bs.BSHistID].Date = bs.GameDate;
+                    BSHist[bs.BSHistID].MustUpdate = true;
                 }
             }
         }
@@ -2392,7 +2435,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             if (AddInfo == "$$PLAYERSENABLED")
             {
-                PST = SQLiteIO.GetPlayersFromDatabase(CurrentDB, TST, TSTOpp, TeamOrder, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
+                PST = SQLiteIO.GetPlayersFromDatabase(CurrentDB, TST, TSTOpp, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
                 UpdateStatus("Players were enabled/disabled. Database saved.");
             }
         }

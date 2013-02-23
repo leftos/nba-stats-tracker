@@ -323,41 +323,41 @@ namespace NBA_Stats_Tracker.Interop.BR
             DataRow tr = dt.Rows[0];
             DataRow toppr = dt.Rows[2];
 
-            ts.Totals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(tr, "MP")/5);
-            ts.Totals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(tr, "FG");
-            ts.Totals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(tr, "FGA");
-            ts.Totals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(tr, "3P");
-            ts.Totals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(tr, "3PA");
-            ts.Totals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(tr, "FT");
-            ts.Totals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(tr, "FTA");
-            ts.Totals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(tr, "ORB");
-            ts.Totals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(tr, "DRB");
-            ts.Totals[TAbbr.AST] = DataRowCellParsers.GetUInt16(tr, "AST");
-            ts.Totals[TAbbr.STL] = DataRowCellParsers.GetUInt16(tr, "STL");
-            ts.Totals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(tr, "BLK");
-            ts.Totals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(tr, "TOV");
-            ts.Totals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(tr, "PF");
-            ts.Totals[TAbbr.PF] = DataRowCellParsers.GetUInt16(tr, "PTS");
-            ts.Totals[TAbbr.PA] = DataRowCellParsers.GetUInt16(toppr, "PTS");
+            ts.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP")/5);
+            ts.Totals[TAbbr.FGM] = ParseCell.GetUInt16(tr, "FG");
+            ts.Totals[TAbbr.FGA] = ParseCell.GetUInt16(tr, "FGA");
+            ts.Totals[TAbbr.TPM] = ParseCell.GetUInt16(tr, "3P");
+            ts.Totals[TAbbr.TPA] = ParseCell.GetUInt16(tr, "3PA");
+            ts.Totals[TAbbr.FTM] = ParseCell.GetUInt16(tr, "FT");
+            ts.Totals[TAbbr.FTA] = ParseCell.GetUInt16(tr, "FTA");
+            ts.Totals[TAbbr.OREB] = ParseCell.GetUInt16(tr, "ORB");
+            ts.Totals[TAbbr.DREB] = ParseCell.GetUInt16(tr, "DRB");
+            ts.Totals[TAbbr.AST] = ParseCell.GetUInt16(tr, "AST");
+            ts.Totals[TAbbr.STL] = ParseCell.GetUInt16(tr, "STL");
+            ts.Totals[TAbbr.BLK] = ParseCell.GetUInt16(tr, "BLK");
+            ts.Totals[TAbbr.TOS] = ParseCell.GetUInt16(tr, "TOV");
+            ts.Totals[TAbbr.FOUL] = ParseCell.GetUInt16(tr, "PF");
+            ts.Totals[TAbbr.PF] = ParseCell.GetUInt16(tr, "PTS");
+            ts.Totals[TAbbr.PA] = ParseCell.GetUInt16(toppr, "PTS");
 
             ts.CalcAvg();
 
-            tsopp.Totals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(toppr, "MP")/5);
-            tsopp.Totals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(toppr, "FG");
-            tsopp.Totals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(toppr, "FGA");
-            tsopp.Totals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(toppr, "3P");
-            tsopp.Totals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(toppr, "3PA");
-            tsopp.Totals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(toppr, "FT");
-            tsopp.Totals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(toppr, "FTA");
-            tsopp.Totals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(toppr, "ORB");
-            tsopp.Totals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(toppr, "DRB");
-            tsopp.Totals[TAbbr.AST] = DataRowCellParsers.GetUInt16(toppr, "AST");
-            tsopp.Totals[TAbbr.STL] = DataRowCellParsers.GetUInt16(toppr, "STL");
-            tsopp.Totals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(toppr, "BLK");
-            tsopp.Totals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(toppr, "TOV");
-            tsopp.Totals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(toppr, "PF");
-            tsopp.Totals[TAbbr.PF] = DataRowCellParsers.GetUInt16(toppr, "PTS");
-            tsopp.Totals[TAbbr.PA] = DataRowCellParsers.GetUInt16(tr, "PTS");
+            tsopp.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP")/5);
+            tsopp.Totals[TAbbr.FGM] = ParseCell.GetUInt16(toppr, "FG");
+            tsopp.Totals[TAbbr.FGA] = ParseCell.GetUInt16(toppr, "FGA");
+            tsopp.Totals[TAbbr.TPM] = ParseCell.GetUInt16(toppr, "3P");
+            tsopp.Totals[TAbbr.TPA] = ParseCell.GetUInt16(toppr, "3PA");
+            tsopp.Totals[TAbbr.FTM] = ParseCell.GetUInt16(toppr, "FT");
+            tsopp.Totals[TAbbr.FTA] = ParseCell.GetUInt16(toppr, "FTA");
+            tsopp.Totals[TAbbr.OREB] = ParseCell.GetUInt16(toppr, "ORB");
+            tsopp.Totals[TAbbr.DREB] = ParseCell.GetUInt16(toppr, "DRB");
+            tsopp.Totals[TAbbr.AST] = ParseCell.GetUInt16(toppr, "AST");
+            tsopp.Totals[TAbbr.STL] = ParseCell.GetUInt16(toppr, "STL");
+            tsopp.Totals[TAbbr.BLK] = ParseCell.GetUInt16(toppr, "BLK");
+            tsopp.Totals[TAbbr.TOS] = ParseCell.GetUInt16(toppr, "TOV");
+            tsopp.Totals[TAbbr.FOUL] = ParseCell.GetUInt16(toppr, "PF");
+            tsopp.Totals[TAbbr.PF] = ParseCell.GetUInt16(toppr, "PTS");
+            tsopp.Totals[TAbbr.PA] = ParseCell.GetUInt16(tr, "PTS");
 
             tsopp.CalcAvg();
         }
@@ -414,43 +414,43 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                 }
 
-                tst[i].PlRecord[0] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "W");
-                tst[i].PlRecord[1] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "L");
-                tst[i].PlTotals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(tr, "MP")/5);
-                tst[i].PlTotals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(tr, "FG");
-                tst[i].PlTotals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(tr, "FGA");
-                tst[i].PlTotals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(tr, "3P");
-                tst[i].PlTotals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(tr, "3PA");
-                tst[i].PlTotals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(tr, "FT");
-                tst[i].PlTotals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(tr, "FTA");
-                tst[i].PlTotals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(tr, "ORB");
-                tst[i].PlTotals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(tr, "DRB");
-                tst[i].PlTotals[TAbbr.AST] = DataRowCellParsers.GetUInt16(tr, "AST");
-                tst[i].PlTotals[TAbbr.STL] = DataRowCellParsers.GetUInt16(tr, "STL");
-                tst[i].PlTotals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(tr, "BLK");
-                tst[i].PlTotals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(tr, "TOV");
-                tst[i].PlTotals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(tr, "PF");
-                tst[i].PlTotals[TAbbr.PF] = DataRowCellParsers.GetUInt16(tr, "PTS");
-                tst[i].PlTotals[TAbbr.PA] = DataRowCellParsers.GetUInt16(toppr, "PTS");
+                tst[i].PlRecord[0] = (byte) ParseCell.GetUInt16(tmiscr, "W");
+                tst[i].PlRecord[1] = (byte) ParseCell.GetUInt16(tmiscr, "L");
+                tst[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP")/5);
+                tst[i].PlTotals[TAbbr.FGM] = ParseCell.GetUInt16(tr, "FG");
+                tst[i].PlTotals[TAbbr.FGA] = ParseCell.GetUInt16(tr, "FGA");
+                tst[i].PlTotals[TAbbr.TPM] = ParseCell.GetUInt16(tr, "3P");
+                tst[i].PlTotals[TAbbr.TPA] = ParseCell.GetUInt16(tr, "3PA");
+                tst[i].PlTotals[TAbbr.FTM] = ParseCell.GetUInt16(tr, "FT");
+                tst[i].PlTotals[TAbbr.FTA] = ParseCell.GetUInt16(tr, "FTA");
+                tst[i].PlTotals[TAbbr.OREB] = ParseCell.GetUInt16(tr, "ORB");
+                tst[i].PlTotals[TAbbr.DREB] = ParseCell.GetUInt16(tr, "DRB");
+                tst[i].PlTotals[TAbbr.AST] = ParseCell.GetUInt16(tr, "AST");
+                tst[i].PlTotals[TAbbr.STL] = ParseCell.GetUInt16(tr, "STL");
+                tst[i].PlTotals[TAbbr.BLK] = ParseCell.GetUInt16(tr, "BLK");
+                tst[i].PlTotals[TAbbr.TOS] = ParseCell.GetUInt16(tr, "TOV");
+                tst[i].PlTotals[TAbbr.FOUL] = ParseCell.GetUInt16(tr, "PF");
+                tst[i].PlTotals[TAbbr.PF] = ParseCell.GetUInt16(tr, "PTS");
+                tst[i].PlTotals[TAbbr.PA] = ParseCell.GetUInt16(toppr, "PTS");
 
-                tstOpp[i].PlRecord[0] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "L");
-                tstOpp[i].PlRecord[1] = (byte) DataRowCellParsers.GetUInt16(tmiscr, "W");
-                tstOpp[i].PlTotals[TAbbr.MINS] = (ushort) (DataRowCellParsers.GetUInt16(toppr, "MP")/5);
-                tstOpp[i].PlTotals[TAbbr.FGM] = DataRowCellParsers.GetUInt16(toppr, "FG");
-                tstOpp[i].PlTotals[TAbbr.FGA] = DataRowCellParsers.GetUInt16(toppr, "FGA");
-                tstOpp[i].PlTotals[TAbbr.TPM] = DataRowCellParsers.GetUInt16(toppr, "3P");
-                tstOpp[i].PlTotals[TAbbr.TPA] = DataRowCellParsers.GetUInt16(toppr, "3PA");
-                tstOpp[i].PlTotals[TAbbr.FTM] = DataRowCellParsers.GetUInt16(toppr, "FT");
-                tstOpp[i].PlTotals[TAbbr.FTA] = DataRowCellParsers.GetUInt16(toppr, "FTA");
-                tstOpp[i].PlTotals[TAbbr.OREB] = DataRowCellParsers.GetUInt16(toppr, "ORB");
-                tstOpp[i].PlTotals[TAbbr.DREB] = DataRowCellParsers.GetUInt16(toppr, "DRB");
-                tstOpp[i].PlTotals[TAbbr.AST] = DataRowCellParsers.GetUInt16(toppr, "AST");
-                tstOpp[i].PlTotals[TAbbr.STL] = DataRowCellParsers.GetUInt16(toppr, "STL");
-                tstOpp[i].PlTotals[TAbbr.BLK] = DataRowCellParsers.GetUInt16(toppr, "BLK");
-                tstOpp[i].PlTotals[TAbbr.TOS] = DataRowCellParsers.GetUInt16(toppr, "TOV");
-                tstOpp[i].PlTotals[TAbbr.FOUL] = DataRowCellParsers.GetUInt16(toppr, "PF");
-                tstOpp[i].PlTotals[TAbbr.PF] = DataRowCellParsers.GetUInt16(toppr, "PTS");
-                tstOpp[i].PlTotals[TAbbr.PA] = DataRowCellParsers.GetUInt16(tr, "PTS");
+                tstOpp[i].PlRecord[0] = (byte) ParseCell.GetUInt16(tmiscr, "L");
+                tstOpp[i].PlRecord[1] = (byte) ParseCell.GetUInt16(tmiscr, "W");
+                tstOpp[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP")/5);
+                tstOpp[i].PlTotals[TAbbr.FGM] = ParseCell.GetUInt16(toppr, "FG");
+                tstOpp[i].PlTotals[TAbbr.FGA] = ParseCell.GetUInt16(toppr, "FGA");
+                tstOpp[i].PlTotals[TAbbr.TPM] = ParseCell.GetUInt16(toppr, "3P");
+                tstOpp[i].PlTotals[TAbbr.TPA] = ParseCell.GetUInt16(toppr, "3PA");
+                tstOpp[i].PlTotals[TAbbr.FTM] = ParseCell.GetUInt16(toppr, "FT");
+                tstOpp[i].PlTotals[TAbbr.FTA] = ParseCell.GetUInt16(toppr, "FTA");
+                tstOpp[i].PlTotals[TAbbr.OREB] = ParseCell.GetUInt16(toppr, "ORB");
+                tstOpp[i].PlTotals[TAbbr.DREB] = ParseCell.GetUInt16(toppr, "DRB");
+                tstOpp[i].PlTotals[TAbbr.AST] = ParseCell.GetUInt16(toppr, "AST");
+                tstOpp[i].PlTotals[TAbbr.STL] = ParseCell.GetUInt16(toppr, "STL");
+                tstOpp[i].PlTotals[TAbbr.BLK] = ParseCell.GetUInt16(toppr, "BLK");
+                tstOpp[i].PlTotals[TAbbr.TOS] = ParseCell.GetUInt16(toppr, "TOV");
+                tstOpp[i].PlTotals[TAbbr.FOUL] = ParseCell.GetUInt16(toppr, "PF");
+                tstOpp[i].PlTotals[TAbbr.PF] = ParseCell.GetUInt16(toppr, "PTS");
+                tstOpp[i].PlTotals[TAbbr.PA] = ParseCell.GetUInt16(tr, "PTS");
             }
         }
 
@@ -543,23 +543,23 @@ namespace NBA_Stats_Tracker.Interop.BR
             foreach (DataRow r in dt.Rows)
             {
                 string name = r["Player"].ToString();
-                pstnames[name].Totals[PAbbr.GP] = DataRowCellParsers.GetUInt16(r, "G");
-                pstnames[name].Totals[PAbbr.GS] = DataRowCellParsers.GetUInt16(r, "GS");
-                pstnames[name].Totals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(r, "MP");
-                pstnames[name].Totals[PAbbr.FGM] = DataRowCellParsers.GetUInt16(r, "FG");
-                pstnames[name].Totals[PAbbr.FGA] = DataRowCellParsers.GetUInt16(r, "FGA");
-                pstnames[name].Totals[PAbbr.TPM] = DataRowCellParsers.GetUInt16(r, "3P");
-                pstnames[name].Totals[PAbbr.TPA] = DataRowCellParsers.GetUInt16(r, "3PA");
-                pstnames[name].Totals[PAbbr.FTM] = DataRowCellParsers.GetUInt16(r, "FT");
-                pstnames[name].Totals[PAbbr.FTA] = DataRowCellParsers.GetUInt16(r, "FTA");
-                pstnames[name].Totals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(r, "ORB");
-                pstnames[name].Totals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(r, "DRB");
-                pstnames[name].Totals[PAbbr.AST] = DataRowCellParsers.GetUInt16(r, "AST");
-                pstnames[name].Totals[PAbbr.STL] = DataRowCellParsers.GetUInt16(r, "STL");
-                pstnames[name].Totals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(r, "BLK");
-                pstnames[name].Totals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(r, "TOV");
-                pstnames[name].Totals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(r, "PF");
-                pstnames[name].Totals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(r, "PTS");
+                pstnames[name].Totals[PAbbr.GP] = ParseCell.GetUInt16(r, "G");
+                pstnames[name].Totals[PAbbr.GS] = ParseCell.GetUInt16(r, "GS");
+                pstnames[name].Totals[PAbbr.MINS] = ParseCell.GetUInt16(r, "MP");
+                pstnames[name].Totals[PAbbr.FGM] = ParseCell.GetUInt16(r, "FG");
+                pstnames[name].Totals[PAbbr.FGA] = ParseCell.GetUInt16(r, "FGA");
+                pstnames[name].Totals[PAbbr.TPM] = ParseCell.GetUInt16(r, "3P");
+                pstnames[name].Totals[PAbbr.TPA] = ParseCell.GetUInt16(r, "3PA");
+                pstnames[name].Totals[PAbbr.FTM] = ParseCell.GetUInt16(r, "FT");
+                pstnames[name].Totals[PAbbr.FTA] = ParseCell.GetUInt16(r, "FTA");
+                pstnames[name].Totals[PAbbr.OREB] = ParseCell.GetUInt16(r, "ORB");
+                pstnames[name].Totals[PAbbr.DREB] = ParseCell.GetUInt16(r, "DRB");
+                pstnames[name].Totals[PAbbr.AST] = ParseCell.GetUInt16(r, "AST");
+                pstnames[name].Totals[PAbbr.STL] = ParseCell.GetUInt16(r, "STL");
+                pstnames[name].Totals[PAbbr.BLK] = ParseCell.GetUInt16(r, "BLK");
+                pstnames[name].Totals[PAbbr.TOS] = ParseCell.GetUInt16(r, "TOV");
+                pstnames[name].Totals[PAbbr.FOUL] = ParseCell.GetUInt16(r, "PF");
+                pstnames[name].Totals[PAbbr.PTS] = ParseCell.GetUInt16(r, "PTS");
             }
 
             dt = ds.Tables["playoffs"];
@@ -569,24 +569,24 @@ namespace NBA_Stats_Tracker.Interop.BR
                 foreach (DataRow r in dt.Rows)
                 {
                     string name = r["Player"].ToString();
-                    pstnames[name].PlTotals[PAbbr.GP] += DataRowCellParsers.GetUInt16(r, "G");
+                    pstnames[name].PlTotals[PAbbr.GP] += ParseCell.GetUInt16(r, "G");
                     //pstnames[name].pl_stats[p.GS] += NSTHelper.getUShort(r, "GS");
-                    pstnames[name].PlTotals[PAbbr.MINS] += DataRowCellParsers.GetUInt16(r, "MP");
-                    pstnames[name].PlTotals[PAbbr.FGM] += DataRowCellParsers.GetUInt16(r, "FG");
-                    pstnames[name].PlTotals[PAbbr.FGA] += DataRowCellParsers.GetUInt16(r, "FGA");
-                    pstnames[name].PlTotals[PAbbr.TPM] += DataRowCellParsers.GetUInt16(r, "3P");
-                    pstnames[name].PlTotals[PAbbr.TPA] += DataRowCellParsers.GetUInt16(r, "3PA");
-                    pstnames[name].PlTotals[PAbbr.FTM] += DataRowCellParsers.GetUInt16(r, "FT");
-                    pstnames[name].PlTotals[PAbbr.FTA] += DataRowCellParsers.GetUInt16(r, "FTA");
-                    pstnames[name].PlTotals[PAbbr.OREB] += DataRowCellParsers.GetUInt16(r, "ORB");
+                    pstnames[name].PlTotals[PAbbr.MINS] += ParseCell.GetUInt16(r, "MP");
+                    pstnames[name].PlTotals[PAbbr.FGM] += ParseCell.GetUInt16(r, "FG");
+                    pstnames[name].PlTotals[PAbbr.FGA] += ParseCell.GetUInt16(r, "FGA");
+                    pstnames[name].PlTotals[PAbbr.TPM] += ParseCell.GetUInt16(r, "3P");
+                    pstnames[name].PlTotals[PAbbr.TPA] += ParseCell.GetUInt16(r, "3PA");
+                    pstnames[name].PlTotals[PAbbr.FTM] += ParseCell.GetUInt16(r, "FT");
+                    pstnames[name].PlTotals[PAbbr.FTA] += ParseCell.GetUInt16(r, "FTA");
+                    pstnames[name].PlTotals[PAbbr.OREB] += ParseCell.GetUInt16(r, "ORB");
                     pstnames[name].PlTotals[PAbbr.DREB] +=
-                        (ushort) (DataRowCellParsers.GetUInt16(r, "TRB") - DataRowCellParsers.GetUInt16(r, "ORB"));
-                    pstnames[name].PlTotals[PAbbr.AST] += DataRowCellParsers.GetUInt16(r, "AST");
-                    pstnames[name].PlTotals[PAbbr.STL] += DataRowCellParsers.GetUInt16(r, "STL");
-                    pstnames[name].PlTotals[PAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "BLK");
-                    pstnames[name].PlTotals[PAbbr.TOS] += DataRowCellParsers.GetUInt16(r, "TOV");
-                    pstnames[name].PlTotals[PAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "PF");
-                    pstnames[name].PlTotals[PAbbr.PTS] += DataRowCellParsers.GetUInt16(r, "PTS");
+                        (ushort) (ParseCell.GetUInt16(r, "TRB") - ParseCell.GetUInt16(r, "ORB"));
+                    pstnames[name].PlTotals[PAbbr.AST] += ParseCell.GetUInt16(r, "AST");
+                    pstnames[name].PlTotals[PAbbr.STL] += ParseCell.GetUInt16(r, "STL");
+                    pstnames[name].PlTotals[PAbbr.BLK] += ParseCell.GetUInt16(r, "BLK");
+                    pstnames[name].PlTotals[PAbbr.TOS] += ParseCell.GetUInt16(r, "TOV");
+                    pstnames[name].PlTotals[PAbbr.FOUL] += ParseCell.GetUInt16(r, "PF");
+                    pstnames[name].PlTotals[PAbbr.PTS] += ParseCell.GetUInt16(r, "PTS");
 
                     pstnames[name].CalcAvg();
                 }

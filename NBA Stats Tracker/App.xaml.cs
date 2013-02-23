@@ -141,6 +141,43 @@ namespace NBA_Stats_Tracker
         {
             base.OnStartup(e);
 
+            if (!Directory.Exists(AppDocsPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(AppDocsPath);
+                }
+                catch (Exception)
+                {
+                    Debug.WriteLine("DocsPath couldn't be created.");
+                }
+            }
+
+            try
+            {
+                File.Delete(AppDocsPath + @"\tracelog.txt");
+            }
+            catch
+            {
+                Debug.WriteLine("Couldn't delete previous trace file, if any.");
+            }
+
+            Trace.Listeners.Clear();
+
+            var twtl = new TextWriterTraceListener(AppDocsPath + @"\tracelog.txt")
+            {
+                Name = "TextLogger",
+                TraceOutputOptions =
+                    TraceOptions.ThreadId |
+                    TraceOptions.DateTime
+            };
+
+            var ctl = new ConsoleTraceListener(false) { TraceOutputOptions = TraceOptions.DateTime };
+
+            Trace.Listeners.Add(twtl);
+            Trace.Listeners.Add(ctl);
+            Trace.AutoFlush = true;
+
             if (e.Args.Length > 0)
             {
                 if (e.Args[0] == "-RealNBAOnly")

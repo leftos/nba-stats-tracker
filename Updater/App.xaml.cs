@@ -45,7 +45,7 @@ namespace Updater
             if (e.Args.Length == 0)
             {
                 MessageBox.Show("Updater must be ran with proper path to installer.");
-                Current.Shutdown();
+                Environment.Exit(-1);
             }
 
             Process installerProc = null;

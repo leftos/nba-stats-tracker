@@ -91,7 +91,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             db.GetDataTable("SELECT ID FROM Divisions")
               .Rows.Cast<DataRow>()
               .ToList()
-              .ForEach(row => usedIDs.Add(DataRowCellParsers.GetInt32(row, "ID")));
+              .ForEach(row => usedIDs.Add(ParseCell.GetInt32(row, "ID")));
 
             List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
             foreach (var newDiv in list)

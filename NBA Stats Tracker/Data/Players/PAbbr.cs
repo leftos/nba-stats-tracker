@@ -190,6 +190,8 @@ namespace NBA_Stats_Tracker.Data.Players
                                                       "FTAR",
                                                       "PER"
                                                   };
+
+        public static Dictionary<string, double> MetricsDict = new Dictionary<string, double>(PAbbr.MetricsNames.Count);
     }
 
     // Unlike TeamStats which was designed before REDitor implemented such stats,

@@ -25,7 +25,7 @@ using System.Data;
 
 namespace LeftosCommonLibrary
 {
-    public class DataRowCellParsers
+    public class ParseCell
     {
         /// <summary>
         ///     Gets an unsigned 16-bit integer from the specified column of the given DataRow.

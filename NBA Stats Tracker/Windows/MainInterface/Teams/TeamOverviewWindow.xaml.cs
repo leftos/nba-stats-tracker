@@ -625,14 +625,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dr["Type"] = " ";
             _dtSs.Rows.Add(dr);
 
-            foreach (var oppTeam in MainWindow.TeamOrder.Values)
+            var inverseDict = MainWindow.DisplayNames.ToDictionary(pair => pair.Value, pair => pair.Key);
+            var names = inverseDict.Keys.ToList();
+            names.Remove("");
+            names.Sort();
+            
+            foreach (var name in names)
             {
-                if (oppTeam == _curTeam)
+                if (inverseDict[name] == _curTeam)
                     continue;
 
                 dr = _dtSs.NewRow();
-                CreateDataRowFromTeamStats(splitTeamStats[id]["vs " + MainWindow.DisplayNames[oppTeam]], ref dr,
-                                           "vs " + MainWindow.DisplayNames[oppTeam]);
+                CreateDataRowFromTeamStats(splitTeamStats[id]["vs " + name], ref dr, "vs " + name);
                 _dtSs.Rows.Add(dr);
             }
 
@@ -1114,17 +1118,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 DataRow dr4 = _dtYea.NewRow();
                 ts = new TeamStats();
-                if (DataRowCellParsers.GetBoolean(dr, "isPlayoff"))
+                if (ParseCell.GetBoolean(dr, "isPlayoff"))
                 {
                     SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, true);
-                    CreateDataRowFromTeamStats(ts, ref dr4, "Playoffs " + DataRowCellParsers.GetString(dr, "SeasonName"), true);
+                    CreateDataRowFromTeamStats(ts, ref dr4, "Playoffs " + ParseCell.GetString(dr, "SeasonName"), true);
                     tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
                     tsAll.AddTeamStats(ts, Span.Playoffs);
                 }
                 else
                 {
                     SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, false);
-                    CreateDataRowFromTeamStats(ts, ref dr4, "Season " + DataRowCellParsers.GetString(dr, "SeasonName"), false);
+                    CreateDataRowFromTeamStats(ts, ref dr4, "Season " + ParseCell.GetString(dr, "SeasonName"), false);
                     tsAllSeasons.AddTeamStats(ts, Span.Season);
                     tsAll.AddTeamStats(ts, Span.Season);
                 }

@@ -143,13 +143,13 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
 
                 foreach (DataRow r in res.Rows)
                 {
-                    if (!DataRowCellParsers.GetBoolean(r, "isHidden"))
+                    if (!ParseCell.GetBoolean(r, "isHidden"))
                     {
-                        lstEnabled.Items.Add(DataRowCellParsers.GetString(r, "DisplayName"));
+                        lstEnabled.Items.Add(ParseCell.GetString(r, "DisplayName"));
                     }
                     else
                     {
-                        lstDisabled.Items.Add(DataRowCellParsers.GetString(r, "DisplayName"));
+                        lstDisabled.Items.Add(ParseCell.GetString(r, "DisplayName"));
                     }
                 }
                 btnLoadList.Visibility = Visibility.Hidden;
@@ -167,14 +167,14 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
 
                 foreach (DataRow r in res.Rows)
                 {
-                    string s = DataRowCellParsers.GetString(r, "Name");
-                    if (!DataRowCellParsers.GetBoolean(r, "isHidden"))
+                    string s = ParseCell.GetString(r, "Name");
+                    if (!ParseCell.GetBoolean(r, "isHidden"))
                     {
-                        _shownPlayers.Add(new KeyValuePair<int, string>(DataRowCellParsers.GetInt32(r, "ID"), s));
+                        _shownPlayers.Add(new KeyValuePair<int, string>(ParseCell.GetInt32(r, "ID"), s));
                     }
                     else
                     {
-                        _hiddenPlayers.Add(new KeyValuePair<int, string>(DataRowCellParsers.GetInt32(r, "ID"), s));
+                        _hiddenPlayers.Add(new KeyValuePair<int, string>(ParseCell.GetInt32(r, "ID"), s));
                     }
                 }
 

@@ -33,32 +33,32 @@ namespace NBA_Stats_Tracker.Data.PastStats
 
         public PastTeamStats(DataRow dr)
         {
-            Wins = DataRowCellParsers.GetUInt32(dr, "WIN");
-            Losses = DataRowCellParsers.GetUInt32(dr, "LOSS");
-            TeamID = DataRowCellParsers.GetInt32(dr, "TeamID");
+            Wins = ParseCell.GetUInt32(dr, "WIN");
+            Losses = ParseCell.GetUInt32(dr, "LOSS");
+            TeamID = ParseCell.GetInt32(dr, "TeamID");
 
-            MINS = DataRowCellParsers.GetUInt32(dr, "MINS");
-            PF = DataRowCellParsers.GetUInt32(dr, "PF");
-            PA = DataRowCellParsers.GetUInt32(dr, "PA");
-            FGM = DataRowCellParsers.GetUInt32(dr, "FGM");
-            FGA = DataRowCellParsers.GetUInt32(dr, "FGA");
-            TPM = DataRowCellParsers.GetUInt32(dr, "TPM");
-            TPA = DataRowCellParsers.GetUInt32(dr, "TPA");
-            FTM = DataRowCellParsers.GetUInt32(dr, "FTM");
-            FTA = DataRowCellParsers.GetUInt32(dr, "FTA");
-            OREB = DataRowCellParsers.GetUInt32(dr, "OREB");
-            DREB = DataRowCellParsers.GetUInt32(dr, "DREB");
+            MINS = ParseCell.GetUInt32(dr, "MINS");
+            PF = ParseCell.GetUInt32(dr, "PF");
+            PA = ParseCell.GetUInt32(dr, "PA");
+            FGM = ParseCell.GetUInt32(dr, "FGM");
+            FGA = ParseCell.GetUInt32(dr, "FGA");
+            TPM = ParseCell.GetUInt32(dr, "TPM");
+            TPA = ParseCell.GetUInt32(dr, "TPA");
+            FTM = ParseCell.GetUInt32(dr, "FTM");
+            FTA = ParseCell.GetUInt32(dr, "FTA");
+            OREB = ParseCell.GetUInt32(dr, "OREB");
+            DREB = ParseCell.GetUInt32(dr, "DREB");
             REB = OREB + DREB;
-            STL = DataRowCellParsers.GetUInt32(dr, "STL");
-            TOS = DataRowCellParsers.GetUInt32(dr, "TOS");
-            BLK = DataRowCellParsers.GetUInt32(dr, "BLK");
-            AST = DataRowCellParsers.GetUInt32(dr, "AST");
-            FOUL = DataRowCellParsers.GetUInt32(dr, "FOUL");
+            STL = ParseCell.GetUInt32(dr, "STL");
+            TOS = ParseCell.GetUInt32(dr, "TOS");
+            BLK = ParseCell.GetUInt32(dr, "BLK");
+            AST = ParseCell.GetUInt32(dr, "AST");
+            FOUL = ParseCell.GetUInt32(dr, "FOUL");
 
-            SeasonName = DataRowCellParsers.GetString(dr, "SeasonName");
-            Order = DataRowCellParsers.GetInt32(dr, "SOrder");
-            IsPlayoff = DataRowCellParsers.GetBoolean(dr, "isPlayoff");
-            ID = DataRowCellParsers.GetInt32(dr, "ID");
+            SeasonName = ParseCell.GetString(dr, "SeasonName");
+            Order = ParseCell.GetInt32(dr, "SOrder");
+            IsPlayoff = ParseCell.GetBoolean(dr, "isPlayoff");
+            ID = ParseCell.GetInt32(dr, "ID");
         }
 
         public int TeamID { get; set; }

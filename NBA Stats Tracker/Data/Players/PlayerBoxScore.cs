@@ -64,8 +64,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="r">The DataRow containing the player's box score.</param>
         public PlayerBoxScore(DataRow r, Dictionary<int, TeamStats> tst)
         {
-            PlayerID = DataRowCellParsers.GetInt32(r, "PlayerID");
-            GameID = DataRowCellParsers.GetInt32(r, "GameID");
+            PlayerID = ParseCell.GetInt32(r, "PlayerID");
+            GameID = ParseCell.GetInt32(r, "GameID");
             try
             {
                 TeamID = Convert.ToInt32(r["TeamID"].ToString());
@@ -74,16 +74,16 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 if (ex is ArgumentException || ex is KeyNotFoundException)
                 {
-                    TeamID = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(r, "Team")).Value.ID;
+                    TeamID = tst.Single(ts => ts.Value.Name == ParseCell.GetString(r, "Team")).Value.ID;
                 }
                 else
                 {
                     throw;
                 }
             }
-            IsStarter = DataRowCellParsers.GetBoolean(r, "isStarter");
-            PlayedInjured = DataRowCellParsers.GetBoolean(r, "playedInjured");
-            IsOut = DataRowCellParsers.GetBoolean(r, "isOut");
+            IsStarter = ParseCell.GetBoolean(r, "isStarter");
+            PlayedInjured = ParseCell.GetBoolean(r, "playedInjured");
+            IsOut = ParseCell.GetBoolean(r, "isOut");
             MINS = Convert.ToUInt16(r["MINS"].ToString());
             PTS = Convert.ToUInt16(r["PTS"].ToString());
             REB = Convert.ToUInt16(r["REB"].ToString());
@@ -108,11 +108,11 @@ namespace NBA_Stats_Tracker.Data.Players
             // Only works for INNER JOIN'ed rows
             try
             {
-                int t1PTS = DataRowCellParsers.GetInt32(r, "T1PTS");
-                int t2PTS = DataRowCellParsers.GetInt32(r, "T2PTS");
+                int t1PTS = ParseCell.GetInt32(r, "T1PTS");
+                int t2PTS = ParseCell.GetInt32(r, "T2PTS");
 
-                int team1 = DataRowCellParsers.GetInt32(r, "Team1ID");
-                int team2 = DataRowCellParsers.GetInt32(r, "Team2ID");
+                int team1 = ParseCell.GetInt32(r, "Team1ID");
+                int team2 = ParseCell.GetInt32(r, "Team2ID");
 
                 if (TeamID == team1)
                 {
@@ -137,9 +137,9 @@ namespace NBA_Stats_Tracker.Data.Players
                     OppTeamPTS = t1PTS;
                 }
 
-                Date = DataRowCellParsers.GetString(r, "Date").Split(' ')[0];
+                Date = ParseCell.GetString(r, "Date").Split(' ')[0];
                 RealDate = Convert.ToDateTime(Date);
-                SeasonNum = DataRowCellParsers.GetInt32(r, "SeasonNum");
+                SeasonNum = ParseCell.GetInt32(r, "SeasonNum");
 
                 CalcMetrics(r);
             }
@@ -196,7 +196,7 @@ namespace NBA_Stats_Tracker.Data.Players
             IsStarter = starter;
             PlayedInjured = false;
             IsOut = false;
-            PTS = DataRowCellParsers.GetUInt16(brRow, "PTS");
+            PTS = ParseCell.GetUInt16(brRow, "PTS");
             REB = Convert.ToUInt16(brRow["TRB"].ToString());
             AST = Convert.ToUInt16(brRow["AST"].ToString());
             STL = Convert.ToUInt16(brRow["STL"].ToString());
@@ -452,8 +452,8 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = new TeamStats(TeamID);
             var tsopp = new TeamStats(OppTeamID);
 
-            int team1ID = DataRowCellParsers.GetInt32(r, "Team1ID");
-            int team2ID = DataRowCellParsers.GetInt32(r, "Team2ID");
+            int team1ID = ParseCell.GetInt32(r, "Team1ID");
+            int team2ID = ParseCell.GetInt32(r, "Team2ID");
 
             if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);

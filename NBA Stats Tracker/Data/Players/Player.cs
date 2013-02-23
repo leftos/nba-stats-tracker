@@ -73,16 +73,16 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dataRow">The data row containing the player information.</param>
         public Player(DataRow dataRow)
         {
-            ID = DataRowCellParsers.GetInt32(dataRow, "ID");
-            Team = DataRowCellParsers.GetInt32(dataRow, "TeamFin");
-            LastName = DataRowCellParsers.GetString(dataRow, "LastName");
-            FirstName = DataRowCellParsers.GetString(dataRow, "FirstName");
-            string p1 = DataRowCellParsers.GetString(dataRow, "Position1");
+            ID = ParseCell.GetInt32(dataRow, "ID");
+            Team = ParseCell.GetInt32(dataRow, "TeamFin");
+            LastName = ParseCell.GetString(dataRow, "LastName");
+            FirstName = ParseCell.GetString(dataRow, "FirstName");
+            string p1 = ParseCell.GetString(dataRow, "Position1");
             if (String.IsNullOrWhiteSpace(p1))
                 Position1 = Position.None;
             else
                 Position1 = (Position) Enum.Parse(typeof (Position), p1);
-            string p2 = DataRowCellParsers.GetString(dataRow, "Position2");
+            string p2 = ParseCell.GetString(dataRow, "Position2");
             if (String.IsNullOrWhiteSpace(p2))
                 Position1 = Position.None;
             else

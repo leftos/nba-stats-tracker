@@ -1201,7 +1201,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 return true;
 
             DataTable res = _db.GetDataTable("SELECT Division FROM Teams WHERE ID = " + teamID);
-            int divID = DataRowCellParsers.GetInt32(res.Rows[0], "Division");
+            int divID = ParseCell.GetInt32(res.Rows[0], "Division");
 
             if (_filterType == TeamFilter.Conference)
             {

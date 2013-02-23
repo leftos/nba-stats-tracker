@@ -1126,7 +1126,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 teamsT += "S" + season;
 
             string q = "select isHidden from " + teamsT + " where ID = " + id + "";
-            bool isHidden = DataRowCellParsers.GetBoolean(db.GetDataTable(q).Rows[0], "isHidden");
+            bool isHidden = ParseCell.GetBoolean(db.GetDataTable(q).Rows[0], "isHidden");
 
             return isHidden;
         }
@@ -1501,7 +1501,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             db.GetDataTable("SELECT ID FROM Divisions")
               .Rows.Cast<DataRow>()
               .ToList()
-              .ForEach(row => usedIDs.Add(DataRowCellParsers.GetInt32(row, "ID")));
+              .ForEach(row => usedIDs.Add(ParseCell.GetInt32(row, "ID")));
 
             var teamsChanged = new List<string>();
 
@@ -1529,11 +1529,11 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     foreach (DataRow r in res.Rows)
                     {
-                        if (usedIDs.Contains(DataRowCellParsers.GetInt32(r, "Division")) == false)
+                        if (usedIDs.Contains(ParseCell.GetInt32(r, "Division")) == false)
                         {
                             db.Update(table, new Dictionary<string, string> {{"Division", MainWindow.Divisions.First().ID.ToString()}},
-                                      "ID = " + DataRowCellParsers.GetString(r, "ID"));
-                            int teamid = MainWindow.TeamOrder[DataRowCellParsers.GetString(r, "Name")];
+                                      "ID = " + ParseCell.GetString(r, "ID"));
+                            int teamid = MainWindow.TeamOrder[ParseCell.GetString(r, "Name")];
                             MainWindow.TST[teamid].Division = MainWindow.Divisions.First().ID;
                             if (teamsChanged.Contains(MainWindow.TST[teamid].DisplayName) == false)
                                 teamsChanged.Add(MainWindow.TST[teamid].DisplayName);
@@ -1576,7 +1576,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="tsopp">The opposing TeamStats instance to be modified.</param>
         public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
         {
-            bool playoffs = DataRowCellParsers.GetBoolean(r, "isPlayoff");
+            bool playoffs = ParseCell.GetBoolean(r, "isPlayoff");
             if (!playoffs)
             {
                 int t1PTS = Convert.ToInt32(r["T1PTS"].ToString());
@@ -1605,9 +1605,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     ts.Totals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     ts.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.Totals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T1BLK");
-                    ts.Totals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T1AST");
-                    ts.Totals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T1FOUL");
+                    ts.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    ts.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    ts.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
 
                     tsopp.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                     tsopp.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1623,9 +1623,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     tsopp.Totals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     tsopp.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.Totals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T2BLK");
-                    tsopp.Totals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T2AST");
-                    tsopp.Totals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T2FOUL");
+                    tsopp.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    tsopp.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    tsopp.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -1651,9 +1651,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     ts.Totals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     ts.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.Totals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T2BLK");
-                    ts.Totals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T2AST");
-                    ts.Totals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T2FOUL");
+                    ts.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    ts.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    ts.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
 
                     tsopp.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                     tsopp.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -1669,9 +1669,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     tsopp.Totals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     tsopp.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.Totals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T1BLK");
-                    tsopp.Totals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T1AST");
-                    tsopp.Totals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T1FOUL");
+                    tsopp.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    tsopp.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    tsopp.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
                 }
 
                 tsopp.Record[1] = ts.Record[0];
@@ -1705,9 +1705,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     ts.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     ts.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.PlTotals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T1BLK");
-                    ts.PlTotals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T1AST");
-                    ts.PlTotals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T1FOUL");
+                    ts.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    ts.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    ts.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
 
                     tsopp.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
                     tsopp.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
@@ -1723,9 +1723,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     tsopp.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     tsopp.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.PlTotals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T2BLK");
-                    tsopp.PlTotals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T2AST");
-                    tsopp.PlTotals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T2FOUL");
+                    tsopp.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    tsopp.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    tsopp.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -1751,9 +1751,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     ts.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
                     ts.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.PlTotals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T2BLK");
-                    ts.PlTotals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T2AST");
-                    ts.PlTotals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T2FOUL");
+                    ts.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    ts.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    ts.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
 
                     tsopp.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
                     tsopp.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
@@ -1769,9 +1769,9 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                     tsopp.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
                     tsopp.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.PlTotals[TAbbr.BLK] += DataRowCellParsers.GetUInt16(r, "T1BLK");
-                    tsopp.PlTotals[TAbbr.AST] += DataRowCellParsers.GetUInt16(r, "T1AST");
-                    tsopp.PlTotals[TAbbr.FOUL] += DataRowCellParsers.GetUInt16(r, "T1FOUL");
+                    tsopp.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    tsopp.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    tsopp.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
                 }
 
                 tsopp.PlRecord[1] = ts.PlRecord[0];

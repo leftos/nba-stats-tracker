@@ -55,9 +55,9 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool IsHidden;
         public bool IsNBAChampion;
         public string LastName;
-        public Dictionary<string, double> Metrics = new Dictionary<string, double>();
+        public Dictionary<string, double> Metrics = new Dictionary<string, double>(PAbbr.MetricsNames.Count);
         public float[] PerGame = new float[16];
-        public Dictionary<string, double> PlMetrics = new Dictionary<string, double>();
+        public Dictionary<string, double> PlMetrics = new Dictionary<string, double>(PAbbr.MetricsNames.Count);
         public float[] PlPerGame = new float[16];
         public uint[] PlTotals = new uint[17];
         public Position Position1;
@@ -112,11 +112,24 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamF = -1;
             TeamS = -1;
 
+            Metrics = new Dictionary<string, double>(PAbbr.MetricsDict);
+            PlMetrics = new Dictionary<string, double>(Metrics);
+            /*
+            var metricsNames = PAbbr.MetricsNames;
+            for (int i = 0; i < metricsNames.Count; i++)
+            {
+                var name = metricsNames[i];
+                Metrics.Add(name, double.NaN);
+                PlMetrics.Add(name, double.NaN);
+            }
+            */
+            /*
             PAbbr.MetricsNames.ForEach(name =>
                                        {
                                            Metrics.Add(name, double.NaN);
                                            PlMetrics.Add(name, double.NaN);
                                        });
+            */
         }
 
         /// <summary>
@@ -157,32 +170,32 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </param>
         public PlayerStats(DataRow dataRow, Dictionary<int, TeamStats> tst, bool playoffs = false) : this()
         {
-            ID = DataRowCellParsers.GetInt32(dataRow, "ID");
+            ID = ParseCell.GetInt32(dataRow, "ID");
 
             if (!playoffs)
             {
-                LastName = DataRowCellParsers.GetString(dataRow, "LastName");
-                FirstName = DataRowCellParsers.GetString(dataRow, "FirstName");
-                string p1 = DataRowCellParsers.GetString(dataRow, "Position1");
+                LastName = ParseCell.GetString(dataRow, "LastName");
+                FirstName = ParseCell.GetString(dataRow, "FirstName");
+                string p1 = ParseCell.GetString(dataRow, "Position1");
                 if (String.IsNullOrWhiteSpace(p1))
                     Position1 = Position.None;
                 else
                     Position1 = (Position) Enum.Parse(typeof (Position), p1);
-                string p2 = DataRowCellParsers.GetString(dataRow, "Position2");
+                string p2 = ParseCell.GetString(dataRow, "Position2");
                 if (String.IsNullOrWhiteSpace(p2))
                     Position2 = Position.None;
                 else
                     Position2 = (Position) Enum.Parse(typeof (Position), p2);
                 try
                 {
-                    TeamF = DataRowCellParsers.GetInt32(dataRow, "TeamFin");
-                    TeamS = DataRowCellParsers.GetInt32(dataRow, "TeamSta");
+                    TeamF = ParseCell.GetInt32(dataRow, "TeamFin");
+                    TeamS = ParseCell.GetInt32(dataRow, "TeamSta");
                 }
                 catch (FormatException)
                 {
                     try
                     {
-                        TeamF = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(dataRow, "TeamFin")).Value.ID;
+                        TeamF = tst.Single(ts => ts.Value.Name == ParseCell.GetString(dataRow, "TeamFin")).Value.ID;
                     }
                     catch (InvalidOperationException)
                     {
@@ -190,19 +203,19 @@ namespace NBA_Stats_Tracker.Data.Players
                     }
                     try
                     {
-                        TeamS = tst.Single(ts => ts.Value.Name == DataRowCellParsers.GetString(dataRow, "TeamSta")).Value.ID;
+                        TeamS = tst.Single(ts => ts.Value.Name == ParseCell.GetString(dataRow, "TeamSta")).Value.ID;
                     }
                     catch (InvalidOperationException)
                     {
                         TeamS = -1;
                     }
                 }
-                IsActive = DataRowCellParsers.GetBoolean(dataRow, "isActive");
+                IsActive = ParseCell.GetBoolean(dataRow, "isActive");
 
                 // Backwards compatibility with databases that didn't have the field
                 try
                 {
-                    IsHidden = DataRowCellParsers.GetBoolean(dataRow, "isHidden");
+                    IsHidden = ParseCell.GetBoolean(dataRow, "isHidden");
                 }
                 catch
                 {
@@ -211,13 +224,13 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 try
                 {
-                    YearOfBirth = DataRowCellParsers.GetInt32(dataRow, "YearOfBirth");
+                    YearOfBirth = ParseCell.GetInt32(dataRow, "YearOfBirth");
                 }
                 catch
                 {
                     try
                     {
-                        YearOfBirth = Convert.ToInt32(MainWindow.Input) - DataRowCellParsers.GetInt32(dataRow, "Age");
+                        YearOfBirth = Convert.ToInt32(MainWindow.Input) - ParseCell.GetInt32(dataRow, "Age");
                     }
                     catch
                     {
@@ -227,7 +240,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 try
                 {
-                    YearsPro = DataRowCellParsers.GetInt32(dataRow, "YearsPro");
+                    YearsPro = ParseCell.GetInt32(dataRow, "YearsPro");
                 }
                 catch (Exception)
                 {
@@ -237,26 +250,26 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 try
                 {
-                    int injType = DataRowCellParsers.GetInt32(dataRow, "InjuryType");
-                    int days = DataRowCellParsers.GetInt32(dataRow, "InjuryDaysLeft");
+                    int injType = ParseCell.GetInt32(dataRow, "InjuryType");
+                    int days = ParseCell.GetInt32(dataRow, "InjuryDaysLeft");
                     Injury = injType != -1
                                  ? new PlayerInjury(injType, days)
-                                 : new PlayerInjury(DataRowCellParsers.GetString(dataRow, "CustomInjuryName"), days);
+                                 : new PlayerInjury(ParseCell.GetString(dataRow, "CustomInjuryName"), days);
                 }
                 catch
                 {
-                    Injury = DataRowCellParsers.GetBoolean(dataRow, "isInjured") ? new PlayerInjury("Unknown", -1) : new PlayerInjury();
+                    Injury = ParseCell.GetBoolean(dataRow, "isInjured") ? new PlayerInjury("Unknown", -1) : new PlayerInjury();
                 }
 
-                IsAllStar = DataRowCellParsers.GetBoolean(dataRow, "isAllStar");
-                IsNBAChampion = DataRowCellParsers.GetBoolean(dataRow, "isNBAChampion");
+                IsAllStar = ParseCell.GetBoolean(dataRow, "isAllStar");
+                IsNBAChampion = ParseCell.GetBoolean(dataRow, "isNBAChampion");
                 Contract = new PlayerContract();
                 for (int i = 1; i <= 7; i++)
                 {
                     int salary;
                     try
                     {
-                        salary = DataRowCellParsers.GetInt32(dataRow, "ContractY" + i);
+                        salary = ParseCell.GetInt32(dataRow, "ContractY" + i);
                     }
                     catch (ArgumentException)
                     {
@@ -271,7 +284,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     Contract.Option =
                         (PlayerContractOption)
-                        Enum.Parse(typeof (PlayerContractOption), DataRowCellParsers.GetString(dataRow, "ContractOption"));
+                        Enum.Parse(typeof (PlayerContractOption), ParseCell.GetString(dataRow, "ContractOption"));
                 }
                 catch (ArgumentException)
                 {
@@ -279,8 +292,8 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 try
                 {
-                    Height = DataRowCellParsers.GetFloat(dataRow, "Height");
-                    Weight = DataRowCellParsers.GetFloat(dataRow, "Weight");
+                    Height = ParseCell.GetFloat(dataRow, "Height");
+                    Weight = ParseCell.GetFloat(dataRow, "Weight");
                 }
                 catch (ArgumentException)
                 {
@@ -344,63 +357,63 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 if (!playoffs)
                 {
-                    Totals[PAbbr.GP] = DataRowCellParsers.GetUInt16(dataRow, "GP");
-                    Totals[PAbbr.GS] = DataRowCellParsers.GetUInt16(dataRow, "GS");
-                    Totals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(dataRow, "MINS");
-                    Totals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(dataRow, "PTS");
+                    Totals[PAbbr.GP] = ParseCell.GetUInt16(dataRow, "GP");
+                    Totals[PAbbr.GS] = ParseCell.GetUInt16(dataRow, "GS");
+                    Totals[PAbbr.MINS] = ParseCell.GetUInt16(dataRow, "MINS");
+                    Totals[PAbbr.PTS] = ParseCell.GetUInt16(dataRow, "PTS");
 
-                    string[] parts = DataRowCellParsers.GetString(dataRow, "FG").Split('-');
+                    string[] parts = ParseCell.GetString(dataRow, "FG").Split('-');
 
                     Totals[PAbbr.FGM] = Convert.ToUInt16(parts[0]);
                     Totals[PAbbr.FGA] = Convert.ToUInt16(parts[1]);
 
-                    parts = DataRowCellParsers.GetString(dataRow, "3PT").Split('-');
+                    parts = ParseCell.GetString(dataRow, "3PT").Split('-');
 
                     Totals[PAbbr.TPM] = Convert.ToUInt16(parts[0]);
                     Totals[PAbbr.TPA] = Convert.ToUInt16(parts[1]);
 
-                    parts = DataRowCellParsers.GetString(dataRow, "FT").Split('-');
+                    parts = ParseCell.GetString(dataRow, "FT").Split('-');
 
                     Totals[PAbbr.FTM] = Convert.ToUInt16(parts[0]);
                     Totals[PAbbr.FTA] = Convert.ToUInt16(parts[1]);
 
-                    Totals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(dataRow, "OREB");
-                    Totals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(dataRow, "DREB");
-                    Totals[PAbbr.STL] = DataRowCellParsers.GetUInt16(dataRow, "STL");
-                    Totals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(dataRow, "TO");
-                    Totals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(dataRow, "BLK");
-                    Totals[PAbbr.AST] = DataRowCellParsers.GetUInt16(dataRow, "AST");
-                    Totals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(dataRow, "FOUL");
+                    Totals[PAbbr.OREB] = ParseCell.GetUInt16(dataRow, "OREB");
+                    Totals[PAbbr.DREB] = ParseCell.GetUInt16(dataRow, "DREB");
+                    Totals[PAbbr.STL] = ParseCell.GetUInt16(dataRow, "STL");
+                    Totals[PAbbr.TOS] = ParseCell.GetUInt16(dataRow, "TO");
+                    Totals[PAbbr.BLK] = ParseCell.GetUInt16(dataRow, "BLK");
+                    Totals[PAbbr.AST] = ParseCell.GetUInt16(dataRow, "AST");
+                    Totals[PAbbr.FOUL] = ParseCell.GetUInt16(dataRow, "FOUL");
                 }
                 else
                 {
-                    PlTotals[PAbbr.GP] = DataRowCellParsers.GetUInt16(dataRow, "GP");
-                    PlTotals[PAbbr.GS] = DataRowCellParsers.GetUInt16(dataRow, "GS");
-                    PlTotals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(dataRow, "MINS");
-                    PlTotals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(dataRow, "PTS");
+                    PlTotals[PAbbr.GP] = ParseCell.GetUInt16(dataRow, "GP");
+                    PlTotals[PAbbr.GS] = ParseCell.GetUInt16(dataRow, "GS");
+                    PlTotals[PAbbr.MINS] = ParseCell.GetUInt16(dataRow, "MINS");
+                    PlTotals[PAbbr.PTS] = ParseCell.GetUInt16(dataRow, "PTS");
 
-                    string[] parts = DataRowCellParsers.GetString(dataRow, "FG").Split('-');
+                    string[] parts = ParseCell.GetString(dataRow, "FG").Split('-');
 
                     PlTotals[PAbbr.FGM] = Convert.ToUInt16(parts[0]);
                     PlTotals[PAbbr.FGA] = Convert.ToUInt16(parts[1]);
 
-                    parts = DataRowCellParsers.GetString(dataRow, "3PT").Split('-');
+                    parts = ParseCell.GetString(dataRow, "3PT").Split('-');
 
                     PlTotals[PAbbr.TPM] = Convert.ToUInt16(parts[0]);
                     PlTotals[PAbbr.TPA] = Convert.ToUInt16(parts[1]);
 
-                    parts = DataRowCellParsers.GetString(dataRow, "FT").Split('-');
+                    parts = ParseCell.GetString(dataRow, "FT").Split('-');
 
                     PlTotals[PAbbr.FTM] = Convert.ToUInt16(parts[0]);
                     PlTotals[PAbbr.FTA] = Convert.ToUInt16(parts[1]);
 
-                    PlTotals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(dataRow, "OREB");
-                    PlTotals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(dataRow, "DREB");
-                    PlTotals[PAbbr.STL] = DataRowCellParsers.GetUInt16(dataRow, "STL");
-                    PlTotals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(dataRow, "TO");
-                    PlTotals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(dataRow, "BLK");
-                    PlTotals[PAbbr.AST] = DataRowCellParsers.GetUInt16(dataRow, "AST");
-                    PlTotals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(dataRow, "FOUL");
+                    PlTotals[PAbbr.OREB] = ParseCell.GetUInt16(dataRow, "OREB");
+                    PlTotals[PAbbr.DREB] = ParseCell.GetUInt16(dataRow, "DREB");
+                    PlTotals[PAbbr.STL] = ParseCell.GetUInt16(dataRow, "STL");
+                    PlTotals[PAbbr.TOS] = ParseCell.GetUInt16(dataRow, "TO");
+                    PlTotals[PAbbr.BLK] = ParseCell.GetUInt16(dataRow, "BLK");
+                    PlTotals[PAbbr.AST] = ParseCell.GetUInt16(dataRow, "AST");
+                    PlTotals[PAbbr.FOUL] = ParseCell.GetUInt16(dataRow, "FOUL");
                 }
             }
             catch (Exception ex)
@@ -584,7 +597,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public void UpdateCareerHighs(DataRow r)
         {
-            int importedID = DataRowCellParsers.GetInt32(r, "PlayerID");
+            int importedID = ParseCell.GetInt32(r, "PlayerID");
             if (importedID != ID)
             {
                 throw new Exception("Tried to update Career Highs of Player with ID " + ID + " with career highs of player with ID " +
@@ -700,43 +713,43 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             if (!isPlayoff)
             {
-                Totals[PAbbr.GP] = DataRowCellParsers.GetUInt16(dataRow, "GP");
-                Totals[PAbbr.GS] = DataRowCellParsers.GetUInt16(dataRow, "GS");
-                Totals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(dataRow, "MINS");
-                Totals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(dataRow, "PTS");
-                Totals[PAbbr.FGM] = DataRowCellParsers.GetUInt16(dataRow, "FGM");
-                Totals[PAbbr.FGA] = DataRowCellParsers.GetUInt16(dataRow, "FGA");
-                Totals[PAbbr.TPM] = DataRowCellParsers.GetUInt16(dataRow, "TPM");
-                Totals[PAbbr.TPA] = DataRowCellParsers.GetUInt16(dataRow, "TPA");
-                Totals[PAbbr.FTM] = DataRowCellParsers.GetUInt16(dataRow, "FTM");
-                Totals[PAbbr.FTA] = DataRowCellParsers.GetUInt16(dataRow, "FTA");
-                Totals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(dataRow, "OREB");
-                Totals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(dataRow, "DREB");
-                Totals[PAbbr.STL] = DataRowCellParsers.GetUInt16(dataRow, "STL");
-                Totals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(dataRow, "TOS");
-                Totals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(dataRow, "BLK");
-                Totals[PAbbr.AST] = DataRowCellParsers.GetUInt16(dataRow, "AST");
-                Totals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(dataRow, "FOUL");
+                Totals[PAbbr.GP] = ParseCell.GetUInt16(dataRow, "GP");
+                Totals[PAbbr.GS] = ParseCell.GetUInt16(dataRow, "GS");
+                Totals[PAbbr.MINS] = ParseCell.GetUInt16(dataRow, "MINS");
+                Totals[PAbbr.PTS] = ParseCell.GetUInt16(dataRow, "PTS");
+                Totals[PAbbr.FGM] = ParseCell.GetUInt16(dataRow, "FGM");
+                Totals[PAbbr.FGA] = ParseCell.GetUInt16(dataRow, "FGA");
+                Totals[PAbbr.TPM] = ParseCell.GetUInt16(dataRow, "TPM");
+                Totals[PAbbr.TPA] = ParseCell.GetUInt16(dataRow, "TPA");
+                Totals[PAbbr.FTM] = ParseCell.GetUInt16(dataRow, "FTM");
+                Totals[PAbbr.FTA] = ParseCell.GetUInt16(dataRow, "FTA");
+                Totals[PAbbr.OREB] = ParseCell.GetUInt16(dataRow, "OREB");
+                Totals[PAbbr.DREB] = ParseCell.GetUInt16(dataRow, "DREB");
+                Totals[PAbbr.STL] = ParseCell.GetUInt16(dataRow, "STL");
+                Totals[PAbbr.TOS] = ParseCell.GetUInt16(dataRow, "TOS");
+                Totals[PAbbr.BLK] = ParseCell.GetUInt16(dataRow, "BLK");
+                Totals[PAbbr.AST] = ParseCell.GetUInt16(dataRow, "AST");
+                Totals[PAbbr.FOUL] = ParseCell.GetUInt16(dataRow, "FOUL");
             }
             else
             {
-                PlTotals[PAbbr.GP] = DataRowCellParsers.GetUInt16(dataRow, "GP");
-                PlTotals[PAbbr.GS] = DataRowCellParsers.GetUInt16(dataRow, "GS");
-                PlTotals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(dataRow, "MINS");
-                PlTotals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(dataRow, "PTS");
-                PlTotals[PAbbr.FGM] = DataRowCellParsers.GetUInt16(dataRow, "FGM");
-                PlTotals[PAbbr.FGA] = DataRowCellParsers.GetUInt16(dataRow, "FGA");
-                PlTotals[PAbbr.TPM] = DataRowCellParsers.GetUInt16(dataRow, "TPM");
-                PlTotals[PAbbr.TPA] = DataRowCellParsers.GetUInt16(dataRow, "TPA");
-                PlTotals[PAbbr.FTM] = DataRowCellParsers.GetUInt16(dataRow, "FTM");
-                PlTotals[PAbbr.FTA] = DataRowCellParsers.GetUInt16(dataRow, "FTA");
-                PlTotals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(dataRow, "OREB");
-                PlTotals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(dataRow, "DREB");
-                PlTotals[PAbbr.STL] = DataRowCellParsers.GetUInt16(dataRow, "STL");
-                PlTotals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(dataRow, "TOS");
-                PlTotals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(dataRow, "BLK");
-                PlTotals[PAbbr.AST] = DataRowCellParsers.GetUInt16(dataRow, "AST");
-                PlTotals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(dataRow, "FOUL");
+                PlTotals[PAbbr.GP] = ParseCell.GetUInt16(dataRow, "GP");
+                PlTotals[PAbbr.GS] = ParseCell.GetUInt16(dataRow, "GS");
+                PlTotals[PAbbr.MINS] = ParseCell.GetUInt16(dataRow, "MINS");
+                PlTotals[PAbbr.PTS] = ParseCell.GetUInt16(dataRow, "PTS");
+                PlTotals[PAbbr.FGM] = ParseCell.GetUInt16(dataRow, "FGM");
+                PlTotals[PAbbr.FGA] = ParseCell.GetUInt16(dataRow, "FGA");
+                PlTotals[PAbbr.TPM] = ParseCell.GetUInt16(dataRow, "TPM");
+                PlTotals[PAbbr.TPA] = ParseCell.GetUInt16(dataRow, "TPA");
+                PlTotals[PAbbr.FTM] = ParseCell.GetUInt16(dataRow, "FTM");
+                PlTotals[PAbbr.FTA] = ParseCell.GetUInt16(dataRow, "FTA");
+                PlTotals[PAbbr.OREB] = ParseCell.GetUInt16(dataRow, "OREB");
+                PlTotals[PAbbr.DREB] = ParseCell.GetUInt16(dataRow, "DREB");
+                PlTotals[PAbbr.STL] = ParseCell.GetUInt16(dataRow, "STL");
+                PlTotals[PAbbr.TOS] = ParseCell.GetUInt16(dataRow, "TOS");
+                PlTotals[PAbbr.BLK] = ParseCell.GetUInt16(dataRow, "BLK");
+                PlTotals[PAbbr.AST] = ParseCell.GetUInt16(dataRow, "AST");
+                PlTotals[PAbbr.FOUL] = ParseCell.GetUInt16(dataRow, "FOUL");
             }
 
             CalcAvg();
@@ -748,23 +761,23 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(DataRow dataRow)
         {
-            PlTotals[PAbbr.GP] = DataRowCellParsers.GetUInt16(dataRow, "GP");
-            PlTotals[PAbbr.GS] = DataRowCellParsers.GetUInt16(dataRow, "GS");
-            PlTotals[PAbbr.MINS] = DataRowCellParsers.GetUInt16(dataRow, "MINS");
-            PlTotals[PAbbr.PTS] = DataRowCellParsers.GetUInt16(dataRow, "PTS");
-            PlTotals[PAbbr.FGM] = DataRowCellParsers.GetUInt16(dataRow, "FGM");
-            PlTotals[PAbbr.FGA] = DataRowCellParsers.GetUInt16(dataRow, "FGA");
-            PlTotals[PAbbr.TPM] = DataRowCellParsers.GetUInt16(dataRow, "TPM");
-            PlTotals[PAbbr.TPA] = DataRowCellParsers.GetUInt16(dataRow, "TPA");
-            PlTotals[PAbbr.FTM] = DataRowCellParsers.GetUInt16(dataRow, "FTM");
-            PlTotals[PAbbr.FTA] = DataRowCellParsers.GetUInt16(dataRow, "FTA");
-            PlTotals[PAbbr.OREB] = DataRowCellParsers.GetUInt16(dataRow, "OREB");
-            PlTotals[PAbbr.DREB] = DataRowCellParsers.GetUInt16(dataRow, "DREB");
-            PlTotals[PAbbr.STL] = DataRowCellParsers.GetUInt16(dataRow, "STL");
-            PlTotals[PAbbr.TOS] = DataRowCellParsers.GetUInt16(dataRow, "TOS");
-            PlTotals[PAbbr.BLK] = DataRowCellParsers.GetUInt16(dataRow, "BLK");
-            PlTotals[PAbbr.AST] = DataRowCellParsers.GetUInt16(dataRow, "AST");
-            PlTotals[PAbbr.FOUL] = DataRowCellParsers.GetUInt16(dataRow, "FOUL");
+            PlTotals[PAbbr.GP] = ParseCell.GetUInt16(dataRow, "GP");
+            PlTotals[PAbbr.GS] = ParseCell.GetUInt16(dataRow, "GS");
+            PlTotals[PAbbr.MINS] = ParseCell.GetUInt16(dataRow, "MINS");
+            PlTotals[PAbbr.PTS] = ParseCell.GetUInt16(dataRow, "PTS");
+            PlTotals[PAbbr.FGM] = ParseCell.GetUInt16(dataRow, "FGM");
+            PlTotals[PAbbr.FGA] = ParseCell.GetUInt16(dataRow, "FGA");
+            PlTotals[PAbbr.TPM] = ParseCell.GetUInt16(dataRow, "TPM");
+            PlTotals[PAbbr.TPA] = ParseCell.GetUInt16(dataRow, "TPA");
+            PlTotals[PAbbr.FTM] = ParseCell.GetUInt16(dataRow, "FTM");
+            PlTotals[PAbbr.FTA] = ParseCell.GetUInt16(dataRow, "FTA");
+            PlTotals[PAbbr.OREB] = ParseCell.GetUInt16(dataRow, "OREB");
+            PlTotals[PAbbr.DREB] = ParseCell.GetUInt16(dataRow, "DREB");
+            PlTotals[PAbbr.STL] = ParseCell.GetUInt16(dataRow, "STL");
+            PlTotals[PAbbr.TOS] = ParseCell.GetUInt16(dataRow, "TOS");
+            PlTotals[PAbbr.BLK] = ParseCell.GetUInt16(dataRow, "BLK");
+            PlTotals[PAbbr.AST] = ParseCell.GetUInt16(dataRow, "AST");
+            PlTotals[PAbbr.FOUL] = ParseCell.GetUInt16(dataRow, "FOUL");
 
             CalcAvg(true);
         }
