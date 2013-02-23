@@ -231,6 +231,13 @@ namespace LeftosCommonLibrary
             return false;
         }
 
+        public static bool IsNumeric(string s)
+        {
+            double temp;
+
+            return Double.TryParse(s, out temp);
+        }
+
         public static bool CheckForBalancedBracketing(string incomingString)
         {
             const char leftParenthesis = '(';

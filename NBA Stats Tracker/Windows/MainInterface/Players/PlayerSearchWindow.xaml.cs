@@ -362,49 +362,70 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     {
                         foreach (var id in includedIDs)
                         {
-                            if (ignoredIDs.Contains(id))
+                            if (!ignoredIDs.Contains(id))
                             {
-                                continue;
+                                expByPlayer[id] += c;
                             }
-                            expByPlayer[id] += c;
+                            if (!ignoredPlIDs.Contains(id))
+                            {
+                                plExpByPlayer[id] += c;
+                            }
                         }
                     }
                     else if (c == '$')
                     {
                         var part = parts[k++].Substring(1);
+                        part = part.Replace("3P", "TP");
+                        part = part.Replace("TO", "TOS");
+                        part = part.Replace("%", "p");
                         foreach (var id in includedIDs)
                         {
-                            if (ignoredIDs.Contains(id))
+                            if (!ignoredIDs.Contains(id))
                             {
-                                continue;
+                                curPSR = psrList.Single(psr => psr.ID == id);
+                                var val = (typeof(PlayerStatsRow)).GetProperty(part).GetValue(curPSR, null).ToString();
+                                if (val != "NaN")
+                                {
+                                    expByPlayer[id] += val;
+                                }
+                                else
+                                {
+                                    ignoredIDs.Add(id);
+                                    expByPlayer[id] = "$$INVALID";
+                                }
                             }
-                            curPSR = psrList.Single(psr => psr.ID == id);
-                            curPlPSR = plPSRList.Single(psr => psr.ID == id);
-                            part = part.Replace("3P", "TP");
-                            part = part.Replace("TO", "TOS");
-                            part = part.Replace("%", "p");
-                            var val = (typeof (PlayerStatsRow)).GetProperty(part).GetValue(curPSR, null).ToString();
-                            if (val != "NaN")
+                            if (!ignoredPlIDs.Contains(id))
                             {
-                                expByPlayer[id] += val;
-                            }
-                            else
-                            {
-                                ignoredIDs.Add(id);
-                                expByPlayer[id] = "$$INVALID";
-                            }
-                            var plVal = (typeof(PlayerStatsRow)).GetProperty(part).GetValue(curPlPSR, null).ToString();
-                            if (plVal != "NaN")
-                            {
-                                plExpByPlayer[id] += plVal;
-                            }
-                            else
-                            {
-                                ignoredPlIDs.Add(id);
-                                plExpByPlayer[id] = "$$INVALID";
+                                curPlPSR = plPSRList.Single(psr => psr.ID == id);
+                                var plVal = (typeof (PlayerStatsRow)).GetProperty(part).GetValue(curPlPSR, null).ToString();
+                                if (plVal != "NaN")
+                                {
+                                    plExpByPlayer[id] += plVal;
+                                }
+                                else
+                                {
+                                    ignoredPlIDs.Add(id);
+                                    plExpByPlayer[id] = "$$INVALID";
+                                }
                             }
                         }
-                        i += part.Length;
+                        i += part.Length; // should be Length-1 but we're using Substring(1) in part's initialization
+                    }
+                    else if (Tools.IsNumeric(parts[k]))
+                    {
+                        var part = parts[k++];
+                        foreach (var id in includedIDs)
+                        {
+                            if (!ignoredIDs.Contains(id))
+                            {
+                                expByPlayer[id] += part;
+                            }
+                            if (!ignoredPlIDs.Contains(id))
+                            {
+                                plExpByPlayer[id] += part;
+                            }
+                        }
+                        i += part.Length - 1;
                     }
                 }
                 foreach (var id in includedIDs)
@@ -839,7 +860,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             try
             {
-                Convert.ToSingle(txtMetricsVal.Text);
+                Convert.ToDouble(txtMetricsVal.Text);
             }
             catch
             {
@@ -1354,6 +1375,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var name = txtCustomName.Text;
             var decimalPoints = txtCustomDP.Text;
             var exp = txtCustomExp.Text;
+            var filterType = cmbCustomComp.SelectedItem;
+            var filterValue = txtCustomVal.Text;
             if (String.IsNullOrWhiteSpace(name) || String.IsNullOrWhiteSpace(exp) || String.IsNullOrWhiteSpace(decimalPoints))
             {
                 return;
@@ -1376,6 +1399,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 MessageBox.Show("Decimal points must be a non-negative integer.");
                 return;
             }
+            
+            if (!Tools.IsNumeric(filterValue))
+            {
+                MessageBox.Show("Filter value must be a numeric.");
+                return;
+            }
 
             var parts = exp.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
             foreach (var part in parts)
@@ -1388,6 +1417,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         known = true;
                     }
                 }
+                else if (Tools.IsNumeric(part))
+                {
+                    known = true;
+                }
 
                 if (!known)
                 {
@@ -1396,7 +1429,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
             }
 
-            _customExpressions.Add(name + ": " + exp + ": " + cmbCustomComp.SelectedItem + " " + txtCustomVal.Text + ": " + decimalPoints);
+            _customExpressions.Add(name + ": " + exp + ": " + filterType + " " + filterValue + ": " + decimalPoints);
 
             refreshCustomExpressionList();
 
