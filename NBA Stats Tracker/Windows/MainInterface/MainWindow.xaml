@@ -4,7 +4,7 @@
         Title="NBA Stats Tracker - by Lefteris &quot;Leftos&quot; Aslanoglou" Height="465" Width="610"
         Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico" ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Loaded="window_Loaded" Closed="window_Closed">
+        Loaded="window_Loaded" Closed="window_Closed" LostFocus="window_LostFocus" GotFocus="Window_GotFocus" IsEnabledChanged="Window_IsEnabledChanged">
     <Grid Name="grdMain">
         <TextBlock Name="txbWait" Text="Please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"
                    TextAlignment="Center" FontSize="16" FontWeight="Bold" Visibility="Hidden">

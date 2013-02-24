@@ -1,10 +1,12 @@
 NBA Stats Tracker - Version History
 
 	v1.10 Beta
-		- Improvement: NST will show progress during various lengthy I/O operations
+		- Improvement: NST will show progress during various lengthy I/O operations (e.g. load, save, change timeframe)
 		- Improvement: Big optimizations to database loading speed if using a multi-core processor
-		- Fix: Fixed possible concurrency issues in previously parallel loading operations
 		- Improvement: Instead of crashing, NST will now show a message about what went wrong when an error occurs while evaluating a user expression in Advanced Player Search
+		- Fix: Fixed possible concurrency issues in previously parallel loading operations
+		- Fix: Fixed crashing in Advanced Player Search when a player had a metric or custom expression evaluate to infinity
+		- Fix: Other bugs fixed all around
 
 	v1.9.1 Beta
 		- Improvement: Numeric values can be used as building blocks in Custom Columns' expressions in Advanced Player Search

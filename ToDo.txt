@@ -12,9 +12,3 @@
 - Anonymous Usage Information
 - Play-by-play analysis
 - Add custom columns to all Metrics tabs
-
-
------------------------------------------------
-FIX UPDATE ALL DATA REFERENCES
------------------------------------------------
-- Minimize db accesses after load

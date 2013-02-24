@@ -1238,15 +1238,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 cmbOppPlayer.SelectedIndex = -1;
             }
 
-            try
-            {
-                ProgressWindow.PwInstance.CanClose = true;
-                ProgressWindow.PwInstance.Close();
-            }
-            catch
-            {
-                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
-            }
+            MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
 

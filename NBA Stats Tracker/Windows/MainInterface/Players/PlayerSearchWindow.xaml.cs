@@ -659,10 +659,41 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                                 parts[0] = parts[0].Replace("%", "p");
                                                 //double val = Convert.ToDouble(parts[2]);
                                                 context = new ExpressionContext();
-                                                if (!double.IsNaN(ps.Metrics[parts[0]]))
+                                                var actualValue = ps.Metrics[parts[0]];
+                                                var filterType = parts[1];
+                                                if (!double.IsNaN(actualValue))
                                                 {
-                                                    ige = context.CompileGeneric<bool>(ps.Metrics[parts[0]] + parts[1] + parts[2]);
-                                                    keep = ige.Evaluate();
+                                                    if (double.IsPositiveInfinity(actualValue))
+                                                    {
+                                                        switch (filterType)
+                                                        {
+                                                            case ">":
+                                                            case ">=":
+                                                                keep = true;
+                                                                break;
+                                                            default:
+                                                                keep = false;
+                                                                break;
+                                                        }
+                                                    }
+                                                    else if (double.IsNegativeInfinity(actualValue))
+                                                    {
+                                                        switch (filterType)
+                                                        {
+                                                            case "<":
+                                                            case "<=":
+                                                                keep = true;
+                                                                break;
+                                                            default:
+                                                                keep = false;
+                                                                break;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        ige = context.CompileGeneric<bool>(actualValue + filterType + parts[2]);
+                                                        keep = ige.Evaluate();
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -675,32 +706,60 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!keep)
                 return keep;
 
-            Parallel.For(0, _customExpressions.Count, (i, loopState) =>
-                                                      {
-                                                          var exp = _customExpressions[i];
-                                                          var itemSParts = exp.Split(new[] {": "}, StringSplitOptions.None);
-                                                          var filterParts = itemSParts[2].Split(new[] {' '}, 2);
-                                                          var filterType = filterParts[0];
-                                                          var filterVal = filterParts.Length == 2 ? filterParts[1] : "";
+            var expCount = _customExpressions.Count;
+            Parallel.For(0, expCount, (i, loopState) =>
+                                      {
+                                          var exp = _customExpressions[i];
+                                          var itemSParts = exp.Split(new[] {": "}, StringSplitOptions.None);
+                                          var filterParts = itemSParts[2].Split(new[] {' '}, 2);
+                                          var filterType = filterParts[0];
+                                          var filterVal = filterParts.Length == 2 ? filterParts[1] : "";
 
-                                                          if (filterType == "All")
-                                                              return;
+                                          if (filterType == "All")
+                                              return;
 
-                                                          var actualValue = psr.Custom[i];
-                                                          if (!double.IsNaN(actualValue))
-                                                          {
-                                                              ige =
-                                                                  new ExpressionContext().CompileGeneric<bool>(actualValue + filterType +
-                                                                                                               filterVal);
-                                                              keep = ige.Evaluate();
-                                                          }
-                                                          else
-                                                          {
-                                                              keep = false;
-                                                          }
-                                                          if (!keep)
-                                                              loopState.Stop();
-                                                      });
+                                          var actualValue = psr.Custom[i];
+                                          if (!double.IsNaN(actualValue))
+                                          {
+                                              if (double.IsPositiveInfinity(actualValue))
+                                              {
+                                                  switch (filterType)
+                                                  {
+                                                      case ">":
+                                                      case ">=":
+                                                          keep = true;
+                                                          break;
+                                                      default:
+                                                          keep = false;
+                                                          break;
+                                                  }
+                                              }
+                                              else if (double.IsNegativeInfinity(actualValue))
+                                              {
+                                                  switch (filterType)
+                                                  {
+                                                      case "<":
+                                                      case "<=":
+                                                          keep = true;
+                                                          break;
+                                                      default:
+                                                          keep = false;
+                                                          break;
+                                                  }
+                                              }
+                                              else
+                                              {
+                                                  ige = new ExpressionContext().CompileGeneric<bool>(actualValue + filterType + filterVal);
+                                                  keep = ige.Evaluate();
+                                              }
+                                          }
+                                          else
+                                          {
+                                              keep = false;
+                                          }
+                                          if (!keep)
+                                              loopState.Stop();
+                                      });
 
             return keep;
         }
@@ -1238,15 +1297,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             populateTeamsCombo();
 
-            try
-            {
-                ProgressWindow.PwInstance.CanClose = true;
-                ProgressWindow.PwInstance.Close();
-            }
-            catch
-            {
-                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
-            }
+            MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
 

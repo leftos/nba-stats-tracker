@@ -479,7 +479,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void finishSavingAs(Task<bool> task, string file)
         {
             FinishLoadingDatabase();
-            stopProgressWatchTimer();
+            StopProgressWatchTimer();
             IsEnabled = true;
             if (task.Result)
             {
@@ -488,10 +488,22 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
         }
 
-        private void stopProgressWatchTimer()
+        public void StopProgressWatchTimer()
         {
             Interlocked.Exchange(ref SQLiteIO.Progress, new ProgressInfo(SQLiteIO.Progress, "Finished"));
+            SQLiteIO.Progress.Timing.Stop(); 
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
             dt.Stop();
+
+            _watchTimerRunning = false;
         }
 
         /// <summary>
@@ -545,8 +557,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //SQLiteIO.LoadSeason();
         }
 
+        private bool _watchTimerRunning = false;
+
         private void startProgressWatchTimer()
         {
+            if (_watchTimerRunning)
+            {
+                return;
+            }
+
+            _watchTimerRunning = true;
+            SQLiteIO.Progress = new ProgressInfo(0, 8, "");
+            if (!IsActive)
+            {
+                var pw = new ProgressWindow("", false);
+                pw.Topmost = true;
+                pw.Show();
+            }
             dt = new DispatcherTimer();
             //dt.Interval = new TimeSpan(100);
             dt.Tick += updateBasedOnProgress;
@@ -619,27 +646,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 _marqueeTimer.Start();
             }
 
-            UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
-            LoadingSeason = false;
-
             mnuTools.IsEnabled = true;
             grdAnalysis.IsEnabled = true;
             grdUpdate.IsEnabled = true;
 
-            dt.Stop();
-            SQLiteIO.Progress.Timing.Stop();
             if (!leaveProgressOpen)
             {
-                try
-                {
-                    ProgressWindow.PwInstance.CanClose = true;
-                    ProgressWindow.PwInstance.Close();
-                }
-                catch
-                {
-                    Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
-                }
+                StopProgressWatchTimer();
+                IsEnabled = true;
             }
+
+            UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
+            LoadingSeason = false;
             mainGrid.Visibility = Visibility.Visible;
         }
 
@@ -725,11 +743,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (bs.Done == false)
                 return;
 
+            IsEnabled = false;
+
             var id1 = bs.Team1ID;
             var id2 = bs.Team2ID;
-
-            SQLiteIO.LoadSeason(bs.SeasonNum);
-
+            
             var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
             if (!bs.DoNotUpdate)
@@ -754,10 +772,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 BSHist[bs.BSHistID].BS = bs;
             }
 
-            SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
-            UpdateAllData();
+            startProgressWatchTimer();
+            SQLiteIO.Progress = new ProgressInfo(0, "Inserting box score to database...");
+            Task.Factory.StartNew(
+                () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
+                .ContinueWith(t => UpdateAllData())
+                .ContinueWith(t => finishParsingBoxScore(), UIScheduler).FailFastOnException(UIScheduler);
+        }
 
+        private void finishParsingBoxScore()
+        {
             UpdateStatus("One or more Box Scores have been added/updated. Database saved.");
+            StopProgressWatchTimer();
+            IsEnabled = true;
         }
 
         /// <summary>
@@ -1535,7 +1562,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Tf = new Timeframe(CurSeason);
             if (!LoadingSeason)
+            {
+                IsEnabled = false;
                 UpdateAllData();
+            }
         }
 
         /// <summary>
@@ -1792,14 +1822,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
+            IsEnabled = false;
+            startProgressWatchTimer();
+            SQLiteIO.Progress = new ProgressInfo(0, "Saving database...");
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData();
+                UpdateAllData()
+                    .ContinueWith(
+                        t => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
+                    .ContinueWith(t => UpdateAllData(true))
+                    .ContinueWith(t => finishSavingSeason(), UIScheduler).FailFastOnException(UIScheduler);
             }
-            SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
+            else
+            {
+                Task.Factory.StartNew(
+                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
+                    .ContinueWith(t => UpdateAllData(true))
+                    .ContinueWith(t => finishSavingSeason(), UIScheduler).FailFastOnException(UIScheduler);
+            }
+        }
+
+        private void finishSavingSeason()
+        {
+            StopProgressWatchTimer();
             txtFile.Text = CurrentDB;
-            UpdateAllData();
+            IsEnabled = true;
             MWInstance.UpdateStatus("File saved successfully. Season " + CurSeason.ToString() + " updated.");
         }
 
@@ -2092,7 +2140,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
         {
-            SQLiteIO.SaveAllSeasons(CurrentDB);
+            IsEnabled = false;
+            startProgressWatchTimer();
+            SQLiteIO.Progress = new ProgressInfo(0, "Saving all seasons...");
+            Task.Factory.StartNew(() => SQLiteIO.SaveAllSeasons(CurrentDB))
+                .ContinueWith(t => finishSavingAllSeasons(), UIScheduler)
+                .FailFastOnException(UIScheduler);
+        }
+
+        private void finishSavingAllSeasons()
+        {
+            UpdateStatus("All seasons saved successfully!");
+            StopProgressWatchTimer();
+            IsEnabled = true;
         }
 
         /// <summary>
@@ -2662,11 +2722,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static Task UpdateAllData(bool leaveProgressWindowOpen = false)
         {
-            SQLiteIO.Progress = new ProgressInfo(0, 8, "Loading database...");
-            var pw = new ProgressWindow("Please wait while the new timeframe is loading...", false);
-            pw.Topmost = true;
-            pw.Show();
-            MWInstance.startProgressWatchTimer();
+            Task.Factory.StartNew(() => MWInstance.startProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
+                                  MWInstance.UIScheduler).Wait();
 
             var result = MWInstance.doPopulateAllInThread()
                                    .ContinueWith(t => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), MWInstance.UIScheduler);
@@ -3143,5 +3200,29 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         }
 
         #endregion
+
+        private void window_LostFocus(object sender, RoutedEventArgs e)
+        {
+            txbMarquee.Text = "";
+            _marqueeTimer.Stop();
+        }
+
+        private void Window_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _marqueeTimer.Start();
+        }
+
+        private void Window_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!IsEnabled)
+            {
+                txbMarquee.Text = "";
+                _marqueeTimer.Stop();
+            }
+            else
+            {
+                _marqueeTimer.Start();
+            }
+        }
     }
 }

@@ -286,28 +286,32 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (!fileExists)
                 PrepareNewDB(MainWindow.DB, season, maxSeason);
 
+            updateProgress("Saving season...");
+            updateProgress("Saving conferences and divisions...");
             SaveConferencesAndDivisions(file);
 
+            updateProgress("Saving season name...");
             SaveSeasonName(season);
 
+            updateProgress("Saving teams...");
             saveTeamsToDatabase(file, tstToSave, tstOppToSave, season, maxSeason);
 
-            #region Save Player Stats
-
+            updateProgress("Saving players...");
             SavePlayersToDatabase(file, pstToSave, season, maxSeason, partialUpdate);
-
-            #endregion
 
             #region Save Box Scores
 
             if (!doNotSaveBoxScores)
             {
+                updateProgress("Saving box scores...");
                 const string q = "select GameID from GameResults;";
                 var res = MainWindow.DB.GetDataTable(q);
                 var idList = (from DataRow r in res.Rows
                               select Convert.ToInt32(r[0].ToString())).ToList();
 
                 var sqlinsert = new List<Dictionary<string, string>>();
+                double count = MainWindow.BSHist.Count;
+                var doneCount = 0;
                 foreach (var bse in MainWindow.BSHist)
                 {
                     var q2 = "select HASH from GameResults";
@@ -406,6 +410,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                             sqlinsert.Add(dict2);
                         }
                     }
+                    updateProgress((++doneCount)*100/count);
                 }
                 if (sqlinsert.Count > 0)
                 {
@@ -427,6 +432,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             //{
             //App.errorReport(ex, "Trying to save team stats - SQLite");
             //}
+        }
+
+        private static void updateProgress(double percentage)
+        {
+            updateProgress(Convert.ToInt32(percentage));
         }
 
         /// <summary>
@@ -2499,10 +2509,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            if (!displayNames.ContainsKey(-1))
-            {
-                displayNames.Add(-1, "");
-            }
+            displayNames.Add(-1, "");
 
             RepairDB(ref pst);
 
@@ -2518,12 +2525,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             bsHist.Sort((bse1, bse2) => bse1.BS.GameDate.CompareTo(bse2.BS.GameDate));
             bsHist.Reverse();
             var bsIDs = bsHist.Select(bse => bse.BS.ID).ToList();
-            var playerGameIDs = new Dictionary<int, List<int>>();
-            foreach (var playerID in pst.Keys)
-            {
-                playerGameIDs.Add(playerID,
-                                  bsHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == playerID)).Select(bse => bse.BS.ID).ToList());
-            }
+            var playerGameIDs = pst.Keys.ToDictionary(playerID => playerID,
+                                                      playerID =>
+                                                      bsHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == playerID))
+                                                            .Select(bse => bse.BS.ID)
+                                                            .ToList());
 
             Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Preparing split dictionaries..."));
             if (!tf.IsBetween)
@@ -2544,107 +2550,77 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             var better500 = "vs >= .500";
             var worse500 = "vs < .500";
-            //foreach (var id in teamOrder.Values)
             var teams = teamOrder.Values;
-            var sts = splitTeamStats;
             var myLock = new object();
-            var order = teamOrder;
-            var names = displayNames;
             Parallel.ForEach(teams, id =>
                                     {
                                         lock (myLock)
                                         {
-                                            sts.Add(id, new Dictionary<string, TeamStats>());
+                                            splitTeamStats.Add(id, new Dictionary<string, TeamStats>());
                                         }
-                                        sts[id].Add("Wins", new TeamStats());
-                                        sts[id].Add("Losses", new TeamStats());
-                                        sts[id].Add("Home", new TeamStats());
-                                        sts[id].Add("Away", new TeamStats());
-                                        sts[id].Add("Season", new TeamStats());
-                                        sts[id].Add("Playoffs", new TeamStats());
-                                        foreach (var pair in order)
+                                        splitTeamStats[id].Add("Wins", new TeamStats());
+                                        splitTeamStats[id].Add("Losses", new TeamStats());
+                                        splitTeamStats[id].Add("Home", new TeamStats());
+                                        splitTeamStats[id].Add("Away", new TeamStats());
+                                        splitTeamStats[id].Add("Season", new TeamStats());
+                                        splitTeamStats[id].Add("Playoffs", new TeamStats());
+                                        foreach (var pair in teamOrder)
                                         {
                                             if (pair.Value != id)
                                             {
-                                                sts[id].Add("vs " + names[pair.Value], new TeamStats());
+                                                splitTeamStats[id].Add("vs " + displayNames[pair.Value], new TeamStats());
                                             }
                                         }
-                                        /*
-                                        if (!tf.IsBetween)
-                                        {
-                                            string q2 = "SELECT Date FROM GameResults WHERE SeasonNum = " + tf.SeasonNum +
-                                                        " GROUP BY Date ORDER BY Date ASC";
-                                            DataTable dataTable = db.GetDataTable(q2);
-                                            if (dataTable.Rows.Count == 0)
-                                            {
-                                                tf.StartDate = DateTime.Today.AddMonths(-1).AddDays(1);
-                                                tf.EndDate = DateTime.Today;
-                                            }
-                                            else
-                                            {
-                                                tf.StartDate = Convert.ToDateTime(dataTable.Rows[0][0].ToString());
-                                                tf.EndDate = Convert.ToDateTime(dataTable.Rows[dataTable.Rows.Count - 1][0].ToString());
-                                            }
-                                        }
-                                        */
                                         var dCur = tf.StartDate;
                                         while (true)
                                         {
                                             if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                                             {
-                                                sts[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
+                                                splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                                                 break;
                                             }
                                             else
                                             {
-                                                sts[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
+                                                splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                                                 dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                                             }
                                         }
-                                        sts[id].Add(better500, new TeamStats());
-                                        sts[id].Add(worse500, new TeamStats());
-                                        sts[id].Add("Division", new TeamStats());
-                                        sts[id].Add("Conference", new TeamStats());
-                                        sts[id].Add("Last 10", new TeamStats());
-                                        sts[id].Add("Before", new TeamStats());
+                                        splitTeamStats[id].Add(better500, new TeamStats());
+                                        splitTeamStats[id].Add(worse500, new TeamStats());
+                                        splitTeamStats[id].Add("Division", new TeamStats());
+                                        splitTeamStats[id].Add("Conference", new TeamStats());
+                                        splitTeamStats[id].Add("Last 10", new TeamStats());
+                                        splitTeamStats[id].Add("Before", new TeamStats());
                                     });
 
             //foreach (var id in pst.Keys)
-            var sps = splitPlayerStats;
             var pIDs = pst.Keys;
-            var invertedDict = names.ToDictionary(pair => pair.Value, pair => pair.Key);
+            var invertedDict = displayNames.ToDictionary(pair => pair.Value, pair => pair.Key);
             var sortedNames = invertedDict.Keys.ToList();
             sortedNames.Remove("");
             sortedNames.Sort();
-            var hist = bsHist;
             Parallel.ForEach(pIDs, id =>
                                    {
                                        lock (myLock)
                                        {
-                                           sps.Add(id, new Dictionary<string, PlayerStats>());
+                                           splitPlayerStats.Add(id, new Dictionary<string, PlayerStats>());
                                        }
-                                       sps[id].Add("Wins", new PlayerStats {ID = id});
-                                       sps[id].Add("Losses", new PlayerStats {ID = id});
-                                       sps[id].Add("Home", new PlayerStats {ID = id});
-                                       sps[id].Add("Away", new PlayerStats {ID = id});
-                                       sps[id].Add("Season", new PlayerStats {ID = id});
-                                       sps[id].Add("Playoffs", new PlayerStats {ID = id});
-                                       /*
-                                       string qrTeams =
-                                           String.Format(
-                                               "select TeamID from PlayerResults INNER JOIN GameResults ON " +
-                                               "(PlayerResults.GameID = GameResults.GameID) " + " WHERE PlayerID = {0}", id);
-                                       */
+                                       splitPlayerStats[id].Add("Wins", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Losses", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Home", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Away", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Season", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Playoffs", new PlayerStats {ID = id});
 
-                                       hist.Where(bse => playerGameIDs[id].Contains(bse.BS.ID))
+                                       bsHist.Where(bse => playerGameIDs[id].Contains(bse.BS.ID))
                                            .Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == id).TeamID)
                                            .Distinct()
                                            .ToList()
-                                           .ForEach(teamID => sps[id].Add("with " + names[teamID], new PlayerStats {ID = id}));
+                                           .ForEach(teamID => splitPlayerStats[id].Add("with " + displayNames[teamID], new PlayerStats {ID = id}));
 
                                        foreach (var name in sortedNames)
                                        {
-                                           sps[id].Add("vs " + name, new PlayerStats {ID = id});
+                                           splitPlayerStats[id].Add("vs " + name, new PlayerStats {ID = id});
                                        }
                                        var dCur = tf.StartDate;
 
@@ -2652,22 +2628,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        {
                                            if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                                            {
-                                               sps[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
+                                               splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
                                                            new PlayerStats {ID = id});
                                                break;
                                            }
                                            else
                                            {
-                                               sps[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
+                                               splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
                                                            new PlayerStats {ID = id});
                                                dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                                            }
                                        }
 
-                                       sps[id].Add(better500, new PlayerStats {ID = id});
-                                       sps[id].Add(worse500, new PlayerStats {ID = id});
-                                       sps[id].Add("Last 10", new PlayerStats {ID = id});
-                                       sps[id].Add("Before", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add(better500, new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add(worse500, new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Last 10", new PlayerStats {ID = id});
+                                       splitPlayerStats[id].Add("Before", new PlayerStats {ID = id});
                                    });
 
             #endregion
@@ -2937,7 +2913,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             doneCount = 0;
             foreach (var ps in pst)
             {
-                ps.Value.CalculateSeasonHighs(hist);
+                ps.Value.CalculateSeasonHighs(bsHist);
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(doneCount*100/plCount)));
             }
 

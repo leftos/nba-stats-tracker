@@ -1311,17 +1311,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _reload = true;
                 tbcLeagueOverview_SelectionChanged(null, null);
             }
-            _changingTimeframe = false; 
-            
-            try
-            {
-                ProgressWindow.PwInstance.CanClose = true;
-                ProgressWindow.PwInstance.Close();
-            }
-            catch
-            {
-                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
-            }
+            _changingTimeframe = false;
+
+            MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
 
