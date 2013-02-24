@@ -79,11 +79,35 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
 
             updateProgress("Loading settings...");
-            var settingsDict = GetAllSettings(oldDB);
+            Dictionary<string, string> settingsDict;
+            try
+            {
+                settingsDict = GetAllSettings(oldDB);
+            }
+            catch
+            {
+                settingsDict = new Dictionary<string, string>();
+            }
             updateProgress("Loading past team stats...");
-            var ptsList = GetAllPastTeamStats(oldDB);
+            List<PastTeamStats> ptsList;
+            try
+            {
+                ptsList = GetAllPastTeamStats(oldDB);
+            }
+            catch
+            {
+                ptsList = new List<PastTeamStats>();
+            }
             updateProgress("Loading past player stats...");
-            var ppsList = GetAllPastPlayerStats(oldDB);
+            List<PastPlayerStats> ppsList;
+            try
+            {
+                ppsList = GetAllPastPlayerStats(oldDB);
+            }
+            catch
+            {
+                ppsList = new List<PastPlayerStats>();
+            }
 
             var db = new SQLiteDatabase(file);
             db.ClearDB();
@@ -1680,7 +1704,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     Console.WriteLine(ex.Message);
                 }
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; saving new database..."));
-                SaveDatabaseAs(file);
+                RecreateDatabaseAs(file);
                 File.Delete(backupName);
                 _upgrading = false;
             }

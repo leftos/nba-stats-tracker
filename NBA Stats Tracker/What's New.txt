@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.10.0.1 Beta
+		- Fix: Fixed v1.10 bug which caused SQLite errors during a database upgrade
+
 	v1.10 Beta
 		- Improvement: NST will show progress during various lengthy I/O operations (e.g. load, save, change timeframe)
 		- Improvement: Big optimizations to database loading speed if using a multi-core processor
