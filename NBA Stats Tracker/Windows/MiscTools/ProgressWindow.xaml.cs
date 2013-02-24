@@ -40,9 +40,18 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             PwInstance = this;
         }
 
-        public ProgressWindow(string message) : this()
+        public ProgressWindow(string message, bool pbVisible = true) : this()
         {
             txbProgress.Text = message;
+            if (pbVisible)
+            {
+                pb.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pb.Visibility = Visibility.Collapsed;
+                Height = 90;
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

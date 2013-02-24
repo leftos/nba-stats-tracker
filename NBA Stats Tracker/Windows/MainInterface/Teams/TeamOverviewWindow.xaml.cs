@@ -24,6 +24,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -1333,13 +1334,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
 
             SQLiteIO.SaveSeasonToDatabase(MainWindow.CurrentDB, _tst, _tstOpp, playersToUpdate, _curSeason, _maxSeason, partialUpdate: true);
-            SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
-            linkInternalsToMainWindow();
-            MainWindow.UpdateNotables();
-
-            int temp = cmbTeam.SelectedIndex;
-            cmbTeam.SelectedIndex = -1;
-            cmbTeam.SelectedIndex = temp;
+            updateData();
         }
 
         /// <summary>
@@ -1401,9 +1396,42 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
             _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            linkInternalsToMainWindow();
-            cmbTeam_SelectionChanged(sender, null);
+            updateData();
+
+        }
+
+        private void updateData()
+        {
+            IsEnabled = false;
+            MainWindow.UpdateAllData(true).ContinueWith(linkInternalsToMainWindow).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+        }
+
+        private void refresh()
+        {
+            var curTeam = cmbTeam.SelectedIndex == -1 ? -1 : _curTeam;
+            populateTeamsCombo();
+            try
+            {
+                cmbTeam.SelectedIndex = -1;
+                if (curTeam != -1)
+                {
+                    cmbTeam.SelectedItem = _tst[curTeam].DisplayName;
+                }
+            }
+            catch
+            {
+                cmbTeam.SelectedIndex = -1;
+            }
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
         }
 
         /// <summary>
@@ -1426,9 +1454,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
             _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            linkInternalsToMainWindow();
-            cmbTeam_SelectionChanged(sender, null);
+            updateData();
         }
 
         /// <summary>
@@ -1444,9 +1470,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.Tf = new Timeframe(_curSeason);
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                cmbTeam_SelectionChanged(sender, null);
+                updateData();
             }
         }
 
@@ -1463,9 +1487,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                cmbTeam_SelectionChanged(sender, null);
+                updateData();
             }
         }
 
@@ -2445,7 +2467,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbSituational.SelectedIndex = 0;
         }
 
-        private void linkInternalsToMainWindow()
+        private void linkInternalsToMainWindow(Task task = null)
         {
             _tst = MainWindow.TST;
             _tstOpp = MainWindow.TSTOpp;
@@ -2596,20 +2618,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
                 MainWindow.Tf = new Timeframe(_curSeason);
                 MainWindow.ChangeSeason(_curSeason);
+                updateData();
+                /*
                 SQLiteIO.LoadSeason(_curSeason);
 
                 linkInternalsToMainWindow();
-                populateTeamsCombo();
-
-                try
-                {
-                    cmbTeam.SelectedIndex = -1;
-                    cmbTeam.SelectedItem = _tst[_curTeam].DisplayName;
-                }
-                catch
-                {
-                    cmbTeam.SelectedIndex = -1;
-                }
+                */
                 _changingTimeframe = false;
             }
         }

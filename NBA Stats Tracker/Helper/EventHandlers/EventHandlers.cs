@@ -23,6 +23,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -42,6 +45,26 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     /// </summary>
     public static class EventHandlers
     {
+        public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
+        {
+            task.ContinueWith(c =>
+            {
+                App.ErrorReport(c.Exception, "Task exception");
+            }, CancellationToken.None,
+                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            return task;
+        }
+
+        public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
+        {
+            task.ContinueWith(c =>
+            {
+                App.ErrorReport(c.Exception, "Task exception");
+            }, CancellationToken.None,
+                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            return task;
+        }
+
         /// <summary>
         ///     Handles the MouseDoubleClick event of any WPF DataGrid control containing PlayerStatsRow entries.
         /// </summary>

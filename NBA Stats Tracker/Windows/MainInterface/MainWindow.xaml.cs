@@ -45,6 +45,7 @@ using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Players.Contracts;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
+using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Helper.WindowsForms;
 using NBA_Stats_Tracker.Interop.BR;
@@ -337,7 +338,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             CommandBindings.Add(new CommandBinding(CmndExport, btnExport2K12_Click));
 
             CmndOpen.InputGestures.Add(new KeyGesture(Key.O, ModifierKeys.Control));
-            CommandBindings.Add(new CommandBinding(CmndOpen, mnuFileOpen_Click));
+            CommandBindings.Add(new CommandBinding(CmndOpen, anyOpen_Click));
 
             CmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(CmndSave, btnSaveCurrentSeason_Click));
@@ -468,7 +469,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuFileOpen_Click(object sender, RoutedEventArgs e)
+        private void anyOpen_Click(object sender, RoutedEventArgs e)
         {
             LoadingSeason = true;
             TST = new Dictionary<int, TeamStats>();
@@ -503,32 +504,71 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            DoWork().ContinueWith(FinishLoadingDatabase, UIScheduler);
+            doLoadSeasonInThread().ContinueWith(t => FinishLoadingDatabase(), UIScheduler);
 
-            dt = new DispatcherTimer();
-            //dt.Interval = new TimeSpan(100);
-            dt.Tick += updateBasedOnProgress;
-            dt.Start();
+            startProgressWatchTimer();
 
             //SQLiteIO.LoadSeason();
         }
 
+        private void startProgressWatchTimer()
+        {
+            dt = new DispatcherTimer();
+            //dt.Interval = new TimeSpan(100);
+            dt.Tick += updateBasedOnProgress;
+            dt.Start();
+        }
+
         private void updateBasedOnProgress(object o, EventArgs args)
         {
-            var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage, SQLiteIO.Progress.Message);
+            var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage,
+                                          SQLiteIO.Progress.Message);
             if (SQLiteIO.Progress.Percentage > 0)
             {
                 newStatus += " (" + SQLiteIO.Progress.Percentage + "%)";
             }
             UpdateStatus(newStatus);
+            try
+            {
+                ProgressWindow.PwInstance.txbProgress.Text = newStatus;
+            }
+            catch
+            {
+            }
         }
 
-        private Task<bool> DoWork()
+        private Task<bool> doLoadSeasonInThread()
         {
-            return Task.Factory.StartNew(() => SQLiteIO.LoadSeasonInThread());
+            return Task.Factory.StartNew(() => SQLiteIO.LoadSeasonInThread()).FailFastOnException(UIScheduler);
         }
 
-        public void FinishLoadingDatabase(Task<bool> task)
+        private Task doPopulateAllInThread()
+        {
+            DBData dbData = null;
+            var result =
+                Task.Factory.StartNew(() => SQLiteIO.PopulateAll(Tf, out dbData))
+                    .ContinueWith(t => ParseDBData(dbData))
+                    .FailFastOnException(UIScheduler);
+            return result;
+        }
+
+        public void ParseDBData(DBData dbData)
+        {
+            TST = dbData.TST;
+            TSTOpp = dbData.TSTOpp;
+            PST = dbData.PST;
+            TeamOrder = dbData.TeamOrder;
+            SeasonTeamRankings = dbData.SeasonTeamRankings;
+            PlayoffTeamRankings = dbData.PlayoffTeamRankings;
+            SplitTeamStats = dbData.SplitTeamStats;
+            SplitPlayerStats = dbData.SplitPlayerStats;
+            SeasonPlayerRankings = dbData.SeasonPlayerRankings;
+            PlayoffPlayerRankings = dbData.PlayoffPlayerRankings;
+            DisplayNames = dbData.DisplayNames;
+            BSHist = dbData.BSHist;
+        }
+
+        public void FinishLoadingDatabase(bool leaveProgressOpen = false)
         {
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
@@ -551,7 +591,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             dt.Stop();
             SQLiteIO.Progress.Timing.Stop();
-
+            if (!leaveProgressOpen)
+            {
+                try
+                {
+                    ProgressWindow.PwInstance.CanClose = true;
+                    ProgressWindow.PwInstance.Close();
+                }
+                catch
+                {
+                    Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+                }
+            }
             mainGrid.Visibility = Visibility.Visible;
         }
 
@@ -1607,7 +1658,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            mnuFileOpen_Click(null, null);
+            anyOpen_Click(null, null);
         }
 
         /// <summary>
@@ -2570,13 +2621,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ascw.ShowDialog();
         }
 
-        public static void UpdateAllData()
+        public static Task UpdateAllData(bool leaveProgressWindowOpen = false)
         {
-            SQLiteIO.PopulateAll(Tf, out TST, out TSTOpp, out TeamOrder, out PST, out SplitTeamStats, out SplitPlayerStats, out BSHist,
-                                 out SeasonTeamRankings, out SeasonPlayerRankings, out PlayoffTeamRankings, out PlayoffPlayerRankings,
-                                 out DisplayNames);
+            SQLiteIO.Progress = new ProgressInfo(0, 8, "Loading database...");
+            var pw = new ProgressWindow("Please wait while the new timeframe is loading...", false);
+            pw.Topmost = true;
+            pw.Show();
+            MWInstance.startProgressWatchTimer();
 
-            UpdateNotables();
+            var result = MWInstance.doPopulateAllInThread()
+                                   .ContinueWith(t => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), MWInstance.UIScheduler);
+
+            return result;
         }
 
         public static void UpdateNotables()

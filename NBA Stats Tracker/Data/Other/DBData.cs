@@ -27,12 +27,12 @@ using NBA_Stats_Tracker.Data.Teams;
 
 namespace NBA_Stats_Tracker.Data.Other
 {
-    public struct DBData
+    public class DBData
     {
         public List<BoxScoreEntry> BSHist;
-        public Dictionary<string, string> DisplayNames;
+        public Dictionary<int, string> DisplayNames;
         public Dictionary<int, PlayerStats> PST;
-        public PlayerRankings PlayerRankings;
+        public PlayerRankings SeasonPlayerRankings;
         public PlayerRankings PlayoffPlayerRankings;
         public TeamRankings PlayoffTeamRankings;
         public Dictionary<int, Dictionary<string, PlayerStats>> SplitPlayerStats;
@@ -40,6 +40,27 @@ namespace NBA_Stats_Tracker.Data.Other
         public Dictionary<int, TeamStats> TST;
         public Dictionary<int, TeamStats> TSTOpp;
         public SortedDictionary<string, int> TeamOrder;
-        public TeamRankings TeamRankings;
+        public TeamRankings SeasonTeamRankings;
+
+        public DBData(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
+                      Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, TeamRankings seasonTeamRankings,
+                      TeamRankings playoffTeamRankings, Dictionary<int, PlayerStats> pst,
+                      Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, PlayerRankings seasonPlayerRankings,
+                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist, SortedDictionary<string, int> teamOrder,
+                      Dictionary<int, string> displayNames)
+        {
+            BSHist = bsHist;
+            DisplayNames = displayNames;
+            PST = pst;
+            SeasonPlayerRankings = seasonPlayerRankings;
+            PlayoffPlayerRankings = playoffPlayerRankings;
+            PlayoffTeamRankings = playoffTeamRankings;
+            SplitPlayerStats = splitPlayerStats;
+            SplitTeamStats = splitTeamStats;
+            TST = tst;
+            TSTOpp = tstOpp;
+            TeamOrder = teamOrder;
+            SeasonTeamRankings = seasonTeamRankings;
+        }
     }
 }

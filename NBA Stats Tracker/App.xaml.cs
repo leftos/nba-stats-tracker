@@ -102,29 +102,44 @@ namespace NBA_Stats_Tracker
         /// <param name="additional">The additional.</param>
         public static void ErrorReport(Exception e, string additional = "")
         {
+            var exceptionString = e.ToString();
+            var innerExceptionString = e.InnerException == null
+                                           ? "No inner exception information."
+                                           : e.InnerException.Message;
+            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+
             try
             {
-                var f = new StreamWriter(NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"\errorlog.txt");
+                var errorReportPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"errorlog.txt";
+                var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Forced Exception Error Report for NBA Stats Tracker");
-                f.WriteLine("Version " + Assembly.GetExecutingAssembly().GetName().Version);
-                f.WriteLine("Additional: " + additional);
+                f.WriteLine(versionString);
+                f.WriteLine("Developer information: " + additional);
                 f.WriteLine();
-                f.Write(e.ToString());
-                f.WriteLine();
-                f.WriteLine();
-                f.Write(e.InnerException == null ? "None" : e.InnerException.Message);
+                f.WriteLine("Exception information:");
+                f.Write(exceptionString);
                 f.WriteLine();
                 f.WriteLine();
+                f.WriteLine("Inner Exception information:");
+                f.Write(innerExceptionString);
                 f.Close();
 
                 MessageBox.Show(
-                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\nAn Error Log has been saved at " +
-                    NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"\errorlog.txt");
+                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
+                    errorReportPath, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Process.Start(errorReportPath);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Can't create errorlog!\n\n" + ex + "\n\n" + (e.InnerException == null ? "None" : e.InnerException.Message));
+                string s = "Can't create errorlog!\nException: " + ex;
+                s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
+                s += "\n\n";
+                s += versionString;
+                s += "Exception Information:\n" + exceptionString + "\n\n";
+                s += "Inner Exception Information:\n" + innerExceptionString;
+                MessageBox.Show(s, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             Environment.Exit(-1);

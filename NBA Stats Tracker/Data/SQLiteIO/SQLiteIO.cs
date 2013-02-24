@@ -97,7 +97,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(oldSeason);
-                MainWindow.UpdateAllData();
+                MainWindow.UpdateAllData().Wait();
             }
             SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
 
@@ -313,7 +313,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
-            MainWindow.MWInstance.txtFile.Text = file;
+            doInScheduler(() => MainWindow.MWInstance.txtFile.Text = file, MainWindow.MWInstance.UIScheduler);
             MainWindow.CurrentDB = file;
 
             //}
@@ -1366,15 +1366,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             DataTable res = db.GetDataTable(q);
 
-            tst = new Dictionary<int, TeamStats>();
-            tstOpp = new Dictionary<int, TeamStats>();
-            teamOrder = new SortedDictionary<string, int>();
             int i = 0;
             double teamCount = res.Rows.Count;
             var rows = res.Rows.Cast<DataRow>();
-            Dictionary<int, TeamStats> newTST = tst;
-            Dictionary<int, TeamStats> newTSTOpp = tstOpp;
-            SortedDictionary<string, int> newTeamOrder = teamOrder;
+            var newTST = new Dictionary<int, TeamStats>();
+            var newTSTOpp = new Dictionary<int, TeamStats>();
+            var newTeamOrder = new SortedDictionary<string, int>();
             var myLock = new object();
             Parallel.ForEach(rows, r =>
                                    {
@@ -1384,14 +1381,18 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        GetTeamStatsFromDatabase(file, teamID, season, out ts, out tsopp);
                                        lock (myLock)
                                        {
-                                           newTST[i] = ts;
-                                           newTSTOpp[i] = tsopp;
+                                           newTST.Add(teamID, ts);
+                                           newTSTOpp.Add(teamID, tsopp);
                                            newTeamOrder.Add(ts.Name, i);
                                        }
                                        Interlocked.Increment(ref i);
 
                                        Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(i*100/teamCount)));
                                    });
+
+            tst = newTST;
+            tstOpp = newTSTOpp;
+            teamOrder = newTeamOrder;
         }
 
         /// <summary>
@@ -1441,7 +1442,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             MainWindow.LoadingSeason = true;
 
             bool mustSave = false;
-            var maxStage = 7;
+            var maxStage = 9;
             if (!_upgrading)
             {
                 mustSave = checkIfDBNeedsUpgrade(file);
@@ -1487,8 +1488,20 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
             else
             {
-                PopulateAll(MainWindow.Tf, out tst, out tstOpp, out teamOrder, out pst, out splitTeamStats, out splitPlayerStats, out bsHist,
-                            out teamRankings, out playerRankings, out playoffTeamRankings, out playoffPlayerRankings, out displayNames);
+                DBData dbData;
+                PopulateAll(MainWindow.Tf, out dbData);
+                tst = dbData.TST;
+                tstOpp = dbData.TSTOpp;
+                pst = dbData.PST;
+                teamOrder = dbData.TeamOrder;
+                teamRankings = dbData.SeasonTeamRankings;
+                playoffTeamRankings = dbData.PlayoffTeamRankings;
+                splitTeamStats = dbData.SplitTeamStats;
+                splitPlayerStats = dbData.SplitPlayerStats;
+                playerRankings = dbData.SeasonPlayerRankings;
+                playoffPlayerRankings = dbData.PlayoffPlayerRankings;
+                displayNames = dbData.DisplayNames;
+                bsHist = dbData.BSHist;
             }
 
             MainWindow.CurrentDB = file;
@@ -1535,7 +1548,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         private static void doInScheduler(Action a, TaskScheduler scheduler)
         {
-            Task.Factory.StartNew(() => a, CancellationToken.None, TaskCreationOptions.None, scheduler);
+            Task.Factory.StartNew(() => a, CancellationToken.None, TaskCreationOptions.None, scheduler).Wait();
         }
 
         /// <summary>
@@ -2263,20 +2276,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                 GetMaxSeason(MainWindow.CurrentDB));
         }
 
-        public static void PopulateAll(Timeframe tf, out Dictionary<int, TeamStats> tst, out Dictionary<int, TeamStats> tstOpp,
-                                       out SortedDictionary<string, int> teamOrder, out Dictionary<int, PlayerStats> pst,
-                                       out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
-                                       out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out List<BoxScoreEntry> bsHist,
-                                       out TeamRankings teamRankings, out PlayerRankings playerRankings,
-                                       out TeamRankings playoffTeamRankings, out PlayerRankings playoffPlayerRankings,
-                                       out Dictionary<int, string> displayNames)
+        public static bool PopulateAll(Timeframe tf, out DBData dbData)
         {
-            tst = new Dictionary<int, TeamStats>();
-            tstOpp = new Dictionary<int, TeamStats>();
-            teamOrder = new SortedDictionary<string, int>();
-            pst = new Dictionary<int, PlayerStats>();
-            splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
-            splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
+            var tst = new Dictionary<int, TeamStats>();
+            var tstOpp = new Dictionary<int, TeamStats>();
+            var teamOrder = new SortedDictionary<string, int>();
+            var pst = new Dictionary<int, PlayerStats>();
+            var splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
+            var splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
             int curSeason = tf.SeasonNum;
             int maxSeason = GetMaxSeason(MainWindow.CurrentDB);
             SQLiteDatabase db = MainWindow.DB;
@@ -2286,7 +2293,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             
             #region Prepare Teams & Players Dictionaries
 
-            displayNames = new Dictionary<int, string>();
+            var displayNames = new Dictionary<int, string>();
 
             if (!tf.IsBetween)
             {
@@ -2358,7 +2365,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            displayNames.Add(-1, "");
+            if (!displayNames.ContainsKey(-1))
+            {
+                displayNames.Add(-1, "");
+            }
 
             RepairDB(ref pst);
 
@@ -2367,7 +2377,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             #region Prepare Split Dictionaries
             
             Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading box scores..."));
-            bsHist = !tf.IsBetween
+            var bsHist = !tf.IsBetween
                          ? GetSeasonBoxScoresFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, maxSeason, tst)
                          : GetTimeframedBoxScoresFromDatabase(MainWindow.CurrentDB, tf.StartDate, tf.EndDate, tst);
 
@@ -2792,15 +2802,25 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
+            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating season highs for players..."));
+            double plCount = pst.Keys.Count;
+            doneCount = 0;
             foreach (var ps in pst)
             {
-                ps.Value.CalculateSeasonHighs(bsHist);
+                ps.Value.CalculateSeasonHighs(hist);
+                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(doneCount*100/plCount)));
             }
 
-            teamRankings = new TeamRankings(tst);
-            playoffTeamRankings = new TeamRankings(tst, true);
-            playerRankings = new PlayerRankings(pst);
-            playoffPlayerRankings = new PlayerRankings(pst, true);
+            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating team & player rankings..."));
+            var teamRankings = new TeamRankings(tst);
+            var playoffTeamRankings = new TeamRankings(tst, true);
+            var playerRankings = new PlayerRankings(pst);
+            var playoffPlayerRankings = new PlayerRankings(pst, true);
+
+            dbData = new DBData(tst, tstOpp, splitTeamStats, teamRankings, playoffTeamRankings, pst, splitPlayerStats, playerRankings,
+                                playoffPlayerRankings, bsHist, teamOrder, displayNames);
+
+            return true;
         }
 
         private static void findTeamByName(string teamName, DateTime startDate, DateTime endDate, out TeamStats ts, out TeamStats tsopp,

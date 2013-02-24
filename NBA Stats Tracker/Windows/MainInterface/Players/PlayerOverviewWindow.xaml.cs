@@ -1117,6 +1117,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvSplitStats.ItemsSource = splitPSRsCollection;
         }
 
+        private void updateData()
+        {
+            IsEnabled = false;
+            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+        }
+
         /// <summary>
         ///     Handles the SelectionChanged event of the cmbSeasonNum control.
         ///     Loads the specified season's team and player stats and tries to automatically switch to the same player again, if he exists in the specified season and isn't hidden.
@@ -1142,119 +1148,114 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     return;
                 }
 
-                PlayerStats ps = null;
-                if (cmbPlayer.SelectedIndex != -1)
-                {
-                    ps = createPlayerStatsFromCurrent();
-                }
-
                 if (!(MainWindow.Tf.SeasonNum == _curSeason && !MainWindow.Tf.IsBetween))
                 {
                     MainWindow.Tf = new Timeframe(_curSeason);
-                    MainWindow.UpdateAllData();
+                    updateData();
                 }
+            }
+        }
 
-                MainWindow.ChangeSeason(_curSeason);
+        private void refresh()
+        {
+            PlayerStats ps;
 
-                _playersT = MainWindow.PlayersT;
-                _plPlayersT = MainWindow.PlPlayersT;
+            MainWindow.ChangeSeason(_curSeason);
 
-                if (cmbPlayer.SelectedIndex != -1 && ps != null)
+            _playersT = MainWindow.PlayersT;
+            _plPlayersT = MainWindow.PlPlayersT;
+            
+            populateTeamsCombo();
+
+            if (cmbPlayer.SelectedIndex != -1)
+            {
+                ps = createPlayerStatsFromCurrent();
+
+                var oldOwn = ps.ID;
+                var oldOpp = selectedOppPlayerID;
+                cmbTeam.SelectedIndex = -1;
+                cmbPlayer.SelectedIndex = -1;
+                cmbOppTeam.SelectedIndex = -1;
+                cmbOppPlayer.SelectedIndex = -1;
+
+                try
                 {
                     _teamOrder = MainWindow.TeamOrder;
 
                     getActivePlayers();
 
-                    populateTeamsCombo();
-
-                    string q = "select * from " + _playersT + " where ID = " + ps.ID;
-                    q += " AND isHidden LIKE \"False\"";
-                    DataTable res = _db.GetDataTable(q);
-
-                    if (res.Rows.Count > 0)
+                    PlayerStats newps = MainWindow.PST[oldOwn];
+                    if (newps.IsActive)
                     {
-                        bool nowActive = ParseCell.GetBoolean(res.Rows[0], "isActive");
-                        int newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
-                        cmbTeam.SelectedIndex = -1;
-                        if (nowActive)
+                        try
                         {
-                            if (newTeam != -1)
-                            {
-                                try
-                                {
-                                    cmbTeam.SelectedItem = MainWindow.TST[newTeam].DisplayName;
-                                }
-                                catch (Exception)
-                                {
-                                    cmbTeam.SelectedIndex = -1;
-                                    cmbPlayer.SelectedIndex = -1;
-                                    return;
-                                }
-                            }
+                            cmbTeam.SelectedIndex = -1;
+                            cmbTeam.SelectedItem = MainWindow.TST[newps.TeamF].DisplayName;
                         }
-                        else
+                        catch (Exception)
                         {
-                            cmbTeam.SelectedItem = "- Inactive -";
-                        }
-                        cmbPlayer.SelectedIndex = -1;
-                        cmbPlayer.SelectedValue = ps.ID;
-
-                        if (cmbOppPlayer.SelectedIndex != -1)
-                        {
-                            selectedOppPlayerID = ((KeyValuePair<int, string>) (((cmbOppPlayer)).SelectedItem)).Key;
-
-                            q = "select * from " + _playersT + " where ID = " + selectedOppPlayerID;
-                            q += " AND isHidden LIKE \"False\"";
-                            res = _db.GetDataTable(q);
-
-                            if (res.Rows.Count > 0)
-                            {
-                                nowActive = ParseCell.GetBoolean(res.Rows[0], "isActive");
-                                newTeam = nowActive ? Convert.ToInt32(res.Rows[0]["TeamFin"].ToString()) : -1;
-                                cmbOppTeam.SelectedIndex = -1;
-                                if (nowActive)
-                                {
-                                    if (newTeam != -1)
-                                    {
-                                        try
-                                        {
-                                            cmbOppTeam.SelectedItem = MainWindow.TST[newTeam].DisplayName;
-                                        }
-                                        catch (Exception)
-                                        {
-                                            cmbOppTeam.SelectedIndex = -1;
-                                            cmbOppPlayer.SelectedIndex = -1;
-                                            return;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    cmbOppTeam.SelectedItem = "- Inactive -";
-                                }
-                                cmbOppPlayer.SelectedIndex = -1;
-                                cmbOppPlayer.SelectedValue = selectedOppPlayerID;
-                            }
-                            else
-                            {
-                                cmbOppTeam.SelectedIndex = -1;
-                                cmbOppPlayer.SelectedIndex = -1;
-                            }
+                            cmbTeam.SelectedIndex = -1;
+                            cmbPlayer.SelectedIndex = -1;
+                            cmbOppTeam.SelectedIndex = -1;
+                            cmbOppPlayer.SelectedIndex = -1;
+                            throw;
                         }
                     }
                     else
                     {
-                        cmbTeam.SelectedIndex = -1;
-                        cmbPlayer.SelectedIndex = -1;
-                        cmbOppTeam.SelectedIndex = -1;
+                        cmbTeam.SelectedItem = "- Inactive -";
+                    }
+                    cmbPlayer.SelectedIndex = -1;
+                    cmbPlayer.SelectedValue = newps.ID;
+
+                    if (oldOpp != -1)
+                    {
+                        var newOpp = MainWindow.PST[oldOpp];
+                        if (newOpp.IsActive)
+                        {
+                            try
+                            {
+                                cmbOppTeam.SelectedIndex = -1;
+                                cmbOppTeam.SelectedItem = MainWindow.TST[newOpp.TeamF].DisplayName;
+                            }
+                            catch (Exception)
+                            {
+                                cmbOppTeam.SelectedIndex = -1;
+                                cmbOppPlayer.SelectedIndex = -1;
+                                throw;
+                            }
+                        }
+                        else
+                        {
+                            cmbOppTeam.SelectedItem = "- Inactive -";
+                        }
                         cmbOppPlayer.SelectedIndex = -1;
+                        cmbOppPlayer.SelectedValue = newOpp.ID;
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    populateTeamsCombo();
+                    Console.WriteLine("Error while trying to find player again: " + ex.Message);
                 }
             }
+            else
+            {
+                cmbTeam.SelectedIndex = -1;
+                cmbPlayer.SelectedIndex = -1;
+                cmbOppTeam.SelectedIndex = -1;
+                cmbOppPlayer.SelectedIndex = -1;
+            }
+
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
         }
 
         /// <summary>
@@ -1449,8 +1450,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!_changingTimeframe)
             {
                 MainWindow.Tf = new Timeframe(_curSeason);
-                MainWindow.UpdateAllData();
-                cmbSeasonNum_SelectionChanged(null, null);
+                updateData();
             }
         }
 
@@ -1467,8 +1467,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!_changingTimeframe)
             {
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
-                cmbPlayer_SelectionChanged(null, null);
+                updateData();
             }
         }
 
@@ -1490,11 +1489,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
+                updateData();
                 rbStatsBetween.IsChecked = true;
                 _changingTimeframe = false;
-
-                cmbPlayer_SelectionChanged(null, null);
             }
         }
 
@@ -1516,11 +1513,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
+                updateData();
                 rbStatsBetween.IsChecked = true;
                 _changingTimeframe = false;
-
-                cmbPlayer_SelectionChanged(null, null);
             }
         }
 
