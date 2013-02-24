@@ -64,8 +64,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private int _curSeason = MainWindow.CurSeason;
         private DataTable _dtOv;
         private List<PlayerBoxScore> _hthAllPBS;
-        private List<PlayerBoxScore> _hthOppPBS;
-        private List<PlayerBoxScore> _hthOwnPBS;
 
         private ObservableCollection<KeyValuePair<int, string>> _oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
 
@@ -339,22 +337,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             _pbsList = new ObservableCollection<PlayerBoxScore>();
 
-            var q = "select * from " + _playersT + " where ID = " + _selectedPlayerID.ToString();
-            var res = _db.GetDataTable(q);
-
-            if (res.Rows.Count == 0) // Player not found in this year's database
+            try
             {
-                cmbTeam_SelectionChanged(null, null); // Reload this team's players
+                _psr = new PlayerStatsRow(MainWindow.PST[_selectedPlayerID]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Player with ID " + _selectedPlayerID + " couldn't be loaded: " + ex.Message);
+                cmbPlayer.SelectedIndex = -1;
                 return;
             }
-            /*
-            string q2 = "select * from " + pl_playersT + " where ID = " + SelectedPlayerID.ToString();
-            DataTable pl_res = db.GetDataTable(q2);
-
-            psr = new PlayerStatsRow(new PlayerStats(res.Rows[0]));
-            pl_psr = new PlayerStatsRow(new PlayerStats(pl_res.Rows[0], true), true);
-            */
-            _psr = new PlayerStatsRow(MainWindow.PST[_selectedPlayerID]);
             _plPSR = new PlayerStatsRow(MainWindow.PST[_selectedPlayerID], true);
 
             updateOverviewAndBoxScores();
@@ -683,7 +675,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 var pbs = new PlayerBoxScore();
                 pbs = bse.PBSList.Single(pbs1 => pbs1.PlayerID == _psr.ID);
-                pbs.AddInfoFromTeamBoxScore(MainWindow.TST, bse.BS);
+                pbs.AddInfoFromTeamBoxScore(bse.BS, MainWindow.TST);
                 pbs.CalcMetrics(bse.BS);
                 _pbsList.Add(pbs);
             }
@@ -1592,192 +1584,77 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var psrList = new ObservableCollection<PlayerStatsRow>();
 
             _hthAllPBS = new List<PlayerBoxScore>();
-
-            string q;
-            DataTable res;
-
+            
             if (_selectedPlayerID == selectedOppPlayerID)
                 return;
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
             {
-                if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
+                _psr.Type = _psr.FirstName + " " + _psr.LastName;
+                psrList.Add(_psr);
+
+                var gameIDs = new List<int>();
+                foreach (var cur in _pbsList)
                 {
-                    _psr.Type = _psr.FirstName + " " + _psr.LastName;
-                    psrList.Add(_psr);
+                    _hthAllPBS.Add(cur);
+                    gameIDs.Add(cur.GameID);
+                }
 
-                    _hthOwnPBS = new List<PlayerBoxScore>(_pbsList);
-
-                    q = "SELECT * FROM " + _playersT + " WHERE ID = " + selectedOppPlayerID;
-                    res = _db.GetDataTable(q);
-
-                    var ps = new PlayerStats(res.Rows[0], MainWindow.TST);
-                    var oppPSR = new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName);
-
-                    oppPSR.Type = oppPSR.FirstName + " " + oppPSR.LastName;
-                    psrList.Add(oppPSR);
-
-                    q = "select * " + "FROM PlayerResults INNER JOIN GameResults " + "ON (PlayerResults.GameID = GameResults.GameID) " +
-                        "WHERE PlayerID = " + selectedOppPlayerID + " AND SeasonNum = " + _curSeason + " AND isOut = \"False\"";
-                    res = _db.GetDataTable(q, true);
-
-                    _hthOppPBS = new List<PlayerBoxScore>();
-                    foreach (DataRow r in res.Rows)
+                var oppPBSList =
+                    MainWindow.BSHist.AsParallel()
+                              .Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == selectedOppPlayerID))
+                              .Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == selectedOppPlayerID))
+                              .Where(pbs => !pbs.IsOut);
+                foreach (var oppPBS in oppPBSList)
+                {
+                    if (!gameIDs.Contains(oppPBS.GameID))
                     {
-                        var pbs = new PlayerBoxScore(r, MainWindow.TST);
-                        _hthOppPBS.Add(pbs);
-                    }
-                    var gameIDs = new List<int>();
-                    foreach (var bs in _hthOwnPBS)
-                    {
-                        _hthAllPBS.Add(bs);
-                        gameIDs.Add(bs.GameID);
-                    }
-                    foreach (var bs in _hthOppPBS)
-                    {
-                        if (!gameIDs.Contains(bs.GameID))
-                        {
-                            _hthAllPBS.Add(bs);
-                        }
+                        oppPBS.AddInfoFromTeamBoxScore(MainWindow.BSHist.Single(bse => bse.BS.ID == oppPBS.GameID).BS, MainWindow.TST);
+                        _hthAllPBS.Add(oppPBS);
                     }
                 }
-                else
-                {
-                    q =
-                        String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} AND isOut = \"False\"" + "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\"" +
-                            "AND SeasonNum = {2}) ORDER BY Date DESC", _selectedPlayerID, selectedOppPlayerID, _curSeason);
-                    res = _db.GetDataTable(q, true);
 
-                    var p = new Player(_psr.ID, _psr.TeamF, _psr.LastName, _psr.FirstName, _psr.Position1, _psr.Position2);
-                    var ps = new PlayerStats(p);
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        var pbs = new PlayerBoxScore(r, MainWindow.TST);
-                        ps.AddBoxScore(pbs);
-                        _hthAllPBS.Add(pbs);
-                    }
-
-                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
-
-
-                    // Opponent
-                    q = "SELECT * FROM " + _playersT + " WHERE ID = " + selectedOppPlayerID;
-                    res = _db.GetDataTable(q);
-
-                    p = new Player(res.Rows[0]);
-
-                    q =
-                        String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} AND isOut = \"False\" " + "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\" " +
-                            "AND SeasonNum = {2}) ORDER BY Date DESC", selectedOppPlayerID, _selectedPlayerID, _curSeason);
-                    res = _db.GetDataTable(q, true);
-
-                    ps = new PlayerStats(p);
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        var pbs = new PlayerBoxScore(r, MainWindow.TST);
-                        ps.AddBoxScore(pbs);
-                    }
-
-                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
-                }
+                var oppPS = MainWindow.PST[selectedOppPlayerID];
+                psrList.Add(new PlayerStatsRow(oppPS, oppPS.FirstName + " " + oppPS.LastName));
             }
             else
             {
-                if (rbHTHStatsAnyone.IsChecked.GetValueOrDefault())
+                var againstBSList =
+                    MainWindow.BSHist.AsParallel()
+                              .Where(
+                                  bse =>
+                                  _pbsList.Any(pbs => pbs.GameID == bse.BS.ID) &&
+                                  bse.PBSList.Any(pbs => pbs.PlayerID == selectedOppPlayerID && !pbs.IsOut));
+
+                var psOwn = new PlayerStats(_psr);
+                psOwn.ResetStats();
+                var psOpp = MainWindow.PST[selectedOppPlayerID].DeepClone();
+                psOpp.ResetStats();
+
+                foreach (var bse in againstBSList)
                 {
-                    _psr.Type = _psr.FirstName + " " + _psr.LastName;
-                    psrList.Add(_psr);
+                    var pbsOwn = bse.PBSList.Single(pbs => pbs.PlayerID == psOwn.ID);
+                    pbsOwn.AddInfoFromTeamBoxScore(bse.BS, MainWindow.TST);
+                    var pbsOpp = bse.PBSList.Single(pbs => pbs.PlayerID == psOpp.ID);
 
-                    var gameIDs = new List<int>();
-                    foreach (var cur in _pbsList)
-                    {
-                        _hthAllPBS.Add(cur);
-                        gameIDs.Add(cur.GameID);
-                    }
+                    psOwn.AddBoxScore(pbsOwn);
+                    psOpp.AddBoxScore(pbsOpp);
 
-                    var oppPBSList =
-                        MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == selectedOppPlayerID))
-                                  .Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == selectedOppPlayerID));
-                    foreach (var oppPBS in oppPBSList)
-                    {
-                        if (!gameIDs.Contains(oppPBS.GameID))
-                        {
-                            _hthAllPBS.Add(oppPBS);
-                        }
-                    }
-
-                    var oppPS = MainWindow.PST[selectedOppPlayerID];
-                    psrList.Add(new PlayerStatsRow(oppPS, oppPS.FirstName + " " + oppPS.LastName));
+                    _hthAllPBS.Add(pbsOwn);
                 }
-                else
-                {
-                    q =
-                        String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} AND isOut = \"False\"" + "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\"", _selectedPlayerID,
-                            selectedOppPlayerID);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
-                    q += ") ORDER BY Date DESC";
-                    res = _db.GetDataTable(q, true);
 
-                    var p = new Player(_psr.ID, _psr.TeamF, _psr.LastName, _psr.FirstName, _psr.Position1, _psr.Position2);
-                    var ps = new PlayerStats(p);
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        var pbs = new PlayerBoxScore(r, MainWindow.TST);
-                        ps.AddBoxScore(pbs);
-                        _hthAllPBS.Add(pbs);
-                    }
-
-                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
-
-
-                    // Opponent
-                    q = "SELECT * FROM " + _playersT + " WHERE ID = " + selectedOppPlayerID;
-                    res = _db.GetDataTable(q);
-
-                    p = new Player(res.Rows[0]);
-
-                    q =
-                        String.Format(
-                            "SELECT * FROM PlayerResults INNER JOIN GameResults " + "ON GameResults.GameID = PlayerResults.GameID " +
-                            "WHERE PlayerID = {0} AND isOut = \"False\" " + "AND PlayerResults.GameID IN " +
-                            "(SELECT GameID FROM PlayerResults " + "WHERE PlayerID = {1} AND isOut = \"False\" ", selectedOppPlayerID,
-                            _selectedPlayerID);
-                    q = SQLiteDatabase.AddDateRangeToSQLQuery(q, dtpStart.SelectedDate.GetValueOrDefault(),
-                                                              dtpEnd.SelectedDate.GetValueOrDefault());
-                    q += ") ORDER BY Date DESC";
-                    res = _db.GetDataTable(q, true);
-
-                    ps = new PlayerStats(p);
-
-                    foreach (DataRow r in res.Rows)
-                    {
-                        var pbs = new PlayerBoxScore(r, MainWindow.TST);
-                        ps.AddBoxScore(pbs);
-                    }
-
-                    psrList.Add(new PlayerStatsRow(ps, ps.FirstName + " " + ps.LastName));
-                }
+                var psrOwn = new PlayerStatsRow(psOwn);
+                psrOwn.Type = psrOwn.FullNameGivenFirst;
+                psrList.Add(psrOwn);
+                var psrOpp = new PlayerStatsRow(psOpp);
+                psrOpp.Type = psrOpp.FullNameGivenFirst;
+                psrList.Add(psrOpp);
             }
 
-            _hthAllPBS.Sort((pbs1, pbs2) => pbs1.RealDate.CompareTo(pbs2.RealDate));
-            _hthAllPBS.Reverse();
+            _hthAllPBS.Sort((pbs1, pbs2) => pbs2.RealDate.CompareTo(pbs1.RealDate));
 
             dgvHTH.ItemsSource = psrList;
             dgvHTHBoxScores.ItemsSource = _hthAllPBS;
-            //dgvHTHBoxScores.ItemsSource = new ObservableCollection<PlayerBoxScore>(hthAllPBS);
         }
 
         /// <summary>

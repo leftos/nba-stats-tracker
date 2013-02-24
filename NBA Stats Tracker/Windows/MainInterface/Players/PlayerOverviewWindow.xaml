@@ -260,7 +260,7 @@
                                 <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
                                 <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
-                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" Visibility="Collapsed"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <DataGrid Margin="6,0" Style="{StaticResource DataGridStyle}"
@@ -268,14 +268,15 @@
                                   FrozenColumnCount="2"
                                   HorizontalAlignment="Stretch" IsReadOnly="True"
                                   MouseDoubleClick="dgvHTHBoxScores_MouseDoubleClick"
-                                  x:Name="dgvHTHBoxScores" VerticalAlignment="Stretch" Grid.Row="2">
+                                  x:Name="dgvHTHBoxScores" VerticalAlignment="Stretch" Grid.Row="2"
+                                  d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Date}" Header="Date" />
-                                <DataGridTextColumn Binding="{Binding Team}" Header="Team" />
+                                <DataGridTextColumn Binding="{Binding DisplayTeam}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding TeamPTS}" Header="Points" />
-                                <DataGridTextColumn Binding="{Binding OppTeam}" Header="Opponent" />
+                                <DataGridTextColumn Binding="{Binding DisplayOppTeam}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding OppTeamPTS}" Header="Points" />
-                                <DataGridTextColumn Binding="{Binding GameID}" Header="ID" />
+                                <DataGridTextColumn Binding="{Binding GameID}" Header="ID" Visibility="Collapsed"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

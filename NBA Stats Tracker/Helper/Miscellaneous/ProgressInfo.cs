@@ -51,7 +51,8 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
 
         public ProgressInfo(ProgressInfo progress, string message, int percentage = 0) : this(message, percentage)
         {
-            Trace.WriteLine("Stage " + progress.CurrentStage + ": " + progress.Timing.ElapsedMilliseconds);
+            Trace.WriteLine(string.Format("Stage {0} ({1}): {2}", progress.CurrentStage, progress.Message,
+                                          progress.Timing.ElapsedMilliseconds));
             CurrentStage = progress.CurrentStage + 1;
             MaxStage = progress.MaxStage;
             Timing = new Stopwatch();

@@ -212,25 +212,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                 cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
 
-                _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>)(((cmbSeasonNum)).SelectedItem)).Key;
+
+                _changingTimeframe = false;
 
                 if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
                     MainWindow.Tf = new Timeframe(_curSeason);
                     MainWindow.ChangeSeason(_curSeason);
-                    SQLiteIO.LoadSeason();
+                    updateData();
                 }
-
-                var teams = (from kvp in MainWindow.TeamOrder
-                             where !MainWindow.TST[kvp.Value].IsHidden
-                             select MainWindow.TST[kvp.Value].DisplayName).ToList();
-
-                teams.Sort();
-                teams.Insert(0, "- Any -");
-
-                cmbTeam.ItemsSource = teams;
-                cmbTeam_SelectionChanged(sender, null);
-                _changingTimeframe = false;
             }
         }
 
@@ -1237,6 +1228,28 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
+        private void updateData()
+        {
+            IsEnabled = false;
+            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+        }
+
+        private void refresh()
+        {
+            populateTeamsCombo();
+
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
+        }
+
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_changingTimeframe)
@@ -1249,8 +1262,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
             _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            populateTeamsCombo();
+            updateData();
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -1265,8 +1277,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
             _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            populateTeamsCombo();
+            updateData();
         }
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
@@ -1274,8 +1285,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
-                populateTeamsCombo();
+                updateData();
             }
         }
 
@@ -1303,17 +1313,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
                 rbStatsAllTime.IsChecked = true;
 
-                _curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>)(((cmbTFSeason)).SelectedItem)).Key;
+
+                _changingTimeframe = false;
 
                 if (MainWindow.Tf.SeasonNum != _curSeason || MainWindow.Tf.IsBetween)
                 {
                     MainWindow.Tf = new Timeframe(_curSeason);
                     MainWindow.ChangeSeason(_curSeason);
-                    SQLiteIO.LoadSeason();
+                    updateData();
                 }
-
-                populateTeamsCombo();
-                _changingTimeframe = false;
             }
         }
 
@@ -1322,8 +1331,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             MainWindow.Tf = new Timeframe(_curSeason);
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
-                cmbSeasonNum_SelectionChanged(null, null);
+                updateData();
             }
         }
 

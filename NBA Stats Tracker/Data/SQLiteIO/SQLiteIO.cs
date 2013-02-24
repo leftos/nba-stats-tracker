@@ -26,6 +26,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
@@ -62,6 +63,53 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <returns>
         ///     <c>true</c> if the operation succeeded, <c>false</c> otherwise.
         /// </returns>
+        public static bool RecreateDatabaseAs(string file)
+        {
+            var oldDB = MainWindow.CurrentDB + ".tmp";
+            File.Copy(MainWindow.CurrentDB, oldDB, true);
+            MainWindow.CurrentDB = oldDB;
+            try
+            {
+                File.Delete(file);
+            }
+            catch
+            {
+                MessageBox.Show("Error while trying to overwrite file. Make sure the file is not in use by another program.");
+                return false;
+            }
+
+            updateProgress("Loading settings...");
+            var settingsDict = GetAllSettings(oldDB);
+            updateProgress("Loading past team stats...");
+            var ptsList = GetAllPastTeamStats(oldDB);
+            updateProgress("Loading past player stats...");
+            var ppsList = GetAllPastPlayerStats(oldDB);
+
+            var db = new SQLiteDatabase(file);
+            db.ClearDB();
+            int count = MainWindow.SeasonList.Count;
+            PrepareNewDB(db, 1, count);
+            for (int i = 2; i <= count; i++)
+            {
+                PrepareNewDB(db, i, count, true);
+            }
+            SaveAllSeasons(file);
+            var db1 = new SQLiteDatabase(file);
+            updateProgress("Saving settings...");
+            foreach (var setting in settingsDict)
+            {
+                SetSetting(file, setting.Key, setting.Value);
+            }
+            updateProgress("Saving past team stats...");
+            SavePastTeamStatsToDatabase(db1, ptsList);
+            updateProgress("Saving past player stats...");
+            SavePastPlayerStatsToDatabase(db1, ppsList);
+
+            MainWindow.CurrentDB = file;
+            File.Delete(oldDB);
+            return true;
+        }
+
         public static bool SaveDatabaseAs(string file)
         {
             var oldDB = MainWindow.CurrentDB + ".tmp";
@@ -76,11 +124,37 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 MessageBox.Show("Error while trying to overwrite file. Make sure the file is not in use by another program.");
                 return false;
             }
-            SaveAllSeasons(file);
-            SetSetting(file, "Game Length", MainWindow.GameLength);
-            SetSetting(file, "Season Length", MainWindow.SeasonLength);
+
+            saveCurrentAndCopyToNew(file, oldDB, GetMaxSeason(oldDB));
+
+            MainWindow.CurrentDB = file;
             File.Delete(oldDB);
             return true;
+        }
+
+        private static List<PastTeamStats> GetAllPastTeamStats(string file)
+        {
+            var db = new SQLiteDatabase(file);
+            var q = "SELECT * FROM PastTeamStats";
+            var res = db.GetDataTable(q);
+            return res.Rows.Cast<DataRow>().AsParallel().Select(dr => new PastTeamStats(dr)).ToList();
+        }
+
+        private static List<PastPlayerStats> GetAllPastPlayerStats(string file)
+        {
+            var db = new SQLiteDatabase(file);
+            var q = "SELECT * FROM PastPlayerStats";
+            var res = db.GetDataTable(q);
+            return res.Rows.Cast<DataRow>().AsParallel().Select(dr => new PastPlayerStats(dr)).ToList();
+        }
+
+        private static Dictionary<string, string> GetAllSettings(string file)
+        {
+            var db = new SQLiteDatabase(file);
+            var q = "SELECT Setting, Value FROM Misc";
+            var res = db.GetDataTable(q);
+            var dict = res.Rows.Cast<DataRow>().AsParallel().ToDictionary(row => row["Setting"].ToString(), row => row["Value"].ToString());
+            return dict;
         }
 
         /// <summary>
@@ -97,20 +171,52 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(oldSeason);
-                MainWindow.UpdateAllData().Wait();
+                MainWindow.UpdateAllData();
             }
+            doSaveAllSeasons(file, maxSeason, oldSeason, oldDB);
+            //saveCurrentAndCopyToNew(file, oldDB, maxSeason);
+        }
+
+        private static void doSaveAllSeasons(string file, int maxSeason, int oldSeason, string oldDB)
+        {
+            var steps = maxSeason*2;
+            var curStep = 0;
+            updateProgress(string.Format("Step {0}/{1}: Saving current season...", (++curStep), steps));
             SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
 
             for (var i = 1; i <= maxSeason; i++)
             {
                 if (i != oldSeason)
                 {
-                    LoadSeason(oldDB, i, doNotLoadBoxScores: true);
-                    SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason,
-                                         doNotSaveBoxScores: true);
+                    MainWindow.CurrentDB = oldDB;
+                    MainWindow.Tf = new Timeframe(i);
+                    updateProgress(string.Format("Step {0}/{1}: Loading season {2}...", (++curStep), steps, i));
+                    MainWindow.UpdateAllDataBlocking(onlyPopulate: true);
+                    updateProgress(string.Format("Step {0}/{1}: Saving season {2}...", (++curStep), steps, i));
+                    SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, i, maxSeason);
                 }
             }
-            LoadSeason(file, oldSeason, doNotLoadBoxScores: true);
+            updateProgress(string.Format("Step {0}/{1}: Loading current season...", (++curStep), steps));
+            LoadSeason(file, oldSeason);
+        }
+
+        private static void updateMWStatusViaDispatcher(string msg)
+        {
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.ContextIdle,
+                                                       new Action(() => MainWindow.MWInstance.UpdateStatus(msg, true)));
+            //doInScheduler(() => MainWindow.MWInstance.UpdateStatus(msg, true), MainWindow.MWInstance.UIScheduler);
+        }
+
+        private static void saveCurrentAndCopyToNew(string file, string oldDB, int maxSeason)
+        {
+            updateProgress("Saving current season...");
+            SaveSeasonToDatabase(oldDB, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
+
+            updateProgress("Copying database to new file...");
+            File.Copy(oldDB, file);
+
+            updateProgress("Reloading current season...");
+            LoadSeason(file, MainWindow.CurSeason);
         }
 
         /// <summary>
@@ -433,7 +539,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 var plDict = new Dictionary<string, string>
                              {
-                                 {"ID", MainWindow.TeamOrder[tstToSave[key].Name].ToString()},
+                                 {"ID", tstToSave[key].ID.ToString()},
                                  {"Name", tstToSave[key].Name},
                                  {"DisplayName", tstToSave[key].DisplayName},
                                  {"isHidden", tstToSave[key].IsHidden.ToString()},
@@ -506,7 +612,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 var dict = new Dictionary<string, string>
                            {
-                               {"ID", MainWindow.TeamOrder[tstOppToSave[key].Name].ToString()},
+                               {"ID", tstOppToSave[key].ID.ToString()},
                                {"Name", tstOppToSave[key].Name},
                                {"DisplayName", tstOppToSave[key].DisplayName},
                                {"isHidden", tstOppToSave[key].IsHidden.ToString()},
@@ -537,7 +643,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 var plDict = new Dictionary<string, string>
                              {
-                                 {"ID", MainWindow.TeamOrder[tstOppToSave[key].Name].ToString()},
+                                 {"ID", tstOppToSave[key].ID.ToString()},
                                  {"Name", tstOppToSave[key].Name},
                                  {"DisplayName", tstOppToSave[key].DisplayName},
                                  {"isHidden", tstOppToSave[key].IsHidden.ToString()},
@@ -992,12 +1098,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="file">The database.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">The database requested doesn't exist.</exception>
-        public static int GetMaxSeason(string file)
+        public static int GetMaxSeasonSafe(string file)
         {
             try
             {
                 if (!File.Exists(file))
-                    throw (new Exception("The database requested doesn't exist."));
+                    throw (new FileNotFoundException("The database requested doesn't exist."));
 
                 var db = new SQLiteDatabase(file);
 
@@ -1013,9 +1119,41 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                 return maxseason;
             }
-            catch
+            catch (Exception ex)
             {
-                return 1;
+                if (ex is FileNotFoundException)
+                {
+                    throw;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+
+        public static int GetMaxSeason(string file)
+        {
+            try
+            {
+                if (!File.Exists(file))
+                    throw (new FileNotFoundException("The database requested doesn't exist."));
+
+                var db = new SQLiteDatabase(file);
+
+                const string q = "select Max(ID) from SeasonNames";
+                return Convert.ToInt32(db.ExecuteScalar(q));
+            }
+            catch (Exception ex)
+            {
+                if (ex is FileNotFoundException)
+                {
+                    throw;
+                }
+                else
+                {
+                    return GetMaxSeasonSafe(file);
+                }
             }
         }
 
@@ -1451,6 +1589,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     maxStage = 5;
                 }
             }
+            Progress.MaxStage = maxStage;
 
             var maxSeason = GetMaxSeason(file);
             var uiScheduler = MainWindow.MWInstance.UIScheduler;
@@ -1464,7 +1603,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(1, maxStage, "Loading divisions and conferences..."));
+            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading divisions and conferences..."));
             LoadDivisionsAndConferences(file);
 
             MainWindow.Tf.SeasonNum = curSeason;
@@ -1542,6 +1681,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         private static void updateProgress(int percentage)
         {
             Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, percentage));
+        }
+
+        private static void updateProgress(string message)
+        {
+            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, message));
         }
 
         private static void doInScheduler(Action a, TaskScheduler scheduler)

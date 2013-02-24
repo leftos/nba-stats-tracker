@@ -22,7 +22,7 @@
                 <MenuItem Header="_File">
                     <MenuItem Header="_New Database..." Name="mnuFileNew" Click="mnuFileNew_Click" />
                     <Separator />
-                    <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="anyOpen_Click"
+                    <MenuItem Header="_Open Database..." Name="mnuFileOpenCustom" Click="FileOpen"
                               InputGestureText="Ctrl-O" />
                     <MenuItem Header="_Get Real NBA Stats..." Name="mnuFileGetRealStats"
                               Click="mnuFileGetRealStats_Click" />

@@ -35,6 +35,7 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
+using NBA_Stats_Tracker.Windows.MiscTools;
 
 #endregion
 
@@ -257,12 +258,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 {
                     MainWindow.Tf = new Timeframe(_curSeason);
                     MainWindow.ChangeSeason(_curSeason);
-                    SQLiteIO.LoadSeason();
+                    updateData();
                 }
-
-                populateTeamsCombo();
-                _changingTimeframe = false;
             }
+        }
+
+        private void updateData()
+        {
+            IsEnabled = false;
+            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+        }
+
+        private void refresh()
+        {
+            populateTeamsCombo();
+            _changingTimeframe = false;
+
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
         }
 
         private void cmbTFSeason_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -293,10 +314,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.Tf = new Timeframe(_curSeason);
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
                 cmbSeasonNum_SelectionChanged(null, null);
             }
         }
@@ -306,8 +325,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             if (!_changingTimeframe)
             {
-                MainWindow.UpdateAllData();
-                populateTeamsCombo();
+                updateData();
             }
         }
 
@@ -322,9 +340,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            populateTeamsCombo();
+            updateData();
         }
 
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -338,9 +354,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            _changingTimeframe = false;
-            MainWindow.UpdateAllData();
-            populateTeamsCombo();
+            updateData();
         }
 
         private void chkIsActive_Click(object sender, RoutedEventArgs e)

@@ -190,19 +190,26 @@ namespace SQLite_Database
         /// <returns>A string.</returns>
         public string ExecuteScalar(string sql)
         {
-            object value;
-            using (var cnn = new SQLiteConnection(_dbConnection))
+            try
             {
-                cnn.Open();
-                using (var mycommand = new SQLiteCommand(cnn))
+                object value;
+                using (var cnn = new SQLiteConnection(_dbConnection))
                 {
-                    mycommand.CommandText = sql;
-                    value = mycommand.ExecuteScalar();
+                    cnn.Open();
+                    using (var mycommand = new SQLiteCommand(cnn))
+                    {
+                        mycommand.CommandText = sql;
+                        value = mycommand.ExecuteScalar();
+                    }
+                }
+                if (value != null)
+                {
+                    return value.ToString();
                 }
             }
-            if (value != null)
+            catch (Exception ex)
             {
-                return value.ToString();
+                throw new Exception(ex.Message + "\n\nQuery: " + sql);
             }
             return "";
         }

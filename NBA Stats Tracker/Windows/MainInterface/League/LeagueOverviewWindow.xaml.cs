@@ -274,15 +274,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                rbStatsBetween.IsChecked = true;
-                _reload = true;
-                _lastShownTeamSeason = 0;
-                _lastShownPlayerSeason = 0;
-                _lastShownBoxSeason = 0;
-                tbcLeagueOverview_SelectionChanged(null, null);
-                _changingTimeframe = false;
+
+                updateData();
             }
         }
 
@@ -304,16 +297,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                rbStatsBetween.IsChecked = true;
-                _reload = true;
-                _lastShownTeamSeason = 0;
-                _lastShownPlayerSeason = 0;
-                _lastShownBoxSeason = 0;
-                tbcLeagueOverview_SelectionChanged(null, null);
-                _changingTimeframe = false;
+                
+                updateData();
             }
+        }
+
+        private void updateData()
+        {
+            IsEnabled = false;
+            MainWindow.UpdateAllData(true)
+                      .ContinueWith(t => linkInternalsToMainWindow())
+                      .ContinueWith(t => refresh(true), MainWindow.MWInstance.UIScheduler);
         }
 
         /// <summary>
@@ -1237,14 +1231,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             if (!_changingTimeframe)
             {
+                _changingTimeframe = true;
                 _reload = true;
                 MainWindow.Tf = new Timeframe(_curSeason);
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                _lastShownTeamSeason = 0;
-                _lastShownPlayerSeason = 0;
-                _lastShownBoxSeason = 0;
-                tbcLeagueOverview_SelectionChanged(null, null);
+
+                updateData();
             }
         }
 
@@ -1260,14 +1251,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             if (!_changingTimeframe)
             {
+                _changingTimeframe = true;
                 _reload = true;
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                MainWindow.UpdateAllData();
-                linkInternalsToMainWindow();
-                _lastShownTeamSeason = 0;
-                _lastShownPlayerSeason = 0;
-                _lastShownBoxSeason = 0;
-                tbcLeagueOverview_SelectionChanged(null, null);
+
+                updateData();
             }
         }
 
@@ -1302,14 +1290,39 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             if (_curSeason == MainWindow.Tf.SeasonNum && !MainWindow.Tf.IsBetween)
                 return;
 
-            SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason);
-            linkInternalsToMainWindow();
+            MainWindow.Tf = new Timeframe(_curSeason);
 
-            if (rbStatsAllTime.IsChecked.GetValueOrDefault())
+            updateData();
+        }
+
+        private void refresh(bool between)
+        {
+            if (!between)
             {
                 _reload = true;
                 tbcLeagueOverview_SelectionChanged(null, null);
             }
+            else
+            {
+                _lastShownTeamSeason = 0;
+                _lastShownPlayerSeason = 0;
+                _lastShownBoxSeason = 0;
+                rbStatsBetween.IsChecked = true;
+                _reload = true;
+                tbcLeagueOverview_SelectionChanged(null, null);
+            }
+            _changingTimeframe = false; 
+            
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
         }
 
         private void linkInternalsToMainWindow()

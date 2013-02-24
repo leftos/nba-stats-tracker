@@ -1486,6 +1486,16 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public List<double> Custom { get; set; }
 
+        public string FullNameGivenFirst
+        {
+            get { return FirstName + " " + LastName; }
+        }
+
+        public string FullName
+        {
+            get { return LastName + ", " + FirstName; }
+        }
+
         #endregion
     }
 }

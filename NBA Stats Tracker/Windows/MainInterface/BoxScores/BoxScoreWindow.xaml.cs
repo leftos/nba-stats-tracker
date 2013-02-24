@@ -38,6 +38,7 @@ using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.ListExtensions;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
+using NBA_Stats_Tracker.Windows.MiscTools;
 using SQLite_Database;
 
 #endregion
@@ -71,7 +72,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private static TeamBoxScore _curTeamBoxScore;
         private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
         private readonly bool _onImport;
-        private readonly Dictionary<int, PlayerStats> _pst;
+        private Dictionary<int, PlayerStats> _pst;
         private bool _clickedOK;
         private int _curSeason;
         private Brush _defaultBackground;
@@ -93,15 +94,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
-                MainWindow.UpdateAllData();
+                IsEnabled = false;
+                MainWindow.UpdateAllData(true).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
             }
-            _pst = MainWindow.PST;
+            else
+            {
+                finishInitialization(curMode);
+            }
+        }
 
-            /*
-            tst = MainWindow.tst;
-            pst = MainWindow.pst;
-            tstOpp = MainWindow.tstOpp;
-            */
+        private void finishInitialization(Mode curMode)
+        {
+            _pst = MainWindow.PST;
 
             _curMode = curMode;
             prepareWindow(curMode);
@@ -112,6 +116,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 _curTeamBoxScore = new TeamBoxScore();
             }
+
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+            IsEnabled = true;
         }
 
         /// <summary>

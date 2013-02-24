@@ -428,7 +428,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         #endregion
 
-        public void AddInfoFromTeamBoxScore(Dictionary<int, TeamStats> tst, TeamBoxScore bs)
+        public void AddInfoFromTeamBoxScore(TeamBoxScore bs, Dictionary<int, TeamStats> tst)
         {
             bs.PrepareForDisplay(tst, TeamID);
             Result = bs.DisplayResult;

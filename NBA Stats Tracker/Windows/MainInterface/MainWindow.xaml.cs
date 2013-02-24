@@ -107,7 +107,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private static readonly Dictionary<int, TeamStats> RealTST = new Dictionary<int, TeamStats>();
         public static TeamBoxScore bs;
-        public static string CurrentDB = "";
+
+        public static string CurrentDB
+        {
+            get { return _currentDB; }
+            set
+            {
+                _currentDB = value;
+                DB = new SQLiteDatabase(value);
+            }
+        }
+
         public static string AddInfo;
         private static int _curSeason;
         public static List<Division> Divisions = new List<Division>();
@@ -182,6 +192,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private Semaphore _sem;
         private BackgroundWorker _worker1 = new BackgroundWorker();
         private DispatcherTimer dt;
+        private static string _currentDB;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -338,7 +349,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             CommandBindings.Add(new CommandBinding(CmndExport, btnExport2K12_Click));
 
             CmndOpen.InputGestures.Add(new KeyGesture(Key.O, ModifierKeys.Control));
-            CommandBindings.Add(new CommandBinding(CmndOpen, anyOpen_Click));
+            CommandBindings.Add(new CommandBinding(CmndOpen, FileOpen));
 
             CmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(CmndSave, btnSaveCurrentSeason_Click));
@@ -456,9 +467,31 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             var file = sfd.FileName;
 
-            if (!SQLiteIO.SaveDatabaseAs(file))
-                return;
-            UpdateStatus("All seasons saved successfully.");
+            IsEnabled = false;
+            
+            startProgressWatchTimer();
+            SQLiteIO.Progress = new ProgressInfo(0, 10, "Saving new database...");
+            Task.Factory.StartNew(() => SQLiteIO.SaveDatabaseAs(file))
+                .ContinueWith(t => finishSavingAs(t, file), UIScheduler)
+                .FailFastOnException(UIScheduler);
+        }
+
+        private void finishSavingAs(Task<bool> task, string file)
+        {
+            FinishLoadingDatabase();
+            stopProgressWatchTimer();
+            IsEnabled = true;
+            if (task.Result)
+            {
+                txtFile.Text = file;
+                UpdateStatus("All seasons saved successfully.");
+            }
+        }
+
+        private void stopProgressWatchTimer()
+        {
+            Interlocked.Exchange(ref SQLiteIO.Progress, new ProgressInfo(SQLiteIO.Progress, "Finished"));
+            dt.Stop();
         }
 
         /// <summary>
@@ -469,7 +502,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void anyOpen_Click(object sender, RoutedEventArgs e)
+        private void FileOpen(object sender, RoutedEventArgs e)
         {
             LoadingSeason = true;
             TST = new Dictionary<int, TeamStats>();
@@ -504,6 +537,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
+            SQLiteIO.Progress = new ProgressInfo(0, "Loading database...");
             doLoadSeasonInThread().ContinueWith(t => FinishLoadingDatabase(), UIScheduler);
 
             startProgressWatchTimer();
@@ -521,13 +555,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void updateBasedOnProgress(object o, EventArgs args)
         {
+            /*
             var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage,
                                           SQLiteIO.Progress.Message);
+            */
+            var newStatus = string.Format("Stage {0}: {1}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.Message);
             if (SQLiteIO.Progress.Percentage > 0)
             {
                 newStatus += " (" + SQLiteIO.Progress.Percentage + "%)";
             }
-            UpdateStatus(newStatus);
+            UpdateStatus(newStatus, true);
             try
             {
                 ProgressWindow.PwInstance.txbProgress.Text = newStatus;
@@ -552,7 +589,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             return result;
         }
 
-        public void ParseDBData(DBData dbData)
+        public static void ParseDBData(DBData dbData)
         {
             TST = dbData.TST;
             TSTOpp = dbData.TSTOpp;
@@ -1437,9 +1474,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
 
             txtFile.ScrollToHorizontalOffset(txtFile.GetRectFromCharacterIndex(txtFile.Text.Length).Right);
-            CurrentDB = txtFile.Text;
-            //PopulateSeasonCombo();
-            DB = new SQLiteDatabase(CurrentDB);
         }
 
         /// <summary>
@@ -1658,7 +1692,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            anyOpen_Click(null, null);
+            FileOpen(null, null);
         }
 
         /// <summary>
@@ -1737,12 +1771,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         ///     Updates the status bar message and starts the timer which will revert it after a number of seconds.
         /// </summary>
         /// <param name="newStatus">The new status.</param>
-        public void UpdateStatus(string newStatus)
+        public void UpdateStatus(string newStatus, bool noResetTimer = false)
         {
             _dispatcherTimer.Stop();
             status.FontWeight = FontWeights.Bold;
             status.Content = newStatus;
-            _dispatcherTimer.Start();
+            if (!noResetTimer)
+            {
+                _dispatcherTimer.Start();
+            }
         }
 
         /// <summary>
@@ -2400,6 +2437,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             SQLiteIO.SaveSeasonName(season);
         }
 
+        public delegate void UpdateStatusDelegate(string message, bool noResetTimer = false);
+
         /// <summary>
         ///     Gets the name of the specified season.
         /// </summary>
@@ -2633,6 +2672,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                    .ContinueWith(t => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), MWInstance.UIScheduler);
 
             return result;
+        }
+
+        public static void UpdateAllDataBlocking(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
+        {
+            DBData dbData;
+            SQLiteIO.PopulateAll(Tf, out dbData);
+            ParseDBData(dbData);
+            if (!onlyPopulate)
+            {
+                MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen);
+            }
         }
 
         public static void UpdateNotables()
