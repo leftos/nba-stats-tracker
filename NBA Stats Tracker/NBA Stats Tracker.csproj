@@ -435,6 +435,10 @@
       <Project>{75333A6E-A4FA-491D-A4BA-D4FE6F38F226}</Project>
       <Name>SQLiteDatabase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Updater\Updater.csproj">
+      <Project>{26821050-3f52-485d-b092-148ab02461ff}</Project>
+      <Name>Updater</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
