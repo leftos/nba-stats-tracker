@@ -68,7 +68,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
             if (Equals(tbcAdd.SelectedItem, tabTeams))
             {
-                List<string> lines = Tools.SplitLinesToList(txtTeams.Text, false);
+                var lines = Tools.SplitLinesToList(txtTeams.Text, false);
                 MainWindow.AddInfo = "";
                 foreach (var line in lines)
                 {
@@ -77,7 +77,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             }
             else if (Equals(tbcAdd.SelectedItem, tabPlayers))
             {
-                int i = SQLiteIO.GetMaxPlayerID(MainWindow.CurrentDB);
+                var i = SQLiteIO.GetMaxPlayerID(MainWindow.CurrentDB);
                 foreach (var p in players)
                 {
                     if (String.IsNullOrWhiteSpace(p.LastName) || p.Team == -1)

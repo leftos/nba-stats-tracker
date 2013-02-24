@@ -105,7 +105,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                string name = MainWindow.Input.Replace(':', '-');
+                var name = MainWindow.Input.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
@@ -113,7 +113,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 }
                 var usedIDs = new List<int>();
                 MainWindow.Conferences.ForEach(conference => usedIDs.Add(conference.ID));
-                int i = 0;
+                var i = 0;
                 while (usedIDs.Contains(i))
                     i++;
 
@@ -152,8 +152,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 return;
 
             var conf = (Conference) lstData.SelectedItem;
-            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
-                                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (r == MessageBoxResult.No)
                 return;
 

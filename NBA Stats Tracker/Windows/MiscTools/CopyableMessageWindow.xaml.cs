@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System;
+using System.Media;
 using System.Windows;
 
 #endregion
@@ -31,7 +32,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
     /// </summary>
     public partial class CopyableMessageWindow
     {
-        private bool _beep;
+        private readonly bool _beep;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CopyableMessageWindow" /> class.
@@ -40,7 +41,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
         /// <param name="title">The title of the window.</param>
         /// <param name="align">The text alignment to be used for the message.</param>
         /// <param name="beep">If true, the system sound Beep will be played after the window is loaded.</param>
-        public CopyableMessageWindow(String msg, String title = "NBA Stats Tracker", TextAlignment align = TextAlignment.Left, bool beep = false)
+        public CopyableMessageWindow(String msg, String title = "NBA Stats Tracker", TextAlignment align = TextAlignment.Left,
+                                     bool beep = false)
         {
             InitializeComponent();
 
@@ -74,7 +76,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
         {
             if (_beep)
             {
-                System.Media.SystemSounds.Beep.Play();
+                SystemSounds.Beep.Play();
             }
         }
     }

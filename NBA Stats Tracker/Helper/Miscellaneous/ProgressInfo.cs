@@ -1,4 +1,5 @@
 ﻿#region Copyright Notice
+
 //    Copyright 2011-2013 Eleftherios Aslanoglou
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,14 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using System;
+#region Using Directives
+
 using System.Diagnostics;
+
+#endregion
 
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
@@ -23,8 +28,8 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     {
         public int CurrentStage;
         public int MaxStage;
-        public int Percentage;
         public string Message;
+        public int Percentage;
         public Stopwatch Timing;
 
         public ProgressInfo(int curStage, int maxStage, string message, int percentage = 0) : this(curStage, message, percentage)
@@ -32,21 +37,19 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             MaxStage = maxStage;
         }
 
-        public ProgressInfo(int curStage, string message, int percentage = 0)
-            : this(message, percentage)
+        public ProgressInfo(int curStage, string message, int percentage = 0) : this(message, percentage)
         {
             CurrentStage = curStage;
             Timing = new Stopwatch();
             Timing.Start();
         }
 
-        public ProgressInfo(string message, int percentage = 0) : this (percentage)
+        public ProgressInfo(string message, int percentage = 0) : this(percentage)
         {
             Message = message;
         }
 
-        public ProgressInfo(ProgressInfo progress, string message, int percentage = 0)
-            : this(message, percentage)
+        public ProgressInfo(ProgressInfo progress, string message, int percentage = 0) : this(message, percentage)
         {
             Trace.WriteLine("Stage " + progress.CurrentStage + ": " + progress.Timing.ElapsedMilliseconds);
             CurrentStage = progress.CurrentStage + 1;

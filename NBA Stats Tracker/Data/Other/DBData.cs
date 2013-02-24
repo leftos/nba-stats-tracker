@@ -32,15 +32,15 @@ namespace NBA_Stats_Tracker.Data.Other
         public List<BoxScoreEntry> BSHist;
         public Dictionary<int, string> DisplayNames;
         public Dictionary<int, PlayerStats> PST;
-        public PlayerRankings SeasonPlayerRankings;
         public PlayerRankings PlayoffPlayerRankings;
         public TeamRankings PlayoffTeamRankings;
+        public PlayerRankings SeasonPlayerRankings;
+        public TeamRankings SeasonTeamRankings;
         public Dictionary<int, Dictionary<string, PlayerStats>> SplitPlayerStats;
         public Dictionary<int, Dictionary<string, TeamStats>> SplitTeamStats;
         public Dictionary<int, TeamStats> TST;
         public Dictionary<int, TeamStats> TSTOpp;
         public SortedDictionary<string, int> TeamOrder;
-        public TeamRankings SeasonTeamRankings;
 
         public DBData(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
                       Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, TeamRankings seasonTeamRankings,

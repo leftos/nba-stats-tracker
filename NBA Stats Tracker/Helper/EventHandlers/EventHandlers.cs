@@ -25,14 +25,12 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows;
 using NBA_Stats_Tracker.Windows.MainInterface.Players;
 using NBA_Stats_Tracker.Windows.MainInterface.Teams;
 
@@ -47,20 +45,14 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     {
         public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c =>
-            {
-                App.ErrorReport(c.Exception, "Task exception");
-            }, CancellationToken.None,
+            task.ContinueWith(c => { App.ErrorReport(c.Exception, "Task exception"); }, CancellationToken.None,
                               TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
 
         public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c =>
-            {
-                App.ErrorReport(c.Exception, "Task exception");
-            }, CancellationToken.None,
+            task.ContinueWith(c => { App.ErrorReport(c.Exception, "Task exception"); }, CancellationToken.None,
                               TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
@@ -101,7 +93,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             if (s != null && s.SelectedCells.Count > 0)
             {
                 var row = (DataRowView) s.SelectedItems[0];
-                string team = row["Name"].ToString();
+                var team = row["Name"].ToString();
 
                 var tow = new TeamOverviewWindow(team);
                 tow.ShowDialog();

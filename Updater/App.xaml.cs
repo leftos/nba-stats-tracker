@@ -62,9 +62,8 @@ namespace Updater
             }
             installerProc.WaitForExit();
 
-            string installDir = GetRegistrySetting("InstallDir",
-                                                   Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) +
-                                                   @"\NBA Stats Tracker");
+            var installDir = GetRegistrySetting("InstallDir",
+                                                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\NBA Stats Tracker");
             Process.Start(installDir + @"\NBA Stats Tracker.exe");
 
             Environment.Exit(0);
@@ -72,8 +71,8 @@ namespace Updater
 
         private static string GetRegistrySetting(string setting, string defaultValue)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            string settingValue = defaultValue;
+            var rk = Registry.CurrentUser;
+            var settingValue = defaultValue;
             try
             {
                 if (rk == null)
@@ -124,7 +123,7 @@ namespace Updater
             }
             catch (Exception ex)
             {
-                string s = "Can't create errorlog!\nException: " + ex;
+                var s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;

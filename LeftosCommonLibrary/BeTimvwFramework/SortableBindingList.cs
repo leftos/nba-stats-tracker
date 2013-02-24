@@ -72,7 +72,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         {
             var itemsList = (List<T>) Items;
 
-            Type propertyType = property.PropertyType;
+            var propertyType = property.PropertyType;
             PropertyComparer<T> comparer;
             if (!_comparers.TryGetValue(propertyType, out comparer))
             {
@@ -101,11 +101,11 @@ namespace LeftosCommonLibrary.BeTimvwFramework
 
         protected override int FindCore(PropertyDescriptor property, object key)
         {
-            int count = Count;
-            for (int i = 0; i < count; ++i)
+            var count = Count;
+            for (var i = 0; i < count; ++i)
             {
-                T element = this[i];
-                object value = property.GetValue(element);
+                var element = this[i];
+                var value = property.GetValue(element);
                 if (value != null && value.Equals(key))
                 {
                     return i;

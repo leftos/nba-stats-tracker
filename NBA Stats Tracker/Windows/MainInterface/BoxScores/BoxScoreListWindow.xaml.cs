@@ -70,7 +70,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             var boxScoreEntry = dgvBoxScores.SelectedItem as BoxScoreEntry;
             if (boxScoreEntry != null)
             {
-                int id = boxScoreEntry.BS.ID;
+                var id = boxScoreEntry.BS.ID;
 
                 var bw = new BoxScoreWindow(BoxScoreWindow.Mode.ViewAndIgnore, id);
                 try
@@ -98,7 +98,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// </param>
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult r =
+            var r =
                 MessageBox.Show(
                     "Are you sure you want to delete this/these box score(s)?\n" + "This action cannot be undone.\n\n" +
                     "Any changes made to Team Stats by automatically adding this/these box score(s) to them won't be reverted by its deletion.",
@@ -109,7 +109,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     if (bse != null)
                     {
-                        int id = bse.BS.ID;
+                        var id = bse.BS.ID;
 
                         _db.Delete("GameResults", "GameID = " + id);
                         _db.Delete("PlayerResults", "GameID = " + id);

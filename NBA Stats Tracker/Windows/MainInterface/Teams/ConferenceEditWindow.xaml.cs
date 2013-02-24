@@ -93,11 +93,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
               .ToList()
               .ForEach(row => usedIDs.Add(ParseCell.GetInt32(row, "ID")));
 
-            List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
+            var list = Tools.SplitLinesToList(txtDivisions.Text, false);
             foreach (var newDiv in list)
             {
-                string newName = newDiv.Replace(':', '-');
-                int i = 0;
+                var newName = newDiv.Replace(':', '-');
+                var i = 0;
                 while (usedIDs.Contains(i))
                     i++;
                 MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = _curConf.ID});
@@ -106,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             if (MainWindow.Divisions.Any(division => division.ConferenceID == _curConf.ID) == false)
             {
-                int i = 0;
+                var i = 0;
                 while (usedIDs.Contains(i))
                     i++;
                 MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = _curConf.ID});

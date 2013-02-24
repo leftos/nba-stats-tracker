@@ -57,7 +57,7 @@ namespace SQLite_Database
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
-            String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
+            var str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
             _dbConnection = str;
         }
@@ -103,7 +103,7 @@ namespace SQLite_Database
         /// <returns></returns>
         private static DataTable getDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
         {
-            DataTable schemaTable = dataReader.GetSchemaTable();
+            var schemaTable = dataReader.GetSchemaTable();
             if (schemaTable == null)
             {
                 throw new Exception("SQLiteDatabase.GetDataTableFromDataReader called with but the DataReader returned null.");
@@ -129,7 +129,7 @@ namespace SQLite_Database
                 {
                     if (queryHasDuplicateColumns)
                     {
-                        int i = 2;
+                        var i = 2;
                         while (resultTable.Columns.Contains(dataColumn.ColumnName + i))
                         {
                             i++;
@@ -146,8 +146,8 @@ namespace SQLite_Database
 
             while (dataReader.Read())
             {
-                DataRow dataRow = resultTable.NewRow();
-                for (int i = 0; i < resultTable.Columns.Count; i++)
+                var dataRow = resultTable.NewRow();
+                for (var i = 0; i < resultTable.Columns.Count; i++)
                 {
                     dataRow[i] = dataReader[i];
                 }
@@ -169,7 +169,7 @@ namespace SQLite_Database
             using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
-                SQLiteTransaction sqLiteTransaction = cnn.BeginTransaction();
+                var sqLiteTransaction = cnn.BeginTransaction();
                 SQLiteCommand mycommand;
                 using (mycommand = new SQLiteCommand(cnn))
                 {
@@ -216,8 +216,8 @@ namespace SQLite_Database
         /// <returns>An integer that represents the amount of rows updated, or -1 if the query failed.</returns>
         public int Update(String tableName, Dictionary<String, String> data, String where)
         {
-            string sql = "";
-            String vals = "";
+            var sql = "";
+            var vals = "";
             int returnCode;
             if (data.Count >= 1)
             {
@@ -246,17 +246,17 @@ namespace SQLite_Database
         public void UpdateManyTransaction(String tableName, List<Dictionary<String, String>> dataList, List<String> whereList)
         {
             SQLiteConnection cnn;
-            String vals = "";
+            var vals = "";
             using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
+                    using (var transaction = cnn.BeginTransaction())
                     {
-                        for (int i = 0; i < dataList.Count; i++)
+                        for (var i = 0; i < dataList.Count; i++)
                         {
-                            Dictionary<string, string> data = dataList[i];
+                            var data = dataList[i];
                             if (data.Count >= 1)
                             {
                                 vals = data.Aggregate("", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
@@ -286,7 +286,7 @@ namespace SQLite_Database
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool Delete(String tableName, String where)
         {
-            Boolean returnCode = true;
+            var returnCode = true;
             try
             {
                 ExecuteNonQuery(String.Format("delete from {0} where {1};", tableName, where));
@@ -307,10 +307,10 @@ namespace SQLite_Database
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool Insert(String tableName, Dictionary<String, String> data)
         {
-            String columns = "";
-            String values = "";
-            string sql = "";
-            Boolean returnCode = true;
+            var columns = "";
+            var values = "";
+            var sql = "";
+            var returnCode = true;
             foreach (var val in data)
             {
                 columns += String.Format(" {0},", val.Key);
@@ -344,13 +344,13 @@ namespace SQLite_Database
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
+                    using (var transaction = cnn.BeginTransaction())
                     {
-                        for (int i = 0; i < dataList.Count; i++)
+                        for (var i = 0; i < dataList.Count; i++)
                         {
-                            Dictionary<string, string> data = dataList[i];
-                            String columns = "";
-                            String values = "";
+                            var data = dataList[i];
+                            var columns = "";
+                            var values = "";
                             foreach (var val in data)
                             {
                                 columns += String.Format(" {0},", val.Key);
@@ -391,7 +391,7 @@ namespace SQLite_Database
 
             int returnCode;
 
-            string sql = "insert into " + tableName + " SELECT";
+            var sql = "insert into " + tableName + " SELECT";
 
             sql = data[0].Aggregate(sql, (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
             sql = sql.Remove(sql.Length - 1);
@@ -423,7 +423,7 @@ namespace SQLite_Database
         {
             try
             {
-                DataTable tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
+                var tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
                 foreach (DataRow table in tables.Rows)
                 {
                     ClearTable(table["NAME"].ToString());

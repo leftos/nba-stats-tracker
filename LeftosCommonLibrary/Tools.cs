@@ -56,8 +56,8 @@ namespace LeftosCommonLibrary
 
         public static string GetFullPathWithoutExtension(string f)
         {
-            string fullpath = Path.GetFullPath(f);
-            string ext = Path.GetExtension(f);
+            var fullpath = Path.GetFullPath(f);
+            var ext = Path.GetExtension(f);
             if (!String.IsNullOrEmpty(ext))
             {
                 fullpath = fullpath.Replace(ext, "");
@@ -84,7 +84,7 @@ namespace LeftosCommonLibrary
         public static byte[] ReverseByteOrder(byte[] original, int length)
         {
             var newArr = new byte[length];
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 newArr[length - i - 1] = original[i];
             }
@@ -98,16 +98,16 @@ namespace LeftosCommonLibrary
         /// <returns>The corresponding byte array.</returns>
         public static byte[] HexStringToByteArray(String hex)
         {
-            int numberChars = hex.Length;
+            var numberChars = hex.Length;
             var bytes = new byte[numberChars/2];
-            for (int i = 0; i < numberChars; i += 2)
+            for (var i = 0; i < numberChars; i += 2)
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
 
         public static string ByteArrayToHexString(byte[] ba)
         {
-            string hex = BitConverter.ToString(ba);
+            var hex = BitConverter.ToString(ba);
             return hex.Replace("-", "");
         }
 
@@ -125,7 +125,7 @@ namespace LeftosCommonLibrary
             //Instantiate MD5CryptoServiceProvider, get bytes for original password and compute hash (encoded password)
             using (md5 = new MD5CryptoServiceProvider())
             {
-                Byte[] originalBytes = Encoding.Default.GetBytes(s);
+                var originalBytes = Encoding.Default.GetBytes(s);
                 encodedBytes = md5.ComputeHash(originalBytes);
             }
 
@@ -169,7 +169,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
-            string[] arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
+            var arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
             if (keepDuplicates)
                 return arr.ToList();
             else
@@ -195,10 +195,10 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Determines if a type is numeric.  Nullable numeric types are considered numeric.
+        ///     Determines if a type is numeric.  Nullable numeric types are considered numeric.
         /// </summary>
         /// <remarks>
-        /// Boolean is not considered numeric.
+        ///     Boolean is not considered numeric.
         /// </remarks>
         public static bool IsNumericType(Type type)
         {
@@ -222,7 +222,7 @@ namespace LeftosCommonLibrary
                 case TypeCode.UInt64:
                     return true;
                 case TypeCode.Object:
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
                     {
                         return IsNumericType(Nullable.GetUnderlyingType(type));
                     }
@@ -246,9 +246,9 @@ namespace LeftosCommonLibrary
 
             try
             {
-                checked  // Turns on overflow checking.
+                checked // Turns on overflow checking.
                 {
-                    foreach (char t in incomingString)
+                    foreach (var t in incomingString)
                     {
                         switch (t)
                         {
@@ -276,7 +276,6 @@ namespace LeftosCommonLibrary
             }
 
             return false;
-
-        } 
+        }
     }
 }

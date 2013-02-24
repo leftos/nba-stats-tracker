@@ -92,7 +92,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
 
             foreach (var team in validTeams)
             {
-                string s = String.Format("{0} (ID: {1})", team["Name"], team["ID"]);
+                var s = String.Format("{0} (ID: {1})", team["Name"], team["ID"]);
                 if (!activeTeams.Contains(team))
                 {
                     lstDisabled.Items.Add(s);
@@ -126,20 +126,20 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
 
             var db = new SQLiteDatabase(_currentDB);
 
-            string teamsT = "Teams";
+            var teamsT = "Teams";
             _playersT = "Players";
             if (_curSeason != _maxSeason)
             {
-                string s = "S" + _curSeason;
+                var s = "S" + _curSeason;
                 teamsT += s;
                 _playersT += s;
             }
 
             if (mode == Mode.HiddenTeams)
             {
-                string q = "select DisplayName, isHidden from " + teamsT + " ORDER BY DisplayName ASC";
+                var q = "select DisplayName, isHidden from " + teamsT + " ORDER BY DisplayName ASC";
 
-                DataTable res = db.GetDataTable(q);
+                var res = db.GetDataTable(q);
 
                 foreach (DataRow r in res.Rows)
                 {
@@ -160,14 +160,14 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 lblEnabled.Content = "Enabled Players";
                 lblDisabled.Content = "Disabled Players";
 
-                string q = "SELECT (LastName || ', ' || FirstName || ' (' || TeamFin || ')') AS Name, ID, isHidden FROM " + _playersT +
-                           " ORDER BY LastName";
+                var q = "SELECT (LastName || ', ' || FirstName || ' (' || TeamFin || ')') AS Name, ID, isHidden FROM " + _playersT +
+                        " ORDER BY LastName";
 
-                DataTable res = db.GetDataTable(q);
+                var res = db.GetDataTable(q);
 
                 foreach (DataRow r in res.Rows)
                 {
-                    string s = ParseCell.GetString(r, "Name");
+                    var s = ParseCell.GetString(r, "Name");
                     if (!ParseCell.GetBoolean(r, "isHidden"))
                     {
                         _shownPlayers.Add(new KeyValuePair<int, string>(ParseCell.GetInt32(r, "ID"), s));
@@ -206,7 +206,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             if (mode == Mode.PickBoxScore)
             {
                 btnLoadList.Visibility = Visibility.Hidden;
-                List<int> candidates = REDitor.TeamsThatPlayedAGame;
+                var candidates = REDitor.TeamsThatPlayedAGame;
                 lblCurSeason.Content = "Select the two teams that you want to extract the box score for";
 
                 if (candidates.Count > 2)
@@ -256,8 +256,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                     lstEnabled.Items.Add(name);
                     lstDisabled.Items.Remove(name);
                 }
-                List<string> items = (from object item in lstEnabled.Items
-                                      select item.ToString()).ToList();
+                var items = (from object item in lstEnabled.Items
+                             select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));
@@ -265,7 +265,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             }
             else
             {
-                List<KeyValuePair<int, string>> list = lstDisabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
+                var list = lstDisabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
                 foreach (var item in list)
                 {
                     _shownPlayers.Add(item);
@@ -295,8 +295,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                     lstDisabled.Items.Add(name);
                     lstEnabled.Items.Remove(name);
                 }
-                List<string> items = (from object item in lstDisabled.Items
-                                      select item.ToString()).ToList();
+                var items = (from object item in lstDisabled.Items
+                             select item.ToString()).ToList();
                 items.Sort();
                 lstDisabled.Items.Clear();
                 items.ForEach(item => lstDisabled.Items.Add(item));
@@ -305,7 +305,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             }
             else
             {
-                List<KeyValuePair<int, string>> list = lstEnabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
+                var list = lstEnabled.SelectedItems.Cast<KeyValuePair<int, string>>().ToList();
                 foreach (var item in list)
                 {
                     _hiddenPlayers.Add(item);
@@ -321,13 +321,13 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             {
                 var db = new SQLiteDatabase(_currentDB);
 
-                string teamsT = "Teams";
-                string plTeamsT = "PlayoffTeams";
-                string oppT = "Opponents";
-                string plOppT = "PlayoffOpponents";
+                var teamsT = "Teams";
+                var plTeamsT = "PlayoffTeams";
+                var oppT = "Opponents";
+                var plOppT = "PlayoffOpponents";
                 if (_curSeason != _maxSeason)
                 {
-                    string s = "S" + _curSeason;
+                    var s = "S" + _curSeason;
                     teamsT += s;
                     plTeamsT += s;
                     oppT += s;
@@ -345,15 +345,14 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
 
                 foreach (string name in lstDisabled.Items)
                 {
-                    string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = " +
-                               getTeamIDFromDisplayName(name) + " OR Team2ID = " + getTeamIDFromDisplayName(name) + ")";
-                    DataTable res = db.GetDataTable(q);
+                    var q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = " +
+                            getTeamIDFromDisplayName(name) + " OR Team2ID = " + getTeamIDFromDisplayName(name) + ")";
+                    var res = db.GetDataTable(q);
 
                     if (res.Rows.Count > 0)
                     {
-                        MessageBoxResult r =
-                            MessageBox.Show(name + " have box scores this season. Are you sure you want to disable this team?",
-                                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        var r = MessageBox.Show(name + " have box scores this season. Are you sure you want to disable this team?",
+                                                "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
                             continue;
@@ -388,16 +387,15 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 whereList = new List<string>();
                 foreach (KeyValuePair<int, string> item in lstDisabled.Items)
                 {
-                    string q =
+                    var q =
                         "select * from PlayerResults INNER JOIN GameResults ON GameResults.GameID = PlayerResults.GameID where SeasonNum = " +
                         _curSeason + " AND PlayerID = " + item.Key;
-                    DataTable res = db.GetDataTable(q, true);
+                    var res = db.GetDataTable(q, true);
 
                     if (res.Rows.Count > 0)
                     {
-                        MessageBoxResult r =
-                            MessageBox.Show(item.Value + " has box scores this season. Are you sure you want to disable them?",
-                                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        var r = MessageBox.Show(item.Value + " has box scores this season. Are you sure you want to disable them?",
+                                                "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
                             continue;
@@ -424,7 +422,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 MainWindow.SelectedTeams = new List<Dictionary<string, string>>();
                 foreach (string team in lstEnabled.Items)
                 {
-                    string teamName = team.Split(new[] {" (ID: "}, StringSplitOptions.None)[0];
+                    var teamName = team.Split(new[] {" (ID: "}, StringSplitOptions.None)[0];
                     MainWindow.SelectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
                                                                   {
                                                                       if (t["Name"] == teamName)
@@ -441,8 +439,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 if (lstEnabled.Items.Count != 2)
                     return;
 
-                MessageBoxResult r = MessageBox.Show("Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker",
-                                                     MessageBoxButton.YesNoCancel);
+                var r = MessageBox.Show("Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker", MessageBoxButton.YesNoCancel);
                 if (r == MessageBoxResult.Cancel)
                     return;
 
@@ -494,8 +491,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 if (String.IsNullOrWhiteSpace(ofd.FileName))
                     return;
 
-                string stg = File.ReadAllText(ofd.FileName);
-                string[] lines = stg.Split(new[] {'\n'});
+                var stg = File.ReadAllText(ofd.FileName);
+                var lines = stg.Split(new[] {'\n'});
                 foreach (var line in lines)
                 {
                     if (line.StartsWith("Active$$"))
@@ -503,7 +500,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                         var enabledTeams = new List<string>(line.Substring(8).Split(new[] {"$%"}, StringSplitOptions.None));
                         foreach (var team in enabledTeams)
                         {
-                            bool found = false;
+                            var found = false;
                             foreach (string dteam in lstDisabled.Items)
                             {
                                 if (dteam.Contains("(ID: " + team + ")"))
@@ -530,8 +527,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                     }
                 }
 
-                List<string> items = (from object item in lstEnabled.Items
-                                      select item.ToString()).ToList();
+                var items = (from object item in lstEnabled.Items
+                             select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));

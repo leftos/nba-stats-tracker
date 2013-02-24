@@ -82,7 +82,7 @@ namespace LeftosCommonLibrary
 
         protected override byte[] HashFinal()
         {
-            byte[] hashBuffer = UInt32ToBigEndianBytes(~_hash);
+            var hashBuffer = UInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
@@ -108,10 +108,10 @@ namespace LeftosCommonLibrary
                 return _defaultTable;
 
             var createTable = new UInt32[256];
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
                 var entry = (UInt32) i;
-                for (int j = 0; j < 8; j++)
+                for (var j = 0; j < 8; j++)
                     if ((entry & 1) == 1)
                         entry = (entry >> 1) ^ polynomial;
                     else
@@ -127,8 +127,8 @@ namespace LeftosCommonLibrary
 
         private static UInt32 calculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
         {
-            UInt32 crc = seed;
-            for (int i = start; i < size; i++)
+            var crc = seed;
+            for (var i = start; i < size; i++)
                 unchecked
                 {
                     crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
@@ -150,7 +150,7 @@ namespace LeftosCommonLibrary
         public static String CalculateCRC(string path, bool ignoreFirst4Bytes = false)
         {
             var crc32 = new Crc32();
-            String hash = String.Empty;
+            var hash = String.Empty;
 
             byte[] file;
             file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();

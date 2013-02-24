@@ -30,8 +30,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public bool CanClose = false;
         public static ProgressWindow PwInstance;
+        public bool CanClose = false;
 
         public ProgressWindow()
         {

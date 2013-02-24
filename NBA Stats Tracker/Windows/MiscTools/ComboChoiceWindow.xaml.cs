@@ -20,7 +20,6 @@
 
 using System.Collections.Generic;
 using System.Windows;
-using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Windows.MainInterface;
 using NBA_Stats_Tracker.Windows.MainInterface.Players;
 
@@ -76,7 +75,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 cmbSelection2.Visibility = Visibility.Hidden;
                 foreach (var div in MainWindow.Divisions)
                 {
-                    Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
+                    var conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
                     cmbSelection1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
                 }
             }

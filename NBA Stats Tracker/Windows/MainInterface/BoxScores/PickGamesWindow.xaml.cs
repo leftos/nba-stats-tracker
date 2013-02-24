@@ -59,8 +59,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             if (lstAvailableAway.SelectedItems.Count == 1 && lstAvailableHome.SelectedItems.Count == 1)
             {
-                object away = lstAvailableAway.SelectedItem;
-                object home = lstAvailableHome.SelectedItem;
+                var away = lstAvailableAway.SelectedItem;
+                var home = lstAvailableHome.SelectedItem;
                 lstSelectedGames.Items.Add(away + " @ " + home);
                 REDitor.PickedTeams.Add(Misc.GetTeamIDFromDisplayName(MainWindow.TST, away.ToString()));
                 REDitor.PickedTeams.Add(Misc.GetTeamIDFromDisplayName(MainWindow.TST, home.ToString()));
@@ -85,7 +85,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?") == MessageBoxResult.Yes)
                 {
-                    string[] parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
+                    var parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
                     foreach (var part in parts)
                     {
@@ -94,7 +94,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         lstAvailableHome.Items.Add(part);
                     }
 
-                    List<string> list = lstAvailableAway.Items.Cast<string>().ToList();
+                    var list = lstAvailableAway.Items.Cast<string>().ToList();
                     list.Sort();
                     lstAvailableAway.Items.Clear();
                     list.ForEach(item => lstAvailableAway.Items.Add(item));

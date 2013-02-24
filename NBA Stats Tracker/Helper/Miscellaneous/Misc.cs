@@ -25,7 +25,6 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows;
 using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
@@ -41,7 +40,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         {
             if (displayName == "- Inactive -")
                 return -1;
-            for (int i = 0; i < MainWindow.TST.Count; i++)
+            for (var i = 0; i < MainWindow.TST.Count; i++)
             {
                 if (teamStats[i].DisplayName == displayName)
                 {
@@ -77,7 +76,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         /// <exception cref="System.Exception"></exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
-            RegistryKey rk = Registry.CurrentUser;
+            var rk = Registry.CurrentUser;
             try
             {
                 try
@@ -112,8 +111,8 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         /// <exception cref="System.Exception"></exception>
         public static int GetRegistrySetting(string setting, int defaultValue)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            int settingValue = defaultValue;
+            var rk = Registry.CurrentUser;
+            var settingValue = defaultValue;
             try
             {
                 if (rk == null)
@@ -140,8 +139,8 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         /// <exception cref="System.Exception"></exception>
         public static string GetRegistrySetting(string setting, string defaultValue)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            string settingValue = defaultValue;
+            var rk = Registry.CurrentUser;
+            var settingValue = defaultValue;
             try
             {
                 if (rk == null)

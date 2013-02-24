@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using LeftosCommonLibrary;
-using NBA_Stats_Tracker.Windows;
 using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
@@ -111,10 +110,10 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="dateParts">The parts of the date string.</param>
         public TeamBoxScore(DataSet ds, string[] dateParts)
         {
-            DataTable away = ds.Tables[0];
-            DataTable home = ds.Tables[1];
+            var away = ds.Tables[0];
+            var home = ds.Tables[1];
 
-            int segmentsDone = 0;
+            var segmentsDone = 0;
             foreach (var team in MainWindow.TeamOrder)
             {
                 if (dateParts[0].Contains(team.Key))
@@ -136,13 +135,13 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Team2ID = -2;
                 return;
             }
-            string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
+            var date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             GameDate = Convert.ToDateTime(date);
 
             ID = SQLiteIO.SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
             SeasonNum = MainWindow.CurSeason;
 
-            DataRow rt = away.Rows[away.Rows.Count - 1];
+            var rt = away.Rows[away.Rows.Count - 1];
             PTS1 = ParseCell.GetUInt16(rt, "PTS");
             REB1 = Convert.ToUInt16(rt["TRB"].ToString());
             AST1 = Convert.ToUInt16(rt["AST"].ToString());

@@ -41,7 +41,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             cmbInjuryType.ItemsSource = PlayerInjury.InjuryTypes.Values.ToList();
 
-            List<string> approx = PlayerInjury.ApproximateDurations.Keys.Skip(2).ToList();
+            var approx = PlayerInjury.ApproximateDurations.Keys.Skip(2).ToList();
             approx.AddRange(PlayerInjury.ApproximateDurations.Keys.Take(2).ToList());
 
             cmbTFApproximateAmount.ItemsSource = approx;

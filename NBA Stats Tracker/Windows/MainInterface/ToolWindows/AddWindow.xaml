@@ -1,4 +1,5 @@
-<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.ToolWindows.AddWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.ToolWindows.AddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         Title="Add Teams/Players" Height="373" Width="575"

@@ -328,8 +328,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 foul += pbs.FOUL;
             }
 
-            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb,
-                                        oreb, ast, blk, stl, tos, foul);
+            var resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb, oreb,
+                                     ast, blk, stl, tos, foul);
 
             return resp;
         }
@@ -456,7 +456,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 || cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
                 return;
 
-            BoxScoreEntry bse = calculateBoxScoreEntry();
+            var bse = calculateBoxScoreEntry();
             DialogResult = true;
             MainWindow.TempBSE = bse;
             Close();
@@ -476,9 +476,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                                                        ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
-            string q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
+            var q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
             q += " ORDER BY LastName ASC";
-            DataTable res = db.GetDataTable(q);
+            var res = db.GetDataTable(q);
 
             playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
@@ -490,10 +490,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
-            for (int i = 0; i < pbsList.Count; i++)
+            for (var i = 0; i < pbsList.Count; i++)
             {
-                LivePlayerBoxScore cur = pbsList[i];
-                string name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
+                var cur = pbsList[i];
+                var name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
                 if (!playersList.Contains(player))
@@ -538,7 +538,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     // Perform the drag operation 
                     var selectedPerson = (LivePlayerBoxScore) row.Item;
-                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(row, selectedPerson, DragDropEffects.Move);
+                    var finalDropEffect = DragDrop.DoDragDrop(row, selectedPerson, DragDropEffects.Move);
                     if ((finalDropEffect == DragDropEffects.Move) && (_targetPerson != null))
                     {
                         // A Move drop was accepted 
@@ -546,8 +546,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         // Determine the index of the item being dragged and the drop 
                         // location. If they are difference, then move the selected 
                         // item to the new location. 
-                        int oldIndex = pbsList.IndexOf(selectedPerson);
-                        int newIndex = pbsList.IndexOf(_targetPerson);
+                        var oldIndex = pbsList.IndexOf(selectedPerson);
+                        var newIndex = pbsList.IndexOf(_targetPerson);
                         if (oldIndex != newIndex)
                         {
                             pbsList.Insert(newIndex + 1, selectedPerson);
@@ -614,7 +614,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <returns></returns>
         private static UIE findVisualParent<UIE>(UIElement element) where UIE : UIElement
         {
-            UIElement parent = element;
+            var parent = element;
             while (parent != null)
             {
                 var correctlyTyped = parent as UIE;

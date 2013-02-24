@@ -230,37 +230,65 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <Grid Grid.Column="0">
-                                    <ComboBox x:Name="cmbCustomOther" HorizontalAlignment="Right" Margin="0,96,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomOther_SelectionChanged"/>
-                                    <Button x:Name="btnCustomAdd" Content="Add" HorizontalAlignment="Right" Margin="0,150,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomAdd_Click"/>
-                                    <ComboBox x:Name="cmbCustomTotals" HorizontalAlignment="Right" Margin="0,14,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomTotals_SelectionChanged"/>
-                                    <ComboBox x:Name="cmbCustomPerGame" HorizontalAlignment="Right" Margin="0,42,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomPerGame_SelectionChanged"/>
-                                    <ComboBox x:Name="cmbCustomMetrics" HorizontalAlignment="Right" Margin="0,69,10,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbCustomMetrics_SelectionChanged"/>
-                                    <Label Content="Totals" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="Per Game" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="Metrics" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="Other" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top"/>
-                                    <ComboBox x:Name="cmbCustomOp" HorizontalAlignment="Right" Margin="0,123,10,0" VerticalAlignment="Top" Width="58" SelectionChanged="cmbCustomOp_SelectionChanged"/>
-                                    <Label Content="Operators" HorizontalAlignment="Left" Margin="11,119,0,0" VerticalAlignment="Top"/>
+                                    <ComboBox x:Name="cmbCustomOther" HorizontalAlignment="Right" Margin="0,96,10,0"
+                                              VerticalAlignment="Top" Width="120"
+                                              SelectionChanged="cmbCustomOther_SelectionChanged" />
+                                    <Button x:Name="btnCustomAdd" Content="Add" HorizontalAlignment="Right"
+                                            Margin="0,150,10,0" VerticalAlignment="Top" Width="75"
+                                            Click="btnCustomAdd_Click" />
+                                    <ComboBox x:Name="cmbCustomTotals" HorizontalAlignment="Right" Margin="0,14,10,0"
+                                              VerticalAlignment="Top" Width="120"
+                                              SelectionChanged="cmbCustomTotals_SelectionChanged" />
+                                    <ComboBox x:Name="cmbCustomPerGame" HorizontalAlignment="Right" Margin="0,42,10,0"
+                                              VerticalAlignment="Top" Width="120"
+                                              SelectionChanged="cmbCustomPerGame_SelectionChanged" />
+                                    <ComboBox x:Name="cmbCustomMetrics" HorizontalAlignment="Right" Margin="0,69,10,0"
+                                              VerticalAlignment="Top" Width="120"
+                                              SelectionChanged="cmbCustomMetrics_SelectionChanged" />
+                                    <Label Content="Totals" HorizontalAlignment="Left" Margin="10,11,0,0"
+                                           VerticalAlignment="Top" />
+                                    <Label Content="Per Game" HorizontalAlignment="Left" Margin="10,38,0,0"
+                                           VerticalAlignment="Top" />
+                                    <Label Content="Metrics" HorizontalAlignment="Left" Margin="10,65,0,0"
+                                           VerticalAlignment="Top" />
+                                    <Label Content="Other" HorizontalAlignment="Left" Margin="10,92,0,0"
+                                           VerticalAlignment="Top" />
+                                    <ComboBox x:Name="cmbCustomOp" HorizontalAlignment="Right" Margin="0,123,10,0"
+                                              VerticalAlignment="Top" Width="58"
+                                              SelectionChanged="cmbCustomOp_SelectionChanged" />
+                                    <Label Content="Operators" HorizontalAlignment="Left" Margin="11,119,0,0"
+                                           VerticalAlignment="Top" />
                                 </Grid>
                                 <Grid Grid.Column="1">
-                                    <TextBox x:Name="txtCustomExp" Height="23" Margin="113,36,311,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="txtCustomExp" Height="23" Margin="113,36,311,0"
+                                             TextWrapping="Wrap" VerticalAlignment="Top" />
                                     <ListBox x:Name="lstCustom" Margin="10,91,10,10"></ListBox>
-                                    <Button x:Name="btnCustomExpAdd" Content="Add" HorizontalAlignment="Right" Margin="0,64,90,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpAdd_Click"/>
-                                    <Button x:Name="btnCustomExpDel" Content="Remove" HorizontalAlignment="Right" Margin="0,64,10,0" VerticalAlignment="Top" Width="75" Click="btnCustomExpDel_Click"/>
-                                    <TextBox x:Name="txtCustomName" Height="23" Margin="15,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="93"/>
-                                    <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="txtCustomDP" Height="23" Margin="0,36,10,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Width="88"/>
-                                    <Label Content="Expression" HorizontalAlignment="Left" Margin="108,10,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="Decimal Points" HorizontalAlignment="Right" Margin="0,10,15,0" VerticalAlignment="Top"/>
+                                    <Button x:Name="btnCustomExpAdd" Content="Add" HorizontalAlignment="Right"
+                                            Margin="0,64,90,0" VerticalAlignment="Top" Width="75"
+                                            Click="btnCustomExpAdd_Click" />
+                                    <Button x:Name="btnCustomExpDel" Content="Remove" HorizontalAlignment="Right"
+                                            Margin="0,64,10,0" VerticalAlignment="Top" Width="75"
+                                            Click="btnCustomExpDel_Click" />
+                                    <TextBox x:Name="txtCustomName" Height="23" Margin="15,36,0,0" TextWrapping="Wrap"
+                                             VerticalAlignment="Top" HorizontalAlignment="Left" Width="93" />
+                                    <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0"
+                                           VerticalAlignment="Top" />
+                                    <TextBox x:Name="txtCustomDP" Height="23" Margin="0,36,10,0" TextWrapping="Wrap"
+                                             VerticalAlignment="Top" HorizontalAlignment="Right" Width="88" />
+                                    <Label Content="Expression" HorizontalAlignment="Left" Margin="108,10,0,0"
+                                           VerticalAlignment="Top" />
+                                    <Label Content="Decimal Points" HorizontalAlignment="Right" Margin="0,10,15,0"
+                                           VerticalAlignment="Top" />
                                     <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,36,265,0"
-                                    	x:Name="cmbCustomComp"
-                                    	VerticalAlignment="Top" Width="41" />
+                                              x:Name="cmbCustomComp"
+                                              VerticalAlignment="Top" Width="41" />
                                     <TextBox Height="23" Margin="0,36,103,0" x:Name="txtCustomVal"
-                                    	VerticalAlignment="Top" HorizontalAlignment="Right" Width="156" />
-                                    <Label Content="Filter" HorizontalAlignment="Left" Margin="405,10,0,0" VerticalAlignment="Top"/>
+                                             VerticalAlignment="Top" HorizontalAlignment="Right" Width="156" />
+                                    <Label Content="Filter" HorizontalAlignment="Left" Margin="405,10,0,0"
+                                           VerticalAlignment="Top" />
                                 </Grid>
                             </Grid>
                         </TabItem>

@@ -80,7 +80,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                string s = "Can't create errorlog!\nException: " + ex;
+                var s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;
@@ -103,9 +103,7 @@ namespace NBA_Stats_Tracker
         public static void ErrorReport(Exception e, string additional = "")
         {
             var exceptionString = e.ToString();
-            var innerExceptionString = e.InnerException == null
-                                           ? "No inner exception information."
-                                           : e.InnerException.Message;
+            var innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
             var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
@@ -133,7 +131,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                string s = "Can't create errorlog!\nException: " + ex;
+                var s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;
@@ -180,14 +178,13 @@ namespace NBA_Stats_Tracker
             Trace.Listeners.Clear();
 
             var twtl = new TextWriterTraceListener(AppDocsPath + @"\tracelog.txt")
-            {
-                Name = "TextLogger",
-                TraceOutputOptions =
-                    TraceOptions.ThreadId |
-                    TraceOptions.DateTime
-            };
+                       {
+                           Name = "TextLogger",
+                           TraceOutputOptions =
+                               TraceOptions.ThreadId | TraceOptions.DateTime
+                       };
 
-            var ctl = new ConsoleTraceListener(false) { TraceOutputOptions = TraceOptions.DateTime };
+            var ctl = new ConsoleTraceListener(false) {TraceOutputOptions = TraceOptions.DateTime};
 
             Trace.Listeners.Add(twtl);
             Trace.Listeners.Add(ctl);
