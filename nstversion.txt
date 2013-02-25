@@ -1,7 +1,9 @@
-1.10.0.1
+1.11.0.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
 http://forums.nba-live.com/viewtopic.php?f=143&t=84110
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
 
-	Introduced in v1.9 is the new Custom Columns feature in Advanced Player Search which allows you to build your own functions (e.g. metrics) out of all the stats and information available in your database!
+	Version 1.11 improves upon the Custom Columns in Advanced Player Search feature which was introduced in version 1.9, by adding teams and opponent stats as building blocks for the custom expressions.
+	
+	Remember that the Custom Columns feature allows you to build your own functions (e.g. metrics) out of all the stats and information available in your database!
