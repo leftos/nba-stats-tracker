@@ -1,5 +1,7 @@
 NBA Stats Tracker - Version History
 
+<<<<<<< experimental
+=======
 	v1.11
 		- Addition: Added Teams stats, metrics and info as building blocks for custom expressions in Advanced Player Search
 		- Improvement: Advanced Player Search and Advanced Stats Calculator will now remember the window size and position
@@ -277,6 +279,7 @@ NBA Stats Tracker - Version History
 	v1.0.2.1
 		- Change: Download NBA Stats now downloads stats for the 2012-13 season
 
+>>>>>>> local
 	v1.0.2
 		- Addition: Team Scouting Reports now include the basic team roster
 
@@ -399,7 +402,7 @@ NBA Stats Tracker - Version History
 		- Improvement: Player box scores in the Box Score window can now be sorted
 
 	v0.12.1.1
-		- Fix: Tool would ignore players with PlType = 5 on REDitor Import
+		- Fix: Tool would ignore players with PlType = 5 on REditor Import
 
 	v0.12.1
 		- Improvement: Best Performers in Team Overview reports if any players are injured
@@ -407,16 +410,16 @@ NBA Stats Tracker - Version History
 		- Fix: Various minor interface fixes
 
 	v0.12.0.6
-		- Fix: Player Stats weren't being exported correctly when doing an REDitor export
+		- Fix: Player Stats weren't being exported correctly when doing an REditor export
 
 	v0.12.0.5
-		- Fix: Fixed Load Active Teams in REDitor Import Team Selection Window which broke in v0.12.0.4
+		- Fix: Fixed Load Active Teams in REditor Import Team Selection Window which broke in v0.12.0.4
 
 	v0.12.0.4
-		- Improvement: Added Team IDs to REDitor Import Team Selection window
+		- Improvement: Added Team IDs to REditor Import Team Selection window
 
 	v0.12.0.3
-		- Fix: Fixed player matching bug during REDitor import that would duplicate players
+		- Fix: Fixed player matching bug during REditor import that would duplicate players
 		- Fix: Fixed warning about duplicate players showing up even when it shouldn't
 		- Change: Player of The Game in Box Score's Best Performers will always be from the winning team
 
@@ -425,17 +428,17 @@ NBA Stats Tracker - Version History
 		- Improvement: 2K12 saves can now be imported into non-2K12 created databases and the tool will try to match the teams and players
 
 	v0.12.0.1
-		- Fix: Fixed a minor issue with box score dates during REDitor import
+		- Fix: Fixed a minor issue with box score dates during REditor import
 
 	v0.12
-		- Addition: Tool now checks if it can detect a single game played since the last REDitor import, and if it can, it automatically fills out the box score
+		- Addition: Tool now checks if it can detect a single game played since the last REditor import, and if it can, it automatically fills out the box score
 		- Improvement: Tool now checks and won't add a second team with the same name as an existing one using the Add Teams/Players window
 
 	v0.11.8.2
 		- Fix: Player Stats & Metric Stats in Team Overview wouldn't allow users to sort by column
 
 	v0.11.8.1
-		- Fix: Fixed logic on which team each player gets assigned to on REDitor imports
+		- Fix: Fixed logic on which team each player gets assigned to on REditor imports
 		- Fix: Fixed bug that made new databases having no seasons to pick from in the Change Season drop-down
 
 	v0.11.8
@@ -464,9 +467,9 @@ NBA Stats Tracker - Version History
 		- Fix: Fixed crash when trying to view League Overview in a league where no teams had played any games
 
 	v0.11.5.3
-		- Fix: Fixed missing stat records handling when exporting to REDitor CSVs
-		- Fix: Fixed crashes when importing/exporting to REDitor CSVs when current culture (regional settings) had a list separator other than comma (",")
-		- Fix: Other minor REDitor CSV handling bugs fixed
+		- Fix: Fixed missing stat records handling when exporting to REditor CSVs
+		- Fix: Fixed crashes when importing/exporting to REditor CSVs when current culture (regional settings) had a list separator other than comma (",")
+		- Fix: Other minor REditor CSV handling bugs fixed
 
 	v0.11.5.2
 		- Fix: Fixed bug that would crash NST when using Live Box Score
@@ -501,15 +504,15 @@ NBA Stats Tracker - Version History
 		- Addition: Team Metric Stats added to League Overview
 
 	v0.11.1
-		- Improvement: User is asked which teams are active in their Career if they can't be detected from the REDitor import
-		- Improvement: Improvements in REDitor import handling
+		- Improvement: User is asked which teams are active in their Career if they can't be detected from the REditor import
+		- Improvement: Improvements in REditor import handling
 
 	v0.11.0.1
-		- Improvement: Tool will now inform you of a successful REDitor export
+		- Improvement: Tool will now inform you of a successful REditor export
 		- Fix: Tool would ignore imported players with PlType 6 (Existing CAT Player)
 
 	v0.11
-		- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REDitor (requires proper REDitor license)
+		- Improvement: Fully compatible with any NBA 2K12 save, any season, if used along with REditor (requires proper REditor license)
 		- Addition: Added Live Box Score feature, which allows you to easily keep track of a live game, and then save it as a box score in your database
 		- Improvement: Seasons can now have names, so that for example, Season "1" can now be Season "1967-1968"
 		- Fix: Advanced Player Search wouldn't take GP or GS into account

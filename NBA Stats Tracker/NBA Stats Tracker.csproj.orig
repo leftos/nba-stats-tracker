@@ -11,8 +11,7 @@
     <RootNamespace>NBA_Stats_Tracker</RootNamespace>
     <AssemblyName>NBA Stats Tracker</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -26,8 +25,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -39,8 +36,11 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+<<<<<<< experimental
+=======
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+>>>>>>> local
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>NBA 2K12.ico</ApplicationIcon>
@@ -72,212 +72,152 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>.\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>.\WPFToolkit.Extended.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\Other\Conference.cs" />
-    <Compile Include="Data\Other\DBData.cs" />
-    <Compile Include="Data\Other\Span.cs" />
-    <Compile Include="Data\Other\Timeframe.cs" />
-    <Compile Include="Data\PastStats\PastPlayerStats.cs" />
-    <Compile Include="Data\Players\Contracts\PlayerContract.cs" />
-    <Compile Include="Data\Players\Contracts\PlayerContractOption.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerAsc.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjury.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerAsc.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerDesc.cs" />
-    <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerDesc.cs" />
-    <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
-    <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
-    <Compile Include="Data\Players\PlayerHighsRow.cs" />
-    <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
-    <Compile Include="Data\Players\PAbbr.cs" />
-    <Compile Include="Data\Teams\TeamStreakComparerAsc.cs" />
-    <Compile Include="Data\Teams\TeamStreakComparerDesc.cs" />
-    <Compile Include="Data\Teams\TeamNameComparerDesc.cs" />
-    <Compile Include="Data\Teams\TeamNameComparerAsc.cs" />
-    <Compile Include="Data\Teams\TeamBoxScore.cs" />
-    <Compile Include="Data\Other\Division.cs" />
-    <Compile Include="Data\PastStats\PastTeamStats.cs" />
-    <Compile Include="Data\Players\Player.cs" />
-    <Compile Include="Data\Players\PlayerBoxScore.cs" />
-    <Compile Include="Data\Players\PlayerRankings.cs" />
-    <Compile Include="Data\Players\PlayerStats.cs" />
-    <Compile Include="Data\Players\PlayerStatsRow.cs" />
-    <Compile Include="Data\Players\Position.cs" />
-    <Compile Include="Data\Teams\TAbbr.cs" />
-    <Compile Include="Data\Teams\TeamRankings.cs" />
-    <Compile Include="Data\Teams\TeamStats.cs" />
-    <Compile Include="Data\Teams\TeamStatsRow.cs" />
-    <Compile Include="Helper\ListExtensions\ListExtensions.cs" />
-    <Compile Include="Helper\Miscellaneous\ComboBoxItemWithIsEnabled.cs" />
-    <Compile Include="Helper\Miscellaneous\Misc.cs" />
-    <Compile Include="Helper\EventHandlers\EventHandlers.cs" />
-    <Compile Include="Helper\Miscellaneous\ProgressInfo.cs" />
-    <Compile Include="Helper\Miscellaneous\StartingFivePermutation.cs" />
-    <Compile Include="Helper\WindowsForms\WindowsForms.cs" />
-    <Compile Include="Interop\REDitor\REDitor.cs" />
-    <Compile Include="Interop\BR\BR.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Windows\MainInterface\AboutWindow.xaml.cs">
+    <Compile Include="Data\NST.Data.BoxScores.cs" />
+    <Compile Include="Data\NST.Data.SQLiteIO.cs" />
+    <Compile Include="Data\NST.Data.Players.cs" />
+    <Compile Include="Data\NST.Data.Teams.cs" />
+    <Compile Include="Data\NST.Data.Misc.cs" />
+    <Compile Include="Helper\NST.Helper.ListExtensions.cs" />
+    <Compile Include="Helper\NST.Helper.Misc.cs" />
+    <Compile Include="Helper\NST.Helper.EventHandlers.cs" />
+    <Compile Include="Helper\NST.Helper.WindowsForms.cs" />
+    <Compile Include="Interop\NST.Interop.InteropREditor.cs" />
+    <Compile Include="Interop\NST.Interop.Interop2K12.cs" />
+    <Compile Include="Interop\NST.Interop.InteropBR.cs" />
+    <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\ToolWindows\AddStatsWindow.xaml.cs">
-      <DependentUpon>AddStatsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainInterface\ToolWindows\AddWindow.xaml.cs">
+    <Compile Include="Windows\AddWindow.xaml.cs">
       <DependentUpon>AddWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\ASC\AdvancedStatCalculatorWindow.xaml.cs">
-      <DependentUpon>AdvancedStatCalculatorWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiscTools\ComboChoiceWindow.xaml.cs">
+    <Compile Include="Windows\ComboChoiceWindow.xaml.cs">
       <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\BoxScores\BoxScoreListWindow.xaml.cs">
+    <Compile Include="Windows\BoxScoreListWindow.xaml.cs">
       <DependentUpon>BoxScoreListWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\BoxScores\BoxScoreWindow.xaml.cs">
+    <Compile Include="Windows\BoxScoreWindow.xaml.cs">
       <DependentUpon>BoxScoreWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\Teams\ConferenceEditWindow.xaml.cs">
+    <Compile Include="Windows\ConferenceEditWindow.xaml.cs">
       <DependentUpon>ConferenceEditWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\Players\PlayerInjuryWindow.xaml.cs">
-      <DependentUpon>PlayerInjuryWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiscTools\CopyableMessageWindow.xaml.cs">
+    <Compile Include="Windows\CopyableMessageWindow.xaml.cs">
       <DependentUpon>CopyableMessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\DualListWindow.xaml.cs">
+    <Compile Include="Windows\DualListWindow.xaml.cs">
       <DependentUpon>DualListWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\InputBoxWindow.xaml.cs">
+    <Compile Include="Windows\InputBoxWindow.xaml.cs">
       <DependentUpon>InputBoxWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\League\LeagueOverviewWindow.xaml.cs">
+    <Compile Include="Windows\LeagueOverviewWindow.xaml.cs">
       <DependentUpon>LeagueOverviewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\ListWindow.xaml.cs">
+    <Compile Include="Windows\ListWindow.xaml.cs">
       <DependentUpon>ListWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\BoxScores\LiveBoxScoreWindow.xaml.cs">
+    <Compile Include="Windows\LiveBoxScoreWindow.xaml.cs">
       <DependentUpon>LiveBoxScoreWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\BoxScores\PickGamesWindow.xaml.cs">
-      <DependentUpon>PickGamesWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainInterface\Players\PlayerOverviewWindow.xaml.cs">
+    <Compile Include="Windows\PlayerOverviewWindow.xaml.cs">
       <DependentUpon>PlayerOverviewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\Players\PlayerSearchWindow.xaml.cs">
+    <Compile Include="Windows\PlayerSearchWindow.xaml.cs">
       <DependentUpon>PlayerSearchWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\ProgressWindow.xaml.cs">
-      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    <Compile Include="Windows\PlayoffTreeWindow.xaml.cs">
+      <DependentUpon>PlayoffTreeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainInterface\Teams\TeamOverviewWindow.xaml.cs">
+    <Compile Include="Windows\TeamOverviewWindow.xaml.cs">
       <DependentUpon>TeamOverviewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TestWindow.xaml.cs">
       <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\TrendsWindow.xaml.cs">
+      <DependentUpon>TrendsWindow.xaml</DependentUpon>
+    </Compile>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Windows\MainInterface\UpdateWindow.xaml.cs">
-      <DependentUpon>UpdateWindow.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Windows\MainInterface\AboutWindow.xaml">
+    <Page Include="Windows\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\ToolWindows\AddStatsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainInterface\ToolWindows\AddWindow.xaml">
+    <Page Include="Windows\AddWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\ASC\AdvancedStatCalculatorWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MiscTools\ComboChoiceWindow.xaml">
+    <Page Include="Windows\ComboChoiceWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\BoxScores\BoxScoreListWindow.xaml">
+    <Page Include="Windows\BoxScoreListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\BoxScores\BoxScoreWindow.xaml">
+    <Page Include="Windows\BoxScoreWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\Teams\ConferenceEditWindow.xaml">
+    <Page Include="Windows\ConferenceEditWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\Players\PlayerInjuryWindow.xaml">
+    <Page Include="Windows\CopyableMessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MiscTools\CopyableMessageWindow.xaml">
+    <Page Include="Windows\DualListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MiscTools\DualListWindow.xaml">
+    <Page Include="Windows\InputBoxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MiscTools\InputBoxWindow.xaml">
+    <Page Include="Windows\LeagueOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\League\LeagueOverviewWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\MiscTools\ListWindow.xaml">
+    <Page Include="Windows\ListWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MainInterface\BoxScores\LiveBoxScoreWindow.xaml">
+    <Page Include="Windows\LiveBoxScoreWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MainInterface\MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\BoxScores\PickGamesWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainInterface\Players\PlayerOverviewWindow.xaml">
+    <Page Include="Windows\PlayerOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\Players\PlayerSearchWindow.xaml">
+    <Page Include="Windows\PlayerSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MiscTools\ProgressWindow.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\PlayoffTreeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\Teams\TeamOverviewWindow.xaml">
+    <Page Include="Windows\TeamOverviewWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -285,9 +225,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MainInterface\UpdateWindow.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Windows\TrendsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -310,10 +250,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
-    <Content Include="lgpl-2.1.txt" />
-    <Content Include="LICENSE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -436,16 +372,12 @@
       <Project>{75333A6E-A4FA-491D-A4BA-D4FE6F38F226}</Project>
       <Name>SQLiteDatabase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Updater\Updater.csproj">
-      <Project>{26821050-3f52-485d-b092-148ab02461ff}</Project>
-      <Name>Updater</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "Readme.txt" "$(SolutionDir)\Readme.txt"
-copy "LICENSE" "$(SolutionDir)\LICENSE"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
