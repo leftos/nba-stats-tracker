@@ -63,10 +63,10 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             {
                 label1.Content = "Pick the two teams";
                 cmbSelection2.Visibility = Visibility.Visible;
-                foreach (var kvp in MainWindow.TeamOrder)
+                foreach (var kvp in MainWindow.TST)
                 {
-                    cmbSelection1.Items.Add(kvp.Key);
-                    cmbSelection2.Items.Add(kvp.Key);
+                    cmbSelection1.Items.Add(kvp.Value.DisplayName);
+                    cmbSelection2.Items.Add(kvp.Value.DisplayName);
                 }
             }
             else if (mode == Mode.Division)

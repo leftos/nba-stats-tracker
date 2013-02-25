@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -131,9 +132,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static List<SortableBindingList<PlayerBoxScore>> PBSLists;
         public static BoxScoreEntry TempBSE;
-
-        public static SortedDictionary<string, int> TeamOrder;
-
+        
         public static List<Dictionary<string, string>> SelectedTeams;
         public static bool SelectedTeamsChanged;
 
@@ -228,10 +227,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 RealTST[i] = new TeamStats();
             }
-
-            //teamOrder = StatsTracker.setTeamOrder("Mode 0");
-            TeamOrder = new SortedDictionary<string, int>();
-
+            
             RegistryKey rk = null;
 
             try
@@ -434,7 +430,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            var result = REDitor.ImportAll(ref TST, ref TSTOpp, ref TeamOrder, ref PST, fbd.SelectedPath);
+            var result = REDitor.ImportAll(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -518,7 +514,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             LoadingSeason = true;
             TST = new Dictionary<int, TeamStats>();
-            TeamOrder = new SortedDictionary<string, int>();
             BSHist = new List<BoxScoreEntry>();
 
             var ofd = new OpenFileDialog
@@ -621,7 +616,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             TST = dbData.TST;
             TSTOpp = dbData.TSTOpp;
             PST = dbData.PST;
-            TeamOrder = dbData.TeamOrder;
             SeasonTeamRankings = dbData.SeasonTeamRankings;
             PlayoffTeamRankings = dbData.PlayoffTeamRankings;
             SplitTeamStats = dbData.SplitTeamStats;
@@ -910,82 +904,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         }
 
         /// <summary>
-        ///     Exports the current league-wide team stats to a tab-separated values formatted file.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void btnLeagueTSV_Click(object sender, RoutedEventArgs e)
-        {
-            const string header1 = "\tTeam\tGP\tW\tL\tPF\tPA\tFGM\tFGA\t3PM\t3PA\tFTM\tFTA\tOREB\tDREB\tSTL\tTO\tBLK\tAST\tFOUL\t";
-            //string header2 = "Team\tW%\tWeff\tPPG\tPAPG\tFG%\tFGeff\t3P%\t3Peff\tFT%\tFTeff\tRPG\tORPG\tDRPG\tSPG\tBPG\tTPG\tAPG\tFPG";
-            const string header2 = "W%\tWeff\tPPG\tPAPG\tFG%\tFGeff\t3P%\t3Peff\tFT%\tFTeff\tRPG\tORPG\tDRPG\tSPG\tBPG\tTPG\tAPG\tFPG";
-            /*
-            string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17}", 
-                tst[id].getGames(), tst[id].winloss[0], tst[id].winloss[1], tst[id].stats[t.FGM], tst[id].stats[t.FGA], tst[id].stats[t.TPM], tst[id].stats[t.TPA],
-                tst[id].stats[t.FTM], tst[id].stats[t.FTA], tst[
-             */
-
-            var sfd = new SaveFileDialog
-                      {
-                          Filter = "Tab-Separated Values file (*.tsv)|*.tsv",
-                          InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                          Title = "Export To TSV"
-                      };
-            sfd.ShowDialog();
-            if (sfd.FileName == "")
-                return;
-
-            var data1 = "";
-            for (var id = 0; id < TST.Count; id++)
-            {
-                if (TST[id].Name == "")
-                    continue;
-
-                data1 += (id + 1).ToString() + "\t";
-                foreach (var kvp in TeamOrder)
-                {
-                    if (kvp.Value == id)
-                    {
-                        data1 += kvp.Key + "\t";
-                        break;
-                    }
-                }
-                data1 += String.Format("{0}\t{1}\t{2}", TST[id].GetGames(), TST[id].Record[0], TST[id].Record[1]);
-                for (var j = 1; j <= 16; j++)
-                {
-                    if (j != 3)
-                    {
-                        data1 += "\t" + TST[id].Totals[j].ToString();
-                    }
-                }
-                data1 += "\t";
-                data1 += String.Format("{0:F3}", TST[id].PerGame[TAbbr.Wp]) + "\t" + String.Format("{0:F1}", TST[id].PerGame[TAbbr.Weff]);
-                for (var j = 0; j <= 15; j++)
-                {
-                    switch (j)
-                    {
-                        case 2:
-                        case 4:
-                        case 6:
-                            data1 += String.Format("\t{0:F3}", TST[id].PerGame[j]);
-                            break;
-                        default:
-                            data1 += String.Format("\t{0:F1}", TST[id].PerGame[j]);
-                            break;
-                    }
-                }
-                data1 += "\n";
-            }
-
-            var sw = new StreamWriter(sfd.FileName);
-            sw.WriteLine(header1 + header2);
-            sw.WriteLine(data1);
-            sw.Close();
-        }
-
-        /// <summary>
         ///     Handles the Click event of the mnuExit control.
         ///     Plans world domination and reticulates splines.
         /// </summary>
@@ -1051,7 +969,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 var temptst = new Dictionary<int, TeamStats>();
                 var temptstOpp = new Dictionary<int, TeamStats>();
                 var temppst = new Dictionary<int, PlayerStats>();
-                var result = REDitor.ImportAll(ref temptst, ref temptstOpp, ref TeamOrder, ref temppst, fbd.SelectedPath, true);
+                var result = REDitor.ImportAll(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
 
                 if (result != 0)
                 {
@@ -1278,7 +1196,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                 };
 
             var k = 0;
-            teamNamesShort.ToList().ForEach(tn => TeamOrder.Add(tn.Key, k++));
+            var teamOrder = new Dictionary<string, int>();
+            teamNamesShort.ToList().ForEach(tn => teamOrder.Add(tn.Key, k++));
 
             _worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
@@ -1292,7 +1211,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                        TeamStats realts;
                                        TeamStats realtsopp;
                                        BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
-                                       var id = TeamOrder[kvp.Key];
+                                       var id = teamOrder[kvp.Key];
                                        RealTST[id] = realts;
                                        RealTST[id].ID = id;
                                        RealTST[id].Division = teamDivisions[kvp.Key];
@@ -1329,7 +1248,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                                    TSTOpp = new Dictionary<int, TeamStats>();
                                                    for (var i = 0; i < len; i++)
                                                    {
-                                                       foreach (var kvp in TeamOrder)
+                                                       foreach (var kvp in teamOrder)
                                                        {
                                                            if (kvp.Value == i)
                                                            {
@@ -1381,112 +1300,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 status.Content = "Season stats downloaded, now downloading playoff stats and saving...";
             }
         }
-
-        // TODO: Implement Compare to Real again sometime
-        /// <summary>
-        ///     OBSOLETE:
-        ///     Handles the Click event of the btnCompareToReal control.
-        ///     Used to compare a team's stats to the ones of its real counterpart.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void btnCompareToReal_Click(object sender, RoutedEventArgs e)
-        {
-            /*
-            var realteam = new TeamStats();
-
-            if (File.Exists(AppDocsPath + cmbTeam1.SelectedItem + ".rst"))
-            {
-                var fi = new FileInfo(AppDocsPath + cmbTeam1.SelectedItem + ".rst");
-                TimeSpan sinceLastModified = DateTime.Now - fi.LastWriteTime;
-                if (sinceLastModified.Days >= 1)
-                    realteam = Helper.getRealStats(cmbTeam1.SelectedItem.ToString());
-                else
-                    try
-                    {
-                        realteam = Helper.getRealStats(cmbTeam1.SelectedItem.ToString(), true);
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            realteam = Helper.getRealStats(cmbTeam1.SelectedItem.ToString());
-                        }
-                        catch
-                        {
-                            MessageBox.Show(
-                                "An incomplete real stats file is present and locked in the disk. Please restart NBA Stats Tracker and try again.");
-                        }
-                    }
-            }
-            else
-            {
-                realteam = Helper.getRealStats(cmbTeam1.SelectedItem.ToString());
-            }
-            TeamStats curteam = tst[teamOrder[cmbTeam1.SelectedItem.ToString()]];
-
-            var vw = new VersusWindow(curteam, "Current", realteam, "Real");
-            vw.ShowDialog();
-            */
-        }
-
-        // TODO: Implement Compare to Other file again sometime
-        /// <summary>
-        ///     OBSOLETE:
-        ///     Handles the Click event of the btnCompareOtherFile control.
-        ///     Used to compare a team's stats to the ones in another NST database.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void btnCompareOtherFile_Click(object sender, RoutedEventArgs e)
-        {
-            /*
-            var ofd = new OpenFileDialog
-                          {
-                              Title = "Select the TST file that has the team stats you want to compare to...",
-                              Filter = "Team Stats files (*.tst)|*.tst",
-                              InitialDirectory = AppDocsPath
-                          };
-            ofd.ShowDialog();
-
-            string file = ofd.FileName;
-            if (file != "")
-            {
-                string team = cmbTeam1.SelectedItem.ToString();
-                var _newTeamOrder = new SortedDictionary<string, int>();
-
-                FileStream stream = File.Open(ofd.FileName, FileMode.Open);
-                var bf = new BinaryFormatter {AssemblyFormat = FormatterAssemblyStyle.Simple};
-
-                var _newtst = new TeamStats[30];
-                for (int i = 0; i < 30; i++)
-                {
-                    _newtst[i] = new TeamStats();
-                    _newtst[i] = (TeamStats) bf.Deserialize(stream);
-                    if (_newtst[i].name == "") continue;
-                    try
-                    {
-                        _newTeamOrder.Add(_newtst[i].name, i);
-                        _newtst[i].calcAvg();
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                TeamStats newteam = _newtst[_newTeamOrder[team]];
-                TeamStats curteam = tst[TeamOrder[team]];
-
-                var vw = new VersusWindow(curteam, "Current", newteam, "Other");
-                vw.ShowDialog();
-            }
-            */
-        }
-
+        
         /// <summary>
         ///     Handles the TextChanged event of the txtFile control.
         ///     Updates the currentDB field of MainWindow with the new file loaded. Usually called after Open or Save As.
@@ -1633,7 +1447,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </summary>
         private static void recalculateOpponentStats()
         {
-            var temptst = TeamOrder.Values.ToDictionary(to => to, to => TST[to].DeepClone());
+            var temptst = TST.ToDictionary(to => to.Key, to => to.Value.DeepClone());
 
             foreach (var key in TSTOpp.Keys)
             {
@@ -1914,7 +1728,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             TST = new Dictionary<int, TeamStats>();
             TSTOpp = new Dictionary<int, TeamStats>();
             PST = new Dictionary<int, PlayerStats>();
-            TeamOrder = new SortedDictionary<string, int>();
             BSHist = new List<BoxScoreEntry>();
 
             txtFile.Text = sfd.FileName;
@@ -1971,7 +1784,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         var newid = oldlen + i;
                         TST[newid] = new TeamStats(newid, newTeams[i]);
                         TSTOpp[newid] = new TeamStats(newid, newTeams[i]);
-                        TeamOrder.Add(newTeams[i], newid);
                     }
                     SQLiteIO.SaveSeasonToDatabase();
                     UpdateStatus("Teams were added, database saved.");
@@ -2303,7 +2115,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             if (AddInfo == "$$TEAMSENABLED")
             {
-                SQLiteIO.GetAllTeamStatsFromDatabase(CurrentDB, CurSeason, out TST, out TSTOpp, out TeamOrder);
+                SQLiteIO.GetAllTeamStatsFromDatabase(CurrentDB, CurSeason, out TST, out TSTOpp);
                 UpdateStatus("Teams were enabled/disabled. Database saved.");
             }
         }
@@ -3086,7 +2898,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            var result = REDitor.ImportPrevious(ref TST, ref TSTOpp, ref TeamOrder, ref PST, fbd.SelectedPath);
+            var result = REDitor.ImportPrevious(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -3140,7 +2952,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            REDitor.ImportOld(PST, TST, TeamOrder, fbd.SelectedPath);
+            REDitor.ImportOld(PST, TST, fbd.SelectedPath);
         }
 
         public void OnImportOldPlayerStatsCompleted(int result)

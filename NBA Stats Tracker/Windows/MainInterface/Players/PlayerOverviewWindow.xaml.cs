@@ -84,7 +84,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private PlayerRankings _rankingsTeam;
         private int _selectedPlayerID = -1;
         private ObservableCollection<PlayerStatsRow> _splitPSRs;
-        private SortedDictionary<string, int> _teamOrder = MainWindow.TeamOrder;
         private List<string> _teams;
 
         /// <summary>
@@ -137,10 +136,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void populateTeamsCombo()
         {
             _teams = new List<string>();
-            foreach (var kvp in _teamOrder)
+            foreach (var kvp in MainWindow.TST)
             {
-                if (!MainWindow.TST[kvp.Value].IsHidden)
-                    _teams.Add(MainWindow.TST[kvp.Value].DisplayName);
+                if (!kvp.Value.IsHidden)
+                    _teams.Add(kvp.Value.DisplayName);
             }
 
             _teams.Sort();
@@ -1172,8 +1171,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                 try
                 {
-                    _teamOrder = MainWindow.TeamOrder;
-
                     getActivePlayers();
 
                     var newps = MainWindow.PST[oldOwn];

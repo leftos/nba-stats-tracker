@@ -1515,9 +1515,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="season">The season.</param>
         /// <param name="tst">The resulting team stats dictionary.</param>
         /// <param name="tstOpp">The resulting opposing team stats dictionary.</param>
-        /// <param name="teamOrder">The resulting team order.</param>
         public static void GetAllTeamStatsFromDatabase(string file, int season, out Dictionary<int, TeamStats> tst,
-                                                       out Dictionary<int, TeamStats> tstOpp, out SortedDictionary<string, int> teamOrder)
+                                                       out Dictionary<int, TeamStats> tstOpp)
         {
             var db = new SQLiteDatabase(file);
 
@@ -1543,7 +1542,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var rows = res.Rows.Cast<DataRow>();
             var newTST = new Dictionary<int, TeamStats>();
             var newTSTOpp = new Dictionary<int, TeamStats>();
-            var newTeamOrder = new SortedDictionary<string, int>();
             var myLock = new object();
             Parallel.ForEach(rows, r =>
                                    {
@@ -1555,7 +1553,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        {
                                            newTST.Add(teamID, ts);
                                            newTSTOpp.Add(teamID, tsopp);
-                                           newTeamOrder.Add(ts.Name, i);
                                        }
                                        Interlocked.Increment(ref i);
 
@@ -1564,7 +1561,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             tst = newTST;
             tstOpp = newTSTOpp;
-            teamOrder = newTeamOrder;
         }
 
         /// <summary>
@@ -1572,8 +1568,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// </summary>
         public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
-            LoadSeason(MainWindow.CurrentDB, out MainWindow.TST, out MainWindow.TSTOpp, out MainWindow.PST, out MainWindow.TeamOrder,
-                       ref MainWindow.BSHist, out MainWindow.SplitTeamStats, out MainWindow.SplitPlayerStats,
+            LoadSeason(MainWindow.CurrentDB, out MainWindow.TST, out MainWindow.TSTOpp, out MainWindow.PST, ref MainWindow.BSHist, out MainWindow.SplitTeamStats, out MainWindow.SplitPlayerStats,
                        out MainWindow.SeasonTeamRankings, out MainWindow.SeasonPlayerRankings, out MainWindow.PlayoffTeamRankings,
                        out MainWindow.PlayoffPlayerRankings, out MainWindow.DisplayNames, season == 0 ? MainWindow.CurSeason : season,
                        doNotLoadBoxScores);
@@ -1584,7 +1579,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// </summary>
         public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
         {
-            LoadSeason(file, out MainWindow.TST, out MainWindow.TSTOpp, out MainWindow.PST, out MainWindow.TeamOrder, ref MainWindow.BSHist,
+            LoadSeason(file, out MainWindow.TST, out MainWindow.TSTOpp, out MainWindow.PST, ref MainWindow.BSHist,
                        out MainWindow.SplitTeamStats, out MainWindow.SplitPlayerStats, out MainWindow.SeasonTeamRankings,
                        out MainWindow.SeasonPlayerRankings, out MainWindow.PlayoffTeamRankings, out MainWindow.PlayoffPlayerRankings,
                        out MainWindow.DisplayNames, season == 0 ? MainWindow.CurSeason : season, doNotLoadBoxScores);
@@ -1604,8 +1599,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         ///     if set to <c>true</c>, box scores will not be parsed.
         /// </param>
         public static void LoadSeason(string file, out Dictionary<int, TeamStats> tst, out Dictionary<int, TeamStats> tstOpp,
-                                      out Dictionary<int, PlayerStats> pst, out SortedDictionary<string, int> teamOrder,
-                                      ref List<BoxScoreEntry> bsHist, out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+                                      out Dictionary<int, PlayerStats> pst, ref List<BoxScoreEntry> bsHist, out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
                                       out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, out TeamRankings teamRankings,
                                       out PlayerRankings playerRankings, out TeamRankings playoffTeamRankings,
                                       out PlayerRankings playoffPlayerRankings, out Dictionary<int, string> displayNames, int curSeason = 0,
@@ -1644,7 +1638,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (mustSave)
             {
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading teams..."));
-                GetAllTeamStatsFromDatabase(file, curSeason, out tst, out tstOpp, out teamOrder);
+                GetAllTeamStatsFromDatabase(file, curSeason, out tst, out tstOpp);
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading players..."));
                 pst = GetPlayersFromDatabase(file, tst, tstOpp, curSeason, maxSeason);
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading box scores..."));
@@ -1666,7 +1660,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 tst = dbData.TST;
                 tstOpp = dbData.TSTOpp;
                 pst = dbData.PST;
-                teamOrder = dbData.TeamOrder;
                 teamRankings = dbData.SeasonTeamRankings;
                 playoffTeamRankings = dbData.PlayoffTeamRankings;
                 splitTeamStats = dbData.SplitTeamStats;
@@ -2448,7 +2441,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         {
             var tst = new Dictionary<int, TeamStats>();
             var tstOpp = new Dictionary<int, TeamStats>();
-            var teamOrder = new SortedDictionary<string, int>();
             var pst = new Dictionary<int, PlayerStats>();
             var splitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
             var splitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
@@ -2466,7 +2458,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (!tf.IsBetween)
             {
                 Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading teams..."));
-                GetAllTeamStatsFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, out tst, out tstOpp, out teamOrder);
+                GetAllTeamStatsFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, out tst, out tstOpp);
                 foreach (var ts in tst)
                 {
                     displayNames.Add(ts.Value.ID, ts.Value.DisplayName);
@@ -2502,7 +2494,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                            Name = ParseCell.GetString(dr, "Name"),
                                            DisplayName = ParseCell.GetString(dr, "DisplayName")
                                        });
-                            teamOrder.Add(ParseCell.GetString(dr, "Name"), teamID);
                             displayNames.Add(ParseCell.GetInt32(dr, "ID"), ParseCell.GetString(dr, "DisplayName"));
                         }
                     }
@@ -2574,7 +2565,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             var better500 = "vs >= .500";
             var worse500 = "vs < .500";
-            var teams = teamOrder.Values;
+            var teams = tst.Keys;
             var myLock = new object();
             Parallel.ForEach(teams, id =>
                                     {
@@ -2588,11 +2579,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                         splitTeamStats[id].Add("Away", new TeamStats());
                                         splitTeamStats[id].Add("Season", new TeamStats());
                                         splitTeamStats[id].Add("Playoffs", new TeamStats());
-                                        foreach (var pair in teamOrder)
+                                        foreach (var pair in tst)
                                         {
-                                            if (pair.Value != id)
+                                            if (pair.Key != id)
                                             {
-                                                splitTeamStats[id].Add("vs " + displayNames[pair.Value], new TeamStats());
+                                                splitTeamStats[id].Add("vs " + displayNames[pair.Key], new TeamStats());
                                             }
                                         }
                                         var dCur = tf.StartDate;
@@ -2700,16 +2691,16 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating split stats..."));
 
             var last10GamesTeams = new Dictionary<int, List<int>>();
-            foreach (var pair in teamOrder)
+            foreach (var pair in tst)
             {
                 var teamPair = pair;
-                var teamBSEs = bsHist.Where(bse => bse.BS.Team1ID == teamPair.Value || bse.BS.Team2ID == teamPair.Value).ToList();
-                last10GamesTeams.Add(pair.Value, teamBSEs.Select(bse => bse.BS.ID).Take(10).ToList());
+                var teamBSEs = bsHist.Where(bse => bse.BS.Team1ID == teamPair.Key || bse.BS.Team2ID == teamPair.Key).ToList();
+                last10GamesTeams.Add(pair.Key, teamBSEs.Select(bse => bse.BS.ID).Take(10).ToList());
                 var type = "";
                 var length = 0;
                 foreach (var bse in teamBSEs)
                 {
-                    if (bse.BS.Team1ID == teamPair.Value)
+                    if (bse.BS.Team1ID == teamPair.Key)
                     {
                         if (bse.BS.PTS1 > bse.BS.PTS2)
                         {
@@ -2780,7 +2771,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         }
                     }
                 }
-                tst[teamPair.Value].CurStreak = type + length;
+                tst[teamPair.Key].CurStreak = type + length;
             }
             var last10GamesPlayers = new Dictionary<int, List<int>>();
             foreach (var playerID in pst.Keys.ToList())
@@ -2948,7 +2939,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var playoffPlayerRankings = new PlayerRankings(pst, true);
 
             dbData = new DBData(tst, tstOpp, splitTeamStats, teamRankings, playoffTeamRankings, pst, splitPlayerStats, playerRankings,
-                                playoffPlayerRankings, bsHist, teamOrder, displayNames);
+                                playoffPlayerRankings, bsHist, displayNames);
 
             return true;
         }

@@ -98,8 +98,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             sw.Close();
         }
 
-        public static void ImportOld(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> tst,
-                                     SortedDictionary<string, int> teamOrder, string folder)
+        public static void ImportOld(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> tst, string folder)
         {
             if (tst.Count != 30)
             {
@@ -205,19 +204,21 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 var id = -1;
                 var name = team["Name"];
-                if (!teamOrder.ContainsKey(name))
+                if (tst.All(pair => pair.Value.Name != name))
                 {
                     for (var i = 0; i < 30; i++)
                     {
-                        if (!teamOrder.ContainsValue(i))
+                        if (!tst.ContainsKey(i))
                         {
                             id = i;
                             break;
                         }
                     }
-                    teamOrder.Add(name, id);
                 }
-                id = teamOrder[name];
+                else
+                {
+                    id = tst.Single(pair => pair.Value.Name == name).Key;
+                }
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
 
                 rosters[id] = new List<int>
@@ -314,8 +315,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                      if (candidates.Count > 0)
                                      {
                                          var found = false;
-                                         var order = teamOrder;
-                                         var c2 = candidates.Where(pair => order.ContainsValue(pair.Value.TeamF)).ToList();
+                                         var c2 = candidates.Where(pair => tst.ContainsKey(pair.Value.TeamF)).ToList();
                                          if (c2.Count() == 1)
                                          {
                                              playerID = c2.First().Value.ID;
@@ -474,15 +474,13 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
-        /// <param name="teamOrder">The team order.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="folder">The folder containing the exported CSV files.</param>
         /// <param name="teamsOnly">
         ///     if set to <c>true</c>, only team stats will be imported.
         /// </param>
         /// <returns></returns>
-        public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
-                                    ref SortedDictionary<string, int> teamOrder, ref Dictionary<int, PlayerStats> pst, string folder,
+        public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp, ref Dictionary<int, PlayerStats> pst, string folder,
                                     bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
@@ -557,11 +555,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 var name = team["Name"];
                 var redID = Convert.ToInt32(team["ID"]);
-                if (!teamOrder.ContainsKey(name))
+                if (tst.Values.All(ts => ts.Name != name))
                 {
-                    if (teamOrder.Values.Contains(redID))
+                    if (tst.Keys.Contains(redID))
                     {
-                        teamOrder.Remove(teamOrder.Single(to => to.Value == redID).Key);
+                        tst.Remove(tst.Single(to => to.Key == redID).Key);
                         var oldName = tst[redID].Name;
                         tst[redID].Name = name;
                         tstOpp[redID].Name = name;
@@ -571,13 +569,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             tstOpp[redID].DisplayName = name;
                         }
                     }
-                    teamOrder.Add(name, redID);
                 }
-                else
-                {
-                    teamOrder[name] = redID;
-                }
-                var id = teamOrder[name];
+                var id = tst.Values.Single(ts => ts.Name == name).ID;
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
 
                 if (madeNew)
@@ -751,8 +744,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         if (candidates.Count > 0)
                         {
                             var found = false;
-                            var order = teamOrder;
-                            var c2 = candidates.Where(pair => order.ContainsValue(pair.Value.TeamF)).ToList();
+                            Dictionary<int, TeamStats> temptst = tst;
+                            var c2 = candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
                             if (c2.Count() == 1)
                             {
                                 playerID = c2.First().Value.ID;
@@ -1139,8 +1132,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return 0;
         }
 
-        public static int ImportPrevious(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
-                                         ref SortedDictionary<string, int> teamOrder, ref Dictionary<int, PlayerStats> pst, string folder,
+        public static int ImportPrevious(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp, ref Dictionary<int, PlayerStats> pst, string folder,
                                          bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
@@ -1212,19 +1204,21 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 var id = -1;
                 var name = team["Name"];
-                if (!teamOrder.ContainsKey(name))
+                if (oldTST.All(pair => pair.Value.Name != name))
                 {
                     for (var i = 0; i < 30; i++)
                     {
-                        if (!teamOrder.ContainsValue(i))
+                        if (!tst.ContainsKey(i))
                         {
                             id = i;
                             break;
                         }
                     }
-                    teamOrder.Add(name, id);
                 }
-                id = teamOrder[name];
+                else
+                {
+                    id = oldTST.Single(pair => pair.Value.Name == name).Key;
+                }
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
 
                 if (madeNew)
@@ -1395,10 +1389,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             pst.Where(
                                 pair => pair.Value.LastName == lastName && pair.Value.FirstName == firstName && pair.Value.IsHidden == false)
                                .ToList();
-                        if (candidates.Count() > 0)
+                        if (candidates.Any())
                         {
-                            var order = teamOrder;
-                            var c2 = candidates.Where(pair => order.ContainsValue(pair.Value.TeamF)).ToList();
+                            Dictionary<int, TeamStats> temptst = tst;
+                            var c2 = candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
                             if (c2.Count() == 1)
                             {
                                 playerID = c2.First().Value.ID;

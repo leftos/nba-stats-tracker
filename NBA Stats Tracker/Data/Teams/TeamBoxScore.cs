@@ -114,16 +114,16 @@ namespace NBA_Stats_Tracker.Data.Teams
             var home = ds.Tables[1];
 
             var segmentsDone = 0;
-            foreach (var team in MainWindow.TeamOrder)
+            foreach (var team in MainWindow.TST)
             {
-                if (dateParts[0].Contains(team.Key))
+                if (dateParts[0].Contains(team.Value.Name))
                 {
-                    Team1ID = team.Value;
+                    Team1ID = team.Key;
                     segmentsDone++;
                 }
-                if (dateParts[1].Contains(team.Key))
+                if (dateParts[1].Contains(team.Value.Name))
                 {
-                    Team2ID = team.Value;
+                    Team2ID = team.Key;
                     segmentsDone++;
                 }
                 if (segmentsDone == 2)

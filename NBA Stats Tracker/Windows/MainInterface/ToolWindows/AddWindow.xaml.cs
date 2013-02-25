@@ -44,9 +44,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             _pst = pst;
 
             teams = new ObservableCollection<KeyValuePair<string, int>>();
-            foreach (var kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TST)
             {
-                teams.Add(new KeyValuePair<string, int>(kvp.Key, kvp.Value));
+                teams.Add(new KeyValuePair<string, int>(kvp.Value.DisplayName, kvp.Key));
             }
 
             players = new ObservableCollection<Player>();

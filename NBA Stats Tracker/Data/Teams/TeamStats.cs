@@ -662,41 +662,6 @@ namespace NBA_Stats_Tracker.Data.Teams
         }
 
         /// <summary>
-        ///     Presents the team's PerGame and rankingsPerGame in a well-formatted multi-line string.
-        /// </summary>
-        /// <param name="teamName">Name of the team.</param>
-        /// <param name="tst">The team stats dictionary.</param>
-        /// <param name="teamOrder">The team order.</param>
-        /// <returns></returns>
-        public static string TeamAveragesAndRankings(string teamName, Dictionary<int, TeamStats> tst,
-                                                     SortedDictionary<string, int> teamOrder)
-        {
-            int id;
-            try
-            {
-                id = teamOrder[teamName];
-            }
-            catch
-            {
-                return "";
-            }
-            var rating = new TeamRankings(tst).RankingsPerGame;
-            var text =
-                String.Format(
-                    "Win %: {32:F3} ({33})\nWin eff: {34:F2} ({35})\n\nPPG: {0:F1} ({16})\nPAPG: {1:F1} ({17})\n\nFG%: {2:F3} ({18})\nFGeff: {3:F2} ({19})\n3P%: {4:F3} ({20})\n3Peff: {5:F2} ({21})\n" +
-                    "FT%: {6:F3} ({22})\nFTeff: {7:F2} ({23})\n\nRPG: {8:F1} ({24})\nORPG: {9:F1} ({25})\nDRPG: {10:F1} ({26})\n\nSPG: {11:F1} ({27})\nBPG: {12:F1} ({28})\n" +
-                    "TPG: {13:F1} ({29})\nAPG: {14:F1} ({30})\nFPG: {15:F1} ({31})", tst[id].PerGame[TAbbr.PPG], tst[id].PerGame[TAbbr.PAPG],
-                    tst[id].PerGame[TAbbr.FGp], tst[id].PerGame[TAbbr.FGeff], tst[id].PerGame[TAbbr.TPp], tst[id].PerGame[TAbbr.TPeff],
-                    tst[id].PerGame[TAbbr.FTp], tst[id].PerGame[TAbbr.FTeff], tst[id].PerGame[TAbbr.RPG], tst[id].PerGame[TAbbr.ORPG],
-                    tst[id].PerGame[TAbbr.DRPG], tst[id].PerGame[TAbbr.SPG], tst[id].PerGame[TAbbr.BPG], tst[id].PerGame[TAbbr.TPG],
-                    tst[id].PerGame[TAbbr.APG], tst[id].PerGame[TAbbr.FPG], rating[id][0], tst.Count + 1 - rating[id][1], rating[id][2],
-                    rating[id][3], rating[id][4], rating[id][5], rating[id][6], rating[id][7], rating[id][8], rating[id][9], rating[id][10],
-                    rating[id][11], rating[id][12], tst.Count + 1 - rating[id][13], rating[id][14], tst.Count + 1 - rating[id][15],
-                    tst[id].PerGame[TAbbr.Wp], rating[id][16], tst[id].PerGame[TAbbr.Weff], rating[id][TAbbr.Weff]);
-            return text;
-        }
-
-        /// <summary>
         ///     Gets the winning percentage.
         /// </summary>
         /// <param name="span">The span.</param>
@@ -1532,7 +1497,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                         {
                             db.Update(table, new Dictionary<string, string> {{"Division", MainWindow.Divisions.First().ID.ToString()}},
                                       "ID = " + ParseCell.GetString(r, "ID"));
-                            var teamid = MainWindow.TeamOrder[ParseCell.GetString(r, "Name")];
+                            var teamid = MainWindow.TST.Values.Single(ts => ts.Name == ParseCell.GetString(r, "Name")).ID;
                             MainWindow.TST[teamid].Division = MainWindow.Divisions.First().ID;
                             if (teamsChanged.Contains(MainWindow.TST[teamid].DisplayName) == false)
                                 teamsChanged.Add(MainWindow.TST[teamid].DisplayName);

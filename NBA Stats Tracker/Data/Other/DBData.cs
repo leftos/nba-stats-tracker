@@ -40,13 +40,12 @@ namespace NBA_Stats_Tracker.Data.Other
         public Dictionary<int, Dictionary<string, TeamStats>> SplitTeamStats;
         public Dictionary<int, TeamStats> TST;
         public Dictionary<int, TeamStats> TSTOpp;
-        public SortedDictionary<string, int> TeamOrder;
 
         public DBData(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
                       Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, TeamRankings seasonTeamRankings,
                       TeamRankings playoffTeamRankings, Dictionary<int, PlayerStats> pst,
                       Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, PlayerRankings seasonPlayerRankings,
-                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist, SortedDictionary<string, int> teamOrder,
+                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist,
                       Dictionary<int, string> displayNames)
         {
             BSHist = bsHist;
@@ -59,7 +58,6 @@ namespace NBA_Stats_Tracker.Data.Other
             SplitTeamStats = splitTeamStats;
             TST = tst;
             TSTOpp = tstOpp;
-            TeamOrder = teamOrder;
             SeasonTeamRankings = seasonTeamRankings;
         }
     }

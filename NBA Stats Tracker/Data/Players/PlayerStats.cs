@@ -1408,55 +1408,6 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             var newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToLeagueLeader(teamStats, playoffs);
             return new PlayerStats(newpsr, playoffs);
-
-            /*
-            string team = ps.TeamF;
-            TeamStats ts = teamStats[MainWindow.TeamOrder[team]];
-            uint gamesTeam = (!playoffs) ? ts.getGames() : ts.getPlayoffGames();
-            uint gamesPlayed = (!playoffs) ? ps.stats[p.GP] : ps.pl_stats[p.GP];
-            PlayerStats newps = ps.Clone();
-            
-            // Below functions found using Eureqa II
-            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
-            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
-            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
-            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
-            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
-            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
-            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
-            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
-            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
-            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
-
-            var tempstats = (!playoffs) ? ps.stats : ps.pl_stats;
-            var newavg = (!playoffs) ? newps.PerGame : newps.pl_averages;
-
-            if (tempstats[p.FGM] < fgmRequired)
-                newavg[p.FGp] = float.NaN;
-            if (tempstats[p.TPM] < tpmRequired)
-                newavg[p.TPp] = float.NaN;
-            if (tempstats[p.FTM] < ftmRequired)
-                newavg[p.FTp] = float.NaN;
-
-            if (gamesPlayed >= gamesRequired)
-            {
-                return newps;
-            }
-
-            if (tempstats[p.PTS] < ptsRequired)
-                newavg[p.PPG] = float.NaN;
-            if ((tempstats[p.DREB] + tempstats[p.OREB]) < rebRequired)
-                newavg[p.RPG] = float.NaN;
-            if (tempstats[p.AST] < astRequired)
-                newavg[p.APG] = float.NaN;
-            if (tempstats[p.STL] < stlRequired)
-                newavg[p.SPG] = float.NaN;
-            if (tempstats[p.BLK] < blkRequired)
-                newavg[p.BPG] = float.NaN;
-            if (tempstats[p.MINS] < minRequired)
-                newavg[p.MPG] = float.NaN;
-            return newps;
-            */
         }
     }
 }

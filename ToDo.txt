@@ -12,3 +12,6 @@
 - Anonymous Usage Information
 - Play-by-play analysis
 - Add custom columns to all Metrics tabs
+
+- Implement Compare to Real again sometime
+- Implement Compare to Other file again sometime

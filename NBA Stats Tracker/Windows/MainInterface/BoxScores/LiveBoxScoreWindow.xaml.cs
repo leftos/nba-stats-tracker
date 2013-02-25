@@ -200,10 +200,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void populateTeamsCombo()
         {
             _teams = new List<string>();
-            foreach (var kvp in MainWindow.TeamOrder)
+            foreach (var kvp in MainWindow.TST)
             {
-                if (!MainWindow.TST[kvp.Value].IsHidden)
-                    _teams.Add(MainWindow.TST[kvp.Value].DisplayName);
+                if (!kvp.Value.IsHidden)
+                    _teams.Add(kvp.Value.DisplayName);
             }
 
             _teams.Sort();

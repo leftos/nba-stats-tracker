@@ -313,8 +313,8 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="tsopp">The resulting opposing team stats instance.</param>
         private static void teamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
-            ts = new TeamStats(MainWindow.TeamOrder[name], name);
-            tsopp = new TeamStats(MainWindow.TeamOrder[name], name);
+            ts = new TeamStats(MainWindow.TST.Single(pair => pair.Value.Name == name).Key, name);
+            tsopp = new TeamStats(MainWindow.TST.Single(pair => pair.Value.Name == name).Key, name);
 
             tsopp.Record[1] = ts.Record[0] = Convert.ToByte(recordparts[0]);
             tsopp.Record[0] = ts.Record[1] = Convert.ToByte(recordparts[1]);

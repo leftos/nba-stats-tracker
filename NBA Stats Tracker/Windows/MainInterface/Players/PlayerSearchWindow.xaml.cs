@@ -1463,10 +1463,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void populateTeamsCombo()
         {
-            var teams = (from kvp in MainWindow.TeamOrder
-                         where !MainWindow.TST[kvp.Value].IsHidden
-                         select MainWindow.TST[kvp.Value].DisplayName).ToList();
-
+            var teams = (MainWindow.TST.Where(kvp => !kvp.Value.IsHidden).Select(kvp => kvp.Value.DisplayName)).ToList();
             teams.Sort();
             teams.Insert(0, "- Any -");
 
