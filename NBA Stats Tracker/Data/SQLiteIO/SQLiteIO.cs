@@ -54,7 +54,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             "\"FOUL\" INTEGER, PRIMARY KEY (\"PlayerID\") )";
 
         private static bool _upgrading;
-        public static ProgressInfo Progress = new ProgressInfo("");
 
         /// <summary>
         ///     Saves the database to a new file.
@@ -78,7 +77,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 return false;
             }
 
-            updateProgress("Loading settings...");
+            ProgressHelper.UpdateProgress("Loading settings...");
             Dictionary<string, string> settingsDict;
             try
             {
@@ -88,7 +87,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 settingsDict = new Dictionary<string, string>();
             }
-            updateProgress("Loading past team stats...");
+            ProgressHelper.UpdateProgress("Loading past team stats...");
             List<PastTeamStats> ptsList;
             try
             {
@@ -98,7 +97,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 ptsList = new List<PastTeamStats>();
             }
-            updateProgress("Loading past player stats...");
+            ProgressHelper.UpdateProgress("Loading past player stats...");
             List<PastPlayerStats> ppsList;
             try
             {
@@ -119,14 +118,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
             SaveAllSeasons(file);
             var db1 = new SQLiteDatabase(file);
-            updateProgress("Saving settings...");
+            ProgressHelper.UpdateProgress("Saving settings...");
             foreach (var setting in settingsDict)
             {
                 SetSetting(file, setting.Key, setting.Value);
             }
-            updateProgress("Saving past team stats...");
+            ProgressHelper.UpdateProgress("Saving past team stats...");
             SavePastTeamStatsToDatabase(db1, ptsList);
-            updateProgress("Saving past player stats...");
+            ProgressHelper.UpdateProgress("Saving past player stats...");
             SavePastPlayerStatsToDatabase(db1, ppsList);
 
             MainWindow.CurrentDB = file;
@@ -205,7 +204,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         {
             var steps = maxSeason*2;
             var curStep = 0;
-            updateProgress(string.Format("Step {0}/{1}: Saving current season...", (++curStep), steps));
+            ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Saving current season...", (++curStep), steps));
             SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
 
             for (var i = 1; i <= maxSeason; i++)
@@ -214,13 +213,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 {
                     MainWindow.CurrentDB = oldDB;
                     MainWindow.Tf = new Timeframe(i);
-                    updateProgress(string.Format("Step {0}/{1}: Loading season {2}...", (++curStep), steps, i));
+                    ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Loading season {2}...", (++curStep), steps, i));
                     MainWindow.UpdateAllDataBlocking(onlyPopulate: true);
-                    updateProgress(string.Format("Step {0}/{1}: Saving season {2}...", (++curStep), steps, i));
+                    ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Saving season {2}...", (++curStep), steps, i));
                     SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, i, maxSeason);
                 }
             }
-            updateProgress(string.Format("Step {0}/{1}: Loading current season...", (++curStep), steps));
+            ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Loading current season...", (++curStep), steps));
             LoadSeason(file, oldSeason);
         }
 
@@ -233,13 +232,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         private static void saveCurrentAndCopyToNew(string file, string oldDB, int maxSeason)
         {
-            updateProgress("Saving current season...");
+            ProgressHelper.UpdateProgress("Saving current season...");
             SaveSeasonToDatabase(oldDB, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
 
-            updateProgress("Copying database to new file...");
+            ProgressHelper.UpdateProgress("Copying database to new file...");
             File.Copy(oldDB, file);
 
-            updateProgress("Reloading current season...");
+            ProgressHelper.UpdateProgress("Reloading current season...");
             LoadSeason(file, MainWindow.CurSeason);
         }
 
@@ -310,24 +309,24 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (!fileExists)
                 PrepareNewDB(MainWindow.DB, season, maxSeason);
 
-            updateProgress("Saving season...");
-            updateProgress("Saving conferences and divisions...");
+            ProgressHelper.UpdateProgress("Saving season...");
+            ProgressHelper.UpdateProgress("Saving conferences and divisions...");
             SaveConferencesAndDivisions(file);
 
-            updateProgress("Saving season name...");
+            ProgressHelper.UpdateProgress("Saving season name...");
             SaveSeasonName(season);
 
-            updateProgress("Saving teams...");
+            ProgressHelper.UpdateProgress("Saving teams...");
             saveTeamsToDatabase(file, tstToSave, tstOppToSave, season, maxSeason);
 
-            updateProgress("Saving players...");
+            ProgressHelper.UpdateProgress("Saving players...");
             SavePlayersToDatabase(file, pstToSave, season, maxSeason, partialUpdate);
 
             #region Save Box Scores
 
             if (!doNotSaveBoxScores)
             {
-                updateProgress("Saving box scores...");
+                ProgressHelper.UpdateProgress("Saving box scores...");
                 const string q = "select GameID from GameResults;";
                 var res = MainWindow.DB.GetDataTable(q);
                 var idList = (from DataRow r in res.Rows
@@ -434,7 +433,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                             sqlinsert.Add(dict2);
                         }
                     }
-                    updateProgress((++doneCount)*100/count);
+                    ProgressHelper.UpdateProgress((++doneCount)*100/count);
                 }
                 if (sqlinsert.Count > 0)
                 {
@@ -448,7 +447,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
-            doInScheduler(() => MainWindow.MWInstance.txtFile.Text = file, MainWindow.MWInstance.UIScheduler);
+            ProgressHelper.DoInScheduler(() => MainWindow.MWInstance.txtFile.Text = file, MainWindow.MWInstance.UIScheduler);
             MainWindow.CurrentDB = file;
 
             //}
@@ -456,11 +455,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             //{
             //App.errorReport(ex, "Trying to save team stats - SQLite");
             //}
-        }
-
-        private static void updateProgress(double percentage)
-        {
-            updateProgress(Convert.ToInt32(percentage));
         }
 
         /// <summary>
@@ -1556,7 +1550,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        }
                                        Interlocked.Increment(ref i);
 
-                                       Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(i*100/teamCount)));
+                                       Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(i*100/teamCount)));
                                    });
 
             tst = newTST;
@@ -1617,7 +1611,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     maxStage = 5;
                 }
             }
-            Progress.MaxStage = maxStage;
+            ProgressHelper.Progress.MaxStage = maxStage;
 
             var maxSeason = GetMaxSeason(file);
             var uiScheduler = MainWindow.MWInstance.UIScheduler;
@@ -1631,17 +1625,17 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading divisions and conferences..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading divisions and conferences..."));
             LoadDivisionsAndConferences(file);
 
             MainWindow.Tf.SeasonNum = curSeason;
             if (mustSave)
             {
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading teams..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading teams..."));
                 GetAllTeamStatsFromDatabase(file, curSeason, out tst, out tstOpp);
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading players..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading players..."));
                 pst = GetPlayersFromDatabase(file, tst, tstOpp, curSeason, maxSeason);
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; loading box scores..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading box scores..."));
                 if (!doNotLoadBoxScores)
                     bsHist = GetSeasonBoxScoresFromDatabase(file, curSeason, maxSeason, tst);
 
@@ -1672,7 +1666,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             MainWindow.CurrentDB = file;
 
-            doInScheduler(() => MainWindow.ChangeSeason(curSeason), uiScheduler);
+            ProgressHelper.DoInScheduler(() => MainWindow.ChangeSeason(curSeason), uiScheduler);
 
             if (mustSave)
             {
@@ -1696,28 +1690,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     Console.WriteLine("Couldn't copy old file to upgrade backup at " + backupName);
                     Console.WriteLine(ex.Message);
                 }
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Database must be upgraded; saving new database..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; saving new database..."));
                 RecreateDatabaseAs(file);
                 File.Delete(backupName);
                 _upgrading = false;
             }
 
             MainWindow.LoadingSeason = false;
-        }
-
-        private static void updateProgress(int percentage)
-        {
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, percentage));
-        }
-
-        private static void updateProgress(string message)
-        {
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, message));
-        }
-
-        private static void doInScheduler(Action a, TaskScheduler scheduler)
-        {
-            Task.Factory.StartNew(() => a, CancellationToken.None, TaskCreationOptions.None, scheduler).Wait();
         }
 
         /// <summary>
@@ -2055,7 +2034,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                        }
 
                                        Interlocked.Increment(ref doneCount);
-                                       Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(doneCount*100/bsCount)));
+                                       Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount*100/bsCount)));
                                    });
             return bsHist;
         }
@@ -2098,8 +2077,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                                             }
 
                                                             Interlocked.Increment(ref doneCount);
-                                                            Interlocked.Exchange(ref Progress,
-                                                                                 new ProgressInfo(Progress,
+                                                            Interlocked.Exchange(ref ProgressHelper.Progress,
+                                                                                 new ProgressInfo(ProgressHelper.Progress,
                                                                                                   Convert.ToInt32(doneCount*100/bsCount)));
                                                         });
             return bsHist;
@@ -2457,20 +2436,20 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             if (!tf.IsBetween)
             {
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading teams..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading teams..."));
                 GetAllTeamStatsFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, out tst, out tstOpp);
                 foreach (var ts in tst)
                 {
                     displayNames.Add(ts.Value.ID, ts.Value.DisplayName);
                 }
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading players..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading players..."));
                 pst = GetPlayersFromDatabase(MainWindow.CurrentDB, tst, tstOpp, curSeason, maxSeason);
             }
             else
             {
                 var seasons = getSeasonsInTimeframe(tf.StartDate, tf.EndDate);
 
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading teams..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading teams..."));
                 foreach (var i in seasons)
                 {
                     q = "SELECT * FROM Teams" + AddSuffix(i, maxSeason) + " WHERE isHidden LIKE \"False\"";
@@ -2498,7 +2477,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         }
                     }
 
-                    Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading players..."));
+                    Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading players..."));
                     q = "SELECT * FROM Players" + AddSuffix(i, maxSeason) + " WHERE isHidden LIKE \"False\"";
                     res = db.GetDataTable(q);
                     foreach (DataRow dr in res.Rows)
@@ -2532,7 +2511,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #region Prepare Split Dictionaries
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Loading box scores..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading box scores..."));
             var bsHist = !tf.IsBetween
                              ? GetSeasonBoxScoresFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, maxSeason, tst)
                              : GetTimeframedBoxScoresFromDatabase(MainWindow.CurrentDB, tf.StartDate, tf.EndDate, tst);
@@ -2546,7 +2525,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                                             .Select(bse => bse.BS.ID)
                                                             .ToList());
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Preparing split dictionaries..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Preparing split dictionaries..."));
             if (!tf.IsBetween)
             {
                 try
@@ -2667,7 +2646,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             if (tf.IsBetween)
             {
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating team & player stats from box scores..."));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Calculating team & player stats from box scores..."));
                 foreach (var bse in bsHist)
                 {
                     TeamStats.AddTeamStatsFromBoxScore(bse.BS, ref tst, ref tstOpp, bse.BS.Team1ID, bse.BS.Team2ID);
@@ -2688,7 +2667,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 PlayerStats.CalculateAllMetrics(ref pst, tst, tstOpp, playoffs: true);
             }
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating split stats..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Calculating split stats..."));
 
             var last10GamesTeams = new Dictionary<int, List<int>>();
             foreach (var pair in tst)
@@ -2918,21 +2897,21 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     }
                 }
                 Interlocked.Increment(ref doneCount);
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(doneCount*100/bsCount)));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount*100/bsCount)));
             }
 
             #endregion
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating season highs for players..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Calculating season highs for players..."));
             double plCount = pst.Keys.Count;
             doneCount = 0;
             foreach (var ps in pst)
             {
                 ps.Value.CalculateSeasonHighs(bsHist);
-                Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, Convert.ToInt32(doneCount*100/plCount)));
+                Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount*100/plCount)));
             }
 
-            Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, "Calculating team & player rankings..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Calculating team & player rankings..."));
             var teamRankings = new TeamRankings(tst);
             var playoffTeamRankings = new TeamRankings(tst, true);
             var playerRankings = new PlayerRankings(pst);

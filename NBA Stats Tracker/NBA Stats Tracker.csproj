@@ -118,6 +118,7 @@
     <Compile Include="Helper\Miscellaneous\ComboBoxItemWithIsEnabled.cs" />
     <Compile Include="Helper\Miscellaneous\Misc.cs" />
     <Compile Include="Helper\EventHandlers\EventHandlers.cs" />
+    <Compile Include="Helper\Miscellaneous\ProgressHelper.cs" />
     <Compile Include="Helper\Miscellaneous\ProgressInfo.cs" />
     <Compile Include="Helper\Miscellaneous\StartingFivePermutation.cs" />
     <Compile Include="Helper\WindowsForms\WindowsForms.cs" />

@@ -465,8 +465,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             IsEnabled = false;
             
-            startProgressWatchTimer();
-            SQLiteIO.Progress = new ProgressInfo(0, 10, "Saving new database...");
+            StartProgressWatchTimer();
+            ProgressHelper.Progress = new ProgressInfo(0, 10, "Saving new database...");
             Task.Factory.StartNew(() => SQLiteIO.SaveDatabaseAs(file))
                 .ContinueWith(t => finishSavingAs(t, file), UIScheduler)
                 .FailFastOnException(UIScheduler);
@@ -486,8 +486,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public void StopProgressWatchTimer()
         {
-            Interlocked.Exchange(ref SQLiteIO.Progress, new ProgressInfo(SQLiteIO.Progress, "Finished"));
-            SQLiteIO.Progress.Timing.Stop(); 
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Finished"));
+            ProgressHelper.Progress.Timing.Stop(); 
             try
             {
                 ProgressWindow.PwInstance.CanClose = true;
@@ -544,17 +544,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            SQLiteIO.Progress = new ProgressInfo(0, "Loading database...");
+            ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
             doLoadSeasonInThread().ContinueWith(t => FinishLoadingDatabase(), UIScheduler);
 
-            startProgressWatchTimer();
+            StartProgressWatchTimer();
 
             //SQLiteIO.LoadSeason();
         }
 
         private bool _watchTimerRunning = false;
 
-        private void startProgressWatchTimer()
+        public void StartProgressWatchTimer()
         {
             if (_watchTimerRunning)
             {
@@ -562,7 +562,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
 
             _watchTimerRunning = true;
-            SQLiteIO.Progress = new ProgressInfo(0, 8, "");
+            ProgressHelper.Progress = new ProgressInfo(0, 8, "");
             if (!IsActive)
             {
                 var pw = new ProgressWindow("", false);
@@ -581,10 +581,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage,
                                           SQLiteIO.Progress.Message);
             */
-            var newStatus = string.Format("Stage {0}: {1}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.Message);
-            if (SQLiteIO.Progress.Percentage > 0)
+            var newStatus = string.Format("Stage {0}: {1}", ProgressHelper.Progress.CurrentStage, ProgressHelper.Progress.Message);
+            if (ProgressHelper.Progress.Percentage > 0)
             {
-                newStatus += " (" + SQLiteIO.Progress.Percentage + "%)";
+                newStatus += " (" + ProgressHelper.Progress.Percentage + "%)";
             }
             UpdateStatus(newStatus, true);
             try
@@ -631,7 +631,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
 
-            Interlocked.Exchange(ref SQLiteIO.Progress, new ProgressInfo(SQLiteIO.Progress, "Updating notables..."));
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
             //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
             UpdateNotables();
 
@@ -766,8 +766,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 BSHist[bs.BSHistID].BS = bs;
             }
 
-            startProgressWatchTimer();
-            SQLiteIO.Progress = new ProgressInfo(0, "Inserting box score to database...");
+            StartProgressWatchTimer();
+            ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             Task.Factory.StartNew(
                 () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
                 .ContinueWith(t => UpdateAllData())
@@ -1637,8 +1637,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
-            startProgressWatchTimer();
-            SQLiteIO.Progress = new ProgressInfo(0, "Saving database...");
+            StartProgressWatchTimer();
+            ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
@@ -1953,8 +1953,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
-            startProgressWatchTimer();
-            SQLiteIO.Progress = new ProgressInfo(0, "Saving all seasons...");
+            StartProgressWatchTimer();
+            ProgressHelper.Progress = new ProgressInfo(0, "Saving all seasons...");
             Task.Factory.StartNew(() => SQLiteIO.SaveAllSeasons(CurrentDB))
                 .ContinueWith(t => finishSavingAllSeasons(), UIScheduler)
                 .FailFastOnException(UIScheduler);
@@ -2534,7 +2534,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static Task UpdateAllData(bool leaveProgressWindowOpen = false)
         {
-            Task.Factory.StartNew(() => MWInstance.startProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
+            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
                                   MWInstance.UIScheduler).Wait();
 
             var result = MWInstance.doPopulateAllInThread()
