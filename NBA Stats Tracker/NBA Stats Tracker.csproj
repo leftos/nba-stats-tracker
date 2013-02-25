@@ -444,8 +444,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "Readme.txt" "$(SolutionDir)\Readme.txt"
-copy "LICENSE" "$(SolutionDir)\LICENSE"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\Readme.txt" "$(SolutionDir)\Readme.txt"
+copy "$(ProjectDir)\LICENSE" "$(SolutionDir)\LICENSE"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

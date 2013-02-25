@@ -147,6 +147,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvPlayerStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayoffStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
+            populateTeamsCombo();
+
             Height = Misc.GetRegistrySetting("APSHeight", (int)Height);
             Width = Misc.GetRegistrySetting("APSWidth", (int)Width);
             Top = Misc.GetRegistrySetting("APSY", (int)Top);
@@ -463,14 +465,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                     curPSR = psrListSea.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
-                                        val = (typeof (PlayerStatsRow)).GetProperty(part).GetValue(curPSR, null).ToString();
+                                        val = Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(part).GetValue(curPSR, null)).ToString(".0###############");
                                     }
                                     else
                                     {
-                                        var curTSR = isOwnTeam == true
-                                                                  ? tsrListSea.Single(tsr => tsr.ID == curPSR.TeamF)
-                                                                  : tsrOppListSea.Single(tsr => tsr.ID == curPSR.TeamF);
-                                        val = (typeof(TeamStatsRow)).GetProperty(part).GetValue(curTSR, null).ToString();
+                                        if (curPSR.TeamF == -1)
+                                        {
+                                            val = "NaN";
+                                        }
+                                        else
+                                        {
+                                            var curTSR = isOwnTeam == true
+                                                             ? tsrListSea.Single(tsr => tsr.ID == curPSR.TeamF)
+                                                             : tsrOppListSea.Single(tsr => tsr.ID == curPSR.TeamF);
+                                            val = Convert.ToDouble(typeof(TeamStatsRow).GetProperty(part).GetValue(curTSR, null)).ToString(".0###############");
+                                        }
                                     }
                                     if (val != "NaN")
                                     {
@@ -488,14 +497,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                     curPSRPl = psrListPl.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
-                                        plVal = (typeof (PlayerStatsRow)).GetProperty(part).GetValue(curPSRPl, null).ToString();
+                                        plVal = Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(part).GetValue(curPSRPl, null)).ToString(".0###############");
                                     }
                                     else
                                     {
-                                        var curTSRPl = isOwnTeam == true
-                                                                     ? tsrListPl.Single(tsr => tsr.ID == curPSRPl.TeamF)
-                                                                     : tsrOppListPl.Single(tsr => tsr.ID == curPSRPl.TeamF);
-                                        plVal = (typeof(TeamStatsRow)).GetProperty(part).GetValue(curTSRPl, null).ToString();
+                                        if (curPSRPl.TeamF == -1)
+                                        {
+                                            plVal = "NaN";
+                                        }
+                                        else
+                                        {
+                                            var curTSRPl = isOwnTeam == true
+                                                               ? tsrListPl.Single(tsr => tsr.ID == curPSRPl.TeamF)
+                                                               : tsrOppListPl.Single(tsr => tsr.ID == curPSRPl.TeamF);
+                                            plVal = Convert.ToDouble(typeof(TeamStatsRow).GetProperty(part).GetValue(curTSRPl, null)).ToString(".0###############");
+                                        }
                                     }
                                     if (plVal != "NaN")
                                     {

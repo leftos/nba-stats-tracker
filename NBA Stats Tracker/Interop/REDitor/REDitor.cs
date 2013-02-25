@@ -559,7 +559,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     if (tst.Keys.Contains(redID))
                     {
-                        tst.Remove(tst.Single(to => to.Key == redID).Key);
                         var oldName = tst[redID].Name;
                         tst[redID].Name = name;
                         tstOpp[redID].Name = name;
