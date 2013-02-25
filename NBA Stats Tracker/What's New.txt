@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.11.0.1
+		- Fix: Fixed crash in some circumstances when using custom expressions in Advanced Player Search
+
 	v1.11
 		- Addition: Added Teams stats, metrics and info as building blocks for custom expressions in Advanced Player Search
 		- Improvement: Advanced Player Search and Advanced Stats Calculator will now remember the window size and position

@@ -846,16 +846,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var expCount = _customExpressions.Count;
             Parallel.For(0, expCount, (i, loopState) =>
                                       {
-                                          var exp = _customExpressions[i];
+                                          var index = i;
+                                          var exp = _customExpressions[index];
                                           var itemSParts = exp.Split(new[] {": "}, StringSplitOptions.None);
                                           var filterParts = itemSParts[2].Split(new[] {' '}, 2);
                                           var filterType = filterParts[0];
                                           var filterVal = filterParts.Length == 2 ? filterParts[1] : "";
 
                                           if (filterType == "All")
+                                          {
                                               return;
+                                          }
 
-                                          var actualValue = psr.Custom[i];
+                                          var actualValue = psr.Custom[index];
                                           if (!double.IsNaN(actualValue))
                                           {
                                               if (double.IsPositiveInfinity(actualValue))
