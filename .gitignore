@@ -1,4 +1,3 @@
-
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
@@ -35,3 +34,4 @@ NST.smproj
 *.psess
 *.vsp
 InnoSetup/PreprocessedNBA Stats Tracker.iss
+*.lnk

@@ -50,16 +50,16 @@
 AppName={#MyAppSetupName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
-AppCopyright=Copyright © Lefteris Aslanoglou 2011-2012
+AppCopyright=Copyright © Lefteris Aslanoglou 2011-2013
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany=Lefteris Aslanoglou
 AppPublisher=Lefteris Aslanoglou
 ;AppPublisherURL=http://...
 ;AppSupportURL=http://...
 ;AppUpdatesURL=http://...
-OutputBaseFilename=[Leftos] {#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
+OutputBaseFilename={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
 DefaultGroupName={#MyAppSetupName}
-DefaultDirName={pf32}\{#MyAppSetupName}
+DefaultDirName={code:GetDefaultDir}
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe
 UninstallDisplayName={#MyAppSetupName}
 Uninstallable=true
@@ -93,6 +93,7 @@ Source: "{#CompiledPath}\*"; DestDir: "{app}"; Flags: ignoreversion; Excludes: "
 Source: "{#CompiledPath}\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#CompiledPath}\Updater.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
@@ -109,6 +110,7 @@ Type: filesandordirs; Name: "{app}"
 
 [Registry]
 Root: "HKCU"; Subkey: "Software\Lefteris Aslanoglou\NBA Stats Tracker"; Flags: uninsdeletekey
+Root: "HKCU"; Subkey: "Software\Lefteris Aslanoglou\NBA Stats Tracker"; ValueType: string; ValueName: "InstallDir"; ValueData: "{app}"
 
 [Dirs]
 Name: "{app}\Images"
@@ -330,4 +332,20 @@ begin
 #endif
 	
 	Result := true;
+end;
+
+function GetDefaultDir(def: string): string;
+var
+sTemp : string;
+begin
+    //Set a defualt value so that the install doesn't fail.  
+    sTemp := ExpandConstant('{pf32}') + '\NBA Stats Tracker';
+
+    //We need to get the current install directory.  
+    if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'Software\Lefteris Aslanoglou\NBA Stats Tracker',
+     'InstallDir', sTemp) then
+     begin
+    //We found the value in the registry so we'll use that.  Otherwise we use the default 
+     end;
+    Result := sTemp;
 end;

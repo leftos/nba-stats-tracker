@@ -3,7 +3,7 @@
 
 
 Prologue
-	What started as a workaround to the Team Stats bug in NBA 2K12, grew up to become a full stats tracker & analyzer for any basketball league. 'NBA 2K12 Correct Team Stats' is now 'NBA Stats Tracker', it's my thesis for my Computer Engineering degree, it's my work and passion.
+	What started as a workaround to the Team Stats bug in NBA 2K12, grew up to become a full stats tracker & analyzer for any basketball league. 'NBA 2K12 Correct Team Stats' is now 'NBA Stats Tracker', it was my thesis for my Computer Engineering degree, and now is my everyday work and passion.
 	
 	Its goal is to offer a cheap and easy solution to real life coaches and fans who want to keep track of their favorite teams and leagues and do all kinds of analysis on the data. When done, it should also offer scouting reports in natural language for nearly every window and table of data. It will also feature a mobile app with syncing to the cloud, to allow you to carry the stats and scouting reports everywhere with you.
 
@@ -19,9 +19,10 @@ Quick notes
 	Each database can keep data from multiple seasons. You can compare yearly averages, as well as compare results against a particular opponent over the years, for example.
 	
 Installation Notes
-	NBA Stats Tracker requires the .NET Framework 4 Client Profile. The installer should download and install it automatically.
+	NBA Stats Tracker requires .NET Framework 4. The installer should download and install it automatically. If it doesn't, you can download it from:
+		http://www.microsoft.com/en-us/download/details.aspx?id=17851
 
-Features in a glance
+Features in a glance (outdated)
 	Team Overview
 		Overview
 			The Overview Tab offers you just that, a quick overview over each team's stats, averages, and rankings during the season and playoffs. You can edit and save each team's stats from this tab.
@@ -91,29 +92,29 @@ NBA 2K12 Features
 	If you have the patience to follow the tutorial below for each game you play in your career, you should have your team stats automatically corrected, and also have full box-scores (with Team & Player Stats) of your games in NBA Stats Tracker for you to check out.
 	
 	Just follow these steps:
-	REditor
+	REDitor
 		1. From in-game, select Play Game (even if you're going to simulate it), and let it save your career on the jersey selection screen.
-		2. Alt-Tab out of the game and start REditor.
-		3. Open your save in REditor, export everything to CSV (File > Export to CSV).
+		2. Alt-Tab out of the game and start REDitor.
+		3. Open your save in REDitor, export everything to CSV (File > Export to CSV).
 		4. Start NBA Stats Tracker.
 		5. Open your database, or create a new one if you haven't previously done so.
 		6. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 3.
 		7. Save the database.
 		8. Alt-Tab into the game and play it or watch it, then after it's done let it save your career again. If you're simulating games, simulate just this game and then save immediately. Do not let any other games simulate since your last save.
-		9. Alt-Tab out of the game and start REditor.
-		10. Open your save in REditor, export everything to CSV (File > Export to CSV).
+		9. Alt-Tab out of the game and start REDitor.
+		10. Open your save in REDitor, export everything to CSV (File > Export to CSV).
 		11. Go back to the tool, open the database you saved before the game.
 		12. Click on Import from 2K12 Save, select the folder you saved the CSVs into in Step 10.
 		13. The tool should detect the game you played and ask you which team is the home team.
 		14. The tool will now show you the full box score of the game so that you can verify everything's okay. Click on OK.
 		15. Save the database.
 		16. Click on Export to 2K12 Save, select the folder you saved the CSVs into in Step 3.
-		17. Go to REditor, open your career again, import everything from CSV (File > Import from CSV).
-		18. Save your career in REditor.
+		17. Go to REDitor, open your career again, import everything from CSV (File > Import from CSV).
+		18. Save your career in REDitor.
 		19. You're done! Once you go back to NBA 2K12, make sure to quit your career and reload it, or your changes could be lost.
 
-		Q: I don't even know what REditor is! Care to throw me a bone?
-		A: In short, REditor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
+		Q: I don't even know what REDitor is! Care to throw me a bone?
+		A: In short, REDitor is the ultimate NBA 2K12 tool. It allows you to edit everything in any roster or career file. You can find out more by visiting
 		http://www.red-mods.com/
 
 	Old Season 1 Workaround
@@ -156,6 +157,10 @@ Additional Features
 
 	Real NBA Stats
 		This feature allows you to automatically grab the real league's team stats, player stats and box scores, and import them into the tool. All that with just a single-click! From there on, you can use all the tool's features, including averages, rankings, scouting reports, comparisons, CSV exports, and anything else that finds its way into the tool's features, onto the real NBA team stats. 	
+
+
+Known Issues
+	- Certain undetected scenarios cause the tool not to add to a team's opponents stats when adding a box score. You can use the "Recalculate Teams' Opponent Stats" feature under "Tools > Fix/Reset Stats" if you notice a discrepancy. If you've found certain steps that consistently reproduce this issue, please contact me via the Dicussion/Support Thread URL at the end of this Readme.
 		
 
 Disclaimer
@@ -180,13 +185,14 @@ Special thanks
 	- Lagoa, for his suggestions and help with debugging
 	- intruda, for his donation
 	- WBT99, for his extensive suggestions
+	- Pitar, for his extensive suggestions and bug reports
 	- Everyone at the NLSC community, for their continued support
 
 
 Development Credits
 	All development for NBA Stats Tracker was done by myself, Lefteris Aslanoglou, unless otherwise explicitly stated, as the implementation of my thesis "Application Development for Basketball Statistical Analysis in Natural Language" under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou.
 
-	This software uses, with permission (whether implicit or explicit), the following binary implementations, class libraries and code examples:
+	This software uses, with permission (whether implicit or explicit), the following binary implementations, class libraries and code examples. The appropriate license information is provided at the end of this Readme file, in the appropriate section.
 		Uses the SQLite database engine (http://www.sqlite.org/)
 		Uses the System.Data.SQLite .NET wrapper for SQLite (http://system.data.sqlite.org/index.html/doc/trunk/www/index.wiki)
 		Uses the HTMLAgilityPack HTML parser (http://htmlagilitypack.codeplex.com/)
@@ -200,16 +206,76 @@ Development Credits
 		Uses a FolderBrowseDialog WPF usage example (http://stackoverflow.com/questions/315164/how-to-use-a-folderbrowserdialog-from-a-wpf-application)
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
 		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
-		Uses a personal edit of the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization)
+		Uses the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization) with minor personal edits
 		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
 		Uses an Object DeepCloning Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)
 		Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
 		Uses a Sortable Binding List implementation by Tim Van Wassenhove (http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/)
-		Uses Swordfish Charts by John Stewien (https://sourceforge.net/projects/swordfishcharts)
+		Uses Swordfish Charts v1.1 by John Stewien (http://www.codeproject.com/Articles/17097/WPF-Chart-Control-With-Pan-Zoom-and-More) with minor personal edits
+		Uses an optimized implementation of DataTable.Load based on Amit Choudhary's work (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
 	
 	
 Discussion/Support Thread
 	http://forums.nba-live.com/viewtopic.php?f=143&t=84106
+
+GitHub Page
+	https://github.com/leftos/nba-stats-tracker
 	
 Donations Page
     http://students.ceid.upatras.gr/~aslanoglou/donate.html
+
+
+License Information
+
+	NBA Stats Tracker
+		Copyright 2011-2013 Eleftherios Aslanoglou
+
+		Licensed under the Apache License, Version 2.0 (the "License");
+		you may not use this file except in compliance with the License.
+		You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+		Unless required by applicable law or agreed to in writing, software
+		distributed under the License is distributed on an "AS IS" BASIS,
+		WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		See the License for the specific language governing permissions and
+		limitations under the License.
+
+		A copy of the license is also included in the LICENSE file.
+
+
+	Other software included as source code or linked to as binary libraries by NBA Stats Tracker or the projects included in the NBA Stats Tracker Solution File, including LeftosCommonLibrary, SQLiteDatabase and Updater, grouped by license:
+
+		Public Domain
+			SQLite
+			System.Data.SQLite
+			Swordfish Charts
+
+		Common Development and Distribution License (CDDL-1.0)
+		http://opensource.org/licenses/CDDL-1.0
+			Object DeepCloning Code Example 
+				Copyright 2008 Rahul Dantkale
+
+		Microsoft Public License (Ms-PL)
+		http://opensource.org/licenses/MS-PL
+			HTML Agility Pack
+				Copyright 2012 Simon Mourier
+			WPF Extended ToolKit
+				Copyright 2012-2013 XCeed
+
+		MIT License
+		http://opensource.org/licenses/mit-license.php
+			LumenWorks Framework
+				Copyright 2005-2011 Sebastian Lorion
+
+		The Code Project Open License v1.0
+		http://www.codeproject.com/info/cpol10.aspx
+			Software Architects Scroll Synchronizer
+				Copyright 2009 Karin Huber, Software Architects
+
+		GNU Library General Public License (LGPL) v2.1
+		http://www.gnu.org/licenses/lgpl-2.1.html
+		A copy of this license is also included per the requirements of the license in the lgpl-2.1.txt file.
+			Fast Lightweight Expression Evaluator
+				Copyright 2009 Ciloci

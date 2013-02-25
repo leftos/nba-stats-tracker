@@ -1,0 +1,14 @@
+- Ultimate Defensive Team
+- Go through all tables, check if they should have paste, implement OnExecutedPaste and database updates
+- Paste box scores from B-R, NBA.com
+- AST/TO ratio
+- Career and Season Highs in Box Scores
+- Milestones in Box Scores & Matchup Preview
+- Average age
+- More Copy To Clipboard
+- Double-double, triple-double
+- Power Rankings with short reports
+- Split Shooting Stats
+- Anonymous Usage Information
+- Play-by-play analysis
+- Add custom columns to all Metrics tabs

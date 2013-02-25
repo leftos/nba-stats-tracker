@@ -1,4 +1,7 @@
-1.0.2.0
-http://forums.nba-live.com/downloads.php?view=detail&df_id=2662
+1.10.0.1
+http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
+http://www.nba-live.com/leftos/NBA Stats Tracker.exe
+http://forums.nba-live.com/viewtopic.php?f=143&t=84110
+http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
 
-		- Addition: Team Scouting Reports now include the basic team roster
+	Introduced in v1.9 is the new Custom Columns feature in Advanced Player Search which allows you to build your own functions (e.g. metrics) out of all the stats and information available in your database!

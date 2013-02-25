@@ -1,20 +1,18 @@
 ﻿#region Copyright Notice
 
-// Created by brennydoogles, (c) 2010
-// Source: http://www.dreamincode.net/forums/topic/157830-using-sqlite-with-c%23/
-// Adapted from Mike Duncan's tutorial
-// Source: http://www.mikeduncan.com/sqlite-on-dotnet-in-3-mins/
-//
-//
-// Improved by Lefteris Aslanoglou, (c) 2011-2012
-// as a Class Library for the implementation of thesis
-// "Application Development for Basketball Statistical Analysis in Natural Language"
-// under the supervision of Prof. Athanasios Tsakalidis & MSc Alexandros Georgiou,
-// Computer Engineering & Informatics Department, University of Patras, Greece.
+//    Copyright 2011-2013 Eleftherios Aslanoglou
 // 
-// All rights reserved. Unless specifically stated otherwise, the code in this file should 
-// not be reproduced, edited and/or republished without explicit permission from the 
-// author.
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+// 
+//        http://www.apache.org/licenses/LICENSE-2.0
+// 
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
 
 #endregion
 
@@ -33,14 +31,14 @@ namespace SQLite_Database
 {
     public class SQLiteDatabase
     {
-        private readonly String dbConnection;
+        private readonly String _dbConnection;
 
         /// <summary>
         ///     Default Constructor for SQLiteDatabase Class. Connects to the "D:\test.sqlite" database file.
         /// </summary>
         public SQLiteDatabase()
         {
-            dbConnection = @"Data Source=D:\test.sqlite";
+            _dbConnection = @"Data Source=D:\test.sqlite";
         }
 
         /// <summary>
@@ -49,7 +47,8 @@ namespace SQLite_Database
         /// <param name="inputFile">The File containing the DB</param>
         public SQLiteDatabase(String inputFile)
         {
-            dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
+            _dbConnection = String.Format("Data Source={0}; PRAGMA cache_size=20000; PRAGMA page_size=32768", inputFile);
+            //ExecuteNonQuery("ANALYZE;");
         }
 
         /// <summary>
@@ -58,9 +57,9 @@ namespace SQLite_Database
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
-            String str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
+            var str = connectionOpts.Aggregate("", (current, row) => current + String.Format("{0}={1}; ", row.Key, row.Value));
             str = str.Trim().Substring(0, str.Length - 1);
-            dbConnection = str;
+            _dbConnection = str;
         }
 
         /// <summary>
@@ -68,31 +67,94 @@ namespace SQLite_Database
         /// </summary>
         /// <param name="sql">The SQL to run</param>
         /// <returns>A DataTable containing the result set.</returns>
-        public DataTable GetDataTable(string sql)
+        public DataTable GetDataTable(string sql, bool queryHasDuplicateColumns = false)
         {
-            using (var dt = new DataTable())
+            var dt = new DataTable();
+
+            try
             {
+                using (var cnn = new SQLiteConnection(_dbConnection))
+                {
+                    cnn.Open();
+                    SQLiteDataReader reader;
+                    using (var mycommand = new SQLiteCommand(cnn))
+                    {
+                        mycommand.CommandText = sql;
+                        reader = mycommand.ExecuteReader();
+                    }
+                    //dt.Load(reader);
+                    dt = getDataTableFromDataReader(reader, queryHasDuplicateColumns);
+                    reader.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "\n\nQuery: " + sql);
+            }
+            return dt;
+        }
+
+        /// <summary>
+        ///     Parses the information in an IDataReader, returning a DataTable.
+        ///     Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
+        ///     (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <returns></returns>
+        private static DataTable getDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
+        {
+            var schemaTable = dataReader.GetSchemaTable();
+            if (schemaTable == null)
+            {
+                throw new Exception("SQLiteDatabase.GetDataTableFromDataReader called with but the DataReader returned null.");
+            }
+            var resultTable = new DataTable();
+
+            foreach (DataRow dataRow in schemaTable.Rows)
+            {
+                var dataColumn = new DataColumn
+                                 {
+                                     ColumnName = dataRow["ColumnName"].ToString(),
+                                     DataType = Type.GetType(dataRow["DataType"].ToString()),
+                                     ReadOnly = (bool) dataRow["IsReadOnly"],
+                                     AutoIncrement = (bool) dataRow["IsAutoIncrement"],
+                                     Unique = (bool) dataRow["IsUnique"]
+                                 };
+
                 try
                 {
-                    using (var cnn = new SQLiteConnection(dbConnection))
+                    resultTable.Columns.Add(dataColumn);
+                }
+                catch (DuplicateNameException)
+                {
+                    if (queryHasDuplicateColumns)
                     {
-                        cnn.Open();
-                        SQLiteDataReader reader;
-                        using (var mycommand = new SQLiteCommand(cnn))
+                        var i = 2;
+                        while (resultTable.Columns.Contains(dataColumn.ColumnName + i))
                         {
-                            mycommand.CommandText = sql;
-                            reader = mycommand.ExecuteReader();
+                            i++;
                         }
-                        dt.Load(reader);
-                        reader.Close();
+                        dataColumn.ColumnName += i.ToString();
+                        resultTable.Columns.Add(dataColumn);
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
-                catch (Exception e)
-                {
-                    throw new Exception(e.Message + "\n\nQuery: " + sql);
-                }
-                return dt;
             }
+
+            while (dataReader.Read())
+            {
+                var dataRow = resultTable.NewRow();
+                for (var i = 0; i < resultTable.Columns.Count; i++)
+                {
+                    dataRow[i] = dataReader[i];
+                }
+                resultTable.Rows.Add(dataRow);
+            }
+
+            return resultTable;
         }
 
         /// <summary>
@@ -104,10 +166,10 @@ namespace SQLite_Database
         {
             SQLiteConnection cnn;
             int rowsUpdated;
-            using (cnn = new SQLiteConnection(dbConnection))
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
-                SQLiteTransaction sqLiteTransaction = cnn.BeginTransaction();
+                var sqLiteTransaction = cnn.BeginTransaction();
                 SQLiteCommand mycommand;
                 using (mycommand = new SQLiteCommand(cnn))
                 {
@@ -128,19 +190,26 @@ namespace SQLite_Database
         /// <returns>A string.</returns>
         public string ExecuteScalar(string sql)
         {
-            object value;
-            using (var cnn = new SQLiteConnection(dbConnection))
+            try
             {
-                cnn.Open();
-                using (var mycommand = new SQLiteCommand(cnn))
+                object value;
+                using (var cnn = new SQLiteConnection(_dbConnection))
                 {
-                    mycommand.CommandText = sql;
-                    value = mycommand.ExecuteScalar();
+                    cnn.Open();
+                    using (var mycommand = new SQLiteCommand(cnn))
+                    {
+                        mycommand.CommandText = sql;
+                        value = mycommand.ExecuteScalar();
+                    }
+                }
+                if (value != null)
+                {
+                    return value.ToString();
                 }
             }
-            if (value != null)
+            catch (Exception ex)
             {
-                return value.ToString();
+                throw new Exception(ex.Message + "\n\nQuery: " + sql);
             }
             return "";
         }
@@ -154,8 +223,8 @@ namespace SQLite_Database
         /// <returns>An integer that represents the amount of rows updated, or -1 if the query failed.</returns>
         public int Update(String tableName, Dictionary<String, String> data, String where)
         {
-            string sql = "";
-            String vals = "";
+            var sql = "";
+            var vals = "";
             int returnCode;
             if (data.Count >= 1)
             {
@@ -184,20 +253,17 @@ namespace SQLite_Database
         public void UpdateManyTransaction(String tableName, List<Dictionary<String, String>> dataList, List<String> whereList)
         {
             SQLiteConnection cnn;
-            int returnCode;
-            String vals = "";
-            using (cnn = new SQLiteConnection(dbConnection))
+            var vals = "";
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
+                    using (var transaction = cnn.BeginTransaction())
                     {
-                        for (int i = 0; i < dataList.Count; i++)
+                        for (var i = 0; i < dataList.Count; i++)
                         {
-                            Dictionary<string, string> data = dataList[i];
-                            String columns = "";
-                            String values = "";
+                            var data = dataList[i];
                             if (data.Count >= 1)
                             {
                                 vals = data.Aggregate("", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
@@ -227,7 +293,7 @@ namespace SQLite_Database
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool Delete(String tableName, String where)
         {
-            Boolean returnCode = true;
+            var returnCode = true;
             try
             {
                 ExecuteNonQuery(String.Format("delete from {0} where {1};", tableName, where));
@@ -248,10 +314,10 @@ namespace SQLite_Database
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool Insert(String tableName, Dictionary<String, String> data)
         {
-            String columns = "";
-            String values = "";
-            string sql = "";
-            Boolean returnCode = true;
+            var columns = "";
+            var values = "";
+            var sql = "";
+            var returnCode = true;
             foreach (var val in data)
             {
                 columns += String.Format(" {0},", val.Key);
@@ -280,19 +346,18 @@ namespace SQLite_Database
         public void InsertManyTransaction(String tableName, List<Dictionary<String, String>> dataList)
         {
             SQLiteConnection cnn;
-            int returnCode;
-            using (cnn = new SQLiteConnection(dbConnection))
+            using (cnn = new SQLiteConnection(_dbConnection))
             {
                 cnn.Open();
                 using (var cmd = new SQLiteCommand(cnn))
                 {
-                    using (SQLiteTransaction transaction = cnn.BeginTransaction())
+                    using (var transaction = cnn.BeginTransaction())
                     {
-                        for (int i = 0; i < dataList.Count; i++)
+                        for (var i = 0; i < dataList.Count; i++)
                         {
-                            Dictionary<string, string> data = dataList[i];
-                            String columns = "";
-                            String values = "";
+                            var data = dataList[i];
+                            var columns = "";
+                            var values = "";
                             foreach (var val in data)
                             {
                                 columns += String.Format(" {0},", val.Key);
@@ -320,9 +385,11 @@ namespace SQLite_Database
         ///     Allows the programmer to easily insert multiple records into the DB
         /// </summary>
         /// <param name="tableName">The table into which we insert the data.</param>
-        /// <param name="data">A list of dictionaries containing the column names and data for the insert.
-        ///                     All dictionaries must have the same order of inserted pairs. 
-        ///                     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.</param>
+        /// <param name="data">
+        ///     A list of dictionaries containing the column names and data for the insert.
+        ///     All dictionaries must have the same order of inserted pairs.
+        ///     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.
+        /// </param>
         /// <returns>The number of lines affected by this query.</returns>
         public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
         {
@@ -331,7 +398,7 @@ namespace SQLite_Database
 
             int returnCode;
 
-            string sql = "insert into " + tableName + " SELECT";
+            var sql = "insert into " + tableName + " SELECT";
 
             sql = data[0].Aggregate(sql, (current, val) => current + String.Format(" \"{0}\" AS {1},", val.Value, val.Key));
             sql = sql.Remove(sql.Length - 1);
@@ -363,7 +430,7 @@ namespace SQLite_Database
         {
             try
             {
-                DataTable tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
+                var tables = GetDataTable("select NAME from SQLITE_MASTER where type='table' order by NAME;");
                 foreach (DataRow table in tables.Rows)
                 {
                     ClearTable(table["NAME"].ToString());
@@ -395,7 +462,7 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        /// Converts a DateTime object into an SQLite-compatible date string.
+        ///     Converts a DateTime object into an SQLite-compatible date string.
         /// </summary>
         /// <param name="dt">The DateTime object.</param>
         /// <returns></returns>
@@ -405,12 +472,14 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        /// Adds a date range to an SQL query.
+        ///     Adds a date range to an SQL query.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="dStart">The starting date.</param>
         /// <param name="dEnd">The ending.</param>
-        /// <param name="addWhere">if set to <c>true</c> add WHERE to the query.</param>
+        /// <param name="addWhere">
+        ///     if set to <c>true</c> add WHERE to the query.
+        /// </param>
         /// <returns></returns>
         public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
         {

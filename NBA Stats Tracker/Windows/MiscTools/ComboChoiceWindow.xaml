@@ -1,0 +1,15 @@
+<Window x:Class="NBA_Stats_Tracker.Windows.MiscTools.ComboChoiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="NBA Stats Tracker" Height="211" Width="292"
+        WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+    <Grid>
+        <Label Content="Select a mode" Margin="12,12,12,0" Name="label1"
+               VerticalAlignment="Top" />
+        <ComboBox Height="23" Margin="12,41,12,0" Name="cmbSelection1" VerticalAlignment="Top" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,10" x:Name="btnOK"
+                VerticalAlignment="Bottom" Width="76" Click="btnOK_Click" />
+        <ComboBox Height="23" Margin="12,70,12,0" Name="cmbSelection2" VerticalAlignment="Top" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,10" x:Name="btnCancel"
+                VerticalAlignment="Bottom" Width="76" Click="btnCancel_Click" />
+    </Grid>
+</Window>
