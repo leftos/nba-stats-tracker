@@ -39,6 +39,7 @@ namespace NBA_Stats_Tracker
         public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath;
         public static string SavesPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.SavesPath;
         public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppTempPath;
+        internal const string AppName = "NBA Stats Tracker";
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control.
@@ -48,7 +49,7 @@ namespace NBA_Stats_Tracker
         /// <param name="e">
         ///     The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.
         /// </param>
-        private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void app_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             var exceptionString = e.Exception.ToString();
             var innerExceptionString = e.Exception.InnerException == null
@@ -58,10 +59,10 @@ namespace NBA_Stats_Tracker
 
             try
             {
-                var errorReportPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"errorlog_unh.txt";
+                var errorReportPath = AppDocsPath + @"errorlog_unh.txt";
                 var f = new StreamWriter(errorReportPath);
 
-                f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker");
+                f.WriteLine(string.Format("Unhandled Exception Error Report for {0}", AppName));
                 f.WriteLine(versionString);
                 f.WriteLine();
                 f.WriteLine("Exception information:");
@@ -73,8 +74,8 @@ namespace NBA_Stats_Tracker
                 f.Close();
 
                 MessageBox.Show(
-                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
-                    errorReportPath, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
+                    errorReportPath, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
             }
@@ -86,7 +87,7 @@ namespace NBA_Stats_Tracker
                 s += versionString;
                 s += "Exception Information:\n" + exceptionString + "\n\n";
                 s += "Inner Exception Information:\n" + innerExceptionString;
-                MessageBox.Show(s, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(s, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             // Prevent default unhandled exception processing
@@ -108,10 +109,10 @@ namespace NBA_Stats_Tracker
 
             try
             {
-                var errorReportPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath + @"errorlog.txt";
+                var errorReportPath = AppDocsPath + @"errorlog.txt";
                 var f = new StreamWriter(errorReportPath);
 
-                f.WriteLine("Forced Exception Error Report for NBA Stats Tracker");
+                f.WriteLine("Forced Exception Error Report for " + AppName);
                 f.WriteLine(versionString);
                 f.WriteLine("Developer information: " + additional);
                 f.WriteLine();
@@ -124,8 +125,8 @@ namespace NBA_Stats_Tracker
                 f.Close();
 
                 MessageBox.Show(
-                    "NBA Stats Tracker encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
-                    errorReportPath, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
+                    errorReportPath, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
             }
@@ -137,7 +138,7 @@ namespace NBA_Stats_Tracker
                 s += versionString;
                 s += "Exception Information:\n" + exceptionString + "\n\n";
                 s += "Inner Exception Information:\n" + innerExceptionString;
-                MessageBox.Show(s, "NBA Stats Tracker Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(s, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             Environment.Exit(-1);
