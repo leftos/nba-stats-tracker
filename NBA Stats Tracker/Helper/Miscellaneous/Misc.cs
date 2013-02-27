@@ -67,13 +67,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             return bi;
         }
 
-        /// <summary>
-        ///     Saves a setting into the Windows registry.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="setting">The setting.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="System.Exception"></exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
             var rk = Registry.CurrentUser;
@@ -81,15 +74,15 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             {
                 try
                 {
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    rk = rk.OpenSubKey(App.AppRegistryKey, true);
                     if (rk == null)
                         throw new Exception();
                 }
                 catch (Exception)
                 {
                     rk = Registry.CurrentUser;
-                    rk.CreateSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
-                    rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker", true);
+                    rk.CreateSubKey(App.AppRegistryKey);
+                    rk = rk.OpenSubKey(App.AppRegistryKey, true);
                     if (rk == null)
                         throw new Exception();
                 }
@@ -102,13 +95,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             }
         }
 
-        /// <summary>
-        ///     Gets a setting from the Windows registry.
-        /// </summary>
-        /// <param name="setting">The setting.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception"></exception>
         public static T GetRegistrySetting<T>(string setting, T defaultValue)
         {
             var rk = Registry.CurrentUser;
@@ -118,9 +104,9 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                 if (rk == null)
                     throw new Exception();
 
-                rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
+                rk = rk.OpenSubKey(App.AppRegistryKey);
                 if (rk != null)
-                    settingValue = (T) Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof (T));
+                    settingValue = (T)Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof(T));
             }
             catch
             {
@@ -128,7 +114,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             }
 
             return settingValue;
-        }
+        } 
 
         public static string GetRankingSuffix(int rank)
         {

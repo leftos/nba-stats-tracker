@@ -8,10 +8,18 @@
 
 
 	Development Credits
-		- Uses an Object DeepCloning Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)
-		- Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
-			* Used under the Common Development and Distribution License (CDDL-1.0) license:
-				http://opensource.org/licenses/CDDL-1.0
+		- Uses an Object DeepCloning Code Example by Felix K. 
+			(http://stackoverflow.com/a/8026574/427338)
+		- Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects 
+			(http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
+		  under the Common Development and Distribution License (CDDL-1.0) license:
+			(http://opensource.org/licenses/CDDL-1.0)
+		- Uses a Sortable Binding List implementation by Tim Van Wassenhove 
+			(http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/)
+		- Uses the LumenWorks Framework 
+			(http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
+		  under the MIT license:
+			(http://www.opensource.org/licenses/mit-license.php)
 
 
 	License

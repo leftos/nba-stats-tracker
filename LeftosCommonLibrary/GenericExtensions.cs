@@ -55,11 +55,11 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value {1}", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("FormatException for key {0} with value {1}", key, dict[key]));
             }
             catch (KeyNotFoundException)
             {
-                Trace.WriteLine(string.Format("{1}: KeyNotFoundException for key {0}", key, DateTime.Now));
+                Tools.WriteToTrace(string.Format("KeyNotFoundException for key {0}", key));
             }
         }
 
@@ -123,22 +123,22 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (InvalidCastException)
             {
-                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (FormatException)
             {
-                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (ArgumentException)
             {
-                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (KeyNotFoundException)
@@ -173,7 +173,7 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -181,7 +181,7 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -189,7 +189,7 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -197,7 +197,7 @@ namespace LeftosCommonLibrary
             }
             catch (ArgumentException)
             {
-                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -243,7 +243,7 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Trace.WriteLine(string.Format("{2}: OverflowException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -251,7 +251,7 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                Trace.WriteLine(string.Format("{2}: InvalidCastException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -259,7 +259,7 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Trace.WriteLine(string.Format("{2}: FormatException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -267,7 +267,7 @@ namespace LeftosCommonLibrary
             }
             catch (ArgumentException)
             {
-                Trace.WriteLine(string.Format("{2}: ArgumentException for key {0} with value '{1}'", key, dict[key], DateTime.Now));
+                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                     return variable;
                 else
@@ -429,18 +429,67 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        ///     Randomizes the list.
+        /// </summary>
+        /// <typeparam name="T">The type of the list's items.</typeparam>
+        /// <param name="list">The list to shuffle.</param>
         public static void Shuffle<T>(this IList<T> list)
         {
-            var rng = new Random();
             var n = list.Count;
             while (n > 1)
             {
                 n--;
-                var k = rng.Next(n + 1);
+                var k = Rng.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        private static readonly Random Rng = new Random();
+
+        /// <summary>
+        ///     Converts the object to an Int32.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="o">The source object.</param>
+        /// <returns>The converted Int32.</returns>
+        public static Int32 ToInt32<T>(this T o)
+        {
+            return Convert.ToInt32(o);
+        }
+
+        /// <summary>
+        ///     Converts the object to a Double.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="o">The soutce object.</param>
+        /// <returns>The converted Double.</returns>
+        public static Double ToDouble<T>(this T o)
+        {
+            return Convert.ToDouble(o);
+        }
+
+        /// <summary>
+        ///     Gets the first item from a list and then removes it, similar to the Stack/Queue Pop() function.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="list">The source list.</param>
+        /// <returns>
+        ///     The first object of the list.
+        /// </returns>
+        /// <exception cref="System.InvalidOperationException">List is empty.</exception>
+        public static T Pop<T>(this List<T> list)
+        {
+            if (list.Count == 0)
+            {
+                throw new InvalidOperationException("List is empty.");
+            }
+
+            var item = list[0];
+            list.RemoveAt(0);
+            return item;
         }
     }
 }

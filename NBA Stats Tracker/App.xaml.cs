@@ -40,6 +40,7 @@ namespace NBA_Stats_Tracker
         public static string SavesPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.SavesPath;
         public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppTempPath;
         internal const string AppName = "NBA Stats Tracker";
+        public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control.
