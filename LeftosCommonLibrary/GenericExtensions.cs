@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -37,10 +36,8 @@ namespace LeftosCommonLibrary
     public static class GenericExtensions
     {
         /// <summary>
-        ///     Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry, after converting it to the specified
-        ///     <see
-        ///         cref="type" />
-        ///     .
+        /// Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry, 
+        /// after converting it to the specified <c>type</c>.
         /// </summary>
         /// <param name="row">The DataRow containing the entry of which we want to try and change the value</param>
         /// <param name="dict">The dictionary containing the value we're trying to set.</param>
@@ -66,9 +63,7 @@ namespace LeftosCommonLibrary
         /// <summary>
         ///     Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry.
         ///     Operation will succeed only if all parts of the dictionary entry, after the latter is split at each
-        ///     <see
-        ///         cref="splitCharacter" />
-        ///     , can be converted into the specified <see cref="type" />.
+        ///     <c>splitCharacter</c>, can be converted into the specified <c>type</c>.
         /// </summary>
         /// <param name="row">The DataRow containing the entry of which we want to try and change the value.</param>
         /// <param name="dict">The dictionary containing the value we're trying to set.</param>
@@ -102,6 +97,8 @@ namespace LeftosCommonLibrary
         /// <param name="variable">The variable.</param>
         /// <param name="dict">The dictionary.</param>
         /// <param name="key">The dictionary key.</param>
+        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
+        /// otherwise, the default value for the type is returned.</param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.
@@ -149,15 +146,15 @@ namespace LeftosCommonLibrary
 
         /// <summary>
         ///     Tries to the set the value of a variable using a user-specified dictionary entry, after converting it to the specified
-        ///     <see
-        ///         cref="type" />
-        ///     .
+        ///     <c>type</c>.
         /// </summary>
         /// <typeparam name="T">The type of the variable.</typeparam>
         /// <param name="variable">The variable.</param>
         /// <param name="dict">The dictionary.</param>
         /// <param name="key">The dictionary key.</param>
         /// <param name="type">The type.</param>
+        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
+        /// otherwise, the default value for the type is returned.</param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.
@@ -212,9 +209,7 @@ namespace LeftosCommonLibrary
         /// <summary>
         ///     Tries to the set the value of a variable by using the corresponding value of a dictionary entry.
         ///     Operation will succeed only if all parts of the dictionary entry, after the latter is split at each
-        ///     <see
-        ///         cref="splitCharacter" />
-        ///     , can be converted into the specified <see cref="type" />.
+        ///     <c>splitCharacter</c>, can be converted into the specified <c>type</c>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="variable">The variable.</param>
@@ -222,6 +217,8 @@ namespace LeftosCommonLibrary
         /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
         /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
         /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
+        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
+        /// otherwise, the default value for the type is returned.</param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.

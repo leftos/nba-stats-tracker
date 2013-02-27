@@ -70,33 +70,66 @@ namespace LeftosCommonLibrary
             get { return 32; }
         }
 
+        /// <summary>
+        /// Initializes an implementation of the <see cref="T:System.Security.Cryptography.HashAlgorithm"/> class.
+        /// </summary>
         public override void Initialize()
         {
             _hash = _seed;
         }
 
-        protected override void HashCore(byte[] buffer, int start, int length)
+        /// <summary>
+        /// When overridden in a derived class, routes data written to the object into the hash algorithm for computing the hash.
+        /// </summary>
+        /// <param name="array">The input to compute the hash code for. </param>
+        /// <param name="ibStart">The offset into the byte array from which to begin using data. </param>
+        /// <param name="cbSize">The number of bytes in the byte array to use as data. </param>
+        protected override void HashCore(byte[] array, int ibStart, int cbSize)
         {
-            _hash = calculateHash(_table, _hash, buffer, start, length);
+            _hash = calculateHash(_table, _hash, array, ibStart, cbSize);
         }
 
+        /// <summary>
+        /// When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic stream object.
+        /// </summary>
+        /// <returns>
+        /// The computed hash code.
+        /// </returns>
         protected override byte[] HashFinal()
         {
-            var hashBuffer = UInt32ToBigEndianBytes(~_hash);
+            var hashBuffer = uInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
 
+        /// <summary>
+        /// Computes the hash of the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>The hash of the buffer.</returns>
         public static UInt32 Compute(byte[] buffer)
         {
             return ~calculateHash(initializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
         }
 
+        /// <summary>
+        /// Computes the hash of the specified buffer.
+        /// </summary>
+        /// <param name="seed">The seed to use.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>The hash of the buffer.</returns>
         public static UInt32 Compute(UInt32 seed, byte[] buffer)
         {
             return ~calculateHash(initializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
         }
 
+        /// <summary>
+        /// Computes the hash of the specified buffer.
+        /// </summary>
+        /// <param name="polynomial">The polynomial to initialize the table with.</param>
+        /// <param name="seed">The seed to use.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>The hash of the buffer.</returns>
         public static UInt32 Compute(UInt32 polynomial, UInt32 seed, byte[] buffer)
         {
             return ~calculateHash(initializeTable(polynomial), seed, buffer, 0, buffer.Length);
@@ -136,7 +169,7 @@ namespace LeftosCommonLibrary
             return crc;
         }
 
-        private static byte[] UInt32ToBigEndianBytes(UInt32 x)
+        private static byte[] uInt32ToBigEndianBytes(UInt32 x)
         {
             return new[] {(byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff)};
         }
@@ -149,24 +182,20 @@ namespace LeftosCommonLibrary
         /// <returns>A hex string representation of the CRC32 hash.</returns>
         public static String CalculateCRC(string path, bool ignoreFirst4Bytes = false)
         {
-            var crc32 = new Crc32();
-            var hash = String.Empty;
-
-            byte[] file;
-            file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();
+            byte[] file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();
             return CalculateCRC(file);
         }
 
         /// <summary>
         ///     Calculates the CRC32 of a specified byte array.
         /// </summary>
-        /// <param name="file">The byte array of which to calculate the CRC32 hash.</param>
+        /// <param name="ba">The byte array of which to calculate the CRC32 hash.</param>
         /// <returns>A hex string representation of the CRC32 hash.</returns>
-        public static String CalculateCRC(byte[] file)
+        public static String CalculateCRC(byte[] ba)
         {
             var crc32 = new Crc32();
 
-            return crc32.ComputeHash(file).Aggregate(String.Empty, (current, b) => current + b.ToString("x2").ToLower());
+            return crc32.ComputeHash(ba).Aggregate(String.Empty, (current, b) => current + b.ToString("x2").ToLower());
         }
     }
 }

@@ -53,7 +53,14 @@ namespace LeftosCommonLibrary
         ///     Converts CSV data from a file into a list of dictionaries.
         /// </summary>
         /// <param name="path">The path of the CSV file.</param>
-        /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
+        /// <param name="useCultureSeparator">
+        /// If <c>true</c>, the method uses the current culture's list separator. 
+        /// If <c>false</c>, it tries to automatically detect it.
+        /// </param>
+        /// <returns>
+        /// A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and 
+        /// corresponding value.
+        /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVFile(string path, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StreamReader(path), true, useCultureSeparator ? ListSeparator : detectSeparator(path));
@@ -62,6 +69,18 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
+        /// <summary>
+        ///     Converts CSV data from a string into a list of dictionaries.
+        /// </summary>
+        /// <param name="text">The CSV data.</param>
+        /// <param name="useCultureSeparator">
+        /// If <c>true</c>, the method uses the current culture's list separator. 
+        /// If <c>false</c>, it tries to automatically detect it.
+        /// </param>
+        /// <returns>
+        /// A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and 
+        /// corresponding value.
+        /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVString(string text, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StringReader(text), true,
@@ -71,6 +90,16 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
+        /// <summary>
+        /// Converts CSV data from a file into a list of string arrays.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="hasHeaders">if set to <c>true</c>, the file is assumed to have headers in the first row.</param>
+        /// <param name="useCultureSeparator">
+        /// If <c>true</c>, the method uses the current culture's list separator. 
+        /// If <c>false</c>, it tries to automatically detect it.
+        /// </param>
+        /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVFile(string path, bool hasHeaders = true, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StreamReader(path), hasHeaders, useCultureSeparator ? ListSeparator : detectSeparator(path));
@@ -79,6 +108,16 @@ namespace LeftosCommonLibrary
             return arrayList;
         }
 
+        /// <summary>
+        /// Converts CSV data from a string into a list of string arrays.
+        /// </summary>
+        /// <param name="text">The CSV data.</param>
+        /// <param name="hasHeaders">if set to <c>true</c>, the file is assumed to have headers in the first row.</param>
+        /// <param name="useCultureSeparator">
+        /// If <c>true</c>, the method uses the current culture's list separator. 
+        /// If <c>false</c>, it tries to automatically detect it.
+        /// </param>
+        /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVString(string text, bool hasHeaders = true, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StringReader(text), hasHeaders,
@@ -165,6 +204,7 @@ namespace LeftosCommonLibrary
         /// </summary>
         /// <param name="dList">The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the key-value pairs should be the column header and corresponding value.</param>
         /// <param name="path">The path of the file where the data should be written to.</param>
+        /// <param name="separator">The separator to use; should be a single-character string. If <c>null</c>, the current culture's separator will be used.</param>
         public static void CSVFromDictionaryList(List<Dictionary<string, string>> dList, string path, string separator = null)
         {
             var sw = new StreamWriter(path);
@@ -203,6 +243,11 @@ namespace LeftosCommonLibrary
             sw.Close();
         }
 
+        /// <summary>
+        ///     Converts a dictionary list into TSV data and writes it to a file.
+        /// </summary>
+        /// <param name="dList">The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the key-value pairs should be the column header and corresponding value.</param>
+        /// <param name="path">The path of the file where the data should be written to.</param>
         public static void TSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
         {
             var sw = new StreamWriter(path);
@@ -248,18 +293,35 @@ namespace LeftosCommonLibrary
             return dictionaryListFromTSV(tsv);
         }
 
+        /// <summary>
+        ///     Converts TSV data from a string into a list of dictionaries.
+        /// </summary>
+        /// <param name="text">The TSV data.</param>
+        /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
         public static List<Dictionary<string, string>> DictionaryListFromTSVString(string text)
         {
             var tsv = Tools.SplitLinesToArray(text);
             return dictionaryListFromTSV(tsv);
         }
 
+        /// <summary>
+        ///     Converts TSV data from a file into a list of dictionaries.
+        /// </summary>
+        /// <param name="path">The path of the TSV file.</param>
+        /// <param name="hasHeaders">If <c>true</c>, the file is assumed to include headers in the first row.</param>
+        /// <returns>A list of string arrays containing the TSV data.</returns>
         public static List<string[]> ArrayListFromTSVFile(string path, bool hasHeaders = true)
         {
             var tsv = File.ReadAllLines(path);
             return arrayListFromTSV(tsv, hasHeaders);
         }
 
+        /// <summary>
+        ///     Converts TSV data from a file into a list of dictionaries.
+        /// </summary>
+        /// <param name="text">The TSV data.</param>
+        /// <param name="hasHeaders">If <c>true</c>, the file is assumed to include headers in the first row.</param>
+        /// <returns>A list of string arrays containing the TSV data.</returns>
         public static List<string[]> ArrayListFromTSVString(string text, bool hasHeaders = true)
         {
             var tsv = Tools.SplitLinesToArray(text);
@@ -352,6 +414,13 @@ namespace LeftosCommonLibrary
             return s;
         }
 
+        /// <summary>
+        /// Detects the list separator.
+        /// </summary>
+        /// <param name="reader">The TextReader instance.</param>
+        /// <param name="rowCount">The row count.</param>
+        /// <param name="separators">The list of separator candidates.</param>
+        /// <returns></returns>
         public static char DetectSeparator(TextReader reader, int rowCount, IList<char> separators)
         {
             IList<int> separatorsCount = new int[separators.Count];
@@ -420,6 +489,10 @@ namespace LeftosCommonLibrary
             return maxCount == 0 ? '\0' : separators[separatorsCount.IndexOf(maxCount)];
         }
 
+        /// <summary>
+        /// Parses the clipboard data.
+        /// </summary>
+        /// <returns>A list of string arrays containing the parsed CSV/TSV data.</returns>
         public static List<string[]> ParseClipboardData()
         {
             List<string[]> clipboardData = null;

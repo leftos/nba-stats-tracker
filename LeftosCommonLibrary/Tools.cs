@@ -32,6 +32,9 @@ using System.Windows.Controls;
 
 namespace LeftosCommonLibrary
 {
+    /// <summary>
+    /// Various miscellaneous tools.
+    /// </summary>
     public static class Tools
     {
         /// <summary>
@@ -54,6 +57,11 @@ namespace LeftosCommonLibrary
             return Path.GetFileName(f);
         }
 
+        /// <summary>
+        /// Gets the full path of the file without its extension.
+        /// </summary>
+        /// <param name="f">The path to the file.</param>
+        /// <returns></returns>
         public static string GetFullPathWithoutExtension(string f)
         {
             var fullpath = Path.GetFullPath(f);
@@ -105,6 +113,11 @@ namespace LeftosCommonLibrary
             return bytes;
         }
 
+        /// <summary>
+        /// Converts a byte array to the equivalent hex string representation.
+        /// </summary>
+        /// <param name="ba">The byte array.</param>
+        /// <returns></returns>
         public static string ByteArrayToHexString(byte[] ba)
         {
             var hex = BitConverter.ToString(ba);
@@ -184,11 +197,20 @@ namespace LeftosCommonLibrary
             }
         }
 
+        /// <summary>
+        /// Writes a message to the trace listeners including a date and time stamp.
+        /// </summary>
+        /// <param name="msg">The message.</param>
         public static void WriteToTrace(string msg)
         {
             Trace.WriteLine(String.Format("{0}: {1}", DateTime.Now, msg));
         }
 
+        /// <summary>
+        /// Writes a message to the trace listeners including a date and time stamp and information about the exception.
+        /// </summary>
+        /// <param name="msg">The message.</param>
+        /// <param name="ex">The exception.</param>
         public static void WriteToTraceWithException(string msg, Exception ex)
         {
             Trace.WriteLine(String.Format("{0}: {1} ({2})", DateTime.Now, msg, ex.Message));
@@ -231,6 +253,13 @@ namespace LeftosCommonLibrary
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the specified string is numeric.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified string is numeric; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsNumeric(string s)
         {
             double temp;
@@ -238,6 +267,11 @@ namespace LeftosCommonLibrary
             return Double.TryParse(s, out temp);
         }
 
+        /// <summary>
+        /// Checks for balanced bracketing.
+        /// </summary>
+        /// <param name="incomingString">The source string.</param>
+        /// <returns></returns>
         public static bool CheckForBalancedBracketing(string incomingString)
         {
             const char leftParenthesis = '(';

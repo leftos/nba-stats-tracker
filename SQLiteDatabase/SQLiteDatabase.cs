@@ -29,6 +29,9 @@ using System.Windows;
 
 namespace SQLite_Database
 {
+    /// <summary>
+    /// SQLite Wrapper to be used with System.Data.SQLite.
+    /// </summary>
     public class SQLiteDatabase
     {
         private readonly String _dbConnection;
@@ -65,7 +68,9 @@ namespace SQLite_Database
         /// <summary>
         ///     Allows the programmer to run a query against the Database.
         /// </summary>
-        /// <param name="sql">The SQL to run</param>
+        /// <param name="sql">The SQL query to run.</param>
+        /// <param name="queryHasDuplicateColumns">If <c>true</c>, if the method encounters a column with the same name as a previous one, 
+        /// it will rename it; otherwise, a DuplicateNameException will be thrown.</param>
         /// <returns>A DataTable containing the result set.</returns>
         public DataTable GetDataTable(string sql, bool queryHasDuplicateColumns = false)
         {
@@ -99,7 +104,9 @@ namespace SQLite_Database
         ///     Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
         ///     (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
         /// </summary>
-        /// <param name="dataReader"></param>
+        /// <param name="dataReader">An IDataReader instance.</param>
+        /// <param name="queryHasDuplicateColumns">If <c>true</c>, if the method encounters a column with the same name as a previous one, 
+        /// it will rename it; otherwise, a DuplicateNameException will be thrown.</param>
         /// <returns></returns>
         private static DataTable getDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
         {

@@ -39,6 +39,12 @@ namespace LeftosCommonLibrary
     {
         private static bool _isTabPressed;
 
+        /// <summary>
+        /// Handles pasting the data into a data-bound DataGrid.
+        /// </summary>
+        /// <param name="sender">The DataGrid instance to paste into.</param>
+        /// <param name="args">The ExecutedRoutedEventArgs instance.</param>
+        /// <returns>Whether the operation completed without errors.</returns>
         public static bool OnExecutedPaste(object sender, ExecutedRoutedEventArgs args)
         {
             var noErrors = true;
@@ -96,7 +102,6 @@ namespace LeftosCommonLibrary
                     var item = s.Items[i];
                     object value = rowData[rowDataIndex][columnDataIndex];
                     object[] index = null;
-                    var originalPropertyName = propertyName;
                     if (propertyName.Contains("[") && propertyName.Contains("]"))
                     {
                         index = new object[1];

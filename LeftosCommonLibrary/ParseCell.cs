@@ -25,6 +25,9 @@ using System.Data;
 
 namespace LeftosCommonLibrary
 {
+    /// <summary>
+    /// Methods to parse a DataRowCell into common data-types.
+    /// </summary>
     public class ParseCell
     {
         /// <summary>
@@ -84,6 +87,12 @@ namespace LeftosCommonLibrary
             return r[columnName].ToString();
         }
 
+        /// <summary>
+        /// Gets a float from the specified column of the given DataRow.
+        /// </summary>
+        /// <param name="r">The row.</param>
+        /// <param name="columnName">Name of the column.</param>
+        /// <returns></returns>
         public static double GetFloat(DataRow r, string columnName)
         {
             return Convert.ToSingle(r[columnName].ToString());
