@@ -139,8 +139,9 @@ namespace LeftosCommonLibrary
 
                 for (var i = 0; i < headers.Length; i++)
                 {
-                    var regex = new Regex("[^a-zA-Z0-9]");
-                    if (regex.IsMatch(headers[i].Substring(0, 1)))
+                    var sortingChars = new [] {'^', Convert.ToChar(65533)};
+                    var firstChar = Convert.ToChar(headers[i].Substring(0, 1));
+                    if (sortingChars.Contains(firstChar))
                     {
                         headers[i] = headers[i].Split(new[] {" ", "\r\n", "\n"}, 2, StringSplitOptions.None)[1];
                         break;
@@ -175,8 +176,9 @@ namespace LeftosCommonLibrary
 
                     for (var i = 0; i < headers.Length; i++)
                     {
-                        var regex = new Regex("[^a-zA-Z0-9]");
-                        if (regex.IsMatch(headers[i].Substring(0, 1)))
+                        var sortingChars = new[] { '^', Convert.ToChar(65533) };
+                        var firstChar = Convert.ToChar(headers[i].Substring(0, 1));
+                        if (sortingChars.Contains(firstChar))
                         {
                             headers[i] = headers[i].Split(new[] {" ", "\r\n", "\n"}, 2, StringSplitOptions.None)[1];
                             break;
