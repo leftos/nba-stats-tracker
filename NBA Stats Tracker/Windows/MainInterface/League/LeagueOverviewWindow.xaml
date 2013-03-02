@@ -6,9 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data" xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
-        mc:Ignorable="d"
-        WindowStartupLocation="CenterScreen" Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
-        Loaded="window_Loaded"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         Closing="window_Closing" MinWidth="800" MinHeight="469">
     <Grid>
         <Grid Margin="0,0,0,25">

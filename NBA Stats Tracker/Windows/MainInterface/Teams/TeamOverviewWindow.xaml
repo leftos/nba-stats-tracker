@@ -6,7 +6,6 @@
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d" Title="Team Overview"
         Height="606" Width="870"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
-        Icon="/NBA%20Stats%20Tracker;component/NBA%202K12.ico"
         MinWidth="698" Closing="window_Closing">
     <Grid>
         <Grid.RowDefinitions>

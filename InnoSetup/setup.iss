@@ -94,7 +94,6 @@ Source: "{#CompiledPath}\NBA Stats Tracker.pdb"; DestDir: "{app}"; Flags: ignore
 Source: "{#CompiledPath}\LeftosCommonLibrary.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\SQLiteDatabase.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#CompiledPath}\Updater.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#CompiledPath}\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
 Name: "{group}\NBA Stats Tracker"; Filename: "{app}\NBA Stats Tracker.exe"; WorkingDir: "{app}"; IconFilename: "{app}\NBA Stats Tracker.exe"
