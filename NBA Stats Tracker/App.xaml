@@ -4,14 +4,14 @@
              StartupUri="Windows\MainInterface\MainWindow.xaml"
              DispatcherUnhandledException="app_DispatcherUnhandledException">
     <Application.Resources>
-            <ObjectDataProvider x:Key="OptionsList" MethodName="GetValues"
+        <ObjectDataProvider x:Key="OptionsList" MethodName="GetValues"
                             ObjectType="{x:Type contracts:PlayerContractOption}">
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="contracts:PlayerContractOption" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="contracts:PlayerContractOption" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         <Style x:Key="DataGridStyle" TargetType="DataGrid">
-            <Setter Property="AlternatingRowBackground" Value="#FFE5E5E5"/>
+            <Setter Property="AlternatingRowBackground" Value="#FFE5E5E5" />
         </Style>
     </Application.Resources>
 </Application>
