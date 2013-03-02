@@ -71,7 +71,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Initializes an implementation of the <see cref="T:System.Security.Cryptography.HashAlgorithm"/> class.
+        ///     Initializes an implementation of the <see cref="T:System.Security.Cryptography.HashAlgorithm" /> class.
         /// </summary>
         public override void Initialize()
         {
@@ -79,7 +79,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// When overridden in a derived class, routes data written to the object into the hash algorithm for computing the hash.
+        ///     When overridden in a derived class, routes data written to the object into the hash algorithm for computing the hash.
         /// </summary>
         /// <param name="array">The input to compute the hash code for. </param>
         /// <param name="ibStart">The offset into the byte array from which to begin using data. </param>
@@ -90,20 +90,20 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic stream object.
+        ///     When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic stream object.
         /// </summary>
         /// <returns>
-        /// The computed hash code.
+        ///     The computed hash code.
         /// </returns>
         protected override byte[] HashFinal()
         {
-            var hashBuffer = uInt32ToBigEndianBytes(~_hash);
+            byte[] hashBuffer = uInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
 
         /// <summary>
-        /// Computes the hash of the specified buffer.
+        ///     Computes the hash of the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The hash of the buffer.</returns>
@@ -113,7 +113,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Computes the hash of the specified buffer.
+        ///     Computes the hash of the specified buffer.
         /// </summary>
         /// <param name="seed">The seed to use.</param>
         /// <param name="buffer">The buffer.</param>
@@ -124,7 +124,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Computes the hash of the specified buffer.
+        ///     Computes the hash of the specified buffer.
         /// </summary>
         /// <param name="polynomial">The polynomial to initialize the table with.</param>
         /// <param name="seed">The seed to use.</param>
@@ -141,10 +141,10 @@ namespace LeftosCommonLibrary
                 return _defaultTable;
 
             var createTable = new UInt32[256];
-            for (var i = 0; i < 256; i++)
+            for (int i = 0; i < 256; i++)
             {
                 var entry = (UInt32) i;
-                for (var j = 0; j < 8; j++)
+                for (int j = 0; j < 8; j++)
                     if ((entry & 1) == 1)
                         entry = (entry >> 1) ^ polynomial;
                     else
@@ -160,8 +160,8 @@ namespace LeftosCommonLibrary
 
         private static UInt32 calculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
         {
-            var crc = seed;
-            for (var i = start; i < size; i++)
+            uint crc = seed;
+            for (int i = start; i < size; i++)
                 unchecked
                 {
                     crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];

@@ -24,7 +24,7 @@ using System.Windows;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Windows.MiscTools
+namespace LeftosCommonLibrary.CommonDialogs
 {
     /// <summary>
     ///     Implements a window to display a message to the user that can be copied to the clipboard.
@@ -38,17 +38,16 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
         ///     Initializes a new instance of the <see cref="CopyableMessageWindow" /> class.
         /// </summary>
         /// <param name="msg">The message to display.</param>
-        /// <param name="title">The title of the window.</param>
-        /// <param name="align">The text alignment to be used for the message.</param>
+        /// <param name="title">The title of the window. If left blank, the Tools.AppName field will be used.</param>
+        /// <param name="alignment">The text alignment to be used for the message.</param>
         /// <param name="beep">If true, the system sound Beep will be played after the window is loaded.</param>
-        public CopyableMessageWindow(String msg, String title = "NBA Stats Tracker", TextAlignment align = TextAlignment.Left,
-                                     bool beep = false)
+        public CopyableMessageWindow(string msg, string title = "", TextAlignment alignment = TextAlignment.Left, bool beep = false)
         {
             InitializeComponent();
 
             txbMsg.Text = msg;
-            txbMsg.TextAlignment = align;
-            Title = title;
+            txbMsg.TextAlignment = alignment;
+            Title = String.IsNullOrWhiteSpace(title) ? Tools.AppName : title;
 
             _beep = beep;
         }

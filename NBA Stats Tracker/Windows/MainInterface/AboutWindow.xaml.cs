@@ -67,7 +67,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void btnLicense_Click(object sender, RoutedEventArgs e)
         {
-            var newLicensePath = App.AppTempPath + "license.txt";
+            string newLicensePath = App.AppTempPath + "license.txt";
             File.Copy("LICENSE", newLicensePath);
             Process.Start(newLicensePath);
         }

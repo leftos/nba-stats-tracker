@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using LeftosCommonLibrary.CommonDialogs;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MainInterface;
@@ -30,7 +31,7 @@ using SQLite_Database;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Windows.MiscTools
+namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
     /// <summary>
     ///     Implements a multi-purpose single list window with add & remove buttons.
@@ -105,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                var name = MainWindow.Input.Replace(':', '-');
+                string name = MainWindow.Input.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
@@ -113,7 +114,7 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 }
                 var usedIDs = new List<int>();
                 MainWindow.Conferences.ForEach(conference => usedIDs.Add(conference.ID));
-                var i = 0;
+                int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
 
@@ -152,8 +153,8 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
                 return;
 
             var conf = (Conference) lstData.SelectedItem;
-            var r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
-                                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
+                                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (r == MessageBoxResult.No)
                 return;
 

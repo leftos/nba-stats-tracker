@@ -316,7 +316,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             int reb = 0, ast = 0, stl = 0, tos = 0, blk = 0, oreb = 0, foul = 0, pts = 0;
 
-            foreach (var pbs in pbsList)
+            foreach (LivePlayerBoxScore pbs in pbsList)
             {
                 pts += pbs.PTS;
                 reb += pbs.REB;
@@ -328,8 +328,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 foul += pbs.FOUL;
             }
 
-            var resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb, oreb,
-                                     ast, blk, stl, tos, foul);
+            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb,
+                                        oreb, ast, blk, stl, tos, foul);
 
             return resp;
         }
@@ -368,7 +368,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                          MINS2 = (ushort) MainWindow.GameLength
                      };
 
-            foreach (var pbs in _pbsAwayList)
+            foreach (LivePlayerBoxScore pbs in _pbsAwayList)
             {
                 bs.PTS1 += pbs.PTS;
                 bs.REB1 += pbs.REB;
@@ -383,7 +383,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 bs.FOUL1 += pbs.FOUL;
             }
 
-            foreach (var pbs in _pbsHomeList)
+            foreach (LivePlayerBoxScore pbs in _pbsHomeList)
             {
                 bs.PTS2 += pbs.PTS;
                 bs.REB2 += pbs.REB;
@@ -406,12 +406,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             bs.Done = false;
 
             var bse = new BoxScoreEntry(bs) {PBSList = new List<PlayerBoxScore>()};
-            foreach (var lpbs in _pbsAwayList)
+            foreach (LivePlayerBoxScore lpbs in _pbsAwayList)
             {
                 var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team1ID};
                 bse.PBSList.Add(pbs);
             }
-            foreach (var lpbs in _pbsHomeList)
+            foreach (LivePlayerBoxScore lpbs in _pbsHomeList)
             {
                 var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team2ID};
                 bse.PBSList.Add(pbs);
@@ -456,7 +456,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 || cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
                 return;
 
-            var bse = calculateBoxScoreEntry();
+            BoxScoreEntry bse = calculateBoxScoreEntry();
             DialogResult = true;
             MainWindow.TempBSE = bse;
             Close();
@@ -476,9 +476,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                                                        ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
-            var q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
+            string q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
             q += " ORDER BY LastName ASC";
-            var res = db.GetDataTable(q);
+            DataTable res = db.GetDataTable(q);
 
             playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
@@ -490,10 +490,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
             }
 
-            for (var i = 0; i < pbsList.Count; i++)
+            for (int i = 0; i < pbsList.Count; i++)
             {
-                var cur = pbsList[i];
-                var name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
+                LivePlayerBoxScore cur = pbsList[i];
+                string name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
                 if (!playersList.Contains(player))
@@ -538,7 +538,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     // Perform the drag operation 
                     var selectedPerson = (LivePlayerBoxScore) row.Item;
-                    var finalDropEffect = DragDrop.DoDragDrop(row, selectedPerson, DragDropEffects.Move);
+                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(row, selectedPerson, DragDropEffects.Move);
                     if ((finalDropEffect == DragDropEffects.Move) && (_targetPerson != null))
                     {
                         // A Move drop was accepted 
@@ -546,8 +546,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         // Determine the index of the item being dragged and the drop 
                         // location. If they are difference, then move the selected 
                         // item to the new location. 
-                        var oldIndex = pbsList.IndexOf(selectedPerson);
-                        var newIndex = pbsList.IndexOf(_targetPerson);
+                        int oldIndex = pbsList.IndexOf(selectedPerson);
+                        int newIndex = pbsList.IndexOf(_targetPerson);
                         if (oldIndex != newIndex)
                         {
                             pbsList.Insert(newIndex + 1, selectedPerson);
@@ -614,7 +614,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <returns></returns>
         private static UIE findVisualParent<UIE>(UIElement element) where UIE : UIElement
         {
-            var parent = element;
+            UIElement parent = element;
             while (parent != null)
             {
                 var correctlyTyped = parent as UIE;

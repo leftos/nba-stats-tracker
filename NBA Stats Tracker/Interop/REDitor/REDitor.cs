@@ -27,6 +27,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using LeftosCommonLibrary;
+using LeftosCommonLibrary.CommonDialogs;
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.PastStats;
@@ -37,7 +38,7 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MainInterface;
 using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
-using NBA_Stats_Tracker.Windows.MiscTools;
+using NBA_Stats_Tracker.Windows.MiscDialogs;
 using MessageBox = System.Windows.MessageBox;
 
 #endregion
@@ -74,12 +75,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// <param name="folder">The default import/export folder.</param>
         public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
         {
-            var s1 = "Folder$$" + folder + "\n";
-            var s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["ID"] + "$%"));
+            string s1 = "Folder$$" + folder + "\n";
+            string s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["ID"] + "$%"));
             s2 = s2.Substring(0, s2.Length - 2);
             s2 += "\n";
 
-            var stg = s1 + s2;
+            string stg = s1 + s2;
 
             var sfd = new SaveFileDialog
                       {
@@ -110,7 +111,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             var list = new List<string> {"1 season ago"};
-            for (var i = 2; i <= 20; i++)
+            for (int i = 2; i <= 20; i++)
             {
                 list.Add(i + " seasons ago");
             }
@@ -136,7 +137,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             int year;
-            var twoPartSeasonDesc = MainWindow.Input.Contains("-");
+            bool twoPartSeasonDesc = MainWindow.Input.Contains("-");
             try
             {
                 year = Convert.ToInt32(twoPartSeasonDesc ? MainWindow.Input.Split('-')[0] : MainWindow.Input);
@@ -150,7 +151,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             var seasonNames = new Dictionary<int, string>();
-            for (var i = startAt; i <= 20; i++)
+            for (int i = startAt; i <= 20; i++)
             {
                 seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
             }
@@ -168,19 +169,19 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var legalTTypes = new List<string> {"0", "4"};
 
-            var validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
-                                           {
-                                               if (legalTTypes.IndexOf(team["TType"]) != -1)
-                                                   return true;
-                                               return false;
-                                           });
+            List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
+                                                                        {
+                                                                            if (legalTTypes.IndexOf(team["TType"]) != -1)
+                                                                                return true;
+                                                                            return false;
+                                                                        });
 
-            var activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
-                                                 {
-                                                     if (team["StatCurS"] != "-1")
-                                                         return true;
-                                                     return false;
-                                                 });
+            List<Dictionary<string, string>> activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
+                                                                              {
+                                                                                  if (team["StatCurS"] != "-1")
+                                                                                      return true;
+                                                                                  return false;
+                                                                              });
             if (activeTeams.Count < 30)
             {
                 var dlw = new DualListWindow(validTeams, activeTeams);
@@ -202,11 +203,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var rosters = new Dictionary<int, List<int>>();
             foreach (var team in activeTeams)
             {
-                var id = -1;
-                var name = team["Name"];
+                int id = -1;
+                string name = team["Name"];
                 if (tst.All(pair => pair.Value.Name != name))
                 {
-                    for (var i = 0; i < 30; i++)
+                    for (int i = 0; i < 30; i++)
                     {
                         if (!tst.ContainsKey(i))
                         {
@@ -229,17 +230,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                   Convert.ToInt32(team["Ros_PF"]),
                                   Convert.ToInt32(team["Ros_C"])
                               };
-                for (var i = 6; i <= 12; i++)
+                for (int i = 6; i <= 12; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
                         break;
                 }
-                for (var i = 13; i <= 20; i++)
+                for (int i = 13; i <= 20; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
@@ -248,37 +249,39 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
 
-            var validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
-                                               {
-                                                   if (player["PlType"] == "4" || player["PlType"] == "5" || player["PlType"] == "6")
-                                                   {
-                                                       if ((player["IsFA"] == "0" && player["TeamID1"] != "-1") || (player["IsFA"] == "1"))
-                                                       {
-                                                           return true;
-                                                       }
-                                                   }
-                                                   return false;
-                                               });
+            List<Dictionary<string, string>> validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
+                                                                            {
+                                                                                if (player["PlType"] == "4" || player["PlType"] == "5" ||
+                                                                                    player["PlType"] == "6")
+                                                                                {
+                                                                                    if ((player["IsFA"] == "0" && player["TeamID1"] != "-1") ||
+                                                                                        (player["IsFA"] == "1"))
+                                                                                    {
+                                                                                        return true;
+                                                                                    }
+                                                                                }
+                                                                                return false;
+                                                                            });
 
             var pw = new ProgressWindow("Please wait as player career stats are being imported...");
             pw.Show();
             var bw = new BackgroundWorker {WorkerReportsProgress = true};
             bw.DoWork += delegate
                          {
-                             var count = validPlayers.Count;
+                             int count = validPlayers.Count;
                              var ppsList = new List<PastPlayerStats>();
-                             for (var i = 0; i < count; i++)
+                             for (int i = 0; i < count; i++)
                              {
-                                 var percentProgress = i*100/count;
+                                 int percentProgress = i*100/count;
                                  if (percentProgress%5 == 0)
                                  {
                                      bw.ReportProgress(percentProgress);
                                  }
-                                 var player = validPlayers[i];
-                                 var playerID = Convert.ToInt32(player["ID"]);
+                                 Dictionary<string, string> player = validPlayers[i];
+                                 int playerID = Convert.ToInt32(player["ID"]);
 
-                                 var lastName = player["Last_Name"];
-                                 var firstName = player["First_Name"];
+                                 string lastName = player["Last_Name"];
+                                 string firstName = player["First_Name"];
 
                                  int pTeam;
                                  var curTeam = new TeamStats();
@@ -307,15 +310,16 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                  if (pst.ContainsKey(playerID) &&
                                      (pst[playerID].LastName != lastName || pst[playerID].FirstName != firstName))
                                  {
-                                     var candidates =
+                                     List<KeyValuePair<int, PlayerStats>> candidates =
                                          pst.Where(
                                              pair =>
                                              pair.Value.LastName == lastName && pair.Value.FirstName == firstName &&
                                              pair.Value.IsHidden == false).ToList();
                                      if (candidates.Count > 0)
                                      {
-                                         var found = false;
-                                         var c2 = candidates.Where(pair => tst.ContainsKey(pair.Value.TeamF)).ToList();
+                                         bool found = false;
+                                         List<KeyValuePair<int, PlayerStats>> c2 =
+                                             candidates.Where(pair => tst.ContainsKey(pair.Value.TeamF)).ToList();
                                          if (c2.Count() == 1)
                                          {
                                              playerID = c2.First().Value.ID;
@@ -323,7 +327,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                          }
                                          else
                                          {
-                                             var c4 =
+                                             List<KeyValuePair<int, PlayerStats>> c4 =
                                                  candidates.Where(pair => pair.Value.YearOfBirth.ToString() == player["BirthYear"]).ToList();
                                              if (c4.Count == 1)
                                              {
@@ -334,7 +338,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                              {
                                                  if (pTeam != -1)
                                                  {
-                                                     var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
+                                                     List<KeyValuePair<int, PlayerStats>> c3 =
+                                                         candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
                                                      if (c3.Count == 1)
                                                      {
                                                          playerID = c3.First().Value.ID;
@@ -348,8 +353,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                              var choices = new List<string>();
                                              foreach (var pair in candidates)
                                              {
-                                                 var choice = String.Format("{0}: {1} {2} (Born {3}", pair.Value.ID, pair.Value.FirstName,
-                                                                            pair.Value.LastName, pair.Value.YearOfBirth);
+                                                 string choice = String.Format("{0}: {1} {2} (Born {3}", pair.Value.ID, pair.Value.FirstName,
+                                                                               pair.Value.LastName, pair.Value.YearOfBirth);
                                                  if (pair.Value.IsActive)
                                                  {
                                                      choice += String.Format(", plays in {0}", pair.Value.TeamF);
@@ -361,8 +366,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                                  choice += ")";
                                                  choices.Add(choice);
                                              }
-                                             var message = String.Format("{0}: {1} {2} (Born {3}", player["ID"], player["First_Name"],
-                                                                         player["Last_Name"], player["BirthYear"]);
+                                             string message = String.Format("{0}: {1} {2} (Born {3}", player["ID"], player["First_Name"],
+                                                                            player["Last_Name"], player["BirthYear"]);
                                              if (pTeam != -1)
                                              {
                                                  message += String.Format(", plays in {0}", curTeam.DisplayName);
@@ -392,20 +397,20 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                  {
                                      continue;
                                  }
-                                 var curPlayer = pst[playerID];
+                                 PlayerStats curPlayer = pst[playerID];
 
-                                 var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
-                                 var dt = MainWindow.DB.GetDataTable(qr);
+                                 string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
+                                 DataTable dt = MainWindow.DB.GetDataTable(qr);
                                  dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
-                                 for (var j = startAt; j <= 20; j++)
+                                 for (int j = startAt; j <= 20; j++)
                                  {
-                                     var statEntryID = player["StatY" + j];
+                                     string statEntryID = player["StatY" + j];
                                      if (statEntryID == "-1")
                                          break;
-                                     var plStats = playerStats.Single(d => d["ID"] == statEntryID);
+                                     Dictionary<string, string> plStats = playerStats.Single(d => d["ID"] == statEntryID);
                                      var prevStats = new PastPlayerStats();
-                                     var teamID2 = plStats["TeamID2"];
-                                     var teamID1 = plStats["TeamID1"];
+                                     string teamID2 = plStats["TeamID2"];
+                                     string teamID1 = plStats["TeamID1"];
                                      if (teamID2 == "-1")
                                      {
                                          if (teamID1 != "-1")
@@ -459,10 +464,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             bw.ProgressChanged += delegate(object sender, ProgressChangedEventArgs args)
                                   {
-                                      pw.pb.Value = args.ProgressPercentage;
+                                      pw.SetProgressBarValue(args.ProgressPercentage);
                                       if (args.UserState != null)
                                       {
-                                          pw.txbProgress.Text = args.UserState.ToString();
+                                          pw.SetMessage(args.UserState.ToString());
                                       }
                                   };
 
@@ -480,8 +485,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         ///     if set to <c>true</c>, only team stats will be imported.
         /// </param>
         /// <returns></returns>
-        public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp, ref Dictionary<int, PlayerStats> pst, string folder,
-                                    bool teamsOnly = false)
+        public static int ImportAll(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
+                                    ref Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
             List<Dictionary<string, string>> players;
@@ -504,19 +509,19 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var legalTTypes = new List<string> {"0", "4"};
 
-            var validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
-                                           {
-                                               if (legalTTypes.IndexOf(team["TType"]) != -1)
-                                                   return true;
-                                               return false;
-                                           });
+            List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
+                                                                        {
+                                                                            if (legalTTypes.IndexOf(team["TType"]) != -1)
+                                                                                return true;
+                                                                            return false;
+                                                                        });
 
-            var activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
-                                                 {
-                                                     if (team["StatCurS"] != "-1")
-                                                         return true;
-                                                     return false;
-                                                 });
+            List<Dictionary<string, string>> activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
+                                                                              {
+                                                                                  if (team["StatCurS"] != "-1")
+                                                                                      return true;
+                                                                                  return false;
+                                                                              });
             if (activeTeams.Count < 30)
             {
                 var dlw = new DualListWindow(validTeams, activeTeams);
@@ -533,7 +538,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 }
             }
 
-            var madeNew = false;
+            bool madeNew = false;
 
             if (tst.Count != activeTeams.Count)
             {
@@ -542,9 +547,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 madeNew = true;
             }
 
-            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
+            Dictionary<int, TeamStats> oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
+            Dictionary<int, TeamStats> oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
+            Dictionary<int, PlayerStats> oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
 
             CreateDivisions();
 
@@ -553,13 +558,13 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             activeTeams.Sort((p1, p2) => Convert.ToInt32(p1["ID"]).CompareTo(Convert.ToInt32(p2["ID"])));
             foreach (var team in activeTeams)
             {
-                var name = team["Name"];
-                var redID = Convert.ToInt32(team["ID"]);
+                string name = team["Name"];
+                int redID = Convert.ToInt32(team["ID"]);
                 if (tst.Values.All(ts => ts.Name != name))
                 {
                     if (tst.Keys.Contains(redID))
                     {
-                        var oldName = tst[redID].Name;
+                        string oldName = tst[redID].Name;
                         tst[redID].Name = name;
                         tstOpp[redID].Name = name;
                         if (oldName == tst[redID].DisplayName)
@@ -569,7 +574,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                     }
                 }
-                var id = tst.Values.Single(ts => ts.Name == name).ID;
+                int id = tst.Values.Single(ts => ts.Name == name).ID;
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
 
                 if (madeNew)
@@ -578,15 +583,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     tstOpp[id] = new TeamStats(id, name);
                 }
 
-                var sStatsID = Convert.ToInt32(team["StatCurS"]);
-                var pStatsID = Convert.ToInt32(team["StatCurP"]);
+                int sStatsID = Convert.ToInt32(team["StatCurS"]);
+                int pStatsID = Convert.ToInt32(team["StatCurP"]);
 
-                var sStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                                            {
-                                                if (s["ID"] == sStatsID.ToString())
-                                                    return true;
-                                                return false;
-                                            });
+                Dictionary<string, string> sStats = teamStats.Find(delegate(Dictionary<string, string> s)
+                                                                   {
+                                                                       if (s["ID"] == sStatsID.ToString())
+                                                                           return true;
+                                                                       return false;
+                                                                   });
 
                 tst[id].ID = id;
                 tstOpp[id].ID = id;
@@ -616,12 +621,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (pStatsID != -1)
                     {
-                        var pStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                                                    {
-                                                        if (s["ID"] == pStatsID.ToString())
-                                                            return true;
-                                                        return false;
-                                                    });
+                        Dictionary<string, string> pStats = teamStats.Find(delegate(Dictionary<string, string> s)
+                                                                           {
+                                                                               if (s["ID"] == pStatsID.ToString())
+                                                                                   return true;
+                                                                               return false;
+                                                                           });
                         tst[id].PlRecord[0] = Convert.ToByte(pStats["Wins"]);
                         tst[id].PlRecord[1] = Convert.ToByte(pStats["Losses"]);
                         tst[id].PlTotals[TAbbr.MINS] = Convert.ToUInt16(pStats["Mins"]);
@@ -653,17 +658,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                   Convert.ToInt32(team["Ros_PF"]),
                                   Convert.ToInt32(team["Ros_C"])
                               };
-                for (var i = 6; i <= 12; i++)
+                for (int i = 6; i <= 12; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
                         break;
                 }
-                for (var i = 13; i <= 20; i++)
+                for (int i = 13; i <= 20; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
@@ -678,25 +683,27 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var duplicatePlayers = new List<string>();
             if (!teamsOnly)
             {
-                var validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
-                                                   {
-                                                       if (player["PlType"] == "4" || player["PlType"] == "5" || player["PlType"] == "6")
-                                                       {
-                                                           if ((player["IsFA"] == "0" && player["TeamID1"] != "-1") ||
-                                                               (player["IsFA"] == "1"))
-                                                           {
-                                                               return true;
-                                                           }
-                                                       }
-                                                       return false;
-                                                   });
+                List<Dictionary<string, string>> validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
+                                                                                {
+                                                                                    if (player["PlType"] == "4" || player["PlType"] == "5" ||
+                                                                                        player["PlType"] == "6")
+                                                                                    {
+                                                                                        if ((player["IsFA"] == "0" &&
+                                                                                             player["TeamID1"] != "-1") ||
+                                                                                            (player["IsFA"] == "1"))
+                                                                                        {
+                                                                                            return true;
+                                                                                        }
+                                                                                    }
+                                                                                    return false;
+                                                                                });
 
                 foreach (var player in validPlayers)
                 {
-                    var playerID = Convert.ToInt32(player["ID"]);
+                    int playerID = Convert.ToInt32(player["ID"]);
 
-                    var lastName = player["Last_Name"];
-                    var firstName = player["First_Name"];
+                    string lastName = player["Last_Name"];
+                    string firstName = player["First_Name"];
 
 #if DEBUG
                     //if (LastName == "Felton") System.Diagnostics.Debugger.Break();
@@ -725,26 +732,27 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         continue;
                     }
 
-                    var playerStatsID = Convert.ToInt32(player["StatY0"]);
+                    int playerStatsID = Convert.ToInt32(player["StatY0"]);
 
-                    var plStats = playerStats.Find(delegate(Dictionary<string, string> s)
-                                                   {
-                                                       if (s["ID"] == playerStatsID.ToString())
-                                                           return true;
-                                                       return false;
-                                                   });
+                    Dictionary<string, string> plStats = playerStats.Find(delegate(Dictionary<string, string> s)
+                                                                          {
+                                                                              if (s["ID"] == playerStatsID.ToString())
+                                                                                  return true;
+                                                                              return false;
+                                                                          });
 
                     if (pst.ContainsKey(playerID) && (pst[playerID].LastName != lastName || pst[playerID].FirstName != firstName))
                     {
-                        var candidates =
+                        List<KeyValuePair<int, PlayerStats>> candidates =
                             pst.Where(
                                 pair => pair.Value.LastName == lastName && pair.Value.FirstName == firstName && pair.Value.IsHidden == false)
                                .ToList();
                         if (candidates.Count > 0)
                         {
-                            var found = false;
+                            bool found = false;
                             Dictionary<int, TeamStats> temptst = tst;
-                            var c2 = candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
+                            List<KeyValuePair<int, PlayerStats>> c2 =
+                                candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
                             if (c2.Count() == 1)
                             {
                                 playerID = c2.First().Value.ID;
@@ -752,7 +760,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             }
                             else
                             {
-                                var c4 = candidates.Where(pair => pair.Value.YearOfBirth.ToString() == player["BirthYear"]).ToList();
+                                List<KeyValuePair<int, PlayerStats>> c4 =
+                                    candidates.Where(pair => pair.Value.YearOfBirth.ToString() == player["BirthYear"]).ToList();
                                 if (c4.Count == 1)
                                 {
                                     playerID = c4.First().Value.ID;
@@ -762,7 +771,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 {
                                     if (pTeam != -1)
                                     {
-                                        var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
+                                        List<KeyValuePair<int, PlayerStats>> c3 =
+                                            candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
                                         if (c3.Count == 1)
                                         {
                                             playerID = c3.First().Value.ID;
@@ -776,8 +786,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 var choices = new List<string>();
                                 foreach (var pair in candidates)
                                 {
-                                    var choice = String.Format("{0}: {1} {2} (Born {3}", pair.Value.ID, pair.Value.FirstName,
-                                                               pair.Value.LastName, pair.Value.YearOfBirth);
+                                    string choice = String.Format("{0}: {1} {2} (Born {3}", pair.Value.ID, pair.Value.FirstName,
+                                                                  pair.Value.LastName, pair.Value.YearOfBirth);
                                     if (pair.Value.IsActive)
                                     {
                                         choice += String.Format(", plays in {0}", tst[pair.Value.TeamF].DisplayName);
@@ -789,8 +799,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                     choice += ")";
                                     choices.Add(choice);
                                 }
-                                var message = String.Format("{0}: {1} {2} (Born {3}", player["ID"], player["First_Name"],
-                                                            player["Last_Name"], player["BirthYear"]);
+                                string message = String.Format("{0}: {1} {2} (Born {3}", player["ID"], player["First_Name"],
+                                                               player["Last_Name"], player["BirthYear"]);
                                 if (pTeam != -1)
                                 {
                                     message += String.Format(", plays in {0}", curTeam.DisplayName);
@@ -821,8 +831,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         playerID = createNewPlayer(ref pst, player, playerID);
                     }
-                    var curPlayer = pst[playerID];
-                    var oldPlayer = curPlayer.Clone();
+                    PlayerStats curPlayer = pst[playerID];
+                    PlayerStats oldPlayer = curPlayer.Clone();
 
                     curPlayer.Position1 = (Position) Enum.Parse(typeof (Position), player["Pos"]);
                     curPlayer.Position2 = (Position) Enum.Parse(typeof (Position), player["SecondPos"]);
@@ -831,9 +841,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     curPlayer.YearOfBirth = Convert.ToInt32(player["BirthYear"]);
                     curPlayer.Contract.Option = (PlayerContractOption) Enum.Parse(typeof (PlayerContractOption), player["COption"]);
                     curPlayer.Contract.ContractSalaryPerYear.Clear();
-                    for (var i = 1; i < 7; i++)
+                    for (int i = 1; i < 7; i++)
                     {
-                        var salary = Convert.ToInt32(player["CYear" + i]);
+                        int salary = Convert.ToInt32(player["CYear" + i]);
                         if (salary == 0)
                             break;
 
@@ -845,26 +855,26 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (plStats != null)
                     {
-                        var teamReal = pTeam.ToString();
-                        var team1 = plStats["TeamID2"];
-                        var team2 = plStats["TeamID1"];
-                        var hasBeenTraded = (team1 != "-1");
+                        string teamReal = pTeam.ToString();
+                        string team1 = plStats["TeamID2"];
+                        string team2 = plStats["TeamID1"];
+                        bool hasBeenTraded = (team1 != "-1");
 
                         if (teamReal != "-1" && player["IsFA"] != "1")
                         {
-                            var ts = tst[pTeam];
+                            TeamStats ts = tst[pTeam];
                         }
                         if (hasBeenTraded)
                         {
-                            var teamS = teams.Find(delegate(Dictionary<string, string> s)
-                                                   {
-                                                       if (s["ID"] == team2)
-                                                           return true;
-                                                       return false;
-                                                   });
+                            Dictionary<string, string> teamS = teams.Find(delegate(Dictionary<string, string> s)
+                                                                          {
+                                                                              if (s["ID"] == team2)
+                                                                                  return true;
+                                                                              return false;
+                                                                          });
                         }
 
-                        var ps = curPlayer;
+                        PlayerStats ps = curPlayer;
                         ps.TeamF = pTeam;
                         ps.TeamS = Convert.ToInt32(team2);
 
@@ -899,7 +909,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     }
                     else
                     {
-                        var ps = curPlayer;
+                        PlayerStats ps = curPlayer;
 
                         ps.TeamF = pTeam;
 
@@ -913,7 +923,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     #region Import Messsages
 
-                    var name = String.Format("{0} {1}", curPlayer.FirstName, curPlayer.LastName);
+                    string name = String.Format("{0} {1}", curPlayer.FirstName, curPlayer.LastName);
                     if (oldPlayer.TeamF != curPlayer.TeamF)
                     {
                         string msg;
@@ -932,7 +942,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (oldPlayer.Contract.GetYears() < curPlayer.Contract.GetYears() && curPlayer.IsActive)
                     {
-                        var msg = name;
+                        string msg = name;
                         bool reSigned;
                         if (!oldPlayer.IsActive && curPlayer.IsActive)
                         {
@@ -976,7 +986,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             if (duplicatePlayers.Count > 0)
             {
-                var msg =
+                string msg =
                     "The following names belong to two or more players in the database and the tool couldn't determine who to import to:\n\n";
                 duplicatePlayers.ForEach(item => msg += item + ", ");
                 msg = msg.TrimEnd(new[] {' ', ','});
@@ -995,9 +1005,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 TeamsThatPlayedAGame = new List<int>();
                 foreach (var team in tst)
                 {
-                    var newTeam = team.Value;
-                    var teamID = team.Key;
-                    var oldTeam = oldTST[teamID];
+                    TeamStats newTeam = team.Value;
+                    int teamID = team.Key;
+                    TeamStats oldTeam = oldTST[teamID];
 
                     if (oldTeam.GetGames() + 1 == newTeam.GetGames() || oldTeam.GetPlayoffGames() + 1 == newTeam.GetPlayoffGames())
                     {
@@ -1012,14 +1022,14 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (dlw.ShowDialog() == true)
                     {
-                        for (var i = 0; i <= PickedTeams.Count - 2; i += 2)
+                        for (int i = 0; i <= PickedTeams.Count - 2; i += 2)
                         {
-                            var t1 = PickedTeams[i];
-                            var t2 = PickedTeams[i + 1];
+                            int t1 = PickedTeams[i];
+                            int t2 = PickedTeams[i + 1];
 
-                            var bse = prepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
+                            BoxScoreEntry bse = prepareBoxScore(tst, oldTST, pst, oldPST, t1, t2);
 
-                            var teamBoxScore = bse.BS;
+                            TeamBoxScore teamBoxScore = bse.BS;
                             BoxScoreWindow.CalculateTeamsFromPlayers(ref teamBoxScore,
                                                                      bse.PBSList.Where(pbs => pbs.TeamID == bse.BS.Team1ID),
                                                                      bse.PBSList.Where(pbs => pbs.TeamID == bse.BS.Team2ID));
@@ -1131,8 +1141,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return 0;
         }
 
-        public static int ImportPrevious(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp, ref Dictionary<int, PlayerStats> pst, string folder,
-                                         bool teamsOnly = false)
+        public static int ImportPrevious(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
+                                         ref Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
             List<Dictionary<string, string>> players;
@@ -1146,19 +1156,19 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var legalTTypes = new List<string> {"0", "4"};
 
-            var validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
-                                           {
-                                               if (legalTTypes.IndexOf(team["TType"]) != -1)
-                                                   return true;
-                                               return false;
-                                           });
+            List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
+                                                                        {
+                                                                            if (legalTTypes.IndexOf(team["TType"]) != -1)
+                                                                                return true;
+                                                                            return false;
+                                                                        });
 
-            var activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
-                                                 {
-                                                     if (team["StatCurS"] != "-1")
-                                                         return true;
-                                                     return false;
-                                                 });
+            List<Dictionary<string, string>> activeTeams = validTeams.FindAll(delegate(Dictionary<string, string> team)
+                                                                              {
+                                                                                  if (team["StatCurS"] != "-1")
+                                                                                      return true;
+                                                                                  return false;
+                                                                              });
             /*
             if (activeTeams.Count == 0)
             {
@@ -1182,7 +1192,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 }
             }
 
-            var madeNew = false;
+            bool madeNew = false;
 
             if (tst.Count != activeTeams.Count)
             {
@@ -1191,9 +1201,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 madeNew = true;
             }
 
-            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
+            Dictionary<int, TeamStats> oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
+            Dictionary<int, TeamStats> oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
+            Dictionary<int, PlayerStats> oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
 
             CreateDivisions();
 
@@ -1201,11 +1211,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var rosters = new Dictionary<int, List<int>>();
             foreach (var team in activeTeams)
             {
-                var id = -1;
-                var name = team["Name"];
+                int id = -1;
+                string name = team["Name"];
                 if (oldTST.All(pair => pair.Value.Name != name))
                 {
-                    for (var i = 0; i < 30; i++)
+                    for (int i = 0; i < 30; i++)
                     {
                         if (!tst.ContainsKey(i))
                         {
@@ -1226,17 +1236,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     tstOpp[id] = new TeamStats(id, name);
                 }
 
-                var sStatsID = Convert.ToInt32(team["StatPrevS"]);
-                var pStatsID = Convert.ToInt32(team["StatPrevP"]);
+                int sStatsID = Convert.ToInt32(team["StatPrevS"]);
+                int pStatsID = Convert.ToInt32(team["StatPrevP"]);
 
-                var sStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                                            {
-                                                if (s["ID"] == sStatsID.ToString())
-                                                    return true;
-                                                return false;
-                                            });
+                Dictionary<string, string> sStats = teamStats.Find(delegate(Dictionary<string, string> s)
+                                                                   {
+                                                                       if (s["ID"] == sStatsID.ToString())
+                                                                           return true;
+                                                                       return false;
+                                                                   });
 
-                var curTeam = tst[id];
+                TeamStats curTeam = tst[id];
                 curTeam.ID = Convert.ToInt32(team["ID"]);
                 curTeam.Division = Convert.ToInt32(team["Division"]);
                 tstOpp[id].Division = Convert.ToInt32(team["Division"]);
@@ -1266,12 +1276,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (pStatsID != -1)
                     {
-                        var pStats = teamStats.Find(delegate(Dictionary<string, string> s)
-                                                    {
-                                                        if (s["ID"] == pStatsID.ToString())
-                                                            return true;
-                                                        return false;
-                                                    });
+                        Dictionary<string, string> pStats = teamStats.Find(delegate(Dictionary<string, string> s)
+                                                                           {
+                                                                               if (s["ID"] == pStatsID.ToString())
+                                                                                   return true;
+                                                                               return false;
+                                                                           });
                         curTeam.PlRecord[0] = Convert.ToByte(pStats["Wins"]);
                         curTeam.PlRecord[1] = Convert.ToByte(pStats["Losses"]);
                         curTeam.PlTotals[TAbbr.MINS] = Convert.ToUInt16(pStats["Mins"]);
@@ -1304,17 +1314,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                   Convert.ToInt32(team["Ros_PF"]),
                                   Convert.ToInt32(team["Ros_C"])
                               };
-                for (var i = 6; i <= 12; i++)
+                for (int i = 6; i <= 12; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_S" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
                         break;
                 }
-                for (var i = 13; i <= 20; i++)
+                for (int i = 13; i <= 20; i++)
                 {
-                    var cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
+                    int cur = Convert.ToInt32(team["Ros_R" + i.ToString()]);
                     if (cur != -1)
                         rosters[id].Add(cur);
                     else
@@ -1329,25 +1339,28 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var duplicatePlayers = new List<string>();
             if (!teamsOnly)
             {
-                var validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
-                                                   {
-                                                       if (player["PlType"] == "4" || player["PlType"] == "5" || player["PlType"] == "6")
-                                                       {
-                                                           if (((player["IsFA"] == "0" && player["TeamID1"] != "-1") ||
-                                                                (player["IsFA"] == "1")) && player["YearsPro"] != "1")
-                                                           {
-                                                               return true;
-                                                           }
-                                                       }
-                                                       return false;
-                                                   });
+                List<Dictionary<string, string>> validPlayers = players.FindAll(delegate(Dictionary<string, string> player)
+                                                                                {
+                                                                                    if (player["PlType"] == "4" || player["PlType"] == "5" ||
+                                                                                        player["PlType"] == "6")
+                                                                                    {
+                                                                                        if (((player["IsFA"] == "0" &&
+                                                                                              player["TeamID1"] != "-1") ||
+                                                                                             (player["IsFA"] == "1")) &&
+                                                                                            player["YearsPro"] != "1")
+                                                                                        {
+                                                                                            return true;
+                                                                                        }
+                                                                                    }
+                                                                                    return false;
+                                                                                });
 
                 foreach (var player in validPlayers)
                 {
-                    var playerID = Convert.ToInt32(player["ID"]);
+                    int playerID = Convert.ToInt32(player["ID"]);
 
-                    var lastName = player["Last_Name"];
-                    var firstName = player["First_Name"];
+                    string lastName = player["Last_Name"];
+                    string firstName = player["First_Name"];
 
                     //if (LastName == "Kemp") System.Diagnostics.Debugger.Break();
 
@@ -1361,7 +1374,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         pTeam = -1;
                     }
 
-                    var curPlayer = pst[playerID];
+                    PlayerStats curPlayer = pst[playerID];
                     if (!activeTeamsIDs.Contains(pTeam) && player["IsFA"] != "1")
                     {
                         if (pst.ContainsKey(playerID) && (curPlayer.LastName == lastName) && curPlayer.FirstName == firstName)
@@ -1373,25 +1386,26 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         continue;
                     }
 
-                    var playerStatsID = Convert.ToInt32(player["StatY1"]);
+                    int playerStatsID = Convert.ToInt32(player["StatY1"]);
 
-                    var plStats = playerStats.Find(delegate(Dictionary<string, string> s)
-                                                   {
-                                                       if (s["ID"] == playerStatsID.ToString())
-                                                           return true;
-                                                       return false;
-                                                   });
+                    Dictionary<string, string> plStats = playerStats.Find(delegate(Dictionary<string, string> s)
+                                                                          {
+                                                                              if (s["ID"] == playerStatsID.ToString())
+                                                                                  return true;
+                                                                              return false;
+                                                                          });
 
                     if (pst.ContainsKey(playerID) && (curPlayer.LastName != lastName || curPlayer.FirstName != firstName))
                     {
-                        var candidates =
+                        List<KeyValuePair<int, PlayerStats>> candidates =
                             pst.Where(
                                 pair => pair.Value.LastName == lastName && pair.Value.FirstName == firstName && pair.Value.IsHidden == false)
                                .ToList();
                         if (candidates.Any())
                         {
                             Dictionary<int, TeamStats> temptst = tst;
-                            var c2 = candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
+                            List<KeyValuePair<int, PlayerStats>> c2 =
+                                candidates.Where(pair => temptst.ContainsKey(pair.Value.TeamF)).ToList();
                             if (c2.Count() == 1)
                             {
                                 playerID = c2.First().Value.ID;
@@ -1400,11 +1414,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             {
                                 if (pTeam != -1)
                                 {
-                                    var curTeam =
+                                    KeyValuePair<int, TeamStats> curTeam =
                                         tst.Single(
                                             team => team.Value.Name == activeTeams.Find(ateam => ateam["ID"] == pTeam.ToString())["Name"]);
 
-                                    var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.Value.ID).ToList();
+                                    List<KeyValuePair<int, PlayerStats>> c3 =
+                                        candidates.Where(pair => pair.Value.TeamF == curTeam.Value.ID).ToList();
                                     if (c3.Count == 1)
                                     {
                                         playerID = c3.First().Value.ID;
@@ -1435,16 +1450,16 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (plStats != null)
                     {
-                        var team1 = plStats["TeamID2"];
-                        var team2 = plStats["TeamID1"];
-                        var hasBeenTraded = (team1 != "-1");
+                        string team1 = plStats["TeamID2"];
+                        string team2 = plStats["TeamID1"];
+                        bool hasBeenTraded = (team1 != "-1");
 
                         if (!hasBeenTraded)
                         {
                             team1 = team2;
                         }
 
-                        var ps = curPlayer;
+                        PlayerStats ps = curPlayer;
                         ps.TeamF = Convert.ToInt32(team1);
                         ps.TeamS = Convert.ToInt32(team2);
 
@@ -1482,7 +1497,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             if (duplicatePlayers.Count > 0)
             {
-                var msg =
+                string msg =
                     "The following names belong to two or more players in the database and the tool couldn't determine who to import to:\n\n";
                 duplicatePlayers.ForEach(item => msg += item + ", ");
                 msg = msg.TrimEnd(new[] {' ', ','});
@@ -1566,7 +1581,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         private static BoxScoreEntry prepareBoxScore(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> oldTST,
                                                      Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int t1, int t2)
         {
-            var isPlayoff = (tst[t1].GetPlayoffGames() > 0);
+            bool isPlayoff = (tst[t1].GetPlayoffGames() > 0);
             var bs = new TeamBoxScore
                      {
                          IsPlayoff = isPlayoff,
@@ -1584,13 +1599,14 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         var team2Players = pst.Where(pair => pair.Value.TeamF == bs.Team2);
                         */
 
-            var bothTeamsPlayers = pst.Where(pair => pair.Value.TeamF == bs.Team1ID || pair.Value.TeamF == bs.Team2ID);
+            IEnumerable<KeyValuePair<int, PlayerStats>> bothTeamsPlayers =
+                pst.Where(pair => pair.Value.TeamF == bs.Team1ID || pair.Value.TeamF == bs.Team2ID);
             foreach (var playerKVP in bothTeamsPlayers)
             {
-                var oldplayerKVP = oldPST.Single(pair => pair.Value.ID == playerKVP.Value.ID);
+                KeyValuePair<int, PlayerStats> oldplayerKVP = oldPST.Single(pair => pair.Value.ID == playerKVP.Value.ID);
 
-                var newPlayer = playerKVP.Value;
-                var oldPlayer = oldplayerKVP.Value;
+                PlayerStats newPlayer = playerKVP.Value;
+                PlayerStats oldPlayer = oldplayerKVP.Value;
 
                 PlayerBoxScore pbs;
                 if (getDiff(newPlayer, oldPlayer, PAbbr.GP) == 1)
@@ -1702,25 +1718,25 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             if (populateREDitorDictionaryLists(folder, out teams, out players, out teamStats, out playerStats) == -1)
                 return -1;
 
-            foreach (var key in tst.Keys)
+            foreach (int key in tst.Keys)
             {
-                var ts = tst[key];
+                TeamStats ts = tst[key];
 
-                var id = ts.ID;
+                int id = ts.ID;
 
-                var tindex = teams.FindIndex(delegate(Dictionary<string, string> s)
+                int tindex = teams.FindIndex(delegate(Dictionary<string, string> s)
                                              {
                                                  if (s["ID"] == id.ToString())
                                                      return true;
                                                  return false;
                                              });
 
-                var team = teams[tindex];
+                Dictionary<string, string> team = teams[tindex];
 
-                var sStatsID = Convert.ToInt32(team["StatCurS"]);
-                var pStatsID = Convert.ToInt32(team["StatCurP"]);
+                int sStatsID = Convert.ToInt32(team["StatCurS"]);
+                int pStatsID = Convert.ToInt32(team["StatCurP"]);
 
-                var sStatsIndex = teamStats.FindIndex(delegate(Dictionary<string, string> s)
+                int sStatsIndex = teamStats.FindIndex(delegate(Dictionary<string, string> s)
                                                       {
                                                           if (s["ID"] == sStatsID.ToString())
                                                               return true;
@@ -1751,7 +1767,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 if (pStatsID != -1)
                 {
-                    var pStatsIndex = teamStats.FindIndex(delegate(Dictionary<string, string> s)
+                    int pStatsIndex = teamStats.FindIndex(delegate(Dictionary<string, string> s)
                                                           {
                                                               if (s["ID"] == pStatsID.ToString())
                                                                   return true;
@@ -1785,14 +1801,15 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var unmatchedPlayers = new List<string>();
             if (!teamsOnly)
             {
-                foreach (var key in pst.Keys)
+                foreach (int key in pst.Keys)
                 {
-                    var ps = pst[key];
+                    PlayerStats ps = pst[key];
 
-                    var id = ps.ID;
+                    int id = ps.ID;
 
                     Dictionary<string, string> player;
-                    var candidates = players.Where(dict => dict["Last_Name"] == ps.LastName && dict["First_Name"] == ps.FirstName).ToList();
+                    List<Dictionary<string, string>> candidates =
+                        players.Where(dict => dict["Last_Name"] == ps.LastName && dict["First_Name"] == ps.FirstName).ToList();
                     try
                     {
                         player = candidates.Single(dict => dict["ID"] == id.ToString());
@@ -1805,7 +1822,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                         catch (InvalidOperationException)
                         {
-                            var message = String.Format("{0}: {1} {2} (Born {3}", ps.ID, ps.FirstName, ps.LastName, ps.YearOfBirth);
+                            string message = String.Format("{0}: {1} {2} (Born {3}", ps.ID, ps.FirstName, ps.LastName, ps.YearOfBirth);
                             if (ps.TeamF != -1)
                             {
                                 message += String.Format(", plays in {0}", tst[ps.TeamF].DisplayName);
@@ -1820,9 +1837,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                     }
 
-                    var playerStatsID = Convert.ToInt32(player["StatY0"]);
+                    int playerStatsID = Convert.ToInt32(player["StatY0"]);
 
-                    var playerStatsIndex = playerStats.FindIndex(delegate(Dictionary<string, string> s)
+                    int playerStatsIndex = playerStats.FindIndex(delegate(Dictionary<string, string> s)
                                                                  {
                                                                      if (s["ID"] == playerStatsID.ToString())
                                                                          return true;
@@ -1854,7 +1871,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 }
             }
 
-            var path = folder + @"\Team_Stats.csv";
+            string path = folder + @"\Team_Stats.csv";
             CSV.CSVFromDictionaryList(teamStats, path);
             if (!teamsOnly)
             {

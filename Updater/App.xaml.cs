@@ -62,8 +62,9 @@ namespace Updater
             }
             installerProc.WaitForExit();
 
-            var installDir = GetRegistrySetting("InstallDir",
-                                                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\NBA Stats Tracker");
+            string installDir = GetRegistrySetting("InstallDir",
+                                                   Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) +
+                                                   @"\NBA Stats Tracker");
             Process.Start(installDir + @"\NBA Stats Tracker.exe");
 
             Environment.Exit(0);
@@ -71,8 +72,8 @@ namespace Updater
 
         private static string GetRegistrySetting(string setting, string defaultValue)
         {
-            var rk = Registry.CurrentUser;
-            var settingValue = defaultValue;
+            RegistryKey rk = Registry.CurrentUser;
+            string settingValue = defaultValue;
             try
             {
                 if (rk == null)
@@ -92,15 +93,15 @@ namespace Updater
 
         private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var exceptionString = e.Exception.ToString();
-            var innerExceptionString = e.Exception.InnerException == null
-                                           ? "No inner exception information."
-                                           : e.Exception.InnerException.Message;
-            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+            string exceptionString = e.Exception.ToString();
+            string innerExceptionString = e.Exception.InnerException == null
+                                              ? "No inner exception information."
+                                              : e.Exception.InnerException.Message;
+            string versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
             {
-                var errorReportPath = AppDocsPath + @"updater_errorlog.txt";
+                string errorReportPath = AppDocsPath + @"updater_errorlog.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Unhandled Exception Error Report for NBA Stats Tracker");
@@ -123,7 +124,7 @@ namespace Updater
             }
             catch (Exception ex)
             {
-                var s = "Can't create errorlog!\nException: " + ex;
+                string s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;

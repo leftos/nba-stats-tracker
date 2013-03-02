@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +31,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Ciloci.Flee;
 using LeftosCommonLibrary;
+using LeftosCommonLibrary.CommonDialogs;
 using Microsoft.Win32;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
@@ -37,7 +39,6 @@ using NBA_Stats_Tracker.Data.SQLiteIO;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Windows.MiscTools;
 
 #endregion
 
@@ -51,25 +52,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private readonly List<string> _contractOptions = new List<string> {"Any", "None", "Team", "Player", "Team2Yr"};
         private readonly List<string> _customExpressions = new List<string>();
         private readonly string _folder = App.AppDocsPath + @"\Search Filters";
-        
+        private readonly List<string> _metrics = PAbbr.MetricsNames;
+
         private readonly List<string> _numericComparisons = new List<string> {"<", "<=", "=", ">=", ">"};
         private readonly List<string> _numericOperators = new List<string> {"+", "-", "*", "/", "(", ")"};
         private readonly List<string> _numericPSRPropertyNames = new List<string>();
+        private readonly List<string> _numericTSRPropertyNames = new List<string>();
+        private readonly List<string> _perGame = PAbbr.ExtendedPerGame;
 
         private readonly List<string> _positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
         private readonly List<string> _splitOn = new List<string>();
         private readonly List<string> _stringOptions = new List<string> {"Contains", "Is"};
 
-        private readonly List<string> _totals = PAbbr.ExtendedTotals;
-        private readonly List<string> _perGame = PAbbr.ExtendedPerGame;
-        private readonly List<string> _metrics = PAbbr.MetricsNames;
-        private readonly List<string> _teamTotals = TAbbr.ExtendedTotals;
-        private readonly List<string> _teamPerGame = TAbbr.ExtendedPerGame;
         private readonly List<string> _teamMetrics = TAbbr.MetricsNames;
+        private readonly List<string> _teamPerGame = TAbbr.ExtendedPerGame;
+        private readonly List<string> _teamTotals = TAbbr.ExtendedTotals;
+        private readonly List<string> _totals = PAbbr.ExtendedTotals;
 
         private bool _changingTimeframe;
         private int _curSeason;
-        private readonly List<string> _numericTSRPropertyNames = new List<string>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class.
@@ -111,7 +112,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbMetricsOp.ItemsSource = _numericComparisons;
             cmbMetricsOp.SelectedIndex = 3;
 
-            for (var i = 1; i <= 7; i++)
+            for (int i = 1; i <= 7; i++)
             {
                 cmbContractPar.Items.Add("Year " + i);
             }
@@ -136,7 +137,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _splitOn.Add(" ");
             cmbCustomOp.ItemsSource = _numericOperators;
 
-            var comparisons = _numericComparisons.ToList();
+            List<string> comparisons = _numericComparisons.ToList();
             comparisons.Insert(0, "All");
             cmbCustomComp.ItemsSource = comparisons;
             cmbCustomComp.SelectedIndex = 0;
@@ -149,23 +150,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             populateTeamsCombo();
 
-            Height = Misc.GetRegistrySetting("APSHeight", (int)Height);
-            Width = Misc.GetRegistrySetting("APSWidth", (int)Width);
-            Top = Misc.GetRegistrySetting("APSY", (int)Top);
-            Left = Misc.GetRegistrySetting("APSX", (int)Left);
+            Height = Misc.GetRegistrySetting("APSHeight", (int) Height);
+            Width = Misc.GetRegistrySetting("APSWidth", (int) Width);
+            Top = Misc.GetRegistrySetting("APSY", (int) Top);
+            Left = Misc.GetRegistrySetting("APSX", (int) Left);
         }
 
         private void populateCustomCombos()
         {
             // Players
             var hiddenProperties = new List<string> {"ID", "TeamF", "TeamS"};
-            var psrProperties = (typeof (PlayerStatsRow)).GetProperties();
-            foreach (var property in psrProperties)
+            PropertyInfo[] psrProperties = (typeof (PlayerStatsRow)).GetProperties();
+            foreach (PropertyInfo property in psrProperties)
             {
                 if (!Tools.IsNumericType(property.PropertyType) || typeof (Enum).IsAssignableFrom(property.PropertyType))
                     continue;
 
-                var name = property.Name;
+                string name = property.Name;
                 name = name.Replace("p", "%");
                 if (name != "TPG")
                 {
@@ -178,7 +179,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
             }
             _numericPSRPropertyNames.Sort();
-            var otherPropertyNames =
+            List<string> otherPropertyNames =
                 _numericPSRPropertyNames.Where(
                     name =>
                     !_totals.Contains(name) && !_perGame.Contains(name) && !_metrics.Contains(name) && !hiddenProperties.Contains(name))
@@ -190,13 +191,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             // Teams
             var hiddenTeamProperties = new List<string> {"ID"};
-            var tsrProperties = (typeof (TeamStatsRow)).GetProperties();
-            foreach (var property in tsrProperties)
+            PropertyInfo[] tsrProperties = (typeof (TeamStatsRow)).GetProperties();
+            foreach (PropertyInfo property in tsrProperties)
             {
                 if (!Tools.IsNumericType(property.PropertyType) || typeof (Enum).IsAssignableFrom(property.PropertyType))
                     continue;
 
-                var name = property.Name;
+                string name = property.Name;
                 name = name.Replace("p", "%");
                 if (name != "TPG")
                 {
@@ -209,7 +210,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
             }
             _numericTSRPropertyNames.Sort();
-            var otherTeamPropertyNames =
+            List<string> otherTeamPropertyNames =
                 _numericTSRPropertyNames.Where(
                     name =>
                     !_teamTotals.Contains(name) && !_teamPerGame.Contains(name) && !_teamMetrics.Contains(name) &&
@@ -260,7 +261,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                 cmbTFSeason.SelectedItem = cmbSeasonNum.SelectedItem;
 
-                _curSeason = ((KeyValuePair<int, string>)(((cmbSeasonNum)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
 
                 _changingTimeframe = false;
 
@@ -284,8 +285,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             dgvPlayerStats.ItemsSource = null;
-            var pst = MainWindow.PST;
-            var filteredPST = pst.AsEnumerable();
+            Dictionary<int, PlayerStats> pst = MainWindow.PST;
+            IEnumerable<KeyValuePair<int, PlayerStats>> filteredPST = pst.AsEnumerable();
 
             if (!String.IsNullOrWhiteSpace(txtLastName.Text))
             {
@@ -358,13 +359,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 filteredPST = filteredPST.Where(pair => pair.Value.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()));
             }
 
-            var pstDict = filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value);
-            var psrListSea = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
-            var psrListPl = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
-            var tsrListSea = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts)).ToList();
-            var tsrListPl = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
-            var tsrOppListSea = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts)).ToList();
-            var tsrOppListPl = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
+            Dictionary<int, PlayerStats> pstDict = filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value);
+            List<PlayerStatsRow> psrListSea = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
+            List<PlayerStatsRow> psrListPl = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
+            List<TeamStatsRow> tsrListSea = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts)).ToList();
+            List<TeamStatsRow> tsrListPl = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
+            List<TeamStatsRow> tsrOppListSea = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts)).ToList();
+            List<TeamStatsRow> tsrOppListPl = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
 
             #region Custom Expressions parsing
 
@@ -378,32 +379,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                            .ToList()
                            .ForEach(col => dgvPlayoffStats.Columns.Remove(col));
 
-            var includedIDs = pstDict.Keys.ToList();
+            List<int> includedIDs = pstDict.Keys.ToList();
             var context = new ExpressionContext();
-            var j = 0;
-            var message = "";
-            foreach (var itemS in _customExpressions)
+            int j = 0;
+            string message = "";
+            foreach (string itemS in _customExpressions)
             {
-                var expByPlayer = includedIDs.ToDictionary(id => id, id => "");
-                var plExpByPlayer = includedIDs.ToDictionary(id => id, id => "");
-                var itemSParts = itemS.Split(new[] {": "}, StringSplitOptions.None);
-                var name = itemSParts[0];
-                var item = itemSParts[1];
-                var decimalPoints = itemSParts[3];
-                var parts = item.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-                var k = 0;
+                Dictionary<int, string> expByPlayer = includedIDs.ToDictionary(id => id, id => "");
+                Dictionary<int, string> plExpByPlayer = includedIDs.ToDictionary(id => id, id => "");
+                string[] itemSParts = itemS.Split(new[] {": "}, StringSplitOptions.None);
+                string name = itemSParts[0];
+                string item = itemSParts[1];
+                string decimalPoints = itemSParts[3];
+                string[] parts = item.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                int k = 0;
                 PlayerStatsRow curPSR;
                 PlayerStatsRow curPSRPl;
 
                 var ignoredIDs = new List<int>();
                 var ignoredPlIDs = new List<int>();
-                for (var i = 0; i < item.Length; i++)
+                for (int i = 0; i < item.Length; i++)
                 {
-                    var c1 = item[i];
+                    char c1 = item[i];
                     char c2;
                     if (_numericOperators.Contains(c1.ToString()))
                     {
-                        foreach (var id in includedIDs)
+                        foreach (int id in includedIDs)
                         {
                             if (!ignoredIDs.Contains(id))
                             {
@@ -457,7 +458,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                             part = part.Replace("3P", "TP");
                             part = part.Replace("TO", "TOS");
                             part = part.Replace("%", "p");
-                            foreach (var id in includedIDs)
+                            foreach (int id in includedIDs)
                             {
                                 if (!ignoredIDs.Contains(id))
                                 {
@@ -465,7 +466,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                     curPSR = psrListSea.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
-                                        val = Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(part).GetValue(curPSR, null)).ToString(".0###############");
+                                        val =
+                                            Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(part).GetValue(curPSR, null))
+                                                   .ToString(".0###############");
                                     }
                                     else
                                     {
@@ -475,10 +478,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                         }
                                         else
                                         {
-                                            var curTSR = isOwnTeam == true
-                                                             ? tsrListSea.Single(tsr => tsr.ID == curPSR.TeamF)
-                                                             : tsrOppListSea.Single(tsr => tsr.ID == curPSR.TeamF);
-                                            val = Convert.ToDouble(typeof(TeamStatsRow).GetProperty(part).GetValue(curTSR, null)).ToString(".0###############");
+                                            TeamStatsRow curTSR = isOwnTeam == true
+                                                                      ? tsrListSea.Single(tsr => tsr.ID == curPSR.TeamF)
+                                                                      : tsrOppListSea.Single(tsr => tsr.ID == curPSR.TeamF);
+                                            val =
+                                                Convert.ToDouble(typeof (TeamStatsRow).GetProperty(part).GetValue(curTSR, null))
+                                                       .ToString(".0###############");
                                         }
                                     }
                                     if (val != "NaN")
@@ -497,7 +502,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                     curPSRPl = psrListPl.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
-                                        plVal = Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(part).GetValue(curPSRPl, null)).ToString(".0###############");
+                                        plVal =
+                                            Convert.ToDouble(typeof (PlayerStatsRow).GetProperty(part).GetValue(curPSRPl, null))
+                                                   .ToString(".0###############");
                                     }
                                     else
                                     {
@@ -507,10 +514,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                         }
                                         else
                                         {
-                                            var curTSRPl = isOwnTeam == true
-                                                               ? tsrListPl.Single(tsr => tsr.ID == curPSRPl.TeamF)
-                                                               : tsrOppListPl.Single(tsr => tsr.ID == curPSRPl.TeamF);
-                                            plVal = Convert.ToDouble(typeof(TeamStatsRow).GetProperty(part).GetValue(curTSRPl, null)).ToString(".0###############");
+                                            TeamStatsRow curTSRPl = isOwnTeam == true
+                                                                        ? tsrListPl.Single(tsr => tsr.ID == curPSRPl.TeamF)
+                                                                        : tsrOppListPl.Single(tsr => tsr.ID == curPSRPl.TeamF);
+                                            plVal =
+                                                Convert.ToDouble(typeof (TeamStatsRow).GetProperty(part).GetValue(curTSRPl, null))
+                                                       .ToString(".0###############");
                                         }
                                     }
                                     if (plVal != "NaN")
@@ -541,8 +550,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     }
                     else if (Tools.IsNumeric(parts[k]))
                     {
-                        var part = parts[k++];
-                        foreach (var id in includedIDs)
+                        string part = parts[k++];
+                        foreach (int id in includedIDs)
                         {
                             if (!ignoredIDs.Contains(id))
                             {
@@ -556,7 +565,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         i += part.Length - 1;
                     }
                 }
-                foreach (var id in includedIDs)
+                foreach (int id in includedIDs)
                 {
                     curPSR = psrListSea.Single(psr => psr.ID == id);
                     curPSRPl = psrListPl.Single(psr => psr.ID == id);
@@ -564,7 +573,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     {
                         try
                         {
-                            var compiled = context.CompileGeneric<double>(expByPlayer[id]);
+                            IGenericExpression<double> compiled = context.CompileGeneric<double>(expByPlayer[id]);
                             curPSR.Custom.Add(compiled.Evaluate());
                         }
                         catch (Exception ex)
@@ -582,7 +591,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     {
                         try
                         {
-                            var compiled = context.CompileGeneric<double>(plExpByPlayer[id]);
+                            IGenericExpression<double> compiled = context.CompileGeneric<double>(plExpByPlayer[id]);
                             curPSRPl.Custom.Add(compiled.Evaluate());
                         }
                         catch (Exception ex)
@@ -625,24 +634,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             #endregion Custom Expressions parsing
 
-            var psrView = CollectionViewSource.GetDefaultView(psrListSea);
+            ICollectionView psrView = CollectionViewSource.GetDefaultView(psrListSea);
             psrView.Filter = filter;
 
-            var plPSRView = CollectionViewSource.GetDefaultView(psrListPl);
+            ICollectionView plPSRView = CollectionViewSource.GetDefaultView(psrListPl);
             plPSRView.Filter = filter;
 
             dgvPlayerStats.ItemsSource = psrView;
             dgvPlayoffStats.ItemsSource = plPSRView;
 
             string sortColumn;
-            foreach (var item in lstMetrics.Items.Cast<string>())
+            foreach (string item in lstMetrics.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
                 plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (var item in lstAvg.Items.Cast<string>())
+            foreach (string item in lstAvg.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
@@ -650,7 +659,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
                 plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
-            foreach (var item in lstTotals.Items.Cast<string>())
+            foreach (string item in lstTotals.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
@@ -689,7 +698,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             var psr = (PlayerStatsRow) o;
             var ps = new PlayerStats(psr);
-            var keep = true;
+            bool keep = true;
             var context = new ExpressionContext();
             IGenericExpression<bool> ige;
             if (!String.IsNullOrWhiteSpace(txtYearsProVal.Text))
@@ -707,9 +716,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
             if (!String.IsNullOrWhiteSpace(txtHeightVal.Text))
             {
-                var metricHeight = MainWindow.IsImperial
-                                       ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
-                                       : Convert.ToDouble(txtHeightVal.Text);
+                double metricHeight = MainWindow.IsImperial
+                                          ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
+                                          : Convert.ToDouble(txtHeightVal.Text);
                 context = new ExpressionContext();
                 ige = context.CompileGeneric<bool>(psr.Height.ToString() + cmbHeightOp.SelectedItem + metricHeight.ToString());
                 if (ige.Evaluate() == false)
@@ -717,9 +726,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
             if (!String.IsNullOrWhiteSpace(txtWeightVal.Text))
             {
-                var imperialWeight = MainWindow.IsImperial
-                                         ? Convert.ToDouble(txtWeightVal.Text)
-                                         : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
+                double imperialWeight = MainWindow.IsImperial
+                                            ? Convert.ToDouble(txtWeightVal.Text)
+                                            : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
                 context = new ExpressionContext();
                 ige = context.CompileGeneric<bool>(psr.Weight.ToString() + cmbWeightOp.SelectedItem + imperialWeight.ToString());
                 if (ige.Evaluate() == false)
@@ -737,9 +746,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     return false;
             }
 
-            foreach (var contractYear in lstContract.Items.Cast<string>())
+            foreach (string contractYear in lstContract.Items.Cast<string>())
             {
-                var parts = contractYear.Split(' ');
+                string[] parts = contractYear.Split(' ');
                 ige =
                     context.CompileGeneric<bool>(psr.GetType().GetProperty("ContractY" + parts[1]).GetValue(psr, null) + parts[2] + parts[3]);
                 keep = ige.Evaluate();
@@ -747,10 +756,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     return keep;
             }
 
-            var totalsFilters = lstTotals.Items.Cast<string>();
+            IEnumerable<string> totalsFilters = lstTotals.Items.Cast<string>();
             Parallel.ForEach(totalsFilters, (item, loopState) =>
                                             {
-                                                var parts = item.Split(' ');
+                                                string[] parts = item.Split(' ');
                                                 parts[0] = parts[0].Replace("3P", "TP");
                                                 parts[0] = parts[0].Replace("TO", "TOS");
                                                 context = new ExpressionContext();
@@ -765,14 +774,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!keep)
                 return keep;
 
-            var pgFilters = lstAvg.Items.Cast<string>();
+            IEnumerable<string> pgFilters = lstAvg.Items.Cast<string>();
             Parallel.ForEach(pgFilters, (item, loopState) =>
                                         {
-                                            var parts = item.Split(' ');
+                                            string[] parts = item.Split(' ');
                                             parts[0] = parts[0].Replace("3P", "TP");
                                             parts[0] = parts[0].Replace("%", "p");
                                             context = new ExpressionContext();
-                                            var value = psr.GetType().GetProperty(parts[0]).GetValue(psr, null);
+                                            object value = psr.GetType().GetProperty(parts[0]).GetValue(psr, null);
                                             if (!Double.IsNaN(Convert.ToDouble(value)))
                                             {
                                                 ige = context.CompileGeneric<bool>(value + parts[1] + parts[2]);
@@ -789,15 +798,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!keep)
                 return keep;
 
-            var metricFilters = lstMetrics.Items.Cast<string>();
+            IEnumerable<string> metricFilters = lstMetrics.Items.Cast<string>();
             Parallel.ForEach(metricFilters, (item, loopState) =>
                                             {
-                                                var parts = item.Split(' ');
+                                                string[] parts = item.Split(' ');
                                                 parts[0] = parts[0].Replace("%", "p");
                                                 //double val = Convert.ToDouble(parts[2]);
                                                 context = new ExpressionContext();
-                                                var actualValue = ps.Metrics[parts[0]];
-                                                var filterType = parts[1];
+                                                double actualValue = ps.Metrics[parts[0]];
+                                                string filterType = parts[1];
                                                 if (!double.IsNaN(actualValue))
                                                 {
                                                     if (double.IsPositiveInfinity(actualValue))
@@ -843,22 +852,22 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (!keep)
                 return keep;
 
-            var expCount = _customExpressions.Count;
+            int expCount = _customExpressions.Count;
             Parallel.For(0, expCount, (i, loopState) =>
                                       {
-                                          var index = i;
-                                          var exp = _customExpressions[index];
-                                          var itemSParts = exp.Split(new[] {": "}, StringSplitOptions.None);
-                                          var filterParts = itemSParts[2].Split(new[] {' '}, 2);
-                                          var filterType = filterParts[0];
-                                          var filterVal = filterParts.Length == 2 ? filterParts[1] : "";
+                                          int index = i;
+                                          string exp = _customExpressions[index];
+                                          string[] itemSParts = exp.Split(new[] {": "}, StringSplitOptions.None);
+                                          string[] filterParts = itemSParts[2].Split(new[] {' '}, 2);
+                                          string filterType = filterParts[0];
+                                          string filterVal = filterParts.Length == 2 ? filterParts[1] : "";
 
                                           if (filterType == "All")
                                           {
                                               return;
                                           }
 
-                                          var actualValue = psr.Custom[index];
+                                          double actualValue = psr.Custom[index];
                                           if (!double.IsNaN(actualValue))
                                           {
                                               if (double.IsPositiveInfinity(actualValue))
@@ -992,16 +1001,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (lstTotals.SelectedItems.Count == 1)
             {
-                var item = lstTotals.SelectedItem.ToString();
+                string item = lstTotals.SelectedItem.ToString();
                 lstTotals.Items.Remove(item);
-                var parts = item.Split(' ');
+                string[] parts = item.Split(' ');
                 cmbTotalsPar.SelectedItem = parts[0];
                 cmbTotalsOp.SelectedItem = parts[1];
                 txtTotalsVal.Text = parts[2];
             }
             else
             {
-                foreach (var item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstTotals.SelectedItems.Cast<string>()))
                 {
                     lstTotals.Items.Remove(item);
                 }
@@ -1050,16 +1059,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (lstAvg.SelectedItems.Count == 1)
             {
-                var item = lstAvg.SelectedItem.ToString();
+                string item = lstAvg.SelectedItem.ToString();
                 lstAvg.Items.Remove(item);
-                var parts = item.Split(' ');
+                string[] parts = item.Split(' ');
                 cmbAvgPar.SelectedItem = parts[0];
                 cmbAvgOp.SelectedItem = parts[1];
                 txtAvgVal.Text = parts[2];
             }
             else
             {
-                foreach (var item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstAvg.SelectedItems.Cast<string>()))
                 {
                     lstAvg.Items.Remove(item);
                 }
@@ -1108,16 +1117,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (lstMetrics.SelectedItems.Count == 1)
             {
-                var item = lstMetrics.SelectedItem.ToString();
+                string item = lstMetrics.SelectedItem.ToString();
                 lstMetrics.Items.Remove(item);
-                var parts = item.Split(' ');
+                string[] parts = item.Split(' ');
                 cmbMetricsPar.SelectedItem = parts[0];
                 cmbMetricsOp.SelectedItem = parts[1];
                 txtMetricsVal.Text = parts[2];
             }
             else
             {
-                foreach (var item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
+                foreach (string item in new List<string>(lstMetrics.SelectedItems.Cast<string>()))
                 {
                     lstMetrics.Items.Remove(item);
                 }
@@ -1159,12 +1168,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (String.IsNullOrWhiteSpace(sfd.FileName))
                 return;
 
-            var filterCount = lstTotals.Items.Count + lstAvg.Items.Count + lstMetrics.Items.Count + lstContract.Items.Count +
+            int filterCount = lstTotals.Items.Count + lstAvg.Items.Count + lstMetrics.Items.Count + lstContract.Items.Count +
                               _customExpressions.Count;
             if (filterCount > 0)
             {
-                var mbr = MessageBox.Show("Do you want to clear the current stat filters and custom columns before loading the new ones?",
-                                          "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                MessageBoxResult mbr =
+                    MessageBox.Show("Do you want to clear the current stat filters and custom columns before loading the new ones?",
+                                    "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (mbr == MessageBoxResult.Cancel)
                     return;
                 if (mbr == MessageBoxResult.Yes)
@@ -1177,10 +1187,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
             }
 
-            var s = File.ReadAllLines(sfd.FileName);
-            for (var i = 0; i < s.Length; i++)
+            string[] s = File.ReadAllLines(sfd.FileName);
+            for (int i = 0; i < s.Length; i++)
             {
-                var parts = s[i].Split('\t');
+                string[] parts = s[i].Split('\t');
                 switch (parts[0])
                 {
                     case "LastName":
@@ -1278,7 +1288,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     case "Totals":
                         while (true)
                         {
-                            var line = s[++i];
+                            string line = s[++i];
                             if (line.StartsWith("TotalsEND"))
                                 break;
 
@@ -1289,7 +1299,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     case "Avg":
                         while (true)
                         {
-                            var line = s[++i];
+                            string line = s[++i];
                             if (line.StartsWith("AvgEND"))
                                 break;
 
@@ -1300,7 +1310,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     case "Metrics":
                         while (true)
                         {
-                            var line = s[++i];
+                            string line = s[++i];
                             if (line.StartsWith("MetricsEND"))
                                 break;
 
@@ -1311,7 +1321,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     case "Contract":
                         while (true)
                         {
-                            var line = s[++i];
+                            string line = s[++i];
                             if (line.StartsWith("ContractEND"))
                                 break;
 
@@ -1322,7 +1332,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     case "Custom":
                         while (true)
                         {
-                            var line = s[++i];
+                            string line = s[++i];
                             if (line.StartsWith("CustomEND"))
                                 break;
 
@@ -1365,7 +1375,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void btnSaveFilters_Click(object sender, RoutedEventArgs e)
         {
-            var s = "";
+            string s = "";
             s += String.Format("LastName\t{0}\t{1}\n", cmbLastNameSetting.SelectedItem, txtLastName.Text);
             s += String.Format("FirstName\t{0}\t{1}\n", cmbFirstNameSetting.SelectedItem, txtFirstName.Text);
             s += String.Format("Position\t{0}\t{1}\n", cmbPosition1.SelectedItem, cmbPosition2.SelectedItem);
@@ -1397,7 +1407,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             s += String.Format("Custom\n");
             s = lstCustom.Items.Cast<string>().Aggregate(s, (current, item) => current + (item + "\n"));
             s += "CustomEND\n";
-            var isBetween = rbStatsBetween.IsChecked.GetValueOrDefault();
+            bool isBetween = rbStatsBetween.IsChecked.GetValueOrDefault();
             s += String.Format("TF\t{0}\t{1}\t{2}", isBetween.ToString(),
                                isBetween ? dtpStart.SelectedDate.GetValueOrDefault().ToString() : cmbTFSeason.SelectedItem.ToString(),
                                isBetween ? dtpEnd.SelectedDate.GetValueOrDefault().ToString() : "");
@@ -1482,7 +1492,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void populateTeamsCombo()
         {
-            var teams = (MainWindow.TST.Where(kvp => !kvp.Value.IsHidden).Select(kvp => kvp.Value.DisplayName)).ToList();
+            List<string> teams = (MainWindow.TST.Where(kvp => !kvp.Value.IsHidden).Select(kvp => kvp.Value.DisplayName)).ToList();
             teams.Sort();
             teams.Insert(0, "- Any -");
 
@@ -1501,7 +1511,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 cmbSeasonNum.SelectedItem = cmbTFSeason.SelectedItem;
                 rbStatsAllTime.IsChecked = true;
 
-                _curSeason = ((KeyValuePair<int, string>)(((cmbTFSeason)).SelectedItem)).Key;
+                _curSeason = ((KeyValuePair<int, string>) (((cmbTFSeason)).SelectedItem)).Key;
 
                 _changingTimeframe = false;
 
@@ -1571,7 +1581,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void anyCustomPerGameCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var combo = (ComboBox)sender;
+            var combo = (ComboBox) sender;
 
             if (combo.SelectedIndex == -1)
                 return;
@@ -1596,7 +1606,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void anyCustomMetricsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var combo = (ComboBox)sender;
+            var combo = (ComboBox) sender;
 
             if (combo.SelectedIndex == -1)
                 return;
@@ -1621,7 +1631,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void anyCustomOtherComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var combo = (ComboBox)sender;
+            var combo = (ComboBox) sender;
 
             if (combo.SelectedIndex == -1)
                 return;
@@ -1661,11 +1671,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void btnCustomExpAdd_Click(object sender, RoutedEventArgs e)
         {
-            var name = txtCustomName.Text;
-            var decimalPoints = txtCustomDP.Text;
-            var exp = txtCustomExp.Text;
-            var filterType = cmbCustomComp.SelectedItem.ToString();
-            var filterValue = txtCustomVal.Text;
+            string name = txtCustomName.Text;
+            string decimalPoints = txtCustomDP.Text;
+            string exp = txtCustomExp.Text;
+            string filterType = cmbCustomComp.SelectedItem.ToString();
+            string filterValue = txtCustomVal.Text;
             if (String.IsNullOrWhiteSpace(name) || String.IsNullOrWhiteSpace(exp) || String.IsNullOrWhiteSpace(decimalPoints))
             {
                 return;
@@ -1695,10 +1705,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 return;
             }
 
-            var parts = exp.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-            foreach (var part in parts)
+            string[] parts = exp.Split(_splitOn.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            foreach (string part in parts)
             {
-                var known = false;
+                bool known = false;
                 if (part.StartsWith("$$"))
                 {
                     if (_numericTSRPropertyNames.Contains(part.Substring(3)))
@@ -1775,16 +1785,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             if (lstCustom.SelectedItems.Count == 1)
             {
-                var parts = lstCustom.SelectedItem.ToString().Split(new[] {": "}, StringSplitOptions.None);
+                string[] parts = lstCustom.SelectedItem.ToString().Split(new[] {": "}, StringSplitOptions.None);
                 txtCustomName.Text = parts[0];
                 txtCustomExp.Text = parts[1];
-                var filterParts = parts[2].Split(new[] {' '}, 2);
+                string[] filterParts = parts[2].Split(new[] {' '}, 2);
                 cmbCustomComp.SelectedItem = filterParts[0];
                 txtCustomVal.Text = filterParts.Length == 2 ? filterParts[1] : "";
                 txtCustomDP.Text = parts[3];
             }
 
-            foreach (var item in lstCustom.SelectedItems.Cast<string>().ToList())
+            foreach (string item in lstCustom.SelectedItems.Cast<string>().ToList())
             {
                 _customExpressions.Remove(item);
             }

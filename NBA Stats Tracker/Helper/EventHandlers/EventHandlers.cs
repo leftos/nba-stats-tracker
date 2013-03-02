@@ -93,7 +93,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             if (s != null && s.SelectedCells.Count > 0)
             {
                 var row = (DataRowView) s.SelectedItems[0];
-                var team = row["Name"].ToString();
+                string team = row["Name"].ToString();
 
                 var tow = new TeamOverviewWindow(team);
                 tow.ShowDialog();

@@ -260,7 +260,8 @@
                                 <DataGridTextColumn Binding="{Binding BLK}" Header="BLK" />
                                 <DataGridTextColumn Binding="{Binding AST}" Header="AST" />
                                 <DataGridTextColumn Binding="{Binding FOUL}" Header="FOUL" />
-                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True" Visibility="Collapsed"/>
+                                <DataGridTextColumn Binding="{Binding ID}" Header="ID" IsReadOnly="True"
+                                                    Visibility="Collapsed" />
                             </DataGrid.Columns>
                         </DataGrid>
                         <DataGrid Margin="6,0" Style="{StaticResource DataGridStyle}"
@@ -276,7 +277,7 @@
                                 <DataGridTextColumn Binding="{Binding TeamPTS}" Header="Points" />
                                 <DataGridTextColumn Binding="{Binding DisplayOppTeam}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding OppTeamPTS}" Header="Points" />
-                                <DataGridTextColumn Binding="{Binding GameID}" Header="ID" Visibility="Collapsed"/>
+                                <DataGridTextColumn Binding="{Binding GameID}" Header="ID" Visibility="Collapsed" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

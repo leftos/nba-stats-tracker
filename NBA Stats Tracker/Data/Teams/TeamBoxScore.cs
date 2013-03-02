@@ -110,10 +110,10 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="dateParts">The parts of the date string.</param>
         public TeamBoxScore(DataSet ds, string[] dateParts)
         {
-            var away = ds.Tables[0];
-            var home = ds.Tables[1];
+            DataTable away = ds.Tables[0];
+            DataTable home = ds.Tables[1];
 
-            var segmentsDone = 0;
+            int segmentsDone = 0;
             foreach (var team in MainWindow.TST)
             {
                 if (dateParts[0].Contains(team.Value.Name))
@@ -135,13 +135,13 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Team2ID = -2;
                 return;
             }
-            var date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
+            string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             GameDate = Convert.ToDateTime(date);
 
             ID = SQLiteIO.SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
             SeasonNum = MainWindow.CurSeason;
 
-            var rt = away.Rows[away.Rows.Count - 1];
+            DataRow rt = away.Rows[away.Rows.Count - 1];
             PTS1 = ParseCell.GetUInt16(rt, "PTS");
             REB1 = Convert.ToUInt16(rt["TRB"].ToString());
             AST1 = Convert.ToUInt16(rt["AST"].ToString());

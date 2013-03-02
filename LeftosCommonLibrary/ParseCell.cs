@@ -26,7 +26,7 @@ using System.Data;
 namespace LeftosCommonLibrary
 {
     /// <summary>
-    /// Methods to parse a DataRowCell into common data-types.
+    ///     Methods to parse a DataRowCell into common data-types.
     /// </summary>
     public class ParseCell
     {
@@ -71,7 +71,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static Boolean GetBoolean(DataRow r, string columnName)
         {
-            var s = r[columnName].ToString();
+            string s = r[columnName].ToString();
             s = s.ToLower();
             return Convert.ToBoolean(s);
         }
@@ -88,7 +88,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets a float from the specified column of the given DataRow.
+        ///     Gets a float from the specified column of the given DataRow.
         /// </summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>

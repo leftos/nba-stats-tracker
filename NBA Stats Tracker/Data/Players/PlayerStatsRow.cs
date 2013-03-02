@@ -87,7 +87,7 @@ namespace NBA_Stats_Tracker.Data.Players
             YearsPro = ps.YearsPro;
 
             ContractOption = ps.Contract.Option;
-            for (var i = 1; i <= 7; i++)
+            for (int i = 1; i <= 7; i++)
             {
                 typeof (PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
             }
@@ -470,9 +470,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 else
                 {
-                    var allInches = Height*0.393701;
-                    var feet = Convert.ToInt32(Math.Floor(allInches/12));
-                    var inches = Convert.ToInt32(allInches)%12;
+                    double allInches = Height*0.393701;
+                    int feet = Convert.ToInt32(Math.Floor(allInches/12));
+                    int inches = Convert.ToInt32(allInches)%12;
                     return String.Format("{0}\'{1}\"", feet, inches);
                 }
             }
@@ -559,13 +559,13 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             try
             {
-                var parts = value.Split('\'');
+                string[] parts = value.Split('\'');
                 if (parts.Length != 2)
                 {
                     throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
                 }
                 parts[1] = parts[1].Replace("\"", "");
-                var allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
+                int allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
                 return (allInches)/0.393701;
             }
             catch
@@ -593,12 +593,12 @@ namespace NBA_Stats_Tracker.Data.Players
 
         private void calculate2KRatings(bool playoffs = false)
         {
-            var gpPctSetting = MainWindow.RatingsGPPctSetting;
-            var gpPCTreq = MainWindow.RatingsGPPctRequired;
-            var mpgSetting = MainWindow.RatingsMPGSetting;
-            var MPGreq = MainWindow.RatingsMPGRequired;
+            string gpPctSetting = MainWindow.RatingsGPPctSetting;
+            double gpPCTreq = MainWindow.RatingsGPPctRequired;
+            string mpgSetting = MainWindow.RatingsMPGSetting;
+            float MPGreq = MainWindow.RatingsMPGRequired;
 
-            var pGP = GP;
+            uint pGP = GP;
             var team = new TeamStats();
             uint tGP = 0;
             try
@@ -639,7 +639,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var ASTp100 = ASTp*100;
+                double ASTp100 = ASTp*100;
                 reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891*ASTp100 + 4.34894327991171/(-0.702541953738967 - ASTp100));
                 if (reRPass > 99)
                     reRPass = 99;
@@ -651,7 +651,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var BLKp100 = BLKp*100;
+                double BLKp100 = BLKp*100;
                 reRBlock =
                     Convert.ToInt32(25.76 + 17.03*BLKp100 + 0.8376*Math.Pow(BLKp100, 3) - 3.195*Math.Pow(BLKp100, 2) -
                                     0.07319*Math.Pow(BLKp100, 4));
@@ -665,7 +665,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var STLp100 = STLp*100;
+                double STLp100 = STLp*100;
                 reRSteal = Convert.ToInt32(29.92 + 14.57*STLp100 - 0.1509*Math.Pow(STLp100, 2));
                 if (reRSteal > 99)
                     reRSteal = 99;
@@ -677,7 +677,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var OREBp100 = OREBp*100;
+                double OREBp100 = OREBp*100;
                 reROffRbd =
                     Convert.ToInt32(24.67 + 3.864*OREBp100 + 0.3523*Math.Pow(OREBp100, 2) + 0.0007358*Math.Pow(OREBp100, 4) -
                                     0.02796*Math.Pow(OREBp100, 3));
@@ -691,7 +691,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var DREBp100 = DREBp*100;
+                double DREBp100 = DREBp*100;
                 reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp100);
                 if (reRDefRbd > 99)
                     reRDefRbd = 99;
@@ -725,8 +725,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                var FGAR = (double) FGA/MINS*36;
-                var touchTotal = Convert.ToInt32(FGAR + FTAR + TOR + ASTR);
+                double FGAR = (double) FGA/MINS*36;
+                int touchTotal = Convert.ToInt32(FGAR + FTAR + TOR + ASTR);
                 reTTouch = Convert.ToInt32(3.141*Math.Pow(touchTotal, 2)/(1.178 + touchTotal));
                 if (reTTouch > 99)
                     reTTouch = 99;
@@ -758,7 +758,7 @@ namespace NBA_Stats_Tracker.Data.Players
             if (GP == 0)
                 return "";
 
-            var position = Position1;
+            Position position = Position1;
             double fgn = 0, tpn = 0, ftn = 0, ftrn = 0;
             var statsn = new Dictionary<string, double>();
 
@@ -785,7 +785,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftn", ftn);
 
-            var orebn = ORPG/orebfactor;
+            double orebn = ORPG/orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -793,19 +793,19 @@ namespace NBA_Stats_Tracker.Data.Players
             statsn.Add("drebn", drebn);
             */
 
-            var rebn = RPG/rebfactor;
+            double rebn = RPG/rebfactor;
             statsn.Add("rebn", rebn);
 
-            var astn = APG/astfactor;
+            double astn = APG/astfactor;
             statsn.Add("astn", astn);
 
-            var stln = SPG/stlfactor;
+            double stln = SPG/stlfactor;
             statsn.Add("stln", stln);
 
-            var blkn = BPG/blkfactor;
+            double blkn = BPG/blkfactor;
             statsn.Add("blkn", blkn);
 
-            var ptsn = PPG/ptsfactor;
+            double ptsn = PPG/ptsfactor;
             statsn.Add("ptsn", ptsn);
 
             if (FTM/GP > 3)
@@ -814,14 +814,14 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftrn", ftrn);
 
-            var items = from k in statsn.Keys
-                        orderby statsn[k] descending
-                        select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys
+                                               orderby statsn[k] descending
+                                               select k;
 
-            var s = "";
-            var i = 1;
+            string s = "";
+            int i = 1;
             s += String.Format("PPG: {0:F1}\n", PPG);
-            foreach (var item in items)
+            foreach (string item in items)
             {
                 if (i == count)
                     break;
@@ -890,11 +890,11 @@ namespace NBA_Stats_Tracker.Data.Players
                 return new Dictionary<string, string>();
 
             var statList = new Dictionary<string, string>();
-            var s = GetBestStats(count);
-            var lines = s.Split('\n');
-            for (var i = 1; i < count; i++)
+            string s = GetBestStats(count);
+            string[] lines = s.Split('\n');
+            for (int i = 1; i < count; i++)
             {
-                var parts = lines[i].Split(new[] {": "}, StringSplitOptions.None);
+                string[] parts = lines[i].Split(new[] {": "}, StringSplitOptions.None);
                 statList.Add(parts[0], parts[1]);
             }
             return statList;
@@ -912,8 +912,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public string ScoutingReport(Dictionary<int, PlayerStats> pst, PlayerRankings rankingsActive, PlayerRankings rankingsTeam,
                                      PlayerRankings rankingsPosition, IList<PlayerBoxScore> pbsIList, string bestGame, bool playoffs = false)
         {
-            var pbsList = pbsIList.ToList();
-            var s = "";
+            List<PlayerBoxScore> pbsList = pbsIList.ToList();
+            string s = "";
             s += String.Format("{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ", FirstName, LastName, Position1,
                                YearOfBirth, DisplayHeight, MainWindow.IsImperial ? "" : "cm.", DateTime.Today.Year - YearOfBirth);
             if (Position2 != Position.None)
@@ -944,7 +944,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 s += String.Format("He's actually one of the best in the league in scoring, rated #{0} overall. ",
                                    rankingsActive.RankingsPerGame[ID][PAbbr.PPG]);
 
-            var statList = GetBestStatsList(5);
+            Dictionary<string, string> statList = GetBestStatsList(5);
 
             s += "\n\n";
 
@@ -1065,11 +1065,11 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (!String.IsNullOrWhiteSpace(bestGame))
             {
-                var parts = bestGame.Split(new[] {": ", " vs ", " (", "\n"}, StringSplitOptions.None);
+                string[] parts = bestGame.Split(new[] {": ", " vs ", " (", "\n"}, StringSplitOptions.None);
                 s += String.Format("His best game was at {0} against the {1}, with a Game Score of {2:F2} ", parts[1], parts[2],
                                    pbsList.Find(pbs => pbs.RealDate == Convert.ToDateTime(parts[1])).GmSc);
                 s += "(";
-                for (var i = 5; i < parts.Length; i++)
+                for (int i = 5; i < parts.Length; i++)
                 {
                     if (String.IsNullOrWhiteSpace(parts[i]))
                         break;
@@ -1093,11 +1093,11 @@ namespace NBA_Stats_Tracker.Data.Players
             if (pbsList.Count > 5)
             {
                 double sum = 0;
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     sum += pbsList[i].GmSc;
                 }
-                var average = sum/5;
+                double average = sum/5;
                 s += String.Format("He's been averaging a Game Score of {0:F2} in his last 5 games, ", average);
                 if (average > GmSc)
                 {
@@ -1111,11 +1111,11 @@ namespace NBA_Stats_Tracker.Data.Players
             else if (pbsList.Count > 3)
             {
                 double sum = 0;
-                for (var i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     sum += pbsList[i].GmSc;
                 }
-                var average = sum/3;
+                double average = sum/3;
                 s += String.Format("He's been averaging a Game Score of {0:F2} in his last 3 games, ", average);
                 if (average > GmSc)
                 {
@@ -1133,18 +1133,18 @@ namespace NBA_Stats_Tracker.Data.Players
 
             s += "\n\nAccording to his rankings in the league, his best areas are ";
             var dict = new Dictionary<int, int>();
-            for (var k = 0; k < rankingsActive.RankingsPerGame[ID].Length; k++)
+            for (int k = 0; k < rankingsActive.RankingsPerGame[ID].Length; k++)
             {
                 dict.Add(k, rankingsActive.RankingsPerGame[ID][k]);
             }
             dict[TAbbr.FPG] = pst.Count + 1 - dict[TAbbr.FPG];
             dict[TAbbr.TPG] = pst.Count + 1 - dict[TAbbr.TPG];
             dict[TAbbr.PAPG] = pst.Count + 1 - dict[TAbbr.PAPG];
-            var strengths = (from entry in dict
-                             orderby entry.Value ascending
-                             select entry.Key).ToList();
-            var m = 0;
-            var j = 3;
+            List<int> strengths = (from entry in dict
+                                   orderby entry.Value ascending
+                                   select entry.Key).ToList();
+            int m = 0;
+            int j = 3;
             while (true)
             {
                 if (m == j)
@@ -1237,22 +1237,22 @@ namespace NBA_Stats_Tracker.Data.Players
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public PlayerStatsRow ConvertToMyLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            var ts = teamStats[TeamF];
-            var gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
-            var gamesPlayer = GP;
-            var newpsr = this.DeepClone();
+            TeamStats ts = teamStats[TeamF];
+            uint gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
+            uint gamesPlayer = GP;
+            PlayerStatsRow newpsr = this.DeepClone();
 
-            var gpPctSetting = MainWindow.MyLeadersGPPctSetting;
-            var gpPctRequired = MainWindow.MyLeadersGPPctRequired;
-            var mpgSetting = MainWindow.MyLeadersMPGSetting;
-            var mpgRequired = MainWindow.MyLeadersMPGRequired;
+            string gpPctSetting = MainWindow.MyLeadersGPPctSetting;
+            double gpPctRequired = MainWindow.MyLeadersGPPctRequired;
+            string mpgSetting = MainWindow.MyLeadersMPGSetting;
+            float mpgRequired = MainWindow.MyLeadersMPGRequired;
 
             if ((gpPctSetting != "-1" && (double) gamesPlayer*100/gamesTeam < gpPctRequired) || (mpgSetting != "-1" && MPG < mpgRequired))
             {
@@ -1326,10 +1326,10 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <returns></returns>
         public PlayerStatsRow ConvertToLeagueLeader(Dictionary<int, TeamStats> teamStats, bool playoffs = false)
         {
-            var ts = teamStats[TeamF];
-            var gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
-            var gamesPlayer = GP;
-            var newpsr = this.DeepClone();
+            TeamStats ts = teamStats[TeamF];
+            uint gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
+            uint gamesPlayer = GP;
+            PlayerStatsRow newpsr = this.DeepClone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0

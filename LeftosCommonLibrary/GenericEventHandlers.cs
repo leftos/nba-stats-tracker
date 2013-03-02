@@ -19,8 +19,10 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -40,33 +42,33 @@ namespace LeftosCommonLibrary
         private static bool _isTabPressed;
 
         /// <summary>
-        /// Handles pasting the data into a data-bound DataGrid.
+        ///     Handles pasting the data into a data-bound DataGrid.
         /// </summary>
         /// <param name="sender">The DataGrid instance to paste into.</param>
         /// <param name="args">The ExecutedRoutedEventArgs instance.</param>
         /// <returns>Whether the operation completed without errors.</returns>
         public static bool OnExecutedPaste(object sender, ExecutedRoutedEventArgs args)
         {
-            var noErrors = true;
+            bool noErrors = true;
 
             var s = (DataGrid) sender;
             // parse the clipboard data
-            var rowData = CSV.ParseClipboardData();
+            List<string[]> rowData = CSV.ParseClipboardData();
             //bool hasAddedNewRow = false;
 
             // call OnPastingCellClipboardContent for each cell
-            var minRowIndex = Math.Max(s.Items.IndexOf(s.CurrentItem), 0);
-            var maxRowIndex = s.Items.Count - 1;
-            var minColumnDisplayIndex = (s.SelectionUnit != DataGridSelectionUnit.FullRow) ? s.Columns.IndexOf(s.CurrentColumn) : 0;
-            var maxColumnDisplayIndex = s.Columns.Count - 1;
+            int minRowIndex = Math.Max(s.Items.IndexOf(s.CurrentItem), 0);
+            int maxRowIndex = s.Items.Count - 1;
+            int minColumnDisplayIndex = (s.SelectionUnit != DataGridSelectionUnit.FullRow) ? s.Columns.IndexOf(s.CurrentColumn) : 0;
+            int maxColumnDisplayIndex = s.Columns.Count - 1;
 
-            var rowDataIndex = 0;
-            for (var i = minRowIndex; i <= maxRowIndex && rowDataIndex < rowData.Count; i++, rowDataIndex++)
+            int rowDataIndex = 0;
+            for (int i = minRowIndex; i <= maxRowIndex && rowDataIndex < rowData.Count; i++, rowDataIndex++)
             {
                 if (s.CanUserAddRows && i == maxRowIndex + 1)
                 {
                     // add a new row to be pasted to
-                    var cv = CollectionViewSource.GetDefaultView(s.Items);
+                    ICollectionView cv = CollectionViewSource.GetDefaultView(s.Items);
                     var iecv = cv as IEditableCollectionView;
                     if (iecv != null)
                     {
@@ -84,12 +86,12 @@ namespace LeftosCommonLibrary
                     continue;
                 }
 
-                var columnDataIndex = 0;
-                for (var j = minColumnDisplayIndex;
+                int columnDataIndex = 0;
+                for (int j = minColumnDisplayIndex;
                      j <= maxColumnDisplayIndex && columnDataIndex < rowData[rowDataIndex].Length;
                      j++, columnDataIndex++)
                 {
-                    var column = s.ColumnFromDisplayIndex(j);
+                    DataGridColumn column = s.ColumnFromDisplayIndex(j);
                     string propertyName;
                     try
                     {
@@ -99,7 +101,7 @@ namespace LeftosCommonLibrary
                     {
                         propertyName = column.SortMemberPath;
                     }
-                    var item = s.Items[i];
+                    object item = s.Items[i];
                     object value = rowData[rowDataIndex][columnDataIndex];
                     object[] index = null;
                     if (propertyName.Contains("[") && propertyName.Contains("]"))
@@ -108,12 +110,12 @@ namespace LeftosCommonLibrary
                         index[0] = Convert.ToInt32(propertyName.Split('[')[1].Split(']')[0]);
                         propertyName = propertyName.Split('[')[0];
                     }
-                    var pi = item.GetType().GetProperty(propertyName);
+                    PropertyInfo pi = item.GetType().GetProperty(propertyName);
                     if (pi == null)
                         continue;
 
                     //PropertyInfo opi = item.GetType().GetProperty(originalPropertyName);
-                    var pType = index != null ? pi.PropertyType.GetGenericArguments()[0] : pi.PropertyType;
+                    Type pType = index != null ? pi.PropertyType.GetGenericArguments()[0] : pi.PropertyType;
 
                     object convertedValue;
                     try
@@ -160,7 +162,7 @@ namespace LeftosCommonLibrary
                         }
                         else // We have an index, so try to actually update the list's item
                         {
-                            var collection = pi.GetValue(item, null);
+                            object collection = pi.GetValue(item, null);
                             collection.GetType().GetProperty("Item") // Item is the normal name for an indexer
                                       .SetValue(collection, convertedValue, index);
                         }
@@ -195,7 +197,7 @@ namespace LeftosCommonLibrary
                 Debug.Assert(dataGrid != null, "dataGrid != null");
                 if (e.Row.Item == dataGrid.Items[dataGrid.Items.Count - 2])
                 {
-                    var parentWindow = Window.GetWindow(dataGrid);
+                    Window parentWindow = Window.GetWindow(dataGrid);
                     Debug.Assert(parentWindow != null, "parentWindow != null");
                     parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
                                                                                         {

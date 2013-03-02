@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
-    static internal class ProgressHelper
+    internal static class ProgressHelper
     {
         public static ProgressInfo Progress = new ProgressInfo("");
 

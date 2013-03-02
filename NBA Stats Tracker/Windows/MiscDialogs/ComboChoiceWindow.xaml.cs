@@ -20,12 +20,13 @@
 
 using System.Collections.Generic;
 using System.Windows;
+using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Windows.MainInterface;
 using NBA_Stats_Tracker.Windows.MainInterface.Players;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Windows.MiscTools
+namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
     /// <summary>
     ///     Implements a multi-function combo-box choice window.
@@ -73,9 +74,9 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
             {
                 label1.Content = "Pick the new division for the team:";
                 cmbSelection2.Visibility = Visibility.Hidden;
-                foreach (var div in MainWindow.Divisions)
+                foreach (Division div in MainWindow.Divisions)
                 {
-                    var conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
+                    Conference conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID);
                     cmbSelection1.Items.Add(string.Format("{0}: {1}", conf.Name, div.Name));
                 }
             }

@@ -18,6 +18,7 @@
 
 #region Using Directives
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,14 +39,14 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         private int _reverse;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyComparer{T}"/> class.
+        ///     Initializes a new instance of the <see cref="PropertyComparer{T}" /> class.
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="direction">The sorting direction.</param>
         public PropertyComparer(PropertyDescriptor property, ListSortDirection direction)
         {
             _propertyDescriptor = property;
-            var comparerForPropertyType = typeof (Comparer<>).MakeGenericType(property.PropertyType);
+            Type comparerForPropertyType = typeof (Comparer<>).MakeGenericType(property.PropertyType);
             _comparer =
                 (IComparer)
                 comparerForPropertyType.InvokeMember("Default", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.Public, null,
@@ -56,12 +57,15 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         #region IComparer<T> Members
 
         /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        ///     Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
         /// </summary>
         /// <param name="x">The first object to compare.</param>
         /// <param name="y">The second object to compare.</param>
         /// <returns>
-        /// Value Condition Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
+        ///     Value Condition Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals
+        ///     <paramref
+        ///         name="y" />
+        ///     .Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
         /// </returns>
         public int Compare(T x, T y)
         {
@@ -81,7 +85,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Sets the property descriptor and sorting direction.
+        ///     Sets the property descriptor and sorting direction.
         /// </summary>
         /// <param name="descriptor">The property descriptor.</param>
         /// <param name="direction">The sorting direction.</param>

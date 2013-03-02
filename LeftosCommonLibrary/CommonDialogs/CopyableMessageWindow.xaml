@@ -1,4 +1,4 @@
-<Window x:Class="NBA_Stats_Tracker.Windows.MiscTools.CopyableMessageWindow"
+<Window x:Class="LeftosCommonLibrary.CommonDialogs.CopyableMessageWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="CopyableMessageWindow"
         SizeToContent="WidthAndHeight"

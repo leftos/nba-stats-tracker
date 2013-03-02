@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -26,7 +27,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Windows;
-using NBA_Stats_Tracker.Windows.MiscTools;
+using LeftosCommonLibrary.CommonDialogs;
 
 #endregion
 
@@ -75,7 +76,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             try
             {
                 var webClient = new WebClient();
-                var updateUri = _changelogURL;
+                string updateUri = _changelogURL;
                 webClient.DownloadFileCompleted += OnChangelogDownloadCompleted;
                 webClient.DownloadFileAsync(new Uri(updateUri), App.AppTempPath + "changelog.txt");
             }
@@ -87,7 +88,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void OnChangelogDownloadCompleted(object sender, AsyncCompletedEventArgs asyncCompletedEventArgs)
         {
-            var lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
+            List<string> lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
             lines.Add("");
             var cmw = new CopyableMessageWindow(lines.Aggregate((l1, l2) => l1 + "\n" + l2), "NBA Stats Tracker - What's New",
                                                 TextAlignment.Left);
@@ -98,12 +99,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             try
             {
-                var localInstallerPath = App.AppTempPath + "Setup.exe";
+                string localInstallerPath = App.AppTempPath + "Setup.exe";
                 var pw = new ProgressWindow("Please wait while the installer is being downloaded...\n" + _installerURL);
                 pw.Show();
                 var webClient = new WebClient();
                 webClient.DownloadProgressChanged +=
-                    delegate(object o, DownloadProgressChangedEventArgs args) { pw.pb.Value = args.ProgressPercentage; };
+                    delegate(object o, DownloadProgressChangedEventArgs args) { pw.SetProgressBarValue(args.ProgressPercentage); };
                 webClient.DownloadFileCompleted += delegate
                                                    {
                                                        pw.CanClose = true;
@@ -117,7 +118,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                                            return;
                                                        }
 
-                                                       var newUpdaterPath = App.AppTempPath + "\\Updater.exe";
+                                                       string newUpdaterPath = App.AppTempPath + "\\Updater.exe";
                                                        try
                                                        {
                                                            File.Copy(

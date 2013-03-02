@@ -18,7 +18,6 @@
 
 #region Using Directives
 
-using System;
 using System.Diagnostics;
 using LeftosCommonLibrary;
 
@@ -54,7 +53,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public ProgressInfo(ProgressInfo progress, string message, int percentage = 0) : this(message, percentage)
         {
             Tools.WriteToTrace(string.Format("Stage {0} ({1}): {2}", progress.CurrentStage, progress.Message,
-                                          progress.Timing.ElapsedMilliseconds));
+                                             progress.Timing.ElapsedMilliseconds));
             CurrentStage = progress.CurrentStage + 1;
             MaxStage = progress.MaxStage;
             Timing = new Stopwatch();

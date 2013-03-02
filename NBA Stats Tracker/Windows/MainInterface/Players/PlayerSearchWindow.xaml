@@ -234,73 +234,85 @@
                                 </Grid.ColumnDefinitions>
                                 <Grid Grid.Column="0">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="150"/>
-                                        <RowDefinition Height="180"/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="150" />
+                                        <RowDefinition Height="180" />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid Grid.Row="0">
                                         <GroupBox Header="Player">
                                             <Grid>
-                                                <ComboBox x:Name="cmbCustomOther" HorizontalAlignment="Right" Margin="0,96,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomOtherComboBox_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomTotals" HorizontalAlignment="Right" Margin="0,14,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomTotalsComboBox_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomPerGame" HorizontalAlignment="Right" Margin="0,42,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomPerGameCombo_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomMetrics" HorizontalAlignment="Right" Margin="0,69,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomMetricsComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomOther" HorizontalAlignment="Right"
+                                                          Margin="0,96,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomOtherComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomTotals" HorizontalAlignment="Right"
+                                                          Margin="0,14,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomTotalsComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomPerGame" HorizontalAlignment="Right"
+                                                          Margin="0,42,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomPerGameCombo_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomMetrics" HorizontalAlignment="Right"
+                                                          Margin="0,69,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomMetricsComboBox_SelectionChanged" />
                                                 <Label Content="Totals" HorizontalAlignment="Left" Margin="10,11,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Per Game" HorizontalAlignment="Left" Margin="10,38,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Metrics" HorizontalAlignment="Left" Margin="10,65,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Other" HorizontalAlignment="Left" Margin="10,92,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                             </Grid>
                                         </GroupBox>
                                     </Grid>
                                     <Grid Grid.Row="1">
                                         <GroupBox Header="Team">
                                             <Grid>
-                                                <ComboBox x:Name="cmbCustomTeamOther" HorizontalAlignment="Right" Margin="0,96,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomOtherComboBox_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomTeamTotals" HorizontalAlignment="Right" Margin="0,14,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomTotalsComboBox_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomTeamPerGame" HorizontalAlignment="Right" Margin="0,42,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomPerGameCombo_SelectionChanged" />
-                                                <ComboBox x:Name="cmbCustomTeamMetrics" HorizontalAlignment="Right" Margin="0,69,10,0"
-                                              VerticalAlignment="Top" Width="120"
-                                              SelectionChanged="anyCustomMetricsComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomTeamOther" HorizontalAlignment="Right"
+                                                          Margin="0,96,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomOtherComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomTeamTotals" HorizontalAlignment="Right"
+                                                          Margin="0,14,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomTotalsComboBox_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomTeamPerGame" HorizontalAlignment="Right"
+                                                          Margin="0,42,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomPerGameCombo_SelectionChanged" />
+                                                <ComboBox x:Name="cmbCustomTeamMetrics" HorizontalAlignment="Right"
+                                                          Margin="0,69,10,0"
+                                                          VerticalAlignment="Top" Width="120"
+                                                          SelectionChanged="anyCustomMetricsComboBox_SelectionChanged" />
                                                 <Label Content="Totals" HorizontalAlignment="Left" Margin="10,11,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Per Game" HorizontalAlignment="Left" Margin="10,38,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Metrics" HorizontalAlignment="Left" Margin="10,65,0,0"
-                                           VerticalAlignment="Top" />
+                                                       VerticalAlignment="Top" />
                                                 <Label Content="Other" HorizontalAlignment="Left" Margin="10,92,0,0"
-                                           VerticalAlignment="Top" />
-                                                <RadioButton Name="rbCustomTeamOwn" Content="Player's" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10"/>
-                                                <RadioButton Name="rbCustomTeamOpp" Content="Opponent" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10"/>
+                                                       VerticalAlignment="Top" />
+                                                <RadioButton Name="rbCustomTeamOwn" Content="Player's"
+                                                             VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                                             Margin="10" />
+                                                <RadioButton Name="rbCustomTeamOpp" Content="Opponent"
+                                                             VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                                             Margin="10" />
                                             </Grid>
                                         </GroupBox>
                                     </Grid>
                                     <Grid Grid.Row="2">
                                         <ComboBox x:Name="cmbCustomOp" HorizontalAlignment="Right" Margin="0,4,10,0"
-                                              VerticalAlignment="Top" Width="58" Height="22"
-                                              SelectionChanged="cmbCustomOp_SelectionChanged" />
+                                                  VerticalAlignment="Top" Width="58" Height="22"
+                                                  SelectionChanged="cmbCustomOp_SelectionChanged" />
                                         <Label Content="Operators" HorizontalAlignment="Left" Margin="10,0,0,0"
-                                           VerticalAlignment="Top" />
+                                               VerticalAlignment="Top" />
                                         <Button x:Name="btnCustomAdd" Content="Add" HorizontalAlignment="Right"
-                                            Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75"
-                                            Click="btnCustomAdd_Click" />
+                                                Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75"
+                                                Click="btnCustomAdd_Click" />
                                     </Grid>
                                 </Grid>
                                 <Grid Grid.Column="1">

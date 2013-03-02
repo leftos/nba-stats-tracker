@@ -18,12 +18,12 @@
 
 #region Using Directives
 
+using System;
 using System.Windows;
-using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
 
-namespace NBA_Stats_Tracker.Windows.MiscTools
+namespace LeftosCommonLibrary.CommonDialogs
 {
     /// <summary>
     ///     Implements a general-purpose Input-box Window.
@@ -31,39 +31,42 @@ namespace NBA_Stats_Tracker.Windows.MiscTools
     public partial class InputBoxWindow
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="InputBoxWindow" /> class.
+        ///     Contains the user input if the user clicked OK, or an empty string if the user clicked Cancel.
         /// </summary>
-        /// <param name="message">The prompt to display.</param>
-        public InputBoxWindow(string message)
-        {
-            InitializeComponent();
-
-            lblMessage.Text = message;
-
-            txtInput.Focus();
-        }
+        public static string UserInput;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="InputBoxWindow" /> class.
         /// </summary>
         /// <param name="message">The prompt to display.</param>
+        /// <param name="title">The title.</param>
         /// <param name="defaultValue">The default value.</param>
-        public InputBoxWindow(string message, string defaultValue) : this(message)
+        public InputBoxWindow(string message, string defaultValue = "", string title = "")
         {
-            txtInput.Text = defaultValue;
-            txtInput.SelectAll();
+            InitializeComponent();
+
+            lblMessage.Text = message;
+            Title = String.IsNullOrWhiteSpace(title) ? Tools.AppName : title;
+
+            txtInput.Focus();
+
+            if (!string.IsNullOrWhiteSpace(defaultValue))
+            {
+                txtInput.Text = defaultValue;
+                txtInput.SelectAll();
+            }
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Input = txtInput.Text;
+            UserInput = txtInput.Text;
             DialogResult = true;
             Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Input = "";
+            UserInput = "";
             DialogResult = false;
             Close();
         }

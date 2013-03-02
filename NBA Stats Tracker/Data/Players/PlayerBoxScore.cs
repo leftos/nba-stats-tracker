@@ -108,11 +108,11 @@ namespace NBA_Stats_Tracker.Data.Players
             // Only works for INNER JOIN'ed rows
             try
             {
-                var t1PTS = ParseCell.GetInt32(r, "T1PTS");
-                var t2PTS = ParseCell.GetInt32(r, "T2PTS");
+                int t1PTS = ParseCell.GetInt32(r, "T1PTS");
+                int t2PTS = ParseCell.GetInt32(r, "T2PTS");
 
-                var team1 = ParseCell.GetInt32(r, "Team1ID");
-                var team2 = ParseCell.GetInt32(r, "Team2ID");
+                int team1 = ParseCell.GetInt32(r, "Team1ID");
+                int team2 = ParseCell.GetInt32(r, "Team2ID");
 
                 if (TeamID == team1)
                 {
@@ -161,7 +161,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playerStats">The player stats.</param>
         public PlayerBoxScore(DataRow brRow, int teamID, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
         {
-            var nameParts = brRow[0].ToString().Split(new[] {' '}, 2);
+            string[] nameParts = brRow[0].ToString().Split(new[] {' '}, 2);
             try
             {
                 PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
@@ -452,8 +452,8 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = new TeamStats(TeamID);
             var tsopp = new TeamStats(OppTeamID);
 
-            var team1ID = ParseCell.GetInt32(r, "Team1ID");
-            var team2ID = ParseCell.GetInt32(r, "Team2ID");
+            int team1ID = ParseCell.GetInt32(r, "Team1ID");
+            int team2ID = ParseCell.GetInt32(r, "Team2ID");
 
             if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
@@ -478,7 +478,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = new TeamStats(TeamID);
             var tsopp = new TeamStats(OppTeamID);
 
-            var team1ID = bs.Team1ID;
+            int team1ID = bs.Team1ID;
 
             if (TeamID == team1ID)
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
@@ -535,7 +535,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftn", ftn);
 
-            var orebn = OREB/orebfactor;
+            double orebn = OREB/orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -543,19 +543,19 @@ namespace NBA_Stats_Tracker.Data.Players
             statsn.Add("drebn", drebn);
             */
 
-            var rebn = REB/rebfactor;
+            double rebn = REB/rebfactor;
             statsn.Add("rebn", rebn);
 
-            var astn = AST/astfactor;
+            double astn = AST/astfactor;
             statsn.Add("astn", astn);
 
-            var stln = STL/stlfactor;
+            double stln = STL/stlfactor;
             statsn.Add("stln", stln);
 
-            var blkn = BLK/blkfactor;
+            double blkn = BLK/blkfactor;
             statsn.Add("blkn", blkn);
 
-            var ptsn = PTS/ptsfactor;
+            double ptsn = PTS/ptsfactor;
             statsn.Add("ptsn", ptsn);
 
             if (FTM > 3)
@@ -564,14 +564,14 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             statsn.Add("ftrn", ftrn);
 
-            var items = from k in statsn.Keys
-                        orderby statsn[k] descending
-                        select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys
+                                               orderby statsn[k] descending
+                                               select k;
 
-            var s = "";
+            string s = "";
             s += String.Format("PTS: {0}\n", PTS);
-            var i = 1;
-            foreach (var item in items)
+            int i = 1;
+            foreach (string item in items)
             {
                 if (i == count)
                     break;

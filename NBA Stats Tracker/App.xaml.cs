@@ -24,6 +24,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using LeftosCommonLibrary;
 
 #endregion
 
@@ -34,13 +35,13 @@ namespace NBA_Stats_Tracker
     /// </summary>
     public partial class App
     {
+        internal const string AppName = "NBA Stats Tracker";
+        public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
         public static bool RealNBAOnly;
 
         public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath;
         public static string SavesPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.SavesPath;
         public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppTempPath;
-        internal const string AppName = "NBA Stats Tracker";
-        public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control.
@@ -50,17 +51,17 @@ namespace NBA_Stats_Tracker
         /// <param name="e">
         ///     The <see cref="DispatcherUnhandledExceptionEventArgs" /> instance containing the event data.
         /// </param>
-        private void app_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var exceptionString = e.Exception.ToString();
-            var innerExceptionString = e.Exception.InnerException == null
-                                           ? "No inner exception information."
-                                           : e.Exception.InnerException.Message;
-            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+            string exceptionString = e.Exception.ToString();
+            string innerExceptionString = e.Exception.InnerException == null
+                                              ? "No inner exception information."
+                                              : e.Exception.InnerException.Message;
+            string versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
             {
-                var errorReportPath = AppDocsPath + @"errorlog_unh.txt";
+                string errorReportPath = AppDocsPath + @"errorlog_unh.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine(string.Format("Unhandled Exception Error Report for {0}", AppName));
@@ -82,7 +83,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                var s = "Can't create errorlog!\nException: " + ex;
+                string s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;
@@ -104,13 +105,13 @@ namespace NBA_Stats_Tracker
         /// <param name="additional">The additional.</param>
         public static void ErrorReport(Exception e, string additional = "")
         {
-            var exceptionString = e.ToString();
-            var innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
-            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+            string exceptionString = e.ToString();
+            string innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
+            string versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
             {
-                var errorReportPath = AppDocsPath + @"errorlog.txt";
+                string errorReportPath = AppDocsPath + @"errorlog.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Forced Exception Error Report for " + AppName);
@@ -133,7 +134,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                var s = "Can't create errorlog!\nException: " + ex;
+                string s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;
@@ -176,6 +177,9 @@ namespace NBA_Stats_Tracker
             {
                 Debug.WriteLine("Couldn't delete previous trace file, if any.");
             }
+
+            Tools.AppName = AppName;
+            Tools.AppRegistryKey = AppRegistryKey;
 
             Trace.Listeners.Clear();
 

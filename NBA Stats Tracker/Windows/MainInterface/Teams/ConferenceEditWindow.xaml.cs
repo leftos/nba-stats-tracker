@@ -26,7 +26,7 @@ using System.Windows;
 using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MiscTools;
+using NBA_Stats_Tracker.Windows.MiscDialogs;
 using SQLite_Database;
 
 #endregion
@@ -93,11 +93,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
               .ToList()
               .ForEach(row => usedIDs.Add(ParseCell.GetInt32(row, "ID")));
 
-            var list = Tools.SplitLinesToList(txtDivisions.Text, false);
-            foreach (var newDiv in list)
+            List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
+            foreach (string newDiv in list)
             {
-                var newName = newDiv.Replace(':', '-');
-                var i = 0;
+                string newName = newDiv.Replace(':', '-');
+                int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
                 MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = _curConf.ID});
@@ -106,14 +106,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             if (MainWindow.Divisions.Any(division => division.ConferenceID == _curConf.ID) == false)
             {
-                var i = 0;
+                int i = 0;
                 while (usedIDs.Contains(i))
                     i++;
                 MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = _curConf.ID});
                 usedIDs.Add(i);
             }
 
-            foreach (var div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
+            foreach (Division div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
             {
                 db.Insert("Divisions",
                           new Dictionary<string, string>

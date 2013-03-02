@@ -35,9 +35,11 @@ namespace LeftosCommonLibrary
     /// </summary>
     public static class GenericExtensions
     {
+        private static readonly Random Rng = new Random();
+
         /// <summary>
-        /// Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry, 
-        /// after converting it to the specified <c>type</c>.
+        ///     Tries to the change the value of specific DataRow entry by using the corresponding value of a dictionary entry,
+        ///     after converting it to the specified <c>type</c>.
         /// </summary>
         /// <param name="row">The DataRow containing the entry of which we want to try and change the value</param>
         /// <param name="dict">The dictionary containing the value we're trying to set.</param>
@@ -47,7 +49,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var val = Convert.ChangeType(dict[key], type);
+                object val = Convert.ChangeType(dict[key], type);
                 row[key] = val.ToString();
             }
             catch (FormatException)
@@ -74,9 +76,9 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var s = dict[key];
-                var parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
-                foreach (var part in parts)
+                string s = dict[key];
+                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
+                foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
@@ -97,8 +99,10 @@ namespace LeftosCommonLibrary
         /// <param name="variable">The variable.</param>
         /// <param name="dict">The dictionary.</param>
         /// <param name="key">The dictionary key.</param>
-        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
-        /// otherwise, the default value for the type is returned.</param>
+        /// <param name="onErrorRemain">
+        ///     If <c>true</c>, if the method is unsuccessful, the value returned is the previous one;
+        ///     otherwise, the default value for the type is returned.
+        /// </param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.
@@ -153,8 +157,10 @@ namespace LeftosCommonLibrary
         /// <param name="dict">The dictionary.</param>
         /// <param name="key">The dictionary key.</param>
         /// <param name="type">The type.</param>
-        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
-        /// otherwise, the default value for the type is returned.</param>
+        /// <param name="onErrorRemain">
+        ///     If <c>true</c>, if the method is unsuccessful, the value returned is the previous one;
+        ///     otherwise, the default value for the type is returned.
+        /// </param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.
@@ -164,7 +170,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var val = Convert.ChangeType(dict[key], type);
+                object val = Convert.ChangeType(dict[key], type);
                 var ret = (T) Convert.ChangeType(val, typeof (T));
                 return ret;
             }
@@ -217,8 +223,10 @@ namespace LeftosCommonLibrary
         /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
         /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
         /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
-        /// <param name="onErrorRemain">If <c>true</c>, if the method is unsuccessful, the value returned is the previous one; 
-        /// otherwise, the default value for the type is returned.</param>
+        /// <param name="onErrorRemain">
+        ///     If <c>true</c>, if the method is unsuccessful, the value returned is the previous one;
+        ///     otherwise, the default value for the type is returned.
+        /// </param>
         /// <returns>
         ///     The value that the variable should be set to if the operation succeeds.
         ///     If the cast is invalid, it returns the default value of the type.
@@ -229,9 +237,9 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                var s = dict[key];
-                var parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
-                foreach (var part in parts)
+                string s = dict[key];
+                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
+                foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
@@ -301,7 +309,7 @@ namespace LeftosCommonLibrary
         private static T deepClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
         {
             T result;
-            var t = original.GetType();
+            Type t = original.GetType();
 
             Object tmpResult;
             // Check if the object already has been copied
@@ -321,16 +329,16 @@ namespace LeftosCommonLibrary
                     copies.Add(original, result);
 
                     // Maybe you need here some more BindingFlags
-                    foreach (var field in
+                    foreach (FieldInfo field in
                         t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
 
-                        var fieldValue = field.GetValue(original);
+                        object fieldValue = field.GetValue(original);
 
                         // Check here if the instance should be cloned
-                        var ft = field.FieldType;
+                        Type ft = field.FieldType;
 
                         /* You can check here for ft.GetCustomAttributes(typeof(SerializableAttribute), false).Length != 0 to 
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
@@ -358,18 +366,18 @@ namespace LeftosCommonLibrary
                         var lengths = new Int32[t.GetArrayRank()];
                         var indicies = new Int32[lengths.Length];
                         // Get lengths from original array
-                        for (var i = 0; i < lengths.Length; i++)
+                        for (int i = 0; i < lengths.Length; i++)
                         {
                             lengths[i] = resultArray.GetLength(i);
                         }
 
-                        var p = lengths.Length - 1;
+                        int p = lengths.Length - 1;
 
                         /* Now we need to iterate though each of the ranks
                             * we need to keep it generic to support all array ranks */
                         while (increment(indicies, lengths, p))
                         {
-                            var value = resultArray.GetValue(indicies);
+                            object value = resultArray.GetValue(indicies);
                             if (value != null)
                                 resultArray.SetValue(value.deepClone(copies), indicies);
                         }
@@ -433,18 +441,16 @@ namespace LeftosCommonLibrary
         /// <param name="list">The list to shuffle.</param>
         public static void Shuffle<T>(this IList<T> list)
         {
-            var n = list.Count;
+            int n = list.Count;
             while (n > 1)
             {
                 n--;
-                var k = Rng.Next(n + 1);
-                var value = list[k];
+                int k = Rng.Next(n + 1);
+                T value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }
         }
-
-        private static readonly Random Rng = new Random();
 
         /// <summary>
         ///     Converts the object to an Int32.
@@ -484,7 +490,7 @@ namespace LeftosCommonLibrary
                 throw new InvalidOperationException("List is empty.");
             }
 
-            var item = list[0];
+            T item = list[0];
             list.RemoveAt(0);
             return item;
         }

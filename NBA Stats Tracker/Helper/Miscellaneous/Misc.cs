@@ -21,9 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using LeftosCommonLibrary;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MainInterface;
 
@@ -40,7 +39,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         {
             if (displayName == "- Inactive -")
                 return -1;
-            for (var i = 0; i < MainWindow.TST.Count; i++)
+            for (int i = 0; i < MainWindow.TST.Count; i++)
             {
                 if (teamStats[i].DisplayName == displayName)
                 {
@@ -66,55 +65,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             bi.EndInit();
             return bi;
         }
-
-        public static void SetRegistrySetting<T>(string setting, T value)
-        {
-            var rk = Registry.CurrentUser;
-            try
-            {
-                try
-                {
-                    rk = rk.OpenSubKey(App.AppRegistryKey, true);
-                    if (rk == null)
-                        throw new Exception();
-                }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(App.AppRegistryKey);
-                    rk = rk.OpenSubKey(App.AppRegistryKey, true);
-                    if (rk == null)
-                        throw new Exception();
-                }
-
-                rk.SetValue(setting, value);
-            }
-            catch
-            {
-                MessageBox.Show("Couldn't save changed setting.");
-            }
-        }
-
-        public static T GetRegistrySetting<T>(string setting, T defaultValue)
-        {
-            var rk = Registry.CurrentUser;
-            var settingValue = defaultValue;
-            try
-            {
-                if (rk == null)
-                    throw new Exception();
-
-                rk = rk.OpenSubKey(App.AppRegistryKey);
-                if (rk != null)
-                    settingValue = (T)Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof(T));
-            }
-            catch
-            {
-                settingValue = defaultValue;
-            }
-
-            return settingValue;
-        } 
 
         public static string GetRankingSuffix(int rank)
         {
@@ -172,6 +122,16 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     return "Unknown";
                 }
             }
+        }
+
+        public static T GetRegistrySetting<T>(string setting, T defaultValue)
+        {
+            return Tools.GetRegistrySetting(setting, defaultValue);
+        }
+
+        public static void SetRegistrySetting<T>(string setting, T value)
+        {
+            Tools.SetRegistrySetting(setting, value);
         }
     }
 }

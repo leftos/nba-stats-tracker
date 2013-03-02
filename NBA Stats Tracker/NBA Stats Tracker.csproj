@@ -137,7 +137,7 @@
     <Compile Include="Windows\MainInterface\ASC\AdvancedStatCalculatorWindow.xaml.cs">
       <DependentUpon>AdvancedStatCalculatorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\ComboChoiceWindow.xaml.cs">
+    <Compile Include="Windows\MiscDialogs\ComboChoiceWindow.xaml.cs">
       <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainInterface\BoxScores\BoxScoreListWindow.xaml.cs">
@@ -152,19 +152,13 @@
     <Compile Include="Windows\MainInterface\Players\PlayerInjuryWindow.xaml.cs">
       <DependentUpon>PlayerInjuryWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\CopyableMessageWindow.xaml.cs">
-      <DependentUpon>CopyableMessageWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiscTools\DualListWindow.xaml.cs">
+    <Compile Include="Windows\MiscDialogs\DualListWindow.xaml.cs">
       <DependentUpon>DualListWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiscTools\InputBoxWindow.xaml.cs">
-      <DependentUpon>InputBoxWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainInterface\League\LeagueOverviewWindow.xaml.cs">
       <DependentUpon>LeagueOverviewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MiscTools\ListWindow.xaml.cs">
+    <Compile Include="Windows\MiscDialogs\ListWindow.xaml.cs">
       <DependentUpon>ListWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainInterface\BoxScores\LiveBoxScoreWindow.xaml.cs">
@@ -181,9 +175,6 @@
     </Compile>
     <Compile Include="Windows\MainInterface\Players\PlayerSearchWindow.xaml.cs">
       <DependentUpon>PlayerSearchWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiscTools\ProgressWindow.xaml.cs">
-      <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainInterface\Teams\TeamOverviewWindow.xaml.cs">
       <DependentUpon>TeamOverviewWindow.xaml</DependentUpon>
@@ -214,7 +205,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MiscTools\ComboChoiceWindow.xaml">
+    <Page Include="Windows\MiscDialogs\ComboChoiceWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -234,15 +225,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MiscTools\CopyableMessageWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\MiscTools\DualListWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\MiscTools\InputBoxWindow.xaml">
+    <Page Include="Windows\MiscDialogs\DualListWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -250,7 +233,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\MiscTools\ListWindow.xaml">
+    <Page Include="Windows\MiscDialogs\ListWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -271,10 +254,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\MainInterface\Players\PlayerSearchWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MiscTools\ProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

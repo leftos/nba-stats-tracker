@@ -45,8 +45,7 @@ namespace NBA_Stats_Tracker.Data.Other
                       Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, TeamRankings seasonTeamRankings,
                       TeamRankings playoffTeamRankings, Dictionary<int, PlayerStats> pst,
                       Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, PlayerRankings seasonPlayerRankings,
-                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist,
-                      Dictionary<int, string> displayNames)
+                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist, Dictionary<int, string> displayNames)
         {
             BSHist = bsHist;
             DisplayNames = displayNames;

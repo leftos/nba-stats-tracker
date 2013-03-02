@@ -45,7 +45,7 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
 
         public int GetYearsMinusOption()
         {
-            var total = GetYears();
+            int total = GetYears();
             switch (Option)
             {
                 case PlayerContractOption.None:
@@ -62,7 +62,7 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
 
         public string GetYearsDesc()
         {
-            var total = ContractSalaryPerYear.Count;
+            int total = ContractSalaryPerYear.Count;
             switch (Option)
             {
                 case PlayerContractOption.Player:

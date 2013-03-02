@@ -26,17 +26,95 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 
 #endregion
 
 namespace LeftosCommonLibrary
 {
     /// <summary>
-    /// Various miscellaneous tools.
+    ///     Various miscellaneous tools.
     /// </summary>
     public static class Tools
     {
+        /// <summary>
+        ///     The application name; used as default title in various dialogs.
+        /// </summary>
+        public static string AppName = "";
+
+        /// <summary>
+        ///     The application's registry key; used by GetRegistrySetting and SetRegistrySetting for example.
+        /// </summary>
+        public static string AppRegistryKey = "";
+
+        /// <summary>
+        ///     Sets a registry setting using the AppRegistryKey field as the key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="setting">The setting.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.Exception">
+        ///     Couldn't access or create application's registry key.
+        /// </exception>
+        public static void SetRegistrySetting<T>(string setting, T value)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            try
+            {
+                try
+                {
+                    rk = rk.OpenSubKey(AppRegistryKey, true);
+                    if (rk == null)
+                        throw new Exception();
+                }
+                catch (Exception)
+                {
+                    rk = Registry.CurrentUser;
+                    rk.CreateSubKey(AppRegistryKey);
+                    rk = rk.OpenSubKey(AppRegistryKey, true);
+                    if (rk == null)
+                        throw new Exception("Couldn't access or create application's registry key.");
+                }
+
+                rk.SetValue(setting, value);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't save setting " + setting + ".", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a registry setting using the AppRegistryKey field as the key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>The registry setting's value.</returns>
+        /// <exception cref="System.Exception">The application doesn't have access to HKEY_CURRENT_USER.</exception>
+        public static T GetRegistrySetting<T>(string setting, T defaultValue)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            T settingValue = defaultValue;
+            try
+            {
+                if (rk == null)
+                    throw new Exception("The application doesn't have access to HKEY_CURRENT_USER.");
+
+                rk = rk.OpenSubKey(AppRegistryKey);
+                if (rk != null)
+                    settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof (T)));
+            }
+            catch
+            {
+                settingValue = defaultValue;
+            }
+
+            return settingValue;
+        }
+
         /// <summary>
         ///     Gets the extension of a specified file.
         /// </summary>
@@ -58,14 +136,14 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Gets the full path of the file without its extension.
+        ///     Gets the full path of the file without its extension.
         /// </summary>
         /// <param name="f">The path to the file.</param>
         /// <returns></returns>
         public static string GetFullPathWithoutExtension(string f)
         {
-            var fullpath = Path.GetFullPath(f);
-            var ext = Path.GetExtension(f);
+            string fullpath = Path.GetFullPath(f);
+            string ext = Path.GetExtension(f);
             if (!String.IsNullOrEmpty(ext))
             {
                 fullpath = fullpath.Replace(ext, "");
@@ -92,7 +170,7 @@ namespace LeftosCommonLibrary
         public static byte[] ReverseByteOrder(byte[] original, int length)
         {
             var newArr = new byte[length];
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 newArr[length - i - 1] = original[i];
             }
@@ -106,21 +184,21 @@ namespace LeftosCommonLibrary
         /// <returns>The corresponding byte array.</returns>
         public static byte[] HexStringToByteArray(String hex)
         {
-            var numberChars = hex.Length;
+            int numberChars = hex.Length;
             var bytes = new byte[numberChars/2];
-            for (var i = 0; i < numberChars; i += 2)
+            for (int i = 0; i < numberChars; i += 2)
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
 
         /// <summary>
-        /// Converts a byte array to the equivalent hex string representation.
+        ///     Converts a byte array to the equivalent hex string representation.
         /// </summary>
         /// <param name="ba">The byte array.</param>
         /// <returns></returns>
         public static string ByteArrayToHexString(byte[] ba)
         {
-            var hex = BitConverter.ToString(ba);
+            string hex = BitConverter.ToString(ba);
             return hex.Replace("-", "");
         }
 
@@ -138,7 +216,7 @@ namespace LeftosCommonLibrary
             //Instantiate MD5CryptoServiceProvider, get bytes for original password and compute hash (encoded password)
             using (md5 = new MD5CryptoServiceProvider())
             {
-                var originalBytes = Encoding.Default.GetBytes(s);
+                byte[] originalBytes = Encoding.Default.GetBytes(s);
                 encodedBytes = md5.ComputeHash(originalBytes);
             }
 
@@ -182,13 +260,13 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
-            var arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
+            string[] arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
             if (keepDuplicates)
                 return arr.ToList();
             else
             {
                 var list = new List<string>();
-                foreach (var item in arr)
+                foreach (string item in arr)
                 {
                     if (!list.Contains(item))
                         list.Add(item);
@@ -198,7 +276,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Writes a message to the trace listeners including a date and time stamp.
+        ///     Writes a message to the trace listeners including a date and time stamp.
         /// </summary>
         /// <param name="msg">The message.</param>
         public static void WriteToTrace(string msg)
@@ -207,7 +285,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Writes a message to the trace listeners including a date and time stamp and information about the exception.
+        ///     Writes a message to the trace listeners including a date and time stamp and information about the exception.
         /// </summary>
         /// <param name="msg">The message.</param>
         /// <param name="ex">The exception.</param>
@@ -254,11 +332,11 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Determines whether the specified string is numeric.
+        ///     Determines whether the specified string is numeric.
         /// </summary>
         /// <param name="s">The source string.</param>
         /// <returns>
-        ///   <c>true</c> if the specified string is numeric; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified string is numeric; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsNumeric(string s)
         {
@@ -268,7 +346,7 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        /// Checks for balanced bracketing.
+        ///     Checks for balanced bracketing.
         /// </summary>
         /// <param name="incomingString">The source string.</param>
         /// <returns></returns>
@@ -282,7 +360,7 @@ namespace LeftosCommonLibrary
             {
                 checked // Turns on overflow checking.
                 {
-                    foreach (var t in incomingString)
+                    foreach (char t in incomingString)
                     {
                         switch (t)
                         {

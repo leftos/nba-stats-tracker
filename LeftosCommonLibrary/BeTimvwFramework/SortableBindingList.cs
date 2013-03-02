@@ -38,7 +38,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         private PropertyDescriptor _propertyDescriptor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortableBindingList{T}"/> class.
+        ///     Initializes a new instance of the <see cref="SortableBindingList{T}" /> class.
         /// </summary>
         public SortableBindingList() : base(new List<T>())
         {
@@ -46,7 +46,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortableBindingList{T}"/> class containing a copy of the objects in the enumeration.
+        ///     Initializes a new instance of the <see cref="SortableBindingList{T}" /> class containing a copy of the objects in the enumeration.
         /// </summary>
         /// <param name="enumeration">The enumeration to initialize the list with.</param>
         public SortableBindingList(IEnumerable<T> enumeration) : base(new List<T>(enumeration))
@@ -55,10 +55,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Gets a value indicating whether this list supports sorting.
+        ///     Gets a value indicating whether this list supports sorting.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if it supports sorting; otherwise, <c>false</c>.
+        ///     <c>true</c> if it supports sorting; otherwise, <c>false</c>.
         /// </value>
         protected override bool SupportsSortingCore
         {
@@ -66,10 +66,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Gets a value indicating whether the list is sorted.
+        ///     Gets a value indicating whether the list is sorted.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the list is sorted; otherwise, <c>false</c>.
+        ///     <c>true</c> if the list is sorted; otherwise, <c>false</c>.
         /// </value>
         protected override bool IsSortedCore
         {
@@ -77,10 +77,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Gets the sorting property descriptor.
+        ///     Gets the sorting property descriptor.
         /// </summary>
         /// <value>
-        /// The sorting property descriptor.
+        ///     The sorting property descriptor.
         /// </value>
         protected override PropertyDescriptor SortPropertyCore
         {
@@ -88,10 +88,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Gets the sorting direction.
+        ///     Gets the sorting direction.
         /// </summary>
         /// <value>
-        /// The sorting direction.
+        ///     The sorting direction.
         /// </value>
         protected override ListSortDirection SortDirectionCore
         {
@@ -99,10 +99,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Gets a value indicating whether the list supports searching.
+        ///     Gets a value indicating whether the list supports searching.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the list supports searching; otherwise, <c>false</c>.
+        ///     <c>true</c> if the list supports searching; otherwise, <c>false</c>.
         /// </value>
         protected override bool SupportsSearchingCore
         {
@@ -110,7 +110,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Applies the sort.
+        ///     Applies the sort.
         /// </summary>
         /// <param name="property">The property descriptor.</param>
         /// <param name="direction">The sorting direction.</param>
@@ -118,7 +118,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         {
             var itemsList = (List<T>) Items;
 
-            var propertyType = property.PropertyType;
+            Type propertyType = property.PropertyType;
             PropertyComparer<T> comparer;
             if (!_comparers.TryGetValue(propertyType, out comparer))
             {
@@ -137,7 +137,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Removes the sort.
+        ///     Removes the sort.
         /// </summary>
         protected override void RemoveSortCore()
         {
@@ -149,18 +149,18 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         }
 
         /// <summary>
-        /// Finds an item.
+        ///     Finds an item.
         /// </summary>
         /// <param name="property">The property descriptor.</param>
         /// <param name="key">The key to find.</param>
         /// <returns></returns>
         protected override int FindCore(PropertyDescriptor property, object key)
         {
-            var count = Count;
-            for (var i = 0; i < count; ++i)
+            int count = Count;
+            for (int i = 0; i < count; ++i)
             {
-                var element = this[i];
-                var value = property.GetValue(element);
+                T element = this[i];
+                object value = property.GetValue(element);
                 if (value != null && value.Equals(key))
                 {
                     return i;
