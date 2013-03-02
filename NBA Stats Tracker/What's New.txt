@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.11.0.2
+		- Fix: Fixed crash when trying to load a registry setting that was saved incorrectly
+
 	v1.11.0.1
 		- Fix: Fixed crash in some circumstances when using custom expressions in Advanced Player Search
 
