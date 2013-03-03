@@ -1,20 +1,23 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.BoxScores.BoxScoreListWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Box Scores List" Height="438" Width="661"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:boxScores="clr-namespace:NBA_Stats_Tracker.Data.BoxScores" mc:Ignorable="d" Title="Box Scores List" Height="438" Width="661"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <DataGrid Margin="6,6,6,44" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                   FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True"
                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
-                  Name="dgvBoxScores" VerticalAlignment="Stretch">
+                  Name="dgvBoxScores" VerticalAlignment="Stretch" d:DataContext="{d:DesignInstance boxScores:BoxScoreEntry}">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding bs.GameID}" Header="GameID" Visibility="Collapsed" />
-                <DataGridTextColumn Binding="{Binding bs.SeasonNum}" Header="Season" />
-                <DataGridTextColumn Binding="{Binding bs.gamedate}" Header="Date" />
+                <DataGridTextColumn Binding="{Binding BS.ID}" Header="GameID" Visibility="Collapsed" />
+                <DataGridTextColumn Binding="{Binding BS.SeasonNum}" Header="Season" />
+                <DataGridTextColumn Binding="{Binding BS.GameDate, StringFormat=d}" Header="Date" />
                 <DataGridTextColumn Binding="{Binding Team1Display}" Header="Away Team" />
-                <DataGridTextColumn Binding="{Binding bs.PTS1}" Header="AS" />
+                <DataGridTextColumn Binding="{Binding BS.PTS1}" Header="AS" />
                 <DataGridTextColumn Binding="{Binding Team2Display}" Header="Home Team" />
-                <DataGridTextColumn Binding="{Binding bs.PTS2}" Header="HS" />
+                <DataGridTextColumn Binding="{Binding BS.PTS2}" Header="HS" />
             </DataGrid.Columns>
         </DataGrid>
         <Button Content="Delete" Height="23" Margin="12,0,0,12" Name="btnDelete" VerticalAlignment="Bottom"
