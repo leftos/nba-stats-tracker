@@ -124,13 +124,13 @@ namespace SQLite_Database
             foreach (DataRow dataRow in schemaTable.Rows)
             {
                 var dataColumn = new DataColumn
-                                 {
-                                     ColumnName = dataRow["ColumnName"].ToString(),
-                                     DataType = Type.GetType(dataRow["DataType"].ToString()),
-                                     ReadOnly = (bool) dataRow["IsReadOnly"],
-                                     AutoIncrement = (bool) dataRow["IsAutoIncrement"],
-                                     Unique = (bool) dataRow["IsUnique"]
-                                 };
+                    {
+                        ColumnName = dataRow["ColumnName"].ToString(),
+                        DataType = Type.GetType(dataRow["DataType"].ToString()),
+                        ReadOnly = (bool) dataRow["IsReadOnly"],
+                        AutoIncrement = (bool) dataRow["IsAutoIncrement"],
+                        Unique = (bool) dataRow["IsUnique"]
+                    };
 
                 try
                 {
@@ -277,7 +277,8 @@ namespace SQLite_Database
                             Dictionary<string, string> data = dataList[i];
                             if (data.Count >= 1)
                             {
-                                vals = data.Aggregate("", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
+                                vals = data.Aggregate("",
+                                                      (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
                                 vals = vals.Substring(0, vals.Length - 1);
                             }
                             try
@@ -405,7 +406,9 @@ namespace SQLite_Database
         public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
         {
             if (data.Count > 500)
+            {
                 throw new Exception("SQLite error: Tried to insert more than 500 rows at once.");
+            }
 
             int returnCode;
 
@@ -495,7 +498,9 @@ namespace SQLite_Database
         public static string AddDateRangeToSQLQuery(string query, DateTime dStart, DateTime dEnd, bool addWhere = false)
         {
             if (query.EndsWith(";"))
+            {
                 query = query.Remove(query.Length - 1);
+            }
 
             if (!addWhere)
             {
