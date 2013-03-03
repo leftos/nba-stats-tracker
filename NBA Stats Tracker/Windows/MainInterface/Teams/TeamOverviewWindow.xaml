@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d" Title="Team Overview"
+        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" mc:Ignorable="d" Title="Team Overview"
         Height="606" Width="870"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         MinWidth="698" Closing="window_Closing">
@@ -984,9 +985,9 @@
                                   VerticalAlignment="Stretch" Margin="6,6,6,0"
                                   MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
                                   Style="{StaticResource DataGridStyle}" IsReadOnly="True"
-                                  Sorting="dgvBoxScores_Sorting">
+                                  Sorting="dgvBoxScores_Sorting" d:DataContext="{d:DesignInstance teams:TeamBoxScore}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
+                                <DataGridTextColumn Binding="{Binding GameDate, StringFormat=d}" Header="Date" />
                                 <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location" />
                                 <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
