@@ -53,7 +53,9 @@ namespace Updater
             {
                 installerProc = Process.Start(e.Args[0], "/SILENT");
                 if (installerProc == null)
+                {
                     throw new Exception();
+                }
             }
             catch
             {
@@ -77,11 +79,15 @@ namespace Updater
             try
             {
                 if (rk == null)
+                {
                     throw new Exception();
+                }
 
                 rk = rk.OpenSubKey(@"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker");
                 if (rk != null)
+                {
                     settingValue = rk.GetValue(setting, defaultValue).ToString();
+                }
             }
             catch
             {
