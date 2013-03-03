@@ -62,7 +62,8 @@ namespace LeftosCommonLibrary
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVFile(string path, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StreamReader(path), true, useCultureSeparator ? ListSeparator : detectSeparator(path));
+            var cr = new CsvReader(new StreamReader(path), true, useCultureSeparator ? ListSeparator : detectSeparator(path), '\"',
+                                   '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
             List<Dictionary<string, string>> dictList = dictionaryListFromCSV(cr);
 
             return dictList;
@@ -83,7 +84,8 @@ namespace LeftosCommonLibrary
         public static List<Dictionary<string, string>> DictionaryListFromCSVString(string text, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StringReader(text), true,
-                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}));
+                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}),
+                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
             List<Dictionary<string, string>> dictList = dictionaryListFromCSV(cr);
 
             return dictList;
@@ -103,7 +105,8 @@ namespace LeftosCommonLibrary
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVFile(string path, bool hasHeaders = true, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StreamReader(path), hasHeaders, useCultureSeparator ? ListSeparator : detectSeparator(path));
+            var cr = new CsvReader(new StreamReader(path), hasHeaders, useCultureSeparator ? ListSeparator : detectSeparator(path),
+                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
             List<string[]> arrayList = arrayListFromCSV(cr);
 
             return arrayList;
@@ -124,7 +127,8 @@ namespace LeftosCommonLibrary
         public static List<string[]> ArrayListFromCSVString(string text, bool hasHeaders = true, bool useCultureSeparator = false)
         {
             var cr = new CsvReader(new StringReader(text), hasHeaders,
-                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}));
+                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}),
+                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
             List<string[]> arrayList = arrayListFromCSV(cr);
 
             return arrayList;
