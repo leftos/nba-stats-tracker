@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.11.1.1
+		- Fix: Fixed window used to show a list of box scores not showing most information
+
 	v1.11.1
 		- Improvement: Improved box score checks and error messages
 		- Fix: Fixed Team Overview's Box Score tab not displaying dates
