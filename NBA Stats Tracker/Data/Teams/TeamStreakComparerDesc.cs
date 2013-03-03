@@ -54,7 +54,9 @@ namespace NBA_Stats_Tracker.Data.Teams
             int t2Count = Convert.ToInt32(s2.Substring(1));
 
             if (s1 == s2)
+            {
                 return 0;
+            }
             else if (t1Type == "W")
             {
                 if (t2Type == "W")

@@ -114,7 +114,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             if (_mode == Mode.OneTeam)
             {
                 if (cmbSelection1.SelectedIndex == -1)
+                {
                     return;
+                }
                 UserChoice = cmbSelection1.SelectedItem.ToString();
             }
             else if (_mode == Mode.Division || _mode == Mode.Generic)

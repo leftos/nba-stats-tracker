@@ -364,7 +364,8 @@ namespace NBA_Stats_Tracker.Properties
     /// }
     /// </code>
     /// </example>
-    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false,
+        Inherited = true)]
     public sealed class CannotApplyEqualityOperatorAttribute : Attribute
     {
     }

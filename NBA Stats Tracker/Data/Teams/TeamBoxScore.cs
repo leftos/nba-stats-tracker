@@ -127,7 +127,9 @@ namespace NBA_Stats_Tracker.Data.Teams
                     segmentsDone++;
                 }
                 if (segmentsDone == 2)
+                {
                     break;
+                }
             }
             if (segmentsDone != 2)
             {

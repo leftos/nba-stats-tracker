@@ -68,115 +68,115 @@ namespace NBA_Stats_Tracker.Data.Teams
                          MPG = 19;
 
         public static readonly Dictionary<int, string> Totals = new Dictionary<int, string>
-                                                                {
-                                                                    {0, "MINS"},
-                                                                    {1, "PF"},
-                                                                    {2, "PA"},
-                                                                    {4, "FGM"},
-                                                                    {5, "FGA"},
-                                                                    {6, "3PM"},
-                                                                    {7, "3PA"},
-                                                                    {8, "FTM"},
-                                                                    {9, "FTA"},
-                                                                    {10, "OREB"},
-                                                                    {11, "DREB"},
-                                                                    {12, "STL"},
-                                                                    {13, "TO"},
-                                                                    {14, "BLK"},
-                                                                    {15, "AST"},
-                                                                    {16, "FOUL"}
-                                                                };
+            {
+                {0, "MINS"},
+                {1, "PF"},
+                {2, "PA"},
+                {4, "FGM"},
+                {5, "FGA"},
+                {6, "3PM"},
+                {7, "3PA"},
+                {8, "FTM"},
+                {9, "FTA"},
+                {10, "OREB"},
+                {11, "DREB"},
+                {12, "STL"},
+                {13, "TO"},
+                {14, "BLK"},
+                {15, "AST"},
+                {16, "FOUL"}
+            };
 
         public static readonly Dictionary<int, string> PerGame = new Dictionary<int, string>
-                                                                 {
-                                                                     {0, "PPG"},
-                                                                     {1, "PAPG"},
-                                                                     {2, "FG%"},
-                                                                     {3, "FGeff"},
-                                                                     {4, "3P%"},
-                                                                     {5, "3Peff"},
-                                                                     {6, "FT%"},
-                                                                     {7, "FTeff"},
-                                                                     {8, "RPG"},
-                                                                     {9, "ORPG"},
-                                                                     {10, "DRPG"},
-                                                                     {11, "SPG"},
-                                                                     {12, "BPG"},
-                                                                     {13, "TPG"},
-                                                                     {14, "APG"},
-                                                                     {15, "FPG"},
-                                                                     {16, "WP"},
-                                                                     {17, "Weff"},
-                                                                     {18, "PD"},
-                                                                     {19, "MPG"}
-                                                                 };
+            {
+                {0, "PPG"},
+                {1, "PAPG"},
+                {2, "FG%"},
+                {3, "FGeff"},
+                {4, "3P%"},
+                {5, "3Peff"},
+                {6, "FT%"},
+                {7, "FTeff"},
+                {8, "RPG"},
+                {9, "ORPG"},
+                {10, "DRPG"},
+                {11, "SPG"},
+                {12, "BPG"},
+                {13, "TPG"},
+                {14, "APG"},
+                {15, "FPG"},
+                {16, "WP"},
+                {17, "Weff"},
+                {18, "PD"},
+                {19, "MPG"}
+            };
 
         public static readonly List<string> ExtendedTotals = new List<string>
-                                                             {
-                                                                 "PF",
-                                                                 "PA",
-                                                                 "FGM",
-                                                                 "FGA",
-                                                                 "3PM",
-                                                                 "3PA",
-                                                                 "FTM",
-                                                                 "FTA",
-                                                                 "REB",
-                                                                 "OREB",
-                                                                 "DREB",
-                                                                 "AST",
-                                                                 "STL",
-                                                                 "BLK",
-                                                                 "TO",
-                                                                 "FOUL",
-                                                                 "MINS"
-                                                             };
+            {
+                "PF",
+                "PA",
+                "FGM",
+                "FGA",
+                "3PM",
+                "3PA",
+                "FTM",
+                "FTA",
+                "REB",
+                "OREB",
+                "DREB",
+                "AST",
+                "STL",
+                "BLK",
+                "TO",
+                "FOUL",
+                "MINS"
+            };
 
         public static readonly List<string> ExtendedPerGame = new List<string>
-                                                              {
-                                                                  "PPG",
-                                                                  "PAPG",
-                                                                  "FGMPG",
-                                                                  "FGAPG",
-                                                                  "FG%",
-                                                                  "FGeff",
-                                                                  "3PMPG",
-                                                                  "3PAPG",
-                                                                  "3P%",
-                                                                  "3Peff",
-                                                                  "FTMPG",
-                                                                  "FTAPG",
-                                                                  "FT%",
-                                                                  "FTeff",
-                                                                  "RPG",
-                                                                  "ORPG",
-                                                                  "DRPG",
-                                                                  "APG",
-                                                                  "SPG",
-                                                                  "BPG",
-                                                                  "TPG",
-                                                                  "FPG",
-                                                                  "MPG"
-                                                              };
+            {
+                "PPG",
+                "PAPG",
+                "FGMPG",
+                "FGAPG",
+                "FG%",
+                "FGeff",
+                "3PMPG",
+                "3PAPG",
+                "3P%",
+                "3Peff",
+                "FTMPG",
+                "FTAPG",
+                "FT%",
+                "FTeff",
+                "RPG",
+                "ORPG",
+                "DRPG",
+                "APG",
+                "SPG",
+                "BPG",
+                "TPG",
+                "FPG",
+                "MPG"
+            };
 
         public static readonly List<string> MetricsNames = new List<string>
-                                                           {
-                                                               "ORTG",
-                                                               "DRTG",
-                                                               "EFFd",
-                                                               "PW%",
-                                                               "PythW",
-                                                               "PythL",
-                                                               "TS%",
-                                                               "EFGp",
-                                                               "3PR",
-                                                               "DREB%",
-                                                               "OREB%",
-                                                               "AST%",
-                                                               "TOR",
-                                                               "FTR",
-                                                               "Poss",
-                                                               "Pace"
-                                                           };
+            {
+                "ORTG",
+                "DRTG",
+                "EFFd",
+                "PW%",
+                "PythW",
+                "PythL",
+                "TS%",
+                "EFGp",
+                "3PR",
+                "DREB%",
+                "OREB%",
+                "AST%",
+                "TOR",
+                "FTR",
+                "Poss",
+                "Pace"
+            };
     }
 }

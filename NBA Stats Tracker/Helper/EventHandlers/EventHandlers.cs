@@ -45,15 +45,19 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     {
         public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c => { App.ErrorReport(c.Exception, "Task exception"); }, CancellationToken.None,
-                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(c =>
+                {
+                    App.ErrorReport(c.Exception, "Task exception");
+                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
 
         public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c => { App.ErrorReport(c.Exception, "Task exception"); }, CancellationToken.None,
-                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(c =>
+                {
+                    App.ErrorReport(c.Exception, "Task exception");
+                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
 
@@ -210,7 +214,9 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             else if (e.Column.SortDirection == null && e.Column.Header.ToString().Contains("Position") == false)
             {
                 if (namesNotToSortDescendingFirst.Contains(e.Column.Header) == false)
+                {
                     e.Column.SortDirection = ListSortDirection.Ascending;
+                }
             }
         }
 

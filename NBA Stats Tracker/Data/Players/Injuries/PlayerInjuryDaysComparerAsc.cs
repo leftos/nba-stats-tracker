@@ -29,22 +29,22 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
     public class PlayerInjuryDaysComparerAsc : IComparer
     {
         protected static readonly Dictionary<string, int> DurationOrder = new Dictionary<string, int>
-                                                                          {
-                                                                              {"Active", 0},
-                                                                              {"Day-To-Day", 1},
-                                                                              {"1-2 weeks", 2},
-                                                                              {"2-4 weeks", 3},
-                                                                              {"4-6 weeks", 4},
-                                                                              {"6-8 weeks", 5},
-                                                                              {"2-4 months", 6},
-                                                                              {"4-6 months", 7},
-                                                                              {"6-8 months", 8},
-                                                                              {"8-10 months", 9},
-                                                                              {"10-12 months", 10},
-                                                                              {"More than a year", 11},
-                                                                              {"Unknown", 12},
-                                                                              {"Career-Ending", 13}
-                                                                          };
+            {
+                {"Active", 0},
+                {"Day-To-Day", 1},
+                {"1-2 weeks", 2},
+                {"2-4 weeks", 3},
+                {"4-6 weeks", 4},
+                {"6-8 weeks", 5},
+                {"2-4 months", 6},
+                {"4-6 months", 7},
+                {"6-8 months", 8},
+                {"8-10 months", 9},
+                {"10-12 months", 10},
+                {"More than a year", 11},
+                {"Unknown", 12},
+                {"Career-Ending", 13}
+            };
 
         #region IComparer Members
 

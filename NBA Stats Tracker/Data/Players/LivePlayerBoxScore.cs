@@ -65,9 +65,13 @@ namespace NBA_Stats_Tracker.Data.Players
             set
             {
                 if (_oreb < value)
+                {
                     REB++;
+                }
                 else if (_oreb > value)
+                {
                     REB--;
+                }
                 _oreb = value;
                 NotifyPropertyChanged("REB");
             }

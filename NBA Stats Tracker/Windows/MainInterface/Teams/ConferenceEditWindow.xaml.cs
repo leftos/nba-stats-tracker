@@ -79,7 +79,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
             if (String.IsNullOrWhiteSpace(txtName.Text))
+            {
                 txtName.Text = "League";
+            }
 
             MainWindow.Conferences.Single(conference => conference.ID == _curConf.ID).Name = txtName.Text;
             db.Update("Conferences", new Dictionary<string, string> {{"Name", txtName.Text}}, "ID = " + _curConf.ID);
@@ -99,7 +101,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 string newName = newDiv.Replace(':', '-');
                 int i = 0;
                 while (usedIDs.Contains(i))
+                {
                     i++;
+                }
                 MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = _curConf.ID});
                 usedIDs.Add(i);
             }
@@ -108,7 +112,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 int i = 0;
                 while (usedIDs.Contains(i))
+                {
                     i++;
+                }
                 MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = _curConf.ID});
                 usedIDs.Add(i);
             }
@@ -117,11 +123,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 db.Insert("Divisions",
                           new Dictionary<string, string>
-                          {
-                              {"ID", div.ID.ToString()},
-                              {"Name", div.Name},
-                              {"Conference", div.ConferenceID.ToString()}
-                          });
+                              {
+                                  {"ID", div.ID.ToString()},
+                                  {"Name", div.Name},
+                                  {"Conference", div.ConferenceID.ToString()}
+                              });
             }
 
             TeamStats.CheckForInvalidDivisions();

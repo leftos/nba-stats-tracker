@@ -79,14 +79,22 @@ namespace NBA_Stats_Tracker.Data.Players
             FirstName = ParseCell.GetString(dataRow, "FirstName");
             string p1 = ParseCell.GetString(dataRow, "Position1");
             if (String.IsNullOrWhiteSpace(p1))
+            {
                 Position1 = Position.None;
+            }
             else
+            {
                 Position1 = (Position) Enum.Parse(typeof (Position), p1);
+            }
             string p2 = ParseCell.GetString(dataRow, "Position2");
             if (String.IsNullOrWhiteSpace(p2))
+            {
                 Position1 = Position.None;
+            }
             else
+            {
                 Position1 = (Position) Enum.Parse(typeof (Position), p2);
+            }
         }
 
         public int ID { get; set; }

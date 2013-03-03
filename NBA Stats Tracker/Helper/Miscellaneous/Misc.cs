@@ -38,13 +38,17 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public static int GetTeamIDFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
         {
             if (displayName == "- Inactive -")
+            {
                 return -1;
+            }
             for (int i = 0; i < MainWindow.TST.Count; i++)
             {
                 if (teamStats[i].DisplayName == displayName)
                 {
                     if (teamStats[i].IsHidden)
+                    {
                         throw new Exception("Requested team that is hidden: " + MainWindow.TST[i].Name);
+                    }
 
                     return teamStats[i].ID;
                 }
@@ -110,7 +114,9 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public static string GetDisplayName(Dictionary<int, string> displayNames, int id)
         {
             if (id == -1)
+            {
                 return "";
+            }
             else
             {
                 try

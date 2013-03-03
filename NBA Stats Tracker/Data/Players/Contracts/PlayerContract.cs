@@ -73,11 +73,17 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
                     return String.Format("{0}+2 years (Team Option)", GetYearsMinusOption());
                 default:
                     if (total == 0)
+                    {
                         return "Not signed";
+                    }
                     else if (total == 1)
+                    {
                         return String.Format("{0} year", total);
+                    }
                     else
+                    {
                         return String.Format("{0} years", total);
+                    }
             }
         }
 

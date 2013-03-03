@@ -203,7 +203,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             foreach (var kvp in MainWindow.TST)
             {
                 if (!kvp.Value.IsHidden)
+                {
                     _teams.Add(kvp.Value.DisplayName);
+                }
             }
 
             _teams.Sort();
@@ -328,8 +330,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 foul += pbs.FOUL;
             }
 
-            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts, reb,
-                                        oreb, ast, blk, stl, tos, foul);
+            string resp = String.Format("{0} PTS - {1} REBS ({2} OREBS) - {3} ASTS - {4} BLKS - {5} STLS - {6} TOS - {7} FOUL", pts,
+                                        reb, oreb, ast, blk, stl, tos, foul);
 
             return resp;
         }
@@ -341,32 +343,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private BoxScoreEntry calculateBoxScoreEntry()
         {
             var bs = new TeamBoxScore
-                     {
-                         REB1 = 0,
-                         AST1 = 0,
-                         STL1 = 0,
-                         TOS1 = 0,
-                         BLK1 = 0,
-                         FGM1 = 0,
-                         TPM1 = 0,
-                         FTM1 = 0,
-                         OREB1 = 0,
-                         FOUL1 = 0,
-                         PTS1 = 0,
-                         MINS1 = (ushort) MainWindow.GameLength,
-                         REB2 = 0,
-                         AST2 = 0,
-                         STL2 = 0,
-                         TOS2 = 0,
-                         BLK2 = 0,
-                         FGM2 = 0,
-                         TPM2 = 0,
-                         FTM2 = 0,
-                         OREB2 = 0,
-                         FOUL2 = 0,
-                         PTS2 = 0,
-                         MINS2 = (ushort) MainWindow.GameLength
-                     };
+                {
+                    REB1 = 0,
+                    AST1 = 0,
+                    STL1 = 0,
+                    TOS1 = 0,
+                    BLK1 = 0,
+                    FGM1 = 0,
+                    TPM1 = 0,
+                    FTM1 = 0,
+                    OREB1 = 0,
+                    FOUL1 = 0,
+                    PTS1 = 0,
+                    MINS1 = (ushort) MainWindow.GameLength,
+                    REB2 = 0,
+                    AST2 = 0,
+                    STL2 = 0,
+                    TOS2 = 0,
+                    BLK2 = 0,
+                    FGM2 = 0,
+                    TPM2 = 0,
+                    FTM2 = 0,
+                    OREB2 = 0,
+                    FOUL2 = 0,
+                    PTS2 = 0,
+                    MINS2 = (ushort) MainWindow.GameLength
+                };
 
             foreach (LivePlayerBoxScore pbs in _pbsAwayList)
             {
@@ -454,7 +456,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             if (cmbTeam1.SelectedIndex == -1 || cmbTeam2.SelectedIndex == -1 || cmbTeam1.SelectedIndex == cmbTeam2.SelectedIndex)
+            {
                 return;
+            }
 
             BoxScoreEntry bse = calculateBoxScoreEntry();
             DialogResult = true;
@@ -473,7 +477,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
         /// </param>
         private static void updateLiveBoxScoreDataGrid(int teamID, out ObservableCollection<KeyValuePair<int, string>> playersList,
-                                                       ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT, bool loading)
+                                                       ref SortableBindingList<LivePlayerBoxScore> pbsList, string playersT,
+                                                       bool loading)
         {
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
             string q = "select * from " + playersT + " where TeamFin = \"" + teamID + "\"";
@@ -482,7 +487,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
+            {
                 pbsList = new SortableBindingList<LivePlayerBoxScore>();
+            }
 
             foreach (DataRow r in res.Rows)
             {

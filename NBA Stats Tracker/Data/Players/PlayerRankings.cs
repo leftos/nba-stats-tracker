@@ -88,7 +88,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 var tempList = new List<KeyValuePair<int, float>>(perGame);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
                 if (j != PAbbr.FPG && j != PAbbr.TPG)
+                {
                     tempList.Reverse();
+                }
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -117,7 +119,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 var tempList = new List<KeyValuePair<int, uint>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
                 if (j != PAbbr.FOUL && j != PAbbr.TOS)
+                {
                     tempList.Reverse();
+                }
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -141,14 +145,17 @@ namespace NBA_Stats_Tracker.Data.Players
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics = !playoffs
-                                                      ? validPlayers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Metrics[metricsNames[j]])
+                                                      ? validPlayers.ToDictionary(kvp => kvp.Key,
+                                                                                  kvp => kvp.Value.Metrics[metricsNames[j]])
                                                       : validPlayers.ToDictionary(kvp => kvp.Key,
                                                                                   kvp => kvp.Value.PlMetrics[metricsNames[j]]);
 
                 var tempList = new List<KeyValuePair<int, double>>(metrics);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
                 if (!badMetrics.Contains(metricsNames[j]))
+                {
                     tempList.Reverse();
+                }
 
                 int k = 1;
                 foreach (var kvp in tempList)
@@ -170,8 +177,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public static PlayerRankings CalculateActiveRankings(bool playoffs = false)
         {
-            var cumRankingsActive = new PlayerRankings(
-                MainWindow.PST.Where(ps => ps.Value.IsActive).ToDictionary(r => r.Key, r => r.Value), playoffs);
+            var cumRankingsActive =
+                new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.IsActive).ToDictionary(r => r.Key, r => r.Value), playoffs);
             return cumRankingsActive;
         }
 

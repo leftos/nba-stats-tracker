@@ -54,13 +54,21 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             if (s1 == s2)
+            {
                 return 0;
+            }
             else if (s1 == "- Inactive -")
+            {
                 return -1;
+            }
             else if (s2 == "- Inactive -")
+            {
                 return 1;
+            }
             else
+            {
                 return String.Compare(s2, s1, StringComparison.Ordinal);
+            }
         }
     }
 }

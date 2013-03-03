@@ -189,8 +189,9 @@ namespace NBA_Stats_Tracker.Data.Teams
             L10L = splitTeamStats[ID]["Last 10"].Record[1];
         }
 
-        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
-                            bool playoffs = false) : this(ts, splitTeamStats, playoffs)
+        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst,
+                            Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, bool playoffs = false)
+            : this(ts, splitTeamStats, playoffs)
         {
             CalculateTotalContracts(pst);
             CalculatePlayerCounts(pst);

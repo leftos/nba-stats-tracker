@@ -117,9 +117,13 @@ namespace NBA_Stats_Tracker.Data.Players
                 if (TeamID == team1)
                 {
                     if (t1PTS > t2PTS)
+                    {
                         Result = "W " + t1PTS.ToString() + "-" + t2PTS.ToString();
+                    }
                     else
+                    {
                         Result = "L " + t1PTS.ToString() + "-" + t2PTS.ToString();
+                    }
 
                     TeamPTS = t1PTS;
                     OppTeamID = team2;
@@ -128,9 +132,13 @@ namespace NBA_Stats_Tracker.Data.Players
                 else
                 {
                     if (t2PTS > t1PTS)
+                    {
                         Result = "W " + t2PTS.ToString() + "-" + t1PTS.ToString();
+                    }
                     else
+                    {
                         Result = "L " + t2PTS.ToString() + "-" + t1PTS.ToString();
+                    }
 
                     TeamPTS = t2PTS;
                     OppTeamID = team1;
@@ -165,23 +173,26 @@ namespace NBA_Stats_Tracker.Data.Players
             try
             {
                 PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
-                                              {
-                                                  if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0] &&
-                                                      kvp.Value.TeamF == teamID)
-                                                      return true;
-                                                  return false;
-                                              }).Value.ID;
+                    {
+                        if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0] && kvp.Value.TeamF == teamID)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }).Value.ID;
             }
             catch (Exception)
             {
                 try
                 {
                     PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
-                                                  {
-                                                      if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0])
-                                                          return true;
-                                                      return false;
-                                                  }).Value.ID;
+                        {
+                            if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0])
+                            {
+                                return true;
+                            }
+                            return false;
+                        }).Value.ID;
                 }
                 catch (Exception)
                 {
@@ -212,7 +223,9 @@ namespace NBA_Stats_Tracker.Data.Players
             FOUL = Convert.ToUInt16(brRow["PF"].ToString());
             MINS = Convert.ToUInt16(brRow["MP"].ToString().Split(':')[0]);
             if (Convert.ToUInt16(brRow["MP"].ToString().Split(':')[1]) >= 30)
+            {
                 MINS++;
+            }
             DREB = (UInt16) (REB - OREB);
             FGp = (float) FGM/FGA;
             TPp = (float) TPM/TPA;
@@ -456,9 +469,13 @@ namespace NBA_Stats_Tracker.Data.Players
             int team2ID = ParseCell.GetInt32(r, "Team2ID");
 
             if (TeamID == team1ID)
+            {
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            }
             else
+            {
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+            }
 
             var ps = new PlayerStats {ID = PlayerID};
             ps.AddBoxScore(this, bs.IsPlayoff);
@@ -481,9 +498,13 @@ namespace NBA_Stats_Tracker.Data.Players
             int team1ID = bs.Team1ID;
 
             if (TeamID == team1ID)
+            {
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp);
+            }
             else
+            {
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
+            }
 
             var ps = new PlayerStats {ID = PlayerID};
             ps.AddBoxScore(this, bs.IsPlayoff);
@@ -574,7 +595,9 @@ namespace NBA_Stats_Tracker.Data.Players
             foreach (string item in items)
             {
                 if (i == count)
+                {
                     break;
+                }
 
                 switch (item)
                 {

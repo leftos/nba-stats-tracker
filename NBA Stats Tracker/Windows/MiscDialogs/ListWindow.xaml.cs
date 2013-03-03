@@ -66,7 +66,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private void lstData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lstData.SelectedIndex == -1)
+            {
                 return;
+            }
 
             var conf = (Conference) lstData.SelectedItem;
             showEditConferenceWindow(conf);
@@ -116,7 +118,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 MainWindow.Conferences.ForEach(conference => usedIDs.Add(conference.ID));
                 int i = 0;
                 while (usedIDs.Contains(i))
+                {
                     i++;
+                }
 
                 MainWindow.Conferences.Add(new Conference {ID = i, Name = name});
 
@@ -150,13 +154,17 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             if (lstData.SelectedIndex == -1)
+            {
                 return;
+            }
 
             var conf = (Conference) lstData.SelectedItem;
-            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?", "NBA Stats Tracker",
-                                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?",
+                                                 "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (r == MessageBoxResult.No)
+            {
                 return;
+            }
 
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
 

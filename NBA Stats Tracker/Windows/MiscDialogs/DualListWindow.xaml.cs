@@ -356,7 +356,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                                             "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
+                        {
                             continue;
+                        }
                     }
 
                     var dict = new Dictionary<string, string> {{"isHidden", "True"}};
@@ -400,7 +402,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                                             "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
+                        {
                             continue;
+                        }
                     }
 
                     var dict = new Dictionary<string, string> {{"isHidden", "True"}, {"isActive", "False"}, {"TeamFin", ""}};
@@ -416,7 +420,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 if (lstEnabled.Items.Count != 30)
                 {
-                    MessageBox.Show("You can't have less or more than 30 teams enabled. You currently have " + lstEnabled.Items.Count + ".");
+                    MessageBox.Show("You can't have less or more than 30 teams enabled. You currently have " + lstEnabled.Items.Count +
+                                    ".");
                     return;
                 }
 
@@ -426,11 +431,13 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 {
                     string teamName = team.Split(new[] {" (ID: "}, StringSplitOptions.None)[0];
                     MainWindow.SelectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
-                                                                  {
-                                                                      if (t["Name"] == teamName)
-                                                                          return true;
-                                                                      return false;
-                                                                  }));
+                        {
+                            if (t["Name"] == teamName)
+                            {
+                                return true;
+                            }
+                            return false;
+                        }));
                 }
                 MainWindow.SelectedTeamsChanged = _changed;
                 DialogResult = true;
@@ -439,12 +446,16 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             else if (_mode == Mode.PickBoxScore)
             {
                 if (lstEnabled.Items.Count != 2)
+                {
                     return;
+                }
 
                 MessageBoxResult r = MessageBox.Show("Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker",
                                                      MessageBoxButton.YesNoCancel);
                 if (r == MessageBoxResult.Cancel)
+                {
                     return;
+                }
 
                 REDitor.PickedTeams = new List<int>();
 
@@ -484,15 +495,17 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             if (_mode == Mode.REDitor)
             {
                 var ofd = new OpenFileDialog
-                          {
-                              Title = "Load Active Teams List",
-                              InitialDirectory = App.AppDocsPath,
-                              Filter = "Active Teams List (*.red)|*.red"
-                          };
+                    {
+                        Title = "Load Active Teams List",
+                        InitialDirectory = App.AppDocsPath,
+                        Filter = "Active Teams List (*.red)|*.red"
+                    };
                 ofd.ShowDialog();
 
                 if (String.IsNullOrWhiteSpace(ofd.FileName))
+                {
                     return;
+                }
 
                 string stg = File.ReadAllText(ofd.FileName);
                 string[] lines = stg.Split(new[] {'\n'});
@@ -521,9 +534,12 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                                     found = true;
                                 }
                                 if (found)
+                                {
                                     continue;
+                                }
 
-                                MessageBox.Show("The active teams list you loaded is incompatible with the save you're trying to import.");
+                                MessageBox.Show(
+                                    "The active teams list you loaded is incompatible with the save you're trying to import.");
                                 return;
                             }
                         }
@@ -551,13 +567,12 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(() =>
-                                                                              {
-                                                                                  if (_mode == Mode.PickBoxScore &&
-                                                                                      lstEnabled.Items.Count == 2)
-                                                                                  {
-                                                                                      btnOK_Click(null, null);
-                                                                                  }
-                                                                              }));
+                {
+                    if (_mode == Mode.PickBoxScore && lstEnabled.Items.Count == 2)
+                    {
+                        btnOK_Click(null, null);
+                    }
+                }));
         }
     }
 }
