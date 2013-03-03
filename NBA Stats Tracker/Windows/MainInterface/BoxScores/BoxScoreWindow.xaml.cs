@@ -596,10 +596,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 MainWindow.bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
                 MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
 
+                var teamName = cmbTeam1.SelectedItem.ToString();
                 if (MainWindow.bs.MINS1 <= 0)
                 {
                     throwErrorWithMessage(
-                        "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.");
+                        "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.", teamName);
                 }
 
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);
@@ -615,35 +616,37 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 if (MainWindow.bs.FGA1 < MainWindow.bs.FGM1)
                 {
-                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
+                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.", teamName);
                 }
                 if (MainWindow.bs.TPA1 < MainWindow.bs.TPM1)
                 {
-                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
+                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.", teamName);
                 }
                 if (MainWindow.bs.FGM1 < MainWindow.bs.TPM1)
                 {
-                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
+                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.", teamName);
                 }
 
                 MainWindow.bs.FTM1 = Convert.ToUInt16(txtFTM1.Text);
                 MainWindow.bs.FTA1 = Convert.ToUInt16(txtFTA1.Text);
                 if (MainWindow.bs.FTA1 < MainWindow.bs.FTM1)
                 {
-                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
+                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.", teamName);
                 }
 
                 MainWindow.bs.OREB1 = Convert.ToUInt16(txtOREB1.Text);
                 if (MainWindow.bs.OREB1 > MainWindow.bs.REB1)
                 {
-                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
+                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.", teamName);
                 }
                 if (MainWindow.bs.FGA1 < MainWindow.bs.TPA1)
                 {
-                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
+                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.", teamName);
                 }
 
                 MainWindow.bs.FOUL1 = Convert.ToUInt16(txtFOUL1.Text);
+
+                teamName = cmbTeam2.SelectedItem.ToString();
                 MainWindow.bs.PTS2 = Convert.ToUInt16(txtPTS2.Text);
                 MainWindow.bs.REB2 = Convert.ToUInt16(txtREB2.Text);
                 MainWindow.bs.AST2 = Convert.ToUInt16(txtAST2.Text);
@@ -657,33 +660,33 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 if (MainWindow.bs.FGA2 < MainWindow.bs.FGM2)
                 {
-                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.");
+                    throwErrorWithMessage("The FGM stat can't be higher than the FGA stat.", teamName);
                 }
                 if (MainWindow.bs.TPA2 < MainWindow.bs.TPM2)
                 {
-                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.");
+                    throwErrorWithMessage("The 3PM stat can't be higher than the 3PA stat.", teamName);
                 }
                 if (MainWindow.bs.FGM2 < MainWindow.bs.TPM2)
                 {
-                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.");
+                    throwErrorWithMessage("The 3PM stat can't be higher than the FGM stat.", teamName);
                 }
                 if (MainWindow.bs.FGA2 < MainWindow.bs.TPA2)
                 {
-                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.");
+                    throwErrorWithMessage("The 3PA stat can't be higher than the FGA stat.", teamName);
                 }
 
                 MainWindow.bs.FTM2 = Convert.ToUInt16(txtFTM2.Text);
                 MainWindow.bs.FTA2 = Convert.ToUInt16(txtFTA2.Text);
                 if (MainWindow.bs.FTA2 < MainWindow.bs.FTM2)
                 {
-                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.");
+                    throwErrorWithMessage("The FTM stat can't be higher than the FTA stat.", teamName);
                 }
 
                 MainWindow.bs.OREB2 = Convert.ToUInt16(txtOREB2.Text);
 
                 if (MainWindow.bs.OREB2 > MainWindow.bs.REB2)
                 {
-                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.");
+                    throwErrorWithMessage("The OFF stat can't be higher than the REB stat.", teamName);
                 }
 
                 MainWindow.bs.FOUL2 = Convert.ToUInt16(txtFOUL2.Text);
@@ -758,7 +761,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 foreach (var pbsList in pbsLists)
                 {
                     teamIter++;
-                    var teamName = teamIter == 1 ? cmbTeam1.SelectedItem.ToString() : cmbTeam2.SelectedItem.ToString();
+                    teamName = teamIter == 1 ? cmbTeam1.SelectedItem.ToString() : cmbTeam2.SelectedItem.ToString();
                     starters = 0;
                     foreach (PlayerBoxScore pbs in pbsList)
                     {
@@ -880,9 +883,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         ///     Throws an exception after showing a friendly error message to the user.
         /// </summary>
         /// <param name="msg">The message displayed to the user and used for the exception.</param>
+        /// <param name="teamName">The name of the team to be included in the message as having an issue.</param>
         /// <exception cref="System.Exception"></exception>
-        private void throwErrorWithMessage(string msg)
+        private void throwErrorWithMessage(string msg, string teamName = "")
         {
+            msg += String.IsNullOrWhiteSpace(teamName) ? "" : "\nTeam: " + teamName;
             MessageBox.Show(msg, "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
             throw (new Exception(msg));
         }
