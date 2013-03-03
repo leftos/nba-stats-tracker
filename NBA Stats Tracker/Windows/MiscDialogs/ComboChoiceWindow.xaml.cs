@@ -51,14 +51,20 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private readonly Mode _mode;
         public static string UserChoice;
 
+        private ComboChoiceWindow()
+        {
+            InitializeComponent();
+
+            UserChoice = "";
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
         /// </summary>
         /// <param name="mode">The Mode enum instance which determines what choices should be offered.</param>
         /// <param name="index">The default choice.</param>
-        public ComboChoiceWindow(Mode mode, int index = 0)
+        public ComboChoiceWindow(Mode mode, int index = 0) : this()
         {
-            InitializeComponent();
             _mode = mode;
 
             if (mode == Mode.Versus)
@@ -93,7 +99,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         /// <param name="items"></param>
         /// <param name="mode"></param>
         /// <param name="teams">The available teams to sign the player to.</param>
-        public ComboChoiceWindow(string message, IEnumerable<string> items, Mode mode = Mode.Generic)
+        public ComboChoiceWindow(string message, IEnumerable<string> items, Mode mode = Mode.Generic) : this()
         {
             InitializeComponent();
 

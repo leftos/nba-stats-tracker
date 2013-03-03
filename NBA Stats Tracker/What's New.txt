@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.11.0.3
+		- Fix: Fixed recent bug that made certain user inputs in dialogs (e.g. season length) be ignored
+
 	v1.11.0.2
 		- Fix: Fixed crash when trying to load a registry setting that was saved incorrectly
 
