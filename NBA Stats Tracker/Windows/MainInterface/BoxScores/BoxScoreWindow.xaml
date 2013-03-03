@@ -222,8 +222,8 @@
             <TabItem Header="Away Team" Name="tabTeam1">
                 <Grid>
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
-                              Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="True"
-                              CanUserDeleteRows="True" FrozenColumnCount="1"
+                              Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="False"
+                              CanUserDeleteRows="False" FrozenColumnCount="1"
                               Sorting="statColumn_Sorting">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}"
@@ -587,7 +587,7 @@
             </TabItem>
             <TabItem Header="Home Team" Name="tabTeam2">
                 <Grid>
-                    <DataGrid AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"
+                    <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome"
                               VerticalAlignment="Stretch" FrozenColumnCount="1"
                               Sorting="statColumn_Sorting">

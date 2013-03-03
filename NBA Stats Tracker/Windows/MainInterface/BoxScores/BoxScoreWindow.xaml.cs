@@ -754,8 +754,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     allPlayers.Add(kvp.Key, kvp.Value);
                 }
+                var teamIter = 0;
                 foreach (var pbsList in pbsLists)
                 {
+                    teamIter++;
+                    var teamName = teamIter == 1 ? cmbTeam1.SelectedItem.ToString() : cmbTeam2.SelectedItem.ToString();
                     starters = 0;
                     foreach (PlayerBoxScore pbs in pbsList)
                     {
@@ -765,7 +768,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                             continue;
                         }
 
-                        pbs.IsOut = pbs.MINS == 0;
+                        var isOut = pbs.MINS == 0;
+
+                        if (isOut)
+                        {
+                            if (pbs.FGM > 0 || pbs.FGA > 0 || pbs.TPM > 0 || pbs.TPA > 0 || pbs.FTM > 0 || pbs.FTA > 0 || pbs.REB > 0 ||
+                                pbs.DREB > 0 || pbs.OREB > 0 || pbs.BLK > 0 || pbs.STL > 0 || pbs.TOS > 0 || pbs.AST > 0 ||
+                                pbs.FOUL > 0)
+                            {
+                                string s = "The player can't have both 0 minutes and more than 0 in any of his stats. If he played " +
+                                           "at all, his minutes should be at least 1.";
+                                s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                                MessageBox.Show(s);
+                                throw (new Exception(s));
+                            }
+                        }
+
+                        pbs.IsOut = isOut;
 
                         if (pbs.IsOut)
                         {
@@ -779,40 +798,40 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                             if (starters > 5)
                             {
                                 string s = "There can't be more than 5 starters in each team.";
-                                s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                                s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                                 MessageBox.Show(s);
-                                throw (new Exception());
+                                throw (new Exception(s));
                             }
                         }
 
                         if (pbs.FGM > pbs.FGA)
                         {
                             string s = "The FGM stat can't be higher than the FGA stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         if (pbs.TPM > pbs.TPA)
                         {
                             string s = "The 3PM stat can't be higher than the 3PA stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         if (pbs.FGM < pbs.TPM)
                         {
                             string s = "The 3PM stat can't be higher than the FGM stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         if (pbs.FGA < pbs.TPA)
                         {
                             string s = "The TPA stat can't be higher than the FGA stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
                             throw (new Exception());
                         }
@@ -820,25 +839,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         if (pbs.FTM > pbs.FTA)
                         {
                             string s = "The FTM stat can't be higher than the FTA stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         if (pbs.OREB > pbs.REB)
                         {
                             string s = "The OREB stat can't be higher than the REB stat.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         if (pbs.IsStarter && pbs.MINS == 0)
                         {
                             string s = "A player can't be a starter but not have any minutes played.";
-                            s += "\n\nTeam: " + pbs.TeamID + "\nPlayer: " + allPlayers[pbs.PlayerID];
+                            s += "\n\nTeam: " + teamName + "\nPlayer: " + allPlayers[pbs.PlayerID];
                             MessageBox.Show(s);
-                            throw (new Exception());
+                            throw (new Exception(s));
                         }
 
                         pbs.DREB = (UInt16) (pbs.REB - pbs.OREB);

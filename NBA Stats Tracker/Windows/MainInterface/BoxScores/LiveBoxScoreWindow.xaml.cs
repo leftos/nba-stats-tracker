@@ -49,8 +49,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     {
         private readonly Brush _defaultBackground;
         private readonly string _playersT;
-        private SortableBindingList<LivePlayerBoxScore> _pbsAwayList = new SortableBindingList<LivePlayerBoxScore>();
-        private SortableBindingList<LivePlayerBoxScore> _pbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
+        private SortableBindingList<LivePlayerBoxScore> _lpbsAwayList = new SortableBindingList<LivePlayerBoxScore>();
+        private SortableBindingList<LivePlayerBoxScore> _lpbsHomeList = new SortableBindingList<LivePlayerBoxScore>();
         private DataRowView _rowBeingEdited;
         private List<string> _teams;
 
@@ -157,7 +157,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 try
                 {
                     teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString());
-                    pbsList = _pbsAwayList;
+                    pbsList = _lpbsAwayList;
                 }
                 catch (Exception)
                 {
@@ -169,7 +169,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 try
                 {
                     teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
-                    pbsList = _pbsHomeList;
+                    pbsList = _lpbsHomeList;
                 }
                 catch (Exception)
                 {
@@ -183,14 +183,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (team == 1)
             {
                 colPlayerAway.ItemsSource = playersList;
-                _pbsAwayList = pbsList;
-                dgvPlayersAway.ItemsSource = _pbsAwayList;
+                _lpbsAwayList = pbsList;
+                dgvPlayersAway.ItemsSource = _lpbsAwayList;
             }
             else
             {
                 colPlayerHome.ItemsSource = playersList;
-                _pbsHomeList = pbsList;
-                dgvPlayersHome.ItemsSource = _pbsHomeList;
+                _lpbsHomeList = pbsList;
+                dgvPlayersHome.ItemsSource = _lpbsHomeList;
             }
         }
 
@@ -263,7 +263,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// </summary>
         private void calculateAwayTeam()
         {
-            txbAwayStats.Text = calculateTeam(_pbsAwayList);
+            txbAwayStats.Text = calculateTeam(_lpbsAwayList);
             compareScores();
         }
 
@@ -305,7 +305,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// </summary>
         private void calculateHomeTeam()
         {
-            txbHomeStats.Text = calculateTeam(_pbsHomeList);
+            txbHomeStats.Text = calculateTeam(_lpbsHomeList);
             compareScores();
         }
 
@@ -370,7 +370,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     MINS2 = (ushort) MainWindow.GameLength
                 };
 
-            foreach (LivePlayerBoxScore pbs in _pbsAwayList)
+            foreach (LivePlayerBoxScore pbs in _lpbsAwayList)
             {
                 bs.PTS1 += pbs.PTS;
                 bs.REB1 += pbs.REB;
@@ -385,7 +385,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 bs.FOUL1 += pbs.FOUL;
             }
 
-            foreach (LivePlayerBoxScore pbs in _pbsHomeList)
+            foreach (LivePlayerBoxScore pbs in _lpbsHomeList)
             {
                 bs.PTS2 += pbs.PTS;
                 bs.REB2 += pbs.REB;
@@ -408,17 +408,30 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             bs.Done = false;
 
             var bse = new BoxScoreEntry(bs) {PBSList = new List<PlayerBoxScore>()};
-            foreach (LivePlayerBoxScore lpbs in _pbsAwayList)
+            foreach (var lpbs in _lpbsAwayList)
+            {
+                lpbs.TeamID = bs.Team1ID;
+                bse.PBSList.Add(lpbs);
+            }
+            foreach (var lpbs in _lpbsHomeList)
+            {
+                lpbs.TeamID = bs.Team2ID;
+                bse.PBSList.Add(lpbs);
+            }
+
+            /*
+            
+            foreach (LivePlayerBoxScore lpbs in _lpbsAwayList)
             {
                 var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team1ID};
                 bse.PBSList.Add(pbs);
             }
-            foreach (LivePlayerBoxScore lpbs in _pbsHomeList)
+            foreach (LivePlayerBoxScore lpbs in _lpbsHomeList)
             {
                 var pbs = new PlayerBoxScore(lpbs) {TeamID = bs.Team2ID};
                 bse.PBSList.Add(pbs);
             }
-
+            */
             bse.Team1Display = cmbTeam1.SelectedItem.ToString();
             bse.Team2Display = cmbTeam2.SelectedItem.ToString();
 
@@ -441,6 +454,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            if (MessageBox.Show("Are you sure you want to close without saving this Live Box Score?", App.AppName,
+                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
+            {
+                return;
+            }
             DialogResult = false;
             Close();
         }
@@ -534,7 +552,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// </param>
         private void dataGrid_MouseMove(object sender, MouseEventArgs e)
         {
-            BindingList<LivePlayerBoxScore> pbsList = Equals(sender, dgvPlayersAway) ? _pbsAwayList : _pbsHomeList;
+            BindingList<LivePlayerBoxScore> pbsList = Equals(sender, dgvPlayersAway) ? _lpbsAwayList : _lpbsHomeList;
             // This is what we're using as a cue to start a drag, but this can be 
             // customized as needed for an application. 
             if (e.LeftButton == MouseButtonState.Pressed)
