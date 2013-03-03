@@ -1762,14 +1762,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("RatingsGPPct", "-1"));
             if (ibw.ShowDialog() == true)
             {
-                SQLiteIO.SetSetting("RatingsGPPct", MainWindow.Input);
+                SQLiteIO.SetSetting("RatingsGPPct", InputBoxWindow.UserInput);
             }
 
             ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
                                      SQLiteIO.GetSetting("RatingsMPG", "-1"));
             if (ibw.ShowDialog() == true)
             {
-                SQLiteIO.SetSetting("RatingsMPG", MainWindow.Input);
+                SQLiteIO.SetSetting("RatingsMPG", InputBoxWindow.UserInput);
             }
 
             MainWindow.LoadRatingsCriteria();
@@ -1836,14 +1836,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("MyLeadersGPPct", "-1"));
             if (ibw.ShowDialog() == true)
             {
-                SQLiteIO.SetSetting("MyLeadersGPPct", MainWindow.Input);
+                SQLiteIO.SetSetting("MyLeadersGPPct", InputBoxWindow.UserInput);
             }
 
             ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
                                      SQLiteIO.GetSetting("MyLeadersMPG", "-1"));
             if (ibw.ShowDialog() == true)
             {
-                SQLiteIO.SetSetting("MyLeadersMPG", MainWindow.Input);
+                SQLiteIO.SetSetting("MyLeadersMPG", InputBoxWindow.UserInput);
             }
 
             MainWindow.LoadMyLeadersCriteria();

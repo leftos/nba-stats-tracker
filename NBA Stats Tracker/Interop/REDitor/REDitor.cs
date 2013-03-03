@@ -124,7 +124,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return;
             }
 
-            startAt = Convert.ToInt32(MainWindow.Input.Split(' ')[0]);
+            startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
 
             var ibw =
                 new InputBoxWindow(
@@ -137,14 +137,14 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             int year;
-            bool twoPartSeasonDesc = MainWindow.Input.Contains("-");
+            bool twoPartSeasonDesc = InputBoxWindow.UserInput.Contains("-");
             try
             {
-                year = Convert.ToInt32(twoPartSeasonDesc ? MainWindow.Input.Split('-')[0] : MainWindow.Input);
+                year = Convert.ToInt32(twoPartSeasonDesc ? InputBoxWindow.UserInput.Split('-')[0] : InputBoxWindow.UserInput);
             }
             catch
             {
-                MessageBox.Show("The year you entered (" + MainWindow.Input +
+                MessageBox.Show("The year you entered (" + InputBoxWindow.UserInput +
                                 ") was not in a valid format.\nValid formats are:\n\t2012\n\t2011-2012");
                 MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
                 return;
@@ -384,7 +384,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                              }
                                              else
                                              {
-                                                 playerID = Convert.ToInt32(MainWindow.Input.Split(':')[0]);
+                                                 playerID = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(':')[0]);
                                              }
                                          }
                                      }
@@ -818,7 +818,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 }
                                 else
                                 {
-                                    playerID = Convert.ToInt32(MainWindow.Input.Split(':')[0]);
+                                    playerID = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(':')[0]);
                                 }
                             }
                         }

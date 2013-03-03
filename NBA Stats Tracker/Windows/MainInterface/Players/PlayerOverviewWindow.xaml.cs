@@ -55,7 +55,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     /// </summary>
     public partial class PlayerOverviewWindow
     {
-        public static string AskedTeam;
         private readonly SQLiteDatabase _db = new SQLiteDatabase(MainWindow.CurrentDB);
         private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
 
@@ -1329,11 +1328,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 teamF = GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString());
                 if (teamF == -1)
                 {
-                    AskedTeam = "";
                     var atw = new ComboChoiceWindow("Select the team to which to sign the player", _teams, ComboChoiceWindow.Mode.OneTeam);
                     if (atw.ShowDialog() == true)
                     {
-                        teamF = Misc.GetTeamIDFromDisplayName(MainWindow.TST, AskedTeam);
+                        teamF = Misc.GetTeamIDFromDisplayName(MainWindow.TST, ComboChoiceWindow.UserChoice);
                     }
                     else
                     {

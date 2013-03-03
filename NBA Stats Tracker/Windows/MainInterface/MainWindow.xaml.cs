@@ -90,7 +90,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
         public static Random Random = new Random();
 
-        public static string Input = "";
+        public static int BaseYear = DateTime.Now.Year;
 
         public static MainWindow MWInstance;
 
@@ -1854,7 +1854,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     var ibw = new InputBoxWindow("Enter a name for the new season", (CurSeason + 1).ToString());
                     ibw.ShowDialog();
 
-                    string seasonName = String.IsNullOrWhiteSpace(Input) ? (CurSeason + 1).ToString() : Input;
+                    string seasonName = String.IsNullOrWhiteSpace(InputBoxWindow.UserInput) ? (CurSeason + 1).ToString() : InputBoxWindow.UserInput;
 
                     string q = "alter table Teams rename to TeamsS" + CurSeason;
                     DB.ExecuteNonQuery(q);
@@ -2291,9 +2291,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ibw = new InputBoxWindow("Enter the new name for the current season", curName);
             ibw.ShowDialog();
 
-            if (!String.IsNullOrWhiteSpace(Input))
+            if (!String.IsNullOrWhiteSpace(InputBoxWindow.UserInput))
             {
-                setSeasonName(CurSeason, Input);
+                setSeasonName(CurSeason, InputBoxWindow.UserInput);
                 cmbSeasonNum.SelectedValue = CurSeason;
             }
         }
@@ -2367,7 +2367,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 try
                 {
-                    int result = BR.ImportBoxScore(Input);
+                    int result = BR.ImportBoxScore(InputBoxWindow.UserInput);
                     if (result == -1)
                     {
                         MessageBox.Show(
@@ -2488,7 +2488,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 try
                 {
-                    GameLength = Convert.ToInt32(Input);
+                    GameLength = Convert.ToInt32(InputBoxWindow.UserInput);
                 }
                 catch (Exception)
                 {
@@ -2519,7 +2519,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 try
                 {
-                    SeasonLength = Convert.ToInt32(Input);
+                    SeasonLength = Convert.ToInt32(InputBoxWindow.UserInput);
                 }
                 catch (Exception)
                 {

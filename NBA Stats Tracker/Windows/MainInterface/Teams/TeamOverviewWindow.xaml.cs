@@ -2705,7 +2705,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 return;
             }
 
-            string newname = MainWindow.Input;
+            string newname = InputBoxWindow.UserInput;
             var dict = new Dictionary<string, string> {{"DisplayName", newname}};
             _db.Update(MainWindow.TeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
             _db.Update(MainWindow.PlTeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
@@ -2900,7 +2900,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             var ccw = new ComboChoiceWindow(ComboChoiceWindow.Mode.Division, i);
             ccw.ShowDialog();
 
-            string[] parts = MainWindow.Input.Split(new[] {": "}, 2, StringSplitOptions.None);
+            string[] parts = InputBoxWindow.UserInput.Split(new[] { ": " }, 2, StringSplitOptions.None);
             Division myDiv = MainWindow.Divisions.Find(division => division.Name == parts[1]);
 
             _tst[teamid].Division = myDiv.ID;

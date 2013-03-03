@@ -229,7 +229,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     try
                     {
-                        YearOfBirth = Convert.ToInt32(MainWindow.Input) - ParseCell.GetInt32(dataRow, "Age");
+                        YearOfBirth = Convert.ToInt32(MainWindow.BaseYear) - ParseCell.GetInt32(dataRow, "Age");
                     }
                     catch
                     {

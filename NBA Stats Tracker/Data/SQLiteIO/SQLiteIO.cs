@@ -1860,7 +1860,19 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                     DateTime.Now.Year.ToString());
                             if (ibw.ShowDialog() == false)
                             {
-                                MainWindow.Input = DateTime.Now.Year.ToString();
+                                MainWindow.BaseYear = DateTime.Now.Year;
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    MainWindow.BaseYear = Convert.ToInt32(InputBoxWindow.UserInput);
+                                }
+                                catch
+                                {
+                                    MessageBox.Show("Invalid year entered. Assuming " + DateTime.Now.Year + " as base year.");
+                                    MainWindow.BaseYear = DateTime.Now.Year;
+                                }
                             }
                         }
                     }

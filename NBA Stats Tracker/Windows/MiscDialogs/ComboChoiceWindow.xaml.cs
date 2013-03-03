@@ -49,6 +49,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         #endregion
 
         private readonly Mode _mode;
+        public static string UserChoice;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
@@ -114,11 +115,11 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 if (cmbSelection1.SelectedIndex == -1)
                     return;
-                PlayerOverviewWindow.AskedTeam = cmbSelection1.SelectedItem.ToString();
+                UserChoice = cmbSelection1.SelectedItem.ToString();
             }
             else if (_mode == Mode.Division || _mode == Mode.Generic)
             {
-                MainWindow.Input = cmbSelection1.SelectedItem.ToString();
+                UserChoice = cmbSelection1.SelectedItem.ToString();
             }
             DialogResult = true;
             Close();

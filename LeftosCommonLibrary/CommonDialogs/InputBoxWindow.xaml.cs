@@ -35,16 +35,21 @@ namespace LeftosCommonLibrary.CommonDialogs
         /// </summary>
         public static string UserInput;
 
+        private InputBoxWindow()
+        {
+            InitializeComponent();
+
+            UserInput = "";
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="InputBoxWindow" /> class.
         /// </summary>
         /// <param name="message">The prompt to display.</param>
         /// <param name="title">The title.</param>
         /// <param name="defaultValue">The default value.</param>
-        public InputBoxWindow(string message, string defaultValue = "", string title = "")
+        public InputBoxWindow(string message, string defaultValue = "", string title = "") : this()
         {
-            InitializeComponent();
-
             lblMessage.Text = message;
             Title = String.IsNullOrWhiteSpace(title) ? Tools.AppName : title;
 

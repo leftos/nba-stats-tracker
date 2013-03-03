@@ -106,7 +106,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                string name = MainWindow.Input.Replace(':', '-');
+                string name = InputBoxWindow.UserInput.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
