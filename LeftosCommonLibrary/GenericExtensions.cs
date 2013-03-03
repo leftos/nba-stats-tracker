@@ -72,7 +72,8 @@ namespace LeftosCommonLibrary
         /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
         /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
         /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
-        public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key, Type type, string splitCharacter)
+        public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key, Type type,
+                                          string splitCharacter)
         {
             try
             {
@@ -166,7 +167,8 @@ namespace LeftosCommonLibrary
         ///     If the cast is invalid, it returns the default value of the type.
         ///     If the key isn't found, it returns the original value of the variable.
         /// </returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, bool onErrorRemain = false)
+        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type,
+                                       bool onErrorRemain = false)
         {
             try
             {
@@ -178,33 +180,49 @@ namespace LeftosCommonLibrary
             {
                 Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (InvalidCastException)
             {
                 Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (FormatException)
             {
                 Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (ArgumentException)
             {
                 Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (KeyNotFoundException)
             {
@@ -250,33 +268,49 @@ namespace LeftosCommonLibrary
             {
                 Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (InvalidCastException)
             {
                 Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (FormatException)
             {
                 Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (ArgumentException)
             {
                 Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
+                {
                     return variable;
+                }
                 else
+                {
                     return default(T);
+                }
             }
             catch (KeyNotFoundException)
             {
@@ -330,7 +364,8 @@ namespace LeftosCommonLibrary
 
                     // Maybe you need here some more BindingFlags
                     foreach (FieldInfo field in
-                        t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
+                        t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy |
+                                    BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
@@ -379,7 +414,9 @@ namespace LeftosCommonLibrary
                         {
                             object value = resultArray.GetValue(indicies);
                             if (value != null)
+                            {
                                 resultArray.SetValue(value.deepClone(copies), indicies);
+                            }
                         }
                     }
                     result = (T) (Object) resultArray;

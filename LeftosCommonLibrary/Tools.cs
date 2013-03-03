@@ -67,7 +67,9 @@ namespace LeftosCommonLibrary
                 {
                     rk = rk.OpenSubKey(AppRegistryKey, true);
                     if (rk == null)
+                    {
                         throw new Exception();
+                    }
                 }
                 catch (Exception)
                 {
@@ -75,7 +77,9 @@ namespace LeftosCommonLibrary
                     rk.CreateSubKey(AppRegistryKey);
                     rk = rk.OpenSubKey(AppRegistryKey, true);
                     if (rk == null)
+                    {
                         throw new Exception("Couldn't access or create application's registry key.");
+                    }
                 }
 
                 rk.SetValue(setting, value);
@@ -101,11 +105,15 @@ namespace LeftosCommonLibrary
             try
             {
                 if (rk == null)
+                {
                     throw new Exception("The application doesn't have access to HKEY_CURRENT_USER.");
+                }
 
                 rk = rk.OpenSubKey(AppRegistryKey);
                 if (rk != null)
+                {
                     settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof (T)));
+                }
             }
             catch
             {
@@ -187,7 +195,9 @@ namespace LeftosCommonLibrary
             int numberChars = hex.Length;
             var bytes = new byte[numberChars/2];
             for (int i = 0; i < numberChars; i += 2)
+            {
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
             return bytes;
         }
 
@@ -235,7 +245,9 @@ namespace LeftosCommonLibrary
         {
             var dataRowView = dataGrid.Items[row] as DataRowView;
             if (dataRowView != null)
+            {
                 return dataRowView.Row.ItemArray[col] as DataGridCell;
+            }
 
             return null;
         }
@@ -262,14 +274,18 @@ namespace LeftosCommonLibrary
         {
             string[] arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
             if (keepDuplicates)
+            {
                 return arr.ToList();
+            }
             else
             {
                 var list = new List<string>();
                 foreach (string item in arr)
                 {
                     if (!list.Contains(item))
+                    {
                         list.Add(item);
+                    }
                 }
                 return list;
             }

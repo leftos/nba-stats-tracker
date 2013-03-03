@@ -230,7 +230,9 @@ namespace LeftosCommonLibrary
                     newColumn = kvp.Key + actualSeparator;
                 }
                 else
+                {
                     newColumn = "\" \"" + actualSeparator;
+                }
 
                 columns.Add(oldColumn, newColumn);
 
@@ -267,9 +269,13 @@ namespace LeftosCommonLibrary
                 string oldColumn = kvp.Key;
                 string newColumn;
                 if (!kvp.Key.StartsWith("Column"))
+                {
                     newColumn = kvp.Key + "\t";
+                }
                 else
+                {
                     newColumn = "\" \"" + "\t";
+                }
 
                 columns.Add(oldColumn, newColumn);
 
@@ -355,7 +361,9 @@ namespace LeftosCommonLibrary
             {
                 string[] values = lines[i].Split('\t');
                 if (values.Length < headers.Length)
+                {
                     continue;
+                }
 
                 dictList.Add(new Dictionary<string, string>());
                 for (int index = 0; index < headers.Length; index++)
@@ -379,7 +387,9 @@ namespace LeftosCommonLibrary
             {
                 string[] values = lines[i].Split('\t');
                 if (values.Length < headers.Length)
+                {
                     continue;
+                }
 
                 arrayList.Add(new string[values.Length]);
                 for (int index = 0; index < headers.Length; index++)
@@ -399,10 +409,14 @@ namespace LeftosCommonLibrary
         private static string escape(string s)
         {
             if (s.Contains(Quote))
+            {
                 s = s.Replace(Quote, EscapedQuote);
+            }
 
             if (s.IndexOfAny(CharactersThatMustBeQuoted) > -1)
+            {
                 s = Quote + s + Quote;
+            }
 
             return s;
         }
@@ -419,7 +433,9 @@ namespace LeftosCommonLibrary
                 s = s.Substring(1, s.Length - 2);
 
                 if (s.Contains(EscapedQuote))
+                {
                     s = s.Replace(EscapedQuote, Quote);
+                }
             }
 
             return s;
@@ -453,17 +469,23 @@ namespace LeftosCommonLibrary
                         if (quoted)
                         {
                             if (reader.Peek() != '"') // Value is quoted and 
+                            {
                                 // current character is " and next character is not ".
                                 quoted = false;
+                            }
                             else
+                            {
                                 reader.Read(); // Value is quoted and current and 
+                            }
                             // next characters are "" - read (skip) peeked qoute.
                         }
                         else
                         {
                             if (firstChar) // Set value as quoted only if this quote is the 
+                            {
                                 // first char in the value.
                                 quoted = true;
+                            }
                         }
                         break;
                     case '\n':
@@ -492,7 +514,9 @@ namespace LeftosCommonLibrary
                 }
 
                 if (firstChar)
+                {
                     firstChar = false;
+                }
             }
 
             int maxCount = separatorsCount.Max();
@@ -514,7 +538,9 @@ namespace LeftosCommonLibrary
             // currently works with CSV and Text DataFormats            
             IDataObject dataObj = Clipboard.GetDataObject();
             if (dataObj == null)
+            {
                 return new List<string[]>();
+            }
             if ((clipboardRawData = dataObj.GetData(DataFormats.CommaSeparatedValue)) != null)
             {
                 isCSV = true;
@@ -536,7 +562,8 @@ namespace LeftosCommonLibrary
                     rawDataStr = sr.ReadToEnd();
                 }
                 Debug.Assert(rawDataStr != null,
-                             String.Format("clipboardRawData: {0}, could not be converted to a string or memorystream.", clipboardRawData));
+                             String.Format("clipboardRawData: {0}, could not be converted to a string or memorystream.",
+                                           clipboardRawData));
 
                 clipboardData = isCSV == true ? ArrayListFromCSVString(rawDataStr, false) : ArrayListFromTSVString(rawDataStr, false);
             }

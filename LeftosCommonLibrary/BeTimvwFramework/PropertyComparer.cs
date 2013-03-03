@@ -49,8 +49,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             Type comparerForPropertyType = typeof (Comparer<>).MakeGenericType(property.PropertyType);
             _comparer =
                 (IComparer)
-                comparerForPropertyType.InvokeMember("Default", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.Public, null,
-                                                     null, null);
+                comparerForPropertyType.InvokeMember("Default", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.Public,
+                                                     null, null, null);
             setListSortDirection(direction);
         }
 

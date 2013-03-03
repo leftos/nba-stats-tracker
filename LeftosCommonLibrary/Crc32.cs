@@ -138,22 +138,32 @@ namespace LeftosCommonLibrary
         private static UInt32[] initializeTable(UInt32 polynomial)
         {
             if (polynomial == DefaultPolynomial && _defaultTable != null)
+            {
                 return _defaultTable;
+            }
 
             var createTable = new UInt32[256];
             for (int i = 0; i < 256; i++)
             {
                 var entry = (UInt32) i;
                 for (int j = 0; j < 8; j++)
+                {
                     if ((entry & 1) == 1)
+                    {
                         entry = (entry >> 1) ^ polynomial;
+                    }
                     else
+                    {
                         entry = entry >> 1;
+                    }
+                }
                 createTable[i] = entry;
             }
 
             if (polynomial == DefaultPolynomial)
+            {
                 _defaultTable = createTable;
+            }
 
             return createTable;
         }
@@ -162,10 +172,12 @@ namespace LeftosCommonLibrary
         {
             uint crc = seed;
             for (int i = start; i < size; i++)
+            {
                 unchecked
                 {
                     crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
                 }
+            }
             return crc;
         }
 

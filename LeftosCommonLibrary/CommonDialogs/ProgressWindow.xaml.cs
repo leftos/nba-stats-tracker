@@ -82,7 +82,9 @@ namespace LeftosCommonLibrary.CommonDialogs
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (!CanClose)
+            {
                 e.Cancel = true;
+            }
         }
 
         /// <summary>

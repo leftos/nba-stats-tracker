@@ -112,7 +112,9 @@ namespace LeftosCommonLibrary
                     }
                     PropertyInfo pi = item.GetType().GetProperty(propertyName);
                     if (pi == null)
+                    {
                         continue;
+                    }
 
                     //PropertyInfo opi = item.GetType().GetProperty(originalPropertyName);
                     Type pType = index != null ? pi.PropertyType.GetGenericArguments()[0] : pi.PropertyType;
@@ -200,20 +202,14 @@ namespace LeftosCommonLibrary
                     Window parentWindow = Window.GetWindow(dataGrid);
                     Debug.Assert(parentWindow != null, "parentWindow != null");
                     parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-                                                                                        {
-                                                                                            dataGrid.Focus();
-                                                                                            dataGrid.SelectedIndex =
-                                                                                                dataGrid.Items.IndexOf(
-                                                                                                    CollectionView.NewItemPlaceholder);
-                                                                                            dataGrid.CurrentCell =
-                                                                                                new DataGridCellInfo(
-                                                                                                    CollectionView.NewItemPlaceholder,
-                                                                                                    dataGrid.Columns[0]);
+                        {
+                            dataGrid.Focus();
+                            dataGrid.SelectedIndex = dataGrid.Items.IndexOf(CollectionView.NewItemPlaceholder);
+                            dataGrid.CurrentCell = new DataGridCellInfo(CollectionView.NewItemPlaceholder, dataGrid.Columns[0]);
 
-                                                                                            //dataGrid.BeginEdit();
-                                                                                            return null;
-                                                                                        }), DispatcherPriority.Background,
-                                                        new object[] {null});
+                            //dataGrid.BeginEdit();
+                            return null;
+                        }), DispatcherPriority.Background, new object[] {null});
                 }
             }
         }
