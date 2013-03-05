@@ -2035,7 +2035,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         {
                             UpdateStatus("New season started. Database saved.");
                             IsEnabled = true;
-                        }).FailFastOnException(UIScheduler);
+                        }, UIScheduler).FailFastOnException(UIScheduler);
                 }
             }
         }

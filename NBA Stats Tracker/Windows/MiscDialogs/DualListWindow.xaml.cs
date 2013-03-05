@@ -92,7 +92,12 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
             foreach (var team in validTeams)
             {
-                string s = String.Format("{0} (ID: {1})", team["Name"], team["ID"]);
+                string s = String.Format("{0}", team["Name"]);
+                if (team.ContainsKey("Year") && team["Year"] != "0")
+                {
+                    s += " '" + team["Year"].PadLeft(2, '0');
+                }
+                s += " (ID: " + team["ID"] + ")";
                 if (!activeTeams.Contains(team))
                 {
                     lstDisabled.Items.Add(s);

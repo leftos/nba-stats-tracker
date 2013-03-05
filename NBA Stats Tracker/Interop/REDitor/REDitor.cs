@@ -113,6 +113,18 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return;
             }
 
+            List<Dictionary<string, string>> teams;
+            List<Dictionary<string, string>> players;
+            List<Dictionary<string, string>> teamStats;
+            List<Dictionary<string, string>> playerStats;
+
+            NBA2KVersion nba2KVersion;
+            if (populateREDitorDictionaryLists(folder, out teams, out players, out teamStats, out playerStats, out nba2KVersion) == -1)
+            {
+                MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-1);
+                return;
+            }
+
             var list = new List<string> {"1 season ago"};
             for (int i = 2; i <= 20; i++)
             {
@@ -129,46 +141,58 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
 
-            var ibw =
-                new InputBoxWindow(
-                    "Enter the current season (e.g. 2011-2012 by default in NBA 2K12, 2012 for a season" +
-                    " taking place only in that year, etc.):", "2011-2012");
-            if (ibw.ShowDialog() != true)
-            {
-                MainWindow.MWInstance.mainGrid.Visibility = Visibility.Visible;
-                return;
-            }
-
-            int year;
-            bool twoPartSeasonDesc = InputBoxWindow.UserInput.Contains("-");
-            try
-            {
-                year = Convert.ToInt32(twoPartSeasonDesc ? InputBoxWindow.UserInput.Split('-')[0] : InputBoxWindow.UserInput);
-            }
-            catch
-            {
-                MessageBox.Show("The year you entered (" + InputBoxWindow.UserInput +
-                                ") was not in a valid format.\nValid formats are:\n\t2012\n\t2011-2012");
-                MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
-                return;
-            }
-
             var seasonNames = new Dictionary<int, string>();
-            for (int i = startAt; i <= 20; i++)
+            if (nba2KVersion == NBA2KVersion.NBA2K12)
             {
-                seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
+                var ibw =
+                    new InputBoxWindow(
+                        "Enter the current season (e.g. 2011-2012 by default in NBA 2K12, 2012 for a season" +
+                        " taking place only in that year, etc.):", "2011-2012");
+                if (ibw.ShowDialog() != true)
+                {
+                    MainWindow.MWInstance.mainGrid.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                int year;
+                bool twoPartSeasonDesc = InputBoxWindow.UserInput.Contains("-");
+                try
+                {
+                    year = Convert.ToInt32(twoPartSeasonDesc ? InputBoxWindow.UserInput.Split('-')[0] : InputBoxWindow.UserInput);
+                }
+                catch
+                {
+                    MessageBox.Show("The year you entered (" + InputBoxWindow.UserInput +
+                                    ") was not in a valid format.\nValid formats are:\n\t2012\n\t2011-2012");
+                    MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
+                    return;
+                }
+
+                for (int i = startAt; i <= 20; i++)
+                {
+                    seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
+                }
             }
-
-            List<Dictionary<string, string>> teams;
-            List<Dictionary<string, string>> players;
-            List<Dictionary<string, string>> teamStats;
-            List<Dictionary<string, string>> playerStats;
-
-            NBA2KVersion nba2KVersion;
-            if (populateREDitorDictionaryLists(folder, out teams, out players, out teamStats, out playerStats, out nba2KVersion) == -1)
+            else
             {
-                MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-1);
-                return;
+                int year = -1;
+                for (int j = 0; j < players.Count;j++)
+                {
+                    if (players[j]["StatY" + startAt] != "-1")
+                    {
+                        year = playerStats.Single(stats => stats["ID"] == players[j]["StatY" + startAt])["Year"].ToInt32();
+                        break;
+                    }
+                }
+                if (year == -1)
+                {
+                    MessageBox.Show("There were no players with stats starting " + startAt + " years ago.");
+                    MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
+                }
+                for (int i = startAt; i <= 20; i++)
+                {
+                    seasonNames.Add(i, string.Format("{0}-{1}", year - i, (year - i + 1)));
+                }
             }
 
             initializeLegalTeamTypes(nba2KVersion);
@@ -602,6 +626,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             foreach (var team in activeTeams)
             {
                 string name = team["Name"];
+                if (nba2KVersion != NBA2KVersion.NBA2K12)
+                {
+                    name += (team["Year"] == "0" ? "" : team["Year"].PadLeft(2, '0'));
+                }
                 int redID = Convert.ToInt32(team["ID"]);
                 if (tst.Values.All(ts => ts.Name != name))
                 {
@@ -1095,18 +1123,18 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         if (!oldPlayer.Injury.IsInjured)
                         {
-                            injuredList.Add(string.Format("{0} ({1}) got injured. Status: {2}", name, tst[curPlayer.TeamF].DisplayName,
+                            injuredList.Add(string.Format("{0} ({1}) got injured. Status: {2}", name, curPlayer.TeamF != -1 ? tst[curPlayer.TeamF].DisplayName : "Free Agent",
                                                           curPlayer.Injury.Status));
                         }
                         else if (!curPlayer.Injury.IsInjured)
                         {
-                            recoveredList.Add(string.Format("{0} ({1}) is no longer injured.", tst[curPlayer.TeamF].DisplayName, name));
+                            recoveredList.Add(string.Format("{0} ({1}) is no longer injured.", curPlayer.TeamF != -1 ? tst[curPlayer.TeamF].DisplayName : "Free Agent", name));
                         }
                         else
                         {
                             reInjuredList.Add(string.Format("{0} ({3}) was injured with {1}, is now injured again. Status: {2}", name,
                                                             oldPlayer.Injury.InjuryName, curPlayer.Injury.Status,
-                                                            tst[curPlayer.TeamF].DisplayName));
+                                                            curPlayer.TeamF != -1 ? tst[curPlayer.TeamF].DisplayName : "Free Agent"));
                         }
                     }
 
@@ -1364,23 +1392,32 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var rosters = new Dictionary<int, List<int>>();
             foreach (var team in activeTeams)
             {
-                int id = -1;
                 string name = team["Name"];
-                if (oldTST.All(pair => pair.Value.Name != name))
+                if (nba2KVersion != NBA2KVersion.NBA2K12)
                 {
-                    for (int i = 0; i < 30; i++)
+                    name += (team["Year"] == "0" ? "" : team["Year"].PadLeft(2, '0'));
+                }
+                int redID = Convert.ToInt32(team["ID"]);
+                if (tst.Values.All(ts => ts.Name != name))
+                {
+                    if (tst.Keys.Contains(redID))
                     {
-                        if (!tst.ContainsKey(i))
+                        string oldName = tst[redID].Name;
+                        tst[redID].Name = name;
+                        tstOpp[redID].Name = name;
+                        if (oldName == tst[redID].DisplayName)
                         {
-                            id = i;
-                            break;
+                            tst[redID].DisplayName = name;
+                            tstOpp[redID].DisplayName = name;
                         }
                     }
+                    else
+                    {
+                        tst.Add(redID, new TeamStats(redID, name));
+                        tstOpp.Add(redID, new TeamStats(redID, name));
+                    }
                 }
-                else
-                {
-                    id = oldTST.Single(pair => pair.Value.Name == name).Key;
-                }
+                int id = tst.Values.Single(ts => ts.Name == name).ID;
                 activeTeamsIDs.Add(Convert.ToInt32(team["ID"]));
 
                 if (madeNew)
