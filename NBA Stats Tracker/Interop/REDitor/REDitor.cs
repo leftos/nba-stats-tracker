@@ -1095,16 +1095,18 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         if (!oldPlayer.Injury.IsInjured)
                         {
-                            injuredList.Add(name + " got injured. Status: " + curPlayer.Injury.Status);
+                            injuredList.Add(string.Format("{0} ({1}) got injured. Status: {2}", name, tst[curPlayer.TeamF].DisplayName,
+                                                          curPlayer.Injury.Status));
                         }
                         else if (!curPlayer.Injury.IsInjured)
                         {
-                            recoveredList.Add(name + " is no longer injured.");
+                            recoveredList.Add(string.Format("{0} ({1}) is no longer injured.", tst[curPlayer.TeamF].DisplayName, name));
                         }
                         else
                         {
-                            reInjuredList.Add(name + " was injured with " + oldPlayer.Injury.InjuryName +
-                                              ", is now injured again. Status: " + curPlayer.Injury.Status);
+                            reInjuredList.Add(string.Format("{0} ({3}) was injured with {1}, is now injured again. Status: {2}", name,
+                                                            oldPlayer.Injury.InjuryName, curPlayer.Injury.Status,
+                                                            tst[curPlayer.TeamF].DisplayName));
                         }
                     }
 
