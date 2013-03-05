@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.2
+		- Fix: Fixed some minor interface bugs
+
 	v1.12.0.1
 		- Fix: Fixed crash when, due to bugs, the tool tried to concurrently populate the memory from the database multiple times; if you notice any instances where the tool loads from the database multiple times in a row, please contact the developer with the steps to reproduce this
 
