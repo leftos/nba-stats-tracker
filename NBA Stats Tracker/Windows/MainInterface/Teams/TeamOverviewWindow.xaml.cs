@@ -84,6 +84,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private string _teamBestG = "";
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, TeamStats> _tstOpp;
+        private DateTime _lastEndDate = DateTime.MinValue;
+        private DateTime _lastStartDate = DateTime.MinValue;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -1432,14 +1434,20 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (dtpEnd.SelectedDate.GetValueOrDefault() == _lastEndDate)
+            {
+                return;
+            }
             if (_changingTimeframe)
             {
                 return;
             }
             _changingTimeframe = true;
+            _lastEndDate = dtpEnd.SelectedDate.GetValueOrDefault();
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
-                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
+                dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1); 
+                _lastStartDate = dtpStart.SelectedDate.GetValueOrDefault();
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
@@ -1489,14 +1497,20 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (dtpEnd.SelectedDate.GetValueOrDefault() == _lastEndDate)
+            {
+                return;
+            }
             if (_changingTimeframe)
             {
                 return;
             }
             _changingTimeframe = true;
+            _lastStartDate = dtpStart.SelectedDate.GetValueOrDefault();
             if (dtpEnd.SelectedDate < dtpStart.SelectedDate)
             {
                 dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
+                _lastEndDate = dtpEnd.SelectedDate.GetValueOrDefault();
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
@@ -1514,10 +1528,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.Tf = new Timeframe(_curSeason);
             if (!_changingTimeframe)
             {
+                _changingTimeframe = true;
+                _lastEndDate = DateTime.MinValue;
+                _lastStartDate = DateTime.MinValue;
+                MainWindow.Tf = new Timeframe(_curSeason);
                 updateData();
+                _changingTimeframe = false;
             }
         }
 
@@ -1531,10 +1549,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             if (!_changingTimeframe)
             {
+                _changingTimeframe = true;
+                _lastEndDate = DateTime.MinValue;
+                _lastStartDate = DateTime.MinValue;
+                MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                 updateData();
+                _changingTimeframe = false;
             }
         }
 
@@ -2700,6 +2722,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             if (!_changingTimeframe)
             {
                 _changingTimeframe = true;
+                _lastEndDate = DateTime.MinValue;
+                _lastStartDate = DateTime.MinValue;
                 rbStatsAllTime.IsChecked = true;
                 if (cmbSeasonNum.SelectedIndex == -1)
                 {
