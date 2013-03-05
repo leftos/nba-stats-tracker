@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.11.2.0
+		- Improvement: Improved Player Stats pasting code in Team & League Overview as to matching the players in the clipboard data with the ones in the database
+		- Fix: Fixed Team Stats pasting code in League Overview so that it differentiates between Team Stats and Opponent Stats
+		- Fix: Fixed a few column headers that wrote "TPM" and "TPA" instead of "3PM" and "3PA"
+
 	v1.11.1.1
 		- Fix: Fixed window used to show a list of box scores not showing most information
 
