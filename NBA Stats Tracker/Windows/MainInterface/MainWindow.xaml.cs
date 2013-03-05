@@ -1065,7 +1065,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     }
                 }
 
-                int eresult = REDitor.ExportCurrentYear(TST, TSTOpp, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+                int eresult = REDitor.ExportCurrentYear(TST, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
 
                 if (eresult != 0)
                 {

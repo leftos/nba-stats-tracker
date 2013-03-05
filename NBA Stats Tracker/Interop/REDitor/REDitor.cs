@@ -67,7 +67,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         public static List<int> TeamsThatPlayedAGame;
         public static List<int> PickedTeams;
         public static DateTime SelectedDate;
-
+        private static List<string> _legalTTypes;
+        
         /// <summary>
         ///     Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
         /// </summary>
@@ -170,11 +171,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return;
             }
 
-            var legalTTypes = new List<string> {"0", "4"};
+            initializeLegalTeamTypes(nba2KVersion);
 
             List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
                 {
-                    if (legalTTypes.IndexOf(team["TType"]) != -1)
+                    if (_legalTTypes.IndexOf(team["TType"]) != -1)
                     {
                         return true;
                     }
@@ -402,8 +403,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                         #endregion Match Player
 
-                        PlayerStats curPlayer = pst[playerID];
-
                         string qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
                         DataTable dt = MainWindow.DB.GetDataTable(qr);
                         dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
@@ -536,6 +535,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return -1;
             }
 
+            initializeLegalTeamTypes(nba2KVersion);
+
             var importMessages = new List<string>();
             var tradesList = new List<string>();
             var faSigningsList = new List<string>();
@@ -547,11 +548,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             #region Import Teams & Team Stats
 
-            var legalTTypes = new List<string> {"0", "4"};
-
             List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
                 {
-                    if (legalTTypes.IndexOf(team["TType"]) != -1)
+                    if (_legalTTypes.IndexOf(team["TType"]) != -1)
                     {
                         return true;
                     }
@@ -1273,6 +1272,21 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return 0;
         }
 
+        private static void initializeLegalTeamTypes(NBA2KVersion nba2KVersion)
+        {
+            switch (nba2KVersion)
+            {
+                case NBA2KVersion.NBA2K12:
+                    _legalTTypes = new List<string> {"0", "4"};
+                    break;
+                case NBA2KVersion.NBA2K13:
+                    _legalTTypes = new List<string> {"0", "21"};
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static int ImportLastYear(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
                                          ref Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
         {
@@ -1289,11 +1303,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             #region Import Teams & Team Stats
 
-            var legalTTypes = new List<string> {"0", "4"};
+            initializeLegalTeamTypes(nba2KVersion);
 
             List<Dictionary<string, string>> validTeams = teams.FindAll(delegate(Dictionary<string, string> team)
                 {
-                    if (legalTTypes.IndexOf(team["TType"]) != -1)
+                    if (_legalTTypes.IndexOf(team["TType"]) != -1)
                     {
                         return true;
                     }
@@ -1881,15 +1895,14 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         ///     Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into REDitor.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
-        /// <param name="tstOpp">The opposing team stats dictionary.</param>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="folder">The folder.</param>
         /// <param name="teamsOnly">
         ///     if set to <c>true</c>, only the teams' stats will be exported.
         /// </param>
         /// <returns></returns>
-        public static int ExportCurrentYear(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
-                                            Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
+        public static int ExportCurrentYear(Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst, string folder,
+                                            bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
             List<Dictionary<string, string>> players;
