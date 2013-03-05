@@ -1443,8 +1443,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            _changingTimeframe = false;
             updateData();
+            _changingTimeframe = false;
         }
 
         private void updateData()
@@ -1500,8 +1500,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            _changingTimeframe = false;
             updateData();
+            _changingTimeframe = false;
         }
 
         /// <summary>
