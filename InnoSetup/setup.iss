@@ -298,13 +298,12 @@ begin
 #endif
 #endif
 	
-	// If no .NET 4.0 framework found, install the smallest
-#ifdef use_dotnetfx40
-	if not dotnetfx40client(true) then
-	    if not dotnetfx40full(true) then
-	        dotnetfx40client(false);
-	// Alternatively:
-	// dotnetfx40full();
+#ifdef use_dotnetfx40full
+	dotnetfx40full(false);
+#endif
+
+#ifdef use_dotnetfx40client
+  dotnetfx40client(false);
 #endif
 
 	// Visual C++ 2010 Redistributable
