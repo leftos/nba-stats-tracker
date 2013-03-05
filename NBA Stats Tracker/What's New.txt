@@ -1,5 +1,12 @@
 NBA Stats Tracker - Version History
 
+	v1.12
+		- Addition: Import/Export using REDitor should now be NBA 2K13 compatible
+		- Fix: Advanced Player Search no longer resets the timeframe dates when opened
+		- Fix: Fixed bugs during async load and save operations
+		- Improvement: Injury messages when importing with REDitor will now include the team of the player
+		- Fix: Other minor bugs fixed
+
 	v1.11.2.0
 		- Improvement: Improved Player Stats pasting code in Team & League Overview as to matching the players in the clipboard data with the ones in the database
 		- Fix: Fixed Team Stats pasting code in League Overview so that it differentiates between Team Stats and Opponent Stats
