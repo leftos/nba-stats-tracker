@@ -2702,13 +2702,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                         {
                             splitPlayerStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
-                                                     new PlayerStats {ID = key});
+                                                      new PlayerStats {ID = key});
                             break;
                         }
                         else
                         {
                             splitPlayerStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
-                                                     new PlayerStats {ID = key});
+                                                      new PlayerStats {ID = key});
                             dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                         }
                     }

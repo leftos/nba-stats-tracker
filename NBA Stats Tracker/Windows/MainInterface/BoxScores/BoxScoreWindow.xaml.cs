@@ -96,7 +96,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
                 IsEnabled = false;
-                Task.Factory.StartNew(() => MainWindow.UpdateAllData(true)).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
+                Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
+                    .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                    .ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler)
+                    .FailFastOnException(MainWindow.MWInstance.UIScheduler);
             }
             else
             {
@@ -601,7 +604,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 if (MainWindow.bs.MINS1 <= 0)
                 {
                     throwErrorWithMessage(
-                        "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.", teamName);
+                        "You have to enter the game's minutes. Usually 48 for 4 quarters, 53 for 1 overtime, 58 for 2 overtimes.",
+                        teamName);
                 }
 
                 MainWindow.bs.PTS1 = Convert.ToUInt16(txtPTS1.Text);

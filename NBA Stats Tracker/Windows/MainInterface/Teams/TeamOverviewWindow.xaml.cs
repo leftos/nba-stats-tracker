@@ -1451,8 +1451,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             IsEnabled = false;
             Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                      .ContinueWith(linkInternalsToMainWindow)
-                      .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                .ContinueWith(linkInternalsToMainWindow)
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler)
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler);
         }
 
         private void refresh()

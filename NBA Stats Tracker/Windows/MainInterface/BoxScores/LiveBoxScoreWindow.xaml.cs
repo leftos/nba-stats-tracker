@@ -454,7 +454,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to close without saving this Live Box Score?", App.AppName,
+            if (
+                MessageBox.Show("Are you sure you want to close without saving this Live Box Score?", App.AppName,
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
             {
                 return;

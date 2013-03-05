@@ -52,7 +52,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         }
 
         public static Task ContinueWithAndWatchExceptions(this Task task, Action<Task> action, TaskScheduler actionScheduler,
-                                                      TaskScheduler exceptionScheduler)
+                                                          TaskScheduler exceptionScheduler)
         {
             task.ContinueWith(action, actionScheduler).FailFastOnException(exceptionScheduler);
             return task;

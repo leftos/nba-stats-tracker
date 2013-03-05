@@ -701,9 +701,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _rankingsPosition = new PlayerRankings(_playersSamePosition);
             _plRankingsPosition = new PlayerRankings(_playersSamePosition, true);
 
-            foreach (
-                BoxScoreEntry bse in
-                    MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID && !pbs.IsOut)).ToList())
+            foreach (BoxScoreEntry bse in
+                MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID && !pbs.IsOut)).ToList())
             {
                 var pbs = new PlayerBoxScore();
                 pbs = bse.PBSList.Single(pbs1 => pbs1.PlayerID == _psr.ID);
@@ -1150,7 +1149,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler)
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler);
         }
 
         /// <summary>

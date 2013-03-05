@@ -488,6 +488,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             StartProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, 10, "Saving new database...");
             Task.Factory.StartNew(() => SQLiteIO.SaveDatabaseAs(file))
+                .FailFastOnException(UIScheduler)
                 .ContinueWith(t => finishSavingAs(t, file), UIScheduler)
                 .FailFastOnException(UIScheduler);
         }
@@ -569,6 +570,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             StartProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
             Task.Factory.StartNew(() => SQLiteIO.LoadSeason())
+                .FailFastOnException(UIScheduler)
                 .ContinueWith(t => FinishLoadingDatabase(), UIScheduler)
                 .FailFastOnException(UIScheduler);
 
@@ -791,7 +793,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             Task.Factory.StartNew(
                 () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
+                .FailFastOnException(UIScheduler)
                 .ContinueWith(t => UpdateAllData())
+                .FailFastOnException(UIScheduler)
                 .ContinueWith(t => finishParsingBoxScore(), UIScheduler)
                 .FailFastOnException(UIScheduler);
         }
@@ -1435,10 +1439,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (!LoadingSeason)
             {
                 IsEnabled = false;
-                Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
+                Task.Factory.StartNew(() => UpdateAllData()).FailFastOnException(UIScheduler).ContinueWith(t =>
                     {
                         IsEnabled = true;
-                    });
+                    }, UIScheduler).FailFastOnException(UIScheduler);
             }
         }
 
@@ -1713,9 +1717,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 Tf = new Timeframe(CurSeason);
                 Task.Factory.StartNew(() => UpdateAllData(true))
+                    .FailFastOnException(UIScheduler)
                     .ContinueWith(
                         t => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
+                    .FailFastOnException(UIScheduler)
                     .ContinueWith(t => UpdateAllData(true))
+                    .FailFastOnException(UIScheduler)
                     .ContinueWith(t => finishSavingSeason(), UIScheduler)
                     .FailFastOnException(UIScheduler);
             }
@@ -1819,7 +1826,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             grdUpdate.IsEnabled = true;
 
             MWInstance.IsEnabled = false;
-            Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
+            Task.Factory.StartNew(() => UpdateAllData()).FailFastOnException(UIScheduler).ContinueWith(t =>
                 {
                     StopProgressWatchTimer();
                     MWInstance.IsEnabled = true;
@@ -2024,11 +2031,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ChangeSeason(CurSeason);
                     Tf = new Timeframe(CurSeason);
                     IsEnabled = false;
-                    Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
+                    Task.Factory.StartNew(() => UpdateAllData()).FailFastOnException(UIScheduler).ContinueWith(t =>
                         {
                             UpdateStatus("New season started. Database saved.");
                             IsEnabled = true;
-                        });
+                        }).FailFastOnException(UIScheduler);
                 }
             }
         }
@@ -2047,6 +2054,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             StartProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving all seasons...");
             Task.Factory.StartNew(() => SQLiteIO.SaveAllSeasons(CurrentDB))
+                .FailFastOnException(UIScheduler)
                 .ContinueWith(t => finishSavingAllSeasons(), UIScheduler)
                 .FailFastOnException(UIScheduler);
         }
@@ -2333,7 +2341,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             Tools.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
-        
+
         /// <summary>
         ///     Handles the Click event of the mnuOptionsExportTeamsOnly control.
         ///     Sets whether only the team stats will be exported when exporting to an NBA 2K save.
@@ -2631,18 +2639,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ascw = new AdvancedStatCalculatorWindow();
             ascw.ShowDialog();
         }
-        
+
         public static void UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
         {
-            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None,
-                                      TaskCreationOptions.None, MWInstance.UIScheduler).FailFastOnException(MWInstance.UIScheduler).Wait();
+            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
+                                  MWInstance.UIScheduler).Wait();
             DBData dbData;
             SQLiteIO.PopulateAll(Tf, out dbData);
             ParseDBData(dbData);
             if (!onlyPopulate)
             {
                 Task.Factory.StartNew(() => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), CancellationToken.None,
-                                      TaskCreationOptions.None, MWInstance.UIScheduler).FailFastOnException(MWInstance.UIScheduler).Wait();
+                                      TaskCreationOptions.None, MWInstance.UIScheduler).Wait();
             }
         }
 

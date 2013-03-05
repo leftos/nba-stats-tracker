@@ -307,8 +307,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             IsEnabled = false;
             Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                      .ContinueWith(t => linkInternalsToMainWindow())
-                      .ContinueWith(t => refresh(rbStatsBetween.IsChecked.GetValueOrDefault()), MainWindow.MWInstance.UIScheduler);
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                .ContinueWith(t => linkInternalsToMainWindow())
+                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
+                .ContinueWith(t => refresh(rbStatsBetween.IsChecked.GetValueOrDefault()), MainWindow.MWInstance.UIScheduler);
         }
 
         /// <summary>
@@ -1781,8 +1783,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                             var matching = new List<PlayerStats>();
                             if (dict.ContainsKey("Last Name"))
                             {
-                                matching = MainWindow.PST.Values.Where(
-                                    ps => ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ToList();
+                                matching =
+                                    MainWindow.PST.Values.Where(
+                                        ps => ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ToList();
                             }
                             else if (dict.ContainsKey("Name"))
                             {
@@ -1807,10 +1810,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                             {
                                 try
                                 {
-                                    matching =
-                                        matching.Where(
-                                            ps =>
-                                            MainWindow.TST[ps.TeamF].DisplayName == dict["Team"]).ToList();
+                                    matching = matching.Where(ps => MainWindow.TST[ps.TeamF].DisplayName == dict["Team"]).ToList();
                                 }
                                 catch
                                 {

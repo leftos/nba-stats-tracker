@@ -309,6 +309,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
 
                         #region Match Player
+
                         if (pst.ContainsKey(playerID) && (pst[playerID].LastName != lastName || pst[playerID].FirstName != firstName))
                         {
                             List<KeyValuePair<int, PlayerStats>> candidates =
@@ -522,7 +523,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// </param>
         /// <returns></returns>
         public static int ImportCurrentYear(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp,
-                                    ref Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
+                                            ref Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
             List<Dictionary<string, string>> players;
@@ -1575,9 +1576,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 if (team1 != "-1" && activeTeamsIDs.Contains(team1.ToInt32()))
                                 {
                                     KeyValuePair<int, TeamStats> curTeam =
-                                        tst.Single(
-                                            team =>
-                                            team.Value.Name == activeTeams.Find(ateam => ateam["ID"] == team1)["Name"]);
+                                        tst.Single(team => team.Value.Name == activeTeams.Find(ateam => ateam["ID"] == team1)["Name"]);
 
                                     List<KeyValuePair<int, PlayerStats>> c3 =
                                         candidates.Where(pair => pair.Value.TeamF == curTeam.Value.ID).ToList();
@@ -1889,8 +1888,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         ///     if set to <c>true</c>, only the teams' stats will be exported.
         /// </param>
         /// <returns></returns>
-        public static int ExportCurrentYear(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp, Dictionary<int, PlayerStats> pst,
-                                    string folder, bool teamsOnly = false)
+        public static int ExportCurrentYear(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
+                                            Dictionary<int, PlayerStats> pst, string folder, bool teamsOnly = false)
         {
             List<Dictionary<string, string>> teams;
             List<Dictionary<string, string>> players;
