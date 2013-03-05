@@ -96,7 +96,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
                 IsEnabled = false;
-                Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
+                Task.Factory.StartNew(() => MainWindow.UpdateAllData(true)).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
             }
             else
             {

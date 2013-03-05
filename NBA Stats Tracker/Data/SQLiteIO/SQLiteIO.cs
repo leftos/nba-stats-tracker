@@ -196,7 +196,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(oldSeason);
-                MainWindow.UpdateAllDataBlocking();
+                MainWindow.UpdateAllData();
             }
             doSaveAllSeasons(file, maxSeason, oldSeason, oldDB);
         }
@@ -215,7 +215,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     MainWindow.CurrentDB = oldDB;
                     MainWindow.Tf = new Timeframe(i);
                     ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Loading season {2}...", (++curStep), steps, i));
-                    MainWindow.UpdateAllDataBlocking(onlyPopulate: true);
+                    MainWindow.UpdateAllData(onlyPopulate: true);
                     ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Saving season {2}...", (++curStep), steps, i));
                     SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, i, maxSeason);
                 }

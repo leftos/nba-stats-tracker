@@ -278,7 +278,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private void updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
         }
 
         private void refresh()

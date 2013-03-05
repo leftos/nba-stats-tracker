@@ -306,7 +306,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private void updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true))
+            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
                       .ContinueWith(t => linkInternalsToMainWindow())
                       .ContinueWith(t => refresh(rbStatsBetween.IsChecked.GetValueOrDefault()), MainWindow.MWInstance.UIScheduler);
         }

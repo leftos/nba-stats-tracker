@@ -423,7 +423,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllDataBlocking();
+                UpdateAllData();
             }
 
             var fbd = new FolderBrowserDialog
@@ -791,7 +791,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             Task.Factory.StartNew(
                 () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                .ContinueWith(t => UpdateAllDataBlocking())
+                .ContinueWith(t => UpdateAllData())
                 .ContinueWith(t => finishParsingBoxScore(), UIScheduler)
                 .FailFastOnException(UIScheduler);
         }
@@ -979,7 +979,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllDataBlocking();
+                UpdateAllData();
             }
 
             var fbd = new FolderBrowserDialog
@@ -1435,7 +1435,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (!LoadingSeason)
             {
                 IsEnabled = false;
-                Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+                Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
                     {
                         IsEnabled = true;
                     });
@@ -1712,10 +1712,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                Task.Factory.StartNew(() => UpdateAllDataBlocking(true))
+                Task.Factory.StartNew(() => UpdateAllData(true))
                     .ContinueWith(
                         t => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .ContinueWith(t => UpdateAllDataBlocking(true))
+                    .ContinueWith(t => UpdateAllData(true))
                     .ContinueWith(t => finishSavingSeason(), UIScheduler)
                     .FailFastOnException(UIScheduler);
             }
@@ -1723,7 +1723,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 Task.Factory.StartNew(
                     () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .ContinueWith(t => UpdateAllDataBlocking(true))
+                    .ContinueWith(t => UpdateAllData(true))
                     .ContinueWith(t => finishSavingSeason(), UIScheduler)
                     .FailFastOnException(UIScheduler);
             }
@@ -1819,7 +1819,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             grdUpdate.IsEnabled = true;
 
             MWInstance.IsEnabled = false;
-            Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+            Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
                 {
                     StopProgressWatchTimer();
                     MWInstance.IsEnabled = true;
@@ -2024,7 +2024,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ChangeSeason(CurSeason);
                     Tf = new Timeframe(CurSeason);
                     IsEnabled = false;
-                    Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+                    Task.Factory.StartNew(() => UpdateAllData()).ContinueWith(t =>
                         {
                             UpdateStatus("New season started. Database saved.");
                             IsEnabled = true;
@@ -2632,7 +2632,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ascw.ShowDialog();
         }
         
-        public static void UpdateAllDataBlocking(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
+        public static void UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
         {
             Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None,
                                       TaskCreationOptions.None, MWInstance.UIScheduler).FailFastOnException(MWInstance.UIScheduler).Wait();
