@@ -2941,10 +2941,50 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                     {
                         try
                         {
-                            id =
-                                _pst.Values.Single(
-                                    ps =>
-                                    ps.TeamF == _curTeam && ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ID;
+                            var matching = new List<PlayerStats>();
+                            if (dict.ContainsKey("Last Name"))
+                            {
+                                matching =
+                                    MainWindow.PST.Values.Where(
+                                        ps => ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ToList();
+                            }
+                            else if (dict.ContainsKey("Name"))
+                            {
+                                if (dict["Name"].Contains(", "))
+                                {
+                                    var parts = dict["Name"].Split(',');
+                                    matching =
+                                        MainWindow.PST.Values.Where(ps => ps.LastName == parts[0] && ps.FirstName == parts[1]).ToList();
+                                }
+                                else
+                                {
+                                    var parts = dict["Name"].Split(new[] {' '}, 2);
+                                    matching =
+                                        MainWindow.PST.Values.Where(ps => ps.LastName == parts[1] && ps.FirstName == parts[0]).ToList();
+                                }
+                            }
+                            if (matching.Count == 0)
+                            {
+                                throw new Exception();
+                            }
+                            if (matching.Count > 1)
+                            {
+                                try
+                                {
+                                    matching = matching.Where(ps => ps.TeamF == _curTeam).ToList();
+                                }
+                                catch
+                                {
+                                }
+                            }
+                            if (matching.Count > 1)
+                            {
+                                throw new Exception();
+                            }
+                            else
+                            {
+                                id = matching[0].ID;
+                            }
                         }
                         catch (Exception)
                         {

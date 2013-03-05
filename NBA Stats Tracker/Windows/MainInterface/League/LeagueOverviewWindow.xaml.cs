@@ -406,9 +406,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <summary>
         ///     Prepares and presents the player stats.
         /// </summary>
-        /// <param name="leaders">
-        ///     if set to <c>true</c>, the stats are calculated based on the NBA rules for League Leaders standings.
-        /// </param>
         private void preparePlayerStats()
         {
             _psrList = new List<PlayerStatsRow>();
@@ -1780,9 +1777,52 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     {
                         try
                         {
-                            id =
-                                MainWindow.PST.Values.Single(
-                                    ps => ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ID;
+                            var matching = new List<PlayerStats>();
+                            if (dict.ContainsKey("Last Name"))
+                            {
+                                matching = MainWindow.PST.Values.Where(
+                                    ps => ps.LastName == dict["Last Name"] && ps.FirstName == dict["First Name"]).ToList();
+                            }
+                            else if (dict.ContainsKey("Name"))
+                            {
+                                if (dict["Name"].Contains(", "))
+                                {
+                                    var parts = dict["Name"].Split(',');
+                                    matching =
+                                        MainWindow.PST.Values.Where(ps => ps.LastName == parts[0] && ps.FirstName == parts[1]).ToList();
+                                }
+                                else
+                                {
+                                    var parts = dict["Name"].Split(new[] {' '}, 2);
+                                    matching =
+                                        MainWindow.PST.Values.Where(ps => ps.LastName == parts[1] && ps.FirstName == parts[0]).ToList();
+                                }
+                            }
+                            if (matching.Count == 0)
+                            {
+                                throw new Exception();
+                            }
+                            if (matching.Count > 1)
+                            {
+                                try
+                                {
+                                    matching =
+                                        matching.Where(
+                                            ps =>
+                                            MainWindow.TST[ps.TeamF].DisplayName == dict["Team"]).ToList();
+                                }
+                                catch
+                                {
+                                }
+                            }
+                            if (matching.Count > 1)
+                            {
+                                throw new Exception();
+                            }
+                            else
+                            {
+                                id = matching[0].ID;
+                            }
                         }
                         catch (Exception)
                         {
@@ -1809,8 +1849,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 ((DataGrid) sender).ItemsSource = null;
                 ((DataGrid) sender).ItemsSource = list;
 
-                MessageBox.Show("Data pasted successfully! Remember to save!", "NBA Stats Tracker", MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                MessageBox.Show(
+                    "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
+                    "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1819,9 +1860,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 List<Dictionary<string, string>> dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
-
+                var dg = (DataGrid) sender;
                 bool isSeason = rbSeason.IsChecked.GetValueOrDefault();
-                List<TeamStatsRow> list = isSeason ? TSRList : pl_TSRList;
+                List<TeamStatsRow> list;
+                if (isSeason)
+                {
+                    list = !dg.Name.Contains("Opp") ? TSRList : oppTSRList;
+                }
+                else
+                {
+                    list = !dg.Name.Contains("Opp") ? pl_TSRList : pl_OppTSRList;
+                }
 
                 for (int j = 0; j < dictList.Count; j++)
                 {
@@ -1851,7 +1900,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                         TeamStatsRow.TryChangeTSR(ref tsr, dict);
                         TeamStatsRow.Refresh(ref tsr);
                         list[list.FindIndex(ts => ts.ID == id)] = tsr;
-                        MainWindow.TST[tsr.ID] = new TeamStats(tsr, !isSeason);
+                        if (!dg.Name.Contains("Opp"))
+                        {
+                            MainWindow.TST[tsr.ID] = new TeamStats(tsr, !isSeason);
+                        }
+                        else
+                        {
+                            MainWindow.TSTOpp[tsr.ID] = new TeamStats(tsr, !isSeason);
+                        }
                     }
                     catch (Exception)
                     {
