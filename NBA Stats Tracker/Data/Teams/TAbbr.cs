@@ -168,7 +168,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 "PythW",
                 "PythL",
                 "TS%",
-                "EFGp",
+                "EFG%",
                 "3PR",
                 "DREB%",
                 "OREB%",
@@ -176,6 +176,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 "TOR",
                 "FTR",
                 "Poss",
+                "PossPG",
                 "Pace"
             };
     }

@@ -92,10 +92,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             InitializeComponent();
 
-            Height = Misc.GetRegistrySetting("TeamOvHeight", (int) Height);
-            Width = Misc.GetRegistrySetting("TeamOvWidth", (int) Width);
-            Top = Misc.GetRegistrySetting("TeamOvY", (int) Top);
-            Left = Misc.GetRegistrySetting("TeamOvX", (int) Left);
+            Height = Tools.GetRegistrySetting("TeamOvHeight", (int) Height);
+            Width = Tools.GetRegistrySetting("TeamOvWidth", (int) Width);
+            Top = Tools.GetRegistrySetting("TeamOvY", (int) Top);
+            Left = Tools.GetRegistrySetting("TeamOvX", (int) Left);
         }
 
         /// <summary>
@@ -1450,7 +1450,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private void updateData()
         {
             IsEnabled = false;
-            MainWindow.UpdateAllData(true)
+            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true))
                       .ContinueWith(linkInternalsToMainWindow)
                       .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
         }
@@ -2781,10 +2781,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.TSTOpp = _tstOpp;
             MainWindow.PST = _pst;
 
-            Misc.SetRegistrySetting("TeamOvHeight", Height);
-            Misc.SetRegistrySetting("TeamOvWidth", Width);
-            Misc.SetRegistrySetting("TeamOvX", Left);
-            Misc.SetRegistrySetting("TeamOvY", Top);
+            Tools.SetRegistrySetting("TeamOvHeight", Height);
+            Tools.SetRegistrySetting("TeamOvWidth", Width);
+            Tools.SetRegistrySetting("TeamOvX", Left);
+            Tools.SetRegistrySetting("TeamOvY", Top);
         }
 
         /// <summary>

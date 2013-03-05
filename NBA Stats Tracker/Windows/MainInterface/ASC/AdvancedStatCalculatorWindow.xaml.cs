@@ -24,6 +24,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Ciloci.Flee;
@@ -139,10 +140,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             populateTeamsCombo();
 
-            Height = Misc.GetRegistrySetting("ASCHeight", (int) Height);
-            Width = Misc.GetRegistrySetting("ASCWidth", (int) Width);
-            Top = Misc.GetRegistrySetting("ASCY", (int) Top);
-            Left = Misc.GetRegistrySetting("ASCX", (int) Left);
+            Height = Tools.GetRegistrySetting("ASCHeight", (int) Height);
+            Width = Tools.GetRegistrySetting("ASCWidth", (int) Width);
+            Top = Tools.GetRegistrySetting("ASCY", (int) Top);
+            Left = Tools.GetRegistrySetting("ASCX", (int) Left);
         }
 
         private void formatTotalsForTeams()
@@ -277,7 +278,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private void updateData()
         {
             IsEnabled = false;
-            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
         }
 
         private void refresh()
@@ -1312,10 +1313,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            Misc.SetRegistrySetting("ASCHeight", Height);
-            Misc.SetRegistrySetting("ASCWidth", Width);
-            Misc.SetRegistrySetting("ASCX", Left);
-            Misc.SetRegistrySetting("ASCY", Top);
+            Tools.SetRegistrySetting("ASCHeight", Height);
+            Tools.SetRegistrySetting("ASCWidth", Width);
+            Tools.SetRegistrySetting("ASCX", Left);
+            Tools.SetRegistrySetting("ASCY", Top);
         }
 
         #region Nested type: Filter

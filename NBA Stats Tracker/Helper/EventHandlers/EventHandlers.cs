@@ -43,21 +43,24 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     /// </summary>
     public static class EventHandlers
     {
+        public static Task ContinueWithExceptionWatch(this Task task, Action<Task> action, TaskScheduler actionScheduler,
+                                                      TaskScheduler exceptionScheduler)
+        {
+            task.ContinueWith(action, actionScheduler).FailFastOnException(exceptionScheduler);
+            return task;
+        }
+
         public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c =>
-                {
-                    App.ErrorReport(c.Exception, "Task exception");
-                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(c => App.ErrorReport(c.Exception, "Task exception"), CancellationToken.None,
+                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
 
         public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c =>
-                {
-                    App.ErrorReport(c.Exception, "Task exception");
-                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(c => App.ErrorReport(c.Exception, "Task exception"), CancellationToken.None,
+                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
             return task;
         }
 

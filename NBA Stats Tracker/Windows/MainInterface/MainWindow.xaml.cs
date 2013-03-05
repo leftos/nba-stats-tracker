@@ -279,35 +279,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 //
                 MessageBox.Show("This feature is temporarily disabled. Sorry for the inconvenience.", "NBA Stats Tracker",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
-                Environment.Exit(-1);
+                Environment.Exit(0);
             }
             else
             {
-                int importSetting = Misc.GetRegistrySetting("NBA2K12ImportMethod", 0);
-                if (importSetting == 0)
-                {
-                    mnuOptionsImportREDitor.IsChecked = true;
-                }
-                else
-                {
-                    Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
-                    mnuOptionsImportREDitor.IsChecked = true;
-                }
-
-                int exportTeamsOnly = Misc.GetRegistrySetting("ExportTeamsOnly", 1);
+                int exportTeamsOnly = Tools.GetRegistrySetting("ExportTeamsOnly", 1);
                 mnuOptionsExportTeamsOnly.IsChecked = exportTeamsOnly == 1;
 
-                int compatibilityCheck = Misc.GetRegistrySetting("CompatibilityCheck", 1);
+                int compatibilityCheck = Tools.GetRegistrySetting("CompatibilityCheck", 1);
                 mnuOptionsCompatibilityCheck.IsChecked = compatibilityCheck == 1;
 
-                IsImperial = Misc.GetRegistrySetting("IsImperial", 1) == 1;
+                IsImperial = Tools.GetRegistrySetting("IsImperial", 1) == 1;
                 mnuOptionsIsImperial.IsChecked = IsImperial;
 
                 // Displays a message to urge the user to donate at the 50th start of the program.
-                int timesStarted = Misc.GetRegistrySetting("TimesStarted", -1);
+                int timesStarted = Tools.GetRegistrySetting("TimesStarted", -1);
                 if (timesStarted == -1)
                 {
-                    Misc.SetRegistrySetting("TimesStarted", 1);
+                    Tools.SetRegistrySetting("TimesStarted", 1);
                 }
                 else if (timesStarted <= 50)
                 {
@@ -331,7 +320,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                             timesStarted = -1;
                         }
                     }
-                    Misc.SetRegistrySetting("TimesStarted", timesStarted + 1);
+                    Tools.SetRegistrySetting("TimesStarted", timesStarted + 1);
                 }
             }
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -434,14 +423,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData();
+                UpdateAllDataBlocking();
             }
 
             var fbd = new FolderBrowserDialog
                 {
                     Description = "Select folder with REDitor-exported CSVs",
                     ShowNewFolderButton = false,
-                    SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+                    SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
             DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
@@ -455,9 +444,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+            Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            int result = REDitor.ImportAll(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
+            int result = REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -577,10 +566,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
-            doLoadSeasonInThread().ContinueWith(t => FinishLoadingDatabase(), UIScheduler);
-
             StartProgressWatchTimer();
+            ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
+            Task.Factory.StartNew(() => SQLiteIO.LoadSeason())
+                .ContinueWith(t => FinishLoadingDatabase(), UIScheduler)
+                .FailFastOnException(UIScheduler);
 
             //SQLiteIO.LoadSeason();
         }
@@ -627,19 +617,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
         }
 
-        private Task<bool> doLoadSeasonInThread()
+        private void doPopulateAll()
         {
-            return Task.Factory.StartNew(() => SQLiteIO.LoadSeasonInThread()).FailFastOnException(UIScheduler);
-        }
-
-        private Task doPopulateAllInThread()
-        {
-            DBData dbData = null;
-            Task result =
-                Task.Factory.StartNew(() => SQLiteIO.PopulateAll(Tf, out dbData))
-                    .ContinueWith(t => ParseDBData(dbData))
-                    .FailFastOnException(UIScheduler);
-            return result;
+            DBData dbData;
+            SQLiteIO.PopulateAll(Tf, out dbData);
+            ParseDBData(dbData);
         }
 
         public static void ParseDBData(DBData dbData)
@@ -809,7 +791,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             Task.Factory.StartNew(
                 () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                .ContinueWith(t => UpdateAllData())
+                .ContinueWith(t => UpdateAllDataBlocking())
                 .ContinueWith(t => finishParsingBoxScore(), UIScheduler)
                 .FailFastOnException(UIScheduler);
         }
@@ -997,14 +979,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData();
+                UpdateAllDataBlocking();
             }
 
             var fbd = new FolderBrowserDialog
                 {
                     Description = "Select folder with REDitor-exported CSVs",
                     ShowNewFolderButton = false,
-                    SelectedPath = Misc.GetRegistrySetting("LastExportDir", "")
+                    SelectedPath = Tools.GetRegistrySetting("LastExportDir", "")
                 };
             DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
@@ -1018,14 +1000,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            Misc.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
+            Tools.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
 
             if (mnuOptionsCompatibilityCheck.IsChecked)
             {
                 var temptst = new Dictionary<int, TeamStats>();
                 var temptstOpp = new Dictionary<int, TeamStats>();
                 var temppst = new Dictionary<int, PlayerStats>();
-                int result = REDitor.ImportAll(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
+                int result = REDitor.ImportCurrentYear(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
 
                 if (result != 0)
                 {
@@ -1079,7 +1061,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     }
                 }
 
-                int eresult = REDitor.ExportAll(TST, TSTOpp, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+                int eresult = REDitor.ExportCurrentYear(TST, TSTOpp, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
 
                 if (eresult != 0)
                 {
@@ -1453,7 +1435,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (!LoadingSeason)
             {
                 IsEnabled = false;
-                UpdateAllData();
+                Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+                    {
+                        IsEnabled = true;
+                    });
             }
         }
 
@@ -1654,7 +1639,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
             //dispatcherTimer.Start();
 
-            int checkForUpdatesSetting = Misc.GetRegistrySetting("CheckForUpdates", 1);
+            int checkForUpdatesSetting = Tools.GetRegistrySetting("CheckForUpdates", 1);
             if (checkForUpdatesSetting == 1)
             {
                 mnuOptionsCheckForUpdates.IsChecked = true;
@@ -1699,6 +1684,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         ///     Updates the status bar message and starts the timer which will revert it after a number of seconds.
         /// </summary>
         /// <param name="newStatus">The new status.</param>
+        /// <param name="noResetTimer">If <c>true</c>, the status won't be reset after a few seconds.</param>
         public void UpdateStatus(string newStatus, bool noResetTimer = false)
         {
             _dispatcherTimer.Stop();
@@ -1726,10 +1712,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData()
+                Task.Factory.StartNew(() => UpdateAllDataBlocking(true))
                     .ContinueWith(
                         t => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .ContinueWith(t => UpdateAllData(true))
+                    .ContinueWith(t => UpdateAllDataBlocking(true))
                     .ContinueWith(t => finishSavingSeason(), UIScheduler)
                     .FailFastOnException(UIScheduler);
             }
@@ -1737,7 +1723,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 Task.Factory.StartNew(
                     () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .ContinueWith(t => UpdateAllData(true))
+                    .ContinueWith(t => UpdateAllDataBlocking(true))
                     .ContinueWith(t => finishSavingSeason(), UIScheduler)
                     .FailFastOnException(UIScheduler);
             }
@@ -1832,7 +1818,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             grdAnalysis.IsEnabled = true;
             grdUpdate.IsEnabled = true;
 
-            UpdateAllData();
+            MWInstance.IsEnabled = false;
+            Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+                {
+                    StopProgressWatchTimer();
+                    MWInstance.IsEnabled = true;
+                }, UIScheduler).FailFastOnException(UIScheduler);
         }
 
         /// <summary>
@@ -2032,8 +2023,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, CurSeason);
                     ChangeSeason(CurSeason);
                     Tf = new Timeframe(CurSeason);
-                    UpdateAllData();
-                    UpdateStatus("New season started. Database saved.");
+                    IsEnabled = false;
+                    Task.Factory.StartNew(() => UpdateAllDataBlocking()).ContinueWith(t =>
+                        {
+                            UpdateStatus("New season started. Database saved.");
+                            IsEnabled = true;
+                        });
                 }
             }
         }
@@ -2336,27 +2331,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         internal void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
-            Misc.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
+            Tools.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
-
-        /// <summary>
-        ///     Handles the Click event of the mnuOptionsImportREDitor control.
-        ///     Changes the NBA 2K import/export method to using REDitor-exported CSV files.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void mnuOptionsImportREDitor_Click(object sender, RoutedEventArgs e)
-        {
-            if (!mnuOptionsImportREDitor.IsChecked)
-            {
-                mnuOptionsImportREDitor.IsChecked = true;
-            }
-
-            Misc.SetRegistrySetting("NBA2K12ImportMethod", 0);
-        }
-
+        
         /// <summary>
         ///     Handles the Click event of the mnuOptionsExportTeamsOnly control.
         ///     Sets whether only the team stats will be exported when exporting to an NBA 2K save.
@@ -2367,7 +2344,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuOptionsExportTeamsOnly_Click(object sender, RoutedEventArgs e)
         {
-            Misc.SetRegistrySetting("ExportTeamsOnly", mnuOptionsExportTeamsOnly.IsChecked ? 1 : 0);
+            Tools.SetRegistrySetting("ExportTeamsOnly", mnuOptionsExportTeamsOnly.IsChecked ? 1 : 0);
         }
 
         /// <summary>
@@ -2380,7 +2357,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuOptionsCompatibilityCheck_Click(object sender, RoutedEventArgs e)
         {
-            Misc.SetRegistrySetting("CompatibilityCheck", mnuOptionsCompatibilityCheck.IsChecked ? 1 : 0);
+            Tools.SetRegistrySetting("CompatibilityCheck", mnuOptionsCompatibilityCheck.IsChecked ? 1 : 0);
         }
 
         /// <summary>
@@ -2654,27 +2631,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ascw = new AdvancedStatCalculatorWindow();
             ascw.ShowDialog();
         }
-
-        public static Task UpdateAllData(bool leaveProgressWindowOpen = false)
-        {
-            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
-                                  MWInstance.UIScheduler).Wait();
-
-            Task result =
-                MWInstance.doPopulateAllInThread()
-                          .ContinueWith(t => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), MWInstance.UIScheduler);
-
-            return result;
-        }
-
+        
         public static void UpdateAllDataBlocking(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
         {
+            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None,
+                                      TaskCreationOptions.None, MWInstance.UIScheduler).FailFastOnException(MWInstance.UIScheduler).Wait();
             DBData dbData;
             SQLiteIO.PopulateAll(Tf, out dbData);
             ParseDBData(dbData);
             if (!onlyPopulate)
             {
-                MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen);
+                Task.Factory.StartNew(() => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), CancellationToken.None,
+                                      TaskCreationOptions.None, MWInstance.UIScheduler).FailFastOnException(MWInstance.UIScheduler).Wait();
             }
         }
 
@@ -3018,7 +2986,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     Description = "Select folder with REDitor-exported CSVs",
                     ShowNewFolderButton = false,
-                    SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+                    SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
             DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
@@ -3032,9 +3000,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+            Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            int result = REDitor.ImportPrevious(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
+            int result = REDitor.ImportLastYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -3049,7 +3017,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void mnuOptionsIsImperial_Click(object sender, RoutedEventArgs e)
         {
             IsImperial = mnuOptionsIsImperial.IsChecked;
-            Misc.SetRegistrySetting("IsImperial", IsImperial ? 1 : 0);
+            Tools.SetRegistrySetting("IsImperial", IsImperial ? 1 : 0);
         }
 
         private void mnuMiscPreferNBALeaders_Checked(object sender, RoutedEventArgs e)
@@ -3074,7 +3042,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     Description = "Select folder with REDitor-exported CSVs",
                     ShowNewFolderButton = false,
-                    SelectedPath = Misc.GetRegistrySetting("LastImportDir", "")
+                    SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
             DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
 
@@ -3088,11 +3056,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            Misc.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
+            Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            REDitor.ImportOld(PST, TST, fbd.SelectedPath);
+            REDitor.ImportOldPlayerCareerStats(PST, TST, fbd.SelectedPath);
         }
 
         public void OnImportOldPlayerStatsCompleted(int result)

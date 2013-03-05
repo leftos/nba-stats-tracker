@@ -41,27 +41,6 @@ namespace NBA_Stats_Tracker.Data.Teams
     [Serializable]
     public class TeamStats
     {
-        public static List<string> MetricsNames = new List<string>
-            {
-                "Poss",
-                "Pace",
-                "ORTG",
-                "DRTG",
-                "AST%",
-                "DREB%",
-                "EFG%",
-                "EFFd",
-                "TOR",
-                "OREB%",
-                "FTR",
-                "PW%",
-                "TS%",
-                "3PR",
-                "PythW",
-                "PythL",
-                "GmSc"
-            };
-
         public int Conference;
         public string CurStreak;
 
@@ -255,7 +234,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             Division = 0;
             Conference = 0;
 
-            MetricsNames.ForEach(metricName =>
+            TAbbr.MetricsNames.ForEach(metricName =>
                 {
                     Metrics.Add(metricName, double.NaN);
                     PlMetrics.Add(metricName, double.NaN);

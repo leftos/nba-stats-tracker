@@ -196,10 +196,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(oldSeason);
-                MainWindow.UpdateAllData();
+                MainWindow.UpdateAllDataBlocking();
             }
             doSaveAllSeasons(file, maxSeason, oldSeason, oldDB);
-            //saveCurrentAndCopyToNew(file, oldDB, maxSeason);
         }
 
         private static void doSaveAllSeasons(string file, int maxSeason, int oldSeason, string oldDB)
@@ -2626,21 +2625,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var myLock = new object();
             Parallel.ForEach(teams, id =>
                 {
+                    var key = id;
                     lock (myLock)
                     {
-                        splitTeamStats.Add(id, new Dictionary<string, TeamStats>());
+                        splitTeamStats.Add(key, new Dictionary<string, TeamStats>());
                     }
-                    splitTeamStats[id].Add("Wins", new TeamStats());
-                    splitTeamStats[id].Add("Losses", new TeamStats());
-                    splitTeamStats[id].Add("Home", new TeamStats());
-                    splitTeamStats[id].Add("Away", new TeamStats());
-                    splitTeamStats[id].Add("Season", new TeamStats());
-                    splitTeamStats[id].Add("Playoffs", new TeamStats());
+                    splitTeamStats[key].Add("Wins", new TeamStats());
+                    splitTeamStats[key].Add("Losses", new TeamStats());
+                    splitTeamStats[key].Add("Home", new TeamStats());
+                    splitTeamStats[key].Add("Away", new TeamStats());
+                    splitTeamStats[key].Add("Season", new TeamStats());
+                    splitTeamStats[key].Add("Playoffs", new TeamStats());
                     foreach (var pair in tst)
                     {
-                        if (pair.Key != id)
+                        if (pair.Key != key)
                         {
-                            splitTeamStats[id].Add("vs " + displayNames[pair.Key], new TeamStats());
+                            splitTeamStats[key].Add("vs " + displayNames[pair.Key], new TeamStats());
                         }
                     }
                     DateTime dCur = tf.StartDate;
@@ -2648,21 +2648,21 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     {
                         if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                         {
-                            splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
+                            splitTeamStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                             break;
                         }
                         else
                         {
-                            splitTeamStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
+                            splitTeamStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'), new TeamStats());
                             dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                         }
                     }
-                    splitTeamStats[id].Add(better500, new TeamStats());
-                    splitTeamStats[id].Add(worse500, new TeamStats());
-                    splitTeamStats[id].Add("Division", new TeamStats());
-                    splitTeamStats[id].Add("Conference", new TeamStats());
-                    splitTeamStats[id].Add("Last 10", new TeamStats());
-                    splitTeamStats[id].Add("Before", new TeamStats());
+                    splitTeamStats[key].Add(better500, new TeamStats());
+                    splitTeamStats[key].Add(worse500, new TeamStats());
+                    splitTeamStats[key].Add("Division", new TeamStats());
+                    splitTeamStats[key].Add("Conference", new TeamStats());
+                    splitTeamStats[key].Add("Last 10", new TeamStats());
+                    splitTeamStats[key].Add("Before", new TeamStats());
                 });
 
             //foreach (var id in pst.Keys)
@@ -2673,26 +2673,27 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             sortedNames.Sort();
             Parallel.ForEach(pIDs, id =>
                 {
+                    var key = id;
                     lock (myLock)
                     {
-                        splitPlayerStats.Add(id, new Dictionary<string, PlayerStats>());
+                        splitPlayerStats.Add(key, new Dictionary<string, PlayerStats>());
                     }
-                    splitPlayerStats[id].Add("Wins", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Losses", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Home", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Away", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Season", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Playoffs", new PlayerStats {ID = id});
+                    splitPlayerStats[key].Add("Wins", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Losses", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Home", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Away", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Season", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Playoffs", new PlayerStats {ID = key});
 
-                    bsHist.Where(bse => playerGameIDs[id].Contains(bse.BS.ID))
-                          .Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == id).TeamID)
+                    bsHist.Where(bse => playerGameIDs[key].Contains(bse.BS.ID))
+                          .Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == key).TeamID)
                           .Distinct()
                           .ToList()
-                          .ForEach(teamID => splitPlayerStats[id].Add("with " + displayNames[teamID], new PlayerStats {ID = id}));
+                          .ForEach(teamID => splitPlayerStats[key].Add("with " + displayNames[teamID], new PlayerStats {ID = key}));
 
                     foreach (string name in sortedNames)
                     {
-                        splitPlayerStats[id].Add("vs " + name, new PlayerStats {ID = id});
+                        splitPlayerStats[key].Add("vs " + name, new PlayerStats {ID = key});
                     }
                     DateTime dCur = tf.StartDate;
 
@@ -2700,22 +2701,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     {
                         if (new DateTime(dCur.Year, dCur.Month, 1) == new DateTime(tf.EndDate.Year, tf.EndDate.Month, 1))
                         {
-                            splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
-                                                     new PlayerStats {ID = id});
+                            splitPlayerStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
+                                                     new PlayerStats {ID = key});
                             break;
                         }
                         else
                         {
-                            splitPlayerStats[id].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
-                                                     new PlayerStats {ID = id});
+                            splitPlayerStats[key].Add("M " + dCur.Year + " " + dCur.Month.ToString().PadLeft(2, '0'),
+                                                     new PlayerStats {ID = key});
                             dCur = new DateTime(dCur.Year, dCur.Month, 1).AddMonths(1);
                         }
                     }
 
-                    splitPlayerStats[id].Add(better500, new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add(worse500, new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Last 10", new PlayerStats {ID = id});
-                    splitPlayerStats[id].Add("Before", new PlayerStats {ID = id});
+                    splitPlayerStats[key].Add(better500, new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add(worse500, new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Last 10", new PlayerStats {ID = key});
+                    splitPlayerStats[key].Add("Before", new PlayerStats {ID = key});
                 });
 
             #endregion

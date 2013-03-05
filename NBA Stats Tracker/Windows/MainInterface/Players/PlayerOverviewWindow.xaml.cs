@@ -25,6 +25,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -93,10 +94,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             InitializeComponent();
 
-            Height = Misc.GetRegistrySetting("PlayerOvHeight", (int) Height);
-            Width = Misc.GetRegistrySetting("PlayerOvWidth", (int) Width);
-            Top = Misc.GetRegistrySetting("PlayerOvY", (int) Top);
-            Left = Misc.GetRegistrySetting("PlayerOvX", (int) Left);
+            Height = Tools.GetRegistrySetting("PlayerOvHeight", (int) Height);
+            Width = Tools.GetRegistrySetting("PlayerOvWidth", (int) Width);
+            Top = Tools.GetRegistrySetting("PlayerOvY", (int) Top);
+            Left = Tools.GetRegistrySetting("PlayerOvX", (int) Left);
 
             prepareWindow();
         }
@@ -1149,7 +1150,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void updateData()
         {
             IsEnabled = false;
-            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
         }
 
         /// <summary>
@@ -2098,10 +2099,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
-            Misc.SetRegistrySetting("PlayerOvHeight", Height);
-            Misc.SetRegistrySetting("PlayerOvWidth", Width);
-            Misc.SetRegistrySetting("PlayerOvX", Left);
-            Misc.SetRegistrySetting("PlayerOvY", Top);
+            Tools.SetRegistrySetting("PlayerOvHeight", Height);
+            Tools.SetRegistrySetting("PlayerOvWidth", Width);
+            Tools.SetRegistrySetting("PlayerOvX", Left);
+            Tools.SetRegistrySetting("PlayerOvY", Top);
         }
 
         private void btnAddPastStats_Click(object sender, RoutedEventArgs e)

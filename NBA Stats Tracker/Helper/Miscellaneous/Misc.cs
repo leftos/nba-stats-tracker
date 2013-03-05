@@ -129,15 +129,5 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                 }
             }
         }
-
-        public static T GetRegistrySetting<T>(string setting, T defaultValue)
-        {
-            return Tools.GetRegistrySetting(setting, defaultValue);
-        }
-
-        public static void SetRegistrySetting<T>(string setting, T value)
-        {
-            Tools.SetRegistrySetting(setting, value);
-        }
     }
 }

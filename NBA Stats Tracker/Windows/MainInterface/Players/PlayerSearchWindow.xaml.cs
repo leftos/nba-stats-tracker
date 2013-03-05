@@ -150,10 +150,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             populateTeamsCombo();
 
-            Height = Misc.GetRegistrySetting("APSHeight", (int) Height);
-            Width = Misc.GetRegistrySetting("APSWidth", (int) Width);
-            Top = Misc.GetRegistrySetting("APSY", (int) Top);
-            Left = Misc.GetRegistrySetting("APSX", (int) Left);
+            Height = Tools.GetRegistrySetting("APSHeight", (int) Height);
+            Width = Tools.GetRegistrySetting("APSWidth", (int) Width);
+            Top = Tools.GetRegistrySetting("APSY", (int) Top);
+            Left = Tools.GetRegistrySetting("APSX", (int) Left);
         }
 
         private void populateCustomCombos()
@@ -1508,7 +1508,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void updateData()
         {
             IsEnabled = false;
-            MainWindow.UpdateAllData(true).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
+            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler);
         }
 
         private void refresh()
@@ -1888,10 +1888,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            Misc.SetRegistrySetting("APSHeight", Height);
-            Misc.SetRegistrySetting("APSWidth", Width);
-            Misc.SetRegistrySetting("APSX", Left);
-            Misc.SetRegistrySetting("APSY", Top);
+            Tools.SetRegistrySetting("APSHeight", Height);
+            Tools.SetRegistrySetting("APSWidth", Width);
+            Tools.SetRegistrySetting("APSX", Left);
+            Tools.SetRegistrySetting("APSY", Top);
         }
     }
 }

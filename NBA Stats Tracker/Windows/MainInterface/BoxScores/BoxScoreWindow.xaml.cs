@@ -24,6 +24,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -95,7 +96,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
                 IsEnabled = false;
-                MainWindow.UpdateAllData(true).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
+                Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true)).ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler);
             }
             else
             {

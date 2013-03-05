@@ -122,6 +122,7 @@
     <Compile Include="Helper\Miscellaneous\ProgressInfo.cs" />
     <Compile Include="Helper\Miscellaneous\StartingFivePermutation.cs" />
     <Compile Include="Helper\WindowsForms\WindowsForms.cs" />
+    <Compile Include="Interop\REDitor\NBA2KVersion.cs" />
     <Compile Include="Interop\REDitor\REDitor.cs" />
     <Compile Include="Interop\BR\BR.cs" />
     <Compile Include="Properties\Annotations.cs" />

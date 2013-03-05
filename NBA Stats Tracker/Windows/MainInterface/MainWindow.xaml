@@ -39,11 +39,7 @@
                     <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
                 </MenuItem>
                 <MenuItem Header="_Options">
-                    <MenuItem Header="_NBA 2K12 Options">
-                        <MenuItem Header="_Import/Export Method" Visibility="Collapsed">
-                            <MenuItem Header="_REDitor" Name="mnuOptionsImportREDitor" IsCheckable="True"
-                                      Click="mnuOptionsImportREDitor_Click" />
-                        </MenuItem>
+                    <MenuItem Header="_NBA 2K Options">
                         <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly"
                                   IsCheckable="True" Click="mnuOptionsExportTeamsOnly_Click" />
                         <MenuItem Header="_Check for compatibility" Name="mnuOptionsCompatibilityCheck"

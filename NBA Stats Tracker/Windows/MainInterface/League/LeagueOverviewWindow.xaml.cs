@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -132,10 +133,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             InitializeComponent();
 
-            Height = Misc.GetRegistrySetting("LeagueOvHeight", (int) Height);
-            Width = Misc.GetRegistrySetting("LeagueOvWidth", (int) Width);
-            Top = Misc.GetRegistrySetting("LeagueOvY", (int) Top);
-            Left = Misc.GetRegistrySetting("LeagueOvX", (int) Left);
+            Height = Tools.GetRegistrySetting("LeagueOvHeight", (int) Height);
+            Width = Tools.GetRegistrySetting("LeagueOvWidth", (int) Width);
+            Top = Tools.GetRegistrySetting("LeagueOvY", (int) Top);
+            Left = Tools.GetRegistrySetting("LeagueOvX", (int) Left);
 
             _dtBS = new DataTable();
 
@@ -305,9 +306,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private void updateData()
         {
             IsEnabled = false;
-            MainWindow.UpdateAllData(true)
+            Task.Factory.StartNew(() => MainWindow.UpdateAllDataBlocking(true))
                       .ContinueWith(t => linkInternalsToMainWindow())
-                      .ContinueWith(t => refresh(true), MainWindow.MWInstance.UIScheduler);
+                      .ContinueWith(t => refresh(rbStatsBetween.IsChecked.GetValueOrDefault()), MainWindow.MWInstance.UIScheduler);
         }
 
         /// <summary>
@@ -1521,10 +1522,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _lastShownPlayerSeason = 0;
             _lastShownBoxSeason = 0;
 
-            Misc.SetRegistrySetting("LeagueOvHeight", Height);
-            Misc.SetRegistrySetting("LeagueOvWidth", Width);
-            Misc.SetRegistrySetting("LeagueOvX", Left);
-            Misc.SetRegistrySetting("LeagueOvY", Top);
+            Tools.SetRegistrySetting("LeagueOvHeight", Height);
+            Tools.SetRegistrySetting("LeagueOvWidth", Width);
+            Tools.SetRegistrySetting("LeagueOvX", Left);
+            Tools.SetRegistrySetting("LeagueOvY", Top);
         }
 
         /// <summary>
