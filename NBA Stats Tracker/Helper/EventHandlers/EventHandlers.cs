@@ -43,7 +43,15 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     /// </summary>
     public static class EventHandlers
     {
-        public static Task ContinueWithExceptionWatch(this Task task, Action<Task> action, TaskScheduler actionScheduler,
+        public static Task StartNewAndWatchExceptions(this TaskFactory taskFactory, Action action, TaskScheduler actionScheduler,
+                                                      TaskScheduler exceptionScheduler)
+        {
+            return
+                taskFactory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, actionScheduler)
+                           .FailFastOnException(exceptionScheduler);
+        }
+
+        public static Task ContinueWithAndWatchExceptions(this Task task, Action<Task> action, TaskScheduler actionScheduler,
                                                       TaskScheduler exceptionScheduler)
         {
             task.ContinueWith(action, actionScheduler).FailFastOnException(exceptionScheduler);
@@ -154,11 +162,10 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         }
 
         /// <summary>
-        ///     Sorts the column in descending order first, if it's not already sorted. Used for columns containing stats.
+        /// Sorts the column in descending order first, if it's not already sorted. Used for columns containing stats.
         /// </summary>
-        /// <param name="e">
-        ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
-        /// </param>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
         public static void StatColumn_Sorting(DataGrid sender, DataGridSortingEventArgs e)
         {
             var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team", "Returns", "Injury"};
