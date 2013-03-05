@@ -1558,9 +1558,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             if (!_changingTimeframe)
             {
+                MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
                 updateData();
             }
         }
@@ -1603,9 +1603,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
-            MainWindow.Tf = new Timeframe(_curSeason);
             if (!_changingTimeframe)
             {
+                MainWindow.Tf = new Timeframe(_curSeason);
                 updateData();
             }
         }
