@@ -2122,21 +2122,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             try
             {
                 string text = guards[0].GetBestStats(5);
-                txbTeam1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") +
+                txbOpp1.Text = "G: " + guards[0].FirstName + " " + guards[0].LastName + (guards[0].IsInjured ? " (Injured)" : "") +
                                 "\n\n" + text;
                 string[] lines = text.Split('\n');
                 _oppBestG = string.Format("{0} {1}\n({2}, {3}, {4})\n", guards[0].FirstName, guards[0].LastName, lines[0], lines[1],
                                           lines[2]);
 
                 text = fors[0].GetBestStats(5);
-                txbTeam2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].IsInjured ? " (Injured)" : "") + "\n\n" +
+                txbOpp2.Text = "F: " + fors[0].FirstName + " " + fors[0].LastName + (fors[0].IsInjured ? " (Injured)" : "") + "\n\n" +
                                 text;
                 lines = text.Split('\n');
                 _oppBestF = string.Format("{0} {1}\n({2}, {3}, {4})\n", fors[0].FirstName, fors[0].LastName, lines[0], lines[1],
                                           lines[2]);
 
                 text = centers[0].GetBestStats(5);
-                txbTeam3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") +
+                txbOpp3.Text = "C: " + centers[0].FirstName + " " + centers[0].LastName + (centers[0].IsInjured ? " (Injured)" : "") +
                                 "\n\n" + text;
                 lines = text.Split('\n');
                 _oppBestC = string.Format("{0} {1}\n({2}, {3}, {4})\n", centers[0].FirstName, centers[0].LastName, lines[0], lines[1],

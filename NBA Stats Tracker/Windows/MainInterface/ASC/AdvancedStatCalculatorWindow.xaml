@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d"
+        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:boxScores="clr-namespace:NBA_Stats_Tracker.Data.BoxScores"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" mc:Ignorable="d"
         Title="Advanced Stats Calculator" Height="535" Width="892" Loaded="window_Loaded"
         WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Window.Resources>
@@ -1115,9 +1117,10 @@
             <Grid VerticalAlignment="Stretch">
                 <DataGrid AutoGenerateColumns="False" CanUserSortColumns="True" Name="dgvBoxScores"
                           VerticalAlignment="Stretch" Margin="6,6,6,0"
-                          Style="{StaticResource DataGridStyle}" IsReadOnly="True" Sorting="dgvBoxScores_Sorting">
+                          Style="{StaticResource DataGridStyle}" IsReadOnly="True" Sorting="dgvBoxScores_Sorting"
+                          d:DataContext="{d:DesignInstance teams:TeamBoxScore}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
+                        <DataGridTextColumn Binding="{Binding GameDate, StringFormat=d}" Header="Date" />
                         <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Away" />
                         <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
                         <DataGridTextColumn Binding="{Binding DisplayTeam}" Header="Home" />
@@ -2124,7 +2127,7 @@
                           VerticalAlignment="Stretch" Margin="6,6,6,0"
                           Style="{StaticResource DataGridStyle}" IsReadOnly="True" Sorting="dgvBoxScores_Sorting">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding gamedate, StringFormat=d}" Header="Date" />
+                        <DataGridTextColumn Binding="{Binding GameDate, StringFormat=d}" Header="Date" />
                         <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Away" />
                         <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
                         <DataGridTextColumn Binding="{Binding DisplayTeam}" Header="Home" />
