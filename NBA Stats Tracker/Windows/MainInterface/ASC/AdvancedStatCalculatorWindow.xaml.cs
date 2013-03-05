@@ -312,10 +312,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 {
                     MainWindow.Tf = new Timeframe(_curSeason);
                     MainWindow.ChangeSeason(_curSeason);
-                    SQLiteIO.LoadSeason();
+                    updateData();
                 }
-
-                populateTeamsCombo();
 
                 _changingTimeframe = false;
             }
