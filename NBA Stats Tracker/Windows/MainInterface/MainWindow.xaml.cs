@@ -191,6 +191,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private bool _watchTimerRunning;
         private BackgroundWorker _worker1 = new BackgroundWorker();
         private DispatcherTimer dt;
+        private static object _lock = new object();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -2642,15 +2643,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static void UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
         {
-            Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
-                                  MWInstance.UIScheduler).Wait();
-            DBData dbData;
-            SQLiteIO.PopulateAll(Tf, out dbData);
-            ParseDBData(dbData);
-            if (!onlyPopulate)
+            lock (_lock)
             {
-                Task.Factory.StartNew(() => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), CancellationToken.None,
-                                      TaskCreationOptions.None, MWInstance.UIScheduler).Wait();
+                Task.Factory.StartNew(() => MWInstance.StartProgressWatchTimer(), CancellationToken.None, TaskCreationOptions.None,
+                                      MWInstance.UIScheduler).Wait();
+                DBData dbData;
+                SQLiteIO.PopulateAll(Tf, out dbData);
+                ParseDBData(dbData);
+                if (!onlyPopulate)
+                {
+                    Task.Factory.StartNew(() => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen), CancellationToken.None,
+                                          TaskCreationOptions.None, MWInstance.UIScheduler).Wait();
+                }
             }
         }
 
