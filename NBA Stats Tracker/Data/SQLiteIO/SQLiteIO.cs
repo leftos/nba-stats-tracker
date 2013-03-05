@@ -3046,12 +3046,5 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         {
             return (curSeason != maxSeason ? "S" + curSeason : "");
         }
-
-        public static bool LoadSeasonInThread()
-        {
-            LoadSeason();
-
-            return true;
-        }
     }
 }
