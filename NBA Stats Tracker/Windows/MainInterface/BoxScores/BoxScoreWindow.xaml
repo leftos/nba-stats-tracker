@@ -359,7 +359,7 @@
                                                     ClipboardContentBinding="{Binding PPR}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding PPR, StringFormat=F1}">
+                                        <TextBlock Text="{Binding PPR, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Pure Point Rating; a John Hollinger created metric, measure of a player's ball-handling ability that takes productivity, team and league pace into account. Each assist is worth 2/3 of what each turnover takes away from the rating."
@@ -373,7 +373,7 @@
                                                     ClipboardContentBinding="{Binding OREBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding OREBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding OREBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a player grabbed while he was on the floor."
@@ -387,7 +387,7 @@
                                                     ClipboardContentBinding="{Binding DREBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding DREBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding DREBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a player grabbed while he was on the floor."
@@ -401,7 +401,7 @@
                                                     ClipboardContentBinding="{Binding REBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding REBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding REBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Total Rebound Percentage; an estimate of the percentage of available rebounds a player grabbed while he was on the floor."
@@ -415,7 +415,7 @@
                                                     ClipboardContentBinding="{Binding ASTp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding ASTp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding ASTp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Assist Percentage; an estimate of the percentage of teammate field goals a player assisted while he was on the floor."
@@ -429,7 +429,7 @@
                                                     ClipboardContentBinding="{Binding STLp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding STLp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding STLp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Steal Percentage; an estimate of the percentage of opponent possessions that end with a steal by the player while he was on the floor."
@@ -443,7 +443,7 @@
                                                     ClipboardContentBinding="{Binding BLKp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding BLKp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding BLKp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Block Percentage; an estimate of the percentage of opponent two-point field goal attempts blocked by the player while he was on the floor."
@@ -457,7 +457,7 @@
                                                     ClipboardContentBinding="{Binding TOp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding TOp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding TOp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Turnover Percentage; an estimate of turnovers per 100 plays."
@@ -471,7 +471,7 @@
                                                     ClipboardContentBinding="{Binding USGp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding USGp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding USGp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Usage Percentage; an estimate of the percentage of team plays used by a player while he was on the floor."
@@ -570,7 +570,7 @@
                                                     ClipboardContentBinding="{Binding FTR}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding FTR, StringFormat=F1}">
+                                        <TextBlock Text="{Binding FTR, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
@@ -739,7 +739,7 @@
                                                     ClipboardContentBinding="{Binding OREBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding OREBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding OREBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Offensive Rebound Percentage; an estimate of the percentage of available offensive rebounds a player grabbed while he was on the floor."
@@ -753,7 +753,7 @@
                                                     ClipboardContentBinding="{Binding DREBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding DREBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding DREBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Defensive Rebound Percentage; an estimate of the percentage of available defensive rebounds a player grabbed while he was on the floor."
@@ -767,7 +767,7 @@
                                                     ClipboardContentBinding="{Binding REBp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding REBp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding REBp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Total Rebound Percentage; an estimate of the percentage of available rebounds a player grabbed while he was on the floor."
@@ -781,7 +781,7 @@
                                                     ClipboardContentBinding="{Binding ASTp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding ASTp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding ASTp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Assist Percentage; an estimate of the percentage of teammate field goals a player assisted while he was on the floor."
@@ -795,7 +795,7 @@
                                                     ClipboardContentBinding="{Binding STLp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding STLp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding STLp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Steal Percentage; an estimate of the percentage of opponent possessions that end with a steal by the player while he was on the floor."
@@ -809,7 +809,7 @@
                                                     ClipboardContentBinding="{Binding BLKp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding BLKp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding BLKp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Block Percentage; an estimate of the percentage of opponent two-point field goal attempts blocked by the player while he was on the floor."
@@ -823,7 +823,7 @@
                                                     ClipboardContentBinding="{Binding TOp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding TOp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding TOp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Turnover Percentage; an estimate of turnovers per 100 plays."
@@ -837,7 +837,7 @@
                                                     ClipboardContentBinding="{Binding USGp}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding USGp, StringFormat=F1}">
+                                        <TextBlock Text="{Binding USGp, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Usage Percentage; an estimate of the percentage of team plays used by a player while he was on the floor."
@@ -936,7 +936,7 @@
                                                     ClipboardContentBinding="{Binding FTR}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding FTR, StringFormat=F1}">
+                                        <TextBlock Text="{Binding FTR, StringFormat=F3}">
                                             <TextBlock.ToolTip>
                                                 <TextBlock
                                                     Text="Free Throw Rate; a measure of a player's ability to get to the line and score."
