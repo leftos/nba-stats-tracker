@@ -25,6 +25,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
+
 using LumenWorks.Framework.IO.Csv;
 
 #endregion
@@ -37,15 +38,25 @@ namespace LeftosCommonLibrary
     public static class CSV
     {
         private const string Quote = "\"";
+
         private const string EscapedQuote = "\"\"";
-        private static readonly char[] CharactersThatMustBeQuoted = {',', '"', '\n', ' '};
+
+        private static readonly char[] CharactersThatMustBeQuoted = { ',', '"', '\n', ' ' };
 
         private static readonly char ListSeparator = CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
+
+        /// <summary>
+        /// If set to <c>true</c>, sorting characters at the start of any column header in REDitor-exported CSV files will be 
+        /// removed.
+        /// </summary>
+        public static bool ReplaceREDitorSortingChars;
+
+        private static readonly char[] _redSortingChars = new[] { '^', Convert.ToChar(65533), '?' };
 
         private static char detectSeparator(string path)
         {
             string s = File.ReadAllText(path);
-            return DetectSeparator(new StringReader(s), Tools.SplitLinesToArray(s).Length, new[] {',', ';'});
+            return DetectSeparator(new StringReader(s), Tools.SplitLinesToArray(s).Length, new[] { ',', ';' });
         }
 
         /// <summary>
@@ -62,8 +73,14 @@ namespace LeftosCommonLibrary
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVFile(string path, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StreamReader(path), true, useCultureSeparator ? ListSeparator : detectSeparator(path), '\"',
-                                   '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
+            var cr = new CsvReader(
+                new StreamReader(path),
+                true,
+                useCultureSeparator ? ListSeparator : detectSeparator(path),
+                '\"',
+                '\"',
+                '\0',
+                ValueTrimmingOptions.UnquotedOnly);
             List<Dictionary<string, string>> dictList = dictionaryListFromCSV(cr);
 
             return dictList;
@@ -83,9 +100,14 @@ namespace LeftosCommonLibrary
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVString(string text, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StringReader(text), true,
-                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}),
-                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
+            var cr = new CsvReader(
+                new StringReader(text),
+                true,
+                useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] { ',', ';' }),
+                '\"',
+                '\"',
+                '\0',
+                ValueTrimmingOptions.UnquotedOnly);
             List<Dictionary<string, string>> dictList = dictionaryListFromCSV(cr);
 
             return dictList;
@@ -105,8 +127,14 @@ namespace LeftosCommonLibrary
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVFile(string path, bool hasHeaders = true, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StreamReader(path), hasHeaders, useCultureSeparator ? ListSeparator : detectSeparator(path),
-                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
+            var cr = new CsvReader(
+                new StreamReader(path),
+                hasHeaders,
+                useCultureSeparator ? ListSeparator : detectSeparator(path),
+                '\"',
+                '\"',
+                '\0',
+                ValueTrimmingOptions.UnquotedOnly);
             List<string[]> arrayList = arrayListFromCSV(cr);
 
             return arrayList;
@@ -126,9 +154,14 @@ namespace LeftosCommonLibrary
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVString(string text, bool hasHeaders = true, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(new StringReader(text), hasHeaders,
-                                   useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] {',', ';'}),
-                                   '\"', '\"', '\0', ValueTrimmingOptions.UnquotedOnly);
+            var cr = new CsvReader(
+                new StringReader(text),
+                hasHeaders,
+                useCultureSeparator ? ListSeparator : DetectSeparator(new StringReader(text), 1, new[] { ',', ';' }),
+                '\"',
+                '\"',
+                '\0',
+                ValueTrimmingOptions.UnquotedOnly);
             List<string[]> arrayList = arrayListFromCSV(cr);
 
             return arrayList;
@@ -144,14 +177,16 @@ namespace LeftosCommonLibrary
                 int fieldCount = cr.FieldCount;
                 string[] headers = cr.GetFieldHeaders();
 
-                for (int i = 0; i < headers.Length; i++)
+                if (ReplaceREDitorSortingChars)
                 {
-                    var sortingChars = new[] {'^', Convert.ToChar(65533)};
-                    char firstChar = Convert.ToChar(headers[i].Substring(0, 1));
-                    if (sortingChars.Contains(firstChar))
+                    for (int i = 0; i < headers.Length; i++)
                     {
-                        headers[i] = headers[i].Split(new[] {" ", "\r\n", "\n"}, 2, StringSplitOptions.None)[1];
-                        break;
+                        char firstChar = Convert.ToChar(headers[i].Substring(0, 1));
+                        if (_redSortingChars.Contains(firstChar))
+                        {
+                            headers[i] = headers[i].Split(new[] { " ", "\r\n", "\n" }, 2, StringSplitOptions.None)[1];
+                            break;
+                        }
                     }
                 }
 
@@ -177,21 +212,23 @@ namespace LeftosCommonLibrary
                 arrayList = new List<string[]>();
 
                 int fieldCount = cr.FieldCount;
-                if (cr.HasHeaders)
+                if (ReplaceREDitorSortingChars)
                 {
-                    string[] headers = cr.GetFieldHeaders();
-
-                    for (int i = 0; i < headers.Length; i++)
+                    if (cr.HasHeaders)
                     {
-                        var sortingChars = new[] {'^', Convert.ToChar(65533)};
-                        char firstChar = Convert.ToChar(headers[i].Substring(0, 1));
-                        if (sortingChars.Contains(firstChar))
+                        string[] headers = cr.GetFieldHeaders();
+
+                        for (int i = 0; i < headers.Length; i++)
                         {
-                            headers[i] = headers[i].Split(new[] {" ", "\r\n", "\n"}, 2, StringSplitOptions.None)[1];
-                            break;
+                            char firstChar = Convert.ToChar(headers[i].Substring(0, 1));
+                            if (_redSortingChars.Contains(firstChar))
+                            {
+                                headers[i] = headers[i].Split(new[] { " ", "\r\n", "\n" }, 2, StringSplitOptions.None)[1];
+                                break;
+                            }
                         }
+                        arrayList.Add(headers);
                     }
-                    arrayList.Add(headers);
                 }
 
                 int j = arrayList.Count;
@@ -242,14 +279,14 @@ namespace LeftosCommonLibrary
 
                 str += newColumn;
             }
-            str = str.TrimEnd(new[] {actualSeparator});
+            str = str.TrimEnd(new[] { actualSeparator });
 
             sw.WriteLine(str);
 
             foreach (var dict in dList)
             {
                 string s3 = columns.Aggregate("", (current, col) => current + (escape(dict[col.Key]) + actualSeparator));
-                s3 = s3.TrimEnd(new[] {actualSeparator});
+                s3 = s3.TrimEnd(new[] { actualSeparator });
                 sw.WriteLine(s3);
             }
 
@@ -285,14 +322,14 @@ namespace LeftosCommonLibrary
 
                 str += newColumn;
             }
-            str = str.TrimEnd(new[] {'\t'});
+            str = str.TrimEnd(new[] { '\t' });
 
             sw.WriteLine(str);
 
             foreach (var dict in dList)
             {
                 string s3 = columns.Aggregate("", (current, col) => current + (dict[col.Key] + "\t"));
-                s3 = s3.TrimEnd(new[] {'\t'});
+                s3 = s3.TrimEnd(new[] { '\t' });
                 sw.WriteLine(s3);
             }
 
@@ -506,7 +543,7 @@ namespace LeftosCommonLibrary
                     default:
                         if (!quoted)
                         {
-                            int index = separators.IndexOf((char) character);
+                            int index = separators.IndexOf((char)character);
                             if (index != -1)
                             {
                                 ++separatorsCount[index];
@@ -565,9 +602,9 @@ namespace LeftosCommonLibrary
                     var sr = new StreamReader(ms);
                     rawDataStr = sr.ReadToEnd();
                 }
-                Debug.Assert(rawDataStr != null,
-                             String.Format("clipboardRawData: {0}, could not be converted to a string or memorystream.",
-                                           clipboardRawData));
+                Debug.Assert(
+                    rawDataStr != null,
+                    String.Format("clipboardRawData: {0}, could not be converted to a string or memorystream.", clipboardRawData));
 
                 clipboardData = isCSV == true ? ArrayListFromCSVString(rawDataStr, false) : ArrayListFromTSVString(rawDataStr, false);
             }

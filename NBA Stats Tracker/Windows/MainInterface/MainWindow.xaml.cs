@@ -263,6 +263,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
             }
 
+            CSV.ReplaceREDitorSortingChars = true;
+
             // TODO: Re-enable downloading NBA stats when possible
             mnuFileGetRealStats.IsEnabled = false;
             btnDownloadBoxScore.IsEnabled = false;
