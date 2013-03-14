@@ -328,8 +328,9 @@ namespace NBA_Stats_Tracker.Interop.BR
         private static void teamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts,
                                                    out TeamStats tsopp)
         {
-            ts = new TeamStats(MainWindow.TST.Single(pair => pair.Value.Name == name).Key, name);
-            tsopp = new TeamStats(MainWindow.TST.Single(pair => pair.Value.Name == name).Key, name);
+            var teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
+            ts = new TeamStats(teamID, name);
+            tsopp = new TeamStats(teamID, name);
 
             tsopp.Record[1] = ts.Record[0] = Convert.ToByte(recordparts[0]);
             tsopp.Record[0] = ts.Record[1] = Convert.ToByte(recordparts[1]);

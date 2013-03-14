@@ -114,7 +114,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static PlayerRankings PlayoffPlayerRankings;
         public static Timeframe Tf = new Timeframe(0);
 
-        private static readonly Dictionary<int, TeamStats> RealTST = new Dictionary<int, TeamStats>();
+        internal static Dictionary<int, TeamStats> RealTST = new Dictionary<int, TeamStats>();
         public static TeamBoxScore bs;
 
         public static string AddInfo;
@@ -1171,8 +1171,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //var grsw = new getRealStatsW();
             //grsw.ShowDialog();
 
-            var realtstOpp = new Dictionary<int, TeamStats>();
-            var realpst = new Dictionary<int, PlayerStats>();
+            RealTST = new Dictionary<int, TeamStats>();
+            var realTSTOpp = new Dictionary<int, TeamStats>();
+            var realPST = new Dictionary<int, PlayerStats>();
             _sem = new Semaphore(1, 1);
 
             mainGrid.Visibility = Visibility.Hidden;
@@ -1252,14 +1253,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             int k = 0;
             var teamOrder = new Dictionary<string, int>();
-            teamNamesShort.ToList().ForEach(tn => teamOrder.Add(tn.Key, k++));
+            REDitor.CreateDivisions();
+            teamNamesShort.ToList().ForEach(
+                tn =>
+                    {
+                        teamOrder.Add(tn.Key, k);
+                        RealTST.Add(k, new TeamStats { ID = k, Name = tn.Key });
+                        RealTST[k].Division = teamDivisions[tn.Key];
+                        RealTST[k].Conference = Divisions.Single(d => d.ID == RealTST[k].Division).ConferenceID;
+                        k++;
+                    });
 
             _worker1 = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             _worker1.DoWork += delegate
                 {
-                    REDitor.CreateDivisions();
-
                     foreach (var kvp in teamNamesShort)
                     {
                         Dictionary<int, PlayerStats> temppst;
@@ -1268,17 +1276,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
                         int id = teamOrder[kvp.Key];
                         RealTST[id] = realts;
-                        RealTST[id].ID = id;
-                        RealTST[id].Division = teamDivisions[kvp.Key];
-                        RealTST[id].Conference = Divisions.Single(d => d.ID == RealTST[id].Division).ConferenceID;
-                        realtstOpp[id] = realtsopp;
-                        realtstOpp[id].ID = id;
-                        realtstOpp[id].Division = RealTST[id].Division;
-                        realtstOpp[id].Conference = RealTST[id].Conference;
+                        realTSTOpp[id] = realtsopp;
+                        realTSTOpp[id].ID = id;
+                        realTSTOpp[id].Division = RealTST[id].Division;
+                        realTSTOpp[id].Conference = RealTST[id].Conference;
                         foreach (var kvp2 in temppst)
                         {
-                            kvp2.Value.ID = realpst.Count;
-                            realpst.Add(realpst.Count, kvp2.Value);
+                            kvp2.Value.ID = realPST.Count;
+                            realPST.Add(realPST.Count, kvp2.Value);
                         }
                         _worker1.ReportProgress(1);
                     }
@@ -1297,31 +1302,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     if (RealTST[0].Name != "Canceled")
                     {
-                        int len = RealTST.Count;
-
-                        TST = new Dictionary<int, TeamStats>();
-                        TSTOpp = new Dictionary<int, TeamStats>();
-                        for (int i = 0; i < len; i++)
-                        {
-                            foreach (var kvp in teamOrder)
-                            {
-                                if (kvp.Value == i)
-                                {
-                                    TST[i] = new TeamStats(i, kvp.Key);
-                                    TSTOpp[i] = new TeamStats(i, kvp.Key);
-                                    break;
-                                }
-                            }
-                        }
-
                         TST = RealTST;
-                        TSTOpp = realtstOpp;
-                        PST = realpst;
+                        TSTOpp = realTSTOpp;
+                        PST = realPST;
                         if (CurSeason == 0)
                         {
                             CurSeason = 1;
                         }
-                        SQLiteIO.SaveSeasonToDatabase(file, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(file));
+                        int maxSeason;
+                        if (File.Exists(file))
+                        {
+                            maxSeason = SQLiteIO.GetMaxSeason(file);
+                        }
+                        else
+                        {
+                            maxSeason = 0;
+                        }
+                        SQLiteIO.SaveSeasonToDatabase(file, TST, TSTOpp, PST, CurSeason, maxSeason);
                         txtFile.Text = file;
                         PopulateSeasonCombo(file);
                         SQLiteIO.LoadSeason(file, CurSeason);
@@ -1334,6 +1331,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         grdUpdate.IsEnabled = true;
 
                         UpdateStatus("The download of real NBA stats is done.");
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "The download of real NBA stats was cancelled. Please reload the current database, if any, before continuing work.");
                     }
                 };
 
@@ -2338,9 +2340,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        internal void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
-            Tools.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
+            this.SetCheckForUpdatesRegistrySetting();
+        }
+
+        internal static void SetCheckForUpdatesRegistrySetting()
+        {
+            Tools.SetRegistrySetting("CheckForUpdates", this.mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
 
         /// <summary>

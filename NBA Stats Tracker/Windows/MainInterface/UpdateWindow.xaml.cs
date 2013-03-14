@@ -150,7 +150,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnDisableNotifications_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.MWInstance.mnuOptionsCheckForUpdates.IsChecked = false;
-            MainWindow.MWInstance.mnuOptionsCheckForUpdates_Click(null, null);
+            MainWindow.SetCheckForUpdatesRegistrySetting();
         }
     }
 }

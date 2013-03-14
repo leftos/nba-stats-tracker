@@ -25,6 +25,8 @@ using LeftosCommonLibrary;
 
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
+    using System;
+
     public class ProgressInfo
     {
         public int CurrentStage;
@@ -52,8 +54,12 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
 
         public ProgressInfo(ProgressInfo progress, string message, int percentage = 0) : this(message, percentage)
         {
-            Tools.WriteToTrace(string.Format("Stage {0} ({1}): {2}", progress.CurrentStage, progress.Message,
-                                             progress.Timing.ElapsedMilliseconds));
+            var status = String.Format("Stage {0} ({1})", progress.CurrentStage, progress.Message);
+            if (progress.Timing != null)
+            {
+                status += ": " + progress.Timing.ElapsedMilliseconds;
+            }
+            Tools.WriteToTrace(status);
             CurrentStage = progress.CurrentStage + 1;
             MaxStage = progress.MaxStage;
             Timing = new Stopwatch();
