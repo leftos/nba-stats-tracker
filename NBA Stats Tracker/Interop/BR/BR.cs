@@ -548,9 +548,10 @@ namespace NBA_Stats_Tracker.Interop.BR
                     default:
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
+                var nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
                 var ps =
-                    new PlayerStats(new Player(pstnames.Count, teamID, r["Player"].ToString().Split(' ')[1],
-                                               r["Player"].ToString().Split(' ')[0], position1, position2));
+                    new PlayerStats(new Player(pstnames.Count, teamID, nameParts[1],
+                                               nameParts[0], position1, position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
             }
