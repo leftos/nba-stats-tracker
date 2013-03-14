@@ -90,8 +90,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             List<string> lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
             lines.Add("");
-            var cmw = new CopyableMessageWindow(lines.Aggregate((l1, l2) => l1 + "\n" + l2), "NBA Stats Tracker - What's New",
-                                                TextAlignment.Left);
+            var result = "";
+            lines.ForEach(line => result += line.Replace("\t", "  ") + "\n");
+            var cmw = new CopyableMessageWindow(result, "NBA Stats Tracker - What's New");
             cmw.ShowDialog();
         }
 
