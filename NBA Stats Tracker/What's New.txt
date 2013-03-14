@@ -1,6 +1,7 @@
 NBA Stats Tracker - Version History
 
-	vNext
+	v1.12.0.3
+		- Fix: Fixed a crash when importing using REDitor that happened with certain system locale settings
 		- Fix: Fixed downloading real NBA stats from B-R.com; note that this feature is still disabled, but the code has been fixed for whenever it's re-enabled
 
 	v1.12.0.2
