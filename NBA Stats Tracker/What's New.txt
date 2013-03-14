@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	vNext
+		- Fix: Fixed downloading real NBA stats from B-R.com; note that this feature is still disabled, but the code has been fixed for whenever it's re-enabled
+
 	v1.12.0.2
 		- Fix: Fixed some minor interface bugs
 
