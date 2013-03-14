@@ -2342,12 +2342,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuOptionsCheckForUpdates_Click(object sender, RoutedEventArgs e)
         {
-            this.SetCheckForUpdatesRegistrySetting();
+            SetCheckForUpdatesRegistrySetting();
         }
 
-        internal static void SetCheckForUpdatesRegistrySetting()
+        internal void SetCheckForUpdatesRegistrySetting()
         {
-            Tools.SetRegistrySetting("CheckForUpdates", this.mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
+            Tools.SetRegistrySetting("CheckForUpdates", mnuOptionsCheckForUpdates.IsChecked ? 1 : 0);
         }
 
         /// <summary>
