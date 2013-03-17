@@ -16,22 +16,16 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media;
-
-using IWin32Window = System.Windows.Forms.IWin32Window;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Helper.WindowsForms
 {
-    /// <summary>
-    ///     Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.
-    /// </summary>
+    using System;
+    using System.Windows;
+    using System.Windows.Interop;
+    using System.Windows.Media;
+
+    using IWin32Window = System.Windows.Forms.IWin32Window;
+
+    /// <summary>Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.</summary>
     public static class WindowsForms
     {
         public static IWin32Window GetIWin32Window(this Visual visual)

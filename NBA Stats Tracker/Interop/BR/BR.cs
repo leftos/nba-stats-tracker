@@ -16,34 +16,26 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using HtmlAgilityPack;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Interop.BR
 {
-    /// <summary>
-    ///     Used to download and import real NBA stats from the Basketball-Reference.com website.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+
+    using HtmlAgilityPack;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Used to download and import real NBA stats from the Basketball-Reference.com website.</summary>
     public static class BR
     {
-        /// <summary>
-        ///     Downloads a box score from the specified URL.
-        /// </summary>
+        /// <summary>Downloads a box score from the specified URL.</summary>
         /// <param name="url">The URL.</param>
         /// <param name="parts">The resulting date parts.</param>
         /// <returns></returns>
@@ -129,9 +121,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Downloads the season team stats for a team.
-        /// </summary>
+        /// <summary>Downloads the season team stats for a team.</summary>
         /// <param name="url">The URL.</param>
         /// <param name="recordparts">The parts of the team's record string.</param>
         /// <returns></returns>
@@ -192,9 +182,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Gets the player stats for a specific player.
-        /// </summary>
+        /// <summary>Gets the player stats for a specific player.</summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
         private static DataSet getPlayerStats(string url)
@@ -256,9 +244,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Gets the playoff team stats for a specific team.
-        /// </summary>
+        /// <summary>Gets the playoff team stats for a specific team.</summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
         private static DataSet getPlayoffTeamStats(string url)
@@ -320,9 +306,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Creates the team and opposing team stats instances using data from the downloaded DataTable.
-        /// </summary>
+        /// <summary>Creates the team and opposing team stats instances using data from the downloaded DataTable.</summary>
         /// <param name="dt">The DataTable.</param>
         /// <param name="name">The name of the team.</param>
         /// <param name="recordparts">The parts of the team's record string.</param>
@@ -331,7 +315,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         private static void teamStatsFromDataTable(
             DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
-            var teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
+            int teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
             ts = new TeamStats(teamID, name);
             tsopp = new TeamStats(teamID, name);
 
@@ -380,9 +364,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             tsopp.CalcAvg();
         }
 
-        /// <summary>
-        ///     Creates the playoff team and opposing playoff team stats instances using data from the downloaded DataSet.
-        /// </summary>
+        /// <summary>Creates the playoff team and opposing playoff team stats instances using data from the downloaded DataSet.</summary>
         /// <param name="ds">The dataset.</param>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
@@ -474,9 +456,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Creates the player stats instances using data from the downloaded DataSet.
-        /// </summary>
+        /// <summary>Creates the player stats instances using data from the downloaded DataSet.</summary>
         /// <param name="ds">The DataSet.</param>
         /// <param name="teamID">The player's team.</param>
         /// <param name="pst">The player stats dictionary.</param>
@@ -551,7 +531,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     default:
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
-                var nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
+                string[] nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
                 var ps = new PlayerStats(new Player(pstnames.Count, teamID, nameParts[1], nameParts[0], position1, position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
@@ -622,9 +602,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             }
         }
 
-        /// <summary>
-        ///     Creates a team box score and all the required player box score instances using data from the downloaded DataSet.
-        /// </summary>
+        /// <summary>Creates a team box score and all the required player box score instances using data from the downloaded DataSet.</summary>
         /// <param name="ds">The DataSet.</param>
         /// <param name="parts">The parts of the split date string.</param>
         /// <param name="bse">The resulting BoxScoreEntry.</param>
@@ -668,9 +646,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             return result;
         }
 
-        /// <summary>
-        ///     Downloads and imports the real NBA stats of a specific team and its players.
-        /// </summary>
+        /// <summary>Downloads and imports the real NBA stats of a specific team and its players.</summary>
         /// <param name="teamAbbr">The team name-abbreviation KeyValuePair.</param>
         /// <param name="ts">The resulting team stats instance.</param>
         /// <param name="tsopp">The opposing team stats instance.</param>
@@ -687,9 +663,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             playerStatsFromDataSet(ds, ts.ID, out pst);
         }
 
-        /// <summary>
-        ///     Downloads and imports a box score.
-        /// </summary>
+        /// <summary>Downloads and imports a box score.</summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
         public static int ImportBoxScore(string url)
@@ -704,9 +678,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             return result;
         }
 
-        /// <summary>
-        ///     Adds the playoff team stats to the current database.
-        /// </summary>
+        /// <summary>Adds the playoff team stats to the current database.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
         public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)

@@ -16,18 +16,14 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Teams;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Other
 {
+    using System.Collections.Generic;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
+
     public class DBData
     {
         public List<BoxScoreEntry> BSHist;

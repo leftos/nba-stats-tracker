@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
-    /// <summary>
-    ///     A list of constant pseudonyms for specific entries in the teams' stats arrays.
-    /// </summary>
+    using System.Collections.Generic;
+
+    /// <summary>A list of constant pseudonyms for specific entries in the teams' stats arrays.</summary>
     public static class TAbbr
     {
         public const int MINS = 0,

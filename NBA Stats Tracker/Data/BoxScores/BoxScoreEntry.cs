@@ -16,21 +16,15 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Teams;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.BoxScores
 {
-    /// <summary>
-    ///     A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
+
+    /// <summary>A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.</summary>
     public class BoxScoreEntry
     {
         public DateTime Date;

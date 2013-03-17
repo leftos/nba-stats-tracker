@@ -16,20 +16,14 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Data;
-
-using LeftosCommonLibrary;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     Contains the basic information required to initially create a player.
-    /// </summary>
+    using System;
+    using System.Data;
+
+    using LeftosCommonLibrary;
+
+    /// <summary>Contains the basic information required to initially create a player.</summary>
     public class Player
     {
         /// <summary>

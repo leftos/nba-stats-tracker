@@ -16,41 +16,35 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-
-using Ciloci.Flee;
-
-using LeftosCommonLibrary;
-using LeftosCommonLibrary.CommonDialogs;
-
-using Microsoft.Win32;
-
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 {
-    /// <summary>
-    ///     Allows the user to search for players fulfilling any combination of user-specified criteria.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Input;
+
+    using Ciloci.Flee;
+
+    using LeftosCommonLibrary;
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using Microsoft.Win32;
+
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.EventHandlers;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+
+    /// <summary>Allows the user to search for players fulfilling any combination of user-specified criteria.</summary>
     public partial class PlayerSearchWindow
     {
         private readonly List<string> _contractOptions = new List<string> { "Any", "None", "Team", "Player", "Team2Yr" };
@@ -77,8 +71,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private int _curSeason;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class.
-        ///     Prepares the window by populating all the combo-boxes.
+        ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class. Prepares the window by populating all the combo-boxes.
         /// </summary>
         public PlayerSearchWindow()
         {
@@ -229,9 +222,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbCustomTeamMetrics.ItemsSource = _teamMetrics;
         }
 
-        /// <summary>
-        ///     Finds a team's name by its displayName.
-        /// </summary>
+        /// <summary>Finds a team's name by its displayName.</summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
         private int GetTeamIDFromDisplayName(string displayName)
@@ -239,9 +230,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             return Misc.GetTeamIDFromDisplayName(MainWindow.TST, displayName);
         }
 
-        /// <summary>
-        ///     Populates the season combo.
-        /// </summary>
+        /// <summary>Populates the season combo.</summary>
         private void populateSeasonCombo()
         {
             cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
@@ -252,8 +241,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
-        ///     Loads all the team and player information for the newly selected season, and refreshes the teams combo-box.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control. Loads all the team and player information for the newly
+        ///     selected season, and refreshes the teams combo-box.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -285,8 +274,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnSearch control.
-        ///     Implements the searching algorithm by accumulating the criteria and filtering the available players based on those criteria.
+        ///     Handles the Click event of the btnSearch control. Implements the searching algorithm by accumulating the criteria and
+        ///     filtering the available players based on those criteria.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -701,9 +690,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
-        /// <summary>
-        ///     Used to filter the PlayerStatsRow results based on any user-specified metric stats criteria.
-        /// </summary>
+        /// <summary>Used to filter the PlayerStatsRow results based on any user-specified metric stats criteria.</summary>
         /// <param name="o">The o.</param>
         /// <returns></returns>
         private bool filter(object o)
@@ -960,9 +947,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             return keep;
         }
 
-        /// <summary>
-        ///     Handles the LoadingRow event of the dg control.
-        /// </summary>
+        /// <summary>Handles the LoadingRow event of the dg control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="DataGridRowEventArgs" /> instance containing the event data.
@@ -976,10 +961,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
         }
 
-        /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam control.
-        ///     Switches the IsActive criterion to true if a team is selected.
-        /// </summary>
+        /// <summary>Handles the SelectionChanged event of the cmbTeam control. Switches the IsActive criterion to true if a team is selected.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
@@ -993,8 +975,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         }
 
         /// <summary>
-        ///     Handles the Click event of the chkIsActive control.
-        ///     Switches the currently selected team to the "Any" option if the IsActive criterion is set to true; otherwise, resets the teams combo-box to no selection.
+        ///     Handles the Click event of the chkIsActive control. Switches the currently selected team to the "Any" option if the IsActive
+        ///     criterion is set to true; otherwise, resets the teams combo-box to no selection.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1012,10 +994,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnTotalsAdd control.
-        ///     Adds a total stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnTotalsAdd control. Adds a total stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1041,10 +1020,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             txtTotalsVal.Text = "";
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnTotalsDel control.
-        ///     Deletes a total stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnTotalsDel control. Deletes a total stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1074,10 +1050,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnAvgAdd control.
-        ///     Adds an average stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnAvgAdd control. Adds an average stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1103,10 +1076,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             txtAvgVal.Text = "";
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnAvgDel control.
-        ///     Deletes an average stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnAvgDel control. Deletes an average stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1136,10 +1106,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnMetricsAdd control.
-        ///     Adds a metric stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnMetricsAdd control. Adds a metric stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1165,10 +1132,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             txtMetricsVal.Text = "";
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnMetricsDel control.
-        ///     Deletes a metric stats filter.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnMetricsDel control. Deletes a metric stats filter.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1199,8 +1163,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         }
 
         /// <summary>
-        ///     Handles the Sorting event of the dgvPlayerStats control.
-        ///     Uses a custom Sorting event handler that sorts a stat in descending order, if it's not sorted already.
+        ///     Handles the Sorting event of the dgvPlayerStats control. Uses a custom Sorting event handler that sorts a stat in descending
+        ///     order, if it's not sorted already.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1211,10 +1175,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             EventHandlers.StatColumn_Sorting((DataGrid) sender, e);
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnLoadFilters control.
-        ///     Loads the filters from a previously saved filters file.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnLoadFilters control. Loads the filters from a previously saved filters file.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1447,10 +1408,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             refreshCustomExpressionList();
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnSaveFilters control.
-        ///     Saves the current filters to a file.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnSaveFilters control. Saves the current filters to a file.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.

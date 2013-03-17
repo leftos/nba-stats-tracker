@@ -16,23 +16,15 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Windows;
-
-#endregion
-
 namespace LeftosCommonLibrary.CommonDialogs
 {
-    /// <summary>
-    ///     Implements a general-purpose Input-box Window.
-    /// </summary>
+    using System;
+    using System.Windows;
+
+    /// <summary>Implements a general-purpose Input-box Window.</summary>
     public partial class InputBoxWindow
     {
-        /// <summary>
-        ///     Contains the user input if the user clicked OK, or an empty string if the user clicked Cancel.
-        /// </summary>
+        /// <summary>Contains the user input if the user clicked OK, or an empty string if the user clicked Cancel.</summary>
         public static string UserInput;
 
         private InputBoxWindow()

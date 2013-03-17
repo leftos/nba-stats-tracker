@@ -16,16 +16,12 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-using NBA_Stats_Tracker.Data.Players;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    using System;
+
+    using NBA_Stats_Tracker.Data.Players;
+
     public class TeamNameComparerDesc : TeamNameComparerAsc
     {
         public override int Compare(object x, object y)

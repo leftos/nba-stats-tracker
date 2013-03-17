@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Other
 {
-    /// <summary>
-    ///     Used to pass on all the required information for a specific timeframe.
-    /// </summary>
+    using System;
+
+    /// <summary>Used to pass on all the required information for a specific timeframe.</summary>
     public class Timeframe
     {
         public Timeframe(int seasonNum)

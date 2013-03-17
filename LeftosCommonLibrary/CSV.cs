@@ -16,25 +16,19 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Windows;
-
-using LumenWorks.Framework.IO.Csv;
-
-#endregion
-
 namespace LeftosCommonLibrary
 {
-    /// <summary>
-    ///     Provides methods to convert from and to CSV data.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Windows;
+
+    using LumenWorks.Framework.IO.Csv;
+
+    /// <summary>Provides methods to convert from and to CSV data.</summary>
     public static class CSV
     {
         private const string Quote = "\"";
@@ -46,8 +40,7 @@ namespace LeftosCommonLibrary
         private static readonly char ListSeparator = CultureInfo.CurrentCulture.TextInfo.ListSeparator.ToCharArray()[0];
 
         /// <summary>
-        /// If set to <c>true</c>, sorting characters at the start of any column header in REDitor-exported CSV files will be 
-        /// removed.
+        ///     If set to <c>true</c>, sorting characters at the start of any column header in REDitor-exported CSV files will be removed.
         /// </summary>
         public static bool ReplaceREDitorSortingChars;
 
@@ -59,17 +52,14 @@ namespace LeftosCommonLibrary
             return DetectSeparator(new StringReader(s), Tools.SplitLinesToArray(s).Length, new[] { ',', ';' });
         }
 
-        /// <summary>
-        ///     Converts CSV data from a file into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts CSV data from a file into a list of dictionaries.</summary>
         /// <param name="path">The path of the CSV file.</param>
         /// <param name="useCultureSeparator">
-        ///     If <c>true</c>, the method uses the current culture's list separator.
-        ///     If <c>false</c>, it tries to automatically detect it.
+        ///     If <c>true</c>, the method uses the current culture's list separator. If <c>false</c>, it tries to automatically detect it.
         /// </param>
         /// <returns>
-        ///     A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and
-        ///     corresponding value.
+        ///     A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and corresponding
+        ///     value.
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVFile(string path, bool useCultureSeparator = false)
         {
@@ -86,17 +76,14 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
-        /// <summary>
-        ///     Converts CSV data from a string into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts CSV data from a string into a list of dictionaries.</summary>
         /// <param name="text">The CSV data.</param>
         /// <param name="useCultureSeparator">
-        ///     If <c>true</c>, the method uses the current culture's list separator.
-        ///     If <c>false</c>, it tries to automatically detect it.
+        ///     If <c>true</c>, the method uses the current culture's list separator. If <c>false</c>, it tries to automatically detect it.
         /// </param>
         /// <returns>
-        ///     A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and
-        ///     corresponding value.
+        ///     A list of dictionaries, where each dictionary is a record, and the key-value pairs are the column header and corresponding
+        ///     value.
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVString(string text, bool useCultureSeparator = false)
         {
@@ -113,16 +100,13 @@ namespace LeftosCommonLibrary
             return dictList;
         }
 
-        /// <summary>
-        ///     Converts CSV data from a file into a list of string arrays.
-        /// </summary>
+        /// <summary>Converts CSV data from a file into a list of string arrays.</summary>
         /// <param name="path">The path to the file.</param>
         /// <param name="hasHeaders">
         ///     if set to <c>true</c>, the file is assumed to have headers in the first row.
         /// </param>
         /// <param name="useCultureSeparator">
-        ///     If <c>true</c>, the method uses the current culture's list separator.
-        ///     If <c>false</c>, it tries to automatically detect it.
+        ///     If <c>true</c>, the method uses the current culture's list separator. If <c>false</c>, it tries to automatically detect it.
         /// </param>
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVFile(string path, bool hasHeaders = true, bool useCultureSeparator = false)
@@ -140,16 +124,13 @@ namespace LeftosCommonLibrary
             return arrayList;
         }
 
-        /// <summary>
-        ///     Converts CSV data from a string into a list of string arrays.
-        /// </summary>
+        /// <summary>Converts CSV data from a string into a list of string arrays.</summary>
         /// <param name="text">The CSV data.</param>
         /// <param name="hasHeaders">
         ///     if set to <c>true</c>, the file is assumed to have headers in the first row.
         /// </param>
         /// <param name="useCultureSeparator">
-        ///     If <c>true</c>, the method uses the current culture's list separator.
-        ///     If <c>false</c>, it tries to automatically detect it.
+        ///     If <c>true</c>, the method uses the current culture's list separator. If <c>false</c>, it tries to automatically detect it.
         /// </param>
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVString(string text, bool hasHeaders = true, bool useCultureSeparator = false)
@@ -245,10 +226,11 @@ namespace LeftosCommonLibrary
             return arrayList;
         }
 
-        /// <summary>
-        ///     Converts a dictionary list into CSV data and writes it to a file.
-        /// </summary>
-        /// <param name="dList">The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the key-value pairs should be the column header and corresponding value.</param>
+        /// <summary>Converts a dictionary list into CSV data and writes it to a file.</summary>
+        /// <param name="dList">
+        ///     The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the
+        ///     key-value pairs should be the column header and corresponding value.
+        /// </param>
         /// <param name="path">The path of the file where the data should be written to.</param>
         /// <param name="separator">
         ///     The separator to use; should be a single-character string. If <c>null</c>, the current culture's separator will be used.
@@ -293,10 +275,11 @@ namespace LeftosCommonLibrary
             sw.Close();
         }
 
-        /// <summary>
-        ///     Converts a dictionary list into TSV data and writes it to a file.
-        /// </summary>
-        /// <param name="dList">The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the key-value pairs should be the column header and corresponding value.</param>
+        /// <summary>Converts a dictionary list into TSV data and writes it to a file.</summary>
+        /// <param name="dList">
+        ///     The dictionary list. All dictionaries should have the same format. Each dictionary should be a record, and the
+        ///     key-value pairs should be the column header and corresponding value.
+        /// </param>
         /// <param name="path">The path of the file where the data should be written to.</param>
         public static void TSVFromDictionaryList(List<Dictionary<string, string>> dList, string path)
         {
@@ -336,9 +319,7 @@ namespace LeftosCommonLibrary
             sw.Close();
         }
 
-        /// <summary>
-        ///     Converts TSV data from a file into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts TSV data from a file into a list of dictionaries.</summary>
         /// <param name="path">The path of the TSV file.</param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
         public static List<Dictionary<string, string>> DictionaryListFromTSVFile(string path)
@@ -347,9 +328,7 @@ namespace LeftosCommonLibrary
             return dictionaryListFromTSV(tsv);
         }
 
-        /// <summary>
-        ///     Converts TSV data from a string into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts TSV data from a string into a list of dictionaries.</summary>
         /// <param name="text">The TSV data.</param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
         public static List<Dictionary<string, string>> DictionaryListFromTSVString(string text)
@@ -358,9 +337,7 @@ namespace LeftosCommonLibrary
             return dictionaryListFromTSV(tsv);
         }
 
-        /// <summary>
-        ///     Converts TSV data from a file into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts TSV data from a file into a list of dictionaries.</summary>
         /// <param name="path">The path of the TSV file.</param>
         /// <param name="hasHeaders">
         ///     If <c>true</c>, the file is assumed to include headers in the first row.
@@ -372,9 +349,7 @@ namespace LeftosCommonLibrary
             return arrayListFromTSV(tsv, hasHeaders);
         }
 
-        /// <summary>
-        ///     Converts TSV data from a file into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts TSV data from a file into a list of dictionaries.</summary>
         /// <param name="text">The TSV data.</param>
         /// <param name="hasHeaders">
         ///     If <c>true</c>, the file is assumed to include headers in the first row.
@@ -386,12 +361,10 @@ namespace LeftosCommonLibrary
             return arrayListFromTSV(tsv, hasHeaders);
         }
 
-        /// <summary>
-        ///     Converts TSV data from an array of strings into a list of dictionaries.
-        /// </summary>
+        /// <summary>Converts TSV data from an array of strings into a list of dictionaries.</summary>
         /// <param name="lines">
-        ///     The array of strings to be converted. First string should be the tab-separated column headers.
-        ///     Each following string should be a tab-separated record.
+        ///     The array of strings to be converted. First string should be the tab-separated column headers. Each following
+        ///     string should be a tab-separated record.
         /// </param>
         /// <returns>A list of dictionaries. Each dictionary is a record, and the key-value pairs are the column header and corresponding value.</returns>
         private static List<Dictionary<string, string>> dictionaryListFromTSV(string[] lines)
@@ -442,9 +415,7 @@ namespace LeftosCommonLibrary
             return arrayList;
         }
 
-        /// <summary>
-        ///     Adds quotes to a string if it needs to be escaped.
-        /// </summary>
+        /// <summary>Adds quotes to a string if it needs to be escaped.</summary>
         /// <param name="s">The string to be escaped.</param>
         /// <returns>The escaped string.</returns>
         private static string escape(string s)
@@ -462,9 +433,7 @@ namespace LeftosCommonLibrary
             return s;
         }
 
-        /// <summary>
-        ///     Unescapes (removes the quotes from) the specified string.
-        /// </summary>
+        /// <summary>Unescapes (removes the quotes from) the specified string.</summary>
         /// <param name="s">The string to be unescaped.</param>
         /// <returns>The unescaped string.</returns>
         public static string Unescape(string s)
@@ -482,9 +451,7 @@ namespace LeftosCommonLibrary
             return s;
         }
 
-        /// <summary>
-        ///     Detects the list separator.
-        /// </summary>
+        /// <summary>Detects the list separator.</summary>
         /// <param name="reader">The TextReader instance.</param>
         /// <param name="rowCount">The row count.</param>
         /// <param name="separators">The list of separator candidates.</param>
@@ -565,9 +532,7 @@ namespace LeftosCommonLibrary
             return maxCount == 0 ? '\0' : separators[separatorsCount.IndexOf(maxCount)];
         }
 
-        /// <summary>
-        ///     Parses the clipboard data.
-        /// </summary>
+        /// <summary>Parses the clipboard data.</summary>
         /// <returns>A list of string arrays containing the parsed CSV/TSV data.</returns>
         public static List<string[]> ParseClipboardData()
         {

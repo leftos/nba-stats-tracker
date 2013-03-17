@@ -16,16 +16,12 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Data;
-
-using LeftosCommonLibrary;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.PastStats
 {
+    using System.Data;
+
+    using LeftosCommonLibrary;
+
     public class PastPlayerStats
     {
         public PastPlayerStats()

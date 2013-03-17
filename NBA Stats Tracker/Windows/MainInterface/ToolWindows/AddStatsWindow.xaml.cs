@@ -16,24 +16,18 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using System.Windows;
-
-using NBA_Stats_Tracker.Data.PastStats;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
-    /// <summary>
-    ///     Interaction logic for AddStatsWindow.xaml
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Data;
+    using System.Linq;
+    using System.Windows;
+
+    using NBA_Stats_Tracker.Data.PastStats;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+
+    /// <summary>Interaction logic for AddStatsWindow.xaml</summary>
     public partial class AddStatsWindow : Window
     {
         private readonly int _id;

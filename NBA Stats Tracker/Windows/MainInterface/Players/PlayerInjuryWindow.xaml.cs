@@ -16,20 +16,16 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-
-using NBA_Stats_Tracker.Data.Players.Injuries;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+
+    using NBA_Stats_Tracker.Data.Players.Injuries;
+
     public partial class PlayerInjuryWindow
     {
         public static int InjuryType;

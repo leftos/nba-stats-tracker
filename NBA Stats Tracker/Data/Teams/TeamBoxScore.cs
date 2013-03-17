@@ -16,24 +16,19 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
-    /// <summary>
-    ///     Contains all the information for the teams' performances in a game.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Contains all the information for the teams' performances in a game.</summary>
     public class TeamBoxScore
     {
         /// <summary>
@@ -142,7 +137,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             GameDate = Convert.ToDateTime(date);
 
-            ID = SQLiteIO.SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
+            ID = SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
             SeasonNum = MainWindow.CurSeason;
 
             DataRow rt = away.Rows[away.Rows.Count - 1];
@@ -236,9 +231,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public ushort DisplayFOUL { get; set; }
         public double DisplayGmSc { get; set; }
 
-        /// <summary>
-        ///     Prepares the presentation fields of the class.
-        /// </summary>
+        /// <summary>Prepares the presentation fields of the class.</summary>
         /// <param name="teamID">The team.</param>
         public void PrepareForDisplay(Dictionary<int, TeamStats> tst)
         {
@@ -247,9 +240,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             DisplayResult = PTS1 + "-" + PTS2;
         }
 
-        /// <summary>
-        ///     Prepares the presentation fields of the class.
-        /// </summary>
+        /// <summary>Prepares the presentation fields of the class.</summary>
         /// <param name="teamID">The team.</param>
         public void PrepareForDisplay(Dictionary<int, TeamStats> tst, int teamID)
         {

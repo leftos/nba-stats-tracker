@@ -16,16 +16,12 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+
     public class PlayerInjuryDaysComparerAsc : IComparer
     {
         protected static readonly Dictionary<string, int> DurationOrder = new Dictionary<string, int>

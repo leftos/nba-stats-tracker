@@ -16,29 +16,23 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Windows;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MiscDialogs;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 {
-    /// <summary>
-    ///     Used to edit a conference and its divisions.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Windows;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MiscDialogs;
+
+    using SQLite_Database;
+
+    /// <summary>Used to edit a conference and its divisions.</summary>
     public partial class ConferenceEditWindow
     {
         private readonly Conference _curConf;
@@ -71,9 +65,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnOK control.
-        ///     The conference is renamed, the divisions are deleted and recreated, and if any teams are left in division IDs that no longer exist,
-        ///     they get reassigned.
+        ///     Handles the Click event of the btnOK control. The conference is renamed, the divisions are deleted and recreated, and if any
+        ///     teams are left in division IDs that no longer exist, they get reassigned.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">

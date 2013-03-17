@@ -16,29 +16,23 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-
-using LeftosCommonLibrary.CommonDialogs;
-
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MainInterface;
-using NBA_Stats_Tracker.Windows.MainInterface.Teams;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
-    /// <summary>
-    ///     Implements a multi-purpose single list window with add & remove buttons.
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Input;
+
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+    using NBA_Stats_Tracker.Windows.MainInterface.Teams;
+
+    using SQLite_Database;
+
+    /// <summary>Implements a multi-purpose single list window with add & remove buttons.</summary>
     public partial class ListWindow
     {
         public static bool MustUpdate;
@@ -59,8 +53,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Handles the MouseDoubleClick event of the lstData control.
-        ///     When editing conferences, it displays the Edit Conference Window for the selected conference.
+        ///     Handles the MouseDoubleClick event of the lstData control. When editing conferences, it displays the Edit Conference Window
+        ///     for the selected conference.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -77,9 +71,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             showEditConferenceWindow(conf);
         }
 
-        /// <summary>
-        ///     Shows the edit conference window, and reloads the conferences the window is closed, if required.
-        /// </summary>
+        /// <summary>Shows the edit conference window, and reloads the conferences the window is closed, if required.</summary>
         /// <param name="conf">The conf.</param>
         private void showEditConferenceWindow(Conference conf)
         {
@@ -98,10 +90,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             Close();
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnAdd control.
-        ///     Allows the user to add a new item.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnAdd control. Allows the user to add a new item.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -146,10 +135,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnRemove control.
-        ///     Allows the user to remove an item.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnRemove control. Allows the user to remove an item.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.

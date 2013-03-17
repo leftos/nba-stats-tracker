@@ -16,14 +16,10 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    using System;
+
     public class PlayerInjuryNameComparerDesc : PlayerInjuryNameComparerAsc
     {
         public override int Compare(object x, object y)

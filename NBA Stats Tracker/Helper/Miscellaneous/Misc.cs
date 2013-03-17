@@ -16,25 +16,17 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Windows.Media.Imaging;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
-    /// <summary>
-    ///     Implements miscellaneous helper methods used all over NBA Stats Tracker.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Windows.Media.Imaging;
+
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Implements miscellaneous helper methods used all over NBA Stats Tracker.</summary>
     public static class Misc
     {
         public static int GetTeamIDFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
@@ -58,9 +50,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             throw new Exception("Team not found: " + displayName);
         }
 
-        /// <summary>
-        ///     Loads an image into a BitmapImage object.
-        /// </summary>
+        /// <summary>Loads an image into a BitmapImage object.</summary>
         /// <param name="path">The path to the image file.</param>
         public static BitmapImage LoadImage(string path)
         {

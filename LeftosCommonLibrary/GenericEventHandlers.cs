@@ -16,34 +16,26 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Threading;
-
-#endregion
-
 namespace LeftosCommonLibrary
 {
-    /// <summary>
-    ///     Implements event handlers that improve the behavior WPF controls.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Reflection;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
+    using System.Windows.Input;
+    using System.Windows.Threading;
+
+    /// <summary>Implements event handlers that improve the behavior WPF controls.</summary>
     public static class GenericEventHandlers
     {
         private static bool _isTabPressed;
 
-        /// <summary>
-        ///     Handles pasting the data into a data-bound DataGrid.
-        /// </summary>
+        /// <summary>Handles pasting the data into a data-bound DataGrid.</summary>
         /// <param name="sender">The DataGrid instance to paste into.</param>
         /// <param name="args">The ExecutedRoutedEventArgs instance.</param>
         /// <returns>Whether the operation completed without errors.</returns>
@@ -182,9 +174,10 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        ///     When added to the RowEditEnding event of a WPF DataGrid, if the user presses Tab while on the last cell of a row, the focus
-        ///     is switched to the first cell of the next row, instead of another control altogether.
-        ///     <see cref="Any_PreviewKeyDown_CheckTab" /> and <see cref="Any_PreviewKeyUp_CheckTab" /> should also be added as event handlers to the control.
+        ///     When added to the RowEditEnding event of a WPF DataGrid, if the user presses Tab while on the last cell of a row, the focus is
+        ///     switched to the first cell of the next row, instead of another control altogether.
+        ///     <see cref="Any_PreviewKeyDown_CheckTab" /> and <see cref="Any_PreviewKeyUp_CheckTab" /> should also be added as event handlers to
+        ///     the control.
         /// </summary>
         /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised..</param>
         /// <param name="e">
@@ -218,9 +211,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        ///     When added to the PreviewKeyDown event of any control, it checks whether the key pressed was Tab.
-        /// </summary>
+        /// <summary>When added to the PreviewKeyDown event of any control, it checks whether the key pressed was Tab.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="KeyEventArgs" /> instance containing the event data.
@@ -233,9 +224,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        ///     When added to the PreviewKeyUp event of any control, it checks whether the key pressed was Tab.
-        /// </summary>
+        /// <summary>When added to the PreviewKeyUp event of any control, it checks whether the key pressed was Tab.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="KeyEventArgs" /> instance containing the event data.
@@ -248,9 +237,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        ///     Handles the ShowToolTip event of any control, placing and showing a tooltip under the control.
-        /// </summary>
+        /// <summary>Handles the ShowToolTip event of any control, placing and showing a tooltip under the control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.

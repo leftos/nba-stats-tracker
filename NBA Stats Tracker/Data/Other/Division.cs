@@ -18,9 +18,7 @@
 
 namespace NBA_Stats_Tracker.Data.Other
 {
-    /// <summary>
-    ///     Basic division information.
-    /// </summary>
+    /// <summary>Basic division information.</summary>
     public class Division
     {
         public int ID { get; set; }

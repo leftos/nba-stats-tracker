@@ -16,29 +16,23 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Players.Contracts;
-using NBA_Stats_Tracker.Data.Players.Injuries;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Properties;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     Implements an easily bindable interface to a player's stats.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Windows;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Players.Contracts;
+    using NBA_Stats_Tracker.Data.Players.Injuries;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Properties;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Implements an easily bindable interface to a player's stats.</summary>
     public class PlayerStatsRow : INotifyPropertyChanged
     {
         private PlayerInjury _injury;
@@ -801,9 +795,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        /// <summary>
-        ///     Gets the best stats.
-        /// </summary>
+        /// <summary>Gets the best stats.</summary>
         /// <param name="count">The count of stats to return.</param>
         /// <returns>A well-formatted multi-line string presenting the best stats.</returns>
         public string GetBestStats(int count)
@@ -945,9 +937,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return s;
         }
 
-        /// <summary>
-        ///     Gets a list (dictionary) of the best stats.
-        /// </summary>
+        /// <summary>Gets a list (dictionary) of the best stats.</summary>
         /// <param name="count">The count of stats to return.</param>
         /// <returns>A list (dictionary) of the best stats' names and values</returns>
         public Dictionary<string, string> GetBestStatsList(int count)
@@ -968,9 +958,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return statList;
         }
 
-        /// <summary>
-        ///     Shows a scouting report for the player in natural language.
-        /// </summary>
+        /// <summary>Shows a scouting report for the player in natural language.</summary>
         /// <param name="pst">The PlayerStats dictionary containing all the player information.</param>
         /// <param name="rankingsActive">The rankingsPerGame of currently active players.</param>
         /// <param name="rankingsTeam">The rankingsPerGame of the players in the same team.</param>
@@ -1387,9 +1375,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return s;
         }
 
-        /// <summary>
-        ///     Tries to parse the specified dictionary and update the specified PlayerStatsRow instance.
-        /// </summary>
+        /// <summary>Tries to parse the specified dictionary and update the specified PlayerStatsRow instance.</summary>
         /// <param name="psr">The PSR.</param>
         /// <param name="dict">The dict.</param>
         public static void TryChangePSR(ref PlayerStatsRow psr, Dictionary<string, string> dict)
@@ -1503,9 +1489,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return newpsr;
         }
 
-        /// <summary>
-        ///     Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.
-        /// </summary>
+        /// <summary>Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.</summary>
         /// <param name="psr">The player stats row.</param>
         /// <param name="teamStats">The player's team stats.</param>
         /// <param name="playoffs">

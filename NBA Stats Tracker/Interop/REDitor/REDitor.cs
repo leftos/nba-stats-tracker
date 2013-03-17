@@ -16,47 +16,41 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Forms;
-
-using LeftosCommonLibrary;
-using LeftosCommonLibrary.CommonDialogs;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.PastStats;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Players.Contracts;
-using NBA_Stats_Tracker.Data.Players.Injuries;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MainInterface;
-using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
-using NBA_Stats_Tracker.Windows.MiscDialogs;
-
-using MessageBox = System.Windows.MessageBox;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Interop.REDitor
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.IO;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Forms;
+
+    using LeftosCommonLibrary;
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.PastStats;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Players.Contracts;
+    using NBA_Stats_Tracker.Data.Players.Injuries;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+    using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
+    using NBA_Stats_Tracker.Windows.MiscDialogs;
+
+    using MessageBox = System.Windows.MessageBox;
+
     /// <summary>
-    ///     Implements import and export methods for interoperability with REDitor.
-    ///     This is the safest and most complete way to import and export stats from NBA 2K save files.
+    ///     Implements import and export methods for interoperability with REDitor. This is the safest and most complete way to import
+    ///     and export stats from NBA 2K save files.
     /// </summary>
     public static class REDitor
     {
-        /// <summary>
-        ///     Implements the Positions enum used by 2K12 save files.
-        /// </summary>
+        /// <summary>Implements the Positions enum used by 2K12 save files.</summary>
         private static readonly Dictionary<string, string> Positions = new Dictionary<string, string>
             {
                 { "0", "PG" },
@@ -72,9 +66,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         public static DateTime SelectedDate;
         private static List<string> _legalTTypes;
 
-        /// <summary>
-        ///     Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.
-        /// </summary>
+        /// <summary>Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.</summary>
         /// <param name="activeTeams">The active teams.</param>
         /// <param name="folder">The default import/export folder.</param>
         public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
@@ -550,9 +542,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return false;
         }
 
-        /// <summary>
-        ///     Imports all team (and optionally) player stats from an REDitor-exported set of CSV files.
-        /// </summary>
+        /// <summary>Imports all team (and optionally) player stats from an REDitor-exported set of CSV files.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
         /// <param name="pst">The player stats dictionary.</param>
@@ -862,7 +852,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     Dictionary<string, string> playerPlayoffStats = null;
                     if (nba2KVersion == NBA2KVersion.NBA2K13)
                     {
-                        var playerPlayoffStatsID = player["StatPOs"];
+                        string playerPlayoffStatsID = player["StatPOs"];
                         try
                         {
                             playerPlayoffStats = playerStats.Find(s => s["ID"] == playerPlayoffStatsID);
@@ -1639,7 +1629,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     //if (lastName == "Battie") System.Diagnostics.Debugger.Break();
 #endif
 
-                    var playerStatsID = player["StatY1"];
+                    string playerStatsID = player["StatY1"];
                     Dictionary<string, string> playerSeasonStats;
                     try
                     {
@@ -1720,7 +1710,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         playerID = createNewPlayer(ref pst, player, playerID);
                     }
 
-                    var ps = pst[playerID];
+                    PlayerStats ps = pst[playerID];
                     ps.IsHidden = false;
                     ps.YearsPro = Convert.ToInt32(player["YearsPro"]) - 1;
                     ps.YearOfBirth = Convert.ToInt32(player["BirthYear"]);
@@ -1801,9 +1791,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return 0;
         }
 
-        /// <summary>
-        ///     Creates the NBA divisions and conferences.
-        /// </summary>
+        /// <summary>Creates the NBA divisions and conferences.</summary>
         public static void CreateDivisions()
         {
             MainWindow.Conferences.Clear();
@@ -1819,9 +1807,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             MainWindow.Divisions.Add(new Division { ID = 5, Name = "Pacific", ConferenceID = 1 });
         }
 
-        /// <summary>
-        ///     Creates a new player and adds them to the player stats dictionary.
-        /// </summary>
+        /// <summary>Creates a new player and adds them to the player stats dictionary.</summary>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="player">The dictionary containing the player information.</param>
         /// <param name="preferredID">The preferred ID.</param>
@@ -1858,9 +1844,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return playerID;
         }
 
-        /// <summary>
-        ///     Calculates the box score by comparing the participating team's current and previous team and player stats.
-        /// </summary>
+        /// <summary>Calculates the box score by comparing the participating team's current and previous team and player stats.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="oldTST">The old team stats dictionary.</param>
         /// <param name="pst">The player stats dictionary.</param>
@@ -1946,9 +1930,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return bse;
         }
 
-        /// <summary>
-        ///     Gets the difference of a team's stat's value between the current and previous stats.
-        /// </summary>
+        /// <summary>Gets the difference of a team's stat's value between the current and previous stats.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="oldTST">The old team stats dictionary.</param>
         /// <param name="teamID">The team ID.</param>
@@ -1965,9 +1947,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                        : (ushort) (tst[teamID].PlTotals[stat] - oldTST[teamID].PlTotals[stat]);
         }
 
-        /// <summary>
-        ///     Gets the difference of a player's stat's value between the current and previous stats.
-        /// </summary>
+        /// <summary>Gets the difference of a player's stat's value between the current and previous stats.</summary>
         /// <param name="pst">The player stats dictionary.</param>
         /// <param name="oldPST">The old player stats dictionary.</param>
         /// <param name="id">The player's ID.</param>
@@ -1979,9 +1959,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return getDiff(pst[id], oldPST[id], stat, isPlayoff);
         }
 
-        /// <summary>
-        ///     Gets the difference of a player's stat's value between the current and previous stats.
-        /// </summary>
+        /// <summary>Gets the difference of a player's stat's value between the current and previous stats.</summary>
         /// <param name="newPS">The new player stats instance.</param>
         /// <param name="oldPS">The old player stats instance.</param>
         /// <param name="stat">The stat.</param>
@@ -1994,7 +1972,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        ///     Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into REDitor.
+        ///     Exports all the team (and optionally player) stats and information to a set of CSV files, which can then be imported into
+        ///     REDitor.
         /// </summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="pst">The player stats dictionary.</param>
@@ -2160,12 +2139,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                     }
 
-                    var playerSeasonStatsID = player["StatY0"];
+                    string playerSeasonStatsID = player["StatY0"];
                     int playerSeasonStatsIndex = playerStats.FindIndex(s => s["ID"] == playerSeasonStatsID);
                     int playerPlayoffStatsIndex = -1;
                     if (nba2KVersion == NBA2KVersion.NBA2K13)
                     {
-                        var playerPlayoffStatsID = player["StatPOs"];
+                        string playerPlayoffStatsID = player["StatPOs"];
                         playerPlayoffStatsIndex = playerStats.FindIndex(s => s["ID"] == playerPlayoffStatsID);
                     }
 
@@ -2269,8 +2248,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         }
 
         /// <summary>
-        ///     Populates the REDitor dictionary lists by importing the CSV data into them.
-        ///     Each dictionary has Setting-Value pairs, where Setting is the column header, and Value is the corresponding value of that particular record.
+        ///     Populates the REDitor dictionary lists by importing the CSV data into them. Each dictionary has Setting-Value pairs, where
+        ///     Setting is the column header, and Value is the corresponding value of that particular record.
         /// </summary>
         /// <param name="folder">The folder containing the REDitor-exported CSV files.</param>
         /// <param name="teams">The resulting teams information dictionary list.</param>

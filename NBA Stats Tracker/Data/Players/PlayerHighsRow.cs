@@ -16,14 +16,10 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
+    using System;
+
     public class PlayerHighsRow
     {
         public PlayerHighsRow(int playerID, string type, UInt16[] highs)

@@ -16,39 +16,32 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-
-using Ciloci.Flee;
-
-using LeftosCommonLibrary;
-
-using Microsoft.Win32;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 {
-    /// <summary>
-    ///     Interaction logic for AdvancedStatCalculatorWindow.xaml
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+
+    using Ciloci.Flee;
+
+    using LeftosCommonLibrary;
+
+    using Microsoft.Win32;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.EventHandlers;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+
+    /// <summary>Interaction logic for AdvancedStatCalculatorWindow.xaml</summary>
     public partial class AdvancedStatCalculatorWindow : Window
     {
         #region SelectionType enum
@@ -657,9 +650,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             populateTotalsList();
         }
 
-        /// <summary>
-        ///     Handles the LoadingRow event of the dg control.
-        /// </summary>
+        /// <summary>Handles the LoadingRow event of the dg control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="DataGridRowEventArgs" /> instance containing the event data.

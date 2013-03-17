@@ -16,27 +16,21 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Windows;
-
-using LeftosCommonLibrary.CommonDialogs;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface
 {
-    /// <summary>
-    ///     Interaction logic for UpdateWindow.xaml
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Reflection;
+    using System.Windows;
+
+    using LeftosCommonLibrary.CommonDialogs;
+
+    /// <summary>Interaction logic for UpdateWindow.xaml</summary>
     public partial class UpdateWindow : Window
     {
         private readonly string _changelogURL;
@@ -98,7 +92,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             List<string> lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
             lines.Add("");
-            var result = "";
+            string result = "";
             lines.ForEach(line => result += line.Replace("\t", "  ") + "\n");
             var cmw = new CopyableMessageWindow(result, "NBA Stats Tracker - What's New");
             cmw.ShowDialog();

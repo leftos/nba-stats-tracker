@@ -16,16 +16,12 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     [Serializable]
     public class PlayerInjury
     {

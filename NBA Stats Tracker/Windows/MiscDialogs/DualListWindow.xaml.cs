@@ -16,42 +16,34 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
-
-using LeftosCommonLibrary;
-
-using Microsoft.Win32;
-
-using NBA_Stats_Tracker.Helper.ListExtensions;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Interop.REDitor;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
-    /// <summary>
-    ///     Provides a multi-purpose dual-list window interface (e.g. used to enable/disable (show/hide) teams and players).
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.IO;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Threading;
+
+    using LeftosCommonLibrary;
+
+    using Microsoft.Win32;
+
+    using NBA_Stats_Tracker.Helper.ListExtensions;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Interop.REDitor;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    using SQLite_Database;
+
+    /// <summary>Provides a multi-purpose dual-list window interface (e.g. used to enable/disable (show/hide) teams and players).</summary>
     public partial class DualListWindow
     {
         #region Mode enum
 
-        /// <summary>
-        ///     Provides the different modes of function for this window.
-        /// </summary>
+        /// <summary>Provides the different modes of function for this window.</summary>
         public enum Mode
         {
             REDitor,
@@ -82,8 +74,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
-        ///     Used to determine the active teams in an NBA 2K save file.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class. Used to determine the active teams in an NBA 2K save file.
         /// </summary>
         /// <param name="validTeams">The valid teams.</param>
         /// <param name="activeTeams">The active teams.</param>
@@ -117,8 +108,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
-        ///     Used to enable/disable players/teams for the season.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class. Used to enable/disable players/teams for the season.
         /// </summary>
         /// <param name="currentDB">The current DB.</param>
         /// <param name="curSeason">The cur season.</param>
@@ -204,8 +194,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DualListWindow" /> class.
-        ///     Used to pick one out of the available box scores to import.
+        ///     Initializes a new instance of the <see cref="DualListWindow" /> class. Used to pick one out of the available box scores to import.
         /// </summary>
         /// <param name="mode">The mode.</param>
         public DualListWindow(Mode mode)
@@ -237,9 +226,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
         }
 
-        /// <summary>
-        ///     Finds the specified team's name by its displayName.
-        /// </summary>
+        /// <summary>Finds the specified team's name by its displayName.</summary>
         /// <param name="displayName">The team's name.</param>
         /// <returns></returns>
         private static int getTeamIDFromDisplayName(string displayName)
@@ -247,10 +234,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             return Misc.GetTeamIDFromDisplayName(MainWindow.TST, displayName);
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnEnable control.
-        ///     Adds one or more disabled items to the enabled list, and sorts.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnEnable control. Adds one or more disabled items to the enabled list, and sorts.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -285,10 +269,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnDisable control.
-        ///     Adds one or more enabled items to the disabled list and sorts.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnDisable control. Adds one or more enabled items to the disabled list and sorts.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -499,10 +480,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             Close();
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnLoadList control.
-        ///     Used to load a previously saved active teams list.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnLoadList control. Used to load a previously saved active teams list.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -573,8 +551,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Handles the Loaded event of the Window control.
-        ///     Automates the OK button click if there's just two teams to pick as far as box score goes.
+        ///     Handles the Loaded event of the Window control. Automates the OK button click if there's just two teams to pick as far as box
+        ///     score goes.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">

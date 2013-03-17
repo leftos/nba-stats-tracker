@@ -16,25 +16,19 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Teams;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     Contains all the information of a player's performance in a game.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Teams;
+
+    /// <summary>Contains all the information of a player's performance in a game.</summary>
     [Serializable]
     public class PlayerBoxScore : INotifyPropertyChanged
     {
@@ -267,8 +261,8 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
-        ///     Used to cast a LivePlayerBoxScore to a PlayerBoxScore which can be saved to the database.
+        ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class. Used to cast a LivePlayerBoxScore to a PlayerBoxScore which
+        ///     can be saved to the database.
         /// </summary>
         /// <param name="lpbs">The LivePlayerBoxScore instance containing the player's box score.</param>
         public PlayerBoxScore(LivePlayerBoxScore lpbs)
@@ -479,10 +473,11 @@ namespace NBA_Stats_Tracker.Data.Players
             DisplayOppTeam = tst[OppTeamID].DisplayName;
         }
 
-        /// <summary>
-        ///     Calculates the metrics of a player's performance.
-        /// </summary>
-        /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
+        /// <summary>Calculates the metrics of a player's performance.</summary>
+        /// <param name="r">
+        ///     The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between
+        ///     PlayerResults and GameResults.
+        /// </param>
         public void CalcMetrics(DataRow r)
         {
             var bs = new TeamBoxScore(r, null);
@@ -510,11 +505,12 @@ namespace NBA_Stats_Tracker.Data.Players
             GmScE = ps.Metrics["GmScE"];
         }
 
-        /// <summary>
-        ///     Calculates the metrics of a player's performance.
-        /// </summary>
+        /// <summary>Calculates the metrics of a player's performance.</summary>
         /// <param name="gameID">The game ID.</param>
-        /// <param name="r">The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between PlayerResults and GameResults.</param>
+        /// <param name="r">
+        ///     The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between
+        ///     PlayerResults and GameResults.
+        /// </param>
         public void CalcMetrics(TeamBoxScore bs)
         {
             var ts = new TeamStats(TeamID);
@@ -539,17 +535,13 @@ namespace NBA_Stats_Tracker.Data.Players
             GmScE = ps.Metrics["GmScE"];
         }
 
-        /// <summary>
-        ///     Calculates the points scored.
-        /// </summary>
+        /// <summary>Calculates the points scored.</summary>
         protected void CalculatePoints()
         {
             PTS = (ushort) ((_FGM - _TPM) * 2 + _TPM * 3 + _FTM);
         }
 
-        /// <summary>
-        ///     Gets the best stats of a player's performance.
-        /// </summary>
+        /// <summary>Gets the best stats of a player's performance.</summary>
         /// <param name="count">The count of stats to return.</param>
         /// <param name="position">The player's primary position.</param>
         /// <returns></returns>
@@ -752,9 +744,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        /// <summary>
-        ///     Resets the stats.
-        /// </summary>
+        /// <summary>Resets the stats.</summary>
         public void ResetStats()
         {
             MINS = 0;

@@ -16,28 +16,18 @@
 
 #endregion
 
-#region Using Directives
-
-using System.ComponentModel;
-using System.Windows;
-
-#endregion
-
 namespace LeftosCommonLibrary.CommonDialogs
 {
-    /// <summary>
-    ///     Interaction logic for ProgressWindow.xaml
-    /// </summary>
+    using System.ComponentModel;
+    using System.Windows;
+
+    /// <summary>Interaction logic for ProgressWindow.xaml</summary>
     public partial class ProgressWindow : Window
     {
-        /// <summary>
-        ///     A static copy of the ProgressWindow instance to be used while the window is opened.
-        /// </summary>
+        /// <summary>A static copy of the ProgressWindow instance to be used while the window is opened.</summary>
         public static ProgressWindow PwInstance;
 
-        /// <summary>
-        ///     Whether the window can be closed either by code or by user input.
-        /// </summary>
+        /// <summary>Whether the window can be closed either by code or by user input.</summary>
         public bool CanClose = false;
 
         /// <summary>
@@ -88,9 +78,7 @@ namespace LeftosCommonLibrary.CommonDialogs
             }
         }
 
-        /// <summary>
-        ///     Sets the progress bar value.
-        /// </summary>
+        /// <summary>Sets the progress bar value.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The value.</param>
         public void SetProgressBarValue<T>(T value)
@@ -98,18 +86,14 @@ namespace LeftosCommonLibrary.CommonDialogs
             pb.Value = value.ToInt32();
         }
 
-        /// <summary>
-        ///     Sets the message.
-        /// </summary>
+        /// <summary>Sets the message.</summary>
         /// <param name="message">The message.</param>
         public void SetMessage(string message)
         {
             txbProgress.Text = message;
         }
 
-        /// <summary>
-        ///     Sets the state (i.e. message shown, progress bar value, etc.)
-        /// </summary>
+        /// <summary>Sets the state (i.e. message shown, progress bar value, etc.)</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="message">The message.</param>
         /// <param name="value">The progress bar value.</param>

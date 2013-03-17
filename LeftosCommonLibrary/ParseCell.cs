@@ -16,23 +16,15 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Data;
-
-#endregion
-
 namespace LeftosCommonLibrary
 {
-    /// <summary>
-    ///     Methods to parse a DataRowCell into common data-types.
-    /// </summary>
+    using System;
+    using System.Data;
+
+    /// <summary>Methods to parse a DataRowCell into common data-types.</summary>
     public class ParseCell
     {
-        /// <summary>
-        ///     Gets an unsigned 16-bit integer from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets an unsigned 16-bit integer from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
@@ -41,9 +33,7 @@ namespace LeftosCommonLibrary
             return Convert.ToUInt16(r[columnName].ToString());
         }
 
-        /// <summary>
-        ///     Gets an unsigned 32-bit integer from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets an unsigned 32-bit integer from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
@@ -52,9 +42,7 @@ namespace LeftosCommonLibrary
             return Convert.ToUInt32(r[columnName].ToString());
         }
 
-        /// <summary>
-        ///     Gets a signed 32-bit integer from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets a signed 32-bit integer from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
@@ -63,9 +51,7 @@ namespace LeftosCommonLibrary
             return Convert.ToInt32(r[columnName].ToString());
         }
 
-        /// <summary>
-        ///     Gets a boolean from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets a boolean from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
@@ -76,9 +62,7 @@ namespace LeftosCommonLibrary
             return Convert.ToBoolean(s);
         }
 
-        /// <summary>
-        ///     Gets a string from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets a string from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
@@ -87,9 +71,7 @@ namespace LeftosCommonLibrary
             return r[columnName].ToString();
         }
 
-        /// <summary>
-        ///     Gets a float from the specified column of the given DataRow.
-        /// </summary>
+        /// <summary>Gets a float from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>

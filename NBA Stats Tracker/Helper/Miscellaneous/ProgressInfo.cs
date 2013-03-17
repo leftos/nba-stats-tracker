@@ -16,17 +16,12 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Diagnostics;
-
-using LeftosCommonLibrary;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
     using System;
+    using System.Diagnostics;
+
+    using LeftosCommonLibrary;
 
     public class ProgressInfo
     {
@@ -59,7 +54,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public ProgressInfo(ProgressInfo progress, string message, int percentage = 0)
             : this(message, percentage)
         {
-            var status = String.Format("Stage {0} ({1})", progress.CurrentStage, progress.Message);
+            string status = String.Format("Stage {0} ({1})", progress.CurrentStage, progress.Message);
             if (progress.Timing != null)
             {
                 status += ": " + progress.Timing.ElapsedMilliseconds;

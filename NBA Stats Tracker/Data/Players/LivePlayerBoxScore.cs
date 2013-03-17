@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     Used to keep live track of a player's performance. Extends PlayerBoxScore.
-    /// </summary>
+    using System;
+
+    /// <summary>Used to keep live track of a player's performance. Extends PlayerBoxScore.</summary>
     [Serializable]
     public class LivePlayerBoxScore : PlayerBoxScore
     {

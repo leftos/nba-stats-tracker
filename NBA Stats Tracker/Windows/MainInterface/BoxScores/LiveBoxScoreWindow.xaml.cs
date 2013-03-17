@@ -16,38 +16,32 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-
-using LeftosCommonLibrary.BeTimvwFramework;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
-    /// <summary>
-    ///     Allows the user to keep track of the box scores of a live game.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Input;
+    using System.Windows.Media;
+
+    using LeftosCommonLibrary.BeTimvwFramework;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.EventHandlers;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+
+    using SQLite_Database;
+
+    /// <summary>Allows the user to keep track of the box scores of a live game.</summary>
     public partial class LiveBoxScoreWindow
     {
         private readonly Brush _defaultBackground;
@@ -80,8 +74,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
 
         /// <summary>
-        ///     Handles the CopyingCellClipboardContent event of the colPlayerAway control.
-        ///     Uses a custom CopyingCellClipboardContent event handler that replaces the Player ID with the player's name.
+        ///     Handles the CopyingCellClipboardContent event of the colPlayerAway control. Uses a custom CopyingCellClipboardContent event
+        ///     handler that replaces the Player ID with the player's name.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -93,8 +87,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CopyingCellClipboardContent event of the colPlayerHome control.
-        ///     Uses a custom CopyingCellClipboardContent event handler that replaces the Player ID with the player's name.
+        ///     Handles the CopyingCellClipboardContent event of the colPlayerHome control. Uses a custom CopyingCellClipboardContent event
+        ///     handler that replaces the Player ID with the player's name.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -106,8 +100,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam1 control.
-        ///     Checks if the same team is selected for both home and away, and updates the corresponding DataGrid.
+        ///     Handles the SelectionChanged event of the cmbTeam1 control. Checks if the same team is selected for both home and away, and
+        ///     updates the corresponding DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -119,9 +113,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             updateDataGrid(1);
         }
 
-        /// <summary>
-        ///     Checks if the same team is selected for both home and away, and changes the combo-box background accordingly.
-        /// </summary>
+        /// <summary>Checks if the same team is selected for both home and away, and changes the combo-box background accordingly.</summary>
         private void checkIfSameTeams()
         {
             string team1, team2;
@@ -146,9 +138,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbTeam2.Background = _defaultBackground;
         }
 
-        /// <summary>
-        ///     Updates the data grid for the specified team, filling it with all the team's players.
-        /// </summary>
+        /// <summary>Updates the data grid for the specified team, filling it with all the team's players.</summary>
         /// <param name="team">1 for the away team; anything else for the home team.</param>
         private void updateDataGrid(int team)
         {
@@ -196,9 +186,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Populates the teams combo.
-        /// </summary>
+        /// <summary>Populates the teams combo.</summary>
         private void populateTeamsCombo()
         {
             _teams = new List<string>();
@@ -217,8 +205,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CellEditEnding event of the dataGrid control.
-        ///     Used to force the immediate update of other data-bound data in the row.
+        ///     Handles the CellEditEnding event of the dataGrid control. Used to force the immediate update of other data-bound data in the
+        ///     row.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -231,8 +219,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CurrentCellChanged event of the dataGrid control.
-        ///     Used to force the immediate update of other data-bound data in the row.
+        ///     Handles the CurrentCellChanged event of the dataGrid control. Used to force the immediate update of other data-bound data in
+        ///     the row.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -247,8 +235,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam2 control.
-        ///     Checks if the same team is selected for both home and away, and updates the corresponding DataGrid.
+        ///     Handles the SelectionChanged event of the cmbTeam2 control. Checks if the same team is selected for both home and away, and
+        ///     updates the corresponding DataGrid.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -260,18 +248,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             updateDataGrid(2);
         }
 
-        /// <summary>
-        ///     Calculates the away team's stats by accumulating the player box scores.
-        /// </summary>
+        /// <summary>Calculates the away team's stats by accumulating the player box scores.</summary>
         private void calculateAwayTeam()
         {
             txbAwayStats.Text = calculateTeam(_lpbsAwayList);
             compareScores();
         }
 
-        /// <summary>
-        ///     Compares the two team's scores, makes the leading team's stats bold.
-        /// </summary>
+        /// <summary>Compares the two team's scores, makes the leading team's stats bold.</summary>
         private void compareScores()
         {
             int awayScore;
@@ -302,18 +286,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Calculates the home team's stats by accumulating the player box scores.
-        /// </summary>
+        /// <summary>Calculates the home team's stats by accumulating the player box scores.</summary>
         private void calculateHomeTeam()
         {
             txbHomeStats.Text = calculateTeam(_lpbsHomeList);
             compareScores();
         }
 
-        /// <summary>
-        ///     Calculates the team's stats by accumulating the player box scores.
-        /// </summary>
+        /// <summary>Calculates the team's stats by accumulating the player box scores.</summary>
         /// <param name="pbsList">The team's LivePlayerBoxScore instances list.</param>
         /// <returns>A well-formatted string displaying all the calculated stats for the team.</returns>
         private string calculateTeam(IEnumerable<LivePlayerBoxScore> pbsList)
@@ -346,9 +326,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             return resp;
         }
 
-        /// <summary>
-        ///     Calculates the box score entry in order to transfer the stats to the Box Score Window for further editing and saving.
-        /// </summary>
+        /// <summary>Calculates the box score entry in order to transfer the stats to the Box Score Window for further editing and saving.</summary>
         /// <returns></returns>
         private BoxScoreEntry calculateBoxScoreEntry()
         {
@@ -418,12 +396,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             bs.Done = false;
 
             var bse = new BoxScoreEntry(bs) { PBSList = new List<PlayerBoxScore>() };
-            foreach (var lpbs in _lpbsAwayList)
+            foreach (LivePlayerBoxScore lpbs in _lpbsAwayList)
             {
                 lpbs.TeamID = bs.Team1ID;
                 bse.PBSList.Add(lpbs);
             }
-            foreach (var lpbs in _lpbsHomeList)
+            foreach (LivePlayerBoxScore lpbs in _lpbsHomeList)
             {
                 lpbs.TeamID = bs.Team2ID;
                 bse.PBSList.Add(lpbs);
@@ -448,10 +426,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             return bse;
         }
 
-        /// <summary>
-        ///     Handles the SourceUpdated event of the IntegerUpDown control.
-        ///     Recalculates both teams' stats each time a stat is updated.
-        /// </summary>
+        /// <summary>Handles the SourceUpdated event of the IntegerUpDown control. Recalculates both teams' stats each time a stat is updated.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="DataTransferEventArgs" /> instance containing the event data.
@@ -478,8 +453,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnCopy control.
-        ///     Copies all the data into a box score entry and views it in the Box Score Window for further editing and saving.
+        ///     Handles the Click event of the btnCopy control. Copies all the data into a box score entry and views it in the Box Score
+        ///     Window for further editing and saving.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -498,9 +473,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             Close();
         }
 
-        /// <summary>
-        ///     Updates the live box score data grid.
-        /// </summary>
+        /// <summary>Updates the live box score data grid.</summary>
         /// <param name="teamID">Name of the team.</param>
         /// <param name="playersList">The players list.</param>
         /// <param name="pbsList">The player box score list.</param>
@@ -560,8 +533,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private LivePlayerBoxScore _targetPerson;
 
         /// <summary>
-        ///     Handles the MouseMove event of the DataGrid control.
-        ///     Implements row rearranging functionality via drag-and-drop. Handles the drag event.
+        ///     Handles the MouseMove event of the DataGrid control. Implements row rearranging functionality via drag-and-drop. Handles the
+        ///     drag event.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -603,8 +576,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CheckDropTarget event of the DataGrid control.
-        ///     Isn't currently used since this window only has DataGrid controls containing LivePlayerBoxScore objects.
+        ///     Handles the CheckDropTarget event of the DataGrid control. Isn't currently used since this window only has DataGrid controls
+        ///     containing LivePlayerBoxScore objects.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -623,8 +596,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Drop event of the DataGrid control.
-        ///     Implements row rearranging functionality via drag-and-drop. Handles the drop event.
+        ///     Handles the Drop event of the DataGrid control. Implements row rearranging functionality via drag-and-drop. Handles the drop
+        ///     event.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -648,8 +621,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Finds the visual parent of the specified UI element.
-        ///     Used to determine the DataGrid that was the destination of the drop event during drag-and-drop.
+        ///     Finds the visual parent of the specified UI element. Used to determine the DataGrid that was the destination of the drop
+        ///     event during drag-and-drop.
         /// </summary>
         /// <typeparam name="UIE">The type of the UI element.</typeparam>
         /// <param name="element">The UI element.</param>

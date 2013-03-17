@@ -16,31 +16,26 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using System.Windows;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
-    /// <summary>
-    ///     A container for all of a team's information, stats, PerGame and metrics handled by the program.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Data;
+    using System.Linq;
+    using System.Windows;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    using SQLite_Database;
+
+    /// <summary>A container for all of a team's information, stats, PerGame and metrics handled by the program.</summary>
     [Serializable]
     public class TeamStats
     {
@@ -56,10 +51,8 @@ namespace NBA_Stats_Tracker.Data.Teams
         public int Offset;
 
         /// <summary>
-        ///     Averages for each team.
-        ///     0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff,
-        ///     8: RPG, 9: ORPG, 10: DRPG, 11: SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%,
-        ///     17: Weff, 18: PD
+        ///     Averages for each team. 0: PPG, 1: PAPG, 2: FG%, 3: FGEff, 4: 3P%, 5: 3PEff, 6: FT%, 7:FTEff, 8: RPG, 9: ORPG, 10: DRPG, 11:
+        ///     SPG, 12: BPG, 13: TPG, 14: APG, 15: FPG, 16: W%, 17: Weff, 18: PD
         /// </summary>
         public float[] PerGame = new float[20];
 
@@ -72,10 +65,8 @@ namespace NBA_Stats_Tracker.Data.Teams
         public uint[] Record = new uint[2];
 
         /// <summary>
-        ///     Stats for each team.
-        ///     0: M, 1: PF, 2: PA, 3: 0x0000, 4: FGM, 5: FGA, 6: 3PM, 7: 3PA, 8: FTM, 9: FTA,
-        ///     10: OREB, 11: DREB, 12: STL, 13: TO, 14: BLK, 15: AST,
-        ///     16: FOUL
+        ///     Stats for each team. 0: M, 1: PF, 2: PA, 3: 0x0000, 4: FGM, 5: FGA, 6: 3PM, 7: 3PA, 8: FTM, 9: FTA, 10: OREB, 11: DREB, 12:
+        ///     STL, 13: TO, 14: BLK, 15: AST, 16: FOUL
         /// </summary>
         public uint[] Totals = new uint[17];
 
@@ -219,9 +210,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Prepares an empty TeamStats instance.
-        /// </summary>
+        /// <summary>Prepares an empty TeamStats instance.</summary>
         private void prepareEmpty()
         {
             Record[0] = Convert.ToByte(0);
@@ -250,9 +239,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     });
         }
 
-        /// <summary>
-        ///     Calculates the PerGame of a team's stats.
-        /// </summary>
+        /// <summary>Calculates the PerGame of a team's stats.</summary>
         public void CalcAvg()
         {
             uint games = Record[0] + Record[1];
@@ -301,9 +288,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             PlPerGame[TAbbr.MPG] = (float) PlTotals[TAbbr.MINS] / plGames;
         }
 
-        /// <summary>
-        ///     Calculates the league PerGame.
-        /// </summary>
+        /// <summary>Calculates the league PerGame.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="statRange">The stat range.</param>
         /// <returns></returns>
@@ -327,9 +312,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return ls;
         }
 
-        /// <summary>
-        ///     Calculates the team metrics for all the teams.
-        /// </summary>
+        /// <summary>Calculates the team metrics for all the teams.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
         /// <param name="playoffs">
@@ -346,9 +329,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Counts the teams having more than one game in a specific time-span of the league's calendar.
-        /// </summary>
+        /// <summary>Counts the teams having more than one game in a specific time-span of the league's calendar.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="statRange">The stat range.</param>
         /// <returns></returns>
@@ -379,9 +360,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return (teamCount != 0) ? teamCount : 1;
         }
 
-        /// <summary>
-        ///     Calculates the metric stats for this team.
-        /// </summary>
+        /// <summary>Calculates the metric stats for this team.</summary>
         /// <param name="tsopp">The opposing team stats.</param>
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the metrics will be calculated based on the team's playoff performances.
@@ -500,9 +479,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Calculates the Possessions metric.
-        /// </summary>
+        /// <summary>Calculates the Possessions metric.</summary>
         /// <param name="tstats">The team stats.</param>
         /// <param name="toppstats">The opposing team stats.</param>
         /// <returns></returns>
@@ -518,9 +495,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return poss;
         }
 
-        /// <summary>
-        ///     Gets the amount of games played by the team.
-        /// </summary>
+        /// <summary>Gets the amount of games played by the team.</summary>
         /// <returns></returns>
         public uint GetGames()
         {
@@ -528,9 +503,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return games;
         }
 
-        /// <summary>
-        ///     Gets the amount of playoff games played by the team.
-        /// </summary>
+        /// <summary>Gets the amount of playoff games played by the team.</summary>
         /// <returns></returns>
         public uint GetPlayoffGames()
         {
@@ -538,9 +511,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return plGames;
         }
 
-        /// <summary>
-        ///     Adds the team stats from a TeamStats instance to the current stats.
-        /// </summary>
+        /// <summary>Adds the team stats from a TeamStats instance to the current stats.</summary>
         /// <param name="ts">The team stats to add.</param>
         /// <param name="mode">The time-span.</param>
         /// <exception cref="System.Exception">Team Add Stats called with invalid parameter.</exception>
@@ -602,9 +573,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Resets the stats.
-        /// </summary>
+        /// <summary>Resets the stats.</summary>
         /// <param name="mode">The time-span.</param>
         /// <exception cref="System.Exception">Team Reset Stats called with invalid parameter.</exception>
         public void ResetStats(Span mode)
@@ -665,9 +634,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Gets the winning percentage.
-        /// </summary>
+        /// <summary>Gets the winning percentage.</summary>
         /// <param name="span">The span.</param>
         /// <returns></returns>
         public double GetWinningPercentage(Span span)
@@ -707,9 +674,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Returns a well-formatted multi-line string presenting a scouting report for the team in natural language.
-        /// </summary>
+        /// <summary>Returns a well-formatted multi-line string presenting a scouting report for the team in natural language.</summary>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="psrList"> </param>
         /// <returns></returns>
@@ -1208,9 +1173,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return msg;
         }
 
-        /// <summary>
-        ///     Determines whether the team is hidden for the current season.
-        /// </summary>
+        /// <summary>Determines whether the team is hidden for the current season.</summary>
         /// <param name="file">The file.</param>
         /// <param name="id">The name of the team.</param>
         /// <param name="season">The season ID.</param>
@@ -1220,7 +1183,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public static bool IsTeamHiddenInSeason(string file, int id, int season)
         {
             var db = new SQLiteDatabase(file);
-            int maxSeason = SQLiteIO.SQLiteIO.GetMaxSeason(file);
+            int maxSeason = SQLiteIO.GetMaxSeason(file);
             string teamsT = "Teams";
             if (season != maxSeason)
             {
@@ -1233,9 +1196,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             return isHidden;
         }
 
-        /// <summary>
-        ///     Adds the team stats from a box score.
-        /// </summary>
+        /// <summary>Adds the team stats from a box score.</summary>
         /// <param name="bsToAdd">The box score to add.</param>
         /// <param name="ts1">The first team's team stats.</param>
         /// <param name="ts2">The second team's team stats.</param>
@@ -1250,9 +1211,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             ts2 = tst[2];
         }
 
-        /// <summary>
-        ///     Adds the team stats from a box score.
-        /// </summary>
+        /// <summary>Adds the team stats from a box score.</summary>
         /// <param name="bsToAdd">The box score to add.</param>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
@@ -1262,9 +1221,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             AddTeamStatsFromBoxScore(bsToAdd, ref tst, ref tstOpp, bsToAdd.Team1ID, bsToAdd.Team2ID);
         }
 
-        /// <summary>
-        ///     Adds the team stats from a box score.
-        /// </summary>
+        /// <summary>Adds the team stats from a box score.</summary>
         /// <param name="bsToAdd">The box score to add.</param>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
@@ -1596,9 +1553,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             tstOpp[id2] = tsopp2;
         }
 
-        /// <summary>
-        ///     Checks for teams in divisions that don't exist anymore, and reassings them to the first available division.
-        /// </summary>
+        /// <summary>Checks for teams in divisions that don't exist anymore, and reassings them to the first available division.</summary>
         public static void CheckForInvalidDivisions()
         {
             var db = new SQLiteDatabase(MainWindow.CurrentDB);
@@ -1610,7 +1565,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             var teamsChanged = new List<string>();
 
-            int maxSeason = SQLiteIO.SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
+            int maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
             for (int i = maxSeason; i >= 1; i--)
             {
                 string teamsT = "Teams";
@@ -1658,14 +1613,12 @@ namespace NBA_Stats_Tracker.Data.Teams
                            + MainWindow.Divisions.First().Name + " division.\n\n";
                 teamsChanged.ForEach(s1 => s += s1 + "\n");
                 s = s.TrimEnd(new[] { '\n' });
-                SQLiteIO.SQLiteIO.SaveSeasonToDatabase();
+                SQLiteIO.SaveSeasonToDatabase();
                 MessageBox.Show(s);
             }
         }
 
-        /// <summary>
-        ///     Adds one or more box scores resulting from an SQLite query to a TeamStats instance.
-        /// </summary>
+        /// <summary>Adds one or more box scores resulting from an SQLite query to a TeamStats instance.</summary>
         /// <param name="res">The result of the query containing the box score records.</param>
         /// <param name="ts">The TeamStats instance to be modified.</param>
         /// <param name="tsopp">The opposing TeamStats instance to be modified..</param>
@@ -1677,9 +1630,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
         }
 
-        /// <summary>
-        ///     Adds a box score resulting from an SQLite query to a TeamStats instance.
-        /// </summary>
+        /// <summary>Adds a box score resulting from an SQLite query to a TeamStats instance.</summary>
         /// <param name="r">The result of the query containing the box score record.</param>
         /// <param name="ts">The TeamStats instance to be modified.</param>
         /// <param name="tsopp">The opposing TeamStats instance to be modified.</param>

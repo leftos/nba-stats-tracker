@@ -16,20 +16,14 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-using System.Linq;
-
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     Used to determine the player ranking for each stat.
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Used to determine the player ranking for each stat.</summary>
     public class PlayerRankings
     {
         public int PerGameCount = new PlayerStats().PerGame.Length;

@@ -16,25 +16,19 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Media;
-using System.Windows;
-using System.Windows.Input;
-
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Interop.REDitor;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
-    /// <summary>
-    ///     Interaction logic for PickGamesWindow.xaml
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Media;
+    using System.Windows;
+    using System.Windows.Input;
+
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Interop.REDitor;
+
+    /// <summary>Interaction logic for PickGamesWindow.xaml</summary>
     public partial class PickGamesWindow : Window
     {
         private readonly List<int> _teams = new List<int>();

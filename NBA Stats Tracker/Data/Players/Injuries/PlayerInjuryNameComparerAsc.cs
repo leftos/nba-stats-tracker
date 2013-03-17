@@ -16,15 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    using System;
+    using System.Collections;
+
     public class PlayerInjuryNameComparerAsc : IComparer
     {
         #region IComparer Members

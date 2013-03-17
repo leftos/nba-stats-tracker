@@ -16,49 +16,35 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-
-using Microsoft.Win32;
-
-#endregion
-
 namespace LeftosCommonLibrary
 {
-    /// <summary>
-    ///     Various miscellaneous tools.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Windows;
+    using System.Windows.Controls;
+
+    using Microsoft.Win32;
+
+    /// <summary>Various miscellaneous tools.</summary>
     public static class Tools
     {
-        /// <summary>
-        ///     The application name; used as default title in various dialogs.
-        /// </summary>
+        /// <summary>The application name; used as default title in various dialogs.</summary>
         public static string AppName = "";
 
-        /// <summary>
-        ///     The application's registry key; used by GetRegistrySetting and SetRegistrySetting for example.
-        /// </summary>
+        /// <summary>The application's registry key; used by GetRegistrySetting and SetRegistrySetting for example.</summary>
         public static string AppRegistryKey = "";
 
-        /// <summary>
-        ///     Sets a registry setting using the AppRegistryKey field as the key.
-        /// </summary>
+        /// <summary>Sets a registry setting using the AppRegistryKey field as the key.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="setting">The setting.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.Exception">
-        ///     Couldn't access or create application's registry key.
-        /// </exception>
+        /// <exception cref="System.Exception">Couldn't access or create application's registry key.</exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
             RegistryKey rk = Registry.CurrentUser;
@@ -91,9 +77,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        ///     Gets a registry setting using the AppRegistryKey field as the key.
-        /// </summary>
+        /// <summary>Gets a registry setting using the AppRegistryKey field as the key.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="setting">The setting.</param>
         /// <param name="defaultValue">The default value.</param>
@@ -124,9 +108,7 @@ namespace LeftosCommonLibrary
             return settingValue;
         }
 
-        /// <summary>
-        ///     Gets the extension of a specified file.
-        /// </summary>
+        /// <summary>Gets the extension of a specified file.</summary>
         /// <param name="path">The path to the file.</param>
         /// <returns>The extension of the file.</returns>
         public static string GetExtension(string path)
@@ -134,9 +116,7 @@ namespace LeftosCommonLibrary
             return Path.GetExtension(path);
         }
 
-        /// <summary>
-        ///     Gets the filename part of a path to a file.
-        /// </summary>
+        /// <summary>Gets the filename part of a path to a file.</summary>
         /// <param name="f">The path to the file.</param>
         /// <returns>The safe filename of the file.</returns>
         public static string GetSafeFilename(string f)
@@ -144,9 +124,7 @@ namespace LeftosCommonLibrary
             return Path.GetFileName(f);
         }
 
-        /// <summary>
-        ///     Gets the full path of the file without its extension.
-        /// </summary>
+        /// <summary>Gets the full path of the file without its extension.</summary>
         /// <param name="f">The path to the file.</param>
         /// <returns></returns>
         public static string GetFullPathWithoutExtension(string f)
@@ -160,9 +138,7 @@ namespace LeftosCommonLibrary
             return fullpath;
         }
 
-        /// <summary>
-        ///     Gets the CRC32 of a specified file.
-        /// </summary>
+        /// <summary>Gets the CRC32 of a specified file.</summary>
         /// <param name="filename">The path to the file.</param>
         /// <returns>The hex representation of the CRC32 of the file.</returns>
         public static String GetCRC(string filename)
@@ -170,9 +146,7 @@ namespace LeftosCommonLibrary
             return Crc32.CalculateCRC(filename);
         }
 
-        /// <summary>
-        ///     Reverses the byte order of (part of) an array of bytes.
-        /// </summary>
+        /// <summary>Reverses the byte order of (part of) an array of bytes.</summary>
         /// <param name="original">The original.</param>
         /// <param name="length">The amount of bytes that should be reversed and returned, counting from the start of the array.</param>
         /// <returns>The reversed byte array.</returns>
@@ -186,9 +160,7 @@ namespace LeftosCommonLibrary
             return newArr;
         }
 
-        /// <summary>
-        ///     Converts a hex representation string to a byte array of corresponding values.
-        /// </summary>
+        /// <summary>Converts a hex representation string to a byte array of corresponding values.</summary>
         /// <param name="hex">The hex representation.</param>
         /// <returns>The corresponding byte array.</returns>
         public static byte[] HexStringToByteArray(String hex)
@@ -202,9 +174,7 @@ namespace LeftosCommonLibrary
             return bytes;
         }
 
-        /// <summary>
-        ///     Converts a byte array to the equivalent hex string representation.
-        /// </summary>
+        /// <summary>Converts a byte array to the equivalent hex string representation.</summary>
         /// <param name="ba">The byte array.</param>
         /// <returns></returns>
         public static string ByteArrayToHexString(byte[] ba)
@@ -213,9 +183,7 @@ namespace LeftosCommonLibrary
             return hex.Replace("-", "");
         }
 
-        /// <summary>
-        ///     Gets the MD5 hash of a string.
-        /// </summary>
+        /// <summary>Gets the MD5 hash of a string.</summary>
         /// <param name="s">The string.</param>
         /// <returns>The MD5 hash.</returns>
         public static string GetMD5(string s)
@@ -235,9 +203,7 @@ namespace LeftosCommonLibrary
             return BitConverter.ToString(encodedBytes);
         }
 
-        /// <summary>
-        ///     Gets a cell of a WPF DataGrid at the specified row and column.
-        /// </summary>
+        /// <summary>Gets a cell of a WPF DataGrid at the specified row and column.</summary>
         /// <param name="dataGrid">The data grid.</param>
         /// <param name="row">The row.</param>
         /// <param name="col">The column.</param>
@@ -253,9 +219,7 @@ namespace LeftosCommonLibrary
             return null;
         }
 
-        /// <summary>
-        ///     Splits a multi-line string to an array of its lines.
-        /// </summary>
+        /// <summary>Splits a multi-line string to an array of its lines.</summary>
         /// <param name="text">The text.</param>
         /// <returns></returns>
         public static string[] SplitLinesToArray(string text)
@@ -263,9 +227,7 @@ namespace LeftosCommonLibrary
             return text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
         }
 
-        /// <summary>
-        ///     Splits a multi-line string to a list of its lines.
-        /// </summary>
+        /// <summary>Splits a multi-line string to a list of its lines.</summary>
         /// <param name="text">The text.</param>
         /// <param name="keepDuplicates">
         ///     if set to <c>true</c> [keep duplicates].
@@ -292,18 +254,14 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        ///     Writes a message to the trace listeners including a date and time stamp.
-        /// </summary>
+        /// <summary>Writes a message to the trace listeners including a date and time stamp.</summary>
         /// <param name="msg">The message.</param>
         public static void WriteToTrace(string msg)
         {
             Trace.WriteLine(String.Format("{0}: {1}", DateTime.Now, msg));
         }
 
-        /// <summary>
-        ///     Writes a message to the trace listeners including a date and time stamp and information about the exception.
-        /// </summary>
+        /// <summary>Writes a message to the trace listeners including a date and time stamp and information about the exception.</summary>
         /// <param name="msg">The message.</param>
         /// <param name="ex">The exception.</param>
         public static void WriteToTraceWithException(string msg, Exception ex)
@@ -311,12 +269,8 @@ namespace LeftosCommonLibrary
             Trace.WriteLine(String.Format("{0}: {1} ({2})", DateTime.Now, msg, ex.Message));
         }
 
-        /// <summary>
-        ///     Determines if a type is numeric.  Nullable numeric types are considered numeric.
-        /// </summary>
-        /// <remarks>
-        ///     Boolean is not considered numeric.
-        /// </remarks>
+        /// <summary>Determines if a type is numeric.  Nullable numeric types are considered numeric.</summary>
+        /// <remarks>Boolean is not considered numeric.</remarks>
         public static bool IsNumericType(Type type)
         {
             if (type == null)
@@ -348,9 +302,7 @@ namespace LeftosCommonLibrary
             return false;
         }
 
-        /// <summary>
-        ///     Determines whether the specified string is numeric.
-        /// </summary>
+        /// <summary>Determines whether the specified string is numeric.</summary>
         /// <param name="s">The source string.</param>
         /// <returns>
         ///     <c>true</c> if the specified string is numeric; otherwise, <c>false</c>.
@@ -362,9 +314,7 @@ namespace LeftosCommonLibrary
             return Double.TryParse(s, out temp);
         }
 
-        /// <summary>
-        ///     Checks for balanced bracketing.
-        /// </summary>
+        /// <summary>Checks for balanced bracketing.</summary>
         /// <param name="incomingString">The source string.</param>
         /// <returns></returns>
         public static bool CheckForBalancedBracketing(string incomingString)

@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
-    /// <summary>
-    ///     Used to determine the team ranking for each stat.
-    /// </summary>
+    using System.Collections.Generic;
+
+    /// <summary>Used to determine the team ranking for each stat.</summary>
     public class TeamRankings
     {
         public Dictionary<int, Dictionary<string, int>> RankingsMetrics;

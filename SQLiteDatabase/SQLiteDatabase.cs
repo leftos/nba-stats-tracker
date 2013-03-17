@@ -16,37 +16,27 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
-using System.Linq;
-using System.Windows;
-
-#endregion
-
 namespace SQLite_Database
 {
-    /// <summary>
-    ///     SQLite Wrapper to be used with System.Data.SQLite.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SQLite;
+    using System.Linq;
+    using System.Windows;
+
+    /// <summary>SQLite Wrapper to be used with System.Data.SQLite.</summary>
     public class SQLiteDatabase
     {
         private readonly String _dbConnection;
 
-        /// <summary>
-        ///     Default Constructor for SQLiteDatabase Class. Connects to the "D:\test.sqlite" database file.
-        /// </summary>
+        /// <summary>Default Constructor for SQLiteDatabase Class. Connects to the "D:\test.sqlite" database file.</summary>
         public SQLiteDatabase()
         {
             _dbConnection = @"Data Source=D:\test.sqlite";
         }
 
-        /// <summary>
-        ///     Single Param Constructor for specifying the DB file.
-        /// </summary>
+        /// <summary>Single Param Constructor for specifying the DB file.</summary>
         /// <param name="inputFile">The File containing the DB</param>
         public SQLiteDatabase(String inputFile)
         {
@@ -54,9 +44,7 @@ namespace SQLite_Database
             //ExecuteNonQuery("ANALYZE;");
         }
 
-        /// <summary>
-        ///     Single Param Constructor for specifying advanced connection options.
-        /// </summary>
+        /// <summary>Single Param Constructor for specifying advanced connection options.</summary>
         /// <param name="connectionOpts">A dictionary containing all desired options and their values</param>
         public SQLiteDatabase(Dictionary<String, String> connectionOpts)
         {
@@ -65,13 +53,11 @@ namespace SQLite_Database
             _dbConnection = str;
         }
 
-        /// <summary>
-        ///     Allows the programmer to run a query against the Database.
-        /// </summary>
+        /// <summary>Allows the programmer to run a query against the Database.</summary>
         /// <param name="sql">The SQL query to run.</param>
         /// <param name="queryHasDuplicateColumns">
-        ///     If <c>true</c>, if the method encounters a column with the same name as a previous one,
-        ///     it will rename it; otherwise, a DuplicateNameException will be thrown.
+        ///     If <c>true</c>, if the method encounters a column with the same name as a previous one, it will rename it; otherwise, a
+        ///     DuplicateNameException will be thrown.
         /// </param>
         /// <returns>A DataTable containing the result set.</returns>
         public DataTable GetDataTable(string sql, bool queryHasDuplicateColumns = false)
@@ -102,14 +88,13 @@ namespace SQLite_Database
         }
 
         /// <summary>
-        ///     Parses the information in an IDataReader, returning a DataTable.
-        ///     Optimized version of DataTable.Load(IDataReader), based on example by Amit Choudhary
-        ///     (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
+        ///     Parses the information in an IDataReader, returning a DataTable. Optimized version of DataTable.Load(IDataReader), based on
+        ///     example by Amit Choudhary (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
         /// </summary>
         /// <param name="dataReader">An IDataReader instance.</param>
         /// <param name="queryHasDuplicateColumns">
-        ///     If <c>true</c>, if the method encounters a column with the same name as a previous one,
-        ///     it will rename it; otherwise, a DuplicateNameException will be thrown.
+        ///     If <c>true</c>, if the method encounters a column with the same name as a previous one, it will rename it; otherwise, a
+        ///     DuplicateNameException will be thrown.
         /// </param>
         /// <returns></returns>
         private static DataTable getDataTableFromDataReader(IDataReader dataReader, bool queryHasDuplicateColumns = false)
@@ -168,9 +153,7 @@ namespace SQLite_Database
             return resultTable;
         }
 
-        /// <summary>
-        ///     Allows the programmer to interact with the database for purposes other than a query.
-        /// </summary>
+        /// <summary>Allows the programmer to interact with the database for purposes other than a query.</summary>
         /// <param name="sql">The SQL to be run.</param>
         /// <returns>An Integer containing the number of rows updated.</returns>
         public int ExecuteNonQuery(string sql)
@@ -194,9 +177,7 @@ namespace SQLite_Database
             return rowsUpdated;
         }
 
-        /// <summary>
-        ///     Allows the programmer to retrieve single items from the DB.
-        /// </summary>
+        /// <summary>Allows the programmer to retrieve single items from the DB.</summary>
         /// <param name="sql">The query to run.</param>
         /// <returns>A string.</returns>
         public string ExecuteScalar(string sql)
@@ -225,9 +206,7 @@ namespace SQLite_Database
             return "";
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily update rows in the DB.
-        /// </summary>
+        /// <summary>Allows the programmer to easily update rows in the DB.</summary>
         /// <param name="tableName">The table to update.</param>
         /// <param name="data">A dictionary containing Column names and their new values.</param>
         /// <param name="where">The where clause for the update statement.</param>
@@ -255,9 +234,7 @@ namespace SQLite_Database
             return returnCode;
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily update multiple records into the DB via transaction command-wrapping
-        /// </summary>
+        /// <summary>Allows the programmer to easily update multiple records into the DB via transaction command-wrapping</summary>
         /// <param name="tableName">The table into which we update the data.</param>
         /// <param name="dataList">A list of dictionaries containing the column names and data for the update.</param>
         /// <param name="whereList">A list of strings containing the according where criteria for each update.</param>
@@ -297,9 +274,7 @@ namespace SQLite_Database
             }
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily delete rows from the DB.
-        /// </summary>
+        /// <summary>Allows the programmer to easily delete rows from the DB.</summary>
         /// <param name="tableName">The table from which to delete.</param>
         /// <param name="where">The where clause for the delete.</param>
         /// <returns>A boolean true or false to signify success or failure.</returns>
@@ -318,9 +293,7 @@ namespace SQLite_Database
             return returnCode;
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily insert into the DB
-        /// </summary>
+        /// <summary>Allows the programmer to easily insert into the DB</summary>
         /// <param name="tableName">The table into which we insert the data.</param>
         /// <param name="data">A dictionary containing the column names and data for the insert.</param>
         /// <returns>A boolean true or false to signify success or failure.</returns>
@@ -350,9 +323,7 @@ namespace SQLite_Database
             return returnCode;
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily insert multiple records into the DB via transaction command-wrapping
-        /// </summary>
+        /// <summary>Allows the programmer to easily insert multiple records into the DB via transaction command-wrapping</summary>
         /// <param name="tableName">The table into which we insert the data.</param>
         /// <param name="dataList">A list of dictionaries containing the column names and data for the insert.</param>
         public void InsertManyTransaction(String tableName, List<Dictionary<String, String>> dataList)
@@ -393,14 +364,11 @@ namespace SQLite_Database
             }
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily insert multiple records into the DB
-        /// </summary>
+        /// <summary>Allows the programmer to easily insert multiple records into the DB</summary>
         /// <param name="tableName">The table into which we insert the data.</param>
         /// <param name="data">
-        ///     A list of dictionaries containing the column names and data for the insert.
-        ///     All dictionaries must have the same order of inserted pairs.
-        ///     The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.
+        ///     A list of dictionaries containing the column names and data for the insert. All dictionaries must have the same
+        ///     order of inserted pairs. The dictionary MUST NOT be more than 500 pairs in length; an exception is thrown if it is.
         /// </param>
         /// <returns>The number of lines affected by this query.</returns>
         public int InsertManyUnion(String tableName, List<Dictionary<String, String>> data)
@@ -436,9 +404,7 @@ namespace SQLite_Database
             return returnCode;
         }
 
-        /// <summary>
-        ///     Allows the programmer to easily delete all data from the DB.
-        /// </summary>
+        /// <summary>Allows the programmer to easily delete all data from the DB.</summary>
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool ClearDB()
         {
@@ -457,9 +423,7 @@ namespace SQLite_Database
             }
         }
 
-        /// <summary>
-        ///     Allows the user to easily clear all data from a specific table.
-        /// </summary>
+        /// <summary>Allows the user to easily clear all data from a specific table.</summary>
         /// <param name="table">The name of the table to clear.</param>
         /// <returns>A boolean true or false to signify success or failure.</returns>
         public bool ClearTable(String table)
@@ -475,9 +439,7 @@ namespace SQLite_Database
             }
         }
 
-        /// <summary>
-        ///     Converts a DateTime object into an SQLite-compatible date string.
-        /// </summary>
+        /// <summary>Converts a DateTime object into an SQLite-compatible date string.</summary>
         /// <param name="dt">The DateTime object.</param>
         /// <returns></returns>
         public static string ConvertDateTimeToSQLite(DateTime dt)
@@ -485,9 +447,7 @@ namespace SQLite_Database
             return String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt);
         }
 
-        /// <summary>
-        ///     Adds a date range to an SQL query.
-        /// </summary>
+        /// <summary>Adds a date range to an SQL query.</summary>
         /// <param name="query">The query.</param>
         /// <param name="dStart">The starting date.</param>
         /// <param name="dEnd">The ending.</param>

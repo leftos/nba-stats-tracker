@@ -16,24 +16,18 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-
-using Microsoft.Win32;
-
-#endregion
-
 namespace Updater
 {
-    /// <summary>
-    ///     Interaction logic for App.xaml
-    /// </summary>
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using System.Windows;
+    using System.Windows.Threading;
+
+    using Microsoft.Win32;
+
+    /// <summary>Interaction logic for App.xaml</summary>
     public partial class App
     {
         private static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)

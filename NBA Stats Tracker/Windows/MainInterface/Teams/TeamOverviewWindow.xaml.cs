@@ -16,43 +16,37 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
-using LeftosCommonLibrary;
-using LeftosCommonLibrary.CommonDialogs;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.ListExtensions;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
-using NBA_Stats_Tracker.Windows.MainInterface.ToolWindows;
-using NBA_Stats_Tracker.Windows.MiscDialogs;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 {
-    /// <summary>
-    ///     Shows team information and stats.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+
+    using LeftosCommonLibrary;
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.EventHandlers;
+    using NBA_Stats_Tracker.Helper.ListExtensions;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
+    using NBA_Stats_Tracker.Windows.MainInterface.ToolWindows;
+    using NBA_Stats_Tracker.Windows.MiscDialogs;
+
+    using SQLite_Database;
+
+    /// <summary>Shows team information and stats.</summary>
     public partial class TeamOverviewWindow
     {
         private readonly string _teamToLoad;
@@ -73,6 +67,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private DataTable _dtSs;
         private DataTable _dtYea;
         private DataView _dvHTH;
+        private DateTime _lastEndDate = DateTime.MinValue;
+        private DateTime _lastStartDate = DateTime.MinValue;
         private int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
         private string _oppBestC = "";
         private string _oppBestF = "";
@@ -87,8 +83,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private string _teamBestG = "";
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, TeamStats> _tstOpp;
-        private DateTime _lastEndDate = DateTime.MinValue;
-        private DateTime _lastStartDate = DateTime.MinValue;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -115,9 +109,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
         protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
 
-        /// <summary>
-        ///     Populates the teams combo.
-        /// </summary>
+        /// <summary>Populates the teams combo.</summary>
         private void populateTeamsCombo()
         {
             List<string> teams = (MainWindow.TST.Where(kvp => !kvp.Value.IsHidden).Select(kvp => kvp.Value.DisplayName)).ToList();
@@ -130,9 +122,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbMPOppTeam.ItemsSource = teams;
         }
 
-        /// <summary>
-        ///     Populates the season combo.
-        /// </summary>
+        /// <summary>Populates the season combo.</summary>
         private void populateSeasonCombo()
         {
             cmbSeasonNum.ItemsSource = MainWindow.SeasonList;
@@ -140,10 +130,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             //cmbSeasonNum.SelectedValue = MainWindow.tf.SeasonNum;
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnPrev control.
-        ///     Switches to the previous team.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnPrev control. Switches to the previous team.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -160,10 +147,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnNext control.
-        ///     Switches to the next team.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnNext control. Switches to the next team.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -291,9 +275,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             return facts;
         }
 
-        /// <summary>
-        ///     Updates the Overview tab and loads the appropriate box scores depending on the timeframe.
-        /// </summary>
+        /// <summary>Updates the Overview tab and loads the appropriate box scores depending on the timeframe.</summary>
         private void updateOverviewAndBoxScores()
         {
             int id = _curTeam;
@@ -586,18 +568,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             #endregion
         }
 
-        /// <summary>
-        ///     Creates a DataView based on the current overview DataTable and refreshes the DataGrid.
-        /// </summary>
+        /// <summary>Creates a DataView based on the current overview DataTable and refreshes the DataGrid.</summary>
         private void createViewAndUpdateOverview()
         {
             var dvOv = new DataView(_dtOv) { AllowNew = false, AllowDelete = false };
             dgvTeamStats.DataContext = dvOv;
         }
 
-        /// <summary>
-        ///     Calculates the split stats and updates the split stats tab.
-        /// </summary>
+        /// <summary>Calculates the split stats and updates the split stats tab.</summary>
         private void updateSplitStats()
         {
             Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats = MainWindow.SplitTeamStats;
@@ -706,10 +684,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvSplit.DataContext = dvSs;
         }
 
-        /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam control.
-        ///     Loads the information for the newly selected team.
-        /// </summary>
+        /// <summary>Handles the SelectionChanged event of the cmbTeam control. Loads the information for the newly selected team.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
@@ -785,9 +760,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvHighs.ItemsSource = recordsList;
         }
 
-        /// <summary>
-        ///     Finds the tam's name by its displayName.
-        /// </summary>
+        /// <summary>Finds the tam's name by its displayName.</summary>
         /// <param name="displayName">The display name.</param>
         /// <returns></returns>
         private int getTeamIDFromDisplayName(string displayName)
@@ -795,9 +768,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             return Misc.GetTeamIDFromDisplayName(_tst, displayName);
         }
 
-        /// <summary>
-        ///     Determines the team's best players and their most significant stats and updates the corresponding tab.
-        /// </summary>
+        /// <summary>Determines the team's best players and their most significant stats and updates the corresponding tab.</summary>
         private void updateBest()
         {
             txbPlayer1.Text = "";
@@ -862,9 +833,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             calculateSituational(cmbSituational.SelectedItem.ToString());
         }
 
-        /// <summary>
-        ///     Determines the team's best starting five and their most significant stats.
-        /// </summary>
+        /// <summary>Determines the team's best starting five and their most significant stats.</summary>
         private void calculateSituational(string property)
         {
             txbStartingPG.Text = "";
@@ -1089,9 +1058,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                        .CompareTo(Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null)));
         }
 
-        /// <summary>
-        ///     Calculates the player and metric stats and updates the corresponding tabs.
-        /// </summary>
+        /// <summary>Calculates the player and metric stats and updates the corresponding tabs.</summary>
         private void updatePlayerAndMetricStats()
         {
             _psrList = new ObservableCollection<PlayerStatsRow>();
@@ -1116,17 +1083,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvPlayoffMetricStats.ItemsSource = _plPSRList;
         }
 
-        /// <summary>
-        ///     Updates the head to head tab.
-        /// </summary>
+        /// <summary>Updates the head to head tab.</summary>
         private void updateHeadToHead()
         {
             cmbOppTeam_SelectionChanged(null, null);
         }
 
-        /// <summary>
-        ///     Calculates the yearly stats and updates the yearly stats tab.
-        /// </summary>
+        /// <summary>Calculates the yearly stats and updates the yearly stats tab.</summary>
         private void updateYearlyStats()
         {
             _dtYea.Clear();
@@ -1230,10 +1193,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvYearly.DataContext = dvYea;
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnSaveCustomTeam control.
-        ///     Saves the team's stats into the database.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnSaveCustomTeam control. Saves the team's stats into the database.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1385,9 +1345,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             updateData();
         }
 
-        /// <summary>
-        ///     Gets the value of the specified cell from the dgvTeamStats DataGrid.
-        /// </summary>
+        /// <summary>Gets the value of the specified cell from the dgvTeamStats DataGrid.</summary>
         /// <param name="row">The row.</param>
         /// <param name="col">The column.</param>
         /// <returns></returns>
@@ -1396,9 +1354,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             return GetCellValue(dgvTeamStats, row, col);
         }
 
-        /// <summary>
-        ///     Gets the value of the specified cell from the specified DataGrid.
-        /// </summary>
+        /// <summary>Gets the value of the specified cell from the specified DataGrid.</summary>
         /// <param name="dataGrid">The data grid.</param>
         /// <param name="row">The row.</param>
         /// <param name="col">The column.</param>
@@ -1415,8 +1371,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnScoutingReport control.
-        ///     Displays a well-formatted scouting report in natural language containing comments on the team's performance, strong and weak points.
+        ///     Handles the Click event of the btnScoutingReport control. Displays a well-formatted scouting report in natural language
+        ///     containing comments on the team's performance, strong and weak points.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1427,8 +1383,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the SelectedDateChanged event of the dtpEnd control.
-        ///     Makes sure the starting date isn't after the ending date, and updates the team's stats based on the new timeframe.
+        ///     Handles the SelectedDateChanged event of the dtpEnd control. Makes sure the starting date isn't after the ending date, and
+        ///     updates the team's stats based on the new timeframe.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1490,8 +1446,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the SelectedDateChanged event of the dtpStart control.
-        ///     Makes sure the starting date isn't after the ending date, and updates the team's stats based on the new timeframe.
+        ///     Handles the SelectedDateChanged event of the dtpStart control. Makes sure the starting date isn't after the ending date, and
+        ///     updates the team's stats based on the new timeframe.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1520,10 +1476,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _changingTimeframe = false;
         }
 
-        /// <summary>
-        ///     Handles the Checked event of the rbStatsAllTime control.
-        ///     Allows the user to display stats from the whole season.
-        /// </summary>
+        /// <summary>Handles the Checked event of the rbStatsAllTime control. Allows the user to display stats from the whole season.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1541,10 +1494,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Handles the Checked event of the rbStatsBetween control.
-        ///     Allows the user to display stats between the specified timeframe.
-        /// </summary>
+        /// <summary>Handles the Checked event of the rbStatsBetween control. Allows the user to display stats between the specified timeframe.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1563,8 +1513,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the MouseDoubleClick event of the dgvBoxScores control.
-        ///     Allows the user to view a specific box score in the Box Score window.
+        ///     Handles the MouseDoubleClick event of the dgvBoxScores control. Allows the user to view a specific box score in the Box Score
+        ///     window.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1587,10 +1537,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnPrevOpp control.
-        ///     Switches to the previous opposing team.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnPrevOpp control. Switches to the previous opposing team.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1624,10 +1571,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnNextOpp control.
-        ///     Switches to the next opposing team.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnNextOpp control. Switches to the next opposing team.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -1663,8 +1607,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbOppTeam control.
-        ///     Synchronizes the two opposing team combos, loads the stats of the selected opposing team, and updates the appropriate tabs.
+        ///     Handles the SelectionChanged event of the cmbOppTeam control. Synchronizes the two opposing team combos, loads the stats of
+        ///     the selected opposing team, and updates the appropriate tabs.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1866,53 +1810,53 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     case TAbbr.APG:
                         msgDesc += "Assists";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.APG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.APG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.APG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.APG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.APG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.APG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.APG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.APG]);
                         break;
                     case TAbbr.BPG:
                         msgDesc += "Blocks";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.BPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.BPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.BPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.BPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.BPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.BPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.BPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.BPG]);
                         break;
                     case TAbbr.DRPG:
                         msgDesc += "Def. Rebounds";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.DRPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.DRPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.DRPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.DRPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.DRPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.DRPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.DRPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.DRPG]);
                         break;
                     case TAbbr.FPG:
                         msgDesc += "Fouls";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.FPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.FPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.FPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.FPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.FPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.FPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.FPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.FPG]);
                         break;
                     case TAbbr.ORPG:
                         msgDesc += "Off. Rebounds";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.ORPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.ORPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.ORPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.ORPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.ORPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.ORPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.ORPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.ORPG]);
                         break;
                     case TAbbr.PAPG:
                         msgDesc += "Points Against";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.PAPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.PAPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.PAPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.PAPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.PAPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.PAPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.PAPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.PAPG]);
                         break;
                     case TAbbr.PPG:
                         msgDesc += "Points For";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.PPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.PPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.PPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.PPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.PPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.PPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.PPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.PPG]);
                         break;
                     case TAbbr.RPG:
                         msgDesc += "Rebounds";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.RPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.RPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.RPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.RPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.RPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.RPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.RPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.RPG]);
                         break;
                     case TAbbr.SPG:
                         msgDesc += "Steals";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.SPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.SPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.SPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.SPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.SPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.SPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.SPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.SPG]);
                         break;
                     case TAbbr.TPG:
                         msgDesc += "Turnovers";
-                        msgTeam += string.Format("{0:F1} ({1})", tsr.TPG, this._seasonRankings.RankingsPerGame[iTeam][TAbbr.TPG]);
-                        msgOpp += string.Format("{0:F1} ({1})", tsropp.TPG, this._seasonRankings.RankingsPerGame[iOpp][TAbbr.TPG]);
+                        msgTeam += string.Format("{0:F1} ({1})", tsr.TPG, _seasonRankings.RankingsPerGame[iTeam][TAbbr.TPG]);
+                        msgOpp += string.Format("{0:F1} ({1})", tsropp.TPG, _seasonRankings.RankingsPerGame[iOpp][TAbbr.TPG]);
                         break;
                     case TAbbr.FGeff:
                         msgDesc += "Field Goals";
@@ -1921,13 +1865,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                             tsr.FGMPG,
                             tsr.FGAPG,
                             tsr.FGp,
-                            this._seasonRankings.RankingsPerGame[iTeam][TAbbr.FGeff]);
+                            _seasonRankings.RankingsPerGame[iTeam][TAbbr.FGeff]);
                         msgOpp += string.Format(
                             "{0:F1}-{1:F1} ({2:F3}) ({3})",
                             tsropp.FGMPG,
                             tsropp.FGAPG,
                             tsropp.FGp,
-                            this._seasonRankings.RankingsPerGame[iOpp][TAbbr.FGeff]);
+                            _seasonRankings.RankingsPerGame[iOpp][TAbbr.FGeff]);
                         break;
                     case TAbbr.TPeff:
                         msgDesc += "3 Pointers";
@@ -1936,13 +1880,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                             tsr.TPMPG,
                             tsr.TPAPG,
                             tsr.TPp,
-                            this._seasonRankings.RankingsPerGame[iTeam][TAbbr.TPeff]);
+                            _seasonRankings.RankingsPerGame[iTeam][TAbbr.TPeff]);
                         msgOpp += string.Format(
                             "{0:F1}-{1:F1} ({2:F3}) ({3})",
                             tsropp.TPMPG,
                             tsropp.TPAPG,
                             tsropp.TPp,
-                            this._seasonRankings.RankingsPerGame[iOpp][TAbbr.TPeff]);
+                            _seasonRankings.RankingsPerGame[iOpp][TAbbr.TPeff]);
                         break;
                     case TAbbr.FTeff:
                         msgDesc += "Free Throws";
@@ -1951,13 +1895,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                             tsr.FTMPG,
                             tsr.FTAPG,
                             tsr.FTp,
-                            this._seasonRankings.RankingsPerGame[iTeam][TAbbr.FTeff]);
+                            _seasonRankings.RankingsPerGame[iTeam][TAbbr.FTeff]);
                         msgOpp += string.Format(
                             "{0:F1}-{1:F1} ({2:F3}) ({3})",
                             tsropp.FTMPG,
                             tsropp.FTAPG,
                             tsropp.FTp,
-                            this._seasonRankings.RankingsPerGame[iOpp][TAbbr.FTeff]);
+                            _seasonRankings.RankingsPerGame[iOpp][TAbbr.FTeff]);
                         break;
                     default:
                         j++;
@@ -2277,9 +2221,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvHTHBoxScores.DataContext = dvHTHBS;
         }
 
-        /// <summary>
-        ///     Creates a data row from a TeamStats instance.
-        /// </summary>
+        /// <summary>Creates a data row from a TeamStats instance.</summary>
         /// <param name="ts">The TeamStats instance.</param>
         /// <param name="dr">The data row to be edited.</param>
         /// <param name="title">The title for the row's Type or Name column.</param>
@@ -2351,9 +2293,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Loaded event of the Window control.
-        ///     Connects the team and player stats dictionaries to the Main window's, calculates team rankingsPerGame,
-        ///     prepares the data tables and sets DataGrid parameters.
+        ///     Handles the Loaded event of the Window control. Connects the team and player stats dictionaries to the Main window's,
+        ///     calculates team rankingsPerGame, prepares the data tables and sets DataGrid parameters.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2557,8 +2498,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Checked event of the rbHTHStatsAnyone control.
-        ///     Used to include all the teams' games in the stat calculations, no matter the opponent.
+        ///     Handles the Checked event of the rbHTHStatsAnyone control. Used to include all the teams' games in the stat calculations, no
+        ///     matter the opponent.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2615,8 +2556,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Checked event of the rbHTHStatsEachOther control.
-        ///     Used to include only stats from the games these two teams have played against each other.
+        ///     Handles the Checked event of the rbHTHStatsEachOther control. Used to include only stats from the games these two teams have
+        ///     played against each other.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2673,8 +2614,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
-        ///     Loads the team and player stats and information for the new season, repopulates the teams combo and tries to switch to the same team again.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control. Loads the team and player stats and information for the new
+        ///     season, repopulates the teams combo and tries to switch to the same team again.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2714,8 +2655,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the MouseDoubleClick event of the AnyPlayerDataGrid control.
-        ///     Views the selected player in the Player Overview window, and reloads their team's stats aftewrards.
+        ///     Handles the MouseDoubleClick event of the AnyPlayerDataGrid control. Views the selected player in the Player Overview window,
+        ///     and reloads their team's stats aftewrards.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2731,10 +2672,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Handles the MouseDoubleClick event of the dgvHTHBoxScores control.
-        ///     Views the selected box score in the Box Score window.
-        /// </summary>
+        /// <summary>Handles the MouseDoubleClick event of the dgvHTHBoxScores control. Views the selected box score in the Box Score window.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
@@ -2758,8 +2696,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Closing event of the Window control.
-        ///     Updates the Main window's team & player stats dictionaries to match the ones in the Team Overview window before closing.
+        ///     Handles the Closing event of the Window control. Updates the Main window's team & player stats dictionaries to match the ones
+        ///     in the Team Overview window before closing.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2778,8 +2716,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnChangeName control.
-        ///     Allows the user to update the team's displayName for the current season.
+        ///     Handles the Click event of the btnChangeName control. Allows the user to update the team's displayName for the current
+        ///     season.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2817,8 +2755,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Sorting event of the StatColumn control.
-        ///     Uses a custom Sorting event handler that sorts a stat in descending order, if it's not sorted already.
+        ///     Handles the Sorting event of the StatColumn control. Uses a custom Sorting event handler that sorts a stat in descending
+        ///     order, if it's not sorted already.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2830,8 +2768,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the PreviewKeyDown event of the dgvTeamStats control.
-        ///     Allows the user to paste and import tab-separated values formatted team stats into the current team.
+        ///     Handles the PreviewKeyDown event of the dgvTeamStats control. Allows the user to paste and import tab-separated values
+        ///     formatted team stats into the current team.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2879,9 +2817,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
         }
 
-        /// <summary>
-        ///     Tries to parse the data in the dictionary and change the values of the specified Overview row.
-        /// </summary>
+        /// <summary>Tries to parse the data in the dictionary and change the values of the specified Overview row.</summary>
         /// <param name="row">The row.</param>
         /// <param name="dict">The dict.</param>
         private void tryChangeRow(int row, Dictionary<string, string> dict)
@@ -2905,9 +2841,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _dtOv.Rows[row].TryChangeValue(dict, "MINS", typeof(UInt16));
         }
 
-        /// <summary>
-        ///     Allows the user to paste and import multiple player stats into the team's players.
-        /// </summary>
+        /// <summary>Allows the user to paste and import multiple player stats into the team's players.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="KeyEventArgs" /> instance containing the event data.
@@ -2942,13 +2876,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                             {
                                 if (dict["Name"].Contains(", "))
                                 {
-                                    var parts = dict["Name"].Split(',');
+                                    string[] parts = dict["Name"].Split(',');
                                     matching =
                                         MainWindow.PST.Values.Where(ps => ps.LastName == parts[0] && ps.FirstName == parts[1]).ToList();
                                 }
                                 else
                                 {
-                                    var parts = dict["Name"].Split(new[] { ' ' }, 2);
+                                    string[] parts = dict["Name"].Split(new[] { ' ' }, 2);
                                     matching =
                                         MainWindow.PST.Values.Where(ps => ps.LastName == parts[1] && ps.FirstName == parts[0]).ToList();
                                 }
@@ -3009,8 +2943,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Click event of the chkHTHHideInjured control.
-        ///     Used to ignore injured players while doing Head-To-Head Best Performers analysis.
+        ///     Handles the Click event of the chkHTHHideInjured control. Used to ignore injured players while doing Head-To-Head Best
+        ///     Performers analysis.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -3021,10 +2955,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbOppTeam_SelectionChanged(null, null);
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnChangeDivision control.
-        ///     Allows the user to change the team's division.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnChangeDivision control. Allows the user to change the team's division.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
@@ -3057,8 +2988,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         }
 
         /// <summary>
-        ///     Handles the Sorting event of the dgvBoxScores control.
-        ///     Uses a custom Sorting event handler that sorts dates or a stat in descending order, if it's not sorted already.
+        ///     Handles the Sorting event of the dgvBoxScores control. Uses a custom Sorting event handler that sorts dates or a stat in
+        ///     descending order, if it's not sorted already.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">

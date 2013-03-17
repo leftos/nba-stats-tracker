@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Data;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows
 {
-    /// <summary>
-    ///     Used to debug and try out new features before rolling them out to release.
-    /// </summary>
+    using System.Data;
+
+    /// <summary>Used to debug and try out new features before rolling them out to release.</summary>
     public partial class TestWindow
     {
         public TestWindow()

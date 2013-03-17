@@ -16,32 +16,26 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Windows;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players.Contracts;
-using NBA_Stats_Tracker.Data.Players.Injuries;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Properties;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     A container for all of a player's information, stats, PerGame and metrics handled by the program.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Windows;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players.Contracts;
+    using NBA_Stats_Tracker.Data.Players.Injuries;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Properties;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>A container for all of a player's information, stats, PerGame and metrics handled by the program.</summary>
     [Serializable]
     public class PlayerStats : INotifyPropertyChanged
     {
@@ -792,9 +786,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg();
         }
 
-        /// <summary>
-        ///     Updates the playoff stats.
-        /// </summary>
+        /// <summary>Updates the playoff stats.</summary>
         /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(DataRow dataRow)
         {
@@ -819,9 +811,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg(true);
         }
 
-        /// <summary>
-        ///     Updates the playoff stats.
-        /// </summary>
+        /// <summary>Updates the playoff stats.</summary>
         /// <param name="dataRow">The data row containing the playoff stats.</param>
         public void UpdatePlayoffStats(PlayerStatsRow pl_psr)
         {
@@ -846,9 +836,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg(true);
         }
 
-        /// <summary>
-        ///     Calculates the PerGame of a player's stats.
-        /// </summary>
+        /// <summary>Calculates the PerGame of a player's stats.</summary>
         /// <param name="playoffsOnly">
         ///     if set to <c>true</c>, only the playoff PerGame will be calculated.
         /// </param>
@@ -894,9 +882,7 @@ namespace NBA_Stats_Tracker.Data.Players
             PlPerGame[PAbbr.FPG] = (float) PlTotals[PAbbr.FOUL] / plGames;
         }
 
-        /// <summary>
-        ///     Calculates the Metric Stats for this Player
-        /// </summary>
+        /// <summary>Calculates the Metric Stats for this Player</summary>
         /// <param name="ts">The player's team's stats</param>
         /// <param name="tsopp">The player's team's opponents' stats</param>
         /// <param name="ls">The total league stats</param>
@@ -1154,9 +1140,7 @@ namespace NBA_Stats_Tracker.Data.Players
             //
         }
 
-        /// <summary>
-        ///     Calculates the PER.
-        /// </summary>
+        /// <summary>Calculates the PER.</summary>
         /// <param name="lgAvgPER">The league average PER.</param>
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the PER is calculated for the player's playoff stats.
@@ -1187,9 +1171,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        /// <summary>
-        ///     Adds a player's box score to their stats.
-        /// </summary>
+        /// <summary>Adds a player's box score to their stats.</summary>
         /// <param name="pbs">The Player Box Score.</param>
         /// <param name="isPlayoff">
         ///     if set to <c>true</c>, the stats are added to the playoff stats.
@@ -1258,9 +1240,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg();
         }
 
-        /// <summary>
-        ///     Adds the player stats from a PlayerStats instance to the current stats.
-        /// </summary>
+        /// <summary>Adds the player stats from a PlayerStats instance to the current stats.</summary>
         /// <param name="ps">The PlayerStats instance.</param>
         /// <param name="addBothToSeasonStats">
         ///     if set to <c>true</c>, both season and playoff stats will be added to the season stats.
@@ -1295,9 +1275,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg();
         }
 
-        /// <summary>
-        ///     Resets the stats.
-        /// </summary>
+        /// <summary>Resets the stats.</summary>
         public void ResetStats()
         {
             for (int i = 0; i < Totals.Length; i++)
@@ -1317,9 +1295,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg();
         }
 
-        /// <summary>
-        ///     Calculates the league PerGame.
-        /// </summary>
+        /// <summary>Calculates the league PerGame.</summary>
         /// <param name="playerStats">The player stats.</param>
         /// <param name="teamStats">The team stats.</param>
         /// <returns></returns>
@@ -1353,9 +1329,7 @@ namespace NBA_Stats_Tracker.Data.Players
             return lps;
         }
 
-        /// <summary>
-        ///     Calculates all metrics.
-        /// </summary>
+        /// <summary>Calculates all metrics.</summary>
         /// <param name="playerStats">The player stats.</param>
         /// <param name="teamStats">The team stats.</param>
         /// <param name="oppStats">The opposing team stats.</param>

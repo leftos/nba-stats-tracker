@@ -16,25 +16,19 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
-    /// <summary>
-    ///     Used for adding Teams and Players to the database.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Windows;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+
+    /// <summary>Used for adding Teams and Players to the database.</summary>
     public partial class AddWindow
     {
         private readonly Dictionary<int, PlayerStats> _pst;

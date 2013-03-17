@@ -16,19 +16,13 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-
-#endregion
-
 namespace LeftosCommonLibrary.BeTimvwFramework
 {
-    /// <summary>
-    ///     An extension of the binding list that allows sorting.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+
+    /// <summary>An extension of the binding list that allows sorting.</summary>
     /// <typeparam name="T">The type of objects this list can contain.</typeparam>
     public class SortableBindingList<T> : BindingList<T>
     {
@@ -56,9 +50,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             _comparers = new Dictionary<Type, PropertyComparer<T>>();
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether this list supports sorting.
-        /// </summary>
+        /// <summary>Gets a value indicating whether this list supports sorting.</summary>
         /// <value>
         ///     <c>true</c> if it supports sorting; otherwise, <c>false</c>.
         /// </value>
@@ -70,9 +62,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether the list is sorted.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the list is sorted.</summary>
         /// <value>
         ///     <c>true</c> if the list is sorted; otherwise, <c>false</c>.
         /// </value>
@@ -84,12 +74,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             }
         }
 
-        /// <summary>
-        ///     Gets the sorting property descriptor.
-        /// </summary>
-        /// <value>
-        ///     The sorting property descriptor.
-        /// </value>
+        /// <summary>Gets the sorting property descriptor.</summary>
+        /// <value>The sorting property descriptor.</value>
         protected override PropertyDescriptor SortPropertyCore
         {
             get
@@ -98,12 +84,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             }
         }
 
-        /// <summary>
-        ///     Gets the sorting direction.
-        /// </summary>
-        /// <value>
-        ///     The sorting direction.
-        /// </value>
+        /// <summary>Gets the sorting direction.</summary>
+        /// <value>The sorting direction.</value>
         protected override ListSortDirection SortDirectionCore
         {
             get
@@ -112,9 +94,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether the list supports searching.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the list supports searching.</summary>
         /// <value>
         ///     <c>true</c> if the list supports searching; otherwise, <c>false</c>.
         /// </value>
@@ -126,9 +106,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             }
         }
 
-        /// <summary>
-        ///     Applies the sort.
-        /// </summary>
+        /// <summary>Applies the sort.</summary>
         /// <param name="property">The property descriptor.</param>
         /// <param name="direction">The sorting direction.</param>
         protected override void ApplySortCore(PropertyDescriptor property, ListSortDirection direction)
@@ -153,9 +131,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
 
-        /// <summary>
-        ///     Removes the sort.
-        /// </summary>
+        /// <summary>Removes the sort.</summary>
         protected override void RemoveSortCore()
         {
             _isSorted = false;
@@ -165,9 +141,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
             OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
         }
 
-        /// <summary>
-        ///     Finds an item.
-        /// </summary>
+        /// <summary>Finds an item.</summary>
         /// <param name="property">The property descriptor.</param>
         /// <param name="key">The key to find.</param>
         /// <returns></returns>

@@ -16,20 +16,14 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface
 {
-    /// <summary>
-    ///     Contains basic version information and accreditations.
-    /// </summary>
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using System.Windows;
+
+    /// <summary>Contains basic version information and accreditations.</summary>
     public partial class AboutWindow
     {
         public AboutWindow()

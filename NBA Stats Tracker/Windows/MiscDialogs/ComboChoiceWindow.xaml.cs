@@ -16,29 +16,20 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-using System.Windows;
-
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Windows.MainInterface;
-using NBA_Stats_Tracker.Windows.MainInterface.Players;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
-    /// <summary>
-    ///     Implements a multi-function combo-box choice window.
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Windows;
+
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    /// <summary>Implements a multi-function combo-box choice window.</summary>
     public partial class ComboChoiceWindow
     {
         #region Mode enum
 
-        /// <summary>
-        ///     Used to determine what choices the window should offer, and its functions
-        /// </summary>
+        /// <summary>Used to determine what choices the window should offer, and its functions</summary>
         public enum Mode
         {
             OneTeam,
@@ -49,8 +40,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
         #endregion
 
-        private readonly Mode _mode;
         public static string UserChoice;
+        private readonly Mode _mode;
 
         private ComboChoiceWindow()
         {
@@ -94,8 +85,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class.
-        ///     Used for when a player is set to active while previously inactive.
+        ///     Initializes a new instance of the <see cref="ComboChoiceWindow" /> class. Used for when a player is set to active while previously
+        ///     inactive.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="items"></param>

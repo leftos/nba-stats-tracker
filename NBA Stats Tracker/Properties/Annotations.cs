@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Properties
 {
-    /// <summary>
-    ///     Indicates that marked element should be localized or not.
-    /// </summary>
+    using System;
+
+    /// <summary>Indicates that marked element should be localized or not.</summary>
     /// <example>
     ///     <code>
     /// [LocalizationRequiredAttribute(true)]
@@ -81,9 +75,7 @@ namespace NBA_Stats_Tracker.Properties
             return attribute != null && attribute.Required == Required;
         }
 
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
+        /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>
         ///     A hash code for the current <see cref="LocalizationRequiredAttribute" />.
         /// </returns>
@@ -94,9 +86,9 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Indicates that the marked method builds string by format pattern and (optional) arguments.
-    ///     Parameter, which contains format string, should be given in constructor.
-    ///     The format string should be in <see cref="string.Format(IFormatProvider,string,object[])" /> -like form
+    ///     Indicates that the marked method builds string by format pattern and (optional) arguments. Parameter, which contains format
+    ///     string, should be given in constructor. The format string should be in
+    ///     <see cref="string.Format(IFormatProvider,string,object[])" /> -like form
     /// </summary>
     /// <example>
     ///     <code>
@@ -114,26 +106,21 @@ namespace NBA_Stats_Tracker.Properties
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class StringFormatMethodAttribute : Attribute
     {
-        /// <summary>
-        ///     Initializes new instance of StringFormatMethodAttribute
-        /// </summary>
+        /// <summary>Initializes new instance of StringFormatMethodAttribute</summary>
         /// <param name="formatParameterName">Specifies which parameter of an annotated method should be treated as format-string</param>
         public StringFormatMethodAttribute(string formatParameterName)
         {
             FormatParameterName = formatParameterName;
         }
 
-        /// <summary>
-        ///     Gets format parameter name
-        /// </summary>
+        /// <summary>Gets format parameter name</summary>
         [UsedImplicitly]
         public string FormatParameterName { get; private set; }
     }
 
     /// <summary>
-    ///     Indicates that the function argument should be string literal and match one of the parameters
-    ///     of the caller function.
-    ///     For example, ReSharper annotates the parameter of <see cref="System.ArgumentNullException" />.
+    ///     Indicates that the function argument should be string literal and match one of the parameters of the caller function. For example,
+    ///     ReSharper annotates the parameter of <see cref="System.ArgumentNullException" />.
     /// </summary>
     /// <example>
     ///     <code>
@@ -151,8 +138,8 @@ namespace NBA_Stats_Tracker.Properties
 
     /// <summary>
     ///     Indicates that the method is contained in a type that implements
-    ///     <see cref="System.ComponentModel.INotifyPropertyChanged" /> interface
-    ///     and this method is used to notify that some property value changed.
+    ///     <see cref="System.ComponentModel.INotifyPropertyChanged" /> interface and this method is used to notify that some property value
+    ///     changed.
     /// </summary>
     /// <remarks>
     ///     The method should be non-static and conform to one of the supported signatures:
@@ -229,8 +216,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Indicates that the value of the marked element could be <c>null</c> sometimes,
-    ///     so the check for <c>null</c> is necessary before its usage.
+    ///     Indicates that the value of the marked element could be <c>null</c> sometimes, so the check for <c>null</c> is necessary before
+    ///     its usage.
     /// </summary>
     /// <example>
     ///     <code>
@@ -273,9 +260,7 @@ namespace NBA_Stats_Tracker.Properties
     {
     }
 
-    /// <summary>
-    ///     Describes dependency between method input and output.
-    /// </summary>
+    /// <summary>Describes dependency between method input and output.</summary>
     /// <syntax>
     ///     <p>Function Definition Table syntax:</p>
     ///     <list>
@@ -286,9 +271,11 @@ namespace NBA_Stats_Tracker.Properties
     ///         <item>Value    ::= true | false | null | notnull | canbenull</item>
     ///     </list>
     ///     If method has single input parameter, it's name could be omitted. <br />
-    ///     Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same) for method output means that the methos doesn't return normally. <br />
+    ///     Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same) for method output means that the methos doesn't return
+    ///     normally. <br />
     ///     <c>canbenull</c> annotation is only applicable for output parameters. <br />
-    ///     You can use multiple <c>[ContractAnnotation]</c> for each FDT row, or use single attribute with rows separated by semicolon. <br />
+    ///     You can use multiple <c>[ContractAnnotation]</c> for each FDT row, or use single attribute with rows separated by semicolon.
+    ///     <br />
     /// </syntax>
     /// <examples>
     ///     <list>
@@ -339,9 +326,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Indicates that the value of the marked type (or its derivatives)
-    ///     cannot be compared using '==' or '!=' operators and <c>Equals()</c> should be used instead.
-    ///     However, using '==' or '!=' for comparison with <c>null</c> is always permitted.
+    ///     Indicates that the value of the marked type (or its derivatives) cannot be compared using '==' or '!=' operators and
+    ///     <c>Equals()</c> should be used instead. However, using '==' or '!=' for comparison with <c>null</c> is always permitted.
     /// </summary>
     /// <example>
     ///     <code>
@@ -372,8 +358,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     When applied to a target attribute, specifies a requirement for any type marked with
-    ///     the target attribute to implement or inherit specific type or types.
+    ///     When applied to a target attribute, specifies a requirement for any type marked with the target attribute to implement or
+    ///     inherit specific type or types.
     /// </summary>
     /// <example>
     ///     <code>
@@ -390,24 +376,20 @@ namespace NBA_Stats_Tracker.Properties
     [BaseTypeRequired(typeof(Attribute))]
     public sealed class BaseTypeRequiredAttribute : Attribute
     {
-        /// <summary>
-        ///     Initializes new instance of BaseTypeRequiredAttribute
-        /// </summary>
+        /// <summary>Initializes new instance of BaseTypeRequiredAttribute</summary>
         /// <param name="baseType">Specifies which types are required</param>
         public BaseTypeRequiredAttribute(Type baseType)
         {
             BaseTypes = new[] { baseType };
         }
 
-        /// <summary>
-        ///     Gets enumerations of specified base types
-        /// </summary>
+        /// <summary>Gets enumerations of specified base types</summary>
         public Type[] BaseTypes { get; private set; }
     }
 
     /// <summary>
-    ///     Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
-    ///     so this symbol will not be marked as unused (as well as by other usage inspections)
+    ///     Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library), so this symbol will not be
+    ///     marked as unused (as well as by other usage inspections)
     /// </summary>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
     public sealed class UsedImplicitlyAttribute : Attribute
@@ -435,16 +417,14 @@ namespace NBA_Stats_Tracker.Properties
         [UsedImplicitly]
         public ImplicitUseKindFlags UseKindFlags { get; private set; }
 
-        /// <summary>
-        ///     Gets value indicating what is meant to be used
-        /// </summary>
+        /// <summary>Gets value indicating what is meant to be used</summary>
         [UsedImplicitly]
         public ImplicitUseTargetFlags TargetFlags { get; private set; }
     }
 
     /// <summary>
-    ///     Should be used on attributes and causes ReSharper
-    ///     to not mark symbols marked with such attributes as unused (as well as by other usage inspections)
+    ///     Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes as unused (as well as by
+    ///     other usage inspections)
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public sealed class MeansImplicitUseAttribute : Attribute
@@ -472,9 +452,7 @@ namespace NBA_Stats_Tracker.Properties
         [UsedImplicitly]
         public ImplicitUseKindFlags UseKindFlags { get; private set; }
 
-        /// <summary>
-        ///     Gets value indicating what is meant to be used
-        /// </summary>
+        /// <summary>Gets value indicating what is meant to be used</summary>
         [UsedImplicitly]
         public ImplicitUseTargetFlags TargetFlags { get; private set; }
     }
@@ -484,32 +462,25 @@ namespace NBA_Stats_Tracker.Properties
     {
         Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
 
-        /// <summary>
-        ///     Only entity marked with attribute considered used
-        /// </summary>
+        /// <summary>Only entity marked with attribute considered used</summary>
         Access = 1,
 
-        /// <summary>
-        ///     Indicates implicit assignment to a member
-        /// </summary>
+        /// <summary>Indicates implicit assignment to a member</summary>
         Assign = 2,
 
         /// <summary>
-        ///     Indicates implicit instantiation of a type with fixed constructor signature.
-        ///     That means any unused constructor parameters won't be reported as such.
+        ///     Indicates implicit instantiation of a type with fixed constructor signature. That means any unused constructor parameters
+        ///     won't be reported as such.
         /// </summary>
         InstantiatedWithFixedConstructorSignature = 4,
 
-        /// <summary>
-        ///     Indicates implicit instantiation of a type
-        /// </summary>
+        /// <summary>Indicates implicit instantiation of a type</summary>
         InstantiatedNoFixedConstructorSignature = 8,
     }
 
     /// <summary>
     ///     Specify what is considered used implicitly when marked with <see cref="MeansImplicitUseAttribute" /> or
-    ///     <see
-    ///         cref="UsedImplicitlyAttribute" />
+    ///     <see cref="UsedImplicitlyAttribute" />
     /// </summary>
     [Flags]
     public enum ImplicitUseTargetFlags
@@ -518,20 +489,14 @@ namespace NBA_Stats_Tracker.Properties
 
         Itself = 1,
 
-        /// <summary>
-        ///     Members of entity marked with attribute are considered used
-        /// </summary>
+        /// <summary>Members of entity marked with attribute are considered used</summary>
         Members = 2,
 
-        /// <summary>
-        ///     Entity marked with attribute and all its members considered used
-        /// </summary>
+        /// <summary>Entity marked with attribute and all its members considered used</summary>
         WithMembers = Itself | Members
     }
 
-    /// <summary>
-    ///     This attribute is intended to mark publicly available API which should not be removed and so is treated as used.
-    /// </summary>
+    /// <summary>This attribute is intended to mark publicly available API which should not be removed and so is treated as used.</summary>
     [MeansImplicitUse]
     public sealed class PublicAPIAttribute : Attribute
     {
@@ -545,9 +510,9 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Tells code analysis engine if the parameter is completely handled when the invoked method is on stack.
-    ///     If the parameter is a delegate, indicates that delegate is executed while the method is executed.
-    ///     If the parameter is an enumerable, indicates that it is enumerated while the method is executed.
+    ///     Tells code analysis engine if the parameter is completely handled when the invoked method is on stack. If the parameter is a
+    ///     delegate, indicates that delegate is executed while the method is executed. If the parameter is an enumerable, indicates that it
+    ///     is enumerated while the method is executed.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true)]
     public sealed class InstantHandleAttribute : Attribute
@@ -555,8 +520,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Indicates that a method does not make any observable state changes.
-    ///     The same as <see cref="System.Diagnostics.Contracts.PureAttribute" />
+    ///     Indicates that a method does not make any observable state changes. The same as
+    ///     <see cref="System.Diagnostics.Contracts.PureAttribute" />
     /// </summary>
     /// <example>
     ///     <code>
@@ -579,8 +544,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     Indicates that a parameter is a path to a file or a folder within a web project.
-    ///     Path can be relative or absolute, starting from web root (~).
+    ///     Indicates that a parameter is a path to a file or a folder within a web project. Path can be relative or absolute, starting
+    ///     from web root (~).
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
     public class PathReferenceAttribute : Attribute
@@ -602,9 +567,8 @@ namespace NBA_Stats_Tracker.Properties
     // ASP.NET MVC attributes
 
     /// <summary>
-    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC action.
-    ///     If applied to a method, the MVC action name is calculated implicitly from the context.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC action. If applied to a method, the MVC
+    ///     action name is calculated implicitly from the context. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
@@ -624,8 +588,7 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC araa.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC araa. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -646,9 +609,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC controller.
-    ///     If applied to a method, the MVC controller name is calculated implicitly from the context.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC controller. If applied to a method, the
+    ///     MVC controller name is calculated implicitly from the context. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
@@ -668,8 +630,7 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC Master.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC Master. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Controller.View(String, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -678,8 +639,7 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC model type.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC model type. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Controller.View(String, Object)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -688,9 +648,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC partial view.
-    ///     If applied to a method, the MVC partial view name is calculated implicitly from the context.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC partial view. If applied to a method, the
+    ///     MVC partial view name is calculated implicitly from the context. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
@@ -698,17 +657,14 @@ namespace NBA_Stats_Tracker.Properties
     {
     }
 
-    /// <summary>
-    ///     ASP.NET MVC attribute. Allows disabling all inspections for MVC views within a class or a method.
-    /// </summary>
+    /// <summary>ASP.NET MVC attribute. Allows disabling all inspections for MVC views within a class or a method.</summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class AspMvcSupressViewErrorAttribute : Attribute
     {
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC display template.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC display template. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.DisplayExtensions.DisplayForModel(HtmlHelper, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -717,8 +673,7 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC editor template.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. Indicates that a parameter is an MVC editor template. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Html.EditorExtensions.EditorForModel(HtmlHelper, String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -727,9 +682,8 @@ namespace NBA_Stats_Tracker.Properties
     }
 
     /// <summary>
-    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC view.
-    ///     If applied to a method, the MVC view name is calculated implicitly from the context.
-    ///     Use this attribute for custom wrappers similar to
+    ///     ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC view. If applied to a method, the MVC
+    ///     view name is calculated implicitly from the context. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.Mvc.Controller.View(Object)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
@@ -737,10 +691,7 @@ namespace NBA_Stats_Tracker.Properties
     {
     }
 
-    /// <summary>
-    ///     ASP.NET MVC attribute. When applied to a parameter of an attribute,
-    ///     indicates that this parameter is an MVC action name.
-    /// </summary>
+    /// <summary>ASP.NET MVC attribute. When applied to a parameter of an attribute, indicates that this parameter is an MVC action name.</summary>
     /// <example>
     ///     <code>
     /// [ActionName("Foo")]
@@ -759,8 +710,7 @@ namespace NBA_Stats_Tracker.Properties
     // Razor attributes
 
     /// <summary>
-    ///     Razor attribute. Indicates that a parameter or a method is a Razor section.
-    ///     Use this attribute for custom wrappers similar to
+    ///     Razor attribute. Indicates that a parameter or a method is a Razor section. Use this attribute for custom wrappers similar to
     ///     <see cref="System.Web.WebPages.WebPageBase.RenderSection(String)" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method, Inherited = true)]

@@ -16,20 +16,16 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using LeftosCommonLibrary;
-
-using NBA_Stats_Tracker.Data.Players;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using LeftosCommonLibrary;
+
+    using NBA_Stats_Tracker.Data.Players;
+
     public class TeamStatsRow
     {
         public TeamStatsRow(TeamStats ts, bool playoffs = false)

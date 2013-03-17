@@ -16,21 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-#endregion
-
-#region Using Directives
-
-using System.Collections.Generic;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players
 {
-    /// <summary>
-    ///     A list of constant pseudonyms for specific entries in the players' stats arrays.
-    /// </summary>
+    using System.Collections.Generic;
+
+    /// <summary>A list of constant pseudonyms for specific entries in the players' stats arrays.</summary>
     public static class PAbbr
     {
         public const int GP = 0,
@@ -51,9 +41,7 @@ namespace NBA_Stats_Tracker.Data.Players
                          FTM = 15,
                          FTA = 16;
 
-        /// <summary>
-        ///     Only to be used with CareerHighs
-        /// </summary>
+        /// <summary>Only to be used with CareerHighs</summary>
         public const int REB = 17; // REB used only for CareerHighs
 
         public const int MPG = 0,

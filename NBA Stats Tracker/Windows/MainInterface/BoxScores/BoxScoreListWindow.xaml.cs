@@ -16,26 +16,20 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
-    /// <summary>
-    ///     Used for displaying a basic list of available box scores, in order to easily delete any of them.
-    /// </summary>
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Input;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+
+    using SQLite_Database;
+
+    /// <summary>Used for displaying a basic list of available box scores, in order to easily delete any of them.</summary>
     public partial class BoxScoreListWindow
     {
         private readonly ObservableCollection<BoxScoreEntry> _bsHist;
@@ -59,9 +53,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             dgvBoxScores.ItemsSource = _bsHist;
         }
 
-        /// <summary>
-        ///     Handles the MouseDoubleClick event of the dgvBoxScores control. The selected box score is displayed in the Box Score Window.
-        /// </summary>
+        /// <summary>Handles the MouseDoubleClick event of the dgvBoxScores control. The selected box score is displayed in the Box Score Window.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
@@ -91,7 +83,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnDelete control. Deletes all the specified Team Box Score, as well as any corresponding Player Box Scores, from the database.
+        ///     Handles the Click event of the btnDelete control. Deletes all the specified Team Box Score, as well as any corresponding
+        ///     Player Box Scores, from the database.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">

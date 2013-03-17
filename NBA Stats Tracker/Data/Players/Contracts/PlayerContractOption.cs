@@ -16,14 +16,10 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Players.Contracts
 {
+    using System;
+
     [Serializable]
     public enum PlayerContractOption : byte
     {

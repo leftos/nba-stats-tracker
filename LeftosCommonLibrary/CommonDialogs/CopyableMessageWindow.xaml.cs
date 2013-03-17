@@ -16,19 +16,15 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Media;
-using System.Windows;
-
-#endregion
-
 namespace LeftosCommonLibrary.CommonDialogs
 {
+    using System;
+    using System.Media;
+    using System.Windows;
+
     /// <summary>
-    ///     Implements a window to display a message to the user that can be copied to the clipboard.
-    ///     Window size adjusts depending on the contents.
+    ///     Implements a window to display a message to the user that can be copied to the clipboard. Window size adjusts depending on
+    ///     the contents.
     /// </summary>
     public partial class CopyableMessageWindow
     {
@@ -57,10 +53,7 @@ namespace LeftosCommonLibrary.CommonDialogs
             Close();
         }
 
-        /// <summary>
-        ///     Handles the Click event of the btnCopyToClip control.
-        ///     Copies the message displayed to the clipboard.
-        /// </summary>
+        /// <summary>Handles the Click event of the btnCopyToClip control. Copies the message displayed to the clipboard.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.

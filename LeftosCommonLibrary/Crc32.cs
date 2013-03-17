@@ -16,20 +16,14 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-
-#endregion
-
 namespace LeftosCommonLibrary
 {
-    /// <summary>
-    ///     Provides methods to calculate CRC32 (32-bit cyclic redundancy check) hashes of byte arrays.
-    /// </summary>
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
+
+    /// <summary>Provides methods to calculate CRC32 (32-bit cyclic redundancy check) hashes of byte arrays.</summary>
     public sealed class Crc32 : HashAlgorithm
     {
         private const UInt32 DefaultPolynomial = 0xedb88320;
@@ -40,9 +34,7 @@ namespace LeftosCommonLibrary
         private readonly UInt32[] _table;
         private UInt32 _hash;
 
-        /// <summary>
-        ///     Default constructor for the Crc32 class, using the default polynomial and seed.
-        /// </summary>
+        /// <summary>Default constructor for the Crc32 class, using the default polynomial and seed.</summary>
         public Crc32()
         {
             _table = initializeTable(DefaultPolynomial);
@@ -50,9 +42,7 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
-        /// <summary>
-        ///     Constructor for the Crc32 class, with user-set polynomial and seed.
-        /// </summary>
+        /// <summary>Constructor for the Crc32 class, with user-set polynomial and seed.</summary>
         /// <param name="polynomial">The polynomial used to initialize the table.</param>
         /// <param name="seed">The seed used to calculate the hash.</param>
         public Crc32(UInt32 polynomial, UInt32 seed)
@@ -62,9 +52,7 @@ namespace LeftosCommonLibrary
             Initialize();
         }
 
-        /// <summary>
-        ///     Overriden property; returns 32 because of the 32-bit implementation.
-        /// </summary>
+        /// <summary>Overriden property; returns 32 because of the 32-bit implementation.</summary>
         public override int HashSize
         {
             get
@@ -81,9 +69,7 @@ namespace LeftosCommonLibrary
             _hash = _seed;
         }
 
-        /// <summary>
-        ///     When overridden in a derived class, routes data written to the object into the hash algorithm for computing the hash.
-        /// </summary>
+        /// <summary>When overridden in a derived class, routes data written to the object into the hash algorithm for computing the hash.</summary>
         /// <param name="array">The input to compute the hash code for. </param>
         /// <param name="ibStart">The offset into the byte array from which to begin using data. </param>
         /// <param name="cbSize">The number of bytes in the byte array to use as data. </param>
@@ -93,11 +79,10 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        ///     When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic stream object.
+        ///     When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic
+        ///     stream object.
         /// </summary>
-        /// <returns>
-        ///     The computed hash code.
-        /// </returns>
+        /// <returns>The computed hash code.</returns>
         protected override byte[] HashFinal()
         {
             byte[] hashBuffer = uInt32ToBigEndianBytes(~_hash);
@@ -105,9 +90,7 @@ namespace LeftosCommonLibrary
             return hashBuffer;
         }
 
-        /// <summary>
-        ///     Computes the hash of the specified buffer.
-        /// </summary>
+        /// <summary>Computes the hash of the specified buffer.</summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The hash of the buffer.</returns>
         public static UInt32 Compute(byte[] buffer)
@@ -115,9 +98,7 @@ namespace LeftosCommonLibrary
             return ~calculateHash(initializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
         }
 
-        /// <summary>
-        ///     Computes the hash of the specified buffer.
-        /// </summary>
+        /// <summary>Computes the hash of the specified buffer.</summary>
         /// <param name="seed">The seed to use.</param>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The hash of the buffer.</returns>
@@ -126,9 +107,7 @@ namespace LeftosCommonLibrary
             return ~calculateHash(initializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
         }
 
-        /// <summary>
-        ///     Computes the hash of the specified buffer.
-        /// </summary>
+        /// <summary>Computes the hash of the specified buffer.</summary>
         /// <param name="polynomial">The polynomial to initialize the table with.</param>
         /// <param name="seed">The seed to use.</param>
         /// <param name="buffer">The buffer.</param>
@@ -189,11 +168,12 @@ namespace LeftosCommonLibrary
             return new[] { (byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff) };
         }
 
-        /// <summary>
-        ///     Calculates the CRC32 of a specified file.
-        /// </summary>
+        /// <summary>Calculates the CRC32 of a specified file.</summary>
         /// <param name="path">The path of the file.</param>
-        /// <param name="ignoreFirst4Bytes">Whether to ignore the first 4 bytes of the file; should be used when the those bytes are the CRC itself.</param>
+        /// <param name="ignoreFirst4Bytes">
+        ///     Whether to ignore the first 4 bytes of the file; should be used when the those bytes are the CRC
+        ///     itself.
+        /// </param>
         /// <returns>A hex string representation of the CRC32 hash.</returns>
         public static String CalculateCRC(string path, bool ignoreFirst4Bytes = false)
         {
@@ -201,9 +181,7 @@ namespace LeftosCommonLibrary
             return CalculateCRC(file);
         }
 
-        /// <summary>
-        ///     Calculates the CRC32 of a specified byte array.
-        /// </summary>
+        /// <summary>Calculates the CRC32 of a specified byte array.</summary>
         /// <param name="ba">The byte array of which to calculate the CRC32 hash.</param>
         /// <returns>A hex string representation of the CRC32 hash.</returns>
         public static String CalculateCRC(byte[] ba)

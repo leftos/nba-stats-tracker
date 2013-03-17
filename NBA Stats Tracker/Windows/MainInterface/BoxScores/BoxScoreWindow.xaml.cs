@@ -16,51 +16,43 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-
-using LeftosCommonLibrary;
-using LeftosCommonLibrary.BeTimvwFramework;
-using LeftosCommonLibrary.CommonDialogs;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.SQLiteIO;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.EventHandlers;
-using NBA_Stats_Tracker.Helper.ListExtensions;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
-    /// <summary>
-    ///     Used to display and edit team and player box scores, as well as player metric stats and the best performers for that game.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media;
+
+    using LeftosCommonLibrary;
+    using LeftosCommonLibrary.BeTimvwFramework;
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.EventHandlers;
+    using NBA_Stats_Tracker.Helper.ListExtensions;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+
+    using SQLite_Database;
+
+    /// <summary>Used to display and edit team and player box scores, as well as player metric stats and the best performers for that game.</summary>
     public partial class BoxScoreWindow
     {
         #region Mode enum
 
         /// <summary>
-        ///     Used to determine the function for which the window has been opened.
-        ///     Update is for entering a new box score.
-        ///     View is for viewing and editing pre-existing box score.
-        ///     ViewAndIgnore is for viewing a pre-existing box score in read-only mode.
+        ///     Used to determine the function for which the window has been opened. Update is for entering a new box score. View is for
+        ///     viewing and editing pre-existing box score. ViewAndIgnore is for viewing a pre-existing box score in read-only mode.
         /// </summary>
         public enum Mode
         {
@@ -204,9 +196,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             IsEnabled = true;
         }
 
-        /// <summary>
-        ///     Finds the requested box score and loads it.
-        /// </summary>
+        /// <summary>Finds the requested box score and loads it.</summary>
         /// <param name="id">The ID of the box score.</param>
         private void loadBoxScore(int id)
         {
@@ -227,9 +217,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             loadBoxScore(bse);
         }
 
-        /// <summary>
-        ///     Loads the given box score.
-        /// </summary>
+        /// <summary>Loads the given box score.</summary>
         /// <param name="bse">The BoxScoreEntry to load.</param>
         private void loadBoxScore(BoxScoreEntry bse)
         {
@@ -322,9 +310,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             _loading = false;
         }
 
-        /// <summary>
-        ///     Updates the player box score data grid for the specified team.
-        /// </summary>
+        /// <summary>Updates the player box score data grid for the specified team.</summary>
         /// <param name="team">1 for the away team, anything else for the home team.</param>
         private void updateDataGrid(int team)
         {
@@ -376,9 +362,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Prepares the window based on the mode of function it was opened for.
-        /// </summary>
+        /// <summary>Prepares the window based on the mode of function it was opened for.</summary>
         /// <param name="curMode">The Mode enum instance which determines the function for which the window is opened.</param>
         private void prepareWindow(Mode curMode)
         {
@@ -459,9 +443,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Populates the teams combo-box.
-        /// </summary>
+        /// <summary>Populates the teams combo-box.</summary>
         private void populateTeamsCombo()
         {
             _teams = new List<string>();
@@ -479,9 +461,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbTeam2.ItemsSource = _teams;
         }
 
-        /// <summary>
-        ///     Populates the season combo-box.
-        /// </summary>
+        /// <summary>Populates the season combo-box.</summary>
         private void populateSeasonCombo()
         {
             cmbSeasonNum.Items.Clear();
@@ -567,9 +547,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             Close();
         }
 
-        /// <summary>
-        ///     Tries to the parse the current team & player box scores, and check for any errors.
-        /// </summary>
+        /// <summary>Tries to the parse the current team & player box scores, and check for any errors.</summary>
         /// <exception cref="System.Exception"></exception>
         private void tryParseBS()
         {
@@ -607,7 +585,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 MainWindow.bs.Team2ID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString());
                 MainWindow.bs.MINS2 = MainWindow.bs.MINS1 = Convert.ToUInt16(txtMINS1.Text);
 
-                var teamName = cmbTeam1.SelectedItem.ToString();
+                string teamName = cmbTeam1.SelectedItem.ToString();
                 if (MainWindow.bs.MINS1 <= 0)
                 {
                     throwErrorWithMessage(
@@ -769,7 +747,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     allPlayers.Add(kvp.Key, kvp.Value);
                 }
-                var teamIter = 0;
+                int teamIter = 0;
                 foreach (var pbsList in pbsLists)
                 {
                     teamIter++;
@@ -783,7 +761,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                             continue;
                         }
 
-                        var isOut = pbs.MINS == 0;
+                        bool isOut = pbs.MINS == 0;
 
                         if (isOut)
                         {
@@ -891,9 +869,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Throws an exception after showing a friendly error message to the user.
-        /// </summary>
+        /// <summary>Throws an exception after showing a friendly error message to the user.</summary>
         /// <param name="msg">The message displayed to the user and used for the exception.</param>
         /// <param name="teamName">The name of the team to be included in the message as having an issue.</param>
         /// <exception cref="System.Exception"></exception>
@@ -904,9 +880,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             throw (new Exception(msg));
         }
 
-        /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam1 control. Updates the tab headers and corresponding data grid.
-        /// </summary>
+        /// <summary>Handles the SelectionChanged event of the cmbTeam1 control. Updates the tab headers and corresponding data grid.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
@@ -920,9 +894,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             updateDataGrid(1);
         }
 
-        /// <summary>
-        ///     Handles the SelectionChanged event of the cmbTeam2 control. Updates the tab headers and corresponding data grid.
-        /// </summary>
+        /// <summary>Handles the SelectionChanged event of the cmbTeam2 control. Updates the tab headers and corresponding data grid.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
@@ -936,9 +908,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             updateDataGrid(2);
         }
 
-        /// <summary>
-        ///     Checks if the same team is selected as home and away, and changes the combo-box color to reflect that.
-        /// </summary>
+        /// <summary>Checks if the same team is selected as home and away, and changes the combo-box color to reflect that.</summary>
         private void checkIfSameTeams()
         {
             string team1, team2;
@@ -963,9 +933,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbTeam2.Background = _defaultBackground;
         }
 
-        /// <summary>
-        ///     Tries to calculate the score and PerGame for the Away team.
-        /// </summary>
+        /// <summary>Tries to calculate the score and PerGame for the Away team.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">
         ///     The <see cref="TextChangedEventArgs" /> instance containing the event data.
@@ -1004,9 +972,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             txbT1Avg.Text = t1Avg;
         }
 
-        /// <summary>
-        ///     Tries to calculate the score and PerGame for the Home team.
-        /// </summary>
+        /// <summary>Tries to calculate the score and PerGame for the Home team.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">
         ///     The <see cref="TextChangedEventArgs" /> instance containing the event data.
@@ -1046,7 +1012,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnCopy control. Copies the current team and player box scores as tab-separated values to the clipboard.
+        ///     Handles the Click event of the btnCopy control. Copies the current team and player box scores as tab-separated values to the
+        ///     clipboard.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1126,8 +1093,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the GotFocus event of the _bsAnyTextbox control. Any time a textbox with this event handler gets focus,
-        ///     its text gets selected so that it can be easily replaced.
+        ///     Handles the GotFocus event of the _bsAnyTextbox control. Any time a textbox with this event handler gets focus, its text gets
+        ///     selected so that it can be easily replaced.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1140,8 +1107,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the cmbSeasonNum control.
-        ///     Loads the new season's team and player stats dictionaries and other information, and repopulates the combo-boxes.
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control. Loads the new season's team and player stats dictionaries and
+        ///     other information, and repopulates the combo-boxes.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1172,8 +1139,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnCalculateTeams control.
-        ///     Calculates the stats for each team from the totals of the corresponding player stats.
+        ///     Handles the Click event of the btnCalculateTeams control. Calculates the stats for each team from the totals of the
+        ///     corresponding player stats.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1315,8 +1282,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CopyingCellClipboardContent event of the colPlayerAway control.
-        ///     Uses a custom CopyingCellCpiboardContent event handler that replaces the player ID with the player name.
+        ///     Handles the CopyingCellClipboardContent event of the colPlayerAway control. Uses a custom CopyingCellCpiboardContent event
+        ///     handler that replaces the player ID with the player name.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1328,8 +1295,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CopyingCellClipboardContent event of the colPlayerHome control.
-        ///     Uses a custom CopyingCellCpiboardContent event handler that replaces the player ID with the player name.
+        ///     Handles the CopyingCellClipboardContent event of the colPlayerHome control. Uses a custom CopyingCellCpiboardContent event
+        ///     handler that replaces the player ID with the player name.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1341,8 +1308,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the CopyingCellClipboardContent event of the PercentageColumn control.
-        ///     Uses a custom CopyingCellClipboardContent event handler that formats the percentage as a string before copying it to the clipboard.
+        ///     Handles the CopyingCellClipboardContent event of the PercentageColumn control. Uses a custom CopyingCellClipboardContent
+        ///     event handler that formats the percentage as a string before copying it to the clipboard.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1353,10 +1320,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             EventHandlers.PercentageColumn_CopyingCellClipboardContent(e);
         }
 
-        /// <summary>
-        ///     Handles the TextChanged event of the txtMINS1 control.
-        ///     Makes sure both teams have the same minutes played for the game.
-        /// </summary>
+        /// <summary>Handles the TextChanged event of the txtMINS1 control. Makes sure both teams have the same minutes played for the game.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="TextChangedEventArgs" /> instance containing the event data.
@@ -1371,10 +1335,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Handles the TextChanged event of the txtMINS2 control.
-        ///     Makes sure both teams have the same minutes played for the game.
-        /// </summary>
+        /// <summary>Handles the TextChanged event of the txtMINS2 control. Makes sure both teams have the same minutes played for the game.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="TextChangedEventArgs" /> instance containing the event data.
@@ -1390,8 +1351,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the tabControl1 control.
-        ///     Updates the metric stats for each team's players and calculates the best performers on-demand.
+        ///     Handles the SelectionChanged event of the tabControl1 control. Updates the metric stats for each team's players and
+        ///     calculates the best performers on-demand.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1418,9 +1379,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Calculates the best performers from each team, and their most significant stats.
-        /// </summary>
+        /// <summary>Calculates the best performers from each team, and their most significant stats.</summary>
         private void updateBest()
         {
             try
@@ -1595,9 +1554,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Updates the metric stats for the specified team's players.
-        /// </summary>
+        /// <summary>Updates the metric stats for the specified team's players.</summary>
         /// <param name="team">1 if the away team's players' metric stats should be updated; anything else for the home team.</param>
         private void updateMetric(int team)
         {
@@ -1657,8 +1614,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnPaste control.
-        ///     Imports the team and player box scores, if any, from the tab-separated values in the clipboard.
+        ///     Handles the Click event of the btnPaste control. Imports the team and player box scores, if any, from the tab-separated
+        ///     values in the clipboard.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1811,10 +1768,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
         }
 
-        /// <summary>
-        ///     Handles the PreviewMouseLeftButtonDown event of the btnTools control.
-        ///     Opens the Tools context-menu on left click.
-        /// </summary>
+        /// <summary>Handles the PreviewMouseLeftButtonDown event of the btnTools control. Opens the Tools context-menu on left click.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
@@ -1826,8 +1780,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Sorting event of any WPF DataGrid stat column.
-        ///     Uses a custom Sorting event handler to sort a stat in descending order if it hasn't been sorted yet.
+        ///     Handles the Sorting event of any WPF DataGrid stat column. Uses a custom Sorting event handler to sort a stat in descending
+        ///     order if it hasn't been sorted yet.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1839,8 +1793,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the ShowToolTip event of the Any control.
-        ///     Uses a custom ShowToolTip event handler that shows the tooltip below the control.
+        ///     Handles the ShowToolTip event of the Any control. Uses a custom ShowToolTip event handler that shows the tooltip below the
+        ///     control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -1852,8 +1806,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the Click event of the btnCompareTeamAndPlayerStats control.
-        ///     Compares each team's stats to the total of its players' stats, to see if the stats match.
+        ///     Handles the Click event of the btnCompareTeamAndPlayerStats control. Compares each team's stats to the total of its players'
+        ///     stats, to see if the stats match.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
@@ -2072,9 +2026,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             MessageBox.Show("All team and player stats add up!");
         }
 
-        /// <summary>
-        ///     Shows a message explaining which comparison between player and team stats failed.
-        /// </summary>
+        /// <summary>Shows a message explaining which comparison between player and team stats failed.</summary>
         /// <param name="stat">The stat.</param>
         /// <param name="team">The team.</param>
         private void comparisonError(string stat, string team)
@@ -2100,9 +2052,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     txbHome3.Text));
         }
 
-        /// <summary>
-        ///     Updates the box score data grid.
-        /// </summary>
+        /// <summary>Updates the box score data grid.</summary>
         /// <param name="teamID">Name of the team.</param>
         /// <param name="playersList">The players list.</param>
         /// <param name="pbsList">The player box score list.</param>

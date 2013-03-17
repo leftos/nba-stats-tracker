@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     internal static class ProgressHelper
     {
         public static ProgressInfo Progress = new ProgressInfo("");

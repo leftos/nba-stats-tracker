@@ -16,38 +16,32 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-
-using LeftosCommonLibrary;
-using LeftosCommonLibrary.CommonDialogs;
-
-using NBA_Stats_Tracker.Data.BoxScores;
-using NBA_Stats_Tracker.Data.Other;
-using NBA_Stats_Tracker.Data.PastStats;
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Helper.Miscellaneous;
-using NBA_Stats_Tracker.Windows.MainInterface;
-
-using SQLite_Database;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.SQLiteIO
 {
-    /// <summary>
-    ///     Implements all SQLite-related input/output methods.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Threading;
+
+    using LeftosCommonLibrary;
+    using LeftosCommonLibrary.CommonDialogs;
+
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.Other;
+    using NBA_Stats_Tracker.Data.PastStats;
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Windows.MainInterface;
+
+    using SQLite_Database;
+
+    /// <summary>Implements all SQLite-related input/output methods.</summary>
     internal static class SQLiteIO
     {
         private const string CreateCareerHighsQuery =
@@ -58,9 +52,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         private static bool _upgrading;
 
-        /// <summary>
-        ///     Saves the database to a new file.
-        /// </summary>
+        /// <summary>Saves the database to a new file.</summary>
         /// <param name="file">The file to save to.</param>
         /// <returns>
         ///     <c>true</c> if the operation succeeded, <c>false</c> otherwise.
@@ -185,9 +177,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return dict;
         }
 
-        /// <summary>
-        ///     Saves all seasons to the specified database.
-        /// </summary>
+        /// <summary>Saves all seasons to the specified database.</summary>
         /// <param name="file">The file.</param>
         public static void SaveAllSeasons(string file)
         {
@@ -246,9 +236,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             LoadSeason(file, MainWindow.CurSeason);
         }
 
-        /// <summary>
-        ///     Saves the conferences and divisions to a specified database.
-        /// </summary>
+        /// <summary>Saves the conferences and divisions to a specified database.</summary>
         /// <param name="file">The database.</param>
         public static void SaveConferencesAndDivisions(string file)
         {
@@ -272,9 +260,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Saves the season to the current database.
-        /// </summary>
+        /// <summary>Saves the season to the current database.</summary>
         public static void SaveSeasonToDatabase()
         {
             SaveSeasonToDatabase(
@@ -286,9 +272,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 GetMaxSeason(MainWindow.CurrentDB));
         }
 
-        /// <summary>
-        ///     Saves the season to a specified database.
-        /// </summary>
+        /// <summary>Saves the season to a specified database.</summary>
         /// <param name="file">The database.</param>
         /// <param name="tstToSave">The TeamStats dictionary to save.</param>
         /// <param name="tstOppToSave">The opposing TeamStats dictionary to save.</param>
@@ -299,7 +283,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         ///     if set to <c>true</c>, will not save box scores.
         /// </param>
         /// <param name="partialUpdate">
-        ///     if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current data).
+        ///     if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current
+        ///     data).
         /// </param>
         public static void SaveSeasonToDatabase(
             string file,
@@ -475,9 +460,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             //}
         }
 
-        /// <summary>
-        ///     Saves the name of the season.
-        /// </summary>
+        /// <summary>Saves the name of the season.</summary>
         /// <param name="season">The season.</param>
         /// <exception cref="System.Exception">Raised if the specified season ID doesn't correspond to a season existing in the database.</exception>
         public static void SaveSeasonName(int season)
@@ -505,9 +488,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Saves the teams to a specified database.
-        /// </summary>
+        /// <summary>Saves the teams to a specified database.</summary>
         /// <param name="file">The database.</param>
         /// <param name="tstToSave">The TeamStats dictionary to save.</param>
         /// <param name="tstOppToSave">The opposing TeamStats dictionary to save.</param>
@@ -757,15 +738,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Saves the players to a specified database.
-        /// </summary>
+        /// <summary>Saves the players to a specified database.</summary>
         /// <param name="file">The database.</param>
         /// <param name="playerStats">The player stats.</param>
         /// <param name="season">The season ID.</param>
         /// <param name="maxSeason">The max season ID.</param>
         /// <param name="partialUpdate">
-        ///     if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current data).
+        ///     if set to <c>true</c>, a partial update will be made (i.e. any pre-existing data won't be cleared before writing the current
+        ///     data).
         /// </param>
         public static void SavePlayersToDatabase(
             string file, Dictionary<int, PlayerStats> playerStats, int season, int maxSeason, bool partialUpdate = false)
@@ -1004,9 +984,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             db.InsertManyTransaction("PastPlayerStats", sqlinsert);
         }
 
-        /// <summary>
-        ///     Prepares a new DB, or adds a new season to a pre-existing database.
-        /// </summary>
+        /// <summary>Prepares a new DB, or adds a new season to a pre-existing database.</summary>
         /// <param name="db">The database.</param>
         /// <param name="curSeason">The current season ID.</param>
         /// <param name="maxSeason">The max season ID.</param>
@@ -1141,9 +1119,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             db.ExecuteNonQuery(qr);
         }
 
-        /// <summary>
-        ///     Gets the max season ID in a database.
-        /// </summary>
+        /// <summary>Gets the max season ID in a database.</summary>
         /// <param name="file">The database.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">The database requested doesn't exist.</exception>
@@ -1210,9 +1186,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Sets a setting value in the current database.
-        /// </summary>
+        /// <summary>Sets a setting value in the current database.</summary>
         /// <typeparam name="T">The type of value to save.</typeparam>
         /// <param name="setting">The setting.</param>
         /// <param name="value">The value.</param>
@@ -1221,9 +1195,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             SetSetting(MainWindow.CurrentDB, setting, value);
         }
 
-        /// <summary>
-        ///     Sets a setting value in the specified database.
-        /// </summary>
+        /// <summary>Sets a setting value in the specified database.</summary>
         /// <typeparam name="T">The type of value to save.</typeparam>
         /// <param name="file">The file.</param>
         /// <param name="setting">The setting.</param>
@@ -1247,9 +1219,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Gets a setting value from the current database.
-        /// </summary>
+        /// <summary>Gets a setting value from the current database.</summary>
         /// <typeparam name="T">The type of value to get.</typeparam>
         /// <param name="setting">The setting.</param>
         /// <param name="defaultValue">The default value.</param>
@@ -1259,9 +1229,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return GetSetting(MainWindow.CurrentDB, setting, defaultValue);
         }
 
-        /// <summary>
-        ///     Gets a setting value from the specified database.
-        /// </summary>
+        /// <summary>Gets a setting value from the specified database.</summary>
         /// <typeparam name="T">The type of value to get.</typeparam>
         /// <param name="file">The file.</param>
         /// <param name="setting">The setting.</param>
@@ -1282,9 +1250,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return (T) Convert.ChangeType(value, typeof(T));
         }
 
-        /// <summary>
-        ///     Gets the team stats from a specified database.
-        /// </summary>
+        /// <summary>Gets the team stats from a specified database.</summary>
         /// <param name="file">The file.</param>
         /// <param name="teamID">The team.</param>
         /// <param name="season">The season.</param>
@@ -1530,9 +1496,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             ts.CalcAvg();
         }
 
-        /// <summary>
-        ///     Gets all team stats from the specified database.
-        /// </summary>
+        /// <summary>Gets all team stats from the specified database.</summary>
         /// <param name="file">The file.</param>
         /// <param name="season">The season.</param>
         /// <param name="tst">The resulting team stats dictionary.</param>
@@ -1591,9 +1555,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             tstOpp = newTSTOpp;
         }
 
-        /// <summary>
-        ///     Default implementation of LoadSeason; calls LoadSeason to update MainWindow data
-        /// </summary>
+        /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
         public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
             LoadSeason(
@@ -1613,9 +1575,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 doNotLoadBoxScores);
         }
 
-        /// <summary>
-        ///     Default implementation of LoadSeason; calls LoadSeason to update MainWindow data
-        /// </summary>
+        /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
         public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
         {
             LoadSeason(
@@ -1635,9 +1595,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 doNotLoadBoxScores);
         }
 
-        /// <summary>
-        ///     Loads a specific season from the specified database.
-        /// </summary>
+        /// <summary>Loads a specific season from the specified database.</summary>
         /// <param name="file">The file.</param>
         /// <param name="tst">The resulting team stats dictionary.</param>
         /// <param name="tstOpp">The resulting opposing team stats dictionary.</param>
@@ -1775,9 +1733,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             MainWindow.LoadingSeason = false;
         }
 
-        /// <summary>
-        ///     Loads the divisions and conferences.
-        /// </summary>
+        /// <summary>Loads the divisions and conferences.</summary>
         /// <param name="file">The file.</param>
         public static void LoadDivisionsAndConferences(string file)
         {
@@ -1814,9 +1770,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Checks for missing and changed fields in older databases and upgrades them to the current format.
-        /// </summary>
+        /// <summary>Checks for missing and changed fields in older databases and upgrades them to the current format.</summary>
         /// <param name="file">The path to the database.</param>
         private static bool checkIfDBNeedsUpgrade(string file)
         {
@@ -2036,9 +1990,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return mustSave;
         }
 
-        /// <summary>
-        ///     Gets all box scores from the specified database.
-        /// </summary>
+        /// <summary>Gets all box scores from the specified database.</summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
         public static List<BoxScoreEntry> GetAllBoxScoresFromDatabase(string file, Dictionary<int, TeamStats> tst)
@@ -2057,9 +2009,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return bsHist;
         }
 
-        /// <summary>
-        ///     Gets the season's box scores from the specified database.
-        /// </summary>
+        /// <summary>Gets the season's box scores from the specified database.</summary>
         /// <param name="file">The file.</param>
         /// <param name="curSeason">The current season ID.</param>
         /// <param name="maxSeason">The max season ID.</param>
@@ -2295,9 +2245,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Gets the players from database.
-        /// </summary>
+        /// <summary>Gets the players from database.</summary>
         /// <param name="file">The file.</param>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
@@ -2380,9 +2328,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return pst;
         }
 
-        /// <summary>
-        ///     Determines whether the TeamStats dictionary is empty.
-        /// </summary>
+        /// <summary>Determines whether the TeamStats dictionary is empty.</summary>
         /// <returns>
         ///     <c>true</c> if the TeamStats dictionary is empty; otherwise, <c>false</c>.
         /// </returns>
@@ -2436,9 +2382,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Gets the max player ID.
-        /// </summary>
+        /// <summary>Gets the max player ID.</summary>
         /// <param name="dbFile">The db file.</param>
         /// <returns></returns>
         public static int GetMaxPlayerID(string dbFile)
@@ -2473,9 +2417,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Gets a free player result ID.
-        /// </summary>
+        /// <summary>Gets a free player result ID.</summary>
         /// <param name="dbFile">The db file.</param>
         /// <param name="used">Additional player result IDs to assume used.</param>
         /// <returns></returns>
@@ -2509,9 +2451,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Gets the first free ID from the specified table.
-        /// </summary>
+        /// <summary>Gets the first free ID from the specified table.</summary>
         /// <param name="dbFile">The db file.</param>
         /// <param name="table">The table.</param>
         /// <param name="columnName">Name of the column; "ID" by default.</param>
@@ -2541,9 +2481,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        /// <summary>
-        ///     Saves the current team stats dictionaries to the current database.
-        /// </summary>
+        /// <summary>Saves the current team stats dictionaries to the current database.</summary>
         public static void SaveTeamsToDatabase()
         {
             saveTeamsToDatabase(
@@ -2685,7 +2623,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 teams,
                 id =>
                     {
-                        var key = id;
+                        int key = id;
                         lock (myLock)
                         {
                             splitTeamStats.Add(key, new Dictionary<string, TeamStats>());
@@ -2737,7 +2675,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 pIDs,
                 id =>
                     {
-                        var key = id;
+                        int key = id;
                         lock (myLock)
                         {
                             splitPlayerStats.Add(key, new Dictionary<string, PlayerStats>());

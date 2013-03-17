@@ -16,17 +16,11 @@
 
 #endregion
 
-#region Using Directives
-
-using System.Collections.Generic;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
-    /// <summary>
-    ///     Implements a list of five players. Used in determining the best starting five in a specific scope.
-    /// </summary>
+    using System.Collections.Generic;
+
+    /// <summary>Implements a list of five players. Used in determining the best starting five in a specific scope.</summary>
     public class StartingFivePermutation
     {
         public int BestPermCount = 0;

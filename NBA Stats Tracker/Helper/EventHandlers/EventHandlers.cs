@@ -16,32 +16,26 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-
-using NBA_Stats_Tracker.Data.Players;
-using NBA_Stats_Tracker.Data.Players.Injuries;
-using NBA_Stats_Tracker.Data.Teams;
-using NBA_Stats_Tracker.Windows.MainInterface.Players;
-using NBA_Stats_Tracker.Windows.MainInterface.Teams;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Helper.EventHandlers
 {
-    /// <summary>
-    ///     Implements Event Handlers used by multiple controls from all over NBA Stats Tracker.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Input;
+
+    using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Players.Injuries;
+    using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Windows.MainInterface.Players;
+    using NBA_Stats_Tracker.Windows.MainInterface.Teams;
+
+    /// <summary>Implements Event Handlers used by multiple controls from all over NBA Stats Tracker.</summary>
     public static class EventHandlers
     {
         public static Task StartNewAndWatchExceptions(
@@ -79,9 +73,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             return task;
         }
 
-        /// <summary>
-        ///     Handles the MouseDoubleClick event of any WPF DataGrid control containing PlayerStatsRow entries.
-        /// </summary>
+        /// <summary>Handles the MouseDoubleClick event of any WPF DataGrid control containing PlayerStatsRow entries.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
@@ -102,9 +94,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             return false;
         }
 
-        /// <summary>
-        ///     Handles the MouseDoubleClick event of any WPF DataGrid control containing team information.
-        /// </summary>
+        /// <summary>Handles the MouseDoubleClick event of any WPF DataGrid control containing team information.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
@@ -122,9 +112,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             }
         }
 
-        /// <summary>
-        ///     Formats the data being copied to the clipboard. Used for columns containing percentage data.
-        /// </summary>
+        /// <summary>Formats the data being copied to the clipboard. Used for columns containing percentage data.</summary>
         /// <param name="e">
         ///     The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.
         /// </param>
@@ -141,8 +129,8 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         }
 
         /// <summary>
-        ///     Substitutes the Player ID value with the Player's name before copying the data to the clipboard.
-        ///     Used for data-bound columns containing player selection combo-boxes.
+        ///     Substitutes the Player ID value with the Player's name before copying the data to the clipboard. Used for data-bound columns
+        ///     containing player selection combo-boxes.
         /// </summary>
         /// <param name="e">
         ///     The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.
@@ -168,11 +156,11 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             }
         }
 
-        /// <summary>
-        /// Sorts the column in descending order first, if it's not already sorted. Used for columns containing stats.
-        /// </summary>
+        /// <summary>Sorts the column in descending order first, if it's not already sorted. Used for columns containing stats.</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridSortingEventArgs" /> instance containing the event data.
+        /// </param>
         public static void StatColumn_Sorting(DataGrid sender, DataGridSortingEventArgs e)
         {
             var namesNotToSortDescendingFirst = new List<string> { "Player", "Last Name", "First Name", "Team", "Returns", "Injury" };
@@ -237,9 +225,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             }
         }
 
-        /// <summary>
-        ///     Calculates the score.
-        /// </summary>
+        /// <summary>Calculates the score.</summary>
         /// <param name="fgm">The FGM.</param>
         /// <param name="fga">The FGA.</param>
         /// <param name="tpm">The 3PM.</param>

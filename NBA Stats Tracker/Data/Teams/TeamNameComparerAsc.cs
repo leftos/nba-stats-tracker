@@ -16,17 +16,13 @@
 
 #endregion
 
-#region Using Directives
-
-using System;
-using System.Collections;
-
-using NBA_Stats_Tracker.Data.Players;
-
-#endregion
-
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    using System;
+    using System.Collections;
+
+    using NBA_Stats_Tracker.Data.Players;
+
     public class TeamNameComparerAsc : IComparer
     {
         #region IComparer Members
