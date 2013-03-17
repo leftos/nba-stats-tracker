@@ -277,8 +277,8 @@ namespace SQLite_Database
                             Dictionary<string, string> data = dataList[i];
                             if (data.Count >= 1)
                             {
-                                vals = data.Aggregate("",
-                                                      (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
+                                vals = data.Aggregate(
+                                    "", (current, val) => current + String.Format(" {0} = \"{1}\",", val.Key, val.Value));
                                 vals = vals.Substring(0, vals.Length - 1);
                             }
                             try
@@ -504,15 +504,17 @@ namespace SQLite_Database
 
             if (!addWhere)
             {
-                query = String.Concat(query,
-                                      String.Format(" AND (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart),
-                                                    ConvertDateTimeToSQLite(dEnd)));
+                query = String.Concat(
+                    query,
+                    String.Format(
+                        " AND (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart), ConvertDateTimeToSQLite(dEnd)));
             }
             else
             {
-                query = String.Concat(query,
-                                      String.Format(" WHERE (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart),
-                                                    ConvertDateTimeToSQLite(dEnd)));
+                query = String.Concat(
+                    query,
+                    String.Format(
+                        " WHERE (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart), ConvertDateTimeToSQLite(dEnd)));
             }
             return query;
         }
