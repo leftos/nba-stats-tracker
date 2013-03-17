@@ -20,6 +20,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
@@ -140,15 +141,15 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
 
-            var badMetrics = new List<string> {"TO%", "TOR"};
+            var badMetrics = new List<string> { "TO%", "TOR" };
             List<string> metricsNames = PAbbr.MetricsNames;
             for (int j = 0; j < metricsCount; j++)
             {
                 Dictionary<int, double> metrics = !playoffs
-                                                      ? validPlayers.ToDictionary(kvp => kvp.Key,
-                                                                                  kvp => kvp.Value.Metrics[metricsNames[j]])
-                                                      : validPlayers.ToDictionary(kvp => kvp.Key,
-                                                                                  kvp => kvp.Value.PlMetrics[metricsNames[j]]);
+                                                      ? validPlayers.ToDictionary(
+                                                          kvp => kvp.Key, kvp => kvp.Value.Metrics[metricsNames[j]])
+                                                      : validPlayers.ToDictionary(
+                                                          kvp => kvp.Key, kvp => kvp.Value.PlMetrics[metricsNames[j]]);
 
                 var tempList = new List<KeyValuePair<int, double>>(metrics);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));

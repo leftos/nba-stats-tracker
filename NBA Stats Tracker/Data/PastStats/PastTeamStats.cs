@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System.Data;
+
 using LeftosCommonLibrary;
 
 #endregion
@@ -89,7 +90,7 @@ namespace NBA_Stats_Tracker.Data.PastStats
         public void EndEdit()
         {
             REB = OREB + DREB;
-            PF = (FGM - TPM)*2 + TPM*3 + FTM;
+            PF = (FGM - TPM) * 2 + TPM * 3 + FTM;
         }
     }
 }

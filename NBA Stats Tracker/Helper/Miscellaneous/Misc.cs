@@ -22,7 +22,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Media.Imaging;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MainInterface;
 
@@ -72,7 +74,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
 
         public static string GetRankingSuffix(int rank)
         {
-            if (rank%10 == 1)
+            if (rank % 10 == 1)
             {
                 if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("11"))
                 {
@@ -83,7 +85,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     return "st";
                 }
             }
-            else if (rank%10 == 2)
+            else if (rank % 10 == 2)
             {
                 if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("12"))
                 {
@@ -94,7 +96,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     return "nd";
                 }
             }
-            else if (rank%10 == 3)
+            else if (rank % 10 == 3)
             {
                 if (rank.ToString(CultureInfo.InvariantCulture).EndsWith("13"))
                 {

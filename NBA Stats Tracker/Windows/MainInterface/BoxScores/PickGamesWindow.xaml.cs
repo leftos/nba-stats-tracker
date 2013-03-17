@@ -24,6 +24,7 @@ using System.Linq;
 using System.Media;
 using System.Windows;
 using System.Windows.Input;
+
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
 
@@ -43,7 +44,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             InitializeComponent();
         }
 
-        public PickGamesWindow(List<int> teams) : this()
+        public PickGamesWindow(List<int> teams)
+            : this()
         {
             _teams = teams;
         }
@@ -83,10 +85,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             if (lstSelectedGames.SelectedItems.Count == 1)
             {
-                if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?") ==
-                    MessageBoxResult.Yes)
+                if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?")
+                    == MessageBoxResult.Yes)
                 {
-                    string[] parts = lstSelectedGames.SelectedItem.ToString().Split(new[] {" @ "}, StringSplitOptions.None);
+                    string[] parts = lstSelectedGames.SelectedItem.ToString().Split(new[] { " @ " }, StringSplitOptions.None);
                     lstSelectedGames.Items.Remove(lstSelectedGames.SelectedItem);
                     foreach (string part in parts)
                     {

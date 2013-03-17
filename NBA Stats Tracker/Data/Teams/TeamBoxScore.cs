@@ -22,7 +22,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Windows.MainInterface;
 
 #endregion
@@ -158,7 +160,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             FTA1 = Convert.ToUInt16(rt["FTA"].ToString());
             OREB1 = Convert.ToUInt16(rt["ORB"].ToString());
             FOUL1 = Convert.ToUInt16(rt["PF"].ToString());
-            MINS1 = (ushort) (Convert.ToUInt16(rt["MP"].ToString())/5);
+            MINS1 = (ushort) (Convert.ToUInt16(rt["MP"].ToString()) / 5);
 
             rt = home.Rows[home.Rows.Count - 1];
             PTS2 = ParseCell.GetUInt16(rt, "PTS");
@@ -175,7 +177,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             FTA2 = Convert.ToUInt16(rt["FTA"].ToString());
             OREB2 = Convert.ToUInt16(rt["ORB"].ToString());
             FOUL2 = Convert.ToUInt16(rt["PF"].ToString());
-            MINS2 = (ushort) (Convert.ToUInt16(rt["MP"].ToString())/5);
+            MINS2 = (ushort) (Convert.ToUInt16(rt["MP"].ToString()) / 5);
         }
 
         public UInt16 AST1 { get; set; }
@@ -257,9 +259,9 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DisplayOpponent = tst[Team2ID].DisplayName;
                 DisplayLocation = "Away";
                 DisplayResult = PTS1 > PTS2 ? "W " : "L ";
-                FGp = (float) FGM1/FGA1;
-                TPp = (float) TPM1/TPA1;
-                FTp = (float) FTM1/FTA1;
+                FGp = (float) FGM1 / FGA1;
+                TPp = (float) TPM1 / TPA1;
+                FTp = (float) FTM1 / FTA1;
                 DisplayREB = REB1;
                 DisplayOREB = OREB1;
                 DisplayAST = AST1;
@@ -281,9 +283,9 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DisplayOpponent = tst[Team1ID].DisplayName;
                 DisplayLocation = "Home";
                 DisplayResult = PTS1 < PTS2 ? "W " : "L ";
-                FGp = (float) FGM2/FGA2;
-                TPp = (float) TPM2/TPA2;
-                FTp = (float) FTM2/FTA2;
+                FGp = (float) FGM2 / FGA2;
+                TPp = (float) TPM2 / TPA2;
+                FTp = (float) FTM2 / FTA2;
                 DisplayREB = REB2;
                 DisplayOREB = OREB2;
                 DisplayAST = AST2;

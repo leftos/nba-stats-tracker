@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+
 using NBA_Stats_Tracker.Data.Players;
 
 #endregion

@@ -35,7 +35,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 TwoPM
         {
-            get { return _twoPM; }
+            get
+            {
+                return _twoPM;
+            }
             set
             {
                 _twoPM = value;
@@ -48,7 +51,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public new UInt16 TPM
         {
-            get { return _TPM; }
+            get
+            {
+                return _TPM;
+            }
             set
             {
                 _TPM = value;
@@ -61,7 +67,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public new UInt16 OREB
         {
-            get { return _oreb; }
+            get
+            {
+                return _oreb;
+            }
             set
             {
                 if (_oreb < value)

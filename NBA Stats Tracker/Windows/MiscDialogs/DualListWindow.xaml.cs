@@ -26,12 +26,16 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+
 using LeftosCommonLibrary;
+
 using Microsoft.Win32;
+
 using NBA_Stats_Tracker.Helper.ListExtensions;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Interop.REDitor;
 using NBA_Stats_Tracker.Windows.MainInterface;
+
 using SQLite_Database;
 
 #endregion
@@ -83,7 +87,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         /// </summary>
         /// <param name="validTeams">The valid teams.</param>
         /// <param name="activeTeams">The active teams.</param>
-        public DualListWindow(List<Dictionary<string, string>> validTeams, List<Dictionary<string, string>> activeTeams) : this()
+        public DualListWindow(List<Dictionary<string, string>> validTeams, List<Dictionary<string, string>> activeTeams)
+            : this()
         {
             _validTeams = validTeams;
             _mode = Mode.REDitor;
@@ -119,7 +124,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         /// <param name="curSeason">The cur season.</param>
         /// <param name="maxSeason">The max season.</param>
         /// <param name="mode">The mode.</param>
-        public DualListWindow(string currentDB, int curSeason, int maxSeason, Mode mode) : this()
+        public DualListWindow(string currentDB, int curSeason, int maxSeason, Mode mode)
+            : this()
         {
             _mode = mode;
 
@@ -165,8 +171,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 lblEnabled.Content = "Enabled Players";
                 lblDisabled.Content = "Disabled Players";
 
-                string q = "SELECT (LastName || ', ' || FirstName || ' (' || TeamFin || ')') AS Name, ID, isHidden FROM " + _playersT +
-                           " ORDER BY LastName";
+                string q = "SELECT (LastName || ', ' || FirstName || ' (' || TeamFin || ')') AS Name, ID, isHidden FROM " + _playersT
+                           + " ORDER BY LastName";
 
                 DataTable res = db.GetDataTable(q);
 
@@ -261,8 +267,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     lstEnabled.Items.Add(name);
                     lstDisabled.Items.Remove(name);
                 }
-                List<string> items = (from object item in lstEnabled.Items
-                                      select item.ToString()).ToList();
+                List<string> items = (from object item in lstEnabled.Items select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));
@@ -300,8 +305,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     lstDisabled.Items.Add(name);
                     lstEnabled.Items.Remove(name);
                 }
-                List<string> items = (from object item in lstDisabled.Items
-                                      select item.ToString()).ToList();
+                List<string> items = (from object item in lstDisabled.Items select item.ToString()).ToList();
                 items.Sort();
                 lstDisabled.Items.Clear();
                 items.ForEach(item => lstDisabled.Items.Add(item));
@@ -341,7 +345,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
                 foreach (string name in lstEnabled.Items)
                 {
-                    var dict = new Dictionary<string, string> {{"isHidden", "False"}};
+                    var dict = new Dictionary<string, string> { { "isHidden", "False" } };
                     db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(plTeamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
@@ -350,15 +354,18 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
                 foreach (string name in lstDisabled.Items)
                 {
-                    string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = " +
-                               getTeamIDFromDisplayName(name) + " OR Team2ID = " + getTeamIDFromDisplayName(name) + ")";
+                    string q = "select * from GameResults where SeasonNum = " + _curSeason + " AND (Team1ID = "
+                               + getTeamIDFromDisplayName(name) + " OR Team2ID = " + getTeamIDFromDisplayName(name) + ")";
                     DataTable res = db.GetDataTable(q);
 
                     if (res.Rows.Count > 0)
                     {
                         MessageBoxResult r =
-                            MessageBox.Show(name + " have box scores this season. Are you sure you want to disable this team?",
-                                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                            MessageBox.Show(
+                                name + " have box scores this season. Are you sure you want to disable this team?",
+                                "NBA Stats Tracker",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
                         {
@@ -366,7 +373,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                         }
                     }
 
-                    var dict = new Dictionary<string, string> {{"isHidden", "True"}};
+                    var dict = new Dictionary<string, string> { { "isHidden", "True" } };
                     db.Update(teamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(plTeamsT, dict, "DisplayName LIKE \"" + name + "\"");
                     db.Update(oppT, dict, "DisplayName LIKE \"" + name + "\"");
@@ -385,7 +392,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
                 foreach (KeyValuePair<int, string> item in lstEnabled.Items)
                 {
-                    var dict = new Dictionary<string, string> {{"isHidden", "False"}};
+                    var dict = new Dictionary<string, string> { { "isHidden", "False" } };
                     dataList.Add(dict);
                     whereList.Add("ID = " + item.Key);
                 }
@@ -396,15 +403,18 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 foreach (KeyValuePair<int, string> item in lstDisabled.Items)
                 {
                     string q =
-                        "select * from PlayerResults INNER JOIN GameResults ON GameResults.GameID = PlayerResults.GameID where SeasonNum = " +
-                        _curSeason + " AND PlayerID = " + item.Key;
+                        "select * from PlayerResults INNER JOIN GameResults ON GameResults.GameID = PlayerResults.GameID where SeasonNum = "
+                        + _curSeason + " AND PlayerID = " + item.Key;
                     DataTable res = db.GetDataTable(q, true);
 
                     if (res.Rows.Count > 0)
                     {
                         MessageBoxResult r =
-                            MessageBox.Show(item.Value + " has box scores this season. Are you sure you want to disable them?",
-                                            "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                            MessageBox.Show(
+                                item.Value + " has box scores this season. Are you sure you want to disable them?",
+                                "NBA Stats Tracker",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Question);
 
                         if (r == MessageBoxResult.No)
                         {
@@ -412,7 +422,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                         }
                     }
 
-                    var dict = new Dictionary<string, string> {{"isHidden", "True"}, {"isActive", "False"}, {"TeamFin", ""}};
+                    var dict = new Dictionary<string, string> { { "isHidden", "True" }, { "isActive", "False" }, { "TeamFin", "" } };
                     dataList.Add(dict);
                     whereList.Add("ID = " + item.Key);
                 }
@@ -425,8 +435,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 if (lstEnabled.Items.Count != 30)
                 {
-                    MessageBox.Show("You can't have less or more than 30 teams enabled. You currently have " + lstEnabled.Items.Count +
-                                    ".");
+                    MessageBox.Show(
+                        "You can't have less or more than 30 teams enabled. You currently have " + lstEnabled.Items.Count + ".");
                     return;
                 }
 
@@ -434,15 +444,17 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 MainWindow.SelectedTeams = new List<Dictionary<string, string>>();
                 foreach (string team in lstEnabled.Items)
                 {
-                    string teamName = team.Split(new[] {" (ID: "}, StringSplitOptions.None)[0];
-                    MainWindow.SelectedTeams.Add(_validTeams.Find(delegate(Dictionary<string, string> t)
-                        {
-                            if (t["Name"] == teamName)
-                            {
-                                return true;
-                            }
-                            return false;
-                        }));
+                    string teamName = team.Split(new[] { " (ID: " }, StringSplitOptions.None)[0];
+                    MainWindow.SelectedTeams.Add(
+                        _validTeams.Find(
+                            delegate(Dictionary<string, string> t)
+                                {
+                                    if (t["Name"] == teamName)
+                                    {
+                                        return true;
+                                    }
+                                    return false;
+                                }));
                 }
                 MainWindow.SelectedTeamsChanged = _changed;
                 DialogResult = true;
@@ -455,8 +467,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     return;
                 }
 
-                MessageBoxResult r = MessageBox.Show("Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker",
-                                                     MessageBoxButton.YesNoCancel);
+                MessageBoxResult r = MessageBox.Show(
+                    "Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker", MessageBoxButton.YesNoCancel);
                 if (r == MessageBoxResult.Cancel)
                 {
                     return;
@@ -513,12 +525,12 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 }
 
                 string stg = File.ReadAllText(ofd.FileName);
-                string[] lines = stg.Split(new[] {'\n'});
+                string[] lines = stg.Split(new[] { '\n' });
                 foreach (string line in lines)
                 {
                     if (line.StartsWith("Active$$"))
                     {
-                        var enabledTeams = new List<string>(line.Substring(8).Split(new[] {"$%"}, StringSplitOptions.None));
+                        var enabledTeams = new List<string>(line.Substring(8).Split(new[] { "$%" }, StringSplitOptions.None));
                         foreach (string team in enabledTeams)
                         {
                             bool found = false;
@@ -551,8 +563,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     }
                 }
 
-                List<string> items = (from object item in lstEnabled.Items
-                                      select item.ToString()).ToList();
+                List<string> items = (from object item in lstEnabled.Items select item.ToString()).ToList();
                 items.Sort();
                 lstEnabled.Items.Clear();
                 items.ForEach(item => lstEnabled.Items.Add(item));
@@ -571,13 +582,16 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         /// </param>
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(() =>
-                {
-                    if (_mode == Mode.PickBoxScore && lstEnabled.Items.Count == 2)
-                    {
-                        btnOK_Click(null, null);
-                    }
-                }));
+            Dispatcher.BeginInvoke(
+                DispatcherPriority.ContextIdle,
+                new Action(
+                    () =>
+                        {
+                            if (_mode == Mode.PickBoxScore && lstEnabled.Items.Count == 2)
+                            {
+                                btnOK_Click(null, null);
+                            }
+                        }));
         }
     }
 }

@@ -3043,10 +3043,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _tstOpp[teamid].Division = myDiv.ID;
 
             var dict = new Dictionary<string, string>
-                           {
-                               { "Division", _tst[teamid].Division.ToString() },
-                               { "Conference", _tst[teamid].Conference.ToString() }
-                           };
+                {
+                    { "Division", _tst[teamid].Division.ToString() },
+                    { "Conference", _tst[teamid].Conference.ToString() }
+                };
             _db.Update(MainWindow.TeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
             _db.Update(MainWindow.PlTeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
             _db.Update(MainWindow.OppT, dict, "Name LIKE \"" + _curTeam + "\"");

@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System.Diagnostics;
+
 using LeftosCommonLibrary;
 
 #endregion
@@ -35,24 +36,28 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public int Percentage;
         public Stopwatch Timing;
 
-        public ProgressInfo(int curStage, int maxStage, string message, int percentage = 0) : this(curStage, message, percentage)
+        public ProgressInfo(int curStage, int maxStage, string message, int percentage = 0)
+            : this(curStage, message, percentage)
         {
             MaxStage = maxStage;
         }
 
-        public ProgressInfo(int curStage, string message, int percentage = 0) : this(message, percentage)
+        public ProgressInfo(int curStage, string message, int percentage = 0)
+            : this(message, percentage)
         {
             CurrentStage = curStage;
             Timing = new Stopwatch();
             Timing.Start();
         }
 
-        public ProgressInfo(string message, int percentage = 0) : this(percentage)
+        public ProgressInfo(string message, int percentage = 0)
+            : this(percentage)
         {
             Message = message;
         }
 
-        public ProgressInfo(ProgressInfo progress, string message, int percentage = 0) : this(message, percentage)
+        public ProgressInfo(ProgressInfo progress, string message, int percentage = 0)
+            : this(message, percentage)
         {
             var status = String.Format("Stage {0} ({1})", progress.CurrentStage, progress.Message);
             if (progress.Timing != null)

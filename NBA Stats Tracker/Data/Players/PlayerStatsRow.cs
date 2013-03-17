@@ -23,7 +23,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.Players.Contracts;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
@@ -52,7 +54,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null) : this()
+        public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null)
+            : this()
         {
             LastName = ps.LastName;
             FirstName = ps.FirstName;
@@ -89,7 +92,7 @@ namespace NBA_Stats_Tracker.Data.Players
             ContractOption = ps.Contract.Option;
             for (int i = 1; i <= 7; i++)
             {
-                typeof (PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
+                typeof(PlayerStatsRow).GetProperty("ContractY" + i).SetValue(this, ps.Contract.TryGetSalary(i), null);
             }
             ContractYears = ps.Contract.GetYears();
             ContractYearsMinusOption = ps.Contract.GetYearsMinusOption();
@@ -106,17 +109,17 @@ namespace NBA_Stats_Tracker.Data.Players
                 MINS = ps.Totals[PAbbr.MINS];
                 PTS = ps.Totals[PAbbr.PTS];
                 FGM = ps.Totals[PAbbr.FGM];
-                FGMPG = ((float) FGM/GP);
+                FGMPG = ((float) FGM / GP);
                 FGA = ps.Totals[PAbbr.FGA];
-                FGAPG = ((float) FGA/GP);
+                FGAPG = ((float) FGA / GP);
                 TPM = ps.Totals[PAbbr.TPM];
-                TPMPG = ((float) TPM/GP);
+                TPMPG = ((float) TPM / GP);
                 TPA = ps.Totals[PAbbr.TPA];
-                TPAPG = ((float) TPA/GP);
+                TPAPG = ((float) TPA / GP);
                 FTM = ps.Totals[PAbbr.FTM];
-                FTMPG = ((float) FTM/GP);
+                FTMPG = ((float) FTM / GP);
                 FTA = ps.Totals[PAbbr.FTA];
-                FTAPG = ((float) FTA/GP);
+                FTAPG = ((float) FTA / GP);
                 OREB = ps.Totals[PAbbr.OREB];
                 DREB = ps.Totals[PAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
@@ -190,17 +193,17 @@ namespace NBA_Stats_Tracker.Data.Players
                 MINS = ps.PlTotals[PAbbr.MINS];
                 PTS = ps.PlTotals[PAbbr.PTS];
                 FGM = ps.PlTotals[PAbbr.FGM];
-                FGMPG = ((float) FGM/GP);
+                FGMPG = ((float) FGM / GP);
                 FGA = ps.PlTotals[PAbbr.FGA];
-                FGAPG = ((float) FGA/GP);
+                FGAPG = ((float) FGA / GP);
                 TPM = ps.PlTotals[PAbbr.TPM];
-                TPMPG = ((float) TPM/GP);
+                TPMPG = ((float) TPM / GP);
                 TPA = ps.PlTotals[PAbbr.TPA];
-                TPAPG = (uint) ((double) TPA/GP);
+                TPAPG = (uint) ((double) TPA / GP);
                 FTM = ps.PlTotals[PAbbr.FTM];
-                FTMPG = ((float) FTM/GP);
+                FTMPG = ((float) FTM / GP);
                 FTA = ps.PlTotals[PAbbr.FTA];
-                FTAPG = ((float) FTA/GP);
+                FTAPG = ((float) FTA / GP);
                 OREB = ps.PlTotals[PAbbr.OREB];
                 DREB = ps.PlTotals[PAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
@@ -281,7 +284,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, string type, bool playoffs = false) : this(ps, playoffs)
+        public PlayerStatsRow(PlayerStats ps, string type, bool playoffs = false)
+            : this(ps, playoffs)
         {
             Type = type;
         }
@@ -295,7 +299,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
-        public PlayerStatsRow(PlayerStats ps, string type, string group, bool playoffs = false) : this(ps, type, playoffs)
+        public PlayerStatsRow(PlayerStats ps, string type, string group, bool playoffs = false)
+            : this(ps, type, playoffs)
         {
             Type = type;
             Group = group;
@@ -377,12 +382,18 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public string Position1S
         {
-            get { return PlayerStats.PositionToString(Position1); }
+            get
+            {
+                return PlayerStats.PositionToString(Position1);
+            }
         }
 
         public string Position2S
         {
-            get { return PlayerStats.PositionToString(Position2); }
+            get
+            {
+                return PlayerStats.PositionToString(Position2);
+            }
         }
 
         public int TeamF { get; set; }
@@ -391,10 +402,12 @@ namespace NBA_Stats_Tracker.Data.Players
         public bool IsHidden { get; set; }
         public bool IsAllStar { get; set; }
 
-
         public PlayerInjury Injury
         {
-            get { return _injury; }
+            get
+            {
+                return _injury;
+            }
             set
             {
                 _injury = value;
@@ -409,27 +422,42 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public string InjuryName
         {
-            get { return Injury.InjuryName; }
+            get
+            {
+                return Injury.InjuryName;
+            }
         }
 
         public string InjuryApproxDaysLeft
         {
-            get { return Injury.ApproximateDays; }
+            get
+            {
+                return Injury.ApproximateDays;
+            }
         }
 
         public bool IsInjured
         {
-            get { return Injury.IsInjured; }
+            get
+            {
+                return Injury.IsInjured;
+            }
         }
 
         public int InjuryDaysLeft
         {
-            get { return Injury.InjuryDaysLeft; }
+            get
+            {
+                return Injury.InjuryDaysLeft;
+            }
         }
 
         public string InjuryStatus
         {
-            get { return Injury.Status; }
+            get
+            {
+                return Injury.Status;
+            }
         }
 
         public bool IsNBAChampion { get; set; }
@@ -472,9 +500,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 else
                 {
-                    double allInches = Height*0.393701;
-                    int feet = Convert.ToInt32(Math.Floor(allInches/12));
-                    int inches = Convert.ToInt32(allInches)%12;
+                    double allInches = Height * 0.393701;
+                    int feet = Convert.ToInt32(Math.Floor(allInches / 12));
+                    int inches = Convert.ToInt32(allInches) % 12;
                     return String.Format("{0}\'{1}\"", feet, inches);
                 }
             }
@@ -517,7 +545,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 else
                 {
-                    return (Weight*0.453592).ToString("F2");
+                    return (Weight * 0.453592).ToString("F2");
                 }
             }
             set
@@ -567,8 +595,8 @@ namespace NBA_Stats_Tracker.Data.Players
                     throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
                 }
                 parts[1] = parts[1].Replace("\"", "");
-                int allInches = Convert.ToInt32(parts[0])*12 + Convert.ToInt32(parts[1]);
-                return (allInches)/0.393701;
+                int allInches = Convert.ToInt32(parts[0]) * 12 + Convert.ToInt32(parts[1]);
+                return (allInches) / 0.393701;
             }
             catch
             {
@@ -590,7 +618,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public static double ConvertMetricWeightToImperial(double value)
         {
-            return value/0.453592;
+            return value / 0.453592;
         }
 
         private void calculate2KRatings(bool playoffs = false)
@@ -613,7 +641,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 gpPctSetting = "-1";
             }
 
-            if ((gpPctSetting != "-1" && (double) (pGP*100)/tGP < gpPCTreq) || (mpgSetting != "-1" && MPG < MPGreq))
+            if ((gpPctSetting != "-1" && (double) (pGP * 100) / tGP < gpPCTreq) || (mpgSetting != "-1" && MPG < MPGreq))
             {
                 reRFT = -1;
                 reRPass = -1;
@@ -630,7 +658,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reRFT = Convert.ToInt32(100*FTp);
+                reRFT = Convert.ToInt32(100 * FTp);
                 if (reRFT > 99)
                 {
                     reRFT = 99;
@@ -643,8 +671,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double ASTp100 = ASTp*100;
-                reRPass = Convert.ToInt32(31.1901795687457 + 1.36501096444891*ASTp100 + 4.34894327991171/(-0.702541953738967 - ASTp100));
+                double ASTp100 = ASTp * 100;
+                reRPass =
+                    Convert.ToInt32(31.1901795687457 + 1.36501096444891 * ASTp100 + 4.34894327991171 / (-0.702541953738967 - ASTp100));
                 if (reRPass > 99)
                 {
                     reRPass = 99;
@@ -657,10 +686,11 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double BLKp100 = BLKp*100;
+                double BLKp100 = BLKp * 100;
                 reRBlock =
-                    Convert.ToInt32(25.76 + 17.03*BLKp100 + 0.8376*Math.Pow(BLKp100, 3) - 3.195*Math.Pow(BLKp100, 2) -
-                                    0.07319*Math.Pow(BLKp100, 4));
+                    Convert.ToInt32(
+                        25.76 + 17.03 * BLKp100 + 0.8376 * Math.Pow(BLKp100, 3) - 3.195 * Math.Pow(BLKp100, 2)
+                        - 0.07319 * Math.Pow(BLKp100, 4));
                 if (reRBlock > 99)
                 {
                     reRBlock = 99;
@@ -673,8 +703,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double STLp100 = STLp*100;
-                reRSteal = Convert.ToInt32(29.92 + 14.57*STLp100 - 0.1509*Math.Pow(STLp100, 2));
+                double STLp100 = STLp * 100;
+                reRSteal = Convert.ToInt32(29.92 + 14.57 * STLp100 - 0.1509 * Math.Pow(STLp100, 2));
                 if (reRSteal > 99)
                 {
                     reRSteal = 99;
@@ -687,10 +717,11 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double OREBp100 = OREBp*100;
+                double OREBp100 = OREBp * 100;
                 reROffRbd =
-                    Convert.ToInt32(24.67 + 3.864*OREBp100 + 0.3523*Math.Pow(OREBp100, 2) + 0.0007358*Math.Pow(OREBp100, 4) -
-                                    0.02796*Math.Pow(OREBp100, 3));
+                    Convert.ToInt32(
+                        24.67 + 3.864 * OREBp100 + 0.3523 * Math.Pow(OREBp100, 2) + 0.0007358 * Math.Pow(OREBp100, 4)
+                        - 0.02796 * Math.Pow(OREBp100, 3));
                 if (reROffRbd > 99)
                 {
                     reROffRbd = 99;
@@ -703,8 +734,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double DREBp100 = DREBp*100;
-                reRDefRbd = Convert.ToInt32(25 + 2.5*DREBp100);
+                double DREBp100 = DREBp * 100;
+                reRDefRbd = Convert.ToInt32(25 + 2.5 * DREBp100);
                 if (reRDefRbd > 99)
                 {
                     reRDefRbd = 99;
@@ -717,7 +748,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reTShotTnd = Convert.ToInt32(2 + 4*FGAPG);
+                reTShotTnd = Convert.ToInt32(2 + 4 * FGAPG);
                 if (reTShotTnd > 90)
                 {
                     reTShotTnd = 90;
@@ -730,7 +761,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reTDrawFoul = Convert.ToInt32(FTAR*10);
+                reTDrawFoul = Convert.ToInt32(FTAR * 10);
                 if (reTDrawFoul > 99)
                 {
                     reTDrawFoul = 99;
@@ -743,9 +774,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                double FGAR = (double) FGA/MINS*36;
+                double FGAR = (double) FGA / MINS * 36;
                 int touchTotal = Convert.ToInt32(FGAR + FTAR + TOR + ASTR);
-                reTTouch = Convert.ToInt32(3.141*Math.Pow(touchTotal, 2)/(1.178 + touchTotal));
+                reTTouch = Convert.ToInt32(3.141 * Math.Pow(touchTotal, 2) / (1.178 + touchTotal));
                 if (reTTouch > 99)
                 {
                     reTTouch = 99;
@@ -758,7 +789,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             try
             {
-                reTCommitFl = Convert.ToInt32((double) FOUL/MINS*36*10);
+                reTCommitFl = Convert.ToInt32((double) FOUL / MINS * 36 * 10);
                 if (reTCommitFl > 99)
                 {
                     reTCommitFl = 99;
@@ -788,28 +819,38 @@ namespace NBA_Stats_Tracker.Data.Players
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            PlayerBoxScore.GetFactors(position, out fgfactor, out tpfactor, out ftfactor, out orebfactor, out rebfactor, out astfactor,
-                                      out stlfactor, out blkfactor, out ptsfactor, out ftrfactor);
+            PlayerBoxScore.GetFactors(
+                position,
+                out fgfactor,
+                out tpfactor,
+                out ftfactor,
+                out orebfactor,
+                out rebfactor,
+                out astfactor,
+                out stlfactor,
+                out blkfactor,
+                out ptsfactor,
+                out ftrfactor);
 
-            if (FGM/GP > 4)
+            if (FGM / GP > 4)
             {
-                fgn = FGp/fgfactor;
+                fgn = FGp / fgfactor;
             }
             statsn.Add("fgn", fgn);
 
-            if (TPM/GP > 2)
+            if (TPM / GP > 2)
             {
-                tpn = TPp/tpfactor;
+                tpn = TPp / tpfactor;
             }
             statsn.Add("tpn", tpn);
 
-            if (FTM/GP > 3)
+            if (FTM / GP > 3)
             {
-                ftn = FTp/ftfactor;
+                ftn = FTp / ftfactor;
             }
             statsn.Add("ftn", ftn);
 
-            double orebn = ORPG/orebfactor;
+            double orebn = ORPG / orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -817,30 +858,28 @@ namespace NBA_Stats_Tracker.Data.Players
             statsn.Add("drebn", drebn);
             */
 
-            double rebn = RPG/rebfactor;
+            double rebn = RPG / rebfactor;
             statsn.Add("rebn", rebn);
 
-            double astn = APG/astfactor;
+            double astn = APG / astfactor;
             statsn.Add("astn", astn);
 
-            double stln = SPG/stlfactor;
+            double stln = SPG / stlfactor;
             statsn.Add("stln", stln);
 
-            double blkn = BPG/blkfactor;
+            double blkn = BPG / blkfactor;
             statsn.Add("blkn", blkn);
 
-            double ptsn = PPG/ptsfactor;
+            double ptsn = PPG / ptsfactor;
             statsn.Add("ptsn", ptsn);
 
-            if (FTM/GP > 3)
+            if (FTM / GP > 3)
             {
-                ftrn = ((double) FTM/FGA)/ftrfactor;
+                ftrn = ((double) FTM / FGA) / ftrfactor;
             }
             statsn.Add("ftrn", ftrn);
 
-            IOrderedEnumerable<string> items = from k in statsn.Keys
-                                               orderby statsn[k] descending
-                                               select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys orderby statsn[k] descending select k;
 
             string s = "";
             int i = 1;
@@ -855,15 +894,15 @@ namespace NBA_Stats_Tracker.Data.Players
                 switch (item)
                 {
                     case "fgn":
-                        s += String.Format("FG: {0:F1}-{1:F1} ({2:F3})\n", (double) FGM/GP, (double) FGA/GP, FGp);
+                        s += String.Format("FG: {0:F1}-{1:F1} ({2:F3})\n", (double) FGM / GP, (double) FGA / GP, FGp);
                         break;
 
                     case "tpn":
-                        s += String.Format("3P: {0:F1}-{1:F1} ({2:F3})\n", (double) TPM/GP, (double) TPA/GP, TPp);
+                        s += String.Format("3P: {0:F1}-{1:F1} ({2:F3})\n", (double) TPM / GP, (double) TPA / GP, TPp);
                         break;
 
                     case "ftn":
-                        s += String.Format("FT: {0:F1}-{1:F1} ({2:F3})\n", (double) FTM/GP, (double) FTA/GP, FTp);
+                        s += String.Format("FT: {0:F1}-{1:F1} ({2:F3})\n", (double) FTM / GP, (double) FTA / GP, FTp);
                         break;
 
                     case "orebn":
@@ -896,7 +935,8 @@ namespace NBA_Stats_Tracker.Data.Players
                         continue;
 
                     case "ftrn":
-                        s += String.Format("FTM/FGA: {0:F1}-{1:F1} ({2:F3})\n", (double) FTM/GP, (double) FGA/GP, (double) FTM/FGA);
+                        s += String.Format(
+                            "FTM/FGA: {0:F1}-{1:F1} ({2:F3})\n", (double) FTM / GP, (double) FGA / GP, (double) FTM / FGA);
                         break;
                 }
 
@@ -922,7 +962,7 @@ namespace NBA_Stats_Tracker.Data.Players
             string[] lines = s.Split('\n');
             for (int i = 1; i < count; i++)
             {
-                string[] parts = lines[i].Split(new[] {": "}, StringSplitOptions.None);
+                string[] parts = lines[i].Split(new[] { ": " }, StringSplitOptions.None);
                 statList.Add(parts[0], parts[1]);
             }
             return statList;
@@ -937,14 +977,26 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="rankingsPosition">The rankingsPerGame of the players in the same position.</param>
         /// <param name="pbsList">The list of the player's available box scores.</param>
         /// <param name="bestGame">The well-formatted string from the player's best game.</param>
-        public string ScoutingReport(Dictionary<int, PlayerStats> pst, PlayerRankings rankingsActive, PlayerRankings rankingsTeam,
-                                     PlayerRankings rankingsPosition, IList<PlayerBoxScore> pbsIList, string bestGame,
-                                     bool playoffs = false)
+        public string ScoutingReport(
+            Dictionary<int, PlayerStats> pst,
+            PlayerRankings rankingsActive,
+            PlayerRankings rankingsTeam,
+            PlayerRankings rankingsPosition,
+            IList<PlayerBoxScore> pbsIList,
+            string bestGame,
+            bool playoffs = false)
         {
             List<PlayerBoxScore> pbsList = pbsIList.ToList();
             string s = "";
-            s += String.Format("{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ", FirstName, LastName, Position1,
-                               YearOfBirth, DisplayHeight, MainWindow.IsImperial ? "" : "cm.", DateTime.Today.Year - YearOfBirth);
+            s += String.Format(
+                "{0} {1}, born in {3} ({6} years old today), is a {4}{5} tall {2} ",
+                FirstName,
+                LastName,
+                Position1,
+                YearOfBirth,
+                DisplayHeight,
+                MainWindow.IsImperial ? "" : "cm.",
+                DateTime.Today.Year - YearOfBirth);
             if (Position2 != Position.None)
             {
                 s += String.Format("(alternatively {0})", Position2);
@@ -973,20 +1025,22 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (rankingsTeam.RankingsPerGame[ID][PAbbr.PPG] <= 3)
             {
-                s += String.Format("One of the best scorers in the team, #{0} among his teammates. ",
-                                   rankingsTeam.RankingsPerGame[ID][PAbbr.PPG]);
+                s += String.Format(
+                    "One of the best scorers in the team, #{0} among his teammates. ", rankingsTeam.RankingsPerGame[ID][PAbbr.PPG]);
             }
             if (rankingsPosition.RankingsPerGame[ID][PAbbr.PPG] <= 10)
             {
                 s +=
                     String.Format(
                         "His performance has got him to become one of the best at his position in scoring, #{0} among {1}'s. ",
-                        rankingsPosition.RankingsPerGame[ID][PAbbr.PPG], Position1);
+                        rankingsPosition.RankingsPerGame[ID][PAbbr.PPG],
+                        Position1);
             }
             if (rankingsActive.RankingsPerGame[ID][PAbbr.PPG] <= 20)
             {
-                s += String.Format("He's actually one of the best in the league in scoring, rated #{0} overall. ",
-                                   rankingsActive.RankingsPerGame[ID][PAbbr.PPG]);
+                s += String.Format(
+                    "He's actually one of the best in the league in scoring, rated #{0} overall. ",
+                    rankingsActive.RankingsPerGame[ID][PAbbr.PPG]);
             }
 
             Dictionary<string, string> statList = GetBestStatsList(5);
@@ -1000,40 +1054,50 @@ namespace NBA_Stats_Tracker.Data.Players
                     case "FG":
                         s +=
                             String.Format(
-                                "Shooting, one of his main strengths. He's averaging {0} as far as field goals go. Percentage-wise, his performance " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.FGp]);
+                                "Shooting, one of his main strengths. He's averaging {0} as far as field goals go. Percentage-wise, his performance "
+                                + "ranks him at #{1} overall. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.FGp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.FGp] <= 3)
                         {
-                            s += String.Format("Top from the floor in his team, ranks at #{0} ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.FGp]);
+                            s += String.Format(
+                                "Top from the floor in his team, ranks at #{0} ", rankingsTeam.RankingsPerGame[ID][PAbbr.FGp]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.FGp] <= 10)
                         {
-                            s += String.Format("Definitely dominating among {0}'s on scoring percentage, ranked at #{1}. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.FGp]);
+                            s += String.Format(
+                                "Definitely dominating among {0}'s on scoring percentage, ranked at #{1}. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.FGp]);
                         }
                         break;
                     case "3P":
                         s +=
                             String.Format(
                                 "His 3-point shooting is another area of focus. His three-point shooting PerGame {0}. #{1} in the league in 3P%. ",
-                                stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.TPp]);
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.TPp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.TPp] <= 3)
                         {
-                            s += String.Format("One of the best guys from the arc in his team, ranks at #{0} ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.TPp]);
+                            s += String.Format(
+                                "One of the best guys from the arc in his team, ranks at #{0} ",
+                                rankingsTeam.RankingsPerGame[ID][PAbbr.TPp]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.TPp] <= 10)
                         {
-                            s += String.Format("Not many {0}'s do better than him, as he's ranked at #{1}. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.TPp]);
+                            s += String.Format(
+                                "Not many {0}'s do better than him, as he's ranked at #{1}. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.TPp]);
                         }
                         break;
                     case "FT":
                         s +=
                             String.Format(
-                                "Take a look at his free throw stats: He's averaging {0} from the line, which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.FTp]);
+                                "Take a look at his free throw stats: He's averaging {0} from the line, which "
+                                + "ranks him at #{1} overall. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.FTp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.FTp] <= 3)
                         {
                             s +=
@@ -1043,89 +1107,115 @@ namespace NBA_Stats_Tracker.Data.Players
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.FTp] <= 10)
                         {
-                            s += String.Format("Most {0}'s in the league struggle to keep up with him, he's ranked at #{1}. ",
-                                               Position1, rankingsPosition.RankingsPerGame[ID][PAbbr.FTp]);
+                            s += String.Format(
+                                "Most {0}'s in the league struggle to keep up with him, he's ranked at #{1}. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.FTp]);
                         }
                         break;
                     case "ORPG":
                         s +=
                             String.Format(
-                                "Crashing the offensive glass, one of his main strengths. His average offensive boards per game are at {0}, which " +
-                                "ranks him at #{1} overall. He grabs {2:F1} offensive rebounds every 36 minutes. ", stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.ORPG], OREBR);
+                                "Crashing the offensive glass, one of his main strengths. His average offensive boards per game are at {0}, which "
+                                + "ranks him at #{1} overall. He grabs {2:F1} offensive rebounds every 36 minutes. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.ORPG],
+                                OREBR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG] <= 3)
                         {
-                            s += String.Format("One of the main guys to worry about below your basket, #{0} in his team. ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG]);
+                            s += String.Format(
+                                "One of the main guys to worry about below your basket, #{0} in his team. ",
+                                rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG] <= 10)
                         {
-                            s += String.Format("He's ranked at #{1} among {0}'s in grabbing those second chance opportunities. ",
-                                               Position1, rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG]);
+                            s += String.Format(
+                                "He's ranked at #{1} among {0}'s in grabbing those second chance opportunities. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG]);
                         }
                         break;
                     case "RPG":
                         s +=
                             String.Format(
-                                "He makes a point of crashing the boards. His RPG are at {0} ({2:F1} per 36 minutes), which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.RPG], REBR);
+                                "He makes a point of crashing the boards. His RPG are at {0} ({2:F1} per 36 minutes), which "
+                                + "ranks him at #{1} overall. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.RPG],
+                                REBR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.RPG] <= 3)
                         {
-                            s += String.Format("One of the top rebounders in his team, #{0} actually. ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
+                            s += String.Format(
+                                "One of the top rebounders in his team, #{0} actually. ", rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.RPG] <= 10)
                         {
-                            s += String.Format("He's ranked at #{1} among {0}'s in crashing the boards. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.RPG]);
+                            s += String.Format(
+                                "He's ranked at #{1} among {0}'s in crashing the boards. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.RPG]);
                         }
                         break;
                     case "BPG":
                         s +=
                             String.Format(
-                                "Keep him in mind when he's in your face. His BPG are at {0} ({2:F1} per 36 minutes), which " +
-                                "ranks him at #{1} overall. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.BPG], BLKR);
+                                "Keep him in mind when he's in your face. His BPG are at {0} ({2:F1} per 36 minutes), which "
+                                + "ranks him at #{1} overall. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.BPG],
+                                BLKR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.BPG] <= 3)
                         {
-                            s += String.Format("Among the top blockers in the team, ranked at #{0}. ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
+                            s += String.Format(
+                                "Among the top blockers in the team, ranked at #{0}. ", rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.BPG] <= 10)
                         {
-                            s += String.Format("One of the best {0}'s (#{1}) at blocking shots. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.BPG]);
+                            s += String.Format(
+                                "One of the best {0}'s (#{1}) at blocking shots. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.BPG]);
                         }
                         break;
                     case "APG":
                         s +=
                             String.Format(
                                 "Assisting the ball, an important aspect of his game. He does {0} APG ({2:F1} per 36 minutes), ranking him at #{1} overall. ",
-                                stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.APG], ASTR);
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.APG],
+                                ASTR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.APG] <= 3)
                         {
-                            s += String.Format("#{0} as far as playmakers in the team go. ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
+                            s += String.Format(
+                                "#{0} as far as playmakers in the team go. ", rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.APG] <= 10)
                         {
-                            s += String.Format("One of the league's best {0}'s (#{1}) at setting up teammates for a shot. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.APG]);
+                            s += String.Format(
+                                "One of the league's best {0}'s (#{1}) at setting up teammates for a shot. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.APG]);
                         }
                         break;
                     case "SPG":
                         s +=
                             String.Format(
-                                "Tries to keep his hands active; keep in mind his {0} SPG ({2:F1} per 36 minutes). His performance in taking the ball away has " +
-                                "ranked him at #{1} in the league. ", stat.Value, rankingsActive.RankingsPerGame[ID][PAbbr.SPG], STLR);
+                                "Tries to keep his hands active; keep in mind his {0} SPG ({2:F1} per 36 minutes). His performance in taking the ball away has "
+                                + "ranked him at #{1} in the league. ",
+                                stat.Value,
+                                rankingsActive.RankingsPerGame[ID][PAbbr.SPG],
+                                STLR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.SPG] <= 3)
                         {
-                            s += String.Format("#{0} in taking the ball away among his teammates. ",
-                                               rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
+                            s += String.Format(
+                                "#{0} in taking the ball away among his teammates. ", rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.SPG] <= 10)
                         {
-                            s += String.Format("One of the league's best {0}'s (#{1}) in this aspect. ", Position1,
-                                               rankingsPosition.RankingsPerGame[ID][PAbbr.SPG]);
+                            s += String.Format(
+                                "One of the league's best {0}'s (#{1}) in this aspect. ",
+                                Position1,
+                                rankingsPosition.RankingsPerGame[ID][PAbbr.SPG]);
                         }
                         break;
                     case "FTM/FGA":
@@ -1138,16 +1228,20 @@ namespace NBA_Stats_Tracker.Data.Players
             s +=
                 String.Format(
                     "His foul rate is at {0:F1} per 36 minutes, while his turnover rate is at {1:F1} per the same duration.\n\n",
-                    (double) FOUL/MINS*36, TOR);
+                    (double) FOUL / MINS * 36,
+                    TOR);
 
             pbsList.Sort((pbs1, pbs2) => pbs1.RealDate.CompareTo(pbs2.RealDate));
             pbsList.Reverse();
 
             if (!String.IsNullOrWhiteSpace(bestGame))
             {
-                string[] parts = bestGame.Split(new[] {": ", " vs ", " (", "\n"}, StringSplitOptions.None);
-                s += String.Format("His best game was at {0} against the {1}, with a Game Score of {2:F2} ", parts[1], parts[2],
-                                   pbsList.Find(pbs => pbs.RealDate == Convert.ToDateTime(parts[1])).GmSc);
+                string[] parts = bestGame.Split(new[] { ": ", " vs ", " (", "\n" }, StringSplitOptions.None);
+                s += String.Format(
+                    "His best game was at {0} against the {1}, with a Game Score of {2:F2} ",
+                    parts[1],
+                    parts[2],
+                    pbsList.Find(pbs => pbs.RealDate == Convert.ToDateTime(parts[1])).GmSc);
                 s += "(";
                 for (int i = 5; i < parts.Length; i++)
                 {
@@ -1168,7 +1262,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         i += 1;
                     }
                 }
-                s = s.TrimEnd(new[] {',', ' '});
+                s = s.TrimEnd(new[] { ',', ' ' });
                 s += "). ";
             }
 
@@ -1179,7 +1273,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     sum += pbsList[i].GmSc;
                 }
-                double average = sum/5;
+                double average = sum / 5;
                 s += String.Format("He's been averaging a Game Score of {0:F2} in his last 5 games, ", average);
                 if (average > GmSc)
                 {
@@ -1197,7 +1291,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     sum += pbsList[i].GmSc;
                 }
-                double average = sum/3;
+                double average = sum / 3;
                 s += String.Format("He's been averaging a Game Score of {0:F2} in his last 3 games, ", average);
                 if (average > GmSc)
                 {
@@ -1222,9 +1316,7 @@ namespace NBA_Stats_Tracker.Data.Players
             dict[TAbbr.FPG] = pst.Count + 1 - dict[TAbbr.FPG];
             dict[TAbbr.TPG] = pst.Count + 1 - dict[TAbbr.TPG];
             dict[TAbbr.PAPG] = pst.Count + 1 - dict[TAbbr.PAPG];
-            List<int> strengths = (from entry in dict
-                                   orderby entry.Value ascending
-                                   select entry.Key).ToList();
+            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
             int j = 3;
             while (true)
@@ -1245,15 +1337,21 @@ namespace NBA_Stats_Tracker.Data.Players
                         s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.DRPG], DRPG);
                         break;
                     case PAbbr.FGeff:
-                        s += String.Format("field goals (#{0}, {1:F1} per game on {2:F3}), ",
-                                           rankingsActive.RankingsPerGame[ID][PAbbr.FGeff], (double) FGM/GP, FGp);
+                        s += String.Format(
+                            "field goals (#{0}, {1:F1} per game on {2:F3}), ",
+                            rankingsActive.RankingsPerGame[ID][PAbbr.FGeff],
+                            (double) FGM / GP,
+                            FGp);
                         break;
                     case PAbbr.FPG:
                         s += String.Format("fouls (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.FPG], FPG);
                         break;
                     case PAbbr.FTeff:
-                        s += String.Format("free throws (#{0}, {1:F1} per game on {2:F3}), ",
-                                           rankingsActive.RankingsPerGame[ID][PAbbr.FTeff], (double) FTM/GP, FTp);
+                        s += String.Format(
+                            "free throws (#{0}, {1:F1} per game on {2:F3}), ",
+                            rankingsActive.RankingsPerGame[ID][PAbbr.FTeff],
+                            (double) FTM / GP,
+                            FTp);
                         break;
                     case PAbbr.ORPG:
                         s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.ORPG], ORPG);
@@ -1271,8 +1369,11 @@ namespace NBA_Stats_Tracker.Data.Players
                         s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.TPG], TPG);
                         break;
                     case PAbbr.TPeff:
-                        s += String.Format("three-pointers (#{0}, {1:F1} per game on {2:F3}), ",
-                                           rankingsActive.RankingsPerGame[ID][PAbbr.TPeff], (double) TPM/GP, TPp);
+                        s += String.Format(
+                            "three-pointers (#{0}, {1:F1} per game on {2:F3}), ",
+                            rankingsActive.RankingsPerGame[ID][PAbbr.TPeff],
+                            (double) TPM / GP,
+                            TPp);
                         break;
                     default:
                         j++;
@@ -1280,7 +1381,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 m++;
             }
-            s = s.TrimEnd(new[] {' ', ','});
+            s = s.TrimEnd(new[] { ' ', ',' });
             s += ".";
 
             return s;
@@ -1293,24 +1394,24 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dict">The dict.</param>
         public static void TryChangePSR(ref PlayerStatsRow psr, Dictionary<string, string> dict)
         {
-            psr.GP = psr.GP.TrySetValue(dict, "GP", typeof (UInt16));
-            psr.GS = psr.GS.TrySetValue(dict, "GS", typeof (UInt16));
-            psr.MINS = psr.MINS.TrySetValue(dict, "MINS", typeof (UInt16));
-            psr.PTS = psr.PTS.TrySetValue(dict, "PTS", typeof (UInt16));
-            psr.FGM = psr.FGM.TrySetValue(dict, "FGM", typeof (UInt16));
-            psr.FGA = psr.FGA.TrySetValue(dict, "FGA", typeof (UInt16));
-            psr.TPM = psr.TPM.TrySetValue(dict, "3PM", typeof (UInt16));
-            psr.TPA = psr.TPA.TrySetValue(dict, "3PA", typeof (UInt16));
-            psr.FTM = psr.FTM.TrySetValue(dict, "FTM", typeof (UInt16));
-            psr.FTA = psr.FTA.TrySetValue(dict, "FTA", typeof (UInt16));
-            psr.REB = psr.REB.TrySetValue(dict, "REB", typeof (UInt16));
-            psr.OREB = psr.OREB.TrySetValue(dict, "OREB", typeof (UInt16));
-            psr.DREB = psr.DREB.TrySetValue(dict, "DREB", typeof (UInt16));
-            psr.AST = psr.AST.TrySetValue(dict, "AST", typeof (UInt16));
-            psr.TOS = psr.TOS.TrySetValue(dict, "TO", typeof (UInt16));
-            psr.STL = psr.STL.TrySetValue(dict, "STL", typeof (UInt16));
-            psr.BLK = psr.BLK.TrySetValue(dict, "BLK", typeof (UInt16));
-            psr.FOUL = psr.FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
+            psr.GP = psr.GP.TrySetValue(dict, "GP", typeof(UInt16));
+            psr.GS = psr.GS.TrySetValue(dict, "GS", typeof(UInt16));
+            psr.MINS = psr.MINS.TrySetValue(dict, "MINS", typeof(UInt16));
+            psr.PTS = psr.PTS.TrySetValue(dict, "PTS", typeof(UInt16));
+            psr.FGM = psr.FGM.TrySetValue(dict, "FGM", typeof(UInt16));
+            psr.FGA = psr.FGA.TrySetValue(dict, "FGA", typeof(UInt16));
+            psr.TPM = psr.TPM.TrySetValue(dict, "3PM", typeof(UInt16));
+            psr.TPA = psr.TPA.TrySetValue(dict, "3PA", typeof(UInt16));
+            psr.FTM = psr.FTM.TrySetValue(dict, "FTM", typeof(UInt16));
+            psr.FTA = psr.FTA.TrySetValue(dict, "FTA", typeof(UInt16));
+            psr.REB = psr.REB.TrySetValue(dict, "REB", typeof(UInt16));
+            psr.OREB = psr.OREB.TrySetValue(dict, "OREB", typeof(UInt16));
+            psr.DREB = psr.DREB.TrySetValue(dict, "DREB", typeof(UInt16));
+            psr.AST = psr.AST.TrySetValue(dict, "AST", typeof(UInt16));
+            psr.TOS = psr.TOS.TrySetValue(dict, "TO", typeof(UInt16));
+            psr.STL = psr.STL.TrySetValue(dict, "STL", typeof(UInt16));
+            psr.BLK = psr.BLK.TrySetValue(dict, "BLK", typeof(UInt16));
+            psr.FOUL = psr.FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
         public static void Refresh(ref PlayerStatsRow psr)
@@ -1340,8 +1441,8 @@ namespace NBA_Stats_Tracker.Data.Players
             string mpgSetting = MainWindow.MyLeadersMPGSetting;
             float mpgRequired = MainWindow.MyLeadersMPGRequired;
 
-            if ((gpPctSetting != "-1" && (double) gamesPlayer*100/gamesTeam < gpPctRequired) ||
-                (mpgSetting != "-1" && MPG < mpgRequired))
+            if ((gpPctSetting != "-1" && (double) gamesPlayer * 100 / gamesTeam < gpPctRequired)
+                || (mpgSetting != "-1" && MPG < mpgRequired))
             {
                 newpsr.PTS = 0;
                 newpsr.FGM = 0;
@@ -1419,16 +1520,16 @@ namespace NBA_Stats_Tracker.Data.Players
             PlayerStatsRow newpsr = this.DeepClone();
 
             // Below functions found using Eureqa II
-            var gamesRequired = (int) Math.Ceiling(0.8522*gamesTeam); // Maximum error of 0
-            var fgmRequired = (int) Math.Ceiling(3.65*gamesTeam); // Max error of 0
-            var ftmRequired = (int) Math.Ceiling(1.52*gamesTeam);
-            var tpmRequired = (int) Math.Ceiling(0.666671427752402*gamesTeam);
-            var ptsRequired = (int) Math.Ceiling(17.07*gamesTeam);
-            var rebRequired = (int) Math.Ceiling(9.74720677727814*gamesTeam);
-            var astRequired = (int) Math.Ceiling(4.87*gamesTeam);
-            var stlRequired = (int) Math.Ceiling(1.51957078555763*gamesTeam);
-            var blkRequired = (int) Math.Ceiling(1.21*gamesTeam);
-            var minRequired = (int) Math.Ceiling(24.39*gamesTeam);
+            var gamesRequired = (int) Math.Ceiling(0.8522 * gamesTeam); // Maximum error of 0
+            var fgmRequired = (int) Math.Ceiling(3.65 * gamesTeam); // Max error of 0
+            var ftmRequired = (int) Math.Ceiling(1.52 * gamesTeam);
+            var tpmRequired = (int) Math.Ceiling(0.666671427752402 * gamesTeam);
+            var ptsRequired = (int) Math.Ceiling(17.07 * gamesTeam);
+            var rebRequired = (int) Math.Ceiling(9.74720677727814 * gamesTeam);
+            var astRequired = (int) Math.Ceiling(4.87 * gamesTeam);
+            var stlRequired = (int) Math.Ceiling(1.51957078555763 * gamesTeam);
+            var blkRequired = (int) Math.Ceiling(1.21 * gamesTeam);
+            var minRequired = (int) Math.Ceiling(24.39 * gamesTeam);
 
             if (FGM < fgmRequired)
             {
@@ -1575,12 +1676,18 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public string FullNameGivenFirst
         {
-            get { return FirstName + " " + LastName; }
+            get
+            {
+                return FirstName + " " + LastName;
+            }
         }
 
         public string FullName
         {
-            get { return LastName + ", " + FirstName; }
+            get
+            {
+                return LastName + ", " + FirstName;
+            }
         }
 
         #endregion

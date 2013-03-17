@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+
 using NBA_Stats_Tracker.Data.Players.Injuries;
 
 #endregion
@@ -45,12 +46,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             approx.AddRange(PlayerInjury.ApproximateDurations.Keys.Take(2).ToList());
 
             cmbTFApproximateAmount.ItemsSource = approx;
-            cmbTFExactType.ItemsSource = new List<string> {"Days", "Weeks", "Months"};
+            cmbTFExactType.ItemsSource = new List<string> { "Days", "Weeks", "Months" };
 
             rbTFApproximate.IsChecked = true;
         }
 
-        public PlayerInjuryWindow(PlayerInjury injury) : this()
+        public PlayerInjuryWindow(PlayerInjury injury)
+            : this()
         {
             if (injury.InjuryType != -1)
             {
@@ -84,10 +86,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                             InjuryDaysLeft = Convert.ToInt32(txtTFExactAmount.Text);
                             break;
                         case "Weeks":
-                            InjuryDaysLeft = Convert.ToInt32(txtTFExactAmount.Text)*7;
+                            InjuryDaysLeft = Convert.ToInt32(txtTFExactAmount.Text) * 7;
                             break;
                         case "Months":
-                            InjuryDaysLeft = Convert.ToInt32(txtTFExactAmount.Text)*30;
+                            InjuryDaysLeft = Convert.ToInt32(txtTFExactAmount.Text) * 30;
                             break;
                     }
                 }

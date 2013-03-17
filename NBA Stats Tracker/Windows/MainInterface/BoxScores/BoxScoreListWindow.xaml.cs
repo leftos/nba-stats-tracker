@@ -23,8 +23,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.SQLiteIO;
+
 using SQLite_Database;
 
 #endregion
@@ -50,7 +52,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             dgvBoxScores.DataContext = res.DefaultView;
             */
-
 
             MainWindow.BSHist = SQLiteIO.GetAllBoxScoresFromDatabase(MainWindow.CurrentDB, MainWindow.TST);
             _bsHist = new ObservableCollection<BoxScoreEntry>(MainWindow.BSHist);
@@ -100,9 +101,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             MessageBoxResult r =
                 MessageBox.Show(
-                    "Are you sure you want to delete this/these box score(s)?\n" + "This action cannot be undone.\n\n" +
-                    "Any changes made to Team Stats by automatically adding this/these box score(s) to them won't be reverted by its deletion.",
-                    "NBA Stats Tracker", MessageBoxButton.YesNo);
+                    "Are you sure you want to delete this/these box score(s)?\n" + "This action cannot be undone.\n\n"
+                    + "Any changes made to Team Stats by automatically adding this/these box score(s) to them won't be reverted by its deletion.",
+                    "NBA Stats Tracker",
+                    MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
                 foreach (BoxScoreEntry bse in dgvBoxScores.SelectedItems.Cast<BoxScoreEntry>().ToList())

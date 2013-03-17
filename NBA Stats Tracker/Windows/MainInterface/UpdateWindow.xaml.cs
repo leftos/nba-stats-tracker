@@ -27,6 +27,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Windows;
+
 using LeftosCommonLibrary.CommonDialogs;
 
 #endregion
@@ -48,8 +49,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             InitializeComponent();
         }
 
-        public UpdateWindow(string curVersion, string newVersion, string message, string installerURL, string downloadURL,
-                            string supportURL, string changelogURL) : this()
+        public UpdateWindow(
+            string curVersion,
+            string newVersion,
+            string message,
+            string installerURL,
+            string downloadURL,
+            string supportURL,
+            string changelogURL)
+            : this()
         {
             txbCurrentVersion.Text = txbCurrentVersion.Text + " " + curVersion;
             txbLatestVersion.Text = txbLatestVersion.Text + " " + newVersion;
@@ -104,10 +112,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 var pw = new ProgressWindow("Please wait while the installer is being downloaded...\n" + _installerURL);
                 pw.Show();
                 var webClient = new WebClient();
-                webClient.DownloadProgressChanged += delegate(object o, DownloadProgressChangedEventArgs args)
-                    {
-                        pw.SetProgressBarValue(args.ProgressPercentage);
-                    };
+                webClient.DownloadProgressChanged +=
+                    delegate(object o, DownloadProgressChangedEventArgs args) { pw.SetProgressBarValue(args.ProgressPercentage); };
                 webClient.DownloadFileCompleted += delegate
                     {
                         pw.CanClose = true;
@@ -115,8 +121,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         if (
                             MessageBox.Show(
                                 "NBA Stats Tracker will now close to install the latest version and then restart.\n\nAre you sure you want to continue?",
-                                "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) !=
-                            MessageBoxResult.Yes)
+                                "NBA Stats Tracker",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Question,
+                                MessageBoxResult.Yes) != MessageBoxResult.Yes)
                         {
                             return;
                         }
@@ -124,8 +132,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         string newUpdaterPath = App.AppTempPath + "\\Updater.exe";
                         try
                         {
-                            File.Copy(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Updater.exe", newUpdaterPath,
-                                      true);
+                            File.Copy(
+                                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Updater.exe", newUpdaterPath, true);
                         }
                         catch (Exception ex)
                         {

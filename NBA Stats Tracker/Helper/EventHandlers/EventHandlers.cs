@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Players.Injuries;
 using NBA_Stats_Tracker.Data.Teams;
@@ -43,16 +44,16 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     /// </summary>
     public static class EventHandlers
     {
-        public static Task StartNewAndWatchExceptions(this TaskFactory taskFactory, Action action, TaskScheduler actionScheduler,
-                                                      TaskScheduler exceptionScheduler)
+        public static Task StartNewAndWatchExceptions(
+            this TaskFactory taskFactory, Action action, TaskScheduler actionScheduler, TaskScheduler exceptionScheduler)
         {
             return
                 taskFactory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, actionScheduler)
                            .FailFastOnException(exceptionScheduler);
         }
 
-        public static Task ContinueWithAndWatchExceptions(this Task task, Action<Task> action, TaskScheduler actionScheduler,
-                                                          TaskScheduler exceptionScheduler)
+        public static Task ContinueWithAndWatchExceptions(
+            this Task task, Action<Task> action, TaskScheduler actionScheduler, TaskScheduler exceptionScheduler)
         {
             task.ContinueWith(action, actionScheduler).FailFastOnException(exceptionScheduler);
             return task;
@@ -60,15 +61,21 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
 
         public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c => App.ErrorReport(c.Exception, "Task exception"), CancellationToken.None,
-                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(
+                c => App.ErrorReport(c.Exception, "Task exception"),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                scheduler);
             return task;
         }
 
         public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
         {
-            task.ContinueWith(c => App.ErrorReport(c.Exception, "Task exception"), CancellationToken.None,
-                              TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            task.ContinueWith(
+                c => App.ErrorReport(c.Exception, "Task exception"),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                scheduler);
             return task;
         }
 
@@ -141,8 +148,8 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         ///     The <see cref="DataGridCellClipboardEventArgs" /> instance containing the event data.
         /// </param>
         /// <param name="playersList">The players list.</param>
-        public static void PlayerColumn_CopyingCellClipboardContent(DataGridCellClipboardEventArgs e,
-                                                                    IEnumerable<KeyValuePair<int, string>> playersList)
+        public static void PlayerColumn_CopyingCellClipboardContent(
+            DataGridCellClipboardEventArgs e, IEnumerable<KeyValuePair<int, string>> playersList)
         {
             try
             {
@@ -168,7 +175,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         /// <param name="e">The <see cref="DataGridSortingEventArgs" /> instance containing the event data.</param>
         public static void StatColumn_Sorting(DataGrid sender, DataGridSortingEventArgs e)
         {
-            var namesNotToSortDescendingFirst = new List<string> {"Player", "Last Name", "First Name", "Team", "Returns", "Injury"};
+            var namesNotToSortDescendingFirst = new List<string> { "Player", "Last Name", "First Name", "Team", "Returns", "Injury" };
             if (e.Column.Header.ToString() == "Returns")
             {
                 e.Handled = true;
@@ -245,7 +252,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         {
             try
             {
-                pts = ((fgm - tpm)*2 + tpm*3 + ftm);
+                pts = ((fgm - tpm) * 2 + tpm * 3 + ftm);
             }
             catch
             {
@@ -255,7 +262,8 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             }
             try
             {
-                percentages = String.Format("FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm/fga, (float) tpm/tpa, (float) ftm/fta);
+                percentages = String.Format(
+                    "FG%: {0:F3}\t3P%: {1:F3}\tFT%: {2:F3}", (float) fgm / fga, (float) tpm / tpa, (float) ftm / fta);
             }
             catch
             {

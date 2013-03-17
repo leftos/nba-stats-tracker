@@ -99,7 +99,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
 
-            var badMetrics = new List<string> {"DRTG", "TOR", "PythL"};
+            var badMetrics = new List<string> { "DRTG", "TOR", "PythL" };
             RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
             List<string> metricsNames = TAbbr.MetricsNames;
             for (int i = 0; i < tst.Count; i++)

@@ -27,9 +27,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
 using Ciloci.Flee;
+
 using LeftosCommonLibrary;
+
 using Microsoft.Win32;
+
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
@@ -60,9 +64,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private readonly Dictionary<Selection, List<Filter>> _filters = new Dictionary<Selection, List<Filter>>();
         private readonly string _folder = App.AppDocsPath + @"\Advanced Stats Filters";
 
-        private readonly List<string> _numericOptions = new List<string> {"<", "<=", "=", ">=", ">"};
+        private readonly List<string> _numericOptions = new List<string> { "<", "<=", "=", ">=", ">" };
         private readonly List<int> _playersToHighlight = new List<int>();
-        private readonly List<string> _positions = new List<string> {"Any", "None", "PG", "SG", "SF", "PF", "C"};
+        private readonly List<string> _positions = new List<string> { "Any", "None", "PG", "SG", "SF", "PF", "C" };
         private readonly List<int> _teamsToHighlight = new List<int>();
 
         private readonly List<string> _totals = new List<string>
@@ -185,11 +189,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             MainWindow.TST.Values.ToList().ForEach(ts => teams.Add(ts.DisplayName));
             teams.Sort();
             cmbTeamFilter.Items.Add("- Any -");
-            teams.ForEach(delegate(string i)
-                {
-                    cmbTeamFilter.Items.Add(i);
-                    cmbSelectedTeam.Items.Add(i);
-                });
+            teams.ForEach(
+                delegate(string i)
+                    {
+                        cmbTeamFilter.Items.Add(i);
+                        cmbSelectedTeam.Items.Add(i);
+                    });
 
             cmbTeamFilter.SelectedIndex = -1;
             cmbTeamFilter.SelectedIndex = 0;
@@ -229,9 +234,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             }
             list.ForEach(
                 ps =>
-                playersList.Add(new KeyValuePair<int, string>(ps.ID,
-                                                              String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName,
-                                                                            ps.Position1.ToString()))));
+                playersList.Add(
+                    new KeyValuePair<int, string>(
+                    ps.ID, String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName, ps.Position1.ToString()))));
 
             cmbSelectedPlayer.ItemsSource = playersList;
         }
@@ -417,8 +422,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                         filter.Value.Remove(
                             filter.Value.Single(
                                 o =>
-                                o.Parameter1 == cmbTotalsPar.SelectedItem.ToString() &&
-                                o.Operator == cmbTotalsOp.SelectedItem.ToString()));
+                                o.Parameter1 == cmbTotalsPar.SelectedItem.ToString()
+                                && o.Operator == cmbTotalsOp.SelectedItem.ToString()));
                     }
                     catch
                     {
@@ -426,8 +431,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     finally
                     {
-                        filter.Value.Add(new Filter(cmbTotalsPar.SelectedItem.ToString(), cmbTotalsOp.SelectedItem.ToString(),
-                                                    cmbTotalsPar2.SelectedItem.ToString(), txtTotalsVal.Text));
+                        filter.Value.Add(
+                            new Filter(
+                                cmbTotalsPar.SelectedItem.ToString(),
+                                cmbTotalsOp.SelectedItem.ToString(),
+                                cmbTotalsPar2.SelectedItem.ToString(),
+                                txtTotalsVal.Text));
                     }
                 }
             }
@@ -461,8 +470,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                         filter.Value.Remove(
                             filter.Value.Single(
                                 o =>
-                                o.Parameter1 == cmbTotalsPar.SelectedItem.ToString() &&
-                                o.Operator == cmbTotalsOp.SelectedItem.ToString()));
+                                o.Parameter1 == cmbTotalsPar.SelectedItem.ToString()
+                                && o.Operator == cmbTotalsOp.SelectedItem.ToString()));
                     }
                     catch
                     {
@@ -470,8 +479,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     finally
                     {
-                        filter.Value.Add(new Filter(cmbTotalsPar.SelectedItem.ToString(), cmbTotalsOp.SelectedItem.ToString(),
-                                                    cmbTotalsPar2.SelectedItem.ToString(), txtTotalsVal.Text));
+                        filter.Value.Add(
+                            new Filter(
+                                cmbTotalsPar.SelectedItem.ToString(),
+                                cmbTotalsOp.SelectedItem.ToString(),
+                                cmbTotalsPar2.SelectedItem.ToString(),
+                                txtTotalsVal.Text));
                     }
                 }
                 else
@@ -566,8 +579,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 string s;
                 if (filter.Key.SelectionType == SelectionType.Team)
                 {
-                    s = string.Format("(#T{0}) {1}: ", filter.Key.ID,
-                                      MainWindow.TST.Values.Single(ts => ts.ID == filter.Key.ID).DisplayName);
+                    s = string.Format(
+                        "(#T{0}) {1}: ", filter.Key.ID, MainWindow.TST.Values.Single(ts => ts.ID == filter.Key.ID).DisplayName);
                 }
                 else
                 {
@@ -581,14 +594,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     {
                         teamName = "Inactive";
                     }
-                    s = String.Format("(#P{4}) {0}, {1} ({2} - {3}): ", player.LastName, player.FirstName, player.Position1, teamName,
-                                      player.ID);
+                    s = String.Format(
+                        "(#P{4}) {0}, {1} ({2} - {3}): ", player.LastName, player.FirstName, player.Position1, teamName, player.ID);
                 }
                 foreach (Filter option in filter.Value)
                 {
-                    string s2 = s +
-                                String.Format("{0} {1} {2}", option.Parameter1, option.Operator,
-                                              String.IsNullOrWhiteSpace(option.Parameter2) ? option.Value : option.Parameter2);
+                    string s2 = s
+                                + String.Format(
+                                    "{0} {1} {2}",
+                                    option.Parameter1,
+                                    option.Operator,
+                                    String.IsNullOrWhiteSpace(option.Parameter2) ? option.Value : option.Parameter2);
                     lstTotals.Items.Add(s2);
                 }
             }
@@ -745,11 +761,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                 if (!parameter.Contains("%"))
                                 {
                                     ige =
-                                        context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
-                                                                                   bse.BS.GetType()
-                                                                                      .GetProperty(parameter)
-                                                                                      .GetValue(bse.BS, null), option.Operator,
-                                                                                   option.Value));
+                                        context.CompileGeneric<bool>(
+                                            string.Format(
+                                                "{0} {1} {2}",
+                                                bse.BS.GetType().GetProperty(parameter).GetValue(bse.BS, null),
+                                                option.Operator,
+                                                option.Value));
                                 }
                                 else
                                 {
@@ -757,10 +774,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                     string par2 = parameter.Replace("%", "A");
                                     ige =
                                         context.CompileGeneric<bool>(
-                                            string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
-                                                          bse.BS.GetType().GetProperty(par1).GetValue(bse.BS, null),
-                                                          bse.BS.GetType().GetProperty(par2).GetValue(bse.BS, null), option.Operator,
-                                                          option.Value));
+                                            string.Format(
+                                                "(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
+                                                bse.BS.GetType().GetProperty(par1).GetValue(bse.BS, null),
+                                                bse.BS.GetType().GetProperty(par2).GetValue(bse.BS, null),
+                                                option.Operator,
+                                                option.Value));
                                 }
                             }
                             else
@@ -770,8 +789,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                     if (!parameter2.Contains("%"))
                                     {
                                         ige =
-                                            context.CompileGeneric<bool>(string.Format("{0} {1} {2}", getValue(bse, parameter),
-                                                                                       option.Operator, getValue(bse, parameter2)));
+                                            context.CompileGeneric<bool>(
+                                                string.Format(
+                                                    "{0} {1} {2}", getValue(bse, parameter), option.Operator, getValue(bse, parameter2)));
                                     }
                                     else
                                     {
@@ -779,9 +799,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                         string par2Part2 = parameter2.Replace("%", "A");
                                         ige =
                                             context.CompileGeneric<bool>(
-                                                string.Format("Cast({0}, double) {1} (Cast({2}, double) / Cast({3}, double))",
-                                                              getValue(bse, parameter), option.Operator, getValue(bse, par2Part1),
-                                                              getValue(bse, par2Part2)));
+                                                string.Format(
+                                                    "Cast({0}, double) {1} (Cast({2}, double) / Cast({3}, double))",
+                                                    getValue(bse, parameter),
+                                                    option.Operator,
+                                                    getValue(bse, par2Part1),
+                                                    getValue(bse, par2Part2)));
                                     }
                                 }
                                 else
@@ -792,9 +815,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                         string par1Part2 = parameter.Replace("%", "A");
                                         ige =
                                             context.CompileGeneric<bool>(
-                                                string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
-                                                              getValue(bse, par1Part1), getValue(bse, par1Part2), option.Operator,
-                                                              getValue(bse, parameter2)));
+                                                string.Format(
+                                                    "(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
+                                                    getValue(bse, par1Part1),
+                                                    getValue(bse, par1Part2),
+                                                    option.Operator,
+                                                    getValue(bse, parameter2)));
                                     }
                                     else
                                     {
@@ -806,8 +832,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                             context.CompileGeneric<bool>(
                                                 string.Format(
                                                     "(Cast({0}, double) / Cast({1}, double)) {2} (Cast({3}, double) / Cast({4}, double))",
-                                                    getValue(bse, par1Part1), getValue(bse, par1Part2), option.Operator,
-                                                    getValue(bse, par2Part1), getValue(bse, par2Part2)));
+                                                    getValue(bse, par1Part1),
+                                                    getValue(bse, par1Part2),
+                                                    option.Operator,
+                                                    getValue(bse, par2Part1),
+                                                    getValue(bse, par2Part2)));
                                     }
                                 }
                             }
@@ -851,9 +880,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                             if (!parameter.Contains("%"))
                             {
                                 ige =
-                                    context.CompileGeneric<bool>(string.Format("{0} {1} {2}",
-                                                                               pbs.GetType().GetProperty(parameter).GetValue(pbs, null),
-                                                                               option.Operator, option.Value));
+                                    context.CompileGeneric<bool>(
+                                        string.Format(
+                                            "{0} {1} {2}",
+                                            pbs.GetType().GetProperty(parameter).GetValue(pbs, null),
+                                            option.Operator,
+                                            option.Value));
                             }
                             else
                             {
@@ -861,10 +893,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                 string par2 = parameter.Replace("%", "A");
                                 ige =
                                     context.CompileGeneric<bool>(
-                                        string.Format("(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
-                                                      pbs.GetType().GetProperty(par1).GetValue(pbs, null),
-                                                      pbs.GetType().GetProperty(par2).GetValue(pbs, null), option.Operator,
-                                                      option.Value));
+                                        string.Format(
+                                            "(Cast({0}, double) / Cast({1}, double)) {2} Cast({3}, double)",
+                                            pbs.GetType().GetProperty(par1).GetValue(pbs, null),
+                                            pbs.GetType().GetProperty(par2).GetValue(pbs, null),
+                                            option.Operator,
+                                            option.Value));
                             }
                             if (ige.Evaluate() == false)
                             {
@@ -916,40 +950,44 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 TeamBoxScore bs = bse.BS;
                 if (!advtst.ContainsKey(team1ID))
                 {
-                    advtst.Add(team1ID,
-                               new TeamStats
-                                   {
-                                       ID = team1ID,
-                                       Name = MainWindow.TST[team1ID].Name,
-                                       DisplayName = MainWindow.TST[team1ID].DisplayName
-                                   });
-                    advtstOpp.Add(team1ID,
-                                  new TeamStats
-                                      {
-                                          ID = team1ID,
-                                          Name = MainWindow.TST[team1ID].Name,
-                                          DisplayName = MainWindow.TST[team1ID].DisplayName
-                                      });
+                    advtst.Add(
+                        team1ID,
+                        new TeamStats
+                            {
+                                ID = team1ID,
+                                Name = MainWindow.TST[team1ID].Name,
+                                DisplayName = MainWindow.TST[team1ID].DisplayName
+                            });
+                    advtstOpp.Add(
+                        team1ID,
+                        new TeamStats
+                            {
+                                ID = team1ID,
+                                Name = MainWindow.TST[team1ID].Name,
+                                DisplayName = MainWindow.TST[team1ID].DisplayName
+                            });
                 }
                 TeamStats ts1 = advtst[team1ID];
                 TeamStats ts1Opp = advtstOpp[team1ID];
                 if (!advtst.ContainsKey(team2ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst.Add(team2ID,
-                               new TeamStats
-                                   {
-                                       ID = team2ID,
-                                       Name = MainWindow.TST[team2ID].Name,
-                                       DisplayName = MainWindow.TST[team2ID].DisplayName
-                                   });
-                    advtstOpp.Add(team2ID,
-                                  new TeamStats
-                                      {
-                                          ID = team2ID,
-                                          Name = MainWindow.TST[team2ID].Name,
-                                          DisplayName = MainWindow.TST[team2ID].DisplayName
-                                      });
+                    advtst.Add(
+                        team2ID,
+                        new TeamStats
+                            {
+                                ID = team2ID,
+                                Name = MainWindow.TST[team2ID].Name,
+                                DisplayName = MainWindow.TST[team2ID].DisplayName
+                            });
+                    advtstOpp.Add(
+                        team2ID,
+                        new TeamStats
+                            {
+                                ID = team2ID,
+                                Name = MainWindow.TST[team2ID].Name,
+                                DisplayName = MainWindow.TST[team2ID].DisplayName
+                            });
                 }
                 TeamStats ts2 = advtst[team2ID];
                 TeamStats ts2Opp = advtstOpp[team2ID];
@@ -967,23 +1005,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     int teamID = pbs.TeamID;
                     if (!advPPtst.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtst.Add(pbs.PlayerID,
-                                     new TeamStats
-                                         {
-                                             ID = teamID,
-                                             Name = MainWindow.TST[teamID].Name,
-                                             DisplayName = MainWindow.TST[teamID].DisplayName
-                                         });
+                        advPPtst.Add(
+                            pbs.PlayerID,
+                            new TeamStats
+                                {
+                                    ID = teamID,
+                                    Name = MainWindow.TST[teamID].Name,
+                                    DisplayName = MainWindow.TST[teamID].DisplayName
+                                });
                     }
                     if (!advPPtstOpp.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtstOpp.Add(pbs.PlayerID,
-                                        new TeamStats
-                                            {
-                                                ID = teamID,
-                                                Name = MainWindow.TST[teamID].Name,
-                                                DisplayName = MainWindow.TST[teamID].DisplayName
-                                            });
+                        advPPtstOpp.Add(
+                            pbs.PlayerID,
+                            new TeamStats
+                                {
+                                    ID = teamID,
+                                    Name = MainWindow.TST[teamID].Name,
+                                    DisplayName = MainWindow.TST[teamID].DisplayName
+                                });
                     }
                     TeamStats ts = advPPtst[pbs.PlayerID];
                     TeamStats tsopp = advPPtstOpp[pbs.PlayerID];
@@ -1006,40 +1046,44 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 if (!advtstNot.ContainsKey(team1ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtstNot.Add(team1ID,
-                                  new TeamStats
-                                      {
-                                          ID = team1ID,
-                                          Name = MainWindow.TST[team1ID].Name,
-                                          DisplayName = MainWindow.TST[team1ID].DisplayName
-                                      });
-                    advtstOppNot.Add(team1ID,
-                                     new TeamStats
-                                         {
-                                             ID = team1ID,
-                                             Name = MainWindow.TST[team1ID].Name,
-                                             DisplayName = MainWindow.TST[team1ID].DisplayName
-                                         });
+                    advtstNot.Add(
+                        team1ID,
+                        new TeamStats
+                            {
+                                ID = team1ID,
+                                Name = MainWindow.TST[team1ID].Name,
+                                DisplayName = MainWindow.TST[team1ID].DisplayName
+                            });
+                    advtstOppNot.Add(
+                        team1ID,
+                        new TeamStats
+                            {
+                                ID = team1ID,
+                                Name = MainWindow.TST[team1ID].Name,
+                                DisplayName = MainWindow.TST[team1ID].DisplayName
+                            });
                 }
                 TeamStats ts1 = advtstNot[team1ID];
                 TeamStats ts1Opp = advtstOppNot[team1ID];
                 if (!advtstNot.ContainsKey(team2ID))
                 {
                     //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtstNot.Add(team2ID,
-                                  new TeamStats
-                                      {
-                                          ID = team2ID,
-                                          Name = MainWindow.TST[team2ID].Name,
-                                          DisplayName = MainWindow.TST[team2ID].DisplayName
-                                      });
-                    advtstOppNot.Add(team2ID,
-                                     new TeamStats
-                                         {
-                                             ID = team2ID,
-                                             Name = MainWindow.TST[team2ID].Name,
-                                             DisplayName = MainWindow.TST[team2ID].DisplayName
-                                         });
+                    advtstNot.Add(
+                        team2ID,
+                        new TeamStats
+                            {
+                                ID = team2ID,
+                                Name = MainWindow.TST[team2ID].Name,
+                                DisplayName = MainWindow.TST[team2ID].DisplayName
+                            });
+                    advtstOppNot.Add(
+                        team2ID,
+                        new TeamStats
+                            {
+                                ID = team2ID,
+                                Name = MainWindow.TST[team2ID].Name,
+                                DisplayName = MainWindow.TST[team2ID].DisplayName
+                            });
                 }
                 TeamStats ts2 = advtstNot[team2ID];
                 TeamStats ts2Opp = advtstOppNot[team2ID];
@@ -1062,23 +1106,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     int teamID = pbs.TeamID;
                     if (!advPPtstNot.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtstNot.Add(pbs.PlayerID,
-                                        new TeamStats
-                                            {
-                                                ID = teamID,
-                                                Name = MainWindow.TST[teamID].Name,
-                                                DisplayName = MainWindow.TST[teamID].DisplayName
-                                            });
+                        advPPtstNot.Add(
+                            pbs.PlayerID,
+                            new TeamStats
+                                {
+                                    ID = teamID,
+                                    Name = MainWindow.TST[teamID].Name,
+                                    DisplayName = MainWindow.TST[teamID].DisplayName
+                                });
                     }
                     if (!advPPtstOppNot.ContainsKey(pbs.PlayerID))
                     {
-                        advPPtstOppNot.Add(pbs.PlayerID,
-                                           new TeamStats
-                                               {
-                                                   ID = teamID,
-                                                   Name = MainWindow.TST[teamID].Name,
-                                                   DisplayName = MainWindow.TST[teamID].DisplayName
-                                               });
+                        advPPtstOppNot.Add(
+                            pbs.PlayerID,
+                            new TeamStats
+                                {
+                                    ID = teamID,
+                                    Name = MainWindow.TST[teamID].Name,
+                                    DisplayName = MainWindow.TST[teamID].DisplayName
+                                });
                     }
                     TeamStats ts = advPPtstNot[pbs.PlayerID];
                     TeamStats tsopp = advPPtstOppNot[pbs.PlayerID];
@@ -1145,7 +1191,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             tsrObservable.Add(tsr);
         }
 
-        private void highlightAndAddPlayers(KeyValuePair<int, PlayerStats> pair, ref ObservableCollection<PlayerStatsRow> psrObservable)
+        private void highlightAndAddPlayers(
+            KeyValuePair<int, PlayerStats> pair, ref ObservableCollection<PlayerStatsRow> psrObservable)
         {
             var psr = new PlayerStatsRow(pair.Value);
             if (_playersToHighlight.Contains(psr.ID))
@@ -1194,8 +1241,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             if (lstTotals.Items.Count > 0)
             {
-                MessageBoxResult mbr = MessageBox.Show("Do you want to clear the current stat filters before loading the new ones?",
-                                                       "NBA Stats Tracker", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                MessageBoxResult mbr = MessageBox.Show(
+                    "Do you want to clear the current stat filters before loading the new ones?",
+                    "NBA Stats Tracker",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
                 if (mbr == MessageBoxResult.Cancel)
                 {
                     return;
@@ -1219,9 +1269,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 string val;
                 try
                 {
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+                    // ReSharper disable ReturnValueOfPureMethodIsNotUsed
                     Convert.ToDouble(criterion[2]);
-// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+                    // ReSharper restore ReturnValueOfPureMethodIsNotUsed
                     par2 = "";
                     val = criterion[2];
                 }

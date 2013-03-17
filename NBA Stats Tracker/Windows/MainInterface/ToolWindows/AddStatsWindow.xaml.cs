@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
+
 using NBA_Stats_Tracker.Data.PastStats;
 using NBA_Stats_Tracker.Data.SQLiteIO;
 

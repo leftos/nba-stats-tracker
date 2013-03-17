@@ -22,8 +22,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+
 using HtmlAgilityPack;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Teams;
@@ -68,7 +71,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                     HtmlNode h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
                     string name = h1.InnerText;
-                    parts = name.Split(new[] {" at ", " Box Score, ", ", "}, 4, StringSplitOptions.None);
+                    parts = name.Split(new[] { " at ", " Box Score, ", ", " }, 4, StringSplitOptions.None);
                     for (int i = 0; i < parts.Count(); i++)
                     {
                         parts[i] = parts[i].Replace("\n", "");
@@ -145,7 +148,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 string record = infoboxp.InnerText;
 
                 recordparts = record.Split('-');
-                recordparts[0] = recordparts[0].TrimStart(new[] {' '});
+                recordparts[0] = recordparts[0].TrimStart(new[] { ' ' });
                 recordparts[1] = recordparts[1].Split(',')[0];
 
                 HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
@@ -207,8 +210,8 @@ namespace NBA_Stats_Tracker.Interop.BR
                     try
                     {
                         if (
-                            !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs" ||
-                              cur.Attributes["id"].Value == "roster"))
+                            !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs"
+                              || cur.Attributes["id"].Value == "roster"))
                         {
                             continue;
                         }
@@ -271,8 +274,8 @@ namespace NBA_Stats_Tracker.Interop.BR
                     try
                     {
                         if (
-                            !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent" ||
-                              cur.Attributes["id"].Value == "misc"))
+                            !(cur.Attributes["id"].Value == "team" || cur.Attributes["id"].Value == "opponent"
+                              || cur.Attributes["id"].Value == "misc"))
                         {
                             continue;
                         }
@@ -325,8 +328,8 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="recordparts">The parts of the team's record string.</param>
         /// <param name="ts">The resulting team stats instance.</param>
         /// <param name="tsopp">The resulting opposing team stats instance.</param>
-        private static void teamStatsFromDataTable(DataTable dt, string name, string[] recordparts, out TeamStats ts,
-                                                   out TeamStats tsopp)
+        private static void teamStatsFromDataTable(
+            DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
             var teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
             ts = new TeamStats(teamID, name);
@@ -338,7 +341,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             DataRow tr = dt.Rows[0];
             DataRow toppr = dt.Rows[2];
 
-            ts.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP")/5);
+            ts.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP") / 5);
             ts.Totals[TAbbr.FGM] = ParseCell.GetUInt16(tr, "FG");
             ts.Totals[TAbbr.FGA] = ParseCell.GetUInt16(tr, "FGA");
             ts.Totals[TAbbr.TPM] = ParseCell.GetUInt16(tr, "3P");
@@ -357,7 +360,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
             ts.CalcAvg();
 
-            tsopp.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP")/5);
+            tsopp.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP") / 5);
             tsopp.Totals[TAbbr.FGM] = ParseCell.GetUInt16(toppr, "FG");
             tsopp.Totals[TAbbr.FGA] = ParseCell.GetUInt16(toppr, "FGA");
             tsopp.Totals[TAbbr.TPM] = ParseCell.GetUInt16(toppr, "3P");
@@ -383,8 +386,8 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="ds">The dataset.</param>
         /// <param name="tst">The team stats dictionary.</param>
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
-        private static void playoffTeamStatsFromDataSet(DataSet ds, ref Dictionary<int, TeamStats> tst,
-                                                        ref Dictionary<int, TeamStats> tstOpp)
+        private static void playoffTeamStatsFromDataSet(
+            DataSet ds, ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)
         {
             DataTable dt = ds.Tables["team"];
             DataTable dtopp = ds.Tables["opponent"];
@@ -433,7 +436,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
                 tst[i].PlRecord[0] = (byte) ParseCell.GetUInt16(tmiscr, "W");
                 tst[i].PlRecord[1] = (byte) ParseCell.GetUInt16(tmiscr, "L");
-                tst[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP")/5);
+                tst[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP") / 5);
                 tst[i].PlTotals[TAbbr.FGM] = ParseCell.GetUInt16(tr, "FG");
                 tst[i].PlTotals[TAbbr.FGA] = ParseCell.GetUInt16(tr, "FGA");
                 tst[i].PlTotals[TAbbr.TPM] = ParseCell.GetUInt16(tr, "3P");
@@ -452,7 +455,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
                 tstOpp[i].PlRecord[0] = (byte) ParseCell.GetUInt16(tmiscr, "L");
                 tstOpp[i].PlRecord[1] = (byte) ParseCell.GetUInt16(tmiscr, "W");
-                tstOpp[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP")/5);
+                tstOpp[i].PlTotals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(toppr, "MP") / 5);
                 tstOpp[i].PlTotals[TAbbr.FGM] = ParseCell.GetUInt16(toppr, "FG");
                 tstOpp[i].PlTotals[TAbbr.FGA] = ParseCell.GetUInt16(toppr, "FGA");
                 tstOpp[i].PlTotals[TAbbr.TPM] = ParseCell.GetUInt16(toppr, "3P");
@@ -549,9 +552,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
                 var nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
-                var ps =
-                    new PlayerStats(new Player(pstnames.Count, teamID, nameParts[1],
-                                               nameParts[0], position1, position2));
+                var ps = new PlayerStats(new Player(pstnames.Count, teamID, nameParts[1], nameParts[0], position1, position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
             }
@@ -634,7 +635,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             DataTable homeDT = ds.Tables[1];
 
             var bs = new TeamBoxScore(ds, parts);
-            bse = new BoxScoreEntry(bs) {Date = bs.GameDate, PBSList = new List<PlayerBoxScore>()};
+            bse = new BoxScoreEntry(bs) { Date = bs.GameDate, PBSList = new List<PlayerBoxScore>() };
             int result = 0;
             for (int i = 0; i < awayDT.Rows.Count - 1; i++)
             {
@@ -674,12 +675,12 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="ts">The resulting team stats instance.</param>
         /// <param name="tsopp">The opposing team stats instance.</param>
         /// <param name="pst">The resulting player stats dictionary.</param>
-        public static void ImportRealStats(KeyValuePair<string, string> teamAbbr, out TeamStats ts, out TeamStats tsopp,
-                                           out Dictionary<int, PlayerStats> pst)
+        public static void ImportRealStats(
+            KeyValuePair<string, string> teamAbbr, out TeamStats ts, out TeamStats tsopp, out Dictionary<int, PlayerStats> pst)
         {
             string[] recordparts;
-            DataSet ds = getSeasonTeamStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html",
-                                            out recordparts);
+            DataSet ds = getSeasonTeamStats(
+                @"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
             teamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
             ds = getPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");

@@ -34,7 +34,8 @@ namespace NBA_Stats_Tracker.Windows
             InitializeComponent();
         }
 
-        public TestWindow(DataSet ds) : this()
+        public TestWindow(DataSet ds)
+            : this()
         {
             dataGrid1.DataContext = ds.Tables[0].DefaultView;
         }

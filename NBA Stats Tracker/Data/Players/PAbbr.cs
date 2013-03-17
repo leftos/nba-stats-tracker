@@ -75,43 +75,43 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public static readonly Dictionary<int, string> Totals = new Dictionary<int, string>
             {
-                {0, "GP"},
-                {1, "GS"},
-                {2, "MINS"},
-                {3, "PTS"},
-                {4, "DREB"},
-                {5, "OREB"},
-                {6, "AST"},
-                {7, "STL"},
-                {8, "BLK"},
-                {9, "TOS"},
-                {10, "FOUL"},
-                {11, "FGM"},
-                {12, "FGA"},
-                {13, "3PM"},
-                {14, "3PA"},
-                {15, "FTM"},
-                {16, "FTA"}
+                { 0, "GP" },
+                { 1, "GS" },
+                { 2, "MINS" },
+                { 3, "PTS" },
+                { 4, "DREB" },
+                { 5, "OREB" },
+                { 6, "AST" },
+                { 7, "STL" },
+                { 8, "BLK" },
+                { 9, "TOS" },
+                { 10, "FOUL" },
+                { 11, "FGM" },
+                { 12, "FGA" },
+                { 13, "3PM" },
+                { 14, "3PA" },
+                { 15, "FTM" },
+                { 16, "FTA" }
             };
 
         public static readonly Dictionary<int, string> PerGame = new Dictionary<int, string>
             {
-                {0, "MPG"},
-                {1, "PPG"},
-                {2, "DRPG"},
-                {3, "ORPG"},
-                {4, "APG"},
-                {5, "SPG"},
-                {6, "BPG"},
-                {7, "TPG"},
-                {8, "FPG"},
-                {9, "FG%"},
-                {10, "FGeff"},
-                {11, "3P%"},
-                {12, "3Peff"},
-                {13, "FT%"},
-                {14, "FTeff"},
-                {15, "RPG"}
+                { 0, "MPG" },
+                { 1, "PPG" },
+                { 2, "DRPG" },
+                { 3, "ORPG" },
+                { 4, "APG" },
+                { 5, "SPG" },
+                { 6, "BPG" },
+                { 7, "TPG" },
+                { 8, "FPG" },
+                { 9, "FG%" },
+                { 10, "FGeff" },
+                { 11, "3P%" },
+                { 12, "3Peff" },
+                { 13, "FT%" },
+                { 14, "FTeff" },
+                { 15, "RPG" }
             };
 
         public static readonly List<string> ExtendedTotals = new List<string>

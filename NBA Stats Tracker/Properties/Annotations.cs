@@ -43,7 +43,8 @@ namespace NBA_Stats_Tracker.Properties
         ///     Initializes a new instance of the <see cref="LocalizationRequiredAttribute" /> class with
         ///     <see cref="Required" /> set to <see langword="true" />.
         /// </summary>
-        public LocalizationRequiredAttribute() : this(true)
+        public LocalizationRequiredAttribute()
+            : this(true)
         {
         }
 
@@ -247,8 +248,8 @@ namespace NBA_Stats_Tracker.Properties
     /// </code>
     /// </example>
     [AttributeUsage(
-        AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Delegate |
-        AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+        AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Delegate
+        | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class CanBeNullAttribute : Attribute
     {
     }
@@ -266,8 +267,8 @@ namespace NBA_Stats_Tracker.Properties
     /// </code>
     /// </example>
     [AttributeUsage(
-        AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Delegate |
-        AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+        AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Delegate
+        | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class NotNullAttribute : Attribute
     {
     }
@@ -386,7 +387,7 @@ namespace NBA_Stats_Tracker.Properties
     /// </code>
     /// </example>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    [BaseTypeRequired(typeof (Attribute))]
+    [BaseTypeRequired(typeof(Attribute))]
     public sealed class BaseTypeRequiredAttribute : Attribute
     {
         /// <summary>
@@ -395,7 +396,7 @@ namespace NBA_Stats_Tracker.Properties
         /// <param name="baseType">Specifies which types are required</param>
         public BaseTypeRequiredAttribute(Type baseType)
         {
-            BaseTypes = new[] {baseType};
+            BaseTypes = new[] { baseType };
         }
 
         /// <summary>
@@ -412,20 +413,22 @@ namespace NBA_Stats_Tracker.Properties
     public sealed class UsedImplicitlyAttribute : Attribute
     {
         [UsedImplicitly]
-        public UsedImplicitlyAttribute() : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default)
+        public UsedImplicitlyAttribute()
+            : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default)
         {
         }
 
         [UsedImplicitly]
-        public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags,
-                                       ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
+        public UsedImplicitlyAttribute(
+            ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
         {
             UseKindFlags = useKindFlags;
             TargetFlags = targetFlags;
         }
 
         [UsedImplicitly]
-        public UsedImplicitlyAttribute(ImplicitUseTargetFlags targetFlags) : this(ImplicitUseKindFlags.Default, targetFlags)
+        public UsedImplicitlyAttribute(ImplicitUseTargetFlags targetFlags)
+            : this(ImplicitUseKindFlags.Default, targetFlags)
         {
         }
 
@@ -447,20 +450,22 @@ namespace NBA_Stats_Tracker.Properties
     public sealed class MeansImplicitUseAttribute : Attribute
     {
         [UsedImplicitly]
-        public MeansImplicitUseAttribute() : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default)
+        public MeansImplicitUseAttribute()
+            : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default)
         {
         }
 
         [UsedImplicitly]
-        public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags,
-                                         ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
+        public MeansImplicitUseAttribute(
+            ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags = ImplicitUseTargetFlags.Default)
         {
             UseKindFlags = useKindFlags;
             TargetFlags = targetFlags;
         }
 
         [UsedImplicitly]
-        public MeansImplicitUseAttribute(ImplicitUseTargetFlags targetFlags) : this(ImplicitUseKindFlags.Default, targetFlags)
+        public MeansImplicitUseAttribute(ImplicitUseTargetFlags targetFlags)
+            : this(ImplicitUseKindFlags.Default, targetFlags)
         {
         }
 
@@ -548,7 +553,6 @@ namespace NBA_Stats_Tracker.Properties
     public sealed class InstantHandleAttribute : Attribute
     {
     }
-
 
     /// <summary>
     ///     Indicates that a method does not make any observable state changes.

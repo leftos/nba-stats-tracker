@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System;
+
 using NBA_Stats_Tracker.Data.Players;
 
 #endregion

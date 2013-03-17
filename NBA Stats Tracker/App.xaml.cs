@@ -24,6 +24,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+
 using LeftosCommonLibrary;
 
 #endregion
@@ -76,8 +77,11 @@ namespace NBA_Stats_Tracker
                 f.Close();
 
                 MessageBox.Show(
-                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
-                    errorReportPath, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n"
+                    + errorReportPath,
+                    AppName + " Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
             }
@@ -127,8 +131,11 @@ namespace NBA_Stats_Tracker
                 f.Close();
 
                 MessageBox.Show(
-                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n" +
-                    errorReportPath, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n"
+                    + errorReportPath,
+                    AppName + " Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
             }
@@ -189,7 +196,7 @@ namespace NBA_Stats_Tracker
                     TraceOutputOptions = TraceOptions.ThreadId | TraceOptions.DateTime
                 };
 
-            var ctl = new ConsoleTraceListener(false) {TraceOutputOptions = TraceOptions.DateTime};
+            var ctl = new ConsoleTraceListener(false) { TraceOutputOptions = TraceOptions.DateTime };
 
             Trace.Listeners.Add(twtl);
             Trace.Listeners.Add(ctl);

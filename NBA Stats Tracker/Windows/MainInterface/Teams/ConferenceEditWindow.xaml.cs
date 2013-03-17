@@ -23,10 +23,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MiscDialogs;
+
 using SQLite_Database;
 
 #endregion
@@ -49,7 +52,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         ///     Initializes a new instance of the <see cref="ConferenceEditWindow" /> class.
         /// </summary>
         /// <param name="conf">The conference to be edited.</param>
-        public ConferenceEditWindow(Conference conf) : this()
+        public ConferenceEditWindow(Conference conf)
+            : this()
         {
             _curConf = conf;
             txtName.Text = conf.Name;
@@ -57,7 +61,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             MainWindow.Divisions.Where(division => division.ConferenceID == conf.ID)
                       .ToList()
                       .ForEach(division => txtDivisions.Text += division.Name + "\n");
-            txtDivisions.Text = txtDivisions.Text.TrimEnd(new[] {'\n'});
+            txtDivisions.Text = txtDivisions.Text.TrimEnd(new[] { '\n' });
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -84,7 +88,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
 
             MainWindow.Conferences.Single(conference => conference.ID == _curConf.ID).Name = txtName.Text;
-            db.Update("Conferences", new Dictionary<string, string> {{"Name", txtName.Text}}, "ID = " + _curConf.ID);
+            db.Update("Conferences", new Dictionary<string, string> { { "Name", txtName.Text } }, "ID = " + _curConf.ID);
 
             MainWindow.Divisions.RemoveAll(division => division.ConferenceID == _curConf.ID);
             db.Delete("Divisions", "Conference = " + _curConf.ID);
@@ -104,7 +108,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     i++;
                 }
-                MainWindow.Divisions.Add(new Division {ID = i, Name = newName, ConferenceID = _curConf.ID});
+                MainWindow.Divisions.Add(new Division { ID = i, Name = newName, ConferenceID = _curConf.ID });
                 usedIDs.Add(i);
             }
 
@@ -115,19 +119,20 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     i++;
                 }
-                MainWindow.Divisions.Add(new Division {ID = i, Name = txtName.Text, ConferenceID = _curConf.ID});
+                MainWindow.Divisions.Add(new Division { ID = i, Name = txtName.Text, ConferenceID = _curConf.ID });
                 usedIDs.Add(i);
             }
 
             foreach (Division div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
             {
-                db.Insert("Divisions",
-                          new Dictionary<string, string>
-                              {
-                                  {"ID", div.ID.ToString()},
-                                  {"Name", div.Name},
-                                  {"Conference", div.ConferenceID.ToString()}
-                              });
+                db.Insert(
+                    "Divisions",
+                    new Dictionary<string, string>
+                        {
+                            { "ID", div.ID.ToString() },
+                            { "Name", div.Name },
+                            { "Conference", div.ConferenceID.ToString() }
+                        });
             }
 
             TeamStats.CheckForInvalidDivisions();

@@ -22,6 +22,7 @@ using System;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+
 using IWin32Window = System.Windows.Forms.IWin32Window;
 
 #endregion
@@ -59,7 +60,10 @@ namespace NBA_Stats_Tracker.Helper.WindowsForms
 
             IntPtr IWin32Window.Handle
             {
-                get { return _handle; }
+                get
+                {
+                    return _handle;
+                }
             }
 
             #endregion

@@ -23,7 +23,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.Teams;
 
 #endregion
@@ -100,9 +102,9 @@ namespace NBA_Stats_Tracker.Data.Players
             OREB = Convert.ToUInt16(r["OREB"].ToString());
             FOUL = Convert.ToUInt16(r["FOUL"].ToString());
             DREB = (UInt16) (REB - OREB);
-            FGp = (float) FGM/FGA;
-            TPp = (float) TPM/TPA;
-            FTp = (float) FTM/FTA;
+            FGp = (float) FGM / FGA;
+            TPp = (float) TPM / TPA;
+            FTp = (float) FTM / FTA;
 
             // Let's try to get the result and date of the game
             // Only works for INNER JOIN'ed rows
@@ -169,30 +171,32 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playerStats">The player stats.</param>
         public PlayerBoxScore(DataRow brRow, int teamID, int gameID, bool starter, Dictionary<int, PlayerStats> playerStats)
         {
-            string[] nameParts = brRow[0].ToString().Split(new[] {' '}, 2);
+            string[] nameParts = brRow[0].ToString().Split(new[] { ' ' }, 2);
             try
             {
-                PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
-                    {
-                        if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0] && kvp.Value.TeamF == teamID)
+                PlayerID = playerStats.Single(
+                    delegate(KeyValuePair<int, PlayerStats> kvp)
                         {
-                            return true;
-                        }
-                        return false;
-                    }).Value.ID;
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    PlayerID = playerStats.Single(delegate(KeyValuePair<int, PlayerStats> kvp)
-                        {
-                            if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0])
+                            if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0] && kvp.Value.TeamF == teamID)
                             {
                                 return true;
                             }
                             return false;
                         }).Value.ID;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    PlayerID = playerStats.Single(
+                        delegate(KeyValuePair<int, PlayerStats> kvp)
+                            {
+                                if (kvp.Value.LastName == nameParts[1] && kvp.Value.FirstName == nameParts[0])
+                                {
+                                    return true;
+                                }
+                                return false;
+                            }).Value.ID;
                 }
                 catch (Exception)
                 {
@@ -227,9 +231,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 MINS++;
             }
             DREB = (UInt16) (REB - OREB);
-            FGp = (float) FGM/FGA;
-            TPp = (float) TPM/TPA;
-            FTp = (float) FTM/FTA;
+            FGp = (float) FGM / FGA;
+            TPp = (float) TPM / TPA;
+            FTp = (float) FTM / FTA;
         }
 
         /// <summary>
@@ -242,24 +246,24 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             PlayerID = playerID;
             TeamID = teamID;
-            IsStarter = IsStarter.TrySetValue(dict, "Starter", typeof (bool));
-            PlayedInjured = PlayedInjured.TrySetValue(dict, "Injured", typeof (bool));
-            IsOut = IsOut.TrySetValue(dict, "DNP", typeof (bool));
-            MINS = MINS.TrySetValue(dict, "MINS", typeof (UInt16));
-            PTS = PTS.TrySetValue(dict, "PTS", typeof (UInt16));
-            REB = REB.TrySetValue(dict, "REB", typeof (UInt16));
-            AST = AST.TrySetValue(dict, "AST", typeof (UInt16));
-            STL = STL.TrySetValue(dict, "STL", typeof (UInt16));
-            BLK = BLK.TrySetValue(dict, "BLK", typeof (UInt16));
-            TOS = TOS.TrySetValue(dict, "TO", typeof (UInt16));
-            FGM = FGM.TrySetValue(dict, "FGM", typeof (UInt16));
-            FGA = FGA.TrySetValue(dict, "FGA", typeof (UInt16));
-            TPM = TPM.TrySetValue(dict, "3PM", typeof (UInt16));
-            TPA = TPA.TrySetValue(dict, "3PA", typeof (UInt16));
-            FTM = FTM.TrySetValue(dict, "FTM", typeof (UInt16));
-            FTA = FTA.TrySetValue(dict, "FTA", typeof (UInt16));
-            OREB = OREB.TrySetValue(dict, "OREB", typeof (UInt16));
-            FOUL = FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
+            IsStarter = IsStarter.TrySetValue(dict, "Starter", typeof(bool));
+            PlayedInjured = PlayedInjured.TrySetValue(dict, "Injured", typeof(bool));
+            IsOut = IsOut.TrySetValue(dict, "DNP", typeof(bool));
+            MINS = MINS.TrySetValue(dict, "MINS", typeof(UInt16));
+            PTS = PTS.TrySetValue(dict, "PTS", typeof(UInt16));
+            REB = REB.TrySetValue(dict, "REB", typeof(UInt16));
+            AST = AST.TrySetValue(dict, "AST", typeof(UInt16));
+            STL = STL.TrySetValue(dict, "STL", typeof(UInt16));
+            BLK = BLK.TrySetValue(dict, "BLK", typeof(UInt16));
+            TOS = TOS.TrySetValue(dict, "TO", typeof(UInt16));
+            FGM = FGM.TrySetValue(dict, "FGM", typeof(UInt16));
+            FGA = FGA.TrySetValue(dict, "FGA", typeof(UInt16));
+            TPM = TPM.TrySetValue(dict, "3PM", typeof(UInt16));
+            TPA = TPA.TrySetValue(dict, "3PA", typeof(UInt16));
+            FTM = FTM.TrySetValue(dict, "FTM", typeof(UInt16));
+            FTA = FTA.TrySetValue(dict, "FTA", typeof(UInt16));
+            OREB = OREB.TrySetValue(dict, "OREB", typeof(UInt16));
+            FOUL = FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
         /// <summary>
@@ -323,7 +327,10 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 MINS
         {
-            get { return _mins; }
+            get
+            {
+                return _mins;
+            }
             set
             {
                 _mins = value;
@@ -337,11 +344,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FGM
         {
-            get { return _FGM; }
+            get
+            {
+                return _FGM;
+            }
             set
             {
                 _FGM = value;
-                FGp = (float) _FGM/_FGA;
+                FGp = (float) _FGM / _FGA;
                 CalculatePoints();
                 NotifyPropertyChanged("FGp");
                 NotifyPropertyChanged("PTS");
@@ -350,11 +360,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FGA
         {
-            get { return _FGA; }
+            get
+            {
+                return _FGA;
+            }
             set
             {
                 _FGA = value;
-                FGp = (float) _FGM/_FGA;
+                FGp = (float) _FGM / _FGA;
                 CalculatePoints();
                 NotifyPropertyChanged("FGp");
                 NotifyPropertyChanged("PTS");
@@ -365,11 +378,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 TPM
         {
-            get { return _TPM; }
+            get
+            {
+                return _TPM;
+            }
             set
             {
                 _TPM = value;
-                TPp = (float) _TPM/_TPA;
+                TPp = (float) _TPM / _TPA;
                 CalculatePoints();
                 NotifyPropertyChanged("TPp");
                 NotifyPropertyChanged("PTS");
@@ -378,11 +394,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 TPA
         {
-            get { return _TPA; }
+            get
+            {
+                return _TPA;
+            }
             set
             {
                 _TPA = value;
-                TPp = (float) _TPM/_TPA;
+                TPp = (float) _TPM / _TPA;
                 CalculatePoints();
                 NotifyPropertyChanged("TPp");
                 NotifyPropertyChanged("PTS");
@@ -393,11 +412,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FTM
         {
-            get { return _FTM; }
+            get
+            {
+                return _FTM;
+            }
             set
             {
                 _FTM = value;
-                FTp = (float) FTM/FTA;
+                FTp = (float) FTM / FTA;
                 CalculatePoints();
                 NotifyPropertyChanged("FTp");
                 NotifyPropertyChanged("PTS");
@@ -406,11 +428,14 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FTA
         {
-            get { return _FTA; }
+            get
+            {
+                return _FTA;
+            }
             set
             {
                 _FTA = value;
-                FTp = (float) FTM/FTA;
+                FTp = (float) FTM / FTA;
                 CalculatePoints();
                 NotifyPropertyChanged("FTp");
                 NotifyPropertyChanged("PTS");
@@ -477,7 +502,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
             }
 
-            var ps = new PlayerStats {ID = PlayerID};
+            var ps = new PlayerStats { ID = PlayerID };
             ps.AddBoxScore(this, bs.IsPlayoff);
             ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
@@ -506,7 +531,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts);
             }
 
-            var ps = new PlayerStats {ID = PlayerID};
+            var ps = new PlayerStats { ID = PlayerID };
             ps.AddBoxScore(this, bs.IsPlayoff);
             ps.CalcMetrics(ts, tsopp, new TeamStats(-1), GmScOnly: true);
 
@@ -519,7 +544,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// </summary>
         protected void CalculatePoints()
         {
-            PTS = (ushort) ((_FGM - _TPM)*2 + _TPM*3 + _FTM);
+            PTS = (ushort) ((_FGM - _TPM) * 2 + _TPM * 3 + _FTM);
         }
 
         /// <summary>
@@ -535,28 +560,38 @@ namespace NBA_Stats_Tracker.Data.Players
 
             double fgfactor, tpfactor, ftfactor, orebfactor, rebfactor, astfactor, stlfactor, blkfactor, ptsfactor, ftrfactor;
 
-            GetFactors(position, out fgfactor, out tpfactor, out ftfactor, out orebfactor, out rebfactor, out astfactor, out stlfactor,
-                       out blkfactor, out ptsfactor, out ftrfactor);
+            GetFactors(
+                position,
+                out fgfactor,
+                out tpfactor,
+                out ftfactor,
+                out orebfactor,
+                out rebfactor,
+                out astfactor,
+                out stlfactor,
+                out blkfactor,
+                out ptsfactor,
+                out ftrfactor);
 
             if (FGM > 4)
             {
-                fgn = FGp/fgfactor;
+                fgn = FGp / fgfactor;
             }
             statsn.Add("fgn", fgn);
 
             if (TPM > 2)
             {
-                tpn = TPp/tpfactor;
+                tpn = TPp / tpfactor;
             }
             statsn.Add("tpn", tpn);
 
             if (FTM > 3)
             {
-                ftn = FTp/ftfactor;
+                ftn = FTp / ftfactor;
             }
             statsn.Add("ftn", ftn);
 
-            double orebn = OREB/orebfactor;
+            double orebn = OREB / orebfactor;
             statsn.Add("orebn", orebn);
 
             /*
@@ -564,30 +599,28 @@ namespace NBA_Stats_Tracker.Data.Players
             statsn.Add("drebn", drebn);
             */
 
-            double rebn = REB/rebfactor;
+            double rebn = REB / rebfactor;
             statsn.Add("rebn", rebn);
 
-            double astn = AST/astfactor;
+            double astn = AST / astfactor;
             statsn.Add("astn", astn);
 
-            double stln = STL/stlfactor;
+            double stln = STL / stlfactor;
             statsn.Add("stln", stln);
 
-            double blkn = BLK/blkfactor;
+            double blkn = BLK / blkfactor;
             statsn.Add("blkn", blkn);
 
-            double ptsn = PTS/ptsfactor;
+            double ptsn = PTS / ptsfactor;
             statsn.Add("ptsn", ptsn);
 
             if (FTM > 3)
             {
-                ftrn = ((double) FTM/FGA)/ftrfactor;
+                ftrn = ((double) FTM / FGA) / ftrfactor;
             }
             statsn.Add("ftrn", ftrn);
 
-            IOrderedEnumerable<string> items = from k in statsn.Keys
-                                               orderby statsn[k] descending
-                                               select k;
+            IOrderedEnumerable<string> items = from k in statsn.Keys orderby statsn[k] descending select k;
 
             string s = "";
             s += String.Format("PTS: {0}\n", PTS);
@@ -643,7 +676,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         continue;
 
                     case "ftrn":
-                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double) FTM/FGA);
+                        s += String.Format("FTM/FGA: {0}-{1} ({2:F3})\n", FTM, FGA, (double) FTM / FGA);
                         break;
                 }
 
@@ -652,9 +685,18 @@ namespace NBA_Stats_Tracker.Data.Players
             return s;
         }
 
-        public static void GetFactors(Position position, out double fgfactor, out double tpfactor, out double ftfactor,
-                                      out double orebfactor, out double rebfactor, out double astfactor, out double stlfactor,
-                                      out double blkfactor, out double ptsfactor, out double ftrfactor)
+        public static void GetFactors(
+            Position position,
+            out double fgfactor,
+            out double tpfactor,
+            out double ftfactor,
+            out double orebfactor,
+            out double rebfactor,
+            out double astfactor,
+            out double stlfactor,
+            out double blkfactor,
+            out double ptsfactor,
+            out double ftrfactor)
         {
             if (position.ToString().EndsWith("G"))
             {

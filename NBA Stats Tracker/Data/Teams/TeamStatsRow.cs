@@ -21,7 +21,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using LeftosCommonLibrary;
+
 using NBA_Stats_Tracker.Data.Players;
 
 #endregion
@@ -46,17 +48,17 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PF = ts.Totals[TAbbr.PF];
                 PA = ts.Totals[TAbbr.PA];
                 FGM = ts.Totals[TAbbr.FGM];
-                FGMPG = ((float) FGM/Games);
+                FGMPG = ((float) FGM / Games);
                 FGA = ts.Totals[TAbbr.FGA];
-                FGAPG = ((float) FGA/Games);
+                FGAPG = ((float) FGA / Games);
                 TPM = ts.Totals[TAbbr.TPM];
-                TPMPG = ((float) TPM/Games);
+                TPMPG = ((float) TPM / Games);
                 TPA = ts.Totals[TAbbr.TPA];
-                TPAPG = ((float) TPA/Games);
+                TPAPG = ((float) TPA / Games);
                 FTM = ts.Totals[TAbbr.FTM];
-                FTMPG = ((float) FTM/Games);
+                FTMPG = ((float) FTM / Games);
                 FTA = ts.Totals[TAbbr.FTA];
-                FTAPG = ((float) FTA/Games);
+                FTAPG = ((float) FTA / Games);
                 OREB = ts.Totals[TAbbr.OREB];
                 DREB = ts.Totals[TAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
@@ -112,17 +114,17 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PF = ts.PlTotals[TAbbr.PF];
                 PA = ts.PlTotals[TAbbr.PA];
                 FGM = ts.PlTotals[TAbbr.FGM];
-                FGMPG = ((float) FGM/Games);
+                FGMPG = ((float) FGM / Games);
                 FGA = ts.PlTotals[TAbbr.FGA];
-                FGAPG = ((float) FGA/Games);
+                FGAPG = ((float) FGA / Games);
                 TPM = ts.PlTotals[TAbbr.TPM];
-                TPMPG = ((float) TPM/Games);
+                TPMPG = ((float) TPM / Games);
                 TPA = ts.PlTotals[TAbbr.TPA];
-                TPAPG = ((float) TPA/Games);
+                TPAPG = ((float) TPA / Games);
                 FTM = ts.PlTotals[TAbbr.FTM];
-                FTMPG = ((float) FTM/Games);
+                FTMPG = ((float) FTM / Games);
                 FTA = ts.PlTotals[TAbbr.FTA];
-                FTAPG = ((float) FTA/Games);
+                FTAPG = ((float) FTA / Games);
                 OREB = ts.PlTotals[TAbbr.OREB];
                 DREB = ts.PlTotals[TAbbr.DREB];
                 REB = (UInt16) (OREB + DREB);
@@ -172,7 +174,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             CurStreak = ts.CurStreak;
         }
 
-        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false) : this(ts, playoffs)
+        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false)
+            : this(ts, playoffs)
         {
             CalculateTotalContracts(pst);
             CalculatePlayerCounts(pst);
@@ -189,8 +192,11 @@ namespace NBA_Stats_Tracker.Data.Teams
             L10L = splitTeamStats[ID]["Last 10"].Record[1];
         }
 
-        public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst,
-                            Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, bool playoffs = false)
+        public TeamStatsRow(
+            TeamStats ts,
+            Dictionary<int, PlayerStats> pst,
+            Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+            bool playoffs = false)
             : this(ts, splitTeamStats, playoffs)
         {
             CalculateTotalContracts(pst);
@@ -285,7 +291,10 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string DivRecord
         {
-            get { return String.Format("{0}-{1}", DivW, DivL); }
+            get
+            {
+                return String.Format("{0}-{1}", DivW, DivL);
+            }
         }
 
         public uint ConfW { get; set; }
@@ -293,7 +302,10 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string ConfRecord
         {
-            get { return String.Format("{0}-{1}", ConfW, ConfL); }
+            get
+            {
+                return String.Format("{0}-{1}", ConfW, ConfL);
+            }
         }
 
         public uint L10W { get; set; }
@@ -301,7 +313,10 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string L10Record
         {
-            get { return String.Format("{0}-{1}", L10W, L10L); }
+            get
+            {
+                return String.Format("{0}-{1}", L10W, L10L);
+            }
         }
 
         public string CurStreak { get; set; }
@@ -313,25 +328,25 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public static void TryChangeTSR(ref TeamStatsRow tsr, Dictionary<string, string> dict)
         {
-            tsr.Wins = tsr.Wins.TrySetValue(dict, "Wins", typeof (UInt16));
-            tsr.Losses = tsr.Losses.TrySetValue(dict, "Losses", typeof (UInt16));
-            tsr.MINS = tsr.MINS.TrySetValue(dict, "MINS", typeof (UInt16));
-            tsr.PF = tsr.PF.TrySetValue(dict, "PF", typeof (UInt16));
-            tsr.PA = tsr.PF.TrySetValue(dict, "PA", typeof (UInt16));
-            tsr.FGM = tsr.FGM.TrySetValue(dict, "FGM", typeof (UInt16));
-            tsr.FGA = tsr.FGA.TrySetValue(dict, "FGA", typeof (UInt16));
-            tsr.TPM = tsr.TPM.TrySetValue(dict, "3PM", typeof (UInt16));
-            tsr.TPA = tsr.TPA.TrySetValue(dict, "3PA", typeof (UInt16));
-            tsr.FTM = tsr.FTM.TrySetValue(dict, "FTM", typeof (UInt16));
-            tsr.FTA = tsr.FTA.TrySetValue(dict, "FTA", typeof (UInt16));
-            tsr.REB = tsr.REB.TrySetValue(dict, "REB", typeof (UInt16));
-            tsr.OREB = tsr.OREB.TrySetValue(dict, "OREB", typeof (UInt16));
-            tsr.DREB = tsr.DREB.TrySetValue(dict, "DREB", typeof (UInt16));
-            tsr.AST = tsr.AST.TrySetValue(dict, "AST", typeof (UInt16));
-            tsr.TOS = tsr.TOS.TrySetValue(dict, "TO", typeof (UInt16));
-            tsr.STL = tsr.STL.TrySetValue(dict, "STL", typeof (UInt16));
-            tsr.BLK = tsr.BLK.TrySetValue(dict, "BLK", typeof (UInt16));
-            tsr.FOUL = tsr.FOUL.TrySetValue(dict, "FOUL", typeof (UInt16));
+            tsr.Wins = tsr.Wins.TrySetValue(dict, "Wins", typeof(UInt16));
+            tsr.Losses = tsr.Losses.TrySetValue(dict, "Losses", typeof(UInt16));
+            tsr.MINS = tsr.MINS.TrySetValue(dict, "MINS", typeof(UInt16));
+            tsr.PF = tsr.PF.TrySetValue(dict, "PF", typeof(UInt16));
+            tsr.PA = tsr.PF.TrySetValue(dict, "PA", typeof(UInt16));
+            tsr.FGM = tsr.FGM.TrySetValue(dict, "FGM", typeof(UInt16));
+            tsr.FGA = tsr.FGA.TrySetValue(dict, "FGA", typeof(UInt16));
+            tsr.TPM = tsr.TPM.TrySetValue(dict, "3PM", typeof(UInt16));
+            tsr.TPA = tsr.TPA.TrySetValue(dict, "3PA", typeof(UInt16));
+            tsr.FTM = tsr.FTM.TrySetValue(dict, "FTM", typeof(UInt16));
+            tsr.FTA = tsr.FTA.TrySetValue(dict, "FTA", typeof(UInt16));
+            tsr.REB = tsr.REB.TrySetValue(dict, "REB", typeof(UInt16));
+            tsr.OREB = tsr.OREB.TrySetValue(dict, "OREB", typeof(UInt16));
+            tsr.DREB = tsr.DREB.TrySetValue(dict, "DREB", typeof(UInt16));
+            tsr.AST = tsr.AST.TrySetValue(dict, "AST", typeof(UInt16));
+            tsr.TOS = tsr.TOS.TrySetValue(dict, "TO", typeof(UInt16));
+            tsr.STL = tsr.STL.TrySetValue(dict, "STL", typeof(UInt16));
+            tsr.BLK = tsr.BLK.TrySetValue(dict, "BLK", typeof(UInt16));
+            tsr.FOUL = tsr.FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
         public static void Refresh(ref TeamStatsRow tsr)

@@ -29,9 +29,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+
 using LeftosCommonLibrary;
 using LeftosCommonLibrary.CommonDialogs;
+
 using Microsoft.Win32;
+
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Players;
@@ -40,6 +43,7 @@ using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Helper.EventHandlers;
 using NBA_Stats_Tracker.Helper.Miscellaneous;
 using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
+
 using SQLite_Database;
 
 #endregion
@@ -62,21 +66,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private readonly Dictionary<string, string> REtoREDitor = new Dictionary<string, string>
             {
-                {"RFT", "SShtFT"},
-                {"RPass", "SPass"},
-                {"RBlock", "SBlock"},
-                {"RSteal", "SSteal"},
-                {"ROffRbd", "SOReb"},
-                {"RDefRbd", "SDReb"},
-                {"TShotTnd", "TShtTend"},
-                {"TDrawFoul", "TDrawFoul"},
-                {"TTouch", "TTouches"},
-                {"TCommitFl", "TCommFoul"}
+                { "RFT", "SShtFT" },
+                { "RPass", "SPass" },
+                { "RBlock", "SBlock" },
+                { "RSteal", "SSteal" },
+                { "ROffRbd", "SOReb" },
+                { "RDefRbd", "SDReb" },
+                { "TShotTnd", "TShtTend" },
+                { "TDrawFoul", "TDrawFoul" },
+                { "TTouch", "TTouches" },
+                { "TCommitFl", "TCommFoul" }
             };
 
         private readonly SQLiteDatabase _db = new SQLiteDatabase(MainWindow.CurrentDB);
         private readonly DataTable _dtBS;
-        private readonly List<string> _uTeamCriteria = new List<string> {"All Players", "League Leaders", "My League Leaders"};
+        private readonly List<string> _uTeamCriteria = new List<string> { "All Players", "League Leaders", "My League Leaders" };
 
         private readonly List<string> _uTeamOptions = new List<string>
             {
@@ -142,9 +146,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             _dtBS.Columns.Add("Date");
             _dtBS.Columns.Add("Away");
-            _dtBS.Columns.Add("AS", typeof (int));
+            _dtBS.Columns.Add("AS", typeof(int));
             _dtBS.Columns.Add("Home");
-            _dtBS.Columns.Add("HS", typeof (int));
+            _dtBS.Columns.Add("HS", typeof(int));
             _dtBS.Columns.Add("GameID");
 
             linkInternalsToMainWindow();
@@ -215,9 +219,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 };
             list.AddRange(MainWindow.Conferences.Select(conf => new ComboBoxItemWithIsEnabled(conf.Name)));
             list.Add(new ComboBoxItemWithIsEnabled("-- Divisions --", false));
-            list.AddRange(from div in MainWindow.Divisions
-                          let conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID)
-                          select new ComboBoxItemWithIsEnabled(String.Format("{0}: {1}", conf.Name, div.Name)));
+            list.AddRange(
+                from div in MainWindow.Divisions
+                let conf = MainWindow.Conferences.Find(conference => conference.ID == div.ConferenceID)
+                select new ComboBoxItemWithIsEnabled(String.Format("{0}: {1}", conf.Name, div.Name)));
             cmbDivConf.DisplayMemberPath = "Item";
             //cmbDivConf.SelectedValuePath = "Item";
             cmbDivConf.ItemsSource = list;
@@ -225,26 +230,26 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private void tryChangeRow(ref DataTable dt, int row, Dictionary<string, string> dict)
         {
-            dt.Rows[row].TryChangeValue(dict, "Games", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "Wins", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "Losses", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "PF", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "PA", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "FGM", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "FGA", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "3PM", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "3PA", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "FTM", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "FTA", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "REB", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "OREB", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "DREB", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "AST", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "TO", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "STL", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "BLK", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "FOUL", typeof (UInt16));
-            dt.Rows[row].TryChangeValue(dict, "MINS", typeof (UInt16));
+            dt.Rows[row].TryChangeValue(dict, "Games", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "Wins", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "Losses", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "PF", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "PA", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "FGM", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "FGA", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "3PM", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "3PA", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "FTM", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "FTA", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "REB", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "OREB", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "DREB", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "AST", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "TO", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "STL", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "BLK", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "FOUL", typeof(UInt16));
+            dt.Rows[row].TryChangeValue(dict, "MINS", typeof(UInt16));
         }
 
         /// <summary>
@@ -357,9 +362,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                         _lastShownTeamSeason = _curSeason;
                     }
                 }
-                else if (Equals(currentTab, tabPlayerStats) || Equals(currentTab, tabMetricStats) || Equals(currentTab, tabBest) ||
-                         Equals(currentTab, tabStartingFive) || Equals(currentTab, tabRatings) || Equals(currentTab, tabContracts) ||
-                         Equals(currentTab, tabLeaders) || Equals(currentTab, tabMyLeaders))
+                else if (Equals(currentTab, tabPlayerStats) || Equals(currentTab, tabMetricStats) || Equals(currentTab, tabBest)
+                         || Equals(currentTab, tabStartingFive) || Equals(currentTab, tabRatings) || Equals(currentTab, tabContracts)
+                         || Equals(currentTab, tabLeaders) || Equals(currentTab, tabMyLeaders))
                 {
                     cmbDivConf.IsEnabled = true;
                     bool doIt = false;
@@ -423,7 +428,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _myLeadersList = new List<PlayerStatsRow>();
             _plMyLeadersList = new List<PlayerStatsRow>();
 
-            var worker1 = new BackgroundWorker {WorkerReportsProgress = true};
+            var worker1 = new BackgroundWorker { WorkerReportsProgress = true };
 
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while player PerGame and metric stats are being calculated...";
@@ -518,8 +523,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 {
                     if (++i < playerCount)
                     {
-                        txbStatus.Text = "Please wait while player PerGame and metric stats are being calculated (" + i + "/" +
-                                         playerCount + " completed)...";
+                        txbStatus.Text = "Please wait while player PerGame and metric stats are being calculated (" + i + "/"
+                                         + playerCount + " completed)...";
                     }
                     else
                     {
@@ -597,39 +602,38 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 PlayerStatsRow psr1 = templist[0];
                 string text = psr1.GetBestStats(5);
-                _best1Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n" +
-                             text;
+                _best1Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n"
+                             + text;
 
                 PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                _best2Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n" +
-                             text;
+                _best2Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n"
+                             + text;
 
                 PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                _best3Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n" +
-                             text;
+                _best3Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n"
+                             + text;
 
                 PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                _best4Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n" +
-                             text;
+                _best4Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n"
+                             + text;
 
                 PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                _best5Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n" +
-                             text;
+                _best5Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n"
+                             + text;
 
                 PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                _best6Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n" +
-                             text;
+                _best6Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n"
+                             + text;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception thrown while trying to calculate best performers: " + ex.Message);
             }
-
 
             _plBest1Text = "";
             _plBest2Text = "";
@@ -646,33 +650,33 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 PlayerStatsRow psr1 = templist[0];
                 string text = psr1.GetBestStats(5);
-                _plBest1Text = string.Format("1: {0} {1} ({2} - {3})\n\n{4}", psr1.FirstName, psr1.LastName, psr1.Position1,
-                                             psr1.TeamFDisplay, text);
+                _plBest1Text = string.Format(
+                    "1: {0} {1} ({2} - {3})\n\n{4}", psr1.FirstName, psr1.LastName, psr1.Position1, psr1.TeamFDisplay, text);
 
                 PlayerStatsRow psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                _plBest2Text = string.Format("2: {0} {1} ({2} - {3})\n\n{4}", psr2.FirstName, psr2.LastName, psr2.Position1,
-                                             psr2.TeamFDisplay, text);
+                _plBest2Text = string.Format(
+                    "2: {0} {1} ({2} - {3})\n\n{4}", psr2.FirstName, psr2.LastName, psr2.Position1, psr2.TeamFDisplay, text);
 
                 PlayerStatsRow psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                _plBest3Text = string.Format("3: {0} {1} ({2} - {3})\n\n{4}", psr3.FirstName, psr3.LastName, psr3.Position1,
-                                             psr3.TeamFDisplay, text);
+                _plBest3Text = string.Format(
+                    "3: {0} {1} ({2} - {3})\n\n{4}", psr3.FirstName, psr3.LastName, psr3.Position1, psr3.TeamFDisplay, text);
 
                 PlayerStatsRow psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                _plBest4Text = string.Format("4: {0} {1} ({2} - {3})\n\n{4}", psr4.FirstName, psr4.LastName, psr4.Position1,
-                                             psr4.TeamFDisplay, text);
+                _plBest4Text = string.Format(
+                    "4: {0} {1} ({2} - {3})\n\n{4}", psr4.FirstName, psr4.LastName, psr4.Position1, psr4.TeamFDisplay, text);
 
                 PlayerStatsRow psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                _plBest5Text = string.Format("5: {0} {1} ({2} - {3})\n\n{4}", psr5.FirstName, psr5.LastName, psr5.Position1,
-                                             psr5.TeamFDisplay, text);
+                _plBest5Text = string.Format(
+                    "5: {0} {1} ({2} - {3})\n\n{4}", psr5.FirstName, psr5.LastName, psr5.Position1, psr5.TeamFDisplay, text);
 
                 PlayerStatsRow psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                _plBest6Text = string.Format("6: {0} {1} ({2} - {3})\n\n{4}", psr6.FirstName, psr6.LastName, psr6.Position1,
-                                             psr6.TeamFDisplay, text);
+                _plBest6Text = string.Format(
+                    "6: {0} {1} ({2} - {3})\n\n{4}", psr6.FirstName, psr6.LastName, psr6.Position1, psr6.TeamFDisplay, text);
             }
             catch (Exception ex)
             {
@@ -754,7 +758,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                             {
                                 double sum = 0;
                                 int pInP = 0;
-                                var perm = new List<int>(5) {pg.ID};
+                                var perm = new List<int>(5) { pg.ID };
                                 sum += pg.GmSc;
                                 if (pg.Position1S == "PG")
                                 {
@@ -806,12 +810,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                     max = sum;
                                 }
 
-                                permutations.Add(new StartingFivePermutation
-                                    {
-                                        IDList = perm,
-                                        PlayersInPrimaryPosition = pInP,
-                                        Sum = sum
-                                    });
+                                permutations.Add(
+                                    new StartingFivePermutation { IDList = perm, PlayersInPrimaryPosition = pInP, Sum = sum });
                             }
                         }
                     }
@@ -864,8 +864,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 psr1 = tempList[0];
                 text = psr1.GetBestStats(5);
-                displayText = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                              ")\n\n" + text;
+                displayText = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay
+                              + ")\n\n" + text;
                 if (!playoffs)
                 {
                     _sPGText = displayText;
@@ -884,8 +884,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 psr1 = tempList[1];
                 text = psr1.GetBestStats(5);
-                displayText = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                              ")\n\n" + text;
+                displayText = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay
+                              + ")\n\n" + text;
                 if (!playoffs)
                 {
                     _sSGText = displayText;
@@ -904,8 +904,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 psr1 = tempList[2];
                 text = psr1.GetBestStats(5);
-                displayText = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                              ")\n\n" + text;
+                displayText = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay
+                              + ")\n\n" + text;
                 if (!playoffs)
                 {
                     _sSFText = displayText;
@@ -924,8 +924,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 psr1 = tempList[3];
                 text = psr1.GetBestStats(5);
-                displayText = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                              ")\n\n" + text;
+                displayText = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay
+                              + ")\n\n" + text;
                 if (!playoffs)
                 {
                     _sPFText = displayText;
@@ -944,8 +944,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 psr1 = tempList[4];
                 text = psr1.GetBestStats(5);
-                displayText = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay +
-                              ")\n\n" + text;
+                displayText = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay
+                              + ")\n\n" + text;
                 if (!playoffs)
                 {
                     _sCText = displayText;
@@ -1077,7 +1077,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 //text = psr1.GetBestStats(5);
                 displayText += psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + "), ";
             }
-            displayText = displayText.TrimEnd(new[] {' ', ','});
+            displayText = displayText.TrimEnd(new[] { ' ', ',' });
 
             if (!playoffs)
             {
@@ -1137,7 +1137,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _dtBS.Rows.Add(r);
             }
 
-            var dvBS = new DataView(_dtBS) {AllowNew = false, AllowEdit = false};
+            var dvBS = new DataView(_dtBS) { AllowNew = false, AllowEdit = false };
 
             dgvBoxScores.DataContext = dvBS;
         }
@@ -1642,7 +1642,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             var cur = (ComboBoxItemWithIsEnabled) cmbDivConf.SelectedItem;
             string name = cur.Item;
-            string[] parts = name.Split(new[] {": "}, 2, StringSplitOptions.None);
+            string[] parts = name.Split(new[] { ": " }, 2, StringSplitOptions.None);
             if (parts.Length == 1)
             {
                 if (parts[0] == "Whole League")
@@ -1715,7 +1715,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private void btnExportLRERatings_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog {Title = "Select the TSV file of your roster"};
+            var ofd = new OpenFileDialog { Title = "Select the TSV file of your roster" };
             ofd.ShowDialog();
 
             if (String.IsNullOrWhiteSpace(ofd.FileName))
@@ -1745,7 +1745,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 {
                     foreach (string ratingName in ratingNames)
                     {
-                        int rating = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
+                        int rating = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
                         if (rating != -1)
                         {
                             pInst[ratingName] = rating.ToString();
@@ -1756,8 +1756,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             CSV.TSVFromDictionaryList(dictList, file);
 
-            MessageBox.Show("Successfully updated Roster TSV with calculated ratings.", "NBA Stats Tracker", MessageBoxButton.OK,
-                            MessageBoxImage.Information);
+            MessageBox.Show(
+                "Successfully updated Roster TSV with calculated ratings.",
+                "NBA Stats Tracker",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
 
         private void dgvPlayerStats_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -1797,7 +1800,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                 }
                                 else
                                 {
-                                    var parts = dict["Name"].Split(new[] {' '}, 2);
+                                    var parts = dict["Name"].Split(new[] { ' ' }, 2);
                                     matching =
                                         MainWindow.PST.Values.Where(ps => ps.LastName == parts[1] && ps.FirstName == parts[0]).ToList();
                                 }
@@ -1827,9 +1830,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                         }
                         catch (Exception)
                         {
-                            MessageBox.Show("Player in row " + j +
-                                            " couldn't be determined either by ID or Full Name. Make sure the pasted data has the proper headers. " +
-                                            "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there, if needed.");
+                            MessageBox.Show(
+                                "Player in row " + j
+                                + " couldn't be determined either by ID or Full Name. Make sure the pasted data has the proper headers. "
+                                + "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there, if needed.");
                             return;
                         }
                     }
@@ -1852,7 +1856,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 MessageBox.Show(
                     "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
-                    "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
+                    "NBA Stats Tracker",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
         }
 
@@ -1889,9 +1895,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                         }
                         catch (Exception)
                         {
-                            MessageBox.Show("Team in row " + (j + 1) +
-                                            " couldn't be determined either by ID or Name. Make sure the pasted data has the proper headers. " +
-                                            "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there, if needed.");
+                            MessageBox.Show(
+                                "Team in row " + (j + 1)
+                                + " couldn't be determined either by ID or Name. Make sure the pasted data has the proper headers. "
+                                + "\nUse a copy of this table as a base by copying it and pasting it into a spreadsheet and making changes there, if needed.");
                             return;
                         }
                     }
@@ -1921,7 +1928,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 MessageBox.Show(
                     "Data pasted successfully! Remember to save!\n\nNote that metric and other stats may appear incorrect until you save.",
-                    "NBA Stats Tracker", MessageBoxButton.OK, MessageBoxImage.Information);
+                    "NBA Stats Tracker",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
         }
 
@@ -1945,15 +1954,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             var ibw =
                 new InputBoxWindow(
-                    "Enter percentage (0-100) of team's games played the player must have " +
-                    "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("RatingsGPPct", "-1"));
+                    "Enter percentage (0-100) of team's games played the player must have "
+                    + "participated in (-1 not to use this criterion)",
+                    SQLiteIO.GetSetting("RatingsGPPct", "-1"));
             if (ibw.ShowDialog() == true)
             {
                 SQLiteIO.SetSetting("RatingsGPPct", InputBoxWindow.UserInput);
             }
 
-            ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
-                                     SQLiteIO.GetSetting("RatingsMPG", "-1"));
+            ibw = new InputBoxWindow(
+                "Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
+                SQLiteIO.GetSetting("RatingsMPG", "-1"));
             if (ibw.ShowDialog() == true)
             {
                 SQLiteIO.SetSetting("RatingsMPG", InputBoxWindow.UserInput);
@@ -1996,13 +2007,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 List<Dictionary<string, string>> pInsts =
                     dictList.FindAll(
                         dict =>
-                        dict["First_Name"].ToLowerInvariant() == ps.FirstName.ToLowerInvariant() &&
-                        dict["Last_Name"].ToLowerInvariant() == ps.LastName.ToLowerInvariant()).ToList();
+                        dict["First_Name"].ToLowerInvariant() == ps.FirstName.ToLowerInvariant()
+                        && dict["Last_Name"].ToLowerInvariant() == ps.LastName.ToLowerInvariant()).ToList();
                 foreach (var pInst in pInsts)
                 {
                     foreach (string ratingName in ratingNames)
                     {
-                        int rating = Convert.ToInt32(typeof (PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
+                        int rating = Convert.ToInt32(typeof(PlayerStatsRow).GetProperty("re" + ratingName).GetValue(ps, null));
                         if (rating != -1)
                         {
                             pInst[REtoREDitor[ratingName]] = rating.ToString();
@@ -2013,23 +2024,28 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             CSV.CSVFromDictionaryList(dictList, file);
 
-            MessageBox.Show("Successfully updated Players CSV with calculated ratings.", "NBA Stats Tracker", MessageBoxButton.OK,
-                            MessageBoxImage.Information);
+            MessageBox.Show(
+                "Successfully updated Players CSV with calculated ratings.",
+                "NBA Stats Tracker",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
 
         private void btnSetMyLeadersCriteria_Click(object sender, RoutedEventArgs e)
         {
             var ibw =
                 new InputBoxWindow(
-                    "Enter percentage (0-100) of team's games played the player must have " +
-                    "participated in (-1 not to use this criterion)", SQLiteIO.GetSetting("MyLeadersGPPct", "-1"));
+                    "Enter percentage (0-100) of team's games played the player must have "
+                    + "participated in (-1 not to use this criterion)",
+                    SQLiteIO.GetSetting("MyLeadersGPPct", "-1"));
             if (ibw.ShowDialog() == true)
             {
                 SQLiteIO.SetSetting("MyLeadersGPPct", InputBoxWindow.UserInput);
             }
 
-            ibw = new InputBoxWindow("Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
-                                     SQLiteIO.GetSetting("MyLeadersMPG", "-1"));
+            ibw = new InputBoxWindow(
+                "Enter minimum amount of minutes per game played by the player (-1 not to use this criterion)",
+                SQLiteIO.GetSetting("MyLeadersMPG", "-1"));
             if (ibw.ShowDialog() == true)
             {
                 SQLiteIO.SetSetting("MyLeadersMPG", InputBoxWindow.UserInput);

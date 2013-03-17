@@ -22,11 +22,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+
 using LeftosCommonLibrary.CommonDialogs;
+
 using NBA_Stats_Tracker.Data.Other;
 using NBA_Stats_Tracker.Data.Teams;
 using NBA_Stats_Tracker.Windows.MainInterface;
 using NBA_Stats_Tracker.Windows.MainInterface.Teams;
+
 using SQLite_Database;
 
 #endregion
@@ -122,10 +125,10 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     i++;
                 }
 
-                MainWindow.Conferences.Add(new Conference {ID = i, Name = name});
+                MainWindow.Conferences.Add(new Conference { ID = i, Name = name });
 
                 var db = new SQLiteDatabase(MainWindow.CurrentDB);
-                db.Insert("Conferences", new Dictionary<string, string> {{"ID", i.ToString()}, {"Name", name}});
+                db.Insert("Conferences", new Dictionary<string, string> { { "ID", i.ToString() }, { "Name", name } });
                 lstData.ItemsSource = null;
                 lstData.ItemsSource = MainWindow.Conferences;
 
@@ -159,8 +162,11 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
 
             var conf = (Conference) lstData.SelectedItem;
-            MessageBoxResult r = MessageBox.Show("Are you sure you want to delete the " + conf.Name + " conference?",
-                                                 "NBA Stats Tracker", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult r = MessageBox.Show(
+                "Are you sure you want to delete the " + conf.Name + " conference?",
+                "NBA Stats Tracker",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
             if (r == MessageBoxResult.No)
             {
                 return;
@@ -175,10 +181,10 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
             if (MainWindow.Conferences.Count == 0)
             {
-                MainWindow.Conferences.Add(new Conference {ID = 0, Name = "League"});
-                db.Insert("Conferences", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}});
-                MainWindow.Divisions.Add(new Division {ID = 0, Name = "League", ConferenceID = 0});
-                db.Insert("Divisions", new Dictionary<string, string> {{"ID", "0"}, {"Name", "League"}, {"Conference", "0"}});
+                MainWindow.Conferences.Add(new Conference { ID = 0, Name = "League" });
+                db.Insert("Conferences", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" } });
+                MainWindow.Divisions.Add(new Division { ID = 0, Name = "League", ConferenceID = 0 });
+                db.Insert("Divisions", new Dictionary<string, string> { { "ID", "0" }, { "Name", "League" }, { "Conference", "0" } });
             }
             lstData.ItemsSource = null;
             lstData.ItemsSource = MainWindow.Conferences;

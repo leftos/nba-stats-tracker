@@ -19,6 +19,7 @@
 #region Using Directives
 
 using System.Collections.Generic;
+
 using NBA_Stats_Tracker.Data.BoxScores;
 using NBA_Stats_Tracker.Data.Players;
 using NBA_Stats_Tracker.Data.Teams;
@@ -41,11 +42,18 @@ namespace NBA_Stats_Tracker.Data.Other
         public Dictionary<int, TeamStats> TST;
         public Dictionary<int, TeamStats> TSTOpp;
 
-        public DBData(Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp,
-                      Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats, TeamRankings seasonTeamRankings,
-                      TeamRankings playoffTeamRankings, Dictionary<int, PlayerStats> pst,
-                      Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats, PlayerRankings seasonPlayerRankings,
-                      PlayerRankings playoffPlayerRankings, List<BoxScoreEntry> bsHist, Dictionary<int, string> displayNames)
+        public DBData(
+            Dictionary<int, TeamStats> tst,
+            Dictionary<int, TeamStats> tstOpp,
+            Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
+            TeamRankings seasonTeamRankings,
+            TeamRankings playoffTeamRankings,
+            Dictionary<int, PlayerStats> pst,
+            Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats,
+            PlayerRankings seasonPlayerRankings,
+            PlayerRankings playoffPlayerRankings,
+            List<BoxScoreEntry> bsHist,
+            Dictionary<int, string> displayNames)
         {
             BSHist = bsHist;
             DisplayNames = displayNames;
