@@ -128,7 +128,7 @@ namespace LeftosCommonLibrary
                     {
                         if (pType.BaseType != null)
                         {
-                            if (pType.BaseType == typeof (Enum))
+                            if (pType.BaseType == typeof(Enum))
                             {
                                 try
                                 {
@@ -201,15 +201,19 @@ namespace LeftosCommonLibrary
                 {
                     Window parentWindow = Window.GetWindow(dataGrid);
                     Debug.Assert(parentWindow != null, "parentWindow != null");
-                    parentWindow.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-                        {
-                            dataGrid.Focus();
-                            dataGrid.SelectedIndex = dataGrid.Items.IndexOf(CollectionView.NewItemPlaceholder);
-                            dataGrid.CurrentCell = new DataGridCellInfo(CollectionView.NewItemPlaceholder, dataGrid.Columns[0]);
+                    parentWindow.Dispatcher.BeginInvoke(
+                        new DispatcherOperationCallback(
+                            param =>
+                                {
+                                    dataGrid.Focus();
+                                    dataGrid.SelectedIndex = dataGrid.Items.IndexOf(CollectionView.NewItemPlaceholder);
+                                    dataGrid.CurrentCell = new DataGridCellInfo(CollectionView.NewItemPlaceholder, dataGrid.Columns[0]);
 
-                            //dataGrid.BeginEdit();
-                            return null;
-                        }), DispatcherPriority.Background, new object[] {null});
+                                    //dataGrid.BeginEdit();
+                                    return null;
+                                }),
+                        DispatcherPriority.Background,
+                        new object[] { null });
                 }
             }
         }

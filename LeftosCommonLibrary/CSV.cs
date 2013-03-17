@@ -543,7 +543,7 @@ namespace LeftosCommonLibrary
                     default:
                         if (!quoted)
                         {
-                            int index = separators.IndexOf((char)character);
+                            int index = separators.IndexOf((char) character);
                             if (index != -1)
                             {
                                 ++separatorsCount[index];

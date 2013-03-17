@@ -67,7 +67,10 @@ namespace LeftosCommonLibrary
         /// </summary>
         public override int HashSize
         {
-            get { return 32; }
+            get
+            {
+                return 32;
+            }
         }
 
         /// <summary>
@@ -183,7 +186,7 @@ namespace LeftosCommonLibrary
 
         private static byte[] uInt32ToBigEndianBytes(UInt32 x)
         {
-            return new[] {(byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff)};
+            return new[] { (byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff) };
         }
 
         /// <summary>

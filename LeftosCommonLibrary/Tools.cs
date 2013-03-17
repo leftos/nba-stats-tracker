@@ -28,6 +28,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+
 using Microsoft.Win32;
 
 #endregion
@@ -112,7 +113,7 @@ namespace LeftosCommonLibrary
                 rk = rk.OpenSubKey(AppRegistryKey);
                 if (rk != null)
                 {
-                    settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof (T)));
+                    settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof(T)));
                 }
             }
             catch
@@ -193,10 +194,10 @@ namespace LeftosCommonLibrary
         public static byte[] HexStringToByteArray(String hex)
         {
             int numberChars = hex.Length;
-            var bytes = new byte[numberChars/2];
+            var bytes = new byte[numberChars / 2];
             for (int i = 0; i < numberChars; i += 2)
             {
-                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             }
             return bytes;
         }
@@ -259,7 +260,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static string[] SplitLinesToArray(string text)
         {
-            return text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
+            return text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
         }
 
         /// <summary>
@@ -272,7 +273,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
-            string[] arr = text.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
+            string[] arr = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             if (keepDuplicates)
             {
                 return arr.ToList();
@@ -338,7 +339,7 @@ namespace LeftosCommonLibrary
                 case TypeCode.UInt64:
                     return true;
                 case TypeCode.Object:
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
                         return IsNumericType(Nullable.GetUnderlyingType(type));
                     }

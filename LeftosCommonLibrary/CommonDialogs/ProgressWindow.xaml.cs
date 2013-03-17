@@ -60,7 +60,8 @@ namespace LeftosCommonLibrary.CommonDialogs
         /// <param name="updateTitleOnPBValueChange">
         ///     if set to <c>true</c>, the window title is updated to include the progress bar value when the latter one is changed.
         /// </param>
-        public ProgressWindow(string message, bool pbVisible = true, bool updateTitleOnPBValueChange = true) : this()
+        public ProgressWindow(string message, bool pbVisible = true, bool updateTitleOnPBValueChange = true)
+            : this()
         {
             txbProgress.Text = message;
             if (pbVisible)

@@ -72,13 +72,13 @@ namespace LeftosCommonLibrary
         /// <param name="key">The key representing both the DataRow column as well as the Dictionary key.</param>
         /// <param name="type">The type to attempt to convert all parts of the dictionary entry to.</param>
         /// <param name="splitCharacter">The character used to split the dictionary entry at.</param>
-        public static void TryChangeValue(this DataRow row, Dictionary<string, string> dict, string key, Type type,
-                                          string splitCharacter)
+        public static void TryChangeValue(
+            this DataRow row, Dictionary<string, string> dict, string key, Type type, string splitCharacter)
         {
             try
             {
                 string s = dict[key];
-                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
+                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
                 foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
@@ -113,14 +113,14 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                if (typeof (T).BaseType != null)
+                if (typeof(T).BaseType != null)
                 {
-                    if (typeof (T).BaseType == typeof (Enum))
+                    if (typeof(T).BaseType == typeof(Enum))
                     {
-                        return (T) Enum.Parse(typeof (T), dict[key]);
+                        return (T) Enum.Parse(typeof(T), dict[key]);
                     }
                 }
-                var ret = (T) Convert.ChangeType(dict[key], typeof (T));
+                var ret = (T) Convert.ChangeType(dict[key], typeof(T));
                 return ret;
             }
             catch (OverflowException)
@@ -167,13 +167,13 @@ namespace LeftosCommonLibrary
         ///     If the cast is invalid, it returns the default value of the type.
         ///     If the key isn't found, it returns the original value of the variable.
         /// </returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type,
-                                       bool onErrorRemain = false)
+        public static T TrySetValue<T>(
+            this T variable, Dictionary<string, string> dict, string key, Type type, bool onErrorRemain = false)
         {
             try
             {
                 object val = Convert.ChangeType(dict[key], type);
-                var ret = (T) Convert.ChangeType(val, typeof (T));
+                var ret = (T) Convert.ChangeType(val, typeof(T));
                 return ret;
             }
             catch (OverflowException)
@@ -250,18 +250,18 @@ namespace LeftosCommonLibrary
         ///     If the cast is invalid, it returns the default value of the type.
         ///     If the key isn't found, it returns the original value of the variable.
         /// </returns>
-        public static T TrySetValue<T>(this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter,
-                                       bool onErrorRemain = false)
+        public static T TrySetValue<T>(
+            this T variable, Dictionary<string, string> dict, string key, Type type, string splitCharacter, bool onErrorRemain = false)
         {
             try
             {
                 string s = dict[key];
-                string[] parts = s.Split(new[] {splitCharacter}, StringSplitOptions.None);
+                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
                 foreach (string part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
-                var ret = (T) Convert.ChangeType(s, typeof (T));
+                var ret = (T) Convert.ChangeType(s, typeof(T));
                 return ret;
             }
             catch (OverflowException)
@@ -364,8 +364,8 @@ namespace LeftosCommonLibrary
 
                     // Maybe you need here some more BindingFlags
                     foreach (FieldInfo field in
-                        t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy |
-                                    BindingFlags.Instance))
+                        t.GetFields(
+                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
@@ -377,7 +377,7 @@ namespace LeftosCommonLibrary
 
                         /* You can check here for ft.GetCustomAttributes(typeof(SerializableAttribute), false).Length != 0 to 
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
-                        if (fieldValue != null && !ft.IsValueType && ft != typeof (String))
+                        if (fieldValue != null && !ft.IsValueType && ft != typeof(String))
                         {
                             fieldValue = fieldValue.deepClone(copies);
                             /* Does not support parameters for subobjects nativly, but you can provide them when using

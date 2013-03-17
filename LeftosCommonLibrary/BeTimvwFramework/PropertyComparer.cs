@@ -46,11 +46,11 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         public PropertyComparer(PropertyDescriptor property, ListSortDirection direction)
         {
             _propertyDescriptor = property;
-            Type comparerForPropertyType = typeof (Comparer<>).MakeGenericType(property.PropertyType);
+            Type comparerForPropertyType = typeof(Comparer<>).MakeGenericType(property.PropertyType);
             _comparer =
                 (IComparer)
-                comparerForPropertyType.InvokeMember("Default", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.Public,
-                                                     null, null, null);
+                comparerForPropertyType.InvokeMember(
+                    "Default", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.Public, null, null, null);
             setListSortDirection(direction);
         }
 
@@ -69,7 +69,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </returns>
         public int Compare(T x, T y)
         {
-            return _reverse*_comparer.Compare(_propertyDescriptor.GetValue(x), _propertyDescriptor.GetValue(y));
+            return _reverse * _comparer.Compare(_propertyDescriptor.GetValue(x), _propertyDescriptor.GetValue(y));
         }
 
         #endregion

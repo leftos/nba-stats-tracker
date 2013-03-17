@@ -48,7 +48,8 @@ namespace LeftosCommonLibrary.CommonDialogs
         /// <param name="message">The prompt to display.</param>
         /// <param name="title">The title.</param>
         /// <param name="defaultValue">The default value.</param>
-        public InputBoxWindow(string message, string defaultValue = "", string title = "") : this()
+        public InputBoxWindow(string message, string defaultValue = "", string title = "")
+            : this()
         {
             lblMessage.Text = message;
             Title = String.IsNullOrWhiteSpace(title) ? Tools.AppName : title;

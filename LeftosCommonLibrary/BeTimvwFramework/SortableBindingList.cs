@@ -40,7 +40,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// <summary>
         ///     Initializes a new instance of the <see cref="SortableBindingList{T}" /> class.
         /// </summary>
-        public SortableBindingList() : base(new List<T>())
+        public SortableBindingList()
+            : base(new List<T>())
         {
             _comparers = new Dictionary<Type, PropertyComparer<T>>();
         }
@@ -49,7 +50,8 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         ///     Initializes a new instance of the <see cref="SortableBindingList{T}" /> class containing a copy of the objects in the enumeration.
         /// </summary>
         /// <param name="enumeration">The enumeration to initialize the list with.</param>
-        public SortableBindingList(IEnumerable<T> enumeration) : base(new List<T>(enumeration))
+        public SortableBindingList(IEnumerable<T> enumeration)
+            : base(new List<T>(enumeration))
         {
             _comparers = new Dictionary<Type, PropertyComparer<T>>();
         }
@@ -62,7 +64,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool SupportsSortingCore
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -73,7 +78,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool IsSortedCore
         {
-            get { return _isSorted; }
+            get
+            {
+                return _isSorted;
+            }
         }
 
         /// <summary>
@@ -84,7 +92,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override PropertyDescriptor SortPropertyCore
         {
-            get { return _propertyDescriptor; }
+            get
+            {
+                return _propertyDescriptor;
+            }
         }
 
         /// <summary>
@@ -95,7 +106,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override ListSortDirection SortDirectionCore
         {
-            get { return _listSortDirection; }
+            get
+            {
+                return _listSortDirection;
+            }
         }
 
         /// <summary>
@@ -106,7 +120,10 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool SupportsSearchingCore
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
