@@ -1099,13 +1099,13 @@
                                     HorizontalAlignment="Center"
                                     Margin="6">
                             <Button Content="&lt;" Height="23" HorizontalAlignment="Center"
-                                    x:Name="btnMPPrevOpp" VerticalAlignment="Top" Width="24" Margin="3,0" />
+                                    x:Name="btnMPPrevOpp" VerticalAlignment="Top" Width="24" Margin="3,0" Click="btnPrevOpp_Click" />
                             <ComboBox Height="23" HorizontalAlignment="Center"
                                       x:Name="cmbMPOppTeam"
                                       VerticalAlignment="Top" Width="153"
                                       SelectionChanged="cmbOppTeam_SelectionChanged" Margin="3,0" />
                             <Button Content="&gt;" Height="23" HorizontalAlignment="Center"
-                                    x:Name="btnMPNextOpp" VerticalAlignment="Top" Width="24" Margin="3,0" />
+                                    x:Name="btnMPNextOpp" VerticalAlignment="Top" Width="24" Margin="3,0" Click="btnNextOpp_Click" />
                         </StackPanel>
                         <ScrollViewer Grid.Row="1">
                             <Grid>

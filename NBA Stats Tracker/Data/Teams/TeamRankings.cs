@@ -58,7 +58,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != TAbbr.FPG && j != TAbbr.TPG)
+                if (j != TAbbr.FPG && j != TAbbr.TPG && j != TAbbr.PAPG)
                 {
                     tempList.Reverse();
                 }
@@ -86,7 +86,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != TAbbr.FOUL && j != TAbbr.TOS)
+                if (j != TAbbr.FOUL && j != TAbbr.TOS && j != TAbbr.PA)
                 {
                     tempList.Reverse();
                 }
