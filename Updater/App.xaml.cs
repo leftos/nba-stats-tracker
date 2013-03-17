@@ -24,6 +24,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+
 using Microsoft.Win32;
 
 #endregion
@@ -35,8 +36,8 @@ namespace Updater
     /// </summary>
     public partial class App
     {
-        private static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                                     @"\NBA Stats Tracker\";
+        private static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                     + @"\NBA Stats Tracker\";
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -64,9 +65,8 @@ namespace Updater
             }
             installerProc.WaitForExit();
 
-            string installDir = GetRegistrySetting("InstallDir",
-                                                   Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) +
-                                                   @"\NBA Stats Tracker");
+            string installDir = GetRegistrySetting(
+                "InstallDir", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\NBA Stats Tracker");
             Process.Start(installDir + @"\NBA Stats Tracker.exe");
 
             Environment.Exit(0);
@@ -122,8 +122,10 @@ namespace Updater
                 f.Close();
 
                 MessageBox.Show(
-                    "NBA Stats Tracker Updater encountered a critical error and will be terminated.\n\n" +
-                    "An Error Log has been saved at \n" + errorReportPath, "NBA Stats Tracker Updater Error", MessageBoxButton.OK,
+                    "NBA Stats Tracker Updater encountered a critical error and will be terminated.\n\n"
+                    + "An Error Log has been saved at \n" + errorReportPath,
+                    "NBA Stats Tracker Updater Error",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
                 Process.Start(errorReportPath);
