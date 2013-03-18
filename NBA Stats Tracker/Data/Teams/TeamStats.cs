@@ -965,25 +965,25 @@ namespace NBA_Stats_Tracker.Data.Teams
             msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][TAbbr.APG], tempPerGame[TAbbr.APG]);
             msg += "\n\n";
 
-            if (31 - rating[ID][TAbbr.PAPG] <= 5)
+            if (rating[ID][TAbbr.PAPG] <= 5)
             {
                 msg +=
                     "Don't expect to get your score high against them. An elite defensive team, top 5 in points against them each night.";
             }
-            else if (31 - rating[ID][TAbbr.PAPG] <= topThird)
+            else if (rating[ID][TAbbr.PAPG] <= topThird)
             {
                 msg += "One of the better defensive teams out there, limiting their opponents to low scores night in, night out.";
             }
-            else if (31 - rating[ID][TAbbr.PAPG] <= secondThird)
+            else if (rating[ID][TAbbr.PAPG] <= secondThird)
             {
                 msg += "Average defensively, not much to show for it, but they're no blow-outs.";
             }
-            else if (31 - rating[ID][TAbbr.PAPG] <= teamCount)
+            else if (rating[ID][TAbbr.PAPG] <= teamCount)
             {
                 msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
             }
 
-            msg += String.Format(" (#{0} in PAPG: {1:F1})", tst.Count + 1 - rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
+            msg += String.Format(" (#{0} in PAPG: {1:F1})", rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
             msg += "\n\n";
 
             if ((rating[ID][9] <= topThird) && (rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -1082,9 +1082,9 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             msg += String.Format(
                 " (#{0} in TPG: {1:F1}, #{2} in FPG: {3:F1})",
-                tst.Count + 1 - rating[ID][TAbbr.TPG],
+                rating[ID][TAbbr.TPG],
                 tempPerGame[TAbbr.TPG],
-                tst.Count + 1 - rating[ID][TAbbr.FPG],
+                rating[ID][TAbbr.FPG],
                 tempPerGame[TAbbr.FPG]);
 
             msg += "\n\n";
@@ -1095,9 +1095,6 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 dict.Add(k, rating[ID][k]);
             }
-            dict[TAbbr.FPG] = tst.Count + 1 - dict[TAbbr.FPG];
-            dict[TAbbr.TPG] = tst.Count + 1 - dict[TAbbr.TPG];
-            dict[TAbbr.PAPG] = tst.Count + 1 - dict[TAbbr.PAPG];
             List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
             int j = 5;
@@ -1126,7 +1123,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                             tempPerGame[TAbbr.FGp]);
                         break;
                     case TAbbr.FPG:
-                        msg += String.Format("fouls (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][TAbbr.FPG], tempPerGame[TAbbr.FPG]);
+                        msg += String.Format("fouls (#{0}, {1:F1}), ", rating[ID][TAbbr.FPG], tempPerGame[TAbbr.FPG]);
                         break;
                     case TAbbr.FTeff:
                         msg += String.Format(
@@ -1140,7 +1137,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                         break;
                     case TAbbr.PAPG:
                         msg += String.Format(
-                            "points allowed per game (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
+                            "points allowed per game (#{0}, {1:F1}), ", rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
                         break;
                     case TAbbr.PPG:
                         msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][TAbbr.PPG], tempPerGame[TAbbr.PPG]);
@@ -1153,7 +1150,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                         break;
                     case TAbbr.TPG:
                         msg += String.Format(
-                            "turnovers (#{0}, {1:F1}), ", tst.Count + 1 - rating[ID][TAbbr.TPG], tempPerGame[TAbbr.TPG]);
+                            "turnovers (#{0}, {1:F1}), ", rating[ID][TAbbr.TPG], tempPerGame[TAbbr.TPG]);
                         break;
                     case TAbbr.TPeff:
                         msg += String.Format(
