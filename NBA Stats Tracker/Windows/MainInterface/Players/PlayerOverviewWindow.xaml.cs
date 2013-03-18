@@ -494,9 +494,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 grpSeasonFacts.Visibility = Visibility.Visible;
                 grpSeasonLeadersFacts.Visibility = Visibility.Visible;
 
-                string msg = new PlayerStatsRow(MainWindow.PST[id], false, false).ScoutingReport(
-                    MainWindow.PST,
-                    _cumSeasonRankingsActive,
+                string msg = new PlayerStatsRow(MainWindow.PST[id], false, false).ScoutingReport(_cumSeasonRankingsActive,
                     _cumSeasonRankingsTeam,
                     _cumSeasonRankingsPosition,
                     _pbsList,
@@ -530,9 +528,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 grpPlayoffsFacts.Visibility = Visibility.Visible;
                 grpPlayoffsLeadersFacts.Visibility = Visibility.Visible;
 
-                string msg = new PlayerStatsRow(MainWindow.PST[id], true, false).ScoutingReport(
-                    MainWindow.PST,
-                    _cumPlayoffsRankingsActive,
+                string msg = new PlayerStatsRow(MainWindow.PST[id], true, false).ScoutingReport(_cumPlayoffsRankingsActive,
                     _cumPlayoffsRankingsTeam,
                     _cumPlayoffsRankingsPosition,
                     _pbsList,
@@ -1303,8 +1299,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var cumRankingsTeam =
                 new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.TeamF == _psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
 
-            new PlayerStatsRow(temppst[_psr.ID]).ScoutingReport(
-                MainWindow.PST, cumRankingsActive, cumRankingsTeam, cumRankingsPosition, _pbsList.ToList(), txbGame1.Text);
+            new PlayerStatsRow(temppst[_psr.ID]).ScoutingReport(cumRankingsActive, cumRankingsTeam, cumRankingsPosition, _pbsList.ToList(), txbGame1.Text);
         }
 
         /// <summary>Handles the Click event of the btnSavePlayer control. Saves the current player's stats to the database.</summary>

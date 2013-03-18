@@ -1149,8 +1149,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                         msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][TAbbr.SPG], tempPerGame[TAbbr.SPG]);
                         break;
                     case TAbbr.TPG:
-                        msg += String.Format(
-                            "turnovers (#{0}, {1:F1}), ", rating[ID][TAbbr.TPG], tempPerGame[TAbbr.TPG]);
+                        msg += String.Format("turnovers (#{0}, {1:F1}), ", rating[ID][TAbbr.TPG], tempPerGame[TAbbr.TPG]);
                         break;
                     case TAbbr.TPeff:
                         msg += String.Format(

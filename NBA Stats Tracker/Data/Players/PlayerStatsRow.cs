@@ -959,20 +959,16 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>Shows a scouting report for the player in natural language.</summary>
-        /// <param name="pst">The PlayerStats dictionary containing all the player information.</param>
         /// <param name="rankingsActive">The rankingsPerGame of currently active players.</param>
         /// <param name="rankingsTeam">The rankingsPerGame of the players in the same team.</param>
         /// <param name="rankingsPosition">The rankingsPerGame of the players in the same position.</param>
-        /// <param name="pbsList">The list of the player's available box scores.</param>
+        /// <param name="pbsIList">The list of the player's available box scores.</param>
         /// <param name="bestGame">The well-formatted string from the player's best game.</param>
-        public string ScoutingReport(
-            Dictionary<int, PlayerStats> pst,
-            PlayerRankings rankingsActive,
+        public string ScoutingReport(PlayerRankings rankingsActive,
             PlayerRankings rankingsTeam,
             PlayerRankings rankingsPosition,
-            IList<PlayerBoxScore> pbsIList,
-            string bestGame,
-            bool playoffs = false)
+            IEnumerable<PlayerBoxScore> pbsIList,
+            string bestGame)
         {
             List<PlayerBoxScore> pbsList = pbsIList.ToList();
             string s = "";
@@ -1301,9 +1297,6 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 dict.Add(k, rankingsActive.RankingsPerGame[ID][k]);
             }
-            dict[TAbbr.FPG] = pst.Count + 1 - dict[TAbbr.FPG];
-            dict[TAbbr.TPG] = pst.Count + 1 - dict[TAbbr.TPG];
-            dict[TAbbr.PAPG] = pst.Count + 1 - dict[TAbbr.PAPG];
             List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             int m = 0;
             int j = 3;
