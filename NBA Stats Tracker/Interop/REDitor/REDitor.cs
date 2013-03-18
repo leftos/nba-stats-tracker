@@ -1162,7 +1162,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             recoveredList.Add(
                                 string.Format(
-                                    "{0} ({1}) is no longer injured.",
+                                    "{1} ({0}) is no longer injured.",
                                     curPlayer.TeamF != -1 ? tst[curPlayer.TeamF].DisplayName : "Free Agent",
                                     name));
                         }
@@ -1317,7 +1317,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 }
                 if (reInjuredList.Count > 0)
                 {
-                    importMessages.Add("Players that got injured again after recovery");
+                    importMessages.Add("Players whose injury status changed");
                     importMessages.Add("=========================");
                     importMessages.Add("");
                     importMessages.AddRange(reInjuredList);
