@@ -18,8 +18,12 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections;
+
+    #endregion
 
     public class TeamStreakComparerAsc : IComparer
     {
@@ -46,11 +50,11 @@ namespace NBA_Stats_Tracker.Data.Teams
                 throw new InvalidCastException("TeamNameComparer can only compare PlayerStatsRow or TeamStatsRow instances.");
             }
 
-            string t1Type = s1.Substring(0, 1);
-            int t1Count = Convert.ToInt32(s1.Substring(1));
+            var t1Type = s1.Substring(0, 1);
+            var t1Count = Convert.ToInt32(s1.Substring(1));
 
-            string t2Type = s2.Substring(0, 1);
-            int t2Count = Convert.ToInt32(s2.Substring(1));
+            var t2Type = s2.Substring(0, 1);
+            var t2Count = Convert.ToInt32(s2.Substring(1));
 
             if (s1 == s2)
             {

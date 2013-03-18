@@ -18,8 +18,9 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface
 {
+    #region Using Directives
+
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
@@ -29,6 +30,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
     using System.Windows;
 
     using LeftosCommonLibrary.CommonDialogs;
+
+    #endregion
 
     /// <summary>Interaction logic for UpdateWindow.xaml</summary>
     public partial class UpdateWindow : Window
@@ -78,7 +81,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             try
             {
                 var webClient = new WebClient();
-                string updateUri = _changelogURL;
+                var updateUri = _changelogURL;
                 webClient.DownloadFileCompleted += OnChangelogDownloadCompleted;
                 webClient.DownloadFileAsync(new Uri(updateUri), App.AppTempPath + "changelog.txt");
             }
@@ -90,9 +93,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void OnChangelogDownloadCompleted(object sender, AsyncCompletedEventArgs asyncCompletedEventArgs)
         {
-            List<string> lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
+            var lines = File.ReadAllLines(App.AppTempPath + "changelog.txt").ToList();
             lines.Add("");
-            string result = "";
+            var result = "";
             lines.ForEach(line => result += line.Replace("\t", "  ") + "\n");
             var cmw = new CopyableMessageWindow(result, "NBA Stats Tracker - What's New");
             cmw.ShowDialog();
@@ -102,7 +105,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             try
             {
-                string localInstallerPath = App.AppTempPath + "Setup.exe";
+                var localInstallerPath = App.AppTempPath + "Setup.exe";
                 var pw = new ProgressWindow("Please wait while the installer is being downloaded...\n" + _installerURL);
                 pw.Show();
                 var webClient = new WebClient();
@@ -123,7 +126,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                             return;
                         }
 
-                        string newUpdaterPath = App.AppTempPath + "\\Updater.exe";
+                        var newUpdaterPath = App.AppTempPath + "\\Updater.exe";
                         try
                         {
                             File.Copy(

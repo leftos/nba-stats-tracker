@@ -18,6 +18,8 @@
 
 namespace LeftosCommonLibrary
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -30,6 +32,8 @@ namespace LeftosCommonLibrary
     using System.Windows.Controls;
 
     using Microsoft.Win32;
+
+    #endregion
 
     /// <summary>Various miscellaneous tools.</summary>
     public static class Tools
@@ -47,7 +51,7 @@ namespace LeftosCommonLibrary
         /// <exception cref="System.Exception">Couldn't access or create application's registry key.</exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
-            RegistryKey rk = Registry.CurrentUser;
+            var rk = Registry.CurrentUser;
             try
             {
                 try
@@ -85,8 +89,8 @@ namespace LeftosCommonLibrary
         /// <exception cref="System.Exception">The application doesn't have access to HKEY_CURRENT_USER.</exception>
         public static T GetRegistrySetting<T>(string setting, T defaultValue)
         {
-            RegistryKey rk = Registry.CurrentUser;
-            T settingValue = defaultValue;
+            var rk = Registry.CurrentUser;
+            var settingValue = defaultValue;
             try
             {
                 if (rk == null)
@@ -129,8 +133,8 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static string GetFullPathWithoutExtension(string f)
         {
-            string fullpath = Path.GetFullPath(f);
-            string ext = Path.GetExtension(f);
+            var fullpath = Path.GetFullPath(f);
+            var ext = Path.GetExtension(f);
             if (!String.IsNullOrEmpty(ext))
             {
                 fullpath = fullpath.Replace(ext, "");
@@ -153,7 +157,7 @@ namespace LeftosCommonLibrary
         public static byte[] ReverseByteOrder(byte[] original, int length)
         {
             var newArr = new byte[length];
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 newArr[length - i - 1] = original[i];
             }
@@ -165,9 +169,9 @@ namespace LeftosCommonLibrary
         /// <returns>The corresponding byte array.</returns>
         public static byte[] HexStringToByteArray(String hex)
         {
-            int numberChars = hex.Length;
+            var numberChars = hex.Length;
             var bytes = new byte[numberChars / 2];
-            for (int i = 0; i < numberChars; i += 2)
+            for (var i = 0; i < numberChars; i += 2)
             {
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             }
@@ -179,7 +183,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static string ByteArrayToHexString(byte[] ba)
         {
-            string hex = BitConverter.ToString(ba);
+            var hex = BitConverter.ToString(ba);
             return hex.Replace("-", "");
         }
 
@@ -195,7 +199,7 @@ namespace LeftosCommonLibrary
             //Instantiate MD5CryptoServiceProvider, get bytes for original password and compute hash (encoded password)
             using (md5 = new MD5CryptoServiceProvider())
             {
-                byte[] originalBytes = Encoding.Default.GetBytes(s);
+                var originalBytes = Encoding.Default.GetBytes(s);
                 encodedBytes = md5.ComputeHash(originalBytes);
             }
 
@@ -235,7 +239,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
-            string[] arr = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            var arr = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             if (keepDuplicates)
             {
                 return arr.ToList();
@@ -243,7 +247,7 @@ namespace LeftosCommonLibrary
             else
             {
                 var list = new List<string>();
-                foreach (string item in arr)
+                foreach (var item in arr)
                 {
                     if (!list.Contains(item))
                     {
@@ -327,7 +331,7 @@ namespace LeftosCommonLibrary
             {
                 checked // Turns on overflow checking.
                 {
-                    foreach (char t in incomingString)
+                    foreach (var t in incomingString)
                     {
                         switch (t)
                         {

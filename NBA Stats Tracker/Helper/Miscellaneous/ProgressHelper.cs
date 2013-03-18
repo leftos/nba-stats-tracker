@@ -1,8 +1,12 @@
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
+    #region Using Directives
+
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+
+    #endregion
 
     internal static class ProgressHelper
     {

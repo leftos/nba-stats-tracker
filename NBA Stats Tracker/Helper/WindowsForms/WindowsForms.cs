@@ -18,12 +18,16 @@
 
 namespace NBA_Stats_Tracker.Helper.WindowsForms
 {
+    #region Using Directives
+
     using System;
     using System.Windows;
     using System.Windows.Interop;
     using System.Windows.Media;
 
     using IWin32Window = System.Windows.Forms.IWin32Window;
+
+    #endregion
 
     /// <summary>Implements legacy Windows Forms classes and methods in order to use dialogs present in that namespace.</summary>
     public static class WindowsForms

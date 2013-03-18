@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Data.Other
 {
+    #region Using Directives
+
     using System;
+
+    #endregion
 
     /// <summary>Used to pass on all the required information for a specific timeframe.</summary>
     public class Timeframe

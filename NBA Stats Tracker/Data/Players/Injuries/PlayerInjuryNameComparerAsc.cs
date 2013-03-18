@@ -18,8 +18,12 @@
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    #region Using Directives
+
     using System;
     using System.Collections;
+
+    #endregion
 
     public class PlayerInjuryNameComparerAsc : IComparer
     {

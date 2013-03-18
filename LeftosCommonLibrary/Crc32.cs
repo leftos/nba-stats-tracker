@@ -18,10 +18,14 @@
 
 namespace LeftosCommonLibrary
 {
+    #region Using Directives
+
     using System;
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
+
+    #endregion
 
     /// <summary>Provides methods to calculate CRC32 (32-bit cyclic redundancy check) hashes of byte arrays.</summary>
     public sealed class Crc32 : HashAlgorithm
@@ -85,7 +89,7 @@ namespace LeftosCommonLibrary
         /// <returns>The computed hash code.</returns>
         protected override byte[] HashFinal()
         {
-            byte[] hashBuffer = uInt32ToBigEndianBytes(~_hash);
+            var hashBuffer = uInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
@@ -125,10 +129,10 @@ namespace LeftosCommonLibrary
             }
 
             var createTable = new UInt32[256];
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
                 var entry = (UInt32) i;
-                for (int j = 0; j < 8; j++)
+                for (var j = 0; j < 8; j++)
                 {
                     if ((entry & 1) == 1)
                     {
@@ -152,8 +156,8 @@ namespace LeftosCommonLibrary
 
         private static UInt32 calculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
         {
-            uint crc = seed;
-            for (int i = start; i < size; i++)
+            var crc = seed;
+            for (var i = start; i < size; i++)
             {
                 unchecked
                 {
@@ -177,7 +181,7 @@ namespace LeftosCommonLibrary
         /// <returns>A hex string representation of the CRC32 hash.</returns>
         public static String CalculateCRC(string path, bool ignoreFirst4Bytes = false)
         {
-            byte[] file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();
+            var file = !ignoreFirst4Bytes ? File.ReadAllBytes(path) : File.ReadAllBytes(path).Skip(4).ToArray();
             return CalculateCRC(file);
         }
 

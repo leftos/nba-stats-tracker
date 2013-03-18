@@ -18,10 +18,14 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface
 {
+    #region Using Directives
+
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
     using System.Windows;
+
+    #endregion
 
     /// <summary>Contains basic version information and accreditations.</summary>
     public partial class AboutWindow
@@ -61,7 +65,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void btnLicense_Click(object sender, RoutedEventArgs e)
         {
-            string newLicensePath = App.AppTempPath + "license.txt";
+            var newLicensePath = App.AppTempPath + "license.txt";
             File.Copy("LICENSE", newLicensePath);
             Process.Start(newLicensePath);
         }

@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker
 {
+    #region Using Directives
+
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -26,6 +28,8 @@ namespace NBA_Stats_Tracker
     using System.Windows.Threading;
 
     using LeftosCommonLibrary;
+
+    #endregion
 
     /// <summary>Interaction logic for App.xaml</summary>
     public partial class App
@@ -48,15 +52,15 @@ namespace NBA_Stats_Tracker
         /// </param>
         private void app_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            string exceptionString = e.Exception.ToString();
-            string innerExceptionString = e.Exception.InnerException == null
-                                              ? "No inner exception information."
-                                              : e.Exception.InnerException.Message;
-            string versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+            var exceptionString = e.Exception.ToString();
+            var innerExceptionString = e.Exception.InnerException == null
+                                           ? "No inner exception information."
+                                           : e.Exception.InnerException.Message;
+            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
             {
-                string errorReportPath = AppDocsPath + @"errorlog_unh.txt";
+                var errorReportPath = AppDocsPath + @"errorlog_unh.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine(string.Format("Unhandled Exception Error Report for {0}", AppName));
@@ -81,7 +85,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                string s = "Can't create errorlog!\nException: " + ex;
+                var s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;
@@ -101,13 +105,13 @@ namespace NBA_Stats_Tracker
         /// <param name="additional">The additional.</param>
         public static void ErrorReport(Exception e, string additional = "")
         {
-            string exceptionString = e.ToString();
-            string innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
-            string versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
+            var exceptionString = e.ToString();
+            var innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
+            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
             {
-                string errorReportPath = AppDocsPath + @"errorlog.txt";
+                var errorReportPath = AppDocsPath + @"errorlog.txt";
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Forced Exception Error Report for " + AppName);
@@ -133,7 +137,7 @@ namespace NBA_Stats_Tracker
             }
             catch (Exception ex)
             {
-                string s = "Can't create errorlog!\nException: " + ex;
+                var s = "Can't create errorlog!\nException: " + ex;
                 s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
                 s += "\n\n";
                 s += versionString;

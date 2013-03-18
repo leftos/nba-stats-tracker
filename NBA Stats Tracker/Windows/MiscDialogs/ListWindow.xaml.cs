@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Windows.MiscDialogs
 {
+    #region Using Directives
+
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows;
@@ -31,6 +33,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
     using NBA_Stats_Tracker.Windows.MainInterface.Teams;
 
     using SQLite_Database;
+
+    #endregion
 
     /// <summary>Implements a multi-purpose single list window with add & remove buttons.</summary>
     public partial class ListWindow
@@ -100,7 +104,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             var ibw = new InputBoxWindow("Enter the name for the new conference:");
             if (ibw.ShowDialog() == true)
             {
-                string name = InputBoxWindow.UserInput.Replace(':', '-');
+                var name = InputBoxWindow.UserInput.Replace(':', '-');
                 if (MainWindow.Conferences.Any(conference => conference.Name == name))
                 {
                     MessageBox.Show("There's already a conference with the name " + name + ".");
@@ -108,7 +112,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 }
                 var usedIDs = new List<int>();
                 MainWindow.Conferences.ForEach(conference => usedIDs.Add(conference.ID));
-                int i = 0;
+                var i = 0;
                 while (usedIDs.Contains(i))
                 {
                     i++;
@@ -148,7 +152,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
 
             var conf = (Conference) lstData.SelectedItem;
-            MessageBoxResult r = MessageBox.Show(
+            var r = MessageBox.Show(
                 "Are you sure you want to delete the " + conf.Name + " conference?",
                 "NBA Stats Tracker",
                 MessageBoxButton.YesNo,

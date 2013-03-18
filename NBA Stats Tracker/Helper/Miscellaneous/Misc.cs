@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -25,6 +27,8 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
 
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Windows.MainInterface;
+
+    #endregion
 
     /// <summary>Implements miscellaneous helper methods used all over NBA Stats Tracker.</summary>
     public static class Misc
@@ -35,7 +39,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
             {
                 return -1;
             }
-            for (int i = 0; i < MainWindow.TST.Count; i++)
+            for (var i = 0; i < MainWindow.TST.Count; i++)
             {
                 if (teamStats[i].DisplayName == displayName)
                 {

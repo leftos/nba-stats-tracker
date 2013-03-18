@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -27,6 +29,8 @@ namespace NBA_Stats_Tracker.Data.Teams
 
     using NBA_Stats_Tracker.Data.SQLiteIO;
     using NBA_Stats_Tracker.Windows.MainInterface;
+
+    #endregion
 
     /// <summary>Contains all the information for the teams' performances in a game.</summary>
     public class TeamBoxScore
@@ -107,10 +111,10 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="dateParts">The parts of the date string.</param>
         public TeamBoxScore(DataSet ds, string[] dateParts)
         {
-            DataTable away = ds.Tables[0];
-            DataTable home = ds.Tables[1];
+            var away = ds.Tables[0];
+            var home = ds.Tables[1];
 
-            int segmentsDone = 0;
+            var segmentsDone = 0;
             foreach (var team in MainWindow.TST)
             {
                 if (dateParts[0].Contains(team.Value.Name))
@@ -134,13 +138,13 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Team2ID = -2;
                 return;
             }
-            string date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
+            var date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             GameDate = Convert.ToDateTime(date);
 
             ID = SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
             SeasonNum = MainWindow.CurSeason;
 
-            DataRow rt = away.Rows[away.Rows.Count - 1];
+            var rt = away.Rows[away.Rows.Count - 1];
             PTS1 = ParseCell.GetUInt16(rt, "PTS");
             REB1 = Convert.ToUInt16(rt["TRB"].ToString());
             AST1 = Convert.ToUInt16(rt["AST"].ToString());

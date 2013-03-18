@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,6 +27,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     using System.Windows.Controls;
 
     using NBA_Stats_Tracker.Data.Players.Injuries;
+
+    #endregion
 
     public partial class PlayerInjuryWindow
     {
@@ -38,7 +42,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             cmbInjuryType.ItemsSource = PlayerInjury.InjuryTypes.Values.ToList();
 
-            List<string> approx = PlayerInjury.ApproximateDurations.Keys.Skip(2).ToList();
+            var approx = PlayerInjury.ApproximateDurations.Keys.Skip(2).ToList();
             approx.AddRange(PlayerInjury.ApproximateDurations.Keys.Take(2).ToList());
 
             cmbTFApproximateAmount.ItemsSource = approx;

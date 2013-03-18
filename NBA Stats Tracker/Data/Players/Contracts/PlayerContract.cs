@@ -18,9 +18,13 @@
 
 namespace NBA_Stats_Tracker.Data.Players.Contracts
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    #endregion
 
     [Serializable]
     public class PlayerContract
@@ -41,7 +45,7 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
 
         public int GetYearsMinusOption()
         {
-            int total = GetYears();
+            var total = GetYears();
             switch (Option)
             {
                 case PlayerContractOption.None:
@@ -58,7 +62,7 @@ namespace NBA_Stats_Tracker.Data.Players.Contracts
 
         public string GetYearsDesc()
         {
-            int total = ContractSalaryPerYear.Count;
+            var total = ContractSalaryPerYear.Count;
             switch (Option)
             {
                 case PlayerContractOption.Player:

@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -68,6 +70,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
     using MessageBox = System.Windows.MessageBox;
     using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
     using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+
+    #endregion
 
     /// <summary>The Main window, offering quick access to the program's features</summary>
     public partial class MainWindow
@@ -226,7 +230,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             TST[0] = new TeamStats(-1, "$$NewDB");
             TSTOpp[0] = new TeamStats(-1, "$$NewDB");
 
-            for (int i = 0; i < 30; i++)
+            for (var i = 0; i < 30; i++)
             {
                 RealTST[i] = new TeamStats();
             }
@@ -286,17 +290,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
             else
             {
-                int exportTeamsOnly = Tools.GetRegistrySetting("ExportTeamsOnly", 1);
+                var exportTeamsOnly = Tools.GetRegistrySetting("ExportTeamsOnly", 1);
                 mnuOptionsExportTeamsOnly.IsChecked = exportTeamsOnly == 1;
 
-                int compatibilityCheck = Tools.GetRegistrySetting("CompatibilityCheck", 1);
+                var compatibilityCheck = Tools.GetRegistrySetting("CompatibilityCheck", 1);
                 mnuOptionsCompatibilityCheck.IsChecked = compatibilityCheck == 1;
 
                 IsImperial = Tools.GetRegistrySetting("IsImperial", 1) == 1;
                 mnuOptionsIsImperial.IsChecked = IsImperial;
 
                 // Displays a message to urge the user to donate at the 50th start of the program.
-                int timesStarted = Tools.GetRegistrySetting("TimesStarted", -1);
+                var timesStarted = Tools.GetRegistrySetting("TimesStarted", -1);
                 if (timesStarted == -1)
                 {
                     Tools.SetRegistrySetting("TimesStarted", 1);
@@ -305,7 +309,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     if (timesStarted == 50)
                     {
-                        MessageBoxResult r =
+                        var r =
                             MessageBox.Show(
                                 "Hey there! This is a friendly reminder from the creator of NBA Stats Tracker.\n\n"
                                 + "You seem to like using NBA Stats Tracker a lot, and I'm sure you enjoy the fact that it's free. "
@@ -330,10 +334,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            List<string> metricsNames = PAbbr.MetricsNames;
-            for (int i = 0; i < metricsNames.Count; i++)
+            var metricsNames = PAbbr.MetricsNames;
+            for (var i = 0; i < metricsNames.Count; i++)
             {
-                string name = metricsNames[i];
+                var name = metricsNames[i];
                 PAbbr.MetricsDict.Add(name, double.NaN);
             }
 
@@ -391,9 +395,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <summary>TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program</summary>
         private static void prepareImageCache()
         {
-            string curTeamsPath = AppPath + @"Images\Teams\Current";
-            string[] curTeamsImages = Directory.GetFiles(curTeamsPath);
-            foreach (string file in curTeamsImages)
+            var curTeamsPath = AppPath + @"Images\Teams\Current";
+            var curTeamsImages = Directory.GetFiles(curTeamsPath);
+            foreach (var file in curTeamsImages)
             {
                 if (!ImageDict.ContainsKey(Path.GetFileNameWithoutExtension(file)))
                 {
@@ -443,7 +447,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
-            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+            var dr = fbd.ShowDialog(this.GetIWin32Window());
 
             if (dr != System.Windows.Forms.DialogResult.OK)
             {
@@ -457,7 +461,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            int result = REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
+            var result = REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -492,7 +496,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            string file = sfd.FileName;
+            var file = sfd.FileName;
 
             IsEnabled = false;
 
@@ -567,7 +571,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             LoadRatingsCriteria();
             LoadMyLeadersCriteria();
-            bool preferNBALeaders = LeadersPrefSetting == "NBA";
+            var preferNBALeaders = LeadersPrefSetting == "NBA";
             MWInstance.mnuMiscPreferNBALeaders.IsChecked = preferNBALeaders;
             MWInstance.mnuMiscPreferMyLeaders.IsChecked = !preferNBALeaders;
 
@@ -612,7 +616,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var newStatus = string.Format("Stage {0}/{1}: {2}", SQLiteIO.Progress.CurrentStage, SQLiteIO.Progress.MaxStage,
                                           SQLiteIO.Progress.Message);
             */
-            string newStatus = string.Format("Stage {0}: {1}", ProgressHelper.Progress.CurrentStage, ProgressHelper.Progress.Message);
+            var newStatus = string.Format("Stage {0}: {1}", ProgressHelper.Progress.CurrentStage, ProgressHelper.Progress.Message);
             if (ProgressHelper.Progress.Percentage > 0)
             {
                 newStatus += " (" + ProgressHelper.Progress.Percentage + "%)";
@@ -722,7 +726,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             CurSeason = curSeason;
             MWInstance.cmbSeasonNum.SelectedValue = CurSeason.ToString();
-            int maxSeason = SQLiteIO.GetMaxSeason(CurrentDB);
+            var maxSeason = SQLiteIO.GetMaxSeason(CurrentDB);
             TeamsT = "Teams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
             PlTeamsT = "PlayoffTeams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
             OppT = "Opponents" + SQLiteIO.AddSuffix(curSeason, maxSeason);
@@ -767,16 +771,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             IsEnabled = false;
 
-            int id1 = bs.Team1ID;
-            int id2 = bs.Team2ID;
+            var id1 = bs.Team1ID;
+            var id2 = bs.Team2ID;
 
-            List<PlayerBoxScore> list = PBSLists.SelectMany(pbsList => pbsList).ToList();
+            var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
             if (!bs.DoNotUpdate)
             {
                 TeamStats.AddTeamStatsFromBoxScore(bs, ref TST, ref TSTOpp, id1, id2);
 
-                foreach (PlayerBoxScore pbs in list)
+                foreach (var pbs in list)
                 {
                     if (pbs.PlayerID == -1)
                     {
@@ -824,7 +828,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             try
             {
                 var webClient = new WebClient();
-                string updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
+                var updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
                 if (!showMessage)
                 {
                     webClient.DownloadFileCompleted += checkForUpdatesCompleted;
@@ -859,11 +863,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 return;
             }
-            string curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            string[] curVersionParts = curVersion.Split('.');
+            var curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var curVersionParts = curVersion.Split('.');
             var iVP = new int[versionParts.Length];
             var iCVP = new int[versionParts.Length];
-            for (int i = 0; i < versionParts.Length; i++)
+            for (var i = 0; i < versionParts.Length; i++)
             {
                 iVP[i] = Convert.ToInt32(versionParts[i]);
                 iCVP[i] = Convert.ToInt32(curVersionParts[i]);
@@ -873,10 +877,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
                 if (iVP[i] > iCVP[i])
                 {
-                    string message = "";
+                    var message = "";
                     try
                     {
-                        for (int j = 6; j < updateInfo.Length; j++)
+                        for (var j = 6; j < updateInfo.Length; j++)
                         {
                             message += updateInfo[j].Replace('\t', ' ') + "\n";
                         }
@@ -898,9 +902,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private static void showUpdateWindow(object o)
         {
             var uio = (UpdateInfoContainer) o;
-            string curVersion = uio.CurVersion;
-            string[] updateInfo = uio.UpdateInfo;
-            string message = uio.Message;
+            var curVersion = uio.CurVersion;
+            var updateInfo = uio.UpdateInfo;
+            var message = uio.Message;
             var uw = new UpdateWindow(curVersion, updateInfo[0], message, updateInfo[2], updateInfo[1], updateInfo[3], updateInfo[4]);
             uw.ShowDialog();
         }
@@ -933,8 +937,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            string safefn = Tools.GetSafeFilename(ofd.FileName);
-            string settingsFile = AppDocsPath + safefn + ".cfg";
+            var safefn = Tools.GetSafeFilename(ofd.FileName);
+            var settingsFile = AppDocsPath + safefn + ".cfg";
             if (File.Exists(settingsFile))
             {
                 File.Delete(settingsFile);
@@ -991,7 +995,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastExportDir", "")
                 };
-            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+            var dr = fbd.ShowDialog(this.GetIWin32Window());
 
             if (dr != System.Windows.Forms.DialogResult.OK)
             {
@@ -1010,7 +1014,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 var temptst = new Dictionary<int, TeamStats>();
                 var temptstOpp = new Dictionary<int, TeamStats>();
                 var temppst = new Dictionary<int, PlayerStats>();
-                int result = REDitor.ImportCurrentYear(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
+                var result = REDitor.ImportCurrentYear(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
 
                 if (result != 0)
                 {
@@ -1018,7 +1022,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     return;
                 }
 
-                bool incompatible = false;
+                var incompatible = false;
 
                 if (temptst.Count != TST.Count)
                 {
@@ -1026,7 +1030,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
                 else
                 {
-                    for (int i = 0; i < temptst.Count; i++)
+                    for (var i = 0; i < temptst.Count; i++)
                     {
                         if (temptst[i].Name != TST[i].Name)
                         {
@@ -1044,7 +1048,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
                 if (incompatible)
                 {
-                    MessageBoxResult r =
+                    var r =
                         MessageBox.Show(
                             "The file currently loaded seems incompatible with the NBA 2K save you're trying to save into."
                             + "\nThis could be happening for a number of reasons:\n\n"
@@ -1066,7 +1070,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     }
                 }
 
-                int eresult = REDitor.ExportCurrentYear(TST, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+                var eresult = REDitor.ExportCurrentYear(TST, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
 
                 if (eresult != 0)
                 {
@@ -1108,11 +1112,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
         {
-            string file = "";
+            var file = "";
 
             if (!String.IsNullOrWhiteSpace(txtFile.Text))
             {
-                MessageBoxResult r =
+                var r =
                     MessageBox.Show(
                         "This will overwrite the stats for the current season. Are you sure?\n\nClick Yes to overwrite.\nClick No to create a new file automatically. Any unsaved changes to the current file will be lost.\nClick Cancel to return to the main window.",
                         "NBA Stats Tracker",
@@ -1139,7 +1143,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     if (App.RealNBAOnly)
                     {
-                        MessageBoxResult r =
+                        var r =
                             MessageBox.Show(
                                 "Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?",
                                 "NBA Stats Tracker",
@@ -1153,7 +1157,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     }
                     else
                     {
-                        MessageBoxResult r =
+                        var r =
                             MessageBox.Show(
                                 "Today's Real NBA Stats have already been downloaded and saved. Are you sure you want to re-download them?",
                                 "NBA Stats Tracker",
@@ -1253,7 +1257,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     { "Wizards", 2 }
                 };
 
-            int k = 0;
+            var k = 0;
             var teamOrder = new Dictionary<string, int>();
             REDitor.CreateDivisions();
             teamNamesShort.ToList().ForEach(
@@ -1276,7 +1280,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         TeamStats realts;
                         TeamStats realtsopp;
                         BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
-                        int id = teamOrder[kvp.Key];
+                        var id = teamOrder[kvp.Key];
                         RealTST[id] = realts;
                         realTSTOpp[id] = realtsopp;
                         realTSTOpp[id].ID = id;
@@ -1396,12 +1400,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public void GenerateSeasons()
         {
             const string qr = "SELECT * FROM SeasonNames ORDER BY ID DESC";
-            DataTable dataTable = DB.GetDataTable(qr);
+            var dataTable = DB.GetDataTable(qr);
             SeasonList.Clear();
             foreach (DataRow row in dataTable.Rows)
             {
-                int id = ParseCell.GetInt32(row, "ID");
-                string name = ParseCell.GetString(row, "Name");
+                var id = ParseCell.GetInt32(row, "ID");
+                var name = ParseCell.GetString(row, "Name");
                 SeasonList.Add(new KeyValuePair<int, string>(id, name));
             }
 
@@ -1447,10 +1451,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private int[][] calculateDifferenceRanking(TeamRankings oldR, TeamRankings newR)
         {
             var diff = new int[30][];
-            for (int i = 0; i < 30; i++)
+            for (var i = 0; i < 30; i++)
             {
                 diff[i] = new int[18];
-                for (int j = 0; j < 18; j++)
+                for (var j = 0; j < 18; j++)
                 {
                     diff[i][j] = newR.RankingsPerGame[i][j] - oldR.RankingsPerGame[i][j];
                 }
@@ -1465,10 +1469,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private float[][] calculateDifferenceAverage(Dictionary<int, TeamStats> curTST, Dictionary<int, TeamStats> oldTST)
         {
             var diff = new float[30][];
-            for (int i = 0; i < 30; i++)
+            for (var i = 0; i < 30; i++)
             {
                 diff[i] = new float[18];
-                for (int j = 0; j < 18; j++)
+                for (var j = 0; j < 18; j++)
                 {
                     diff[i][j] = curTST[i].PerGame[j] - oldTST[i].PerGame[j];
                 }
@@ -1499,15 +1503,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <summary>Recalculates the opponent stats for all teams by accumulating the stats from the box scores.</summary>
         private static void recalculateOpponentStats()
         {
-            Dictionary<int, TeamStats> temptst = TST.ToDictionary(to => to.Key, to => to.Value.DeepClone());
+            var temptst = TST.ToDictionary(to => to.Key, to => to.Value.DeepClone());
 
-            foreach (int key in TSTOpp.Keys)
+            foreach (var key in TSTOpp.Keys)
             {
                 temptst[key].ResetStats(Span.SeasonAndPlayoffs);
                 TSTOpp[key].ResetStats(Span.SeasonAndPlayoffs);
             }
 
-            foreach (BoxScoreEntry bse in BSHist)
+            foreach (var bse in BSHist)
             {
                 if (bse.BS.SeasonNum == _curSeason)
                 {
@@ -1545,7 +1549,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 if (bs.Done)
                 {
-                    List<PlayerBoxScore> list = PBSLists.SelectMany(pbsList => pbsList).ToList();
+                    var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
                     BSHist[bs.BSHistID].BS = bs;
                     BSHist[bs.BSHistID].PBSList = list;
@@ -1621,7 +1625,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
             //dispatcherTimer.Start();
 
-            int checkForUpdatesSetting = Tools.GetRegistrySetting("CheckForUpdates", 1);
+            var checkForUpdatesSetting = Tools.GetRegistrySetting("CheckForUpdates", 1);
             if (checkForUpdatesSetting == 1)
             {
                 mnuOptionsCheckForUpdates.IsChecked = true;
@@ -1818,16 +1822,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 if (AddInfo != "$$NST Players Added")
                 {
-                    string[] parts = Tools.SplitLinesToArray(AddInfo);
-                    List<string> newTeams = parts.Where(s => !String.IsNullOrWhiteSpace(s)).ToList();
+                    var parts = Tools.SplitLinesToArray(AddInfo);
+                    var newTeams = parts.Where(s => !String.IsNullOrWhiteSpace(s)).ToList();
 
-                    int oldlen = TST.Count;
+                    var oldlen = TST.Count;
                     if (SQLiteIO.IsTSTEmpty())
                     {
                         oldlen = 0;
                     }
 
-                    for (int i = 0; i < newTeams.Count; i++)
+                    for (var i = 0; i < newTeams.Count; i++)
                     {
                         if (TST.Count(pair => pair.Value.Name == newTeams[i]) == 1)
                         {
@@ -1835,7 +1839,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                 "There's a team with the name " + newTeams[i] + " already in the database so it won't be added again.");
                             continue;
                         }
-                        int newid = oldlen + i;
+                        var newid = oldlen + i;
                         TST[newid] = new TeamStats(newid, newTeams[i]);
                         TSTOpp[newid] = new TeamStats(newid, newTeams[i]);
                     }
@@ -1882,7 +1886,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             if (!SQLiteIO.IsTSTEmpty())
             {
-                MessageBoxResult r =
+                var r =
                     MessageBox.Show(
                         "Are you sure you want to do this? This is an irreversible action.\nStats and box Scores will be retained, and you'll be able to use all the tool's features on them.",
                         "NBA Stats Tracker",
@@ -1896,11 +1900,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     var ibw = new InputBoxWindow("Enter a name for the new season", (CurSeason + 1).ToString());
                     ibw.ShowDialog();
 
-                    string seasonName = String.IsNullOrWhiteSpace(InputBoxWindow.UserInput)
-                                            ? (CurSeason + 1).ToString()
-                                            : InputBoxWindow.UserInput;
+                    var seasonName = String.IsNullOrWhiteSpace(InputBoxWindow.UserInput)
+                                         ? (CurSeason + 1).ToString()
+                                         : InputBoxWindow.UserInput;
 
-                    string q = "alter table Teams rename to TeamsS" + CurSeason;
+                    var q = "alter table Teams rename to TeamsS" + CurSeason;
                     DB.ExecuteNonQuery(q);
 
                     q = "alter table PlayoffTeams rename to PlayoffTeamsS" + CurSeason;
@@ -1924,10 +1928,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     DB.Insert("SeasonNames", new Dictionary<string, string> { { "ID", CurSeason.ToString() }, { "Name", seasonName } });
                     SeasonList.Add(new KeyValuePair<int, string>(CurSeason, seasonName));
 
-                    foreach (int key in TST.Keys.ToList())
+                    foreach (var key in TST.Keys.ToList())
                     {
-                        TeamStats ts = TST[key];
-                        for (int i = 0; i < ts.Totals.Length; i++)
+                        var ts = TST[key];
+                        for (var i = 0; i < ts.Totals.Length; i++)
                         {
                             ts.Totals[i] = 0;
                             ts.PlTotals[i] = 0;
@@ -1940,10 +1944,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         TST[key] = ts;
                     }
 
-                    foreach (int key in TSTOpp.Keys.ToList())
+                    foreach (var key in TSTOpp.Keys.ToList())
                     {
-                        TeamStats ts = TSTOpp[key];
-                        for (int i = 0; i < ts.Totals.Length; i++)
+                        var ts = TSTOpp[key];
+                        for (var i = 0; i < ts.Totals.Length; i++)
                         {
                             ts.Totals[i] = 0;
                             ts.PlTotals[i] = 0;
@@ -1958,7 +1962,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
                     foreach (var ps in PST)
                     {
-                        for (int i = 0; i < ps.Value.Totals.Length; i++)
+                        for (var i = 0; i < ps.Value.Totals.Length; i++)
                         {
                             ps.Value.Totals[i] = 0;
                             ps.Value.PlTotals[i] = 0;
@@ -2065,17 +2069,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            string file = ofd.FileName;
+            var file = ofd.FileName;
 
-            int maxSeason = SQLiteIO.GetMaxSeason(file);
-            for (int i = 1; i <= maxSeason; i++)
+            var maxSeason = SQLiteIO.GetMaxSeason(file);
+            for (var i = 1; i <= maxSeason; i++)
             {
-                List<BoxScoreEntry> newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason, TST);
+                var newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason, TST);
 
-                foreach (BoxScoreEntry newbse in newBShist)
+                foreach (var newbse in newBShist)
                 {
-                    bool doNotAdd = false;
-                    foreach (BoxScoreEntry bse in BSHist)
+                    var doNotAdd = false;
+                    foreach (var bse in BSHist)
                     {
                         if (bse.BS.ID == newbse.BS.ID)
                         {
@@ -2142,11 +2146,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <returns></returns>
         private static int getFreeBseID()
         {
-            List<int> bseIDs = BSHist.Select(bse => bse.BS.ID).ToList();
+            var bseIDs = BSHist.Select(bse => bse.BS.ID).ToList();
 
             bseIDs.Sort();
 
-            int i = 0;
+            var i = 0;
             while (true)
             {
                 if (!bseIDs.Contains(i))
@@ -2223,7 +2227,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             if (!SQLiteIO.IsTSTEmpty())
             {
-                MessageBoxResult r =
+                var r =
                     MessageBox.Show(
                         "Are you sure you want to do this? This is an irreversible action.\nThis only applies to the current season.",
                         "Reset All Team Stats",
@@ -2231,12 +2235,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         MessageBoxImage.Question);
                 if (r == MessageBoxResult.Yes)
                 {
-                    foreach (int key in TST.Keys)
+                    foreach (var key in TST.Keys)
                     {
                         TST[key].ResetStats(Span.SeasonAndPlayoffs);
                     }
 
-                    foreach (int key in TSTOpp.Keys)
+                    foreach (var key in TSTOpp.Keys)
                     {
                         TSTOpp[key].ResetStats(Span.SeasonAndPlayoffs);
                     }
@@ -2260,7 +2264,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             if (!SQLiteIO.IsTSTEmpty())
             {
-                MessageBoxResult r =
+                var r =
                     MessageBox.Show(
                         "Are you sure you want to do this? This is an irreversible action.\nThis only applies to the current season.",
                         "Reset All Team Stats",
@@ -2268,7 +2272,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         MessageBoxImage.Question);
                 if (r == MessageBoxResult.Yes)
                 {
-                    foreach (PlayerStats ps in PST.Values)
+                    foreach (var ps in PST.Values)
                     {
                         ps.ResetStats();
                     }
@@ -2331,7 +2335,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuMiscRenameCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
-            string curName = GetSeasonName(CurSeason);
+            var curName = GetSeasonName(CurSeason);
             var ibw = new InputBoxWindow("Enter the new name for the current season", curName);
             ibw.ShowDialog();
 
@@ -2347,7 +2351,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="name">The name.</param>
         private static void setSeasonName(int season, string name)
         {
-            for (int i = 0; i < SeasonList.Count; i++)
+            for (var i = 0; i < SeasonList.Count; i++)
             {
                 if (SeasonList[i].Key == season)
                 {
@@ -2407,7 +2411,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 try
                 {
-                    int result = BR.ImportBoxScore(InputBoxWindow.UserInput);
+                    var result = BR.ImportBoxScore(InputBoxWindow.UserInput);
                     if (result == -1)
                     {
                         MessageBox.Show(
@@ -2863,18 +2867,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private static string getBestStatsForMarquee(PlayerStatsRow curLr, PlayerRankings rankingsActive, int count, int statToIgnore)
         {
-            string s = "";
+            var s = "";
             var dict = new Dictionary<int, int>();
-            for (int k = 0; k < rankingsActive.RankingsPerGame[curLr.ID].Length; k++)
+            for (var k = 0; k < rankingsActive.RankingsPerGame[curLr.ID].Length; k++)
             {
                 dict.Add(k, rankingsActive.RankingsPerGame[curLr.ID][k]);
             }
             dict[PAbbr.FPG] = PST.Count + 1 - dict[PAbbr.FPG];
             dict[PAbbr.TPG] = PST.Count + 1 - dict[PAbbr.TPG];
             //dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
-            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
-            int m = 0;
-            int j = count;
+            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            var m = 0;
+            var j = count;
             while (true)
             {
                 if (m == j)
@@ -2940,15 +2944,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var bw = new BackgroundWorker { WorkerReportsProgress = true };
             bw.DoWork += delegate
                 {
-                    int highsCount = PST.FirstOrDefault().Value.CareerHighs.Length;
-                    int plCount = PST.Keys.Count();
-                    for (int i = 0; i < plCount; i++)
+                    var highsCount = PST.FirstOrDefault().Value.CareerHighs.Length;
+                    var plCount = PST.Keys.Count();
+                    for (var i = 0; i < plCount; i++)
                     {
                         bw.ReportProgress(Convert.ToInt32((double) 100 * i / plCount));
-                        int pID = PST.Keys.ToList()[i];
+                        var pID = PST.Keys.ToList()[i];
                         PST[pID].CalculateSeasonHighs(BSHist);
-                        bool fail = false;
-                        for (int k = 0; k < highsCount; k++)
+                        var fail = false;
+                        for (var k = 0; k < highsCount; k++)
                         {
                             try
                             {
@@ -2956,7 +2960,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                             }
                             catch (InvalidOperationException)
                             {
-                                for (int j = 0; j < highsCount; j++)
+                                for (var j = 0; j < highsCount; j++)
                                 {
                                     PST[pID].CareerHighs[j] = 0;
                                 }
@@ -3004,7 +3008,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
-            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+            var dr = fbd.ShowDialog(this.GetIWin32Window());
 
             if (dr != System.Windows.Forms.DialogResult.OK)
             {
@@ -3018,7 +3022,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            int result = REDitor.ImportLastYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
+            var result = REDitor.ImportLastYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
 
             if (result != 0)
             {
@@ -3063,7 +3067,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
-            DialogResult dr = fbd.ShowDialog(this.GetIWin32Window());
+            var dr = fbd.ShowDialog(this.GetIWin32Window());
 
             if (dr != System.Windows.Forms.DialogResult.OK)
             {

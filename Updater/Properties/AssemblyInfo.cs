@@ -16,9 +16,13 @@
 
 #endregion
 
+#region Using Directives
+
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+
+#endregion
 
 #region Other Info
 

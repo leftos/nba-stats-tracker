@@ -18,11 +18,15 @@
 
 namespace NBA_Stats_Tracker.Helper.ListExtensions
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
+
+    #endregion
 
     /// <summary>Extensions for various kinds of .NET list constructs, including BindingList and ObservableCollection.</summary>
     public static class ListExtensions
@@ -61,7 +65,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         private static void sort<T>(this BindingList<T> bl, IComparer<T> pComparer, Comparison<T> pComparison)
         {
             //Extract items and sort separately
-            List<T> sortList = bl.ToList();
+            var sortList = bl.ToList();
             if (pComparison == null)
             {
                 sortList.Sort(pComparer);
@@ -72,7 +76,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
             } //else
 
             //Disable notifications, rebuild, and re-enable notifications
-            bool oldRaise = bl.RaiseListChangedEvents;
+            var oldRaise = bl.RaiseListChangedEvents;
             bl.RaiseListChangedEvents = false;
             try
             {
@@ -108,7 +112,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         private static void sort<T>(this ObservableCollection<T> oc, IComparer<T> pComparer, Comparison<T> pComparison)
         {
             //Extract items and sort separately
-            List<T> sortList = oc.ToList();
+            var sortList = oc.ToList();
             if (pComparison == null)
             {
                 sortList.Sort(pComparer);

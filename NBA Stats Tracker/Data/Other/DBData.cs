@@ -18,11 +18,15 @@
 
 namespace NBA_Stats_Tracker.Data.Other
 {
+    #region Using Directives
+
     using System.Collections.Generic;
 
     using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Teams;
+
+    #endregion
 
     public class DBData
     {

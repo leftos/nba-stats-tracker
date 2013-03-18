@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -27,6 +29,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
+
+    #endregion
 
     /// <summary>Used for adding Teams and Players to the database.</summary>
     public partial class AddWindow
@@ -64,17 +68,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
             if (Equals(tbcAdd.SelectedItem, tabTeams))
             {
-                List<string> lines = Tools.SplitLinesToList(txtTeams.Text, false);
+                var lines = Tools.SplitLinesToList(txtTeams.Text, false);
                 MainWindow.AddInfo = "";
-                foreach (string line in lines)
+                foreach (var line in lines)
                 {
                     MainWindow.AddInfo += line + "\n";
                 }
             }
             else if (Equals(tbcAdd.SelectedItem, tabPlayers))
             {
-                int i = SQLiteIO.GetMaxPlayerID(MainWindow.CurrentDB);
-                foreach (Player p in players)
+                var i = SQLiteIO.GetMaxPlayerID(MainWindow.CurrentDB);
+                foreach (var p in players)
                 {
                     if (String.IsNullOrWhiteSpace(p.LastName) || p.Team == -1)
                     {

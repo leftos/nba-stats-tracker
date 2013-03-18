@@ -18,8 +18,12 @@
 
 namespace LeftosCommonLibrary.CommonDialogs
 {
+    #region Using Directives
+
     using System;
     using System.Windows;
+
+    #endregion
 
     /// <summary>Implements a general-purpose Input-box Window.</summary>
     public partial class InputBoxWindow

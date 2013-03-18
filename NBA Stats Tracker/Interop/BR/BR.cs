@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Interop.BR
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -32,6 +34,8 @@ namespace NBA_Stats_Tracker.Interop.BR
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Windows.MainInterface;
 
+    #endregion
+
     /// <summary>Used to download and import real NBA stats from the Basketball-Reference.com website.</summary>
     public static class BR
     {
@@ -45,10 +49,10 @@ namespace NBA_Stats_Tracker.Interop.BR
             using (var dataset = new DataSet())
             {
                 var htmlweb = new HtmlWeb();
-                HtmlDocument doc = htmlweb.Load(url);
+                var doc = htmlweb.Load(url);
 
-                HtmlNodeCollection divs = doc.DocumentNode.SelectNodes("//div");
-                foreach (HtmlNode cur in divs)
+                var divs = doc.DocumentNode.SelectNodes("//div");
+                foreach (var cur in divs)
                 {
                     try
                     {
@@ -61,17 +65,17 @@ namespace NBA_Stats_Tracker.Interop.BR
                     {
                         continue;
                     }
-                    HtmlNode h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
-                    string name = h1.InnerText;
+                    var h1 = doc.DocumentNode.SelectSingleNode("id('page_content')/table/tr/td/h1");
+                    var name = h1.InnerText;
                     parts = name.Split(new[] { " at ", " Box Score, ", ", " }, 4, StringSplitOptions.None);
-                    for (int i = 0; i < parts.Count(); i++)
+                    for (var i = 0; i < parts.Count(); i++)
                     {
                         parts[i] = parts[i].Replace("\n", "");
                     }
                 }
 
-                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                var tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -86,29 +90,28 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                     using (var table = new DataTable(cur.Attributes["id"].Value))
                     {
-                        HtmlNode thead = cur.SelectSingleNode("thead");
-                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                        var thead = cur.SelectSingleNode("thead");
+                        var theadrows = thead.SelectNodes("tr");
 
-                        IEnumerable<string> headers = theadrows[1].Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        var headers = theadrows[1].Elements("th").Select(th => th.InnerText.Trim());
+                        foreach (var colheader in headers)
                         {
                             table.Columns.Add(colheader);
                         }
 
-                        HtmlNode tbody = cur.SelectSingleNode("tbody");
-                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                        IEnumerable<string[]> rows =
-                            tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
+                        var tbody = cur.SelectSingleNode("tbody");
+                        var tbodyrows = tbody.SelectNodes("tr");
+                        var rows = tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
                         foreach (object[] row in rows)
                         {
                             table.Rows.Add(row);
                         }
-                        HtmlNode tfoot = cur.SelectSingleNode("tfoot");
-                        HtmlNode frow = tfoot.SelectSingleNode("tr");
-                        IEnumerable<HtmlNode> elements = frow.Elements("td");
-                        IList<HtmlNode> htmlNodes = elements as IList<HtmlNode> ?? elements.ToList();
+                        var tfoot = cur.SelectSingleNode("tfoot");
+                        var frow = tfoot.SelectSingleNode("tr");
+                        var elements = frow.Elements("td");
+                        var htmlNodes = elements as IList<HtmlNode> ?? elements.ToList();
                         var erow = new object[htmlNodes.Count()];
-                        for (int i = 0; i < htmlNodes.Count(); i++)
+                        for (var i = 0; i < htmlNodes.Count(); i++)
                         {
                             erow[i] = htmlNodes.ElementAt(i).InnerText;
                         }
@@ -130,19 +133,19 @@ namespace NBA_Stats_Tracker.Interop.BR
             using (var dataset = new DataSet())
             {
                 var htmlweb = new HtmlWeb();
-                HtmlDocument doc = htmlweb.Load(url);
+                var doc = htmlweb.Load(url);
 
-                HtmlNode infobox = doc.DocumentNode.SelectSingleNode("//*[@id='info_box']");
-                HtmlNodeCollection infoboxps = infobox.SelectNodes("p");
-                HtmlNode infoboxp = infoboxps[1].NextSibling.NextSibling;
-                string record = infoboxp.InnerText;
+                var infobox = doc.DocumentNode.SelectSingleNode("//*[@id='info_box']");
+                var infoboxps = infobox.SelectNodes("p");
+                var infoboxp = infoboxps[1].NextSibling.NextSibling;
+                var record = infoboxp.InnerText;
 
                 recordparts = record.Split('-');
                 recordparts[0] = recordparts[0].TrimStart(new[] { ' ' });
                 recordparts[1] = recordparts[1].Split(',')[0];
 
-                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                var tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -157,19 +160,18 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                     using (var table = new DataTable(cur.Attributes["id"].Value))
                     {
-                        HtmlNode thead = cur.SelectSingleNode("thead");
-                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                        var thead = cur.SelectSingleNode("thead");
+                        var theadrows = thead.SelectNodes("tr");
 
-                        IEnumerable<string> headers = theadrows[0].Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        var headers = theadrows[0].Elements("th").Select(th => th.InnerText.Trim());
+                        foreach (var colheader in headers)
                         {
                             table.Columns.Add(colheader);
                         }
 
-                        HtmlNode tbody = cur.SelectSingleNode("tbody");
-                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                        IEnumerable<string[]> rows =
-                            tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
+                        var tbody = cur.SelectSingleNode("tbody");
+                        var tbodyrows = tbody.SelectNodes("tr");
+                        var rows = tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
                         foreach (object[] row in rows)
                         {
                             table.Rows.Add(row);
@@ -190,10 +192,10 @@ namespace NBA_Stats_Tracker.Interop.BR
             using (var dataset = new DataSet())
             {
                 var htmlweb = new HtmlWeb();
-                HtmlDocument doc = htmlweb.Load(url);
+                var doc = htmlweb.Load(url);
 
-                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                var tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -210,13 +212,13 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                     using (var table = new DataTable(cur.Attributes["id"].Value))
                     {
-                        HtmlNode thead = cur.SelectSingleNode("thead");
-                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                        var thead = cur.SelectSingleNode("thead");
+                        var theadrows = thead.SelectNodes("tr");
 
-                        HtmlNode theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
+                        var theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
 
-                        IEnumerable<string> headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        var headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
+                        foreach (var colheader in headers)
                         {
                             try
                             {
@@ -228,10 +230,9 @@ namespace NBA_Stats_Tracker.Interop.BR
                             }
                         }
 
-                        HtmlNode tbody = cur.SelectSingleNode("tbody");
-                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                        IEnumerable<string[]> rows =
-                            tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
+                        var tbody = cur.SelectSingleNode("tbody");
+                        var tbodyrows = tbody.SelectNodes("tr");
+                        var rows = tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
                         foreach (object[] row in rows)
                         {
                             table.Rows.Add(row);
@@ -252,10 +253,10 @@ namespace NBA_Stats_Tracker.Interop.BR
             using (var dataset = new DataSet())
             {
                 var htmlweb = new HtmlWeb();
-                HtmlDocument doc = htmlweb.Load(url);
+                var doc = htmlweb.Load(url);
 
-                HtmlNodeCollection tables = doc.DocumentNode.SelectNodes("//table");
-                foreach (HtmlNode cur in tables)
+                var tables = doc.DocumentNode.SelectNodes("//table");
+                foreach (var cur in tables)
                 {
                     try
                     {
@@ -272,13 +273,13 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                     using (var table = new DataTable(cur.Attributes["id"].Value))
                     {
-                        HtmlNode thead = cur.SelectSingleNode("thead");
-                        HtmlNodeCollection theadrows = thead.SelectNodes("tr");
+                        var thead = cur.SelectSingleNode("thead");
+                        var theadrows = thead.SelectNodes("tr");
 
-                        HtmlNode theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
+                        var theadrow = cur.Attributes["id"].Value == "misc" ? theadrows[1] : theadrows[0];
 
-                        IEnumerable<string> headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
-                        foreach (string colheader in headers)
+                        var headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
+                        foreach (var colheader in headers)
                         {
                             try
                             {
@@ -290,10 +291,9 @@ namespace NBA_Stats_Tracker.Interop.BR
                             }
                         }
 
-                        HtmlNode tbody = cur.SelectSingleNode("tbody");
-                        HtmlNodeCollection tbodyrows = tbody.SelectNodes("tr");
-                        IEnumerable<string[]> rows =
-                            tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
+                        var tbody = cur.SelectSingleNode("tbody");
+                        var tbodyrows = tbody.SelectNodes("tr");
+                        var rows = tbodyrows.Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToArray());
                         foreach (object[] row in rows)
                         {
                             table.Rows.Add(row);
@@ -315,15 +315,15 @@ namespace NBA_Stats_Tracker.Interop.BR
         private static void teamStatsFromDataTable(
             DataTable dt, string name, string[] recordparts, out TeamStats ts, out TeamStats tsopp)
         {
-            int teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
+            var teamID = MainWindow.RealTST.Single(pair => pair.Value.Name == name).Key;
             ts = new TeamStats(teamID, name);
             tsopp = new TeamStats(teamID, name);
 
             tsopp.Record[1] = ts.Record[0] = Convert.ToByte(recordparts[0]);
             tsopp.Record[0] = ts.Record[1] = Convert.ToByte(recordparts[1]);
 
-            DataRow tr = dt.Rows[0];
-            DataRow toppr = dt.Rows[2];
+            var tr = dt.Rows[0];
+            var toppr = dt.Rows[2];
 
             ts.Totals[TAbbr.MINS] = (ushort) (ParseCell.GetUInt16(tr, "MP") / 5);
             ts.Totals[TAbbr.FGM] = ParseCell.GetUInt16(tr, "FG");
@@ -371,19 +371,19 @@ namespace NBA_Stats_Tracker.Interop.BR
         private static void playoffTeamStatsFromDataSet(
             DataSet ds, ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)
         {
-            DataTable dt = ds.Tables["team"];
-            DataTable dtopp = ds.Tables["opponent"];
-            DataTable dtmisc = ds.Tables["misc"];
+            var dt = ds.Tables["team"];
+            var dtopp = ds.Tables["opponent"];
+            var dtmisc = ds.Tables["misc"];
 
-            for (int i = 0; i < tst.Count; i++)
+            for (var i = 0; i < tst.Count; i++)
             {
-                DataRow tr = dt.Rows[0];
-                DataRow toppr = dtopp.Rows[0];
-                DataRow tmiscr = dtmisc.Rows[0];
+                var tr = dt.Rows[0];
+                var toppr = dtopp.Rows[0];
+                var tmiscr = dtmisc.Rows[0];
 
-                bool found = false;
+                var found = false;
 
-                for (int j = 0; j < dt.Rows.Count; j++)
+                for (var j = 0; j < dt.Rows.Count; j++)
                 {
                     if (dt.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
@@ -398,7 +398,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     continue;
                 }
 
-                for (int j = 0; j < dtopp.Rows.Count; j++)
+                for (var j = 0; j < dtopp.Rows.Count; j++)
                 {
                     if (dtopp.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
@@ -407,7 +407,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     }
                 }
 
-                for (int j = 0; j < dtmisc.Rows.Count; j++)
+                for (var j = 0; j < dtmisc.Rows.Count; j++)
                 {
                     if (dtmisc.Rows[j]["Team"].ToString().EndsWith(tst[i].Name))
                     {
@@ -465,7 +465,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         {
             var pstnames = new Dictionary<string, PlayerStats>();
 
-            DataTable dt = ds.Tables["roster"];
+            var dt = ds.Tables["roster"];
 
             foreach (DataRow r in dt.Rows)
             {
@@ -531,7 +531,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     default:
                         throw (new Exception("Don't recognize the position " + r["Pos"]));
                 }
-                string[] nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
+                var nameParts = r["Player"].ToString().Split(new[] { ' ' }, 2);
                 var ps = new PlayerStats(new Player(pstnames.Count, teamID, nameParts[1], nameParts[0], position1, position2));
 
                 pstnames.Add(r["Player"].ToString(), ps);
@@ -541,7 +541,7 @@ namespace NBA_Stats_Tracker.Interop.BR
 
             foreach (DataRow r in dt.Rows)
             {
-                string name = r["Player"].ToString();
+                var name = r["Player"].ToString();
                 pstnames[name].Totals[PAbbr.GP] = ParseCell.GetUInt16(r, "G");
                 pstnames[name].Totals[PAbbr.GS] = ParseCell.GetUInt16(r, "GS");
                 pstnames[name].Totals[PAbbr.MINS] = ParseCell.GetUInt16(r, "MP");
@@ -567,7 +567,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             {
                 foreach (DataRow r in dt.Rows)
                 {
-                    string name = r["Player"].ToString();
+                    var name = r["Player"].ToString();
                     pstnames[name].PlTotals[PAbbr.GP] += ParseCell.GetUInt16(r, "G");
                     //pstnames[name].pl_stats[p.GS] += NSTHelper.getUShort(r, "GS");
                     pstnames[name].PlTotals[PAbbr.MINS] += ParseCell.GetUInt16(r, "MP");
@@ -609,13 +609,13 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <returns>0 if every required player was found in the database; otherwise, -1.</returns>
         private static int boxScoreFromDataSet(DataSet ds, string[] parts, out BoxScoreEntry bse)
         {
-            DataTable awayDT = ds.Tables[0];
-            DataTable homeDT = ds.Tables[1];
+            var awayDT = ds.Tables[0];
+            var homeDT = ds.Tables[1];
 
             var bs = new TeamBoxScore(ds, parts);
             bse = new BoxScoreEntry(bs) { Date = bs.GameDate, PBSList = new List<PlayerBoxScore>() };
-            int result = 0;
-            for (int i = 0; i < awayDT.Rows.Count - 1; i++)
+            var result = 0;
+            for (var i = 0; i < awayDT.Rows.Count - 1; i++)
             {
                 if (i == 5)
                 {
@@ -629,7 +629,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 }
                 bse.PBSList.Add(pbs);
             }
-            for (int i = 0; i < homeDT.Rows.Count - 1; i++)
+            for (var i = 0; i < homeDT.Rows.Count - 1; i++)
             {
                 if (i == 5)
                 {
@@ -655,7 +655,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             KeyValuePair<string, string> teamAbbr, out TeamStats ts, out TeamStats tsopp, out Dictionary<int, PlayerStats> pst)
         {
             string[] recordparts;
-            DataSet ds = getSeasonTeamStats(
+            var ds = getSeasonTeamStats(
                 @"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
             teamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
@@ -669,9 +669,9 @@ namespace NBA_Stats_Tracker.Interop.BR
         public static int ImportBoxScore(string url)
         {
             string[] parts;
-            DataSet ds = getBoxScore(url, out parts);
+            var ds = getBoxScore(url, out parts);
             BoxScoreEntry bse;
-            int result = boxScoreFromDataSet(ds, parts, out bse);
+            var result = boxScoreFromDataSet(ds, parts, out bse);
 
             MainWindow.BSHist.Add(bse);
 
@@ -683,7 +683,7 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
         public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)
         {
-            DataSet ds = getPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
+            var ds = getPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
             playoffTeamStatsFromDataSet(ds, ref tst, ref tstOpp);
         }
     }

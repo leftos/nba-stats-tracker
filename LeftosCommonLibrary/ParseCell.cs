@@ -18,8 +18,12 @@
 
 namespace LeftosCommonLibrary
 {
+    #region Using Directives
+
     using System;
     using System.Data;
+
+    #endregion
 
     /// <summary>Methods to parse a DataRowCell into common data-types.</summary>
     public class ParseCell
@@ -57,7 +61,7 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static Boolean GetBoolean(DataRow r, string columnName)
         {
-            string s = r[columnName].ToString();
+            var s = r[columnName].ToString();
             s = s.ToLower();
             return Convert.ToBoolean(s);
         }

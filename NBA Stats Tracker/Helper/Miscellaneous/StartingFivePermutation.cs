@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Helper.Miscellaneous
 {
+    #region Using Directives
+
     using System.Collections.Generic;
+
+    #endregion
 
     /// <summary>Implements a list of five players. Used in determining the best starting five in a specific scope.</summary>
     public class StartingFivePermutation

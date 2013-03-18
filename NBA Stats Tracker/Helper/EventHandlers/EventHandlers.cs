@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Helper.EventHandlers
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -34,6 +36,8 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Windows.MainInterface.Players;
     using NBA_Stats_Tracker.Windows.MainInterface.Teams;
+
+    #endregion
 
     /// <summary>Implements Event Handlers used by multiple controls from all over NBA Stats Tracker.</summary>
     public static class EventHandlers
@@ -105,7 +109,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
             if (s != null && s.SelectedCells.Count > 0)
             {
                 var row = (DataRowView) s.SelectedItems[0];
-                string team = row["Name"].ToString();
+                var team = row["Name"].ToString();
 
                 var tow = new TeamOverviewWindow(team);
                 tow.ShowDialog();

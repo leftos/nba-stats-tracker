@@ -18,11 +18,14 @@
 
 namespace LeftosCommonLibrary.BeTimvwFramework
 {
-    using System;
+    #region Using Directives
+
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Reflection;
+
+    #endregion
 
     /// <summary>IComparer to compare two properties and thus sort a list.</summary>
     /// <typeparam name="T">Type of property.</typeparam>
@@ -40,7 +43,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         public PropertyComparer(PropertyDescriptor property, ListSortDirection direction)
         {
             _propertyDescriptor = property;
-            Type comparerForPropertyType = typeof(Comparer<>).MakeGenericType(property.PropertyType);
+            var comparerForPropertyType = typeof(Comparer<>).MakeGenericType(property.PropertyType);
             _comparer =
                 (IComparer)
                 comparerForPropertyType.InvokeMember(

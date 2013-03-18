@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -31,6 +33,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     using NBA_Stats_Tracker.Windows.MiscDialogs;
 
     using SQLite_Database;
+
+    #endregion
 
     /// <summary>Used to edit a conference and its divisions.</summary>
     public partial class ConferenceEditWindow
@@ -92,11 +96,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
               .ToList()
               .ForEach(row => usedIDs.Add(ParseCell.GetInt32(row, "ID")));
 
-            List<string> list = Tools.SplitLinesToList(txtDivisions.Text, false);
-            foreach (string newDiv in list)
+            var list = Tools.SplitLinesToList(txtDivisions.Text, false);
+            foreach (var newDiv in list)
             {
-                string newName = newDiv.Replace(':', '-');
-                int i = 0;
+                var newName = newDiv.Replace(':', '-');
+                var i = 0;
                 while (usedIDs.Contains(i))
                 {
                     i++;
@@ -107,7 +111,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             if (MainWindow.Divisions.Any(division => division.ConferenceID == _curConf.ID) == false)
             {
-                int i = 0;
+                var i = 0;
                 while (usedIDs.Contains(i))
                 {
                     i++;
@@ -116,7 +120,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 usedIDs.Add(i);
             }
 
-            foreach (Division div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
+            foreach (var div in MainWindow.Divisions.Where(division => division.ConferenceID == _curConf.ID))
             {
                 db.Insert(
                     "Divisions",

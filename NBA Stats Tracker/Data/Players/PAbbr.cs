@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Data.Players
 {
+    #region Using Directives
+
     using System.Collections.Generic;
+
+    #endregion
 
     /// <summary>A list of constant pseudonyms for specific entries in the players' stats arrays.</summary>
     public static class PAbbr

@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,6 +27,8 @@ namespace NBA_Stats_Tracker.Data.Teams
     using LeftosCommonLibrary;
 
     using NBA_Stats_Tracker.Data.Players;
+
+    #endregion
 
     public class TeamStatsRow
     {
@@ -352,7 +356,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public void CalculateTotalContracts(Dictionary<int, PlayerStats> pst)
         {
-            List<PlayerStats> teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
             ContractsY1 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(1)).Sum();
             ContractsY2 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(2)).Sum();
             ContractsY3 = teamPlayers.Select(ps => ps.Contract.TryGetSalary(3)).Sum();
@@ -364,7 +368,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public void CalculatePlayerCounts(Dictionary<int, PlayerStats> pst)
         {
-            List<PlayerStats> teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
+            var teamPlayers = pst.Values.Where(ps => ps.TeamF == ID).ToList();
             PlCount = teamPlayers.Count;
             PGCount = teamPlayers.Count(ps => ps.Position1 == Position.PG);
             SGCount = teamPlayers.Count(ps => ps.Position1 == Position.SG);

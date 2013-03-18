@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Properties
 {
+    #region Using Directives
+
     using System;
+
+    #endregion
 
     /// <summary>Indicates that marked element should be localized or not.</summary>
     /// <example>

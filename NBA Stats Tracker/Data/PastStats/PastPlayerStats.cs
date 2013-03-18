@@ -18,9 +18,13 @@
 
 namespace NBA_Stats_Tracker.Data.PastStats
 {
+    #region Using Directives
+
     using System.Data;
 
     using LeftosCommonLibrary;
+
+    #endregion
 
     public class PastPlayerStats
     {

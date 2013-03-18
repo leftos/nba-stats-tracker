@@ -18,10 +18,14 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections;
 
     using NBA_Stats_Tracker.Data.Players;
+
+    #endregion
 
     public class TeamNameComparerAsc : IComparer
     {

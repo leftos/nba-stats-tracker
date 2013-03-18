@@ -18,9 +18,13 @@
 
 namespace LeftosCommonLibrary.CommonDialogs
 {
+    #region Using Directives
+
     using System;
     using System.Media;
     using System.Windows;
+
+    #endregion
 
     /// <summary>
     ///     Implements a window to display a message to the user that can be copied to the clipboard. Window size adjusts depending on

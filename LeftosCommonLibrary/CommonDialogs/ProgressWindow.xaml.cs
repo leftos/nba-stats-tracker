@@ -18,8 +18,12 @@
 
 namespace LeftosCommonLibrary.CommonDialogs
 {
+    #region Using Directives
+
     using System.ComponentModel;
     using System.Windows;
+
+    #endregion
 
     /// <summary>Interaction logic for ProgressWindow.xaml</summary>
     public partial class ProgressWindow : Window

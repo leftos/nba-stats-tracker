@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Data.Players
 {
+    #region Using Directives
+
     using System;
+
+    #endregion
 
     public class PlayerHighsRow
     {

@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System.Collections.Generic;
+
+    #endregion
 
     /// <summary>Used to determine the team ranking for each stat.</summary>
     public class TeamRankings
@@ -38,14 +42,14 @@ namespace NBA_Stats_Tracker.Data.Teams
         public TeamRankings(Dictionary<int, TeamStats> tst, bool playoffs = false)
         {
             RankingsPerGame = new int[tst.Count][];
-            for (int i = 0; i < tst.Count; i++)
+            for (var i = 0; i < tst.Count; i++)
             {
                 RankingsPerGame[i] = new int[tst[i].PerGame.Length];
             }
-            for (int j = 0; j < (new TeamStats()).PerGame.Length; j++)
+            for (var j = 0; j < (new TeamStats()).PerGame.Length; j++)
             {
                 var averages = new Dictionary<int, float>();
-                for (int i = 0; i < tst.Count; i++)
+                for (var i = 0; i < tst.Count; i++)
                 {
                     averages.Add(i, playoffs ? tst[i].PlPerGame[j] : tst[i].PerGame[j]);
                 }
@@ -57,7 +61,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tempList.Reverse();
                 }
 
-                int k = 1;
+                var k = 1;
                 foreach (var kvp in tempList)
                 {
                     RankingsPerGame[kvp.Key][j] = k;
@@ -66,14 +70,14 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             RankingsTotal = new int[tst.Count][];
-            for (int i = 0; i < tst.Count; i++)
+            for (var i = 0; i < tst.Count; i++)
             {
                 RankingsTotal[i] = new int[tst[i].Totals.Length];
             }
-            for (int j = 0; j < (new TeamStats()).Totals.Length; j++)
+            for (var j = 0; j < (new TeamStats()).Totals.Length; j++)
             {
                 var totals = new Dictionary<int, float>();
-                for (int i = 0; i < tst.Count; i++)
+                for (var i = 0; i < tst.Count; i++)
                 {
                     totals.Add(i, playoffs ? tst[i].PlTotals[j] : tst[i].Totals[j]);
                 }
@@ -85,7 +89,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tempList.Reverse();
                 }
 
-                int k = 1;
+                var k = 1;
                 foreach (var kvp in tempList)
                 {
                     RankingsTotal[kvp.Key][j] = k;
@@ -95,15 +99,15 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             var badMetrics = new List<string> { "DRTG", "TOR", "PythL" };
             RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-            List<string> metricsNames = TAbbr.MetricsNames;
-            for (int i = 0; i < tst.Count; i++)
+            var metricsNames = TAbbr.MetricsNames;
+            for (var i = 0; i < tst.Count; i++)
             {
                 RankingsMetrics[i] = new Dictionary<string, int>();
             }
-            foreach (string metricName in metricsNames)
+            foreach (var metricName in metricsNames)
             {
                 var metricStats = new Dictionary<int, double>();
-                for (int i = 0; i < tst.Count; i++)
+                for (var i = 0; i < tst.Count; i++)
                 {
                     metricStats.Add(i, playoffs ? tst[i].PlMetrics[metricName] : tst[i].Metrics[metricName]);
                 }
@@ -115,7 +119,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tempList.Reverse();
                 }
 
-                int k = 1;
+                var k = 1;
                 foreach (var kvp in tempList)
                 {
                     RankingsMetrics[kvp.Key][metricName] = k;

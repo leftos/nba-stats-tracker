@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Data.Teams
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -34,6 +36,8 @@ namespace NBA_Stats_Tracker.Data.Teams
     using NBA_Stats_Tracker.Windows.MainInterface;
 
     using SQLite_Database;
+
+    #endregion
 
     /// <summary>A container for all of a team's information, stats, PerGame and metrics handled by the program.</summary>
     [Serializable]
@@ -217,12 +221,12 @@ namespace NBA_Stats_Tracker.Data.Teams
             Record[1] = Convert.ToByte(0);
             PlRecord[0] = Convert.ToByte(0);
             PlRecord[1] = Convert.ToByte(0);
-            for (int i = 0; i < Totals.Length; i++)
+            for (var i = 0; i < Totals.Length; i++)
             {
                 Totals[i] = 0;
                 PlTotals[i] = 0;
             }
-            for (int i = 0; i < PerGame.Length; i++)
+            for (var i = 0; i < PerGame.Length; i++)
             {
                 PerGame[i] = 0;
                 PlPerGame[i] = 0;
@@ -242,8 +246,8 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <summary>Calculates the PerGame of a team's stats.</summary>
         public void CalcAvg()
         {
-            uint games = Record[0] + Record[1];
-            uint plGames = PlRecord[0] + PlRecord[1];
+            var games = Record[0] + Record[1];
+            var plGames = PlRecord[0] + PlRecord[1];
 
             PerGame[TAbbr.Wp] = (float) Record[0] / games;
             PerGame[TAbbr.Weff] = PerGame[TAbbr.Wp] * Record[0];
@@ -295,8 +299,8 @@ namespace NBA_Stats_Tracker.Data.Teams
         public static TeamStats CalculateLeagueAverages(Dictionary<int, TeamStats> tst, Span statRange)
         {
             var ls = new TeamStats(-1, "League");
-            uint teamCount = countTeams(tst, statRange);
-            for (int i = 0; i < tst.Count; i++)
+            var teamCount = countTeams(tst, statRange);
+            for (var i = 0; i < tst.Count; i++)
             {
                 ls.AddTeamStats(tst[i], statRange);
             }
@@ -321,10 +325,10 @@ namespace NBA_Stats_Tracker.Data.Teams
         public static void CalculateAllMetrics(
             ref Dictionary<int, TeamStats> tst, Dictionary<int, TeamStats> tstOpp, bool playoffs = false)
         {
-            List<int> tstKeys = tst.Keys.ToList();
-            for (int i = 0; i < tst.Keys.Count; i++)
+            var tstKeys = tst.Keys.ToList();
+            for (var i = 0; i < tst.Keys.Count; i++)
             {
-                int key = tstKeys[i];
+                var key = tstKeys[i];
                 tst[key].CalcMetrics(tstOpp[key], playoffs);
             }
         }
@@ -339,7 +343,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             if (statRange != Span.Playoffs)
             {
-                for (int i = 0; i < tst.Count; i++)
+                for (var i = 0; i < tst.Count; i++)
                 {
                     if (tst[i].GetGames() > 0)
                     {
@@ -349,7 +353,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             else
             {
-                for (int i = 0; i < tst.Count; i++)
+                for (var i = 0; i < tst.Count; i++)
                 {
                     if (tst[i].GetPlayoffGames() > 0)
                     {
@@ -370,7 +374,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             var tempMetrics = new Dictionary<string, double>();
 
             var tempTotals = new double[Totals.Length];
-            for (int i = 0; i < Totals.Length; i++)
+            for (var i = 0; i < Totals.Length; i++)
             {
                 if (!playoffs)
                 {
@@ -383,7 +387,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             var toppstats = new double[tsopp.Totals.Length];
-            for (int i = 0; i < tsopp.Totals.Length; i++)
+            for (var i = 0; i < tsopp.Totals.Length; i++)
             {
                 if (!playoffs)
                 {
@@ -395,15 +399,15 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
 
-            uint games = (!playoffs) ? GetGames() : GetPlayoffGames();
+            var games = (!playoffs) ? GetGames() : GetPlayoffGames();
 
-            double poss = calcPossMetric(tempTotals, toppstats);
+            var poss = calcPossMetric(tempTotals, toppstats);
             tempMetrics.Add("Poss", poss);
             tempMetrics.Add("PossPG", poss / games);
 
             poss = calcPossMetric(toppstats, tempTotals);
 
-            Dictionary<string, double> toppmetrics = (!playoffs) ? tsopp.Metrics : tsopp.PlMetrics;
+            var toppmetrics = (!playoffs) ? tsopp.Metrics : tsopp.PlMetrics;
             try
             {
                 toppmetrics.Add("Poss", poss);
@@ -413,60 +417,60 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Console.WriteLine("Possessions metric couldn't be calculated for team " + ID);
             }
 
-            double pace = MainWindow.GameLength * ((tempMetrics["Poss"] + toppmetrics["Poss"]) / (2 * (tempTotals[TAbbr.MINS])));
+            var pace = MainWindow.GameLength * ((tempMetrics["Poss"] + toppmetrics["Poss"]) / (2 * (tempTotals[TAbbr.MINS])));
             tempMetrics.Add("Pace", pace);
 
-            double ortg = (tempTotals[TAbbr.PF] / tempMetrics["Poss"]) * 100;
+            var ortg = (tempTotals[TAbbr.PF] / tempMetrics["Poss"]) * 100;
             tempMetrics.Add("ORTG", ortg);
 
-            double drtg = (tempTotals[TAbbr.PA] / tempMetrics["Poss"]) * 100;
+            var drtg = (tempTotals[TAbbr.PA] / tempMetrics["Poss"]) * 100;
             tempMetrics.Add("DRTG", drtg);
 
-            double astP = (tempTotals[TAbbr.AST])
-                          / (tempTotals[TAbbr.FGA] + tempTotals[TAbbr.FTA] * 0.44 + tempTotals[TAbbr.AST] + tempTotals[TAbbr.TOS]);
+            var astP = (tempTotals[TAbbr.AST])
+                       / (tempTotals[TAbbr.FGA] + tempTotals[TAbbr.FTA] * 0.44 + tempTotals[TAbbr.AST] + tempTotals[TAbbr.TOS]);
             tempMetrics.Add("AST%", astP);
 
-            double drebP = tempTotals[TAbbr.DREB] / (tempTotals[TAbbr.DREB] + toppstats[TAbbr.OREB]);
+            var drebP = tempTotals[TAbbr.DREB] / (tempTotals[TAbbr.DREB] + toppstats[TAbbr.OREB]);
             tempMetrics.Add("DREB%", drebP);
 
-            double efgP = (tempTotals[TAbbr.FGM] + tempTotals[TAbbr.TPM] * 0.5) / tempTotals[TAbbr.FGA];
+            var efgP = (tempTotals[TAbbr.FGM] + tempTotals[TAbbr.TPM] * 0.5) / tempTotals[TAbbr.FGA];
             tempMetrics.Add("EFG%", efgP);
 
-            double effD = ortg - drtg;
+            var effD = ortg - drtg;
             tempMetrics.Add("EFFd", effD);
 
-            double tor = tempTotals[TAbbr.TOS] / (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA] + tempTotals[TAbbr.TOS]);
+            var tor = tempTotals[TAbbr.TOS] / (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA] + tempTotals[TAbbr.TOS]);
             tempMetrics.Add("TOR", tor);
 
-            double orebP = tempTotals[TAbbr.OREB] / (tempTotals[TAbbr.OREB] + toppstats[TAbbr.DREB]);
+            var orebP = tempTotals[TAbbr.OREB] / (tempTotals[TAbbr.OREB] + toppstats[TAbbr.DREB]);
             tempMetrics.Add("OREB%", orebP);
 
-            double ftr = tempTotals[TAbbr.FTM] / tempTotals[TAbbr.FGA];
+            var ftr = tempTotals[TAbbr.FTM] / tempTotals[TAbbr.FGA];
             tempMetrics.Add("FTR", ftr);
 
-            float[] tempPerGame = (!playoffs) ? PerGame : PlPerGame;
+            var tempPerGame = (!playoffs) ? PerGame : PlPerGame;
 
-            double pwP = (((tempPerGame[TAbbr.PPG] - tempPerGame[TAbbr.PAPG]) * 2.7) + ((double) MainWindow.SeasonLength / 2))
-                         / MainWindow.SeasonLength;
+            var pwP = (((tempPerGame[TAbbr.PPG] - tempPerGame[TAbbr.PAPG]) * 2.7) + ((double) MainWindow.SeasonLength / 2))
+                      / MainWindow.SeasonLength;
             tempMetrics.Add("PW%", pwP);
 
-            double tsP = tempTotals[TAbbr.PF] / (2 * (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA]));
+            var tsP = tempTotals[TAbbr.PF] / (2 * (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA]));
             tempMetrics.Add("TS%", tsP);
 
-            double tpr = tempTotals[TAbbr.TPA] / tempTotals[TAbbr.FGA];
+            var tpr = tempTotals[TAbbr.TPA] / tempTotals[TAbbr.FGA];
             tempMetrics.Add("3PR", tpr);
 
-            double pythW = MainWindow.SeasonLength * (Math.Pow(tempTotals[TAbbr.PF], 16.5))
-                           / (Math.Pow(tempTotals[TAbbr.PF], 16.5) + Math.Pow(tempTotals[TAbbr.PA], 16.5));
+            var pythW = MainWindow.SeasonLength * (Math.Pow(tempTotals[TAbbr.PF], 16.5))
+                        / (Math.Pow(tempTotals[TAbbr.PF], 16.5) + Math.Pow(tempTotals[TAbbr.PA], 16.5));
             tempMetrics.Add("PythW", pythW);
 
-            double pythL = MainWindow.SeasonLength - pythW;
+            var pythL = MainWindow.SeasonLength - pythW;
             tempMetrics.Add("PythL", pythL);
 
-            double gmsc = tempTotals[TAbbr.PF] + 0.4 * tempTotals[TAbbr.FGM] - 0.7 * tempTotals[TAbbr.FGA]
-                          - 0.4 * (tempTotals[TAbbr.FTA] - tempTotals[TAbbr.FTM]) + 0.7 * tempTotals[TAbbr.OREB]
-                          + 0.3 * tempTotals[TAbbr.DREB] + tempTotals[TAbbr.STL] + 0.7 * tempTotals[TAbbr.AST]
-                          + 0.7 * tempTotals[TAbbr.BLK] - 0.4 * tempTotals[TAbbr.FOUL] - tempTotals[TAbbr.TOS];
+            var gmsc = tempTotals[TAbbr.PF] + 0.4 * tempTotals[TAbbr.FGM] - 0.7 * tempTotals[TAbbr.FGA]
+                       - 0.4 * (tempTotals[TAbbr.FTA] - tempTotals[TAbbr.FTM]) + 0.7 * tempTotals[TAbbr.OREB]
+                       + 0.3 * tempTotals[TAbbr.DREB] + tempTotals[TAbbr.STL] + 0.7 * tempTotals[TAbbr.AST]
+                       + 0.7 * tempTotals[TAbbr.BLK] - 0.4 * tempTotals[TAbbr.FOUL] - tempTotals[TAbbr.TOS];
             tempMetrics.Add("GmSc", gmsc / games);
 
             if (!playoffs)
@@ -485,13 +489,13 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <returns></returns>
         private static double calcPossMetric(double[] tstats, double[] toppstats)
         {
-            double poss = 0.5
-                          * ((tstats[TAbbr.FGA] + 0.4 * tstats[TAbbr.FTA]
-                              - 1.07 * (tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]))
-                                * (tstats[TAbbr.FGA] - tstats[TAbbr.FGM]) + tstats[TAbbr.TOS])
-                             + (toppstats[TAbbr.FGA] + 0.4 * toppstats[TAbbr.FTA]
-                                - 1.07 * (toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + tstats[TAbbr.DREB]))
-                                  * (toppstats[TAbbr.FGA] - toppstats[TAbbr.FGM]) + toppstats[TAbbr.TOS]));
+            var poss = 0.5
+                       * ((tstats[TAbbr.FGA] + 0.4 * tstats[TAbbr.FTA]
+                           - 1.07 * (tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]))
+                             * (tstats[TAbbr.FGA] - tstats[TAbbr.FGM]) + tstats[TAbbr.TOS])
+                          + (toppstats[TAbbr.FGA] + 0.4 * toppstats[TAbbr.FTA]
+                             - 1.07 * (toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + tstats[TAbbr.DREB]))
+                               * (toppstats[TAbbr.FGA] - toppstats[TAbbr.FGM]) + toppstats[TAbbr.TOS]));
             return poss;
         }
 
@@ -499,7 +503,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <returns></returns>
         public uint GetGames()
         {
-            uint games = Record[0] + Record[1];
+            var games = Record[0] + Record[1];
             return games;
         }
 
@@ -507,7 +511,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <returns></returns>
         public uint GetPlayoffGames()
         {
-            uint plGames = PlRecord[0] + PlRecord[1];
+            var plGames = PlRecord[0] + PlRecord[1];
             return plGames;
         }
 
@@ -524,7 +528,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     Record[0] += ts.Record[0];
                     Record[1] += ts.Record[1];
 
-                    for (int i = 0; i < Totals.Length; i++)
+                    for (var i = 0; i < Totals.Length; i++)
                     {
                         Totals[i] += ts.Totals[i];
                     }
@@ -537,7 +541,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     PlRecord[0] += ts.PlRecord[0];
                     PlRecord[1] += ts.PlRecord[1];
 
-                    for (int i = 0; i < PlTotals.Length; i++)
+                    for (var i = 0; i < PlTotals.Length; i++)
                     {
                         PlTotals[i] += ts.PlTotals[i];
                     }
@@ -550,7 +554,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     Record[0] += ts.Record[0];
                     Record[1] += ts.Record[1];
 
-                    for (int i = 0; i < Totals.Length; i++)
+                    for (var i = 0; i < Totals.Length; i++)
                     {
                         Totals[i] += ts.Totals[i];
                     }
@@ -558,7 +562,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     Record[0] += ts.PlRecord[0];
                     Record[1] += ts.PlRecord[1];
 
-                    for (int i = 0; i < PlTotals.Length; i++)
+                    for (var i = 0; i < PlTotals.Length; i++)
                     {
                         Totals[i] += ts.PlTotals[i];
                     }
@@ -585,7 +589,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     Record[0] = 0;
                     Record[1] = 0;
 
-                    for (int i = 0; i < Totals.Length; i++)
+                    for (var i = 0; i < Totals.Length; i++)
                     {
                         Totals[i] = 0;
                     }
@@ -598,7 +602,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     PlRecord[0] = 0;
                     PlRecord[1] = 0;
 
-                    for (int i = 0; i < PlTotals.Length; i++)
+                    for (var i = 0; i < PlTotals.Length; i++)
                     {
                         PlTotals[i] = 0;
                     }
@@ -611,7 +615,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     Record[0] = 0;
                     Record[1] = 0;
 
-                    for (int i = 0; i < Totals.Length; i++)
+                    for (var i = 0; i < Totals.Length; i++)
                     {
                         Totals[i] = 0;
                     }
@@ -619,7 +623,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                     PlRecord[0] = 0;
                     PlRecord[1] = 0;
 
-                    for (int i = 0; i < PlTotals.Length; i++)
+                    for (var i = 0; i < PlTotals.Length; i++)
                     {
                         PlTotals[i] = 0;
                     }
@@ -684,27 +688,27 @@ namespace NBA_Stats_Tracker.Data.Teams
             TeamRankings teamRankings,
             bool playoffs = false)
         {
-            uint[] tempRecord = playoffs ? PlRecord : Record;
-            uint[] tempTotals = playoffs ? PlTotals : Totals;
-            float[] tempPerGame = playoffs ? PlPerGame : PerGame;
+            var tempRecord = playoffs ? PlRecord : Record;
+            var tempTotals = playoffs ? PlTotals : Totals;
+            var tempPerGame = playoffs ? PlPerGame : PerGame;
 
-            List<PlayerStatsRow> pgList = psrList.Where(ps => ps.Position1 == Position.PG).ToList();
+            var pgList = psrList.Where(ps => ps.Position1 == Position.PG).ToList();
             pgList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps1.GmSc));
             pgList.Reverse();
-            List<PlayerStatsRow> sgList = psrList.Where(ps => ps.Position1 == Position.SG).ToList();
+            var sgList = psrList.Where(ps => ps.Position1 == Position.SG).ToList();
             sgList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
             sgList.Reverse();
-            List<PlayerStatsRow> sfList = psrList.Where(ps => ps.Position1 == Position.SF).ToList();
+            var sfList = psrList.Where(ps => ps.Position1 == Position.SF).ToList();
             sfList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
             sfList.Reverse();
-            List<PlayerStatsRow> pfList = psrList.Where(ps => ps.Position1 == Position.PF).ToList();
+            var pfList = psrList.Where(ps => ps.Position1 == Position.PF).ToList();
             pfList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
             pfList.Reverse();
-            List<PlayerStatsRow> cList = psrList.Where(ps => ps.Position1 == Position.C).ToList();
+            var cList = psrList.Where(ps => ps.Position1 == Position.C).ToList();
             cList.Sort((ps1, ps2) => ps1.GmSc.CompareTo(ps2.GmSc));
             cList.Reverse();
 
-            string roster = "Team Roster\n";
+            var roster = "Team Roster\n";
             roster += "\nPG: ";
             pgList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
             roster = roster.Remove(roster.Length - 2);
@@ -721,15 +725,15 @@ namespace NBA_Stats_Tracker.Data.Teams
             cList.ForEach(ps => roster += ps.FirstName + " " + ps.LastName + ", ");
             roster = roster.Remove(roster.Length - 2);
 
-            int[][] rating = teamRankings.RankingsPerGame;
-            int teamCount = tst.Count;
-            int divpos = 0;
-            int confpos = 0;
+            var rating = teamRankings.RankingsPerGame;
+            var teamCount = tst.Count;
+            var divpos = 0;
+            var confpos = 0;
 
-            List<KeyValuePair<int, TeamStats>> divTeams = tst.Where(pair => pair.Value.Division == Division).ToList();
+            var divTeams = tst.Where(pair => pair.Value.Division == Division).ToList();
             divTeams.Sort((t1, t2) => t1.Value.GetWinningPercentage(Span.Season).CompareTo(t2.Value.GetWinningPercentage(Span.Season)));
             divTeams.Reverse();
-            for (int i = 0; i < divTeams.Count; i++)
+            for (var i = 0; i < divTeams.Count; i++)
             {
                 if (divTeams[i].Value.ID == ID)
                 {
@@ -737,11 +741,11 @@ namespace NBA_Stats_Tracker.Data.Teams
                     break;
                 }
             }
-            List<KeyValuePair<int, TeamStats>> confTeams = tst.Where(pair => pair.Value.Conference == Conference).ToList();
+            var confTeams = tst.Where(pair => pair.Value.Conference == Conference).ToList();
             confTeams.Sort(
                 (t1, t2) => t1.Value.GetWinningPercentage(Span.Season).CompareTo(t2.Value.GetWinningPercentage(Span.Season)));
             confTeams.Reverse();
-            for (int i = 0; i < confTeams.Count; i++)
+            for (var i = 0; i < confTeams.Count; i++)
             {
                 if (confTeams[i].Value.ID == ID)
                 {
@@ -750,12 +754,12 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
             }
 
-            string msg = roster + "\n\n===================================================\n\n";
+            var msg = roster + "\n\n===================================================\n\n";
             msg += String.Format("{0}, the {1}{2}", DisplayName, rating[ID][17], Misc.GetRankingSuffix(rating[ID][17]));
 
-            int topThird = teamCount / 3;
-            int secondThird = teamCount / 3 * 2;
-            int topHalf = teamCount / 2;
+            var topThird = teamCount / 3;
+            var secondThird = teamCount / 3 * 2;
+            var topHalf = teamCount / 2;
 
             msg +=
                 string.Format(
@@ -840,7 +844,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg += "You won't have to worry about their scoring, one of the least 10 efficient in the league.";
             }
 
-            int comp = rating[ID][TAbbr.FGeff] - rating[ID][TAbbr.FGp];
+            var comp = rating[ID][TAbbr.FGeff] - rating[ID][TAbbr.FGp];
             if (comp < -topHalf)
             {
                 msg +=
@@ -1091,13 +1095,13 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             msg += "In summary, their best areas are ";
             var dict = new Dictionary<int, int>();
-            for (int k = 0; k < rating[ID].Length; k++)
+            for (var k = 0; k < rating[ID].Length; k++)
             {
                 dict.Add(k, rating[ID][k]);
             }
-            List<int> strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
-            int m = 0;
-            int j = 5;
+            var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
+            var m = 0;
+            var j = 5;
             while (true)
             {
                 if (m == j)
@@ -1179,15 +1183,15 @@ namespace NBA_Stats_Tracker.Data.Teams
         public static bool IsTeamHiddenInSeason(string file, int id, int season)
         {
             var db = new SQLiteDatabase(file);
-            int maxSeason = SQLiteIO.GetMaxSeason(file);
-            string teamsT = "Teams";
+            var maxSeason = SQLiteIO.GetMaxSeason(file);
+            var teamsT = "Teams";
             if (season != maxSeason)
             {
                 teamsT += "S" + season;
             }
 
-            string q = "select isHidden from " + teamsT + " where ID = " + id + "";
-            bool isHidden = ParseCell.GetBoolean(db.GetDataTable(q).Rows[0], "isHidden");
+            var q = "select isHidden from " + teamsT + " where ID = " + id + "";
+            var isHidden = ParseCell.GetBoolean(db.GetDataTable(q).Rows[0], "isHidden");
 
             return isHidden;
         }
@@ -1231,10 +1235,10 @@ namespace NBA_Stats_Tracker.Data.Teams
             int id2,
             bool ignorePlayoffFlag = false)
         {
-            TeamStats ts1 = tst[id1];
-            TeamStats ts2 = tst[id2];
-            TeamStats tsopp1 = tstOpp[id1];
-            TeamStats tsopp2 = tstOpp[id2];
+            var ts1 = tst[id1];
+            var ts2 = tst[id2];
+            var tsopp1 = tstOpp[id1];
+            var tsopp2 = tstOpp[id2];
             if (!bsToAdd.IsPlayoff || ignorePlayoffFlag)
             {
                 // Add win & loss
@@ -1561,16 +1565,16 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             var teamsChanged = new List<string>();
 
-            int maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
-            for (int i = maxSeason; i >= 1; i--)
+            var maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
+            for (var i = maxSeason; i >= 1; i--)
             {
-                string teamsT = "Teams";
-                string plTeamsT = "PlayoffTeams";
-                string oppT = "Opponents";
-                string plOppT = "PlayoffOpponents";
+                var teamsT = "Teams";
+                var plTeamsT = "PlayoffTeams";
+                var oppT = "Opponents";
+                var plOppT = "PlayoffOpponents";
                 if (i != maxSeason)
                 {
-                    string toAdd = "S" + i;
+                    var toAdd = "S" + i;
                     teamsT += toAdd;
                     plTeamsT += toAdd;
                     oppT += toAdd;
@@ -1578,10 +1582,10 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
 
                 var tables = new List<string> { teamsT, plTeamsT, oppT, plOppT };
-                foreach (string table in tables)
+                foreach (var table in tables)
                 {
-                    string q = "SELECT ID, Name, Division FROM " + table;
-                    DataTable res = db.GetDataTable(q);
+                    var q = "SELECT ID, Name, Division FROM " + table;
+                    var res = db.GetDataTable(q);
 
                     foreach (DataRow r in res.Rows)
                     {
@@ -1591,7 +1595,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                                 table,
                                 new Dictionary<string, string> { { "Division", MainWindow.Divisions.First().ID.ToString() } },
                                 "ID = " + ParseCell.GetString(r, "ID"));
-                            int teamid = MainWindow.TST.Values.Single(ts => ts.Name == ParseCell.GetString(r, "Name")).ID;
+                            var teamid = MainWindow.TST.Values.Single(ts => ts.Name == ParseCell.GetString(r, "Name")).ID;
                             MainWindow.TST[teamid].Division = MainWindow.Divisions.First().ID;
                             if (teamsChanged.Contains(MainWindow.TST[teamid].DisplayName) == false)
                             {
@@ -1605,8 +1609,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             if (teamsChanged.Count > 0)
             {
                 teamsChanged.Sort();
-                string s = "Some teams were in divisions that were deleted and have been reset to the "
-                           + MainWindow.Divisions.First().Name + " division.\n\n";
+                var s = "Some teams were in divisions that were deleted and have been reset to the "
+                        + MainWindow.Divisions.First().Name + " division.\n\n";
                 teamsChanged.ForEach(s1 => s += s1 + "\n");
                 s = s.TrimEnd(new[] { '\n' });
                 SQLiteIO.SaveSeasonToDatabase();
@@ -1632,11 +1636,11 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="tsopp">The opposing TeamStats instance to be modified.</param>
         public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
         {
-            bool playoffs = ParseCell.GetBoolean(r, "isPlayoff");
+            var playoffs = ParseCell.GetBoolean(r, "isPlayoff");
             if (!playoffs)
             {
-                int t1PTS = Convert.ToInt32(r["T1PTS"].ToString());
-                int t2PTS = Convert.ToInt32(r["T2PTS"].ToString());
+                var t1PTS = Convert.ToInt32(r["T1PTS"].ToString());
+                var t2PTS = Convert.ToInt32(r["T2PTS"].ToString());
                 if (r["T1Name"].ToString().Equals(ts.Name))
                 {
                     if (t1PTS > t2PTS)
@@ -1658,8 +1662,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
                     ts.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                    ushort t1REB = Convert.ToUInt16(r["T1REB"].ToString());
-                    ushort t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
+                    var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
+                    var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
                     ts.Totals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
                     ts.Totals[TAbbr.OREB] += t1OREB;
 
@@ -1676,8 +1680,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
                     tsopp.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                    ushort t2REB = Convert.ToUInt16(r["T2REB"].ToString());
-                    ushort t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
+                    var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
+                    var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
                     tsopp.Totals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
                     tsopp.Totals[TAbbr.OREB] += t2OREB;
 
@@ -1708,8 +1712,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
                     ts.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                    ushort t2REB = Convert.ToUInt16(r["T2REB"].ToString());
-                    ushort t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
+                    var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
+                    var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
                     ts.Totals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
                     ts.Totals[TAbbr.OREB] += t2OREB;
 
@@ -1726,8 +1730,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
                     tsopp.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                    ushort t1REB = Convert.ToUInt16(r["T1REB"].ToString());
-                    ushort t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
+                    var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
+                    var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
                     tsopp.Totals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
                     tsopp.Totals[TAbbr.OREB] += t1OREB;
 
@@ -1743,8 +1747,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             else
             {
-                int t1PTS = Convert.ToInt32(r["T1PTS"].ToString());
-                int t2PTS = Convert.ToInt32(r["T2PTS"].ToString());
+                var t1PTS = Convert.ToInt32(r["T1PTS"].ToString());
+                var t2PTS = Convert.ToInt32(r["T2PTS"].ToString());
                 if (r["T1Name"].ToString().Equals(ts.Name))
                 {
                     if (t1PTS > t2PTS)
@@ -1766,8 +1770,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
                     ts.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                    ushort t1REB = Convert.ToUInt16(r["T1REB"].ToString());
-                    ushort t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
+                    var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
+                    var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
                     ts.PlTotals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
                     ts.PlTotals[TAbbr.OREB] += t1OREB;
 
@@ -1784,8 +1788,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
                     tsopp.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                    ushort t2REB = Convert.ToUInt16(r["T2REB"].ToString());
-                    ushort t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
+                    var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
+                    var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
                     tsopp.PlTotals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
                     tsopp.PlTotals[TAbbr.OREB] += t2OREB;
 
@@ -1816,8 +1820,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
                     ts.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
-                    ushort t2REB = Convert.ToUInt16(r["T2REB"].ToString());
-                    ushort t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
+                    var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
+                    var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
                     ts.PlTotals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
                     ts.PlTotals[TAbbr.OREB] += t2OREB;
 
@@ -1834,8 +1838,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
                     tsopp.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
-                    ushort t1REB = Convert.ToUInt16(r["T1REB"].ToString());
-                    ushort t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
+                    var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
+                    var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
                     tsopp.PlTotals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
                     tsopp.PlTotals[TAbbr.OREB] += t1OREB;
 

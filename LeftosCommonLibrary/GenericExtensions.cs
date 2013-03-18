@@ -18,6 +18,8 @@
 
 namespace LeftosCommonLibrary
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -25,6 +27,8 @@ namespace LeftosCommonLibrary
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
+
+    #endregion
 
     /// <summary>Implements generic extension methods.</summary>
     public static class GenericExtensions
@@ -43,7 +47,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                object val = Convert.ChangeType(dict[key], type);
+                var val = Convert.ChangeType(dict[key], type);
                 row[key] = val.ToString();
             }
             catch (FormatException)
@@ -71,9 +75,9 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                string s = dict[key];
-                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
-                foreach (string part in parts)
+                var s = dict[key];
+                var parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
+                foreach (var part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
@@ -162,7 +166,7 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                object val = Convert.ChangeType(dict[key], type);
+                var val = Convert.ChangeType(dict[key], type);
                 var ret = (T) Convert.ChangeType(val, typeof(T));
                 return ret;
             }
@@ -244,9 +248,9 @@ namespace LeftosCommonLibrary
         {
             try
             {
-                string s = dict[key];
-                string[] parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
-                foreach (string part in parts)
+                var s = dict[key];
+                var parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
+                foreach (var part in parts)
                 {
                     Convert.ChangeType(part, type);
                 }
@@ -326,7 +330,7 @@ namespace LeftosCommonLibrary
         private static T deepClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
         {
             T result;
-            Type t = original.GetType();
+            var t = original.GetType();
 
             Object tmpResult;
             // Check if the object already has been copied
@@ -346,17 +350,17 @@ namespace LeftosCommonLibrary
                     copies.Add(original, result);
 
                     // Maybe you need here some more BindingFlags
-                    foreach (FieldInfo field in
+                    foreach (var field in
                         t.GetFields(
                             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance))
                     {
                         /* You can filter the fields here ( look for attributes and avoid
                             * unwanted fields ) */
 
-                        object fieldValue = field.GetValue(original);
+                        var fieldValue = field.GetValue(original);
 
                         // Check here if the instance should be cloned
-                        Type ft = field.FieldType;
+                        var ft = field.FieldType;
 
                         /* You can check here for ft.GetCustomAttributes(typeof(SerializableAttribute), false).Length != 0 to 
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
@@ -384,18 +388,18 @@ namespace LeftosCommonLibrary
                         var lengths = new Int32[t.GetArrayRank()];
                         var indicies = new Int32[lengths.Length];
                         // Get lengths from original array
-                        for (int i = 0; i < lengths.Length; i++)
+                        for (var i = 0; i < lengths.Length; i++)
                         {
                             lengths[i] = resultArray.GetLength(i);
                         }
 
-                        int p = lengths.Length - 1;
+                        var p = lengths.Length - 1;
 
                         /* Now we need to iterate though each of the ranks
                             * we need to keep it generic to support all array ranks */
                         while (increment(indicies, lengths, p))
                         {
-                            object value = resultArray.GetValue(indicies);
+                            var value = resultArray.GetValue(indicies);
                             if (value != null)
                             {
                                 resultArray.SetValue(value.deepClone(copies), indicies);
@@ -457,12 +461,12 @@ namespace LeftosCommonLibrary
         /// <param name="list">The list to shuffle.</param>
         public static void Shuffle<T>(this IList<T> list)
         {
-            int n = list.Count;
+            var n = list.Count;
             while (n > 1)
             {
                 n--;
-                int k = Rng.Next(n + 1);
-                T value = list[k];
+                var k = Rng.Next(n + 1);
+                var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }
@@ -498,7 +502,7 @@ namespace LeftosCommonLibrary
                 throw new InvalidOperationException("List is empty.");
             }
 
-            T item = list[0];
+            var item = list[0];
             list.RemoveAt(0);
             return item;
         }

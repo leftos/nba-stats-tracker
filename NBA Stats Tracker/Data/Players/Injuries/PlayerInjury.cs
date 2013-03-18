@@ -18,9 +18,13 @@
 
 namespace NBA_Stats_Tracker.Data.Players.Injuries
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    #endregion
 
     [Serializable]
     public class PlayerInjury

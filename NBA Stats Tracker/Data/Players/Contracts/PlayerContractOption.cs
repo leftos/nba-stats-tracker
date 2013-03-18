@@ -18,7 +18,11 @@
 
 namespace NBA_Stats_Tracker.Data.Players.Contracts
 {
+    #region Using Directives
+
     using System;
+
+    #endregion
 
     [Serializable]
     public enum PlayerContractOption : byte
