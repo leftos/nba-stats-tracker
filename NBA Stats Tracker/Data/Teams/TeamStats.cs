@@ -1063,17 +1063,17 @@ namespace NBA_Stats_Tracker.Data.Teams
                 rating[ID][TAbbr.BPG],
                 tempPerGame[TAbbr.BPG]);
 
-            if ((rating[ID][13] <= topThird) && (rating[ID][15] <= topThird))
+            if ((rating[ID][13] > topHalf) && (rating[ID][15] > topHalf))
             {
                 msg +=
                     "Clumsy team to say the least. They're not careful with the ball, and they foul too much. Keep your eyes open and play hard.";
             }
-            else if (rating[ID][13] < topThird)
+            else if (rating[ID][13] > topHalf)
             {
                 msg +=
                     "Not good ball handlers, and that's being polite. Bottom 10 in turnovers, they have work to do until they get their offense going.";
             }
-            else if (rating[ID][15] < topThird)
+            else if (rating[ID][15] > topHalf)
             {
                 msg += "A team that's prone to fouling. You better drive the lanes as hard as you can, you'll get to the line a lot.";
             }
