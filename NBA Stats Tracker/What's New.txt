@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.5
+		- Fix: Fixed minor bugs in some team rankings' and player rankings' calculations affecting Scouting Reports
+
 	v1.12.0.4
 		- Fix: Fixed minor bugs in some team rankings' calculations
 
