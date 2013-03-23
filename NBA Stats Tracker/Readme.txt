@@ -186,6 +186,8 @@ Special thanks
 	- intruda, for his donation
 	- WBT99, for his extensive suggestions
 	- Pitar, for his extensive suggestions and bug reports
+	- Rosque, for getting permission from Basketball-Referece.com to use their stats
+	- Basketball-Reference.com, for allowing me to implement automatic downloading of the real NBA stats from their website
 	- Everyone at the NLSC community, for their continued support
 
 

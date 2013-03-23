@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.7
+		- Addition: Permission to use B-R.com's stats has been granted (thanks Rosque!), so downloading NBA stats has been re-enabled
+
+	v1.12.0.6
+		- Fix: Fixed commentary on fouls and turnovers in teams' scouting reports
+
 	v1.12.0.5
 		- Fix: Fixed minor bugs in some team rankings' and player rankings' calculations affecting Scouting Reports
 
