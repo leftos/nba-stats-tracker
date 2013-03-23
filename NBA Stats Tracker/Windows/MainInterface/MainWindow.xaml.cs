@@ -266,27 +266,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             CSV.ReplaceREDitorSortingChars = true;
 
-            // TODO: Re-enable downloading NBA stats when possible
-            mnuFileGetRealStats.IsEnabled = false;
-            btnDownloadBoxScore.IsEnabled = false;
-            btnGrabNBAStats.IsEnabled = false;
-            //
-
             if (App.RealNBAOnly)
             {
-                // TODO: Re-enable downloading NBA stats when possible
-                /*
                 mnuFileGetRealStats_Click(null, null);
                 MessageBox.Show("Nothing but net! Thanks for using NBA Stats Tracker!");
                 Environment.Exit(-1);
-                */
-                //
-                MessageBox.Show(
-                    "This feature is temporarily disabled. Sorry for the inconvenience.",
-                    "NBA Stats Tracker",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-                Environment.Exit(0);
             }
             else
             {
@@ -1265,8 +1249,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     {
                         teamOrder.Add(tn.Key, k);
                         RealTST.Add(k, new TeamStats { ID = k, Name = tn.Key });
-                        RealTST[k].Division = teamDivisions[tn.Key];
-                        RealTST[k].Conference = Divisions.Single(d => d.ID == RealTST[k].Division).ConferenceID;
                         k++;
                     });
 
@@ -1282,6 +1264,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
                         var id = teamOrder[kvp.Key];
                         RealTST[id] = realts;
+                        RealTST[id].Division = teamDivisions[realts.Name];
+                        RealTST[id].Conference = Divisions.Single(d => d.ID == RealTST[id].Division).ConferenceID;
                         realTSTOpp[id] = realtsopp;
                         realTSTOpp[id].ID = id;
                         realTSTOpp[id].Division = RealTST[id].Division;
