@@ -300,6 +300,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             bool doNotSaveBoxScores = false,
             bool partialUpdate = false)
         {
+            if (maxSeason == 0)
+            {
+                maxSeason = 1;
+            }
+
             // Delete the file and create it from scratch. If partial updating is implemented later, maybe
             // we won't delete the file before all this.
             //File.Delete(file); 
@@ -1044,7 +1049,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var plOppT = "PlayoffOpponents";
             var playersT = "Players";
             var plPlayersT = "PlayoffPlayers";
-            if (curSeason != maxSeason)
+            if (curSeason < maxSeason)
             {
                 var s = "S" + curSeason.ToString();
                 teamsT += s;
