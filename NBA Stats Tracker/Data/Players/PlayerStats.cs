@@ -1399,7 +1399,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 playerStats[playerid].CalcMetrics(ts, tsopp, ls, leagueOv, playoffs: playoffs);
                 if (!playoffs)
                 {
-                    if (!(Double.IsNaN(playerStats[playerid].Metrics["aPER"])))
+                    if (!(Double.IsNaN(playerStats[playerid].Metrics["aPER"])) && !(Double.IsInfinity(playerStats[playerid].Metrics["aPER"])))
                     {
                         lgAvgPER += playerStats[playerid].Metrics["aPER"] * playerStats[playerid].Totals[PAbbr.MINS];
                         totalMins += playerStats[playerid].Totals[PAbbr.MINS];
@@ -1407,7 +1407,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
                 else
                 {
-                    if (!(Double.IsNaN(playerStats[playerid].PlMetrics["aPER"])))
+                    if (!(Double.IsNaN(playerStats[playerid].PlMetrics["aPER"])) && !(Double.IsInfinity(playerStats[playerid].PlMetrics["aPER"])))
                     {
                         plLgAvgPER += playerStats[playerid].PlMetrics["aPER"] * playerStats[playerid].PlTotals[PAbbr.MINS];
                         plTotalMins += playerStats[playerid].PlTotals[PAbbr.MINS];
