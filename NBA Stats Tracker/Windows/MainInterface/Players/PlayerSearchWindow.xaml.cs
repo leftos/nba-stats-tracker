@@ -25,6 +25,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     using System.ComponentModel;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
@@ -767,9 +768,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 keep = ige.Evaluate();
                 if (!keep)
                 {
-                    return keep;
+                    return false;
                 }
             }
+
+            bool stopped = false;
 
             var totalsFilters = lstTotals.Items.Cast<string>();
             Parallel.ForEach(
@@ -785,13 +788,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         keep = ige.Evaluate();
                         if (!keep)
                         {
+                            stopped = true;
                             loopState.Stop();
                         }
                     });
 
-            if (!keep)
+            if (!keep || stopped)
             {
-                return keep;
+                return false;
             }
 
             var pgFilters = lstAvg.Items.Cast<string>();
@@ -815,13 +819,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         }
                         if (!keep)
                         {
+                            stopped = true;
                             loopState.Stop();
                         }
                     });
 
-            if (!keep)
+            if (!keep || stopped)
             {
-                return keep;
+                return false;
             }
 
             var metricFilters = lstMetrics.Items.Cast<string>();
@@ -830,7 +835,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 (item, loopState) =>
                     {
                         var parts = item.Split(' ');
-                        parts[0] = parts[0].Replace("%", "p");
+                        //parts[0] = parts[0].Replace("%", "p");
                         //double val = Convert.ToDouble(parts[2]);
                         context = new ExpressionContext();
                         var actualValue = ps.Metrics[parts[0]];
@@ -875,13 +880,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         }
                         if (!keep)
                         {
+                            stopped = true;
                             loopState.Stop();
                         }
                     });
 
-            if (!keep)
+            if (!keep || stopped)
             {
-                return keep;
+                return false;
             }
 
             var expCount = _customExpressions.Count;
@@ -943,10 +949,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         }
                         if (!keep)
                         {
+                            stopped = true;
                             loopState.Stop();
                         }
                     });
 
+            if (!keep || stopped)
+            {
+                return false;
+            }
             return keep;
         }
 

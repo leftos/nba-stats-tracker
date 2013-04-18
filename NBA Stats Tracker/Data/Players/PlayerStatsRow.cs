@@ -994,7 +994,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (IsActive)
             {
-                s += String.Format("who currently plays for the {0}.", TeamF);
+                s += String.Format("who currently plays for the {0}.", TeamFDisplay);
             }
             else
             {
@@ -1010,7 +1010,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             s += "\n\n";
 
-            s += String.Format("He PerGame {0:F1} PPG on {1:F1} MPG, making for {2:F1} points per 36 minutes. ", PPG, MPG, PTSR);
+            s += String.Format("He averages {0:F1} PPG on {1:F1} MPG, making for {2:F1} points per 36 minutes. ", PPG, MPG, PTSR);
 
             if (rankingsTeam.RankingsPerGame[ID][PAbbr.PPG] <= 3)
             {

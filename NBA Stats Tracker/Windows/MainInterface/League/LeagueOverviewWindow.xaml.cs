@@ -2051,6 +2051,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             prepareUltimateTeam();
             prepareBestPerformers();
+
+            if (cmbUTCriteria.SelectedItem.ToString() == "League Leaders")
+            {
+                txbStartingPG.Text =
+                    "Ultimate Team can't be calculated with League Leaders filtering. Other features (e.g. \"Best Performers\" "
+                    + "use this filtering though. Use All Players or My League Leaders for Ultimate Team.";
+            }
         }
 
         private void prepareBestPerformers()

@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.9
+		- Fix: Minor corrections in players' scouting reports
+		- Fix: Fixed filtering in Advanced Player Search when using multiple filters from the same category (such as multiple Per Game filters)
+		- Fix: Fixed some percentage metrics in Advanced Player Search that would only show one decimal digit
+		- Fix: Fixed crash when searching with certain Metrics criteria in Advanced Player Search
+
 	v1.12.0.8
 		- Fix: Fixed bug that would make all players' PER be NaN when a player's PER calculated to positive or negative infinity
 
