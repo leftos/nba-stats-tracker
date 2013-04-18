@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.8
+		- Fix: Fixed bug that would make all players' PER be NaN when a player's PER calculated to positive or negative infinity
+
 	v1.12.0.7
 		- Addition: Permission to use B-R.com's stats has been granted (thanks Rosque!), so downloading NBA stats has been re-enabled
 
