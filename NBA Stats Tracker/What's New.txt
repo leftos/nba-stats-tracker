@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.10
+		- Change: Changed the button labels to reflect NBA 2K13 Import/Export compatibility through REDitor
+		- Fix: Various minor fixes
+
 	v1.12.0.9
 		- Fix: Minor corrections in players' scouting reports
 		- Fix: Fixed filtering in Advanced Player Search when using multiple filters from the same category (such as multiple Per Game filters)
