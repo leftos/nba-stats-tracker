@@ -132,7 +132,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             }
 
             int startAt;
-            var ccw = new ComboChoiceWindow("Add player stats staring from...", list);
+            var ccw = new ComboChoiceWindow("Add player stats starting from...", list);
             if (ccw.ShowDialog() != true)
             {
                 MainWindow.MWInstance.mainGrid.Visibility = Visibility.Visible;

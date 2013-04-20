@@ -2088,7 +2088,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             }
             else
             {
-                dgvContracts.ItemsSource = _psrList;
+                var pView = CollectionViewSource.GetDefaultView(_psrList);
+                pView.Filter = null;
+                dgvContracts.ItemsSource = null;
+                dgvContracts.ItemsSource = pView;
             }
         }
 

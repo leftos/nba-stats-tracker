@@ -105,6 +105,8 @@
                                 <DataGridTextColumn Binding="{Binding Games}" Header="Games" />
                                 <DataGridTextColumn Binding="{Binding Wins}" Header="W" />
                                 <DataGridTextColumn Binding="{Binding Losses}" Header="L" />
+                                <DataGridTextColumn Binding="{Binding Wp, StringFormat=F3}" Header="W%" />
+                                <DataGridTextColumn Binding="{Binding Weff, StringFormat=F2}" Header="Weff" />
                                 <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding DivW}" Header="Div W" />
                                 <DataGridTextColumn Binding="{Binding DivL}" Header="Div L" />
@@ -112,8 +114,11 @@
                                 <DataGridTextColumn Binding="{Binding ConfW}" Header="Conf W" />
                                 <DataGridTextColumn Binding="{Binding ConfL}" Header="Conf L" />
                                 <DataGridTextColumn />
-                                <DataGridTextColumn Binding="{Binding Wp, StringFormat=F3}" Header="W%" />
-                                <DataGridTextColumn Binding="{Binding Weff, StringFormat=F2}" Header="Weff" />
+                                <DataGridTextColumn Binding="{Binding L10W}" Header="L10 W" />
+                                <DataGridTextColumn Binding="{Binding L10L}" Header="L10 L" />
+                                <DataGridTextColumn />
+                                <DataGridTextColumn Binding="{Binding CurStreak}" Header="Streak" />
+                                <DataGridTextColumn />
                                 <DataGridTextColumn Binding="{Binding PPG, StringFormat=F1}" Header="PPG" />
                                 <DataGridTextColumn Binding="{Binding PAPG, StringFormat=F1}" Header="PAPG" />
                                 <DataGridTextColumn Binding="{Binding FGMPG, StringFormat=F1}" Header="FGM/G" />
