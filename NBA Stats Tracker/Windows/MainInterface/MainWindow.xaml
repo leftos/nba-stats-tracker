@@ -199,7 +199,7 @@
                         <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
                             Import from
                             <LineBreak />
-                            2K12 Save
+                            2K12/13 Save
                         </TextBlock>
                         <Button.ToolTip>
                             <TextBlock>
@@ -212,7 +212,7 @@
                         <TextBlock FontSize="14" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center">
                             Export to
                             <LineBreak />
-                            2K12 Save
+                            2K12/13 Save
                         </TextBlock>
                         <Button.ToolTip>
                             <TextBlock>
