@@ -673,8 +673,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             foreach (var sspair in splitTeamStats[id].Where(pair => pair.Key.StartsWith("M ")))
             {
                 dr = _dtSs.NewRow();
-                var label = new DateTime(Convert.ToInt32(sspair.Key.Substring(2, 4)), Convert.ToInt32(sspair.Key.Substring(7, 2)), 1);
-                CreateDataRowFromTeamStats(sspair.Value, ref dr, label.Year.ToString() + " " + String.Format("{0:MMMM}", label));
+                var labeldt = new DateTime(Convert.ToInt32(sspair.Key.Substring(2, 4)), Convert.ToInt32(sspair.Key.Substring(7, 2)), 1);
+                CreateDataRowFromTeamStats(sspair.Value, ref dr, labeldt.Year.ToString() + " " + String.Format("{0:MMMM}", labeldt));
                 _dtSs.Rows.Add(dr);
             }
 

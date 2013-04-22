@@ -1120,7 +1120,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             foreach (var ss in split[_psr.ID].Where(pair => pair.Key.StartsWith("M ")))
             {
-                _splitPSRs.Add(new PlayerStatsRow(split[_psr.ID][ss.Key], ss.Key.Substring(2), "Monthly"));
+                var labeldt = new DateTime(Convert.ToInt32(ss.Key.Substring(2, 4)), Convert.ToInt32(ss.Key.Substring(7, 2)), 1);
+                _splitPSRs.Add(
+                    new PlayerStatsRow(
+                        split[_psr.ID][ss.Key], labeldt.Year.ToString() + " " + String.Format("{0:MMMM}", labeldt), "Monthly"));
             }
 
             #endregion
