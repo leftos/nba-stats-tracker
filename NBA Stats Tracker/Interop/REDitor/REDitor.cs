@@ -722,15 +722,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (pStatsID != -1)
                     {
-                        var pStats = teamStats.Find(
-                            delegate(Dictionary<string, string> s)
-                                {
-                                    if (s["ID"] == pStatsID.ToString())
-                                    {
-                                        return true;
-                                    }
-                                    return false;
-                                });
+                        var pStats = teamStats.Single(s => s["ID"] == pStatsID.ToString());
                         tst[id].PlRecord[0] = Convert.ToByte(pStats["Wins"]);
                         tst[id].PlRecord[1] = Convert.ToByte(pStats["Losses"]);
                         tst[id].PlTotals[TAbbr.MINS] = Convert.ToUInt16(pStats["Mins"]);
