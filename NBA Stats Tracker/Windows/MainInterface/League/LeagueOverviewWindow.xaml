@@ -4,7 +4,8 @@
         xmlns:scroll="clr-namespace:SoftwareArchitects.Windows.Controls;assembly=SoftwareArchitects.Windows.Controls.ScrollSynchronizer"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data" xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         Closing="window_Closing" MinWidth="800" MinHeight="469">
@@ -1667,7 +1668,8 @@
                 <TabItem Header="My League Leaders" x:Name="tabMyLeaders">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
-                            <RowDefinition /><RowDefinition Height="35" />
+                            <RowDefinition />
+                            <RowDefinition Height="35" />
                         </Grid.RowDefinitions>
                         <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                                   CanUserAddRows="True" CanUserDeleteRows="True" HorizontalAlignment="Stretch"
@@ -2890,8 +2892,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Label Content="To change the criteria for inclusion, use the Ultimate Team tab."
-                               Grid.ColumnSpan="3" Margin="4"
-                               HorizontalContentAlignment="Right" FontStyle="Italic" Grid.Row="2" />
+                               Grid.ColumnSpan="2" Margin="4,4,10,4"
+                               HorizontalContentAlignment="Left" FontStyle="Italic" Grid.Row="2" />
                         <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbPlayer1" Text=""
                                    TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Row="0" />
                         <TextBlock FontSize="12" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6"
@@ -2908,6 +2910,8 @@
                         <TextBlock FontSize="12" Grid.Column="2" HorizontalAlignment="Stretch" Margin="6"
                                    Name="txbPlayer6" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch"
                                    Grid.Row="1" />
+                        <TextBlock Grid.Column="2" HorizontalAlignment="Right" Margin="0,9,46,0" Grid.Row="2" TextWrapping="Wrap" Text="Page" VerticalAlignment="Top"/>
+                        <xctk:IntegerUpDown x:Name="nudBestPage" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,7" ValueChanged="nudBestPage_ValueChanged"></xctk:IntegerUpDown>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Ultimate Team" Name="tabStartingFive">

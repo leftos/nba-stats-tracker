@@ -572,7 +572,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <summary>Prepares and presents the best performers' stats.</summary>
         /// <param name="psrList">The list of currently loaded PlayerMetricStatsRow instances.</param>
         /// <param name="plPSRList">The list of currently loaded playoff PlayerMetricStatsRow instances.</param>
-        private void calculateBestPerformers(List<PlayerStatsRow> psrList, List<PlayerStatsRow> plPSRList)
+        private void calculateBestPerformers(IEnumerable<PlayerStatsRow> psrList, IEnumerable<PlayerStatsRow> plPSRList)
         {
             _best1Text = "";
             _best2Text = "";
@@ -587,35 +587,37 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 templist = psrList.ToList();
                 templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 templist.Reverse();
+                var startingIndex = (Convert.ToInt32(nudBestPage.Value) - 1) * 6;
+                templist = templist.Skip(startingIndex).ToList();
 
                 var psr1 = templist[0];
                 var text = psr1.GetBestStats(5);
-                _best1Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n"
+                _best1Text = (startingIndex + 1) + ": " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n"
                              + text;
 
                 var psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                _best2Text = "2: " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n"
+                _best2Text = (startingIndex + 2) + ": " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n"
                              + text;
 
                 var psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                _best3Text = "3: " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n"
+                _best3Text = (startingIndex + 3) + ": " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n"
                              + text;
 
                 var psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                _best4Text = "4: " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n"
+                _best4Text = (startingIndex + 4) + ": " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n"
                              + text;
 
                 var psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                _best5Text = "5: " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n"
+                _best5Text = (startingIndex + 5) + ": " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n"
                              + text;
 
                 var psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                _best6Text = "6: " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n"
+                _best6Text = (startingIndex + 6) + ": " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n"
                              + text;
             }
             catch (Exception ex)
@@ -2062,6 +2064,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private void prepareBestPerformers()
         {
+            if (nudBestPage.Value == null || nudBestPage.Value < 1)
+            {
+                nudBestPage.Value = 1;
+            }
+
             switch (cmbUTCriteria.SelectedItem.ToString())
             {
                 case "All Players":
@@ -2109,5 +2116,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         }
 
         #endregion
+
+        private void nudBestPage_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            prepareBestPerformers();
+        }
     }
 }
