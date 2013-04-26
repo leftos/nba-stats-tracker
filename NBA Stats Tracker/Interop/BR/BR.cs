@@ -200,7 +200,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                     try
                     {
                         if (
-                            !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs"
+                            !(cur.Attributes["id"].Value == "totals" || cur.Attributes["id"].Value == "playoffs_totals"
                               || cur.Attributes["id"].Value == "roster"))
                         {
                             continue;
@@ -215,7 +215,8 @@ namespace NBA_Stats_Tracker.Interop.BR
                         var thead = cur.SelectSingleNode("thead");
                         var theadrows = thead.SelectNodes("tr");
 
-                        var theadrow = cur.Attributes["id"].Value == "playoffs" ? theadrows[1] : theadrows[0];
+                        //var theadrow = cur.Attributes["id"].Value == "playoffs_totals" ? theadrows[1] : theadrows[0];
+                        var theadrow = theadrows[0];
 
                         var headers = theadrow.Elements("th").Select(th => th.InnerText.Trim());
                         foreach (var colheader in headers)
@@ -561,7 +562,7 @@ namespace NBA_Stats_Tracker.Interop.BR
                 pstnames[name].Totals[PAbbr.PTS] = ParseCell.GetUInt16(r, "PTS");
             }
 
-            dt = ds.Tables["playoffs"];
+            dt = ds.Tables["playoffs_totals"];
 
             try
             {

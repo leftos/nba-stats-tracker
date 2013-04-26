@@ -1278,7 +1278,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         _worker1.ReportProgress(1);
                     }
                     // TODO: Re-enable once Playoffs start
-                    //BR.AddPlayoffTeamStats(ref realtst, ref realtstOpp);
+                    BR.AddPlayoffTeamStats(ref RealTST, ref realTSTOpp);
                 };
 
             _worker1.ProgressChanged += delegate
