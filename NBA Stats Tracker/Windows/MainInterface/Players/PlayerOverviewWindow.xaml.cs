@@ -1186,6 +1186,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _plPlayersT = MainWindow.PlPlayersT;
 
             populateTeamsCombo();
+            getActivePlayers();
 
             if (cmbPlayer.SelectedIndex != -1)
             {
@@ -1200,8 +1201,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                 try
                 {
-                    getActivePlayers();
-
                     var newps = MainWindow.PST[oldOwn];
                     if (newps.IsActive)
                     {
