@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.12
+		- Fix: Active players and rankings wouldn't update when the timeframe changed in Player Overview, leading to crashes
+		- Fix: Player Overview's Performance Graph wouldn't reset when there was no data to display (e.g. after a timeframe change that led to no box scores for the current player)
+
 	v1.12.0.11
 		- Improvement: Best Performers tab in League Overview now offers "pages", allowing you to view information for players that are ranked below the 6 best performers
 		- Fix: Fixed monthly labels in Player Overview's Split Stats
