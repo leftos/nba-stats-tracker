@@ -1264,6 +1264,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 cmbOppPlayer.SelectedIndex = -1;
             }
 
+            cmbGraphStat_SelectionChanged(null, null);
             MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
@@ -1870,6 +1871,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || _pbsList.Count < 1)
             {
+                chart.Primitives.Clear();
+                chart.ResetPanAndZoom();
                 return;
             }
 
