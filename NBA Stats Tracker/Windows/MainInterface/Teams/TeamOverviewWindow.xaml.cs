@@ -190,7 +190,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 msg = _tst[id].ScoutingReport(_tst, _psrList, MainWindow.PlayoffTeamRankings, true);
                 txbPlayoffsScoutingReport.Text = msg;
 
-                facts = getFacts(id, MainWindow.PlayoffTeamRankings);
+                facts = getFacts(id, MainWindow.PlayoffTeamRankings, true);
                 txbPlayoffsFacts.Text = facts.Aggregate("", (s1, s2) => s1 + "\n" + s2);
 
                 grpPlayoffsScoutingReport.Visibility = Visibility.Visible;
@@ -205,7 +205,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             svScoutingReport.ScrollToTop();
         }
 
-        private List<string> getFacts(int id, TeamRankings rankings)
+        private List<string> getFacts(int id, TeamRankings rankings, bool playoffs = false)
         {
             var count = 0;
             var facts = new List<string>();
@@ -221,28 +221,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 if (rank <= topThird)
                 {
                     var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), TAbbr.Totals[i]);
-                    fact += String.Format("{0}", _tst[id].Totals[i]);
+                    fact += String.Format("{0}", !playoffs ? _tst[id].Totals[i] : _tst[id].PlTotals[i]);
                     facts.Add(fact);
                     count++;
                 }
             }
             for (var i = 0; i < rankings.RankingsPerGame[id].Length; i++)
             {
+                if (double.IsNaN(!playoffs ? _tst[id].PerGame[i] : _tst[id].PlPerGame[i]))
+                {
+                    continue;
+                }
                 var rank = rankings.RankingsPerGame[id][i];
                 if (rank <= topThird)
                 {
                     var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), TAbbr.PerGame[i]);
                     if (TAbbr.PerGame[i].EndsWith("%"))
                     {
-                        fact += String.Format("{0:F3}", _tst[id].PerGame[i]);
+                        fact += String.Format("{0:F3}", !playoffs ? _tst[id].PerGame[i] : _tst[id].PlPerGame[i]);
                     }
                     else if (TAbbr.PerGame[i].EndsWith("eff"))
                     {
-                        fact += String.Format("{0:F2}", _tst[id].PerGame[i]);
+                        fact += String.Format("{0:F2}", !playoffs ? _tst[id].PerGame[i] : _tst[id].PlPerGame[i]);
                     }
                     else
                     {
-                        fact += String.Format("{0:F1}", _tst[id].PerGame[i]);
+                        fact += String.Format("{0:F1}", !playoffs ? _tst[id].PerGame[i] : _tst[id].PlPerGame[i]);
                     }
                     facts.Add(fact);
                     count++;
@@ -251,21 +255,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             for (var i = 0; i < rankings.RankingsMetrics[id].Keys.Count; i++)
             {
                 var metricName = rankings.RankingsMetrics[id].Keys.ToList()[i];
+                if (double.IsNaN(!playoffs ? _tst[id].Metrics[metricName] : _tst[id].PlMetrics[metricName]))
+                {
+                    continue;
+                }
                 var rank = rankings.RankingsMetrics[id][metricName];
                 if (rank <= topThird)
                 {
                     var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), metricName.Replace("p", "%"));
                     if (metricName.EndsWith("p") || metricName.EndsWith("%"))
                     {
-                        fact += String.Format("{0:F3}", _tst[id].Metrics[metricName]);
+                        fact += String.Format("{0:F3}", !playoffs ? _tst[id].Metrics[metricName] : _tst[id].PlMetrics[metricName]);
                     }
                     else if (metricName.EndsWith("eff"))
                     {
-                        fact += String.Format("{0:F2}", _tst[id].Metrics[metricName]);
+                        fact += String.Format("{0:F2}", !playoffs ? _tst[id].Metrics[metricName] : _tst[id].PlMetrics[metricName]);
                     }
                     else
                     {
-                        fact += String.Format("{0:F1}", _tst[id].Metrics[metricName]);
+                        fact += String.Format("{0:F1}", !playoffs ? _tst[id].Metrics[metricName] : _tst[id].PlMetrics[metricName]);
                     }
                     facts.Add(fact);
                     count++;

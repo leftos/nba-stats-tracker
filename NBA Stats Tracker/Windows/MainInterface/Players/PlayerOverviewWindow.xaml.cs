@@ -382,13 +382,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
         }
 
-        private List<string> GetFacts(int id, PlayerRankings rankings, bool onlyLeaders = false)
+        private static List<string> getFacts(int id, PlayerRankings rankings, bool onlyLeaders = false, bool playoffs = false)
         {
             var leadersStats = new List<int> { PAbbr.PPG, PAbbr.FGp, PAbbr.TPp, PAbbr.FTp, PAbbr.RPG, PAbbr.SPG, PAbbr.APG, PAbbr.BPG };
             var count = 0;
             var facts = new List<string>();
             for (var i = 0; i < rankings.RankingsPerGame[id].Length; i++)
             {
+                if (double.IsNaN(!playoffs ? MainWindow.PST[id].PerGame[i] : MainWindow.PST[id].PlPerGame[i]))
+                {
+                    continue;
+                }
                 if (onlyLeaders)
                 {
                     if (!leadersStats.Contains(i))
@@ -402,36 +406,42 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), PAbbr.PerGame[i]);
                     if (PAbbr.PerGame[i].EndsWith("%"))
                     {
-                        fact += String.Format("{0:F3}", MainWindow.PST[id].PerGame[i]);
+                        fact += String.Format("{0:F3}", !playoffs ? MainWindow.PST[id].PerGame[i] : MainWindow.PST[id].PlPerGame[i]);
                     }
                     else if (PAbbr.PerGame[i].EndsWith("eff"))
                     {
-                        fact += String.Format("{0:F2} ", MainWindow.PST[id].PerGame[i]);
+                        fact += String.Format("{0:F2} ", !playoffs ? MainWindow.PST[id].PerGame[i] : MainWindow.PST[id].PlPerGame[i]);
                         switch (PAbbr.PerGame[i].Substring(0, 2))
                         {
                             case "FG":
                                 fact += String.Format(
                                     "({0:F1} FGM/G on {1:F3})",
-                                    ((double) MainWindow.PST[id].Totals[PAbbr.FGM]) / MainWindow.PST[id].Totals[PAbbr.GP],
-                                    MainWindow.PST[id].PerGame[PAbbr.FGp]);
+                                    !playoffs
+                                        ? (double) (MainWindow.PST[id].Totals[PAbbr.FGM]) / MainWindow.PST[id].Totals[PAbbr.GP]
+                                        : (double) (MainWindow.PST[id].PlTotals[PAbbr.FGM]) / MainWindow.PST[id].PlTotals[PAbbr.GP],
+                                        !playoffs ? MainWindow.PST[id].PerGame[PAbbr.FGp] : MainWindow.PST[id].PlPerGame[PAbbr.FGp]);
                                 break;
                             case "3P":
                                 fact += String.Format(
                                     "({0:F1} 3PM/G on {1:F3})",
-                                    ((double) MainWindow.PST[id].Totals[PAbbr.TPM]) / MainWindow.PST[id].Totals[PAbbr.GP],
-                                    MainWindow.PST[id].PerGame[PAbbr.TPp]);
+                                    !playoffs
+                                        ? (double)(MainWindow.PST[id].Totals[PAbbr.TPM]) / MainWindow.PST[id].Totals[PAbbr.GP]
+                                        : (double)(MainWindow.PST[id].PlTotals[PAbbr.TPM]) / MainWindow.PST[id].PlTotals[PAbbr.GP],
+                                        !playoffs ? MainWindow.PST[id].PerGame[PAbbr.TPp] : MainWindow.PST[id].PlPerGame[PAbbr.TPp]);
                                 break;
                             case "FT":
                                 fact += String.Format(
                                     "({0:F1} FTM/G on {1:F3})",
-                                    ((double) MainWindow.PST[id].Totals[PAbbr.FTM]) / MainWindow.PST[id].Totals[PAbbr.GP],
-                                    MainWindow.PST[id].PerGame[PAbbr.FTp]);
+                                    !playoffs
+                                        ? (double)(MainWindow.PST[id].Totals[PAbbr.FTM]) / MainWindow.PST[id].Totals[PAbbr.GP]
+                                        : (double)(MainWindow.PST[id].PlTotals[PAbbr.FTM]) / MainWindow.PST[id].PlTotals[PAbbr.GP],
+                                        !playoffs ? MainWindow.PST[id].PerGame[PAbbr.FTp] : MainWindow.PST[id].PlPerGame[PAbbr.FTp]);
                                 break;
                         }
                     }
                     else
                     {
-                        fact += String.Format("{0:F1}", MainWindow.PST[id].PerGame[i]);
+                        fact += String.Format("{0:F1}", !playoffs ? MainWindow.PST[id].PerGame[i] : MainWindow.PST[id].PlPerGame[i]);
                     }
                     facts.Add(fact);
                     count++;
@@ -445,6 +455,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 {
                     continue;
                 }
+                if (double.IsNaN(!playoffs ? MainWindow.PST[id].Metrics[metricName] : MainWindow.PST[id].PlMetrics[metricName]))
+                {
+                    continue;
+                }
 
                 var rank = rankings.RankingsMetrics[id][metricName];
                 if (rank <= 20)
@@ -452,15 +466,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), metricName.Replace("p", "%"));
                     if (metricName.EndsWith("p") || metricName.EndsWith("%"))
                     {
-                        fact += String.Format("{0:F3}", MainWindow.PST[id].Metrics[metricName]);
+                        fact += String.Format("{0:F3}", !playoffs ? MainWindow.PST[id].Metrics[metricName] : MainWindow.PST[id].PlMetrics[metricName]);
                     }
                     else if (metricName.EndsWith("eff"))
                     {
-                        fact += String.Format("{0:F2}", MainWindow.PST[id].Metrics[metricName]);
+                        fact += String.Format("{0:F2}", !playoffs ? MainWindow.PST[id].Metrics[metricName] : MainWindow.PST[id].PlMetrics[metricName]);
                     }
                     else
                     {
-                        fact += String.Format("{0:F1}", MainWindow.PST[id].Metrics[metricName]);
+                        fact += String.Format("{0:F1}", !playoffs ? MainWindow.PST[id].Metrics[metricName] : MainWindow.PST[id].PlMetrics[metricName]);
                     }
                     facts.Add(fact);
                     count++;
@@ -474,7 +488,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     if (rank <= 20)
                     {
                         var fact = String.Format("{0}{1} in {2}: ", rank, Misc.GetRankingSuffix(rank), PAbbr.Totals[i]);
-                        fact += String.Format("{0}", MainWindow.PST[id].Totals[i]);
+                        fact += String.Format("{0}", !playoffs ? MainWindow.PST[id].Totals[i] : MainWindow.PST[id].PlTotals[i]);
                         facts.Add(fact);
                         count++;
                     }
@@ -501,14 +515,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     _cumSeasonRankingsActive, _cumSeasonRankingsTeam, _cumSeasonRankingsPosition, _pbsList, txbGame1.Text);
                 txbSeasonScoutingReport.Text = msg;
 
-                var facts = GetFacts(id, _cumSeasonRankingsActive);
+                var facts = getFacts(id, _cumSeasonRankingsActive);
                 txbSeasonFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
                     grpSeasonFacts.Visibility = Visibility.Collapsed;
                 }
 
-                facts = GetFacts(id, MainWindow.SeasonLeadersRankings, true);
+                facts = getFacts(id, MainWindow.SeasonLeadersRankings, true);
                 txbSeasonLeadersFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
@@ -532,14 +546,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     _cumPlayoffsRankingsActive, _cumPlayoffsRankingsTeam, _cumPlayoffsRankingsPosition, _pbsList, txbGame1.Text);
                 txbPlayoffsScoutingReport.Text = msg;
 
-                var facts = GetFacts(id, _cumPlayoffsRankingsActive);
+                var facts = getFacts(id, _cumPlayoffsRankingsActive, false, true);
                 txbPlayoffsFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
                     grpPlayoffsFacts.Visibility = Visibility.Collapsed;
                 }
 
-                facts = GetFacts(id, MainWindow.PlayoffsLeadersRankings, true);
+                facts = getFacts(id, MainWindow.PlayoffsLeadersRankings, true, true);
                 txbPlayoffsLeadersFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
@@ -556,7 +570,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             svScoutingReport.ScrollToTop();
         }
 
-        private static string aggregateFacts(List<string> facts)
+        private static string aggregateFacts(IList<string> facts)
         {
             switch (facts.Count)
             {
