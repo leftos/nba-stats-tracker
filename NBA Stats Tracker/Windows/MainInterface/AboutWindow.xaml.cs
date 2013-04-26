@@ -55,7 +55,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void btnWebsite_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://forums.nba-live.com/viewtopic.php?f=143&t=84110");
+            Process.Start("http://forums.nba-live.com/viewtopic.php?f=149&t=91237");
         }
 
         private void btnCheckForUpdates_Click(object sender, RoutedEventArgs e)
