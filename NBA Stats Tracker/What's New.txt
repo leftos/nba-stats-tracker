@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.14
+		- Fix: Download NBA Stats will now also download the playoff stats as well, courtesy (as always) of Basketball-Reference.com
+
 	v1.12.0.13
 		- Fix: Team & Player Significant Stats in Scouting Reports will now show the correct playoff stats
 		- Fix: Team & Player Significant Stats in Scouting Reports will no longer show NaN entries
