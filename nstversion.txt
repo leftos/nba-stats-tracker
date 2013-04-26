@@ -1,7 +1,7 @@
 1.12.0.14
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
-http://forums.nba-live.com/viewtopic.php?f=143&t=84110
+http://forums.nba-live.com/viewtopic.php?f=149&t=91237
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
 
 	In version 1.12.0.7, downloading the real NBA stats automatically has been re-enabled after permission was granted from Basketball-Reference.com. Kudos to Rosque from the NLSC Forum for getting in touch with them and getting permission.
