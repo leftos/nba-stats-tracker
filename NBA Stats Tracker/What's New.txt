@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.13
+		- Fix: Team & Player Significant Stats in Scouting Reports will now show the correct playoff stats
+		- Fix: Team & Player Significant Stats in Scouting Reports will no longer show NaN entries
+		- Fix: Fixed crash when selecting a player in Player Overview that had only 1 recorded box-score in the current timeframe and had a negative number in the currently selected stat to be graphed
+
 	v1.12.0.12
 		- Fix: Active players and rankings wouldn't update when the timeframe changed in Player Overview, leading to crashes
 		- Fix: Player Overview's Performance Graph wouldn't reset when there was no data to display (e.g. after a timeframe change that led to no box scores for the current player)
