@@ -1161,7 +1161,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             reInjuredList.Add(
                                 string.Format(
-                                    "{0} ({3}) was injured with {1}, is now injured again. Status: {2}",
+                                    "{0} ({3}) was being reported as having {1}, is now reported as: {2}",
                                     name,
                                     oldPlayer.Injury.InjuryName,
                                     curPlayer.Injury.Status,
