@@ -83,7 +83,7 @@
                                   Name="dgvPlayerStats" VerticalAlignment="Stretch"
                                   MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
                                   FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
-                                  Sorting="statColumn_Sorting"
+                                  Sorting="statColumn_Sorting" CanUserAddRows="False"
                                   PreviewKeyDown="anyPlayerDataGrid_PreviewKeyDown">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
