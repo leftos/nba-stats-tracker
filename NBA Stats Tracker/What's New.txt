@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.15
+		- Fix: Various minor interface fixes
+
 	v1.12.0.14
 		- Fix: Download NBA Stats will now also download the playoff stats as well, courtesy (as always) of Basketball-Reference.com
 
