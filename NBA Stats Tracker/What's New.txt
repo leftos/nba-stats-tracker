@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.16
+		- Fix: Fix Best Performers tab page-switching when timeframe is set to playoffs
+
 	v1.12.0.15
 		- Fix: Various minor interface fixes
 
