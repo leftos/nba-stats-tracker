@@ -1809,7 +1809,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 playerID = SQLiteIO.GetFreeID(
                     MainWindow.CurrentDB,
-                    "Players" + (MainWindow.CurSeason != SQLiteIO.GetMaxSeason(MainWindow.CurrentDB) ? "S" + MainWindow.CurSeason : ""));
+                    "Players" + (MainWindow.CurSeason != SQLiteIO.GetMaxSeason(MainWindow.CurrentDB) ? "S" + MainWindow.CurSeason : ""), "ID", new List<int>());
             }
             else
             {

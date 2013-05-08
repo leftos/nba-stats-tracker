@@ -456,11 +456,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                         MainWindow.DB.Delete("PlayByPlay", "GameID = " + bse.BS.ID);
 
+                        var usedPBPEIDs = new List<uint>();
+
                         foreach (var pbpe in bse.PBPEList)
                         {
+                            var nextPBPEID = GetFreeID(MainWindow.CurrentDB, "PlayByPlay", "ID", usedPBPEIDs);
                             dict2 = new Dictionary<string, string>
                                 {
-                                    { "ID", pbpe.ID.ToString() },
+                                    { "ID", nextPBPEID.ToString() },
                                     { "GameID", pbpe.GameID.ToString() },
                                     { "Quarter", pbpe.Quarter.ToString() },
                                     { "TimeLeft", pbpe.TimeLeft.ToString() },
@@ -490,6 +493,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                 };
 
                             sqlinsert2.Add(dict2);
+                            usedPBPEIDs.Add(nextPBPEID);
                         }
                     }
                     ProgressHelper.UpdateProgress((++doneCount) * 100 / count);
@@ -2523,8 +2527,33 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             var q = "select " + columnName + " from " + table + " ORDER BY " + columnName + " ASC;";
             var res = db.GetDataTable(q);
-            res.Rows.Cast<DataRow>().ToList().ForEach(r => used.Add(Convert.ToInt32(r["ID"].ToString())));
+            res.Rows.Cast<DataRow>().ToList().ForEach(r => used.Add(Convert.ToInt32(r[0].ToString())));
             var i = 0;
+            while (true)
+            {
+                if (used.Contains(i))
+                {
+                    i++;
+                }
+                else
+                {
+                    return i;
+                }
+            }
+        }
+
+        public static uint GetFreeID(string dbFile, string table, string columnName = "ID", List<uint> used = null)
+        {
+            var db = new SQLiteDatabase(dbFile);
+            if (used == null)
+            {
+                used = new List<uint>();
+            }
+
+            var q = "select " + columnName + " from " + table + " ORDER BY " + columnName + " ASC;";
+            var res = db.GetDataTable(q);
+            res.Rows.Cast<DataRow>().ToList().ForEach(r => used.Add(Convert.ToUInt32(r[0].ToString())));
+            uint i = 0;
             while (true)
             {
                 if (used.Contains(i))

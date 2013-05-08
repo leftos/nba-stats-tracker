@@ -141,7 +141,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             var date = dateParts[2].Trim() + ", " + dateParts[3].Trim();
             GameDate = Convert.ToDateTime(date);
 
-            ID = SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID");
+            ID = SQLiteIO.GetFreeID(MainWindow.CurrentDB, "GameResults", "GameID", new List<int>());
             SeasonNum = MainWindow.CurSeason;
 
             var rt = away.Rows[away.Rows.Count - 1];
