@@ -1,8 +1,47 @@
 ﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.BoxScores.PlayByPlayWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Play By Play Editor" Height="300" Width="300">
+        Title="Play By Play Editor" Height="396" Width="769">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <ListBox Margin="10,10,5,5" SelectionMode="Multiple" />
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <Button Margin="5" Height="23" Content="Do Subs"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="2">
+            <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="6">
+            <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="7">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <Button Margin="5" Height="23" Content="Do Subs"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="9">
+            <ListBox Margin="5,10,10,5" SelectionMode="Multiple" />
+        </Grid>
     </Grid>
 </Window>
