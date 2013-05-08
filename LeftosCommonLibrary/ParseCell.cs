@@ -83,5 +83,14 @@ namespace LeftosCommonLibrary
         {
             return Convert.ToSingle(r[columnName].ToString());
         }
+        
+        /// <summary>Gets a double from the specified column of the given DataRow.</summary>
+        /// <param name="r">The row.</param>
+        /// <param name="columnName">Name of the column.</param>
+        /// <returns></returns>
+        public static double GetDouble(DataRow r, string columnName)
+        {
+            return Convert.ToDouble(r[columnName].ToString());
+        }
     }
 }

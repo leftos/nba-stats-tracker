@@ -31,9 +31,13 @@ namespace NBA_Stats_Tracker.Data.BoxScores
     /// <summary>A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.</summary>
     public class BoxScoreEntry
     {
-        public DateTime Date;
-        public bool MustUpdate;
-        public List<PlayerBoxScore> PBSList;
+        public DateTime Date { get; set; }
+        public bool MustUpdate { get; set; }
+        public List<PlayerBoxScore> PBSList { get; set; }
+        public TeamBoxScore BS { get; set; }
+        public string Team1Display { get; set; }
+        public string Team2Display { get; set; }
+        public List<PlayByPlayEntry> PBPEList { get; set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
@@ -52,14 +56,10 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         /// <param name="date">The date of the game.</param>
         /// <param name="pbsList">The PlayerBoxScore list.</param>
         public BoxScoreEntry(TeamBoxScore bs, DateTime date, List<PlayerBoxScore> pbsList)
+            : this(bs)
         {
-            BS = bs;
             Date = date;
             PBSList = pbsList;
         }
-
-        public TeamBoxScore BS { get; set; }
-        public string Team1Display { get; set; }
-        public string Team2Display { get; set; }
     }
 }

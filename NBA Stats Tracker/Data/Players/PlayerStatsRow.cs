@@ -28,6 +28,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
     using LeftosCommonLibrary;
 
+    using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.Players.Contracts;
     using NBA_Stats_Tracker.Data.Players.Injuries;
     using NBA_Stats_Tracker.Data.Teams;

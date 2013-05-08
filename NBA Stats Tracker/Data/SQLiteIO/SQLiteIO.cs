@@ -54,6 +54,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             + "\"TPM\" INTEGER ,\"TPA\" INTEGER ,\"FTM\" INTEGER ,\"FTA\" INTEGER ,\"OREB\" INTEGER , \"DREB\" INTEGER, "
             + "\"FOUL\" INTEGER, PRIMARY KEY (\"PlayerID\") )";
 
+        private const string CreatePlayByPlayTableQuery =
+            "CREATE TABLE \"PlayByPlay\" (" + "\"ID\" INTEGER PRIMARY KEY NOT NULL, " + "\"GameID\" INTEGER, "
+            + "\"Quarter\" INTEGER, \"TimeLeft\" REAL, \"P1ID\" INTEGER, \"P2ID\" INTEGER, " + "\"T1ID\" INTEGER, \"T2ID\" INTEGER, "
+            + "\"T1P1ID\" INTEGER, \"T1P2ID\" INTEGER, \"T1P3ID\" INTEGER, \"T1P4ID\" INTEGER, \"T1P5ID\" INTEGER, "
+            + "\"T2P1ID\" INTEGER, \"T2P2ID\" INTEGER, \"T2P3ID\" INTEGER, \"T2P4ID\" INTEGER, \"T2P5ID\" INTEGER, "
+            + "\"EventType\" INTEGER, \"EventDesc\" TEXT, \"Location\" INTEGER, \"LocationDesc\" TEXT, "
+            + "\"ShotDistance\" INTEGER, \"ShotOrigin\" INTEGER, \"ShotType\" INTEGER, \"ShotIsMade Text, ShotIsAssisted TEXT\")";
+
         private static bool _upgrading;
 
         /// <summary>Saves the database to a new file.</summary>
@@ -344,6 +352,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 var idList = (from DataRow r in res.Rows select Convert.ToInt32(r[0].ToString())).ToList();
 
                 var sqlinsert = new List<Dictionary<string, string>>();
+                var sqlinsert2 = new List<Dictionary<string, string>>();
                 double count = MainWindow.BSHist.Count;
                 var doneCount = 0;
                 foreach (var bse in MainWindow.BSHist)
@@ -444,6 +453,44 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                             sqlinsert.Add(dict2);
                         }
+
+                        MainWindow.DB.Delete("PlayByPlay", "GameID = " + bse.BS.ID);
+
+                        foreach (var pbpe in bse.PBPEList)
+                        {
+                            dict2 = new Dictionary<string, string>
+                                {
+                                    { "ID", pbpe.ID.ToString() },
+                                    { "GameID", pbpe.GameID.ToString() },
+                                    { "Quarter", pbpe.Quarter.ToString() },
+                                    { "TimeLeft", pbpe.TimeLeft.ToString() },
+                                    { "P1ID", pbpe.Player1ID.ToString() },
+                                    { "P2ID", pbpe.Player2ID.ToString() },
+                                    { "T1ID", pbpe.Team1ID.ToString() },
+                                    { "T2ID", pbpe.Team2ID.ToString() },
+                                    { "T1P1ID", pbpe.Team1PlayerIDs[0].ToString() },
+                                    { "T1P2ID", pbpe.Team1PlayerIDs[1].ToString() },
+                                    { "T1P3ID", pbpe.Team1PlayerIDs[2].ToString() },
+                                    { "T1P4ID", pbpe.Team1PlayerIDs[3].ToString() },
+                                    { "T1P5ID", pbpe.Team1PlayerIDs[4].ToString() },
+                                    { "T2P1ID", pbpe.Team2PlayerIDs[0].ToString() },
+                                    { "T2P2ID", pbpe.Team2PlayerIDs[1].ToString() },
+                                    { "T2P3ID", pbpe.Team2PlayerIDs[2].ToString() },
+                                    { "T2P4ID", pbpe.Team2PlayerIDs[3].ToString() },
+                                    { "T2P5ID", pbpe.Team2PlayerIDs[4].ToString() },
+                                    { "EventType", pbpe.EventType.ToString() },
+                                    { "EventDesc", pbpe.EventDesc },
+                                    { "Location", pbpe.Location.ToString() },
+                                    { "LocationDesc", pbpe.LocationDesc },
+                                    { "ShotDistance", pbpe.ShotEntry.Distance.ToString() },
+                                    { "ShotOrigin", pbpe.ShotEntry.Origin.ToString() },
+                                    { "ShotType", pbpe.ShotEntry.Type.ToString() },
+                                    { "ShotIsMade", pbpe.ShotEntry.IsMade.ToString() },
+                                    { "ShotIsAssisted", pbpe.ShotEntry.IsAssisted.ToString() }
+                                };
+
+                            sqlinsert2.Add(dict2);
+                        }
                     }
                     ProgressHelper.UpdateProgress((++doneCount) * 100 / count);
                 }
@@ -454,6 +501,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     //Thread.Sleep(500);
                     //DataTable dt = MainWindow.db.GetDataTable("SELECT * FROM PlayerResults");
                     //Debug.Print(dt.Rows.Count.ToString() + " " + linesAffected.ToString());
+                }
+                if (sqlinsert2.Count > 0)
+                {
+                    MainWindow.DB.InsertManyTransaction("PlayByPlay", sqlinsert2);
                 }
             }
 
@@ -1039,6 +1090,10 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 qr = @"DROP TABLE IF EXISTS ""CareerHighs""";
                 db.ExecuteNonQuery(qr);
                 qr = CreateCareerHighsQuery;
+                db.ExecuteNonQuery(qr);
+                qr = @"DROP TABLE IF EXISTS ""PlayByPlay""";
+                db.ExecuteNonQuery(qr);
+                qr = CreatePlayByPlayTableQuery;
                 db.ExecuteNonQuery(qr);
 
                 createPastPlayerAndTeamStatsTables(db);
@@ -1996,6 +2051,21 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
+            #region PlayByPlay
+
+            qr = "SELECT * FROM PlayByPlay";
+            try
+            {
+                db.GetDataTable(qr);
+            }
+            catch (Exception)
+            {
+                qr = CreatePlayByPlayTableQuery;
+                db.ExecuteNonQuery(qr);
+            }
+
+            #endregion
+
             return mustSave;
         }
 
@@ -2060,6 +2130,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
+            var bsHist = ParseBoxScores(tst, res2, displayNames, db);
+            return bsHist;
+        }
+
+        private static List<BoxScoreEntry> ParseBoxScores(Dictionary<int, TeamStats> tst, DataTable res2, Dictionary<int, string> displayNames, SQLiteDatabase db)
+        {
             var bsHist = new List<BoxScoreEntry>(res2.Rows.Count);
             double bsCount = res2.Rows.Count;
             var doneCount = 0;
@@ -2084,6 +2160,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                         Parallel.ForEach(res3.Rows.Cast<DataRow>(), r3 => bse.PBSList.Add(new PlayerBoxScore(r3, tst)));
 
+                        var q3 = "SELECT * FROM PlayByPlay WHERE GameID = " + bs.ID.ToString();
+                        var res4 = db.GetDataTable(q3);
+                        bse.PBPEList = new List<PlayByPlayEntry>(res4.Rows.Count);
+
+                        Parallel.ForEach(res4.Rows.Cast<DataRow>(), r4 => bse.PBPEList.Add(new PlayByPlayEntry(r4)));
+
                         lock (myLock)
                         {
                             bsHist.Add(bse);
@@ -2091,8 +2173,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                         Interlocked.Increment(ref doneCount);
                         Interlocked.Exchange(
-                            ref ProgressHelper.Progress,
-                            new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount * 100 / bsCount)));
+                            ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount * 100 / bsCount)));
                     });
             return bsHist;
         }
@@ -2107,39 +2188,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var res2 = db.GetDataTable(q);
             var displayNames = GetTimeframedDisplayNames(file, startDate, endDate);
 
-            var bsHist = new List<BoxScoreEntry>(res2.Rows.Count);
-            double bsCount = res2.Rows.Count;
-            var doneCount = 0;
-            var myLock = new object();
-            Parallel.ForEach(
-                res2.Rows.Cast<DataRow>(),
-                r =>
-                    {
-                        var bs = new TeamBoxScore(r, tst);
-
-                        var bse = new BoxScoreEntry(bs)
-                            {
-                                Date = bs.GameDate,
-                                Team1Display = displayNames[bs.Team1ID],
-                                Team2Display = displayNames[bs.Team2ID]
-                            };
-
-                        var q2 = "select * from PlayerResults WHERE GameID = " + bs.ID.ToString();
-                        var res3 = db.GetDataTable(q2);
-                        bse.PBSList = new List<PlayerBoxScore>(res3.Rows.Count);
-
-                        Parallel.ForEach(res3.Rows.Cast<DataRow>(), r3 => bse.PBSList.Add(new PlayerBoxScore(r3, tst)));
-
-                        lock (myLock)
-                        {
-                            bsHist.Add(bse);
-                        }
-
-                        Interlocked.Increment(ref doneCount);
-                        Interlocked.Exchange(
-                            ref ProgressHelper.Progress,
-                            new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount * 100 / bsCount)));
-                    });
+            var bsHist = ParseBoxScores(tst, res2, displayNames, db);
             return bsHist;
         }
 

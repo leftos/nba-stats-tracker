@@ -29,6 +29,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
     using LeftosCommonLibrary;
 
+    using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players.Contracts;

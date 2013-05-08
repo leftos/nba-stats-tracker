@@ -16,7 +16,7 @@
 
 #endregion
 
-namespace NBA_Stats_Tracker.Properties
+namespace NBA_Stats_Tracker.Annotations
 {
     #region Using Directives
 

@@ -87,6 +87,8 @@
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContract.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContractOption.cs" />
+    <Compile Include="Data\BoxScores\PlayByPlayEntry.cs" />
+    <Compile Include="Data\BoxScores\ShotEntry.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerAsc.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjury.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerAsc.cs" />
@@ -125,9 +127,12 @@
     <Compile Include="Interop\REDitor\NBA2KVersion.cs" />
     <Compile Include="Interop\REDitor\REDitor.cs" />
     <Compile Include="Interop\BR\BR.cs" />
-    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="Windows\MainInterface\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainInterface\BoxScores\PlayByPlayWindow.xaml.cs">
+      <DependentUpon>PlayByPlayWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainInterface\ToolWindows\AddStatsWindow.xaml.cs">
       <DependentUpon>AddStatsWindow.xaml</DependentUpon>
@@ -193,6 +198,10 @@
     <Page Include="Windows\MainInterface\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainInterface\BoxScores\PlayByPlayWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainInterface\ToolWindows\AddStatsWindow.xaml">
       <SubType>Designer</SubType>
