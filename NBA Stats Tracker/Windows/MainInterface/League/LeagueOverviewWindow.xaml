@@ -3055,7 +3055,6 @@
                                 <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                             </Style>
                         </ComboBox.ItemContainerStyle>
-
                     </ComboBox>
                 </Grid>
             </GroupBox>

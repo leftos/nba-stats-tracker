@@ -24,13 +24,20 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     /// </summary>
     public class ComboBoxItemWithIsEnabled
     {
-        public ComboBoxItemWithIsEnabled(string item, bool isEnabled = true)
+        public ComboBoxItemWithIsEnabled(string item, bool isEnabled = true, int id = -1)
         {
             Item = item;
             IsEnabled = isEnabled;
+            ID = id;
         }
 
         public string Item { get; set; }
+        public int ID { get; set; }
         public bool IsEnabled { get; set; }
+
+        public override string ToString()
+        {
+            return Item;
+        }
     }
 }

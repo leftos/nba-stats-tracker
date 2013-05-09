@@ -175,7 +175,7 @@
                     <StackPanel Orientation="Vertical" Width="120">
                         <TextBlock Text="Event" />
                         <Rectangle Height="5" />
-                        <ComboBox Name="cmbEventType" />
+                        <ComboBox Name="cmbEventType" SelectionChanged="cmbEventType_SelectionChanged" />
                         <Rectangle Height="5" />
                         <TextBox Name="txtEventDesc" />
                     </StackPanel>
@@ -183,19 +183,31 @@
                     <StackPanel Orientation="Vertical" Width="120">
                         <TextBlock Text="Player" />
                         <Rectangle Height="5" />
-                        <ComboBox Name="cmbPlayer1" />
+                        <ComboBox Name="cmbPlayer1">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ComboBoxItem}">
+                                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                     <Rectangle Width="10" />
                     <StackPanel Orientation="Vertical" Width="120">
                         <TextBlock Name="txbPlayer2Label" Text="Player 2" />
                         <Rectangle Height="5" />
-                        <ComboBox Name="cmbPlayer2" />
+                        <ComboBox Name="cmbPlayer2">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ComboBoxItem}">
+                                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                     <Rectangle Width="10" />
                     <StackPanel Orientation="Vertical" Width="120">
                         <TextBlock Name="txbLocationLabel" Text="Location/Shot Dist." />
                         <Rectangle Height="5" />
-                        <ComboBox Name="cmbLocationShotDistance" />
+                        <ComboBox Name="cmbLocationShotDistance" SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
                         <Rectangle Height="5" />
                         <TextBox Name="txtLocationDesc" />
                     </StackPanel>

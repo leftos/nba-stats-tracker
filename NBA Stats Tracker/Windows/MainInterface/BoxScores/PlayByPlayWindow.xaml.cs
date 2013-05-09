@@ -25,6 +25,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using NBA_Stats_Tracker.Data.SQLiteIO;
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Helper.ListExtensions;
+    using NBA_Stats_Tracker.Helper.Miscellaneous;
 
     /// <summary>
     /// Interaction logic for PlayByPlayWindow.xaml
@@ -43,6 +44,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<PlayerStats> HomeSubs { get; set; }
         private ObservableCollection<PlayerStats> AwayActive { get; set; }
         private ObservableCollection<PlayerStats> HomeActive { get; set; }
+        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
 
         public PlayByPlayWindow()
         {
@@ -101,6 +103,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             HomeActive = new ObservableCollection<PlayerStats>();
             lstHomeActive.ItemsSource = HomeActive;
+
+            cmbEventType.ItemsSource = PlayByPlayEntry.EventTypes.Values;
+            cmbEventType.SelectedIndex = 2;
+
+            cmbShotOrigin.ItemsSource = ShotEntry.ShotOrigins.Values;
+            cmbShotType.ItemsSource = ShotEntry.ShotTypes.Values;
+
+            PlayersComboList = new ObservableCollection<ComboBoxItemWithIsEnabled>();
+            cmbPlayer1.ItemsSource = PlayersComboList;
+            cmbPlayer2.ItemsSource = PlayersComboList;
         }
 
         private void resetShotClock()
@@ -236,7 +248,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnTimeLeftSet_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow("Enter the time left:", SQLiteIO.GetSetting("LastTimeLeftSet", "0:00"), "NBA Stats Tracker");
+            InputBoxWindow ibw = new InputBoxWindow(
+                "Enter the time left:", SQLiteIO.GetSetting("LastTimeLeftSet", "0:00"), "NBA Stats Tracker");
             if (ibw.ShowDialog() == false)
             {
                 return;
@@ -259,7 +272,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnShotClockSet_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow("Enter the shot clock left:", SQLiteIO.GetSetting("LastShotClockSet", "0.0"), "NBA Stats Tracker");
+            InputBoxWindow ibw = new InputBoxWindow(
+                "Enter the shot clock left:", SQLiteIO.GetSetting("LastShotClockSet", "0.0"), "NBA Stats Tracker");
             if (ibw.ShowDialog() == false)
             {
                 return;
@@ -313,6 +327,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             AwayActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
             HomeSubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
             HomeActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+
+            PlayersComboList.Clear();
+            PlayersComboList.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
+            AwayActive.ToList().ForEach(ps => PlayersComboList.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+            PlayersComboList.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
+            HomeActive.ToList().ForEach(ps => PlayersComboList.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
         }
 
         private void btnHomeDoSubs_Click(object sender, RoutedEventArgs e)
@@ -340,6 +360,51 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 HomeActive.Remove(player);
             }
             sortPlayerLists();
+        }
+
+        private void cmbEventType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbEventType.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+
+            txtEventDesc.IsEnabled = cmbEventType.SelectedItem.ToString() == "Other";
+
+            stpShotEvent.IsEnabled = curEventKey == 1;
+            txbLocationLabel.Text = curEventKey == 1 ? "Shot Distance" : "Location";
+            txtLocationDesc.IsEnabled = false;
+            cmbLocationShotDistance.ItemsSource = curEventKey == 1
+                                                      ? ShotEntry.ShotDistances.Values
+                                                      : PlayByPlayEntry.EventLocations.Values;
+
+            try
+            {
+                var definition = PlayByPlayEntry.Player2Definition[curEventKey];
+                txbPlayer2Label.Text = definition;
+                cmbPlayer2.IsEnabled = true;
+            }
+            catch (KeyNotFoundException)
+            {
+                txbPlayer2Label.Text = "Not Applicable";
+                cmbPlayer2.IsEnabled = false;
+            }
+        }
+
+        private void cmbLocationShotDistance_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+            if (curEventKey != 1)
+            {
+                var curDistanceKey = PlayByPlayEntry.EventLocations.Single(pair => pair.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
+                txtLocationDesc.IsEnabled = curDistanceKey == -1;
+            }
+            else
+            {
+                txtLocationDesc.IsEnabled = false;
+            }
         }
     }
 }

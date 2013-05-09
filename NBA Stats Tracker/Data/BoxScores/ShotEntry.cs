@@ -91,30 +91,32 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         public static Dictionary<int, string> ShotDistances = new Dictionary<int, string>
             {
                 { 0, "Unknown" },
-                { 0, "Under the basket" },
-                { 1, "3-10ft (0.91-3.04m)" },
-                { 2, "10-16ft (3.04-4.88m)" },
-                { 3, "16ft-3pt (4.88m-3pt)" },
-                { 4, "Beyond 3pt" }
+                { 1, "Under the basket" },
+                { 2, "3-10ft (0.91-3.04m)" },
+                { 3, "10-16ft (3.04-4.88m)" },
+                { 4, "16ft-3pt (4.88m-3pt)" },
+                { 5, "Beyond 3pt" }
             };
 
         public static Dictionary<int, string> ShotOrigins = new Dictionary<int, string>
             {
-                { 0, "Under the basket" },
-                { 1, "Left" },
-                { 2, "Mid-Left" },
-                { 3, "Middle" },
-                { 4, "Mid-Right" },
-                { 5, "Right" }
+                { 0, "Unknown" },
+                { 1, "Under the basket" },
+                { 2, "Left" },
+                { 3, "Mid-Left" },
+                { 4, "Middle" },
+                { 5, "Mid-Right" },
+                { 6, "Right" }
             };
 
         public static Dictionary<int, string> ShotTypes = new Dictionary<int, string>
             {
-                { 0, "Dunk" },
-                { 1, "Hook Shot" },
-                { 2, "Jump Shot" },
-                { 3, "Layup" },
-                { 4, "Tip Shot" }
+                { 0, "Unknown" },
+                { 1, "Dunk" },
+                { 2, "Hook Shot" },
+                { 3, "Jump Shot" },
+                { 4, "Layup" },
+                { 5, "Tip Shot" }
             };
 
         public ShotEntry()
