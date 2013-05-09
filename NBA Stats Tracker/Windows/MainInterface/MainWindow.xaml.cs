@@ -346,10 +346,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static string CurrentDB
         {
-            get
-            {
-                return _currentDB;
-            }
+            get { return _currentDB; }
             set
             {
                 _currentDB = value;
@@ -359,10 +356,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static int CurSeason
         {
-            get
-            {
-                return _curSeason;
-            }
+            get { return _curSeason; }
             set
             {
                 try
@@ -1474,14 +1468,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            //TestWindow tw = new TestWindow(ds);
-            //tw.ShowDialog();
-
-            /*
-            var lbsw = new LiveBoxScoreWindow();
-            lbsw.ShowDialog();
-            */
-            throw new Exception("Test exception");
+#if DEBUG
+            var pbpw = new PlayByPlayWindow();
+            pbpw.Show();
+#endif
         }
 
         /// <summary>Recalculates the opponent stats for all teams by accumulating the stats from the box scores.</summary>
@@ -3169,5 +3159,41 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         }
 
         #endregion
+
+        private void mnuMiscEditPeriods_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.IsTSTEmpty())
+            {
+                return;
+            }
+
+            while (true)
+            {
+                var ibw = new InputBoxWindow(
+                    "Insert the number of periods (e.g. quarters, havles, etc.) in a game (e.g. 4):", NumberOfPeriods.ToString());
+                if (ibw.ShowDialog() == true)
+                {
+                    try
+                    {
+                        var input = Convert.ToInt32(InputBoxWindow.UserInput);
+                        if (input > 0)
+                        {
+                            NumberOfPeriods = input;
+                            break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            SQLiteIO.SetSetting("NumberOfPeriods", NumberOfPeriods);
+
+            UpdateStatus("Season Length saved. Database updated.");
+        }
+
+        public static int NumberOfPeriods { get; set; }
     }
 }
