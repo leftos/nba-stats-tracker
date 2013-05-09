@@ -127,6 +127,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static int GameLength = 48;
         public static int SeasonLength = 82;
+        public static int NumberOfPeriods = 4;
+        public static int ShotClockDuration = 24;
 
         public static readonly ObservableCollection<KeyValuePair<int, string>> SeasonList =
             new ObservableCollection<KeyValuePair<int, string>>();
@@ -635,6 +637,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
+            NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
+            ShotClockDuration = SQLiteIO.GetSetting("Shot Clock Duration", 24);
 
             Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
             //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
@@ -1469,7 +1473,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            var pbpw = new PlayByPlayWindow();
+            var pbpw = new PlayByPlayWindow(TST, PST, BSHist[0], 0, 1);
             pbpw.Show();
 #endif
         }
@@ -3191,9 +3195,41 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             SQLiteIO.SetSetting("NumberOfPeriods", NumberOfPeriods);
 
-            UpdateStatus("Season Length saved. Database updated.");
+            UpdateStatus("Number of Periods saved. Database updated.");
         }
 
-        public static int NumberOfPeriods { get; set; }
+        private void mnuMiscEditShotClockDuration_Click(object sender, RoutedEventArgs e)
+        {
+            if (SQLiteIO.IsTSTEmpty())
+            {
+                return;
+            }
+
+            while (true)
+            {
+                var ibw = new InputBoxWindow(
+                    "Insert the shot clock duration (e.g. 24):", ShotClockDuration.ToString());
+                if (ibw.ShowDialog() == true)
+                {
+                    try
+                    {
+                        var input = Convert.ToInt32(InputBoxWindow.UserInput);
+                        if (input > 0)
+                        {
+                            ShotClockDuration = input;
+                            break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            SQLiteIO.SetSetting("Shot Clock Duration", ShotClockDuration);
+
+            UpdateStatus("Shot Clock Duration saved. Database updated.");
+        }
     }
 }
