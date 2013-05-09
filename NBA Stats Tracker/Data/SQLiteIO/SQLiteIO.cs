@@ -57,6 +57,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         private const string CreatePlayByPlayTableQuery =
             "CREATE TABLE \"PlayByPlay\" (" + "\"ID\" INTEGER PRIMARY KEY NOT NULL, " + "\"GameID\" INTEGER, "
             + "\"Quarter\" INTEGER, \"TimeLeft\" REAL, \"ShotClockLeft\" REAL, " + "\"P1ID\" INTEGER, \"P2ID\" INTEGER, "
+            + "\"T1CurPTS\" INTEGER, \"T2CurPTS\" INTEGER, "
             + "\"T1P1ID\" INTEGER, \"T1P2ID\" INTEGER, \"T1P3ID\" INTEGER, \"T1P4ID\" INTEGER, \"T1P5ID\" INTEGER, "
             + "\"T2P1ID\" INTEGER, \"T2P2ID\" INTEGER, \"T2P3ID\" INTEGER, \"T2P4ID\" INTEGER, \"T2P5ID\" INTEGER, "
             + "\"EventType\" INTEGER, \"EventDesc\" TEXT, \"Location\" INTEGER, \"LocationDesc\" TEXT, "
@@ -470,6 +471,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                     { "ShotClockLeft", pbpe.ShotClockLeft.ToString() },
                                     { "P1ID", pbpe.Player1ID.ToString() },
                                     { "P2ID", pbpe.Player2ID.ToString() },
+                                    { "T1CurPTS", pbpe.T1PTS.ToString() },
+                                    { "T2CurPTS", pbpe.T2PTS.ToString() },
                                     { "T1P1ID", pbpe.Team1PlayerIDs[0].ToString() },
                                     { "T1P2ID", pbpe.Team1PlayerIDs[1].ToString() },
                                     { "T1P3ID", pbpe.Team1PlayerIDs[2].ToString() },

@@ -20,15 +20,17 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Text="Away Team" />
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Text="42" />
             </Grid>
             <Grid Grid.Column="2">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Quarter" VerticalAlignment="Center" />
+                    <TextBlock Text="Period" VerticalAlignment="Center" />
                     <Rectangle Width="5" />
                     <TextBox Width="25" Height="23" Text="4" TextAlignment="Center" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="4">
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Text="47" />
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Text="Home Team" />
             </Grid>
         </Grid>
@@ -152,6 +154,8 @@
                         <CheckBox Content="Made" />
                         <Rectangle Height="5" />
                         <CheckBox Content="Assisted" />
+                        <Rectangle Height="10" />
+                        <CheckBox Content="Update" />
                     </StackPanel>
                     <Rectangle Width="10" />
                 </StackPanel>

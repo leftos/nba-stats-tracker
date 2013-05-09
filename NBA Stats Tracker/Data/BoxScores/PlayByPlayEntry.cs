@@ -113,6 +113,30 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
         private int _player2ID;
 
+        public int T1PTS
+        {
+            get { return _t1PTS; }
+            set
+            {
+                _t1PTS = value;
+                OnPropertyChanged("T1PTS");
+            }
+        }
+
+        private int _t1PTS;
+
+        public int T2PTS
+        {
+            get { return _t2PTS; }
+            set
+            {
+                _t2PTS = value;
+                OnPropertyChanged("T2PTS");
+            }
+        }
+
+        private int _t2PTS;
+
         public List<int> Team1PlayerIDs
         {
             get { return _team1PlayerIDs; }
@@ -280,6 +304,9 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             ShotClockLeft = ParseCell.GetDouble(row, "ShotClockLeft");
             Player1ID = ParseCell.GetInt32(row, "P1ID");
             Player2ID = ParseCell.GetInt32(row, "P2ID");
+
+            T1PTS = ParseCell.GetInt32(row, "T1CurPTS");
+            T2PTS = ParseCell.GetInt32(row, "T2CurPTS");
 
             Team1PlayerIDs.Clear();
             Team1PlayerIDs.Add(ParseCell.GetInt32(row, "T1P1ID"));
