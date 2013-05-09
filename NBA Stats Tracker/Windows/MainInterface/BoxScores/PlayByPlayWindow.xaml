@@ -1,47 +1,178 @@
 ﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.BoxScores.PlayByPlayWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Play By Play Editor" Height="396" Width="769">
+        Title="Play By Play Editor" Height="470" Width="918">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="40"/>
-            <RowDefinition/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="40" />
+            <RowDefinition MinHeight="150" />
+            <RowDefinition Height="80" />
+            <RowDefinition />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0">
-            <ListBox Margin="10,10,5,5" SelectionMode="Multiple" />
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="115" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Text="Away Team" />
+            </Grid>
+            <Grid Grid.Column="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Quarter" VerticalAlignment="Center" />
+                    <Rectangle Width="5" />
+                    <TextBox Width="25" Height="23" Text="4" TextAlignment="Center" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="4">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Text="Home Team" />
+            </Grid>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="1">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                <Button Margin="5" Height="23" Content="Do Subs"/>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="0" Grid.Column="2">
-            <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
-        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="115" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <ListBox Margin="10,10,5,5" SelectionMode="Multiple" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <Button Margin="5" Height="23" Content="Do Subs" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="2">
+                <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
+            </Grid>
 
-        <Grid Grid.Row="0" Grid.Column="6">
-            <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
+            <Grid Grid.Row="0" Grid.Column="6">
+                <ListBox Margin="5,10,5,5" SelectionMode="Multiple" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="7">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <Button Margin="5" Height="23" Content="Do Subs" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="9">
+                <ListBox Margin="5,10,10,5" SelectionMode="Multiple" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="4">
+                <StackPanel Orientation="Vertical" Margin="5,10,5,5">
+                    <StackPanel Orientation="Horizontal" Background="Black" FlowDirection="RightToLeft">
+                        <TextBlock Background="Black" Foreground="Yellow" FontSize="18" FontFamily="Courier New"
+                                   Text=".6" TextAlignment="Left" VerticalAlignment="Bottom" Padding="0,0,4,2"
+                                   FlowDirection="LeftToRight" />
+                        <TextBlock Background="Black" Foreground="Yellow" FontSize="24" FontFamily="Courier New"
+                                   Text="12:00" TextAlignment="Right" VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" />
+                    </StackPanel>
+                    <Rectangle Height="5" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Start/Stop" />
+                        <Rectangle Width="10" />
+                        <Button Content="Set"></Button>
+                    </StackPanel>
+                    <Rectangle Height="5" />
+                    <StackPanel Orientation="Horizontal" Background="Black" FlowDirection="RightToLeft">
+                        <TextBlock Background="Black" Foreground="Red" FontSize="24" FontFamily="Courier New"
+                                   FontWeight="Bold" Text=".0" TextAlignment="Left" VerticalAlignment="Bottom"
+                                   Padding="0,0,4,5" FlowDirection="LeftToRight" />
+                        <TextBlock Background="Black" Foreground="Red" FontSize="40" FontFamily="Courier New"
+                                   FontWeight="Bold" Text="24" TextAlignment="Right" VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" />
+                    </StackPanel>
+                    <Rectangle Height="5" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Start/Stop" />
+                        <Rectangle Width="10" />
+                        <Button Content="Set"></Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="7">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                <Button Margin="5" Height="23" Content="Do Subs"/>
+        <Grid Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Event" />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                        <Rectangle Height="5" />
+                        <TextBox />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Player" />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Player 2" />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Location/Shot Dist." />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                        <Rectangle Height="5" />
+                        <TextBox />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Shot Origin" />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical" Width="120">
+                        <TextBlock Text="Shot Type" />
+                        <Rectangle Height="5" />
+                        <ComboBox />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                    <StackPanel Orientation="Vertical">
+                        <Rectangle Height="5" />
+                        <CheckBox Content="Made" />
+                        <Rectangle Height="5" />
+                        <CheckBox Content="Assisted" />
+                    </StackPanel>
+                    <Rectangle Width="10" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                Width="40">
+                        <Button Content="Add" />
+                        <Rectangle Height="5" />
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="9">
-            <ListBox Margin="5,10,10,5" SelectionMode="Multiple" />
+        <Grid Grid.Row="3">
+            <ListBox Margin="10,5" />
+        </Grid>
+        <Grid Grid.Row="4" Margin="10,5,10,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Save" Width="92"/>
+                <Rectangle Width="10" />
+                <Button Content="Cancel" Width="92"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

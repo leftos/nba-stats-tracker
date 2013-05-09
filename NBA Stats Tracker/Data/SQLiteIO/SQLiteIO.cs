@@ -56,7 +56,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         private const string CreatePlayByPlayTableQuery =
             "CREATE TABLE \"PlayByPlay\" (" + "\"ID\" INTEGER PRIMARY KEY NOT NULL, " + "\"GameID\" INTEGER, "
-            + "\"Quarter\" INTEGER, \"TimeLeft\" REAL, \"P1ID\" INTEGER, \"P2ID\" INTEGER, " + "\"T1ID\" INTEGER, \"T2ID\" INTEGER, "
+            + "\"Quarter\" INTEGER, \"TimeLeft\" REAL, \"ShotClockLeft\" REAL, " + "\"P1ID\" INTEGER, \"P2ID\" INTEGER, "
             + "\"T1P1ID\" INTEGER, \"T1P2ID\" INTEGER, \"T1P3ID\" INTEGER, \"T1P4ID\" INTEGER, \"T1P5ID\" INTEGER, "
             + "\"T2P1ID\" INTEGER, \"T2P2ID\" INTEGER, \"T2P3ID\" INTEGER, \"T2P4ID\" INTEGER, \"T2P5ID\" INTEGER, "
             + "\"EventType\" INTEGER, \"EventDesc\" TEXT, \"Location\" INTEGER, \"LocationDesc\" TEXT, "
@@ -467,10 +467,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                     { "GameID", pbpe.GameID.ToString() },
                                     { "Quarter", pbpe.Quarter.ToString() },
                                     { "TimeLeft", pbpe.TimeLeft.ToString() },
+                                    { "ShotClockLeft", pbpe.ShotClockLeft.ToString() },
                                     { "P1ID", pbpe.Player1ID.ToString() },
                                     { "P2ID", pbpe.Player2ID.ToString() },
-                                    { "T1ID", pbpe.Team1ID.ToString() },
-                                    { "T2ID", pbpe.Team2ID.ToString() },
                                     { "T1P1ID", pbpe.Team1PlayerIDs[0].ToString() },
                                     { "T1P2ID", pbpe.Team1PlayerIDs[1].ToString() },
                                     { "T1P3ID", pbpe.Team1PlayerIDs[2].ToString() },
@@ -2138,7 +2137,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return bsHist;
         }
 
-        private static List<BoxScoreEntry> ParseBoxScores(Dictionary<int, TeamStats> tst, DataTable res2, Dictionary<int, string> displayNames, SQLiteDatabase db)
+        private static List<BoxScoreEntry> ParseBoxScores(
+            Dictionary<int, TeamStats> tst, DataTable res2, Dictionary<int, string> displayNames, SQLiteDatabase db)
         {
             var bsHist = new List<BoxScoreEntry>(res2.Rows.Count);
             double bsCount = res2.Rows.Count;
@@ -2177,7 +2177,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
                         Interlocked.Increment(ref doneCount);
                         Interlocked.Exchange(
-                            ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount * 100 / bsCount)));
+                            ref ProgressHelper.Progress,
+                            new ProgressInfo(ProgressHelper.Progress, Convert.ToInt32(doneCount * 100 / bsCount)));
                     });
             return bsHist;
         }

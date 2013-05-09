@@ -75,6 +75,18 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             }
         }
 
+        public double ShotClockLeft
+        {
+            get { return _shotClockLeft; }
+            set
+            {
+                _shotClockLeft = value;
+                OnPropertyChanged("ShotClockLeft");
+            }
+        }
+
+        private double _shotClockLeft;
+
         private double _timeLeft;
 
         public int Player1ID
@@ -100,30 +112,6 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         }
 
         private int _player2ID;
-
-        public int Team1ID
-        {
-            get { return _team1ID; }
-            set
-            {
-                _team1ID = value;
-                OnPropertyChanged("Team1ID");
-            }
-        }
-
-        private int _team1ID;
-
-        public int Team2ID
-        {
-            get { return _team2ID; }
-            set
-            {
-                _team2ID = value;
-                OnPropertyChanged("Team2ID");
-            }
-        }
-
-        private int _team2ID;
 
         public List<int> Team1PlayerIDs
         {
@@ -289,10 +277,9 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             GameID = ParseCell.GetInt32(row, "GameID");
             Quarter = ParseCell.GetInt32(row, "Quarter");
             TimeLeft = ParseCell.GetDouble(row, "TimeLeft");
+            ShotClockLeft = ParseCell.GetDouble(row, "ShotClockLeft");
             Player1ID = ParseCell.GetInt32(row, "P1ID");
             Player2ID = ParseCell.GetInt32(row, "P2ID");
-            Team1ID = ParseCell.GetInt32(row, "T1ID");
-            Team2ID = ParseCell.GetInt32(row, "T2ID");
 
             Team1PlayerIDs.Clear();
             Team1PlayerIDs.Add(ParseCell.GetInt32(row, "T1P1ID"));
