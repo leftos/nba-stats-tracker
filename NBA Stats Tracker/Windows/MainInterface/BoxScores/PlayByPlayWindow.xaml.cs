@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 
 namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Windows.Threading;
 
@@ -23,6 +24,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
     using NBA_Stats_Tracker.Data.Teams;
+    using NBA_Stats_Tracker.Helper.ListExtensions;
 
     /// <summary>
     /// Interaction logic for PlayByPlayWindow.xaml
@@ -37,6 +39,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private double _timeLeft;
         private DispatcherTimer _timeLeftTimer, _shotClockTimer;
         private double _shotClock;
+        private ObservableCollection<PlayerStats> AwaySubs { get; set; }
+        private ObservableCollection<PlayerStats> HomeSubs { get; set; }
+        private ObservableCollection<PlayerStats> AwayActive { get; set; }
+        private ObservableCollection<PlayerStats> HomeActive { get; set; }
 
         public PlayByPlayWindow()
         {
@@ -77,6 +83,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             _shotClockTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 50) };
             _shotClockTimer.Tick += _shotClockTimer_Tick;
+
+            var awayPlayersIDs = _bse.PBSList.Where(pbs => pbs.TeamID == _t1ID).Select(pbs => pbs.PlayerID).ToList();
+            AwaySubs = new ObservableCollection<PlayerStats>();
+            awayPlayersIDs.ForEach(id => AwaySubs.Add(_pst[id]));
+            AwaySubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            lstAwaySubs.ItemsSource = AwaySubs;
+
+            AwayActive = new ObservableCollection<PlayerStats>();
+            lstAwayActive.ItemsSource = AwayActive;
+
+            var homePlayersIDs = _bse.PBSList.Where(pbs => pbs.TeamID == _t2ID).Select(pbs => pbs.PlayerID).ToList();
+            HomeSubs = new ObservableCollection<PlayerStats>();
+            homePlayersIDs.ForEach(id => HomeSubs.Add(_pst[id]));
+            HomeSubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            lstHomeSubs.ItemsSource = HomeSubs;
+
+            HomeActive = new ObservableCollection<PlayerStats>();
+            lstHomeActive.ItemsSource = HomeActive;
         }
 
         private void resetShotClock()
@@ -254,6 +278,68 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             _shotClock = shotClock;
             updateShotClockIndication(_shotClock);
             SQLiteIO.SetSetting("LastShotClockSet", InputBoxWindow.UserInput);
+        }
+
+        private void btnAwayDoSubs_Click(object sender, RoutedEventArgs e)
+        {
+            var inCount = lstAwaySubs.SelectedItems.Count;
+            var outCount = lstAwayActive.SelectedItems.Count;
+            var activeCount = lstAwayActive.Items.Count;
+            var diff = inCount - outCount;
+
+            if (activeCount + diff != 5)
+            {
+                return;
+            }
+
+            var playersIn = lstAwaySubs.SelectedItems.Cast<PlayerStats>().ToList();
+            var playersOut = lstAwayActive.SelectedItems.Cast<PlayerStats>().ToList();
+            foreach (var player in playersIn)
+            {
+                AwaySubs.Remove(player);
+                AwayActive.Add(player);
+            }
+            foreach (var player in playersOut)
+            {
+                AwaySubs.Add(player);
+                AwayActive.Remove(player);
+            }
+            sortPlayerLists();
+        }
+
+        private void sortPlayerLists()
+        {
+            AwaySubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            AwayActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            HomeSubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            HomeActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+        }
+
+        private void btnHomeDoSubs_Click(object sender, RoutedEventArgs e)
+        {
+            var inCount = lstHomeSubs.SelectedItems.Count;
+            var outCount = lstHomeActive.SelectedItems.Count;
+            var activeCount = lstHomeActive.Items.Count;
+            var diff = inCount - outCount;
+
+            if (activeCount + diff != 5)
+            {
+                return;
+            }
+
+            var playersIn = lstHomeSubs.SelectedItems.Cast<PlayerStats>().ToList();
+            var playersOut = lstHomeActive.SelectedItems.Cast<PlayerStats>().ToList();
+            foreach (var player in playersIn)
+            {
+                HomeSubs.Remove(player);
+                HomeActive.Add(player);
+            }
+            foreach (var player in playersOut)
+            {
+                HomeSubs.Add(player);
+                HomeActive.Remove(player);
+            }
+            sortPlayerLists();
         }
     }
 }

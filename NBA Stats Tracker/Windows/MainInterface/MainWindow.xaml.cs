@@ -1473,7 +1473,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            var pbpw = new PlayByPlayWindow(TST, PST, BSHist[0], 0, 1);
+            var pbpw = new PlayByPlayWindow(TST, PST, BSHist[0], BSHist[0].BS.Team1ID, BSHist[0].BS.Team2ID);
             pbpw.Show();
 #endif
         }

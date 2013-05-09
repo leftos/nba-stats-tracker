@@ -1490,5 +1490,46 @@ namespace NBA_Stats_Tracker.Data.Players
             var newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToLeagueLeader(teamStats, playoffs);
             return new PlayerStats(newpsr, playoffs);
         }
+
+        public string FullNameGivenFirst
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return FirstName + " " + LastName;
+            }
+        }
+
+        public string FullName
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return LastName + ", " + FirstName;
+            }
+        }
+
+        public override string ToString()
+        {
+            return FullName;
+        }
     }
 }

@@ -25,8 +25,34 @@
         <TextBlock Grid.ColumnSpan="3" Grid.Column="1" Margin="0,3,0,0" TextWrapping="Wrap" Grid.Row="1">
             Select any games for which you want to calculate the box-score.<LineBreak /><LineBreak />Any games you don't select won't have their box scores calculated, but the teams' and players' stats will still be updated.
         </TextBlock>
-        <ListBox Name="lstAvailableHome" Grid.Row="7" Grid.Column="3" />
-        <ListBox Name="lstAvailableAway" Grid.Row="7" Grid.Column="1" />
+        <ListBox Name="lstAvailableHome" Grid.Row="7" Grid.Column="3">
+            <ListBox.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+            </ListBox.Resources>
+            <ListBox.ItemContainerStyle>
+                <Style>
+                    <Style.Triggers>
+                        <Trigger Property="Selector.IsSelected" Value="True">
+                            <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <ListBox Name="lstAvailableAway" Grid.Row="7" Grid.Column="1">
+            <ListBox.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+            </ListBox.Resources>
+            <ListBox.ItemContainerStyle>
+                <Style>
+                    <Style.Triggers>
+                        <Trigger Property="Selector.IsSelected" Value="True">
+                            <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
         <ListBox Name="lstSelectedGames" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
                  MouseDoubleClick="lstSelectedGames_MouseDoubleClick" />
         <DatePicker Name="dtpToday" Grid.Row="3" Grid.Column="1" Margin="2" />

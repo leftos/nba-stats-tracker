@@ -381,18 +381,12 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public string Position1S
         {
-            get
-            {
-                return PlayerStats.PositionToString(Position1);
-            }
+            get { return PlayerStats.PositionToString(Position1); }
         }
 
         public string Position2S
         {
-            get
-            {
-                return PlayerStats.PositionToString(Position2);
-            }
+            get { return PlayerStats.PositionToString(Position2); }
         }
 
         public int TeamF { get; set; }
@@ -403,10 +397,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public PlayerInjury Injury
         {
-            get
-            {
-                return _injury;
-            }
+            get { return _injury; }
             set
             {
                 _injury = value;
@@ -421,42 +412,27 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public string InjuryName
         {
-            get
-            {
-                return Injury.InjuryName;
-            }
+            get { return Injury.InjuryName; }
         }
 
         public string InjuryApproxDaysLeft
         {
-            get
-            {
-                return Injury.ApproximateDays;
-            }
+            get { return Injury.ApproximateDays; }
         }
 
         public bool IsInjured
         {
-            get
-            {
-                return Injury.IsInjured;
-            }
+            get { return Injury.IsInjured; }
         }
 
         public int InjuryDaysLeft
         {
-            get
-            {
-                return Injury.InjuryDaysLeft;
-            }
+            get { return Injury.InjuryDaysLeft; }
         }
 
         public string InjuryStatus
         {
-            get
-            {
-                return Injury.Status;
-            }
+            get { return Injury.Status; }
         }
 
         public bool IsNBAChampion { get; set; }
@@ -1661,6 +1637,16 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             get
             {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
                 return FirstName + " " + LastName;
             }
         }
@@ -1669,6 +1655,16 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             get
             {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
                 return LastName + ", " + FirstName;
             }
         }

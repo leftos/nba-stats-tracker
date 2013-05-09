@@ -1,7 +1,7 @@
 ﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.BoxScores.PlayByPlayWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Play By Play Editor" Height="470" MinHeight="470" Width="918" MinWidth="918"
+        Title="Play By Play Editor" Height="470" MinHeight="470" Width="960" MinWidth="960"
         Loaded="window_Initialized" Closing="window_Closing" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
@@ -42,37 +42,89 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="118" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="160" />
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="118" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid Grid.Row="0" Grid.Column="0">
-                <ListBox Name="lstAwayActive" Margin="10,10,5,5" SelectionMode="Multiple" />
+                <ListBox Name="lstAwayActive" Margin="10,10,5,5" SelectionMode="Multiple">
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="Selector.IsSelected" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="1">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <Button Name="btnAwayDoSubs" Margin="5" Height="23" Content="Do Subs" />
+                    <Button Name="btnAwayDoSubs" Margin="5" Height="23" Content="Do Subs" Click="btnAwayDoSubs_Click"  />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="2">
-                <ListBox Name="lstAwaySubs" Margin="5,10,5,5" SelectionMode="Multiple" />
+                <ListBox Name="lstAwaySubs" Margin="5,10,5,5" SelectionMode="Multiple">
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="Selector.IsSelected" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
 
             <Grid Grid.Row="0" Grid.Column="6">
-                <ListBox Name="lstHomeActive" Margin="5,10,5,5" SelectionMode="Multiple" />
+                <ListBox Name="lstHomeActive" Margin="5,10,5,5" SelectionMode="Multiple">
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="Selector.IsSelected" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="7">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <Button Name="btnHomeDoSubs" Margin="5" Height="23" Content="Do Subs" />
+                    <Button Name="btnHomeDoSubs" Margin="5" Height="23" Content="Do Subs" Click="btnHomeDoSubs_Click" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="9">
-                <ListBox Name="lstHomeSubs" Margin="5,10,10,5" SelectionMode="Multiple" />
+                <ListBox Name="lstHomeSubs" Margin="5,10,10,5" SelectionMode="Multiple">
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="Selector.IsSelected" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="{x:Static SystemColors.HighlightTextBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="4">
                 <StackPanel Orientation="Vertical" Margin="5,10,5,5">
