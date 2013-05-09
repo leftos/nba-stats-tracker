@@ -42,13 +42,13 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="118" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="160" />
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="118" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid Grid.Row="0" Grid.Column="0">
@@ -69,7 +69,7 @@
             </Grid>
             <Grid Grid.Row="0" Grid.Column="1">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <Button Name="btnAwayDoSubs" Margin="5" Height="23" Content="Do Subs" Click="btnAwayDoSubs_Click"  />
+                    <Button Name="btnAwayDoSubs" Margin="5" Height="23" Content="&lt;-&gt;" Click="btnAwayDoSubs_Click"  />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="2">
@@ -107,7 +107,7 @@
             </Grid>
             <Grid Grid.Row="0" Grid.Column="7">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <Button Name="btnHomeDoSubs" Margin="5" Height="23" Content="Do Subs" Click="btnHomeDoSubs_Click" />
+                    <Button Name="btnHomeDoSubs" Margin="5" Height="23" Content="&lt;-&gt;" Click="btnHomeDoSubs_Click" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="9">
