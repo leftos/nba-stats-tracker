@@ -221,6 +221,42 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
         private ShotEntry _shotEntry;
 
+        public string DisplayTeam
+        {
+            get { return _displayTeam; }
+            set
+            {
+                _displayTeam = value;
+                OnPropertyChanged("DisplayTeam");
+            }
+        }
+
+        private string _displayTeam;
+
+        public string DisplayPlayer1
+        {
+            get { return _displayPlayer1; }
+            set
+            {
+                _displayPlayer1 = value;
+                OnPropertyChanged("DisplayPlayer1");
+            }
+        }
+
+        private string _displayPlayer1;
+
+        public string DisplayPlayer2
+        {
+            get { return _displayPlayer2; }
+            set
+            {
+                _displayPlayer2 = value;
+                OnPropertyChanged("DisplayPlayer2");
+            }
+        }
+
+        private string _displayPlayer2;
+
         public static Dictionary<int, string> EventTypes = new Dictionary<int, string>
             {
                 { -1, "Other" },
@@ -309,7 +345,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             ShotClockLeft = ParseCell.GetDouble(row, "ShotClockLeft");
             Player1ID = ParseCell.GetInt32(row, "P1ID");
             Player2ID = ParseCell.GetInt32(row, "P2ID");
-
+            
             T1PTS = ParseCell.GetInt32(row, "T1CurPTS");
             T2PTS = ParseCell.GetInt32(row, "T2CurPTS");
 
@@ -336,6 +372,20 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             {
                 ShotEntry = new ShotEntry(row);
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format(
+                "P{0} - {1:00}:{2:00} ({3:F1}) - {7} - {4}: {5} {6}",
+                Quarter,
+                TimeLeft / 60,
+                TimeLeft % 60,
+                ShotClockLeft,
+                EventTypes[EventType],
+                DisplayPlayer1,
+                DisplayPlayer2 != "" ? "(" + DisplayPlayer2 + ")" : "",
+                DisplayTeam);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

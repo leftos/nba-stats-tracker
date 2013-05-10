@@ -239,7 +239,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom"
                                 Width="40">
-                        <Button Name="btnAdd" Content="Add" />
+                        <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" />
                         <Rectangle Height="5" />
                         <Button Name="btnEdit" Content="Edit" />
                         <Rectangle Height="5" />

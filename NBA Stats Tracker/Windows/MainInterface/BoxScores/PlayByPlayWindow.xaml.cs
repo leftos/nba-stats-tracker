@@ -46,6 +46,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<PlayerStats> HomeActive { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
+        private ObservableCollection<PlayByPlayEntry> Plays { get; set; } 
 
         public PlayByPlayWindow()
         {
@@ -462,6 +463,41 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void cmbPlayer1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             populatePlayer2Combo();
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbEventType.SelectedIndex == -1 || cmbPlayer1.SelectedIndex == -1 || cmbLocationShotDistance.SelectedIndex == -1)
+            {
+                return;
+            }
+            if (stpShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
+            {
+                return;
+            }
+            var curPlayer = cmbPlayer1.SelectedItem as ComboBoxItemWithIsEnabled;
+            var curPlayerTeam = _bse.PBSList.Single(pbs => pbs.PlayerID == curPlayer.ID).TeamID;
+            var teamName = _tst[curPlayerTeam].DisplayName;
+            var play = new PlayByPlayEntry
+                {
+                    DisplayPlayer1 = cmbPlayer1.SelectedItem.ToString(),
+                    DisplayPlayer2 = cmbPlayer2.SelectedIndex != -1 ? cmbPlayer2.SelectedItem.ToString() : "",
+                    DisplayTeam = teamName,
+                    EventDesc = txtEventDesc.IsEnabled ? txtEventDesc.Text : "",
+                    EventType = PlayByPlayEntry.EventTypes.Single(item => item.Value == cmbEventType.SelectedItem.ToString()).Key,
+                    GameID = _bse.BS.ID,
+                    Location = stpShotEvent.IsEnabled ? -2 : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
+                    LocationDesc = txtLocationDesc.IsEnabled ? txtLocationDesc.Text : "",
+                    Player1ID = curPlayer.ID,
+                    Player2ID = cmbPlayer2.IsEnabled ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID : -1,
+                    T1PTS = Convert.ToInt32(txtAwayScore.Text),
+                    T2PTS = Convert.ToInt32(txtHomeScore.Text),
+                    Team1PlayerIDs = AwayActive.Select(ps => ps.ID).ToList(),
+                    Team2PlayerIDs = HomeActive.Select(ps => ps.ID).ToList(),
+                    ShotEntry = stpShotEvent.IsEnabled ? new ShotEntry(/*WORK NEEDED*/) : null,
+                    TimeLeft = _timeLeft,
+                    ShotClockLeft = _shotClock
+                };
         }
     }
 }
