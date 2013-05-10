@@ -18,6 +18,7 @@
 
 namespace NBA_Stats_Tracker.Data.BoxScores
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Data;
@@ -376,13 +377,39 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
         public override string ToString()
         {
+            string eventTypeDescription = "";
+            if (EventType == -1)
+            {
+                eventTypeDescription = EventDesc;
+            }
+            else if (EventType != 1)
+            {
+                eventTypeDescription = EventTypes[EventType];
+            }
+            else
+            {
+                if (ShotEntry.Distance == 5)
+                {
+                    eventTypeDescription += "3PT ";
+                }
+                else if (ShotEntry.Distance != 0)
+                {
+                    eventTypeDescription += "2PT ";
+                }
+                else
+                {
+                    eventTypeDescription += "Shot ";
+                }
+
+                eventTypeDescription += ShotEntry.IsMade ? "Made" : "Missed";
+            }
             return string.Format(
                 "P{0} - {1:00}:{2:00} ({3:F1}) - {7} - {4}: {5} {6}",
                 Quarter,
-                TimeLeft / 60,
+                Convert.ToInt32(Math.Floor(TimeLeft)) / 60,
                 TimeLeft % 60,
                 ShotClockLeft,
-                EventTypes[EventType],
+                eventTypeDescription,
                 DisplayPlayer1,
                 DisplayPlayer2 != "" ? "(" + DisplayPlayer2 + ")" : "",
                 DisplayTeam);

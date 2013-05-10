@@ -20,6 +20,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using LeftosCommonLibrary;
     using LeftosCommonLibrary.CommonDialogs;
 
+    using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
@@ -30,7 +31,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     /// <summary>
     /// Interaction logic for PlayByPlayWindow.xaml
     /// </summary>
-    public partial class PlayByPlayWindow : Window
+    public partial class PlayByPlayWindow : Window, INotifyPropertyChanged
     {
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, PlayerStats> _pst;
@@ -46,7 +47,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<PlayerStats> HomeActive { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
-        private ObservableCollection<PlayByPlayEntry> Plays { get; set; } 
+        private ObservableCollection<PlayByPlayEntry> Plays { get; set; }
+
+        public int CurrentPeriod
+        {
+            get { return _currentPeriod; }
+            set
+            {
+                _currentPeriod = value;
+                OnPropertyChanged("CurrentPeriod");
+            }
+        }
+
+        private int _currentPeriod;
+        private double _savedTimeLeft, _savedShotClock;
+        private List<PlayerStats> _savedAwaySubs, _savedHomeSubs, _savedAwayActive, _savedHomeActive;
+        private int _savedAwayPoints, _savedHomePoints;
+        private int _savedPeriod;
 
         public PlayByPlayWindow()
         {
@@ -62,21 +79,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             _bse = bse;
             _t1ID = t1ID;
             _t2ID = t2ID;
-        }
 
-        private void window_Initialized(object sender, EventArgs e)
-        {
             Height = Tools.GetRegistrySetting("PBPHeight", MinHeight);
             Width = Tools.GetRegistrySetting("PBPWidth", MinWidth);
             Left = Tools.GetRegistrySetting("PBPX", Left);
             Top = Tools.GetRegistrySetting("PBPY", Top);
+        }
 
+        private void window_Loaded(object sender, EventArgs e)
+        {
             txbAwayTeam.Text = _tst[_t1ID].DisplayName;
             txbHomeTeam.Text = _tst[_t2ID].DisplayName;
             txtAwayScore.Text = _bse.BS.PTS1.ToString();
             txtHomeScore.Text = _bse.BS.PTS2.ToString();
 
-            txtPeriod.Text = "1";
+            CurrentPeriod = 1;
 
             resetTimeLeft();
 
@@ -117,6 +134,20 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             cmbPlayer1.ItemsSource = PlayersComboList;
             cmbPlayer2.ItemsSource = PlayersComboList2;
+
+            Plays = new ObservableCollection<PlayByPlayEntry>();
+            lstEvents.ItemsSource = Plays;
+
+#if DEBUG
+            for (int i = 0; i < 5; i++)
+            {
+                HomeActive.Add(HomeSubs[0]);
+                HomeSubs.RemoveAt(0);
+                AwayActive.Add(AwaySubs[0]);
+                AwaySubs.RemoveAt(0);
+            }
+            sortPlayerLists();
+#endif
         }
 
         private void resetShotClock()
@@ -475,6 +506,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 return;
             }
+            var play = createPlayByPlayEntryFromCurrent();
+
+            Plays.Add(play);
+            Plays.Sort(new PlayByPlayEntryComparerAsc());
+            lstEvents.ItemsSource = Plays;
+        }
+
+        private PlayByPlayEntry createPlayByPlayEntryFromCurrent()
+        {
             var curPlayer = cmbPlayer1.SelectedItem as ComboBoxItemWithIsEnabled;
             var curPlayerTeam = _bse.PBSList.Single(pbs => pbs.PlayerID == curPlayer.ID).TeamID;
             var teamName = _tst[curPlayerTeam].DisplayName;
@@ -486,18 +526,158 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     EventDesc = txtEventDesc.IsEnabled ? txtEventDesc.Text : "",
                     EventType = PlayByPlayEntry.EventTypes.Single(item => item.Value == cmbEventType.SelectedItem.ToString()).Key,
                     GameID = _bse.BS.ID,
-                    Location = stpShotEvent.IsEnabled ? -2 : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
+                    Location =
+                        stpShotEvent.IsEnabled
+                            ? -2
+                            : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
                     LocationDesc = txtLocationDesc.IsEnabled ? txtLocationDesc.Text : "",
                     Player1ID = curPlayer.ID,
-                    Player2ID = cmbPlayer2.IsEnabled ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID : -1,
+                    Player2ID =
+                        (cmbPlayer2.IsEnabled && cmbPlayer2.SelectedIndex != -1) ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID : -1,
                     T1PTS = Convert.ToInt32(txtAwayScore.Text),
                     T2PTS = Convert.ToInt32(txtHomeScore.Text),
                     Team1PlayerIDs = AwayActive.Select(ps => ps.ID).ToList(),
                     Team2PlayerIDs = HomeActive.Select(ps => ps.ID).ToList(),
-                    ShotEntry = stpShotEvent.IsEnabled ? new ShotEntry(/*WORK NEEDED*/) : null,
+                    ShotEntry =
+                        stpShotEvent.IsEnabled
+                            ? new ShotEntry(
+                                  ShotEntry.ShotDistances.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
+                                  ShotEntry.ShotOrigins.Single(item => item.Value == cmbShotOrigin.SelectedItem.ToString()).Key,
+                                  ShotEntry.ShotTypes.Single(item => item.Value == cmbShotType.SelectedItem.ToString()).Key,
+                                  chkShotIsMade.IsChecked == true,
+                                  chkShotIsAssisted.IsChecked == true)
+                            : null,
                     TimeLeft = _timeLeft,
-                    ShotClockLeft = _shotClock
+                    ShotClockLeft = _shotClock,
+                    Quarter = CurrentPeriod
                 };
+            return play;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstEvents.SelectedIndex == -1)
+            {
+                return;
+            }
+            if (btnEdit.Content.ToString() == "Edit")
+            {
+                var selectedPlay = lstEvents.SelectedItem as PlayByPlayEntry;
+                lstEvents.IsEnabled = false;
+                btnSave.IsEnabled = false;
+                btnCancel.IsEnabled = false;
+                btnAdd.IsEnabled = false;
+                btnDelete.IsEnabled = false;
+                _shotClockTimer.Stop();
+                _timeLeftTimer.Stop();
+                _savedTimeLeft = _timeLeft;
+                _savedShotClock = _shotClock;
+                _savedAwayActive = AwayActive.ToList();
+                _savedAwaySubs = AwaySubs.ToList();
+                _savedHomeActive = HomeActive.ToList();
+                _savedHomeSubs = HomeSubs.ToList();
+                _savedAwayPoints = Convert.ToInt32(txtAwayScore.Text);
+                _savedHomePoints = Convert.ToInt32(txtHomeScore.Text);
+                _savedPeriod = CurrentPeriod;
+
+                _timeLeft = selectedPlay.TimeLeft;
+                updateTimeLeftIndication(_timeLeft);
+
+                _shotClock = selectedPlay.ShotClockLeft;
+                updateShotClockIndication(_shotClock);
+
+                AwayActive = new ObservableCollection<PlayerStats>(selectedPlay.Team1PlayerIDs.Select(id => _pst[id]).ToList());
+                AwaySubs =
+                    new ObservableCollection<PlayerStats>(
+                        _bse.PBSList.Where(pbs => pbs.TeamID == _t1ID && !selectedPlay.Team1PlayerIDs.Contains(pbs.PlayerID))
+                            .Select(pbs => _pst[pbs.PlayerID])
+                            .ToList());
+                HomeActive = new ObservableCollection<PlayerStats>(selectedPlay.Team2PlayerIDs.Select(id => _pst[id]).ToList());
+                HomeSubs =
+                    new ObservableCollection<PlayerStats>(
+                        _bse.PBSList.Where(pbs => pbs.TeamID == _t2ID && !selectedPlay.Team2PlayerIDs.Contains(pbs.PlayerID))
+                            .Select(pbs => _pst[pbs.PlayerID])
+                            .ToList());
+
+                lstAwayActive.ItemsSource = AwayActive;
+                lstAwaySubs.ItemsSource = AwaySubs;
+                lstHomeActive.ItemsSource = HomeActive;
+                lstHomeSubs.ItemsSource = HomeSubs;
+
+                sortPlayerLists();
+
+                cmbEventType.SelectedItem = PlayByPlayEntry.EventTypes[selectedPlay.EventType];
+                txtEventDesc.Text = selectedPlay.EventDesc;
+                cmbPlayer1.SelectedItem = PlayersComboList.Single(item => item.ID == selectedPlay.Player1ID);
+                cmbPlayer2.SelectedItem = selectedPlay.Player2ID != -1 ? PlayersComboList2.Single(item => item.ID == selectedPlay.Player2ID) : null;
+                cmbLocationShotDistance.SelectedItem = selectedPlay.EventType != 1
+                                                           ? PlayByPlayEntry.EventLocations[selectedPlay.Location]
+                                                           : ShotEntry.ShotDistances[selectedPlay.ShotEntry.Distance];
+                txtLocationDesc.Text = selectedPlay.LocationDesc;
+                cmbShotOrigin.SelectedItem = selectedPlay.EventType == 1 ? ShotEntry.ShotOrigins[selectedPlay.ShotEntry.Origin] : null;
+                cmbShotType.SelectedItem = selectedPlay.EventType == 1 ? ShotEntry.ShotTypes[selectedPlay.ShotEntry.Type] : null;
+                chkShotIsMade.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsMade;
+                chkShotIsAssisted.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsAssisted;
+                txtAwayScore.Text = selectedPlay.T1PTS.ToString();
+                txtHomeScore.Text = selectedPlay.T2PTS.ToString();
+                CurrentPeriod = selectedPlay.Quarter;
+
+                btnEdit.Content = "Save";
+            }
+            else
+            {
+                if (cmbEventType.SelectedIndex == -1 || cmbPlayer1.SelectedIndex == -1 || cmbLocationShotDistance.SelectedIndex == -1)
+                {
+                    return;
+                }
+                if (stpShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
+                {
+                    return;
+                }
+                var play = createPlayByPlayEntryFromCurrent();
+                Plays.Remove(lstEvents.SelectedItem as PlayByPlayEntry);
+                Plays.Add(play);
+                Plays.Sort(new PlayByPlayEntryComparerAsc());
+
+                _timeLeft = _savedTimeLeft;
+                updateTimeLeftIndication(_timeLeft);
+                _shotClock = _savedShotClock;
+                updateShotClockIndication(_shotClock);
+                AwayActive = new ObservableCollection<PlayerStats>(_savedAwayActive);
+                AwaySubs = new ObservableCollection<PlayerStats>(_savedAwaySubs);
+                HomeActive = new ObservableCollection<PlayerStats>(_savedHomeActive);
+                HomeSubs = new ObservableCollection<PlayerStats>(_savedHomeSubs);
+                txtAwayScore.Text = _savedAwayPoints.ToString();
+                txtHomeScore.Text = _savedHomePoints.ToString();
+                CurrentPeriod = _savedPeriod;
+
+                lstAwayActive.ItemsSource = AwayActive;
+                lstAwaySubs.ItemsSource = AwaySubs;
+                lstHomeActive.ItemsSource = HomeActive;
+                lstHomeSubs.ItemsSource = HomeSubs;
+
+                sortPlayerLists();
+                
+                lstEvents.IsEnabled = true;
+                btnSave.IsEnabled = true;
+                btnCancel.IsEnabled = true;
+                btnAdd.IsEnabled = true;
+                btnDelete.IsEnabled = true;
+
+                btnEdit.Content = "Edit";
+            }
         }
     }
 }

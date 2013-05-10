@@ -80,6 +80,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\BoxScores\PlayByPlay\PlayByPlayEntryComparerAsc.cs" />
     <Compile Include="Data\Other\Conference.cs" />
     <Compile Include="Data\Other\DBData.cs" />
     <Compile Include="Data\Other\Span.cs" />
@@ -87,8 +88,8 @@
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContract.cs" />
     <Compile Include="Data\Players\Contracts\PlayerContractOption.cs" />
-    <Compile Include="Data\BoxScores\PlayByPlayEntry.cs" />
-    <Compile Include="Data\BoxScores\ShotEntry.cs" />
+    <Compile Include="Data\BoxScores\PlayByPlay\PlayByPlayEntry.cs" />
+    <Compile Include="Data\BoxScores\PlayByPlay\ShotEntry.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerAsc.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjury.cs" />
     <Compile Include="Data\Players\Injuries\PlayerInjuryDaysComparerAsc.cs" />
