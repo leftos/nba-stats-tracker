@@ -45,6 +45,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<PlayerStats> AwayActive { get; set; }
         private ObservableCollection<PlayerStats> HomeActive { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
+        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
 
         public PlayByPlayWindow()
         {
@@ -104,15 +105,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             HomeActive = new ObservableCollection<PlayerStats>();
             lstHomeActive.ItemsSource = HomeActive;
 
+            PlayersComboList = new ObservableCollection<ComboBoxItemWithIsEnabled>();
+            PlayersComboList2 = new ObservableCollection<ComboBoxItemWithIsEnabled>();
+
             cmbEventType.ItemsSource = PlayByPlayEntry.EventTypes.Values;
             cmbEventType.SelectedIndex = 2;
 
             cmbShotOrigin.ItemsSource = ShotEntry.ShotOrigins.Values;
             cmbShotType.ItemsSource = ShotEntry.ShotTypes.Values;
 
-            PlayersComboList = new ObservableCollection<ComboBoxItemWithIsEnabled>();
             cmbPlayer1.ItemsSource = PlayersComboList;
-            cmbPlayer2.ItemsSource = PlayersComboList;
+            cmbPlayer2.ItemsSource = PlayersComboList2;
         }
 
         private void resetShotClock()
@@ -333,6 +336,54 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             AwayActive.ToList().ForEach(ps => PlayersComboList.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
             PlayersComboList.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
             HomeActive.ToList().ForEach(ps => PlayersComboList.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+
+            populatePlayer2Combo();
+        }
+
+        private void populatePlayer2Combo()
+        {
+            PlayersComboList2.Clear();
+            if (cmbEventType.SelectedIndex == -1)
+            {
+                return;
+            }
+            var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+            if (curEventKey <= 0 || cmbPlayer1.SelectedIndex == -1)
+            {
+                PlayersComboList2 = new ObservableCollection<ComboBoxItemWithIsEnabled>(PlayersComboList);
+            }
+            else
+            {
+                var curPlayer = cmbPlayer1.SelectedItem as ComboBoxItemWithIsEnabled;
+                var curPlayerTeam = _bse.PBSList.Single(pbs => pbs.PlayerID == curPlayer.ID).TeamID;
+                if (PlayByPlayEntry.UseOpposingTeamAsPlayer2.Contains(curEventKey))
+                {
+                    if (curPlayerTeam == _t1ID)
+                    {
+                        PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
+                        HomeActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                    }
+                    else
+                    {
+                        PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
+                        AwayActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                    }
+                }
+                else
+                {
+                    if (curPlayerTeam == _t1ID)
+                    {
+                        PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
+                        AwayActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                    }
+                    else
+                    {
+                        PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
+                        HomeActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                    }
+                }
+            }
+            cmbPlayer2.ItemsSource = PlayersComboList2;
         }
 
         private void btnHomeDoSubs_Click(object sender, RoutedEventArgs e)
@@ -385,6 +436,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 var definition = PlayByPlayEntry.Player2Definition[curEventKey];
                 txbPlayer2Label.Text = definition;
                 cmbPlayer2.IsEnabled = true;
+                populatePlayer2Combo();
             }
             catch (KeyNotFoundException)
             {
@@ -405,6 +457,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 txtLocationDesc.IsEnabled = false;
             }
+        }
+
+        private void cmbPlayer1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            populatePlayer2Combo();
         }
     }
 }

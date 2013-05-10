@@ -183,7 +183,7 @@
                     <StackPanel Orientation="Vertical" Width="120">
                         <TextBlock Text="Player" />
                         <Rectangle Height="5" />
-                        <ComboBox Name="cmbPlayer1">
+                        <ComboBox Name="cmbPlayer1" SelectionChanged="cmbPlayer1_SelectionChanged">
                             <ComboBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ComboBoxItem}">
                                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />

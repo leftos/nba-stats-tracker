@@ -254,6 +254,11 @@ namespace NBA_Stats_Tracker.Data.BoxScores
                 { 13, "Shot By" }
             };
 
+        public static List<int> UseOpposingTeamAsPlayer2  = new List<int>
+            {
+                1, 6, 7, 8, 9, 10, 12
+            };
+
         public static Dictionary<int, string> EventLocations = new Dictionary<int, string>
             {
                 { -1, "Other" },
