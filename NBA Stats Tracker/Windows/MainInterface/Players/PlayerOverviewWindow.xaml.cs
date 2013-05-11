@@ -71,7 +71,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private ObservableCollection<PlayerBoxScore> _pbsList;
         private PlayerStatsRow _plPSR;
-        private string _plPlayersT = MainWindow.PlPlayersT;
         private PlayerRankings _plRankingsActive;
         private PlayerRankings _plRankingsPosition;
         private PlayerRankings _plRankingsTeam;
@@ -79,7 +78,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private Dictionary<int, PlayerStats> _playersActive;
         private Dictionary<int, PlayerStats> _playersSamePosition;
         private Dictionary<int, PlayerStats> _playersSameTeam;
-        private string _playersT = MainWindow.PlayersT;
         private PlayerStatsRow _psr;
         private PlayerRankings _rankingsActive;
         private PlayerRankings _rankingsPosition;
@@ -221,21 +219,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <summary>Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.</summary>
         private void getActivePlayers()
         {
-            _playersActive = new Dictionary<int, PlayerStats>();
-
-            var q = "select * from " + _playersT + " where isActive LIKE \"True\"";
-            q += " AND isHidden LIKE \"False\"";
-            var res = _db.GetDataTable(q);
-            foreach (DataRow r in res.Rows)
-            {
-                var q2 = "select * from " + _plPlayersT + " where ID = " + ParseCell.GetInt32(r, "ID");
-                var plRes = _db.GetDataTable(q2);
-
-                var ps = new PlayerStats(r, MainWindow.TST);
-                _playersActive.Add(ps.ID, ps);
-                _playersActive[ps.ID].UpdatePlayoffStats(plRes.Rows[0]);
-            }
-
+            _playersActive = MainWindow.PST.Where(ps => ps.Value.IsActive && !ps.Value.IsHidden).ToDictionary(ps => ps.Key, ps => ps.Value);
             _rankingsActive = new PlayerRankings(_playersActive);
             _plRankingsActive = new PlayerRankings(_playersActive, true);
         }
@@ -1195,10 +1179,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             PlayerStats ps;
 
             MainWindow.ChangeSeason(_curSeason);
-
-            _playersT = MainWindow.PlayersT;
-            _plPlayersT = MainWindow.PlPlayersT;
-
+            
             populateTeamsCombo();
             getActivePlayers();
 
@@ -1574,28 +1555,26 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbOppPlayer.ItemsSource = null;
 
             _oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
-            string q;
+            List<KeyValuePair<int, PlayerStats>> list;
             if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
             {
-                q = "select * from " + _playersT + " where TeamFin = "
-                    + Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbOppTeam.SelectedItem.ToString()) + " AND isActive LIKE \"True\"";
+                list =
+                    MainWindow.PST.Where(
+                        ps =>
+                        ps.Value.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbOppTeam.SelectedItem.ToString())
+                        && ps.Value.IsActive).ToList();
             }
             else
             {
-                q = "select * from " + _playersT + " where isActive LIKE \"False\"";
+                list = MainWindow.PST.Where(ps => !ps.Value.IsActive).ToList();
             }
-            q += " AND isHidden LIKE \"False\"";
-            q += " ORDER BY LastName ASC";
-            var res = _db.GetDataTable(q);
+            list = list.Where(ps => !ps.Value.IsHidden).OrderBy(ps => ps.Value.FullName).ToList();
 
-            foreach (DataRow r in res.Rows)
-            {
-                _oppPlayersList.Add(
-                    new KeyValuePair<int, string>(
-                        ParseCell.GetInt32(r, "ID"),
-                        ParseCell.GetString(r, "LastName") + ", " + ParseCell.GetString(r, "FirstName") + " ("
-                        + ParseCell.GetString(r, "Position1") + ")"));
-            }
+            _oppPlayersList =
+                new ObservableCollection<KeyValuePair<int, string>>(
+                    list.Select(
+                        item =>
+                        new KeyValuePair<int, string>(item.Key, String.Format("{0} ({1})", item.Value.FullName, item.Value.Position1S))));
 
             cmbOppPlayer.ItemsSource = _oppPlayersList;
         }

@@ -2733,6 +2733,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void btnChangeName_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.Tf.IsBetween)
+            {
+                MessageBox.Show(
+                    "Please switch to a season timeframe before trying to change the name of a team.",
+                    App.AppName,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
             try
             {
                 var ibw = new InputBoxWindow("Please enter the new name for the team", _tst[_curTeam].DisplayName);
@@ -2970,6 +2979,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void btnChangeDivision_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.Tf.IsBetween)
+            {
+                MessageBox.Show(
+                    "Please switch to a season timeframe before trying to change the division of a team.",
+                    App.AppName,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
             var teamid = _curTeam;
             var i = MainWindow.Divisions.TakeWhile(div => _tst[teamid].Division != div.ID).Count();
             var ccw = new ComboChoiceWindow(ComboChoiceWindow.Mode.Division, i);

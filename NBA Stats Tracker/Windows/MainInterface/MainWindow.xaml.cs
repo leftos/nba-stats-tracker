@@ -171,12 +171,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private static List<string> _notables = new List<string>();
 
-        public static string TeamsT;
-        public static string PlTeamsT;
-        public static string OppT;
-        public static string PlOppT;
-        public static string PlayersT;
-        public static string PlPlayersT;
         public static PlayerRankings SeasonLeadersRankings;
         public static PlayerRankings PlayoffsLeadersRankings;
         public static bool IsImperial = true;
@@ -370,6 +364,26 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                 }
             }
+        }
+
+        public static string TeamsT
+        {
+            get { return "Teams" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
+        }
+
+        public static string PlTeamsT
+        {
+            get { return "PlayoffTeams" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
+        }
+
+        public static string OppT
+        {
+            get { return "Opponents" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
+        }
+
+        public static string PlOppT
+        {
+            get { return "PlayoffOpponents" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
         }
 
         /// <summary>TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program</summary>
@@ -708,15 +722,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             CurSeason = curSeason;
             MWInstance.cmbSeasonNum.SelectedValue = CurSeason.ToString();
-            var maxSeason = SQLiteIO.GetMaxSeason(CurrentDB);
-            TeamsT = "Teams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
-            PlTeamsT = "PlayoffTeams" + SQLiteIO.AddSuffix(curSeason, maxSeason);
-            OppT = "Opponents" + SQLiteIO.AddSuffix(curSeason, maxSeason);
-            PlOppT = "PlayoffOpponents" + SQLiteIO.AddSuffix(curSeason, maxSeason);
-            PlayersT = "Players" + SQLiteIO.AddSuffix(curSeason, maxSeason);
-            PlPlayersT = "PlayoffPlayers" + SQLiteIO.AddSuffix(curSeason, maxSeason);
         }
-
+        
         /// <summary>
         ///     Handles the Click event of the btnLoadUpdate control. Opens the Box Score window to allow the user to update the team stats
         ///     by entering a box score.
