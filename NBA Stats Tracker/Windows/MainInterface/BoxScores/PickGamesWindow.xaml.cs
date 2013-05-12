@@ -115,10 +115,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (var team in _teams)
+            var list = _teams.Select(team => MainWindow.TST[team].DisplayName).ToList();
+            list.Sort();
+            foreach (var team in list)
             {
-                lstAvailableAway.Items.Add(MainWindow.TST[team].DisplayName);
-                lstAvailableHome.Items.Add(MainWindow.TST[team].DisplayName);
+                lstAvailableAway.Items.Add(team);
+                lstAvailableHome.Items.Add(team);
             }
 
             dtpToday.SelectedDate = DateTime.Today;
