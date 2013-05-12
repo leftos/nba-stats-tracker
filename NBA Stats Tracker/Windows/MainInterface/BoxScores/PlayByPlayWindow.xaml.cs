@@ -48,6 +48,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
         private ObservableCollection<PlayByPlayEntry> Plays { get; set; }
+        public static List<PlayByPlayEntry> SavedPlays { get; set; } 
 
         public int CurrentPeriod
         {
@@ -64,10 +65,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private List<PlayerStats> _savedAwaySubs, _savedHomeSubs, _savedAwayActive, _savedHomeActive;
         private int _savedAwayPoints, _savedHomePoints;
         private int _savedPeriod;
+        private bool _exitedViaButton = false;
 
         public PlayByPlayWindow()
         {
             InitializeComponent();
+
+            SavedPlays = new List<PlayByPlayEntry>();
         }
 
         public PlayByPlayWindow(
@@ -79,6 +83,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             _bse = bse;
             _t1ID = t1ID;
             _t2ID = t2ID;
+            Plays = new ObservableCollection<PlayByPlayEntry>(bse.PBPEList);
 
             Height = Tools.GetRegistrySetting("PBPHeight", MinHeight);
             Width = Tools.GetRegistrySetting("PBPWidth", MinWidth);
@@ -135,7 +140,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbPlayer1.ItemsSource = PlayersComboList;
             cmbPlayer2.ItemsSource = PlayersComboList2;
 
-            Plays = new ObservableCollection<PlayByPlayEntry>();
+            if (Plays == null)
+            {
+                Plays = new ObservableCollection<PlayByPlayEntry>();
+            }
             lstEvents.ItemsSource = Plays;
 
 #if DEBUG
@@ -233,6 +241,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
+            if (!_exitedViaButton)
+            {
+                e.Cancel = true;
+            }
+
             Tools.SetRegistrySetting("PBPHeight", Height);
             Tools.SetRegistrySetting("PBPWidth", Width);
             Tools.SetRegistrySetting("PBPX", Left);
@@ -507,7 +520,44 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 return;
             }
             var play = createPlayByPlayEntryFromCurrent();
-
+            if (play.EventType == 1 && play.ShotEntry.IsMade && chkUpdate.IsChecked == true)
+            {
+                try
+                {
+                    if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
+                    {
+                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                        {
+                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 2).ToString();
+                        }
+                        else
+                        {
+                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 2).ToString();
+                        }
+                    }
+                    else if (play.ShotEntry.Distance == 5)
+                    {
+                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                        {
+                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 3).ToString();
+                        }
+                        else
+                        {
+                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 3).ToString();
+                        }
+                    }
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show(
+                        "Tried to update the team scores but they seem to be in a non-numeric format.",
+                        App.AppName,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+                catch
+                { }
+            }
             Plays.Add(play);
             Plays.Sort(new PlayByPlayEntryComparerAsc());
             lstEvents.ItemsSource = Plays;
@@ -678,6 +728,39 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 btnEdit.Content = "Edit";
             }
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstEvents.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            var selectedPlay = lstEvents.SelectedItem as PlayByPlayEntry;
+            Plays.Remove(selectedPlay);
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show(
+                "Are you sure you want to exit the Play By Play Editor without saving changes?",
+                App.AppName,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                _exitedViaButton = true;
+                DialogResult = false;
+                Close();
+            }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SavedPlays = new List<PlayByPlayEntry>(Plays);
+            _exitedViaButton = true;
+            DialogResult = true;
+            Close();
         }
     }
 }

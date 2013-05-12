@@ -118,7 +118,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static Timeframe Tf = new Timeframe(0);
 
         internal static Dictionary<int, TeamStats> RealTST = new Dictionary<int, TeamStats>();
-        public static TeamBoxScore bs;
+        public static TeamBoxScore TempBSE_BS;
 
         public static string AddInfo;
         private static int _curSeason;
@@ -133,8 +133,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static readonly ObservableCollection<KeyValuePair<int, string>> SeasonList =
             new ObservableCollection<KeyValuePair<int, string>>();
 
-        public static List<SortableBindingList<PlayerBoxScore>> PBSLists;
-        public static BoxScoreEntry TempBSE;
+        public static List<SortableBindingList<PlayerBoxScore>> TempBSE_PBSLists;
+        public static BoxScoreEntry TempLiveBSE;
 
         public static List<Dictionary<string, string>> SelectedTeams;
         public static bool SelectedTeamsChanged;
@@ -199,11 +199,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             InitializeComponent();
 
             MWInstance = this;
-            bs = new TeamBoxScore();
+            TempBSE_BS = new TeamBoxScore();
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
             Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("en-US");
-            SetDefaultCulture(CultureInfo.CreateSpecificCulture("en-US"));
+            setDefaultCulture(CultureInfo.CreateSpecificCulture("en-US"));
 
             //btnInject.Visibility = Visibility.Hidden;
 #if DEBUG
@@ -317,9 +317,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
             var metricsNames = PAbbr.MetricsNames;
-            for (var i = 0; i < metricsNames.Count; i++)
+            foreach (var name in metricsNames)
             {
-                var name = metricsNames[i];
                 PAbbr.MetricsDict.Add(name, double.NaN);
             }
 
@@ -342,7 +341,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //prepareImageCache();
         }
 
-        static void SetDefaultCulture(CultureInfo culture)
+        private static void setDefaultCulture(CultureInfo culture)
         {
             Type type = typeof(CultureInfo);
 
@@ -424,6 +423,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             get { return "PlayoffOpponents" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
         }
+
+        public static List<PlayByPlayEntry> TempBSE_PBPEList = new List<PlayByPlayEntry>();
 
         /// <summary>TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program</summary>
         private static void prepareImageCache()
@@ -779,7 +780,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            bs = new TeamBoxScore();
+            TempBSE_BS = new TeamBoxScore();
             var bsW = new BoxScoreWindow();
             bsW.ShowDialog();
 
@@ -792,21 +793,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </summary>
         private void parseBoxScoreResult()
         {
-            if (bs.Done == false)
+            if (TempBSE_BS.Done == false)
             {
                 return;
             }
 
             IsEnabled = false;
 
-            var id1 = bs.Team1ID;
-            var id2 = bs.Team2ID;
+            var id1 = TempBSE_BS.Team1ID;
+            var id2 = TempBSE_BS.Team2ID;
 
-            var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
+            var list = TempBSE_PBSLists.SelectMany(pbsList => pbsList).ToList();
 
-            if (!bs.DoNotUpdate)
+            if (!TempBSE_BS.DoNotUpdate)
             {
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref TST, ref TSTOpp, id1, id2);
+                TeamStats.AddTeamStatsFromBoxScore(TempBSE_BS, ref TST, ref TSTOpp, id1, id2);
 
                 foreach (var pbs in list)
                 {
@@ -814,23 +815,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     {
                         continue;
                     }
-                    PST[pbs.PlayerID].AddBoxScore(pbs, bs.IsPlayoff);
+                    PST[pbs.PlayerID].AddBoxScore(pbs, TempBSE_BS.IsPlayoff);
                 }
             }
 
-            if (bs.ID == -1)
+            if (TempBSE_BS.ID == -1)
             {
-                bs.ID = getFreeBseID();
+                TempBSE_BS.ID = getFreeBseID();
             }
 
-            if (BSHist.Any(bse => bse.BS.ID == bs.ID) == false)
+            if (BSHist.Any(bse => bse.BS.ID == TempBSE_BS.ID) == false)
             {
-                var bse = new BoxScoreEntry(bs, bs.GameDate, list);
+                var bse = new BoxScoreEntry(TempBSE_BS, list, TempBSE_PBPEList);
                 BSHist.Add(bse);
             }
             else
             {
-                BSHist.Single(bse => bse.BS.ID == bs.ID).BS = bs;
+                BSHist.Single(bse => bse.BS.ID == TempBSE_BS.ID).BS = TempBSE_BS;
             }
 
             StartProgressWatchTimer();
@@ -1552,17 +1553,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <summary>Updates a specific box score using the local box score instance.</summary>
         public static void UpdateBoxScore()
         {
-            if (bs.ID == -1 || !bs.Done)
+            if (TempBSE_BS.ID == -1 || !TempBSE_BS.Done)
             {
                 return;
             }
 
-            var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
+            var list = TempBSE_PBSLists.SelectMany(pbsList => pbsList).ToList();
 
-            var bse = BSHist.Single(entry => entry.BS.ID == bs.ID);
-            bse.BS = bs;
+            var bse = BSHist.Single(entry => entry.BS.ID == TempBSE_BS.ID);
+            bse.BS = TempBSE_BS;
             bse.PBSList = list;
-            bse.Date = bs.GameDate;
+            bse.PBPEList = TempBSE_PBPEList;
             bse.MustUpdate = true;
 
             MessageBox.Show("The database will now save to update the box score. This could take a few moments.");
@@ -2085,7 +2086,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var maxSeason = SQLiteIO.GetMaxSeason(file);
             for (var i = 1; i <= maxSeason; i++)
             {
-                var newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason, TST);
+                var newBShist = SQLiteIO.GetSeasonBoxScoresFromDatabase(file, i, maxSeason, TST, PST);
 
                 foreach (var newbse in newBShist)
                 {
@@ -2400,7 +2401,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var lbsw = new LiveBoxScoreWindow();
             if (lbsw.ShowDialog() == true)
             {
-                var bsw = new BoxScoreWindow(TempBSE);
+                var bsw = new BoxScoreWindow(TempLiveBSE);
                 bsw.ShowDialog();
 
                 parseBoxScoreResult();

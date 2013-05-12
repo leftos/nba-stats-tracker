@@ -27,6 +27,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
     using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.Players;
+    using NBA_Stats_Tracker.Data.Teams;
 
     public class PlayByPlayEntry : INotifyPropertyChanged
     {
@@ -337,7 +338,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             ShotEntry = new ShotEntry();
         }
 
-        public PlayByPlayEntry(DataRow row)
+        public PlayByPlayEntry(DataRow row, BoxScoreEntry bse, Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst) : this()
         {
             ID = ParseCell.GetUInt32(row, "ID");
             GameID = ParseCell.GetInt32(row, "GameID");
@@ -368,6 +369,10 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             EventDesc = ParseCell.GetString(row, "EventDesc");
             Location = ParseCell.GetInt32(row, "Location");
             LocationDesc = ParseCell.GetString(row, "LocationDesc");
+
+            DisplayTeam = Team1PlayerIDs.Contains(Player1ID) ? tst[bse.BS.Team1ID].DisplayName : tst[bse.BS.Team2ID].DisplayName;
+            DisplayPlayer1 = pst[Player1ID].FullName;
+            DisplayPlayer2 = pst[Player2ID].FullName;
 
             if (EventType == 1)
             {

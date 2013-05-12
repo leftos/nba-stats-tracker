@@ -1016,6 +1016,23 @@
                     </Grid>
                 </Grid>
             </TabItem>
+            <TabItem Header="Play By Play">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <ListBox Name="lstPlayByPlay" Margin="10,10,10,5" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="10,5">
+                            <Rectangle Width="10"/>
+                            <Button Name="btnEditPlayByPlay" Content="Edit" Width="75" Height="23" Click="btnEditPlayByPlay_Click" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

@@ -256,7 +256,7 @@
                         <Rectangle Height="3" />
                         <Button Name="btnEdit" Content="Edit" Click="btnEdit_Click" />
                         <Rectangle Height="3" />
-                        <Button Name="btnDelete" Content="Del" />
+                        <Button Name="btnDelete" Content="Del" Click="btnDelete_Click" />
                         <Rectangle Height="5" />
                     </StackPanel>
                 </StackPanel>
@@ -267,9 +267,9 @@
         </Grid>
         <Grid Grid.Row="4" Margin="10,5,10,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="btnSave" Content="Save" Width="92" />
+                <Button Name="btnSave" Content="Save &amp; Close" Width="92" Click="btnSave_Click" />
                 <Rectangle Width="10" />
-                <Button Name="btnCancel" Content="Cancel" Width="92" />
+                <Button Name="btnCancel" Content="Cancel" Width="92" Click="btnCancel_Click" />
             </StackPanel>
         </Grid>
     </Grid>

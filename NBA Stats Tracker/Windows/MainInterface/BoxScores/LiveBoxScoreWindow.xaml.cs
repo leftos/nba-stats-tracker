@@ -473,7 +473,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             var bse = calculateBoxScoreEntry();
             DialogResult = true;
-            MainWindow.TempBSE = bse;
+            MainWindow.TempLiveBSE = bse;
             Close();
         }
 

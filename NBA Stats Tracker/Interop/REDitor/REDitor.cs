@@ -1239,7 +1239,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             }
 
                             bse.BS.GameDate = SelectedDate;
-                            bse.Date = bse.BS.GameDate;
                             TeamStats.AddTeamStatsFromBoxScore(bse.BS, ref oldTST, ref oldtstOpp, t1, t2);
                             MainWindow.BSHist.Add(bse);
                             tst[t1] = oldTST[t1].Clone();
@@ -1911,8 +1910,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 bse.PBSList.Add(pbs);
             }
-            bse.Date = DateTime.Today;
-            bse.BS.GameDate = bse.Date;
+            bse.BS.GameDate = DateTime.Today;
             bse.BS.SeasonNum = MainWindow.CurSeason;
 
             return bse;

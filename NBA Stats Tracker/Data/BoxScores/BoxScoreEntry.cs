@@ -20,7 +20,6 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 {
     #region Using Directives
 
-    using System;
     using System.Collections.Generic;
 
     using NBA_Stats_Tracker.Data.Players;
@@ -31,7 +30,6 @@ namespace NBA_Stats_Tracker.Data.BoxScores
     /// <summary>A container for a TeamBoxScore and a list of PlayerBoxScores, along with other helpful information.</summary>
     public class BoxScoreEntry
     {
-        public DateTime Date { get; set; }
         public bool MustUpdate { get; set; }
         public List<PlayerBoxScore> PBSList { get; set; }
         public TeamBoxScore BS { get; set; }
@@ -46,7 +44,6 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         public BoxScoreEntry(TeamBoxScore bs)
         {
             BS = bs;
-            Date = DateTime.Now;
             PBSList = new List<PlayerBoxScore>();
             PBPEList = new List<PlayByPlayEntry>();
         }
@@ -55,13 +52,13 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
         /// </summary>
         /// <param name="bs">The TeamBoxScore to initialize with.</param>
-        /// <param name="date">The date of the game.</param>
         /// <param name="pbsList">The PlayerBoxScore list.</param>
-        public BoxScoreEntry(TeamBoxScore bs, DateTime date, List<PlayerBoxScore> pbsList)
+        /// <param name="pbpeList"></param>
+        public BoxScoreEntry(TeamBoxScore bs, List<PlayerBoxScore> pbsList, List<PlayByPlayEntry> pbpeList)
             : this(bs)
         {
-            Date = date;
             PBSList = pbsList;
+            PBPEList = pbpeList;
         }
     }
 }

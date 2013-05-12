@@ -614,7 +614,7 @@ namespace NBA_Stats_Tracker.Interop.BR
             var homeDT = ds.Tables[1];
 
             var bs = new TeamBoxScore(ds, parts);
-            bse = new BoxScoreEntry(bs) { Date = bs.GameDate, PBSList = new List<PlayerBoxScore>() };
+            bse = new BoxScoreEntry(bs) { PBSList = new List<PlayerBoxScore>() };
             var result = 0;
             for (var i = 0; i < awayDT.Rows.Count - 1; i++)
             {

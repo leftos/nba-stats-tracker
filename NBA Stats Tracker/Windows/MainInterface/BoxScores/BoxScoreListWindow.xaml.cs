@@ -51,7 +51,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             dgvBoxScores.DataContext = res.DefaultView;
             */
 
-            MainWindow.BSHist = SQLiteIO.GetAllBoxScoresFromDatabase(MainWindow.CurrentDB, MainWindow.TST);
+            MainWindow.BSHist = SQLiteIO.GetAllBoxScoresFromDatabase(MainWindow.CurrentDB, MainWindow.TST, MainWindow.PST);
             _bsHist = new ObservableCollection<BoxScoreEntry>(MainWindow.BSHist);
 
             dgvBoxScores.ItemsSource = _bsHist;
