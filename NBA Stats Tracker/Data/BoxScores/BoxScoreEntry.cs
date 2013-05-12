@@ -47,6 +47,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         {
             BS = bs;
             Date = DateTime.Now;
+            PBSList = new List<PlayerBoxScore>();
+            PBPEList = new List<PlayByPlayEntry>();
         }
 
         /// <summary>
