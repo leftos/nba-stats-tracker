@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.13
+		- Addition: Added Play By Play editing in the Box Score window; you can now manually insert all or any of the plays of a particular game
+			Note: This is merely a preview of a series of upcoming features, such as calculating the box score from the play by play entries, and doing analysis and partial stats calculation based on that info
+
 	v1.12.0.19
 		- Improvement: Improved handling of edited box scores while in Team/Player/League Overview
 		- Improvement: Improved Box Score code to remove redundancies and make it easier to maintain
