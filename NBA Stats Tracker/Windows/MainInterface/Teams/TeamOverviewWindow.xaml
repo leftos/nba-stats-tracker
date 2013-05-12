@@ -991,7 +991,7 @@
                                 <DataGridTextColumn Binding="{Binding DisplayOpponent}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding DisplayLocation}" Header="Location" />
                                 <DataGridTextColumn Binding="{Binding DisplayResult}" Header="Result" />
-                                <DataGridTextColumn Binding="{Binding DisplayGmSc}" Header="GmSc" />
+                                <DataGridTextColumn Binding="{Binding DisplayGmSc, StringFormat=F1}" Header="GmSc" />
                                 <DataGridTextColumn Binding="{Binding FGp, StringFormat=F3}" Header="FG%" />
                                 <DataGridTextColumn Binding="{Binding TPp, StringFormat=F3}" Header="3P%" />
                                 <DataGridTextColumn Binding="{Binding FTp, StringFormat=F3}" Header="FT%" />
