@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.19
+		- Improvement: Improved handling of edited box scores while in Team/Player/League Overview
+		- Improvement: Improved Box Score code to remove redundancies and make it easier to maintain
+
 	v1.12.0.18
 		- Fix: Fixed crash introduced in v1.12.0.17 when saving the database and box scores needed to be inserted/updated
 		- Fix: Double-clicking a game in the Pick Games window would not remove it from the list
