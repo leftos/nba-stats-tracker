@@ -1435,6 +1435,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     {
                         _reload = true;
                         updateData();
+                        tbcLeagueOverview_SelectionChanged(null, null);
                     }
                 }
                 catch
