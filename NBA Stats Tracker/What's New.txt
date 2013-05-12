@@ -1,5 +1,14 @@
 NBA Stats Tracker - Version History
 
+	v1.12.0.18
+		- Fix: Fixed crash introduced in v1.12.0.17 when saving the database and box scores needed to be inserted/updated
+		- Fix: Double-clicking a game in the Pick Games window would not remove it from the list
+		- Fix: GmSc column in Player Overview's Box Scores wasn't properly formatted
+		- Fix: Teams in Pick Games window weren't initially sorted alphabetically
+
+	v1.12.0.17
+		- Fix: Fixed crash when clicking on Player Overview after just having downloaded the real NBA stats (and in possibly other situations)
+
 	v1.12.0.16
 		- Fix: Fix Best Performers tab page-switching when timeframe is set to playoffs
 
