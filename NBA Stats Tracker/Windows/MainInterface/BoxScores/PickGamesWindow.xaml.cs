@@ -83,7 +83,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             if (lstSelectedGames.SelectedItems.Count == 1)
             {
-                if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?")
+                if (MessageBox.Show("Are you sure you want to remove \"" + lstSelectedGames.SelectedItem + "\"?", App.AppName, MessageBoxButton.YesNo, MessageBoxImage.Question)
                     == MessageBoxResult.Yes)
                 {
                     var parts = lstSelectedGames.SelectedItem.ToString().Split(new[] { " @ " }, StringSplitOptions.None);
