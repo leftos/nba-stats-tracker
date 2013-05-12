@@ -41,7 +41,6 @@ namespace NBA_Stats_Tracker.Data.Teams
         public TeamBoxScore()
         {
             ID = -1;
-            BSHistID = -1;
         }
 
         /// <summary>
@@ -212,7 +211,6 @@ namespace NBA_Stats_Tracker.Data.Teams
         public UInt16 TPM2 { get; set; }
         public int Team1ID { get; set; }
         public int Team2ID { get; set; }
-        public int BSHistID { get; set; }
         public bool DoNotUpdate { get; set; }
         public bool Done { get; set; }
         public DateTime GameDate { get; set; }

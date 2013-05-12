@@ -35,9 +35,6 @@
                     <Separator />
                     <MenuItem Header="_Exit" Name="mnuExit" Click="mnuExit_Click" />
                 </MenuItem>
-                <MenuItem Header="_History" Visibility="Collapsed">
-                    <MenuItem Header="_Box Scores" Name="mnuHistoryBoxScores" Click="mnuHistoryBoxScores_Click" />
-                </MenuItem>
                 <MenuItem Header="_Options">
                     <MenuItem Header="_NBA 2K Options">
                         <MenuItem Header="_Only Export/Update Team Stats" Name="mnuOptionsExportTeamsOnly"

@@ -1431,9 +1431,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View, gameid);
                 try
                 {
-                    bsw.ShowDialog();
-
-                    MainWindow.UpdateBoxScore();
+                    if (bsw.ShowDialog() == true)
+                    {
+                        _reload = true;
+                        updateData();
+                    }
                 }
                 catch
                 {

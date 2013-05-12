@@ -779,14 +779,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
             }
 
-            if (bs.BSHistID == -1)
+            if (bs.ID == -1)
+            {
+                bs.ID = getFreeBseID();
+            }
+
+            if (BSHist.Any(bse => bse.BS.ID == bs.ID) == false)
             {
                 var bse = new BoxScoreEntry(bs, bs.GameDate, list);
                 BSHist.Add(bse);
             }
             else
             {
-                BSHist[bs.BSHistID].BS = bs;
+                BSHist.Single(bse => bse.BS.ID == bs.ID).BS = bs;
             }
 
             StartProgressWatchTimer();
@@ -1505,43 +1510,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
         }
 
-        /// <summary>
-        ///     OBSOLETE: Handles the Click event of the mnuHistoryBoxScores control. Used to open the Box Score window in View mode so that
-        ///     the user can view and edit any box score. Superseded by the Box Scores tab in the League Overview window.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void mnuHistoryBoxScores_Click(object sender, RoutedEventArgs e)
+        /// <summary>Updates a specific box score using the local box score instance.</summary>
+        public static void UpdateBoxScore()
         {
-            if (SQLiteIO.IsTSTEmpty())
+            if (bs.ID == -1 || !bs.Done)
             {
                 return;
             }
 
-            bs = new TeamBoxScore();
-            var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View);
-            bsw.ShowDialog();
+            var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
 
-            UpdateBoxScore();
-        }
+            var bse = BSHist.Single(entry => entry.BS.ID == bs.ID);
+            bse.BS = bs;
+            bse.PBSList = list;
+            bse.Date = bs.GameDate;
+            bse.MustUpdate = true;
 
-        /// <summary>Updates a specific box score using the local box score instance.</summary>
-        public static void UpdateBoxScore()
-        {
-            if (bs.BSHistID != -1)
-            {
-                if (bs.Done)
-                {
-                    var list = PBSLists.SelectMany(pbsList => pbsList).ToList();
-
-                    BSHist[bs.BSHistID].BS = bs;
-                    BSHist[bs.BSHistID].PBSList = list;
-                    BSHist[bs.BSHistID].Date = bs.GameDate;
-                    BSHist[bs.BSHistID].MustUpdate = true;
-                }
-            }
+            MessageBox.Show("The database will now save to update the box score. This could take a few moments.");
+            SQLiteIO.SaveSeasonToDatabase();
+            UpdateAllData();
         }
 
         /// <summary>Handles the Click event of the btnTeamOverview control. Displays the Team Overview window.</summary>

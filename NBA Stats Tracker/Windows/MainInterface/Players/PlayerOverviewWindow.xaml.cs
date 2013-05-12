@@ -1704,9 +1704,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View, gameID);
                 try
                 {
-                    bsw.ShowDialog();
-
-                    MainWindow.UpdateBoxScore();
+                    if (bsw.ShowDialog() == true)
+                    {
+                        updateData();
+                    }
                 }
                 catch
                 {
@@ -1732,9 +1733,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 var bsw = new BoxScoreWindow(BoxScoreWindow.Mode.View, gameID);
                 try
                 {
-                    bsw.ShowDialog();
-
-                    MainWindow.UpdateBoxScore();
+                    if (bsw.ShowDialog() == true)
+                    {
+                        updateData();
+                    }
                 }
                 catch
                 {

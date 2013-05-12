@@ -204,20 +204,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <param name="id">The ID of the box score.</param>
         private void loadBoxScore(int id)
         {
-            var bsHistID = -1;
-
-            for (var i = 0; i < MainWindow.BSHist.Count; i++)
-            {
-                if (MainWindow.BSHist[i].BS.ID == id)
-                {
-                    bsHistID = i;
-                    break;
-                }
-            }
-
-            var bse = MainWindow.BSHist[bsHistID];
-            _curTeamBoxScore = MainWindow.BSHist[bsHistID].BS;
-            _curTeamBoxScore.BSHistID = bsHistID;
+            var bse = MainWindow.BSHist.Single(entry => entry.BS.ID == id);
+            _curTeamBoxScore = bse.BS;
             loadBoxScore(bse);
         }
 
@@ -513,37 +501,31 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 if (_curMode == Mode.View)
                 {
-                    if (_curTeamBoxScore.BSHistID != -1)
+                    var r = MessageBox.Show(
+                        "Do you want to save any changes to this Box Score?",
+                        "NBA Stats Tracker",
+                        MessageBoxButton.YesNoCancel,
+                        MessageBoxImage.Question);
+                    if (r == MessageBoxResult.Cancel)
                     {
-                        var r = MessageBox.Show(
-                            "Do you want to save any changes to this Box Score?",
-                            "NBA Stats Tracker",
-                            MessageBoxButton.YesNoCancel,
-                            MessageBoxImage.Question);
-                        if (r == MessageBoxResult.Cancel)
+                        return;
+                    }
+
+                    if (r == MessageBoxResult.Yes)
+                    {
+                        tryParseBS();
+                        if (MainWindow.bs.Done == false)
                         {
                             return;
                         }
 
-                        if (r == MessageBoxResult.Yes)
-                        {
-                            tryParseBS();
-                            if (MainWindow.bs.Done == false)
-                            {
-                                return;
-                            }
-
-                            MainWindow.UpdateBoxScore();
-                            MessageBox.Show("It is recommended to save the database for changes to take effect.");
-                        }
-                        else
-                        {
-                            MainWindow.bs.Done = false;
-                        }
+                        MainWindow.UpdateBoxScore();
+                        DialogResult = true;
                     }
                     else
                     {
                         MainWindow.bs.Done = false;
+                        DialogResult = false;
                     }
                 }
             }
@@ -575,12 +557,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 try
                 {
                     MainWindow.bs.ID = _curTeamBoxScore.ID;
-                    MainWindow.bs.BSHistID = _curTeamBoxScore.BSHistID;
                 }
                 catch
                 {
                     MainWindow.bs.ID = -1;
-                    MainWindow.bs.BSHistID = -1;
                 }
                 MainWindow.bs.IsPlayoff = chkIsPlayoff.IsChecked.GetValueOrDefault();
                 MainWindow.bs.GameDate = dtpGameDate.SelectedDate.GetValueOrDefault();
