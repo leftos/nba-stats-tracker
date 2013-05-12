@@ -332,75 +332,72 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             //try
             //{
-            if (_reload || e.OriginalSource is TabControl)
+            if (!_reload && !(e.OriginalSource is TabControl))
             {
-                var currentTab = tbcLeagueOverview.SelectedItem;
-                if (Equals(currentTab, tabTeamStats) || Equals(currentTab, tabTeamMetricStats))
-                {
-                    cmbDivConf.IsEnabled = true;
-                    var doIt = false;
-                    if (_lastShownTeamSeason != _curSeason)
-                    {
-                        doIt = true;
-                    }
-                    else if (_reload)
-                    {
-                        doIt = true;
-                    }
-
-                    if (doIt)
-                    {
-                        prepareTeamStats();
-                        _lastShownTeamSeason = _curSeason;
-                    }
-                }
-                else if (Equals(currentTab, tabPlayerStats) || Equals(currentTab, tabMetricStats) || Equals(currentTab, tabBest)
-                         || Equals(currentTab, tabStartingFive) || Equals(currentTab, tabRatings) || Equals(currentTab, tabContracts)
-                         || Equals(currentTab, tabLeaders) || Equals(currentTab, tabMyLeaders))
-                {
-                    cmbDivConf.IsEnabled = true;
-                    var doIt = false;
-                    if (_lastShownPlayerSeason != _curSeason)
-                    {
-                        doIt = true;
-                    }
-                    else if (_reload)
-                    {
-                        doIt = true;
-                    }
-
-                    if (doIt)
-                    {
-                        preparePlayerStats();
-                        _lastShownPlayerSeason = _curSeason;
-                    }
-                }
-                else if (Equals(currentTab, tabBoxScores))
-                {
-                    //cmbDivConf.IsEnabled = false;
-                    var doIt = false;
-                    if (_lastShownBoxSeason != _curSeason)
-                    {
-                        doIt = true;
-                    }
-                    else if (_reload)
-                    {
-                        doIt = true;
-                    }
-
-                    if (doIt)
-                    {
-                        prepareBoxScores();
-                        _lastShownBoxSeason = _curSeason;
-                    }
-                }
-                _reload = false;
+                return;
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //    //throw ex;
-            //}
+
+            var currentTab = tbcLeagueOverview.SelectedItem;
+            if (Equals(currentTab, tabTeamStats) || Equals(currentTab, tabTeamMetricStats))
+            {
+                cmbDivConf.IsEnabled = true;
+                var doIt = false;
+                if (_lastShownTeamSeason != _curSeason)
+                {
+                    doIt = true;
+                }
+                else if (_reload)
+                {
+                    doIt = true;
+                }
+
+                if (doIt)
+                {
+                    prepareTeamStats();
+                    _lastShownTeamSeason = _curSeason;
+                }
+            }
+            else if (Equals(currentTab, tabPlayerStats) || Equals(currentTab, tabMetricStats) || Equals(currentTab, tabBest)
+                     || Equals(currentTab, tabStartingFive) || Equals(currentTab, tabRatings) || Equals(currentTab, tabContracts)
+                     || Equals(currentTab, tabLeaders) || Equals(currentTab, tabMyLeaders))
+            {
+                cmbDivConf.IsEnabled = true;
+                var doIt = false;
+                if (_lastShownPlayerSeason != _curSeason)
+                {
+                    doIt = true;
+                }
+                else if (_reload)
+                {
+                    doIt = true;
+                }
+
+                if (doIt)
+                {
+                    preparePlayerStats();
+                    _lastShownPlayerSeason = _curSeason;
+                }
+            }
+            else if (Equals(currentTab, tabBoxScores))
+            {
+                //cmbDivConf.IsEnabled = false;
+                var doIt = false;
+                if (_lastShownBoxSeason != _curSeason)
+                {
+                    doIt = true;
+                }
+                else if (_reload)
+                {
+                    doIt = true;
+                }
+
+                if (doIt)
+                {
+                    prepareBoxScores();
+                    _lastShownBoxSeason = _curSeason;
+                }
+            }
+            _reload = false;
         }
 
         /// <summary>Prepares and presents the player stats.</summary>
