@@ -138,7 +138,7 @@
                                 <DataGridTextColumn Binding="{Binding DisplayTeam}" Header="Team" />
                                 <DataGridTextColumn Binding="{Binding DisplayOppTeam}" Header="Opponent" />
                                 <DataGridTextColumn Binding="{Binding Result}" Header="Result" />
-                                <DataGridTextColumn Binding="{Binding GmSc}" Header="GmSc" />
+                                <DataGridTextColumn Binding="{Binding GmSc, StringFormat=F1}" Header="GmSc" />
                                 <DataGridTextColumn Binding="{Binding MINS}" Header="MINS" />
                                 <DataGridTextColumn Binding="{Binding PTS}" Header="PTS" />
                                 <DataGridTextColumn Binding="{Binding FGM}" Header="FGM" />
