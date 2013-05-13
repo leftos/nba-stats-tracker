@@ -1,7 +1,9 @@
 NBA Stats Tracker - Version History
 
 	v1.13.0.1
-		- Fix: Fix crash when editing the Playoff, Team Finished At and Team Started At parameters in the Add Past Stats window
+		- Fix: Fixed crash when editing the Playoff, Team Finished At and Team Started At parameters in the Add Past Stats window
+		- Fix: Fixed crash that occurred sometimes when opening a database while another one is currently open
+		- Fix: Fixed the season names when importing Past Player Stats from an NBA 2K13 save
 
 	v1.13
 		- Addition: Added Play By Play editing in the Box Score window; you can now manually insert all or any of the plays of a particular game
