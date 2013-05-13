@@ -144,35 +144,38 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var seasonNames = new Dictionary<int, string>();
             if (nba2KVersion == NBA2KVersion.NBA2K12)
             {
-                var ibw =
-                    new InputBoxWindow(
-                        "Enter the current season (e.g. 2011-2012 by default in NBA 2K12, 2012 for a season"
-                        + " taking place only in that year, etc.):",
-                        "2011-2012");
-                if (ibw.ShowDialog() != true)
+                while (true)
                 {
-                    MainWindow.MWInstance.mainGrid.Visibility = Visibility.Visible;
-                    return;
-                }
+                    var ibw =
+                        new InputBoxWindow(
+                            "Enter the season that describes the first season in this database (e.g. 2011-2012 by default in NBA 2K12, 2010-2011 if you "
+                            + "imported last year's stats first, 2012 for a season taking place only in that year, etc.):",
+                            "2011-2012");
+                    if (ibw.ShowDialog() != true)
+                    {
+                        MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
+                        return;
+                    }
 
-                int year;
-                var twoPartSeasonDesc = InputBoxWindow.UserInput.Contains("-");
-                try
-                {
-                    year = Convert.ToInt32(twoPartSeasonDesc ? InputBoxWindow.UserInput.Split('-')[0] : InputBoxWindow.UserInput);
-                }
-                catch
-                {
-                    MessageBox.Show(
-                        "The year you entered (" + InputBoxWindow.UserInput
-                        + ") was not in a valid format.\nValid formats are:\n\t2012\n\t2011-2012");
-                    MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
-                    return;
-                }
+                    int year;
+                    var twoPartSeasonDesc = InputBoxWindow.UserInput.Contains("-");
+                    try
+                    {
+                        year = Convert.ToInt32(twoPartSeasonDesc ? InputBoxWindow.UserInput.Split('-')[0] : InputBoxWindow.UserInput);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(
+                            "The year you entered (" + InputBoxWindow.UserInput
+                            + ") was not in a valid format.\nValid formats are:\n\t2012\n\t2011-2012");
+                        continue;
+                    }
 
-                for (var i = startAt; i <= 20; i++)
-                {
-                    seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
+                    for (var i = startAt; i <= 20; i++)
+                    {
+                        seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
+                    }
+                    break;
                 }
             }
             else
@@ -190,10 +193,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     MessageBox.Show("There were no players with stats starting " + startAt + " years ago.");
                     MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
-                }
-                for (var i = startAt; i <= 20; i++)
-                {
-                    seasonNames.Add(i, string.Format("{0}-{1}", year - i, (year - i + 1)));
                 }
             }
 
@@ -492,9 +491,16 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             prevStats.FTM = Convert.ToUInt16(stats["FTMade"]);
                             prevStats.FTA = Convert.ToUInt16(stats["FTAtt"]);
                             prevStats.PlayerID = playerID;
-                            prevStats.SeasonName = seasonNames[j];
+                            int yearF = 0;
+                            if (nba2KVersion != NBA2KVersion.NBA2K12)
+                            {
+                                yearF = Convert.ToInt32(stats["Year"]);
+                            }
+                            prevStats.SeasonName = nba2KVersion == NBA2KVersion.NBA2K12
+                                                       ? seasonNames[j]
+                                                       : String.Format("{0}-{1}", yearF - 1, yearF);
                             prevStats.IsPlayoff = false;
-                            prevStats.Order = 20 - j;
+                            prevStats.Order = nba2KVersion == NBA2KVersion.NBA2K12 ? 20 - j : yearF;
                             prevStats.EndEdit();
                             ppsList.Add(prevStats);
                         }
