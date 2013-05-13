@@ -1,6 +1,9 @@
 ﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.ToolWindows.AddStatsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pastStats="clr-namespace:NBA_Stats_Tracker.Data.PastStats" mc:Ignorable="d"
         Title="Add Past Stats" Height="369" Width="709" Topmost="True">
     <Grid>
         <DataGrid x:Name="dgStats" Margin="10,10,10,35" CanUserAddRows="True" CanUserDeleteRows="True"
@@ -8,9 +11,9 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding SeasonName}" Header="Season Name" />
                 <DataGridTextColumn Binding="{Binding Order}" Header="Order" />
-                <DataGridCheckBoxColumn Binding="{Binding isPlayoff}" Header="Playoffs?" />
+                <DataGridCheckBoxColumn Binding="{Binding IsPlayoff}" Header="Playoffs?" />
                 <DataGridTextColumn Binding="{Binding TeamF}" x:Name="dgTeamFColumn" Header="Team at End" />
-                <DataGridTextColumn Binding="{Binding TeamS}" x:Name="dgTeamSColumn" Header="Team at Start" />
+                <DataGridTextColumn Binding="{Binding TeamSName}" x:Name="dgTeamSColumn" Header="Team at Start" />
                 <DataGridTextColumn Binding="{Binding GP}" x:Name="dgGamesPlayedColumn" Header="GP" />
                 <DataGridTextColumn Binding="{Binding GS}" x:Name="dgGamesStartedColumn" Header="GS" />
                 <DataGridTextColumn Binding="{Binding Wins}" x:Name="dgWinsColumn" Header="Wins" />
