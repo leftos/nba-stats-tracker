@@ -3057,6 +3057,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void mnuMiscPreferNBALeaders_Checked(object sender, RoutedEventArgs e)
         {
+            if (LoadingSeason)
+            {
+                return;
+            }
             mnuMiscPreferMyLeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "NBA");
             LoadMyLeadersCriteria();
@@ -3065,6 +3069,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void mnuMiscPreferMyLeaders_Checked(object sender, RoutedEventArgs e)
         {
+            if (LoadingSeason)
+            {
+                return;
+            }
             mnuMiscPreferNBALeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "My");
             LoadMyLeadersCriteria();
