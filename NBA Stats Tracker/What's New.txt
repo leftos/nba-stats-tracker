@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.13.0.1
+		- Fix: Fix crash when editing the Playoff, Team Finished At and Team Started At parameters in the Add Past Stats window
+
 	v1.13
 		- Addition: Added Play By Play editing in the Box Score window; you can now manually insert all or any of the plays of a particular game
 			Note: This is merely a preview of a series of upcoming features, such as calculating the box score from the play by play entries, and doing analysis and partial stats calculation based on that info
