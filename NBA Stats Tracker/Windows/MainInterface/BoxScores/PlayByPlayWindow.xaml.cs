@@ -48,7 +48,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
         private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
         private ObservableCollection<PlayByPlayEntry> Plays { get; set; }
-        public static List<PlayByPlayEntry> SavedPlays { get; set; } 
+        public static List<PlayByPlayEntry> SavedPlays { get; set; }
 
         public int CurrentPeriod
         {
@@ -406,12 +406,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     if (curPlayerTeam == _t1ID)
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
-                        HomeActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        HomeActive.ToList()
+                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                     else
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
-                        AwayActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        AwayActive.ToList()
+                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                 }
                 else
@@ -419,12 +421,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     if (curPlayerTeam == _t1ID)
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
-                        AwayActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        AwayActive.ToList()
+                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                     else
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
-                        HomeActive.ToList().ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        HomeActive.ToList()
+                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                 }
             }
@@ -475,6 +479,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbLocationShotDistance.ItemsSource = curEventKey == 1
                                                       ? ShotEntry.ShotDistances.Values
                                                       : PlayByPlayEntry.EventLocations.Values;
+            if (curEventKey == 3 || curEventKey == 4)
+            {
+                cmbLocationShotDistance.SelectedIndex = 0;
+                cmbLocationShotDistance.IsEnabled = false;
+            }
+            else
+            {
+                cmbLocationShotDistance.IsEnabled = true;
+            }
 
             try
             {
@@ -493,10 +506,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void cmbLocationShotDistance_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
-            if (curEventKey != 1)
+            if (curEventKey != 1 && cmbLocationShotDistance.SelectedIndex != -1)
             {
-                var curDistanceKey = PlayByPlayEntry.EventLocations.Single(pair => pair.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
-                txtLocationDesc.IsEnabled = curDistanceKey == -1;
+                var curDistanceKey =
+                    PlayByPlayEntry.EventLocations.Single(pair => pair.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
+                txtLocationDesc.IsEnabled = (curDistanceKey == -1 && curEventKey != 3 && curEventKey != 4);
             }
             else
             {
@@ -520,43 +534,72 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 return;
             }
             var play = createPlayByPlayEntryFromCurrent();
-            if (play.EventType == 1 && play.ShotEntry.IsMade && chkUpdate.IsChecked == true)
+            if (chkUpdate.IsChecked == true)
             {
-                try
+                if (play.EventType == 1 && play.ShotEntry.IsMade)
                 {
-                    if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
+                    try
+                    {
+                        if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
+                        {
+                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                            {
+                                txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 2).ToString();
+                            }
+                            else
+                            {
+                                txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 2).ToString();
+                            }
+                        }
+                        else if (play.ShotEntry.Distance == 5)
+                        {
+                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                            {
+                                txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 3).ToString();
+                            }
+                            else
+                            {
+                                txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 3).ToString();
+                            }
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        MessageBox.Show(
+                            "Tried to update the team scores but they seem to be in a non-numeric format.",
+                            App.AppName,
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                    catch
+                    {
+                    }
+                }
+                else if (play.EventType == 3)
+                {
+                    try
                     {
                         if (play.Team1PlayerIDs.Contains(play.Player1ID))
                         {
-                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 2).ToString();
+                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 1).ToString();
                         }
                         else
                         {
-                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 2).ToString();
+                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 1).ToString();
                         }
                     }
-                    else if (play.ShotEntry.Distance == 5)
+                    catch (FormatException)
                     {
-                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
-                        {
-                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 3).ToString();
-                        }
-                        else
-                        {
-                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 3).ToString();
-                        }
+                        MessageBox.Show(
+                            "Tried to update the team scores but they seem to be in a non-numeric format.",
+                            App.AppName,
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                    catch
+                    {
                     }
                 }
-                catch (FormatException)
-                {
-                    MessageBox.Show(
-                        "Tried to update the team scores but they seem to be in a non-numeric format.",
-                        App.AppName,
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                }
-                catch
-                { }
             }
             Plays.Add(play);
             Plays.Sort(new PlayByPlayEntryComparerAsc());
@@ -579,11 +622,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     Location =
                         stpShotEvent.IsEnabled
                             ? -2
-                            : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
+                            : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString())
+                                             .Key,
                     LocationDesc = txtLocationDesc.IsEnabled ? txtLocationDesc.Text : "",
                     Player1ID = curPlayer.ID,
                     Player2ID =
-                        (cmbPlayer2.IsEnabled && cmbPlayer2.SelectedIndex != -1) ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID : -1,
+                        (cmbPlayer2.IsEnabled && cmbPlayer2.SelectedIndex != -1)
+                            ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID
+                            : -1,
                     T1PTS = Convert.ToInt32(txtAwayScore.Text),
                     T2PTS = Convert.ToInt32(txtHomeScore.Text),
                     Team1PlayerIDs = AwayActive.Select(ps => ps.ID).ToList(),
@@ -671,7 +717,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 cmbEventType.SelectedItem = PlayByPlayEntry.EventTypes[selectedPlay.EventType];
                 txtEventDesc.Text = selectedPlay.EventDesc;
                 cmbPlayer1.SelectedItem = PlayersComboList.Single(item => item.ID == selectedPlay.Player1ID);
-                cmbPlayer2.SelectedItem = selectedPlay.Player2ID != -1 ? PlayersComboList2.Single(item => item.ID == selectedPlay.Player2ID) : null;
+                cmbPlayer2.SelectedItem = selectedPlay.Player2ID != -1
+                                              ? PlayersComboList2.Single(item => item.ID == selectedPlay.Player2ID)
+                                              : null;
                 cmbLocationShotDistance.SelectedItem = selectedPlay.EventType != 1
                                                            ? PlayByPlayEntry.EventLocations[selectedPlay.Location]
                                                            : ShotEntry.ShotDistances[selectedPlay.ShotEntry.Distance];
@@ -719,7 +767,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 lstHomeSubs.ItemsSource = HomeSubs;
 
                 sortPlayerLists();
-                
+
                 lstEvents.IsEnabled = true;
                 btnSave.IsEnabled = true;
                 btnCancel.IsEnabled = true;
