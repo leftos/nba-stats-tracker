@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.13.0.3
+		- Fix: Free Throw Made and Missed will no longer require a location to be set in the Play By Play Editor
+		- Fix: Free Throw Made will update the scoring team's points accordingly in the Play By Play Editor
+
 	v1.13.0.2
 		- Fix: Box Scores copied will now have an empty line separating player and team stats, so that they'll be parsed properly when pasted back (and look better, too!)
 		- Fix: Box Scores wouldn't sort by player name properly in some cases
