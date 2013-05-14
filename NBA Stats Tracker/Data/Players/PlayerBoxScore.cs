@@ -240,9 +240,10 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dict">The dictionary containing the player box score.</param>
         /// <param name="playerID">The player ID.</param>
         /// <param name="teamID">The team.</param>
-        public PlayerBoxScore(Dictionary<string, string> dict, int playerID, int teamID)
+        public PlayerBoxScore(Dictionary<string, string> dict, int playerID, int teamID, string playerName = "")
         {
             PlayerID = playerID;
+            Name = playerName;
             TeamID = teamID;
             IsStarter = IsStarter.TrySetValue(dict, "Starter", typeof(bool));
             PlayedInjured = PlayedInjured.TrySetValue(dict, "Injured", typeof(bool));

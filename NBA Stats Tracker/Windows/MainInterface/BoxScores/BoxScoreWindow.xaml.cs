@@ -29,6 +29,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Media;
 
@@ -1696,7 +1697,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                             pbsAwayList.Add(
                                 new PlayerBoxScore(
-                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString())));
+                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString()), pair.Value));
                             break;
                         }
                     }
@@ -1737,7 +1738,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                             pbsHomeList.Add(
                                 new PlayerBoxScore(
-                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString())));
+                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString()), pair.Value));
                             break;
                         }
                     }
@@ -2110,7 +2111,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 return;
             }
 
-            PlayByPlayWindow pbpw = new PlayByPlayWindow(
+            var pbpw = new PlayByPlayWindow(
                 MainWindow.TST,
                 MainWindow.PST,
                 new BoxScoreEntry(MainWindow.TempBSE_BS, MainWindow.TempBSE_PBSLists.SelectMany(list => list).ToList(), MainWindow.TempBSE_PBPEList),
@@ -2126,6 +2127,34 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             lstPlayByPlay.ItemsSource = pbpeList;
 
             MainWindow.TempBSE_PBPEList = new List<PlayByPlayEntry>(PlayByPlayWindow.SavedPlays);
+        }
+
+        private void anyPBSDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            var dg = sender as DataGrid;
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                var pbs = (e.Row.Item as PlayerBoxScore);
+                var id = pbs.PlayerID;
+                Dispatcher.BeginInvoke(
+                    new Action(() => pbs.Name = MainWindow.PST[id].FullName), System.Windows.Threading.DispatcherPriority.Background);
+            }
+        }
+
+        private bool _isManualEditCommit;
+
+        private void anyPBSDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (!_isManualEditCommit && e.EditAction == DataGridEditAction.Commit)
+            {
+                _isManualEditCommit = true;
+                var grid = (DataGrid)sender;
+                if (grid != null)
+                {
+                    grid.CommitEdit(DataGridEditingUnit.Row, true);
+                }
+                _isManualEditCommit = false;
+            }
         }
     }
 }

@@ -228,9 +228,10 @@
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                               Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="False"
                               CanUserDeleteRows="False" FrozenColumnCount="1"
-                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
+                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}"
+                              RowEditEnding="anyPBSDataGrid_RowEditEnding" CellEditEnding="anyPBSDataGrid_CellEditEnding" >
                         <DataGrid.Columns>
-                            <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}"
+                            <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}"
                                                     SelectedValuePath="Key" DisplayMemberPath="Value"
                                                     SortMemberPath="Name" x:Name="colPlayerAway"
                                                     CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
@@ -594,10 +595,11 @@
                     <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome"
                               VerticalAlignment="Stretch" FrozenColumnCount="1"
-                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
+                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}"
+                              RowEditEnding="anyPBSDataGrid_RowEditEnding" CellEditEnding="anyPBSDataGrid_CellEditEnding">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player"
-                                                    SelectedValueBinding="{Binding PlayerID}" SortMemberPath="Name"
+                                                    SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}" SortMemberPath="Name"
                                                     SelectedValuePath="Key"
                                                     CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Binding="{Binding IsStarter}" Header="Starter" />
@@ -1023,16 +1025,17 @@
             <TabItem Header="Play By Play">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition />
+                        <RowDefinition Height="40" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <ListBox Name="lstPlayByPlay" Margin="10,10,10,5" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="10,5">
-                            <Rectangle Width="10"/>
-                            <Button Name="btnEditPlayByPlay" Content="Edit" Width="75" Height="23" Click="btnEditPlayByPlay_Click" />
+                            <Rectangle Width="10" />
+                            <Button Name="btnEditPlayByPlay" Content="Edit" Width="75" Height="23"
+                                    Click="btnEditPlayByPlay_Click" />
                         </StackPanel>
                     </Grid>
                 </Grid>
