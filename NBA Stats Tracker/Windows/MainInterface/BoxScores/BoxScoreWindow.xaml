@@ -1,6 +1,10 @@
 <Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.BoxScores.BoxScoreWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Insert Box Score" Height="400" Width="682"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d"
+        Title="Insert Box Score" Height="400" Width="682"
         WindowStartupLocation="CenterScreen" MinWidth="682" MinHeight="359"
         Closing="window_Closing">
     <Grid>
@@ -224,15 +228,15 @@
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                               Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="False"
                               CanUserDeleteRows="False" FrozenColumnCount="1"
-                              Sorting="statColumn_Sorting">
+                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID}"
                                                     SelectedValuePath="Key" DisplayMemberPath="Value"
                                                     SortMemberPath="Name" x:Name="colPlayerAway"
                                                     CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
-                            <DataGridCheckBoxColumn Header="Starter" Binding="{Binding isStarter}" />
-                            <DataGridCheckBoxColumn Header="Injured" Binding="{Binding playedInjured}" />
-                            <DataGridCheckBoxColumn Header="DNP" Binding="{Binding isOut}" />
+                            <DataGridCheckBoxColumn Header="Starter" Binding="{Binding IsStarter}" />
+                            <DataGridCheckBoxColumn Header="Injured" Binding="{Binding PlayedInjured}" />
+                            <DataGridCheckBoxColumn Header="DNP" Binding="{Binding IsOut}" />
                             <DataGridTextColumn Binding="{Binding MINS, Mode=TwoWay}" Header="MINS" />
                             <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding REB, Mode=TwoWay}" Header="REB" />
@@ -590,15 +594,15 @@
                     <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome"
                               VerticalAlignment="Stretch" FrozenColumnCount="1"
-                              Sorting="statColumn_Sorting">
+                              Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player"
                                                     SelectedValueBinding="{Binding PlayerID}" SortMemberPath="Name"
                                                     SelectedValuePath="Key"
                                                     CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" />
-                            <DataGridCheckBoxColumn Binding="{Binding isStarter}" Header="Starter" />
-                            <DataGridCheckBoxColumn Binding="{Binding playedInjured}" Header="Injured" />
-                            <DataGridCheckBoxColumn Binding="{Binding isOut}" Header="DNP" />
+                            <DataGridCheckBoxColumn Binding="{Binding IsStarter}" Header="Starter" />
+                            <DataGridCheckBoxColumn Binding="{Binding PlayedInjured}" Header="Injured" />
+                            <DataGridCheckBoxColumn Binding="{Binding IsOut}" Header="DNP" />
                             <DataGridTextColumn Binding="{Binding MINS, Mode=TwoWay}" Header="MINS" />
                             <DataGridTextColumn Binding="{Binding PTS, Mode=TwoWay}" Header="PTS" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding REB, Mode=TwoWay}" Header="REB" />

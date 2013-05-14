@@ -339,7 +339,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
 
             ObservableCollection<KeyValuePair<int, string>> playersList;
-            updateBoxScoreDataGrid(teamID, out playersList, ref pbsList, _playersT, _loading);
+            updateBoxScoreDataGrid(teamID, out playersList, ref pbsList, _loading);
 
             if (team == 1)
             {
@@ -1074,7 +1074,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 dgvPlayersHome.UnselectAllCells();
                 var result2 = (string) Clipboard.GetData(DataFormats.Text);
 
-                var result = result1 + data1 + "\n\n\n" + result2 + data2;
+                var result = result1 + "\n" + data1 + "\n\n\n" + result2 + "\n" + data2;
                 Clipboard.SetText(result);
             }
         }
@@ -2049,7 +2049,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <param name="teamID">Name of the team.</param>
         /// <param name="playersList">The players list.</param>
         /// <param name="pbsList">The player box score list.</param>
-        /// <param name="playersT">The players' SQLite table name.</param>
         /// <param name="loading">
         ///     if set to <c>true</c>, it is assumed that a pre-existing box score is being loaded.
         /// </param>
@@ -2057,13 +2056,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             int teamID,
             out ObservableCollection<KeyValuePair<int, string>> playersList,
             ref SortableBindingList<PlayerBoxScore> pbsList,
-            string playersT,
             bool loading)
         {
-            var db = new SQLiteDatabase(MainWindow.CurrentDB);
-            var q = "select * from " + playersT + " where TeamFin = " + teamID + "";
-            q += " ORDER BY LastName ASC";
-            var res = db.GetDataTable(q);
+            var list = MainWindow.PST.Where(ps => ps.Value.TeamF == teamID).ToDictionary(ps => ps.Key, ps => ps.Value);
 
             playersList = new ObservableCollection<KeyValuePair<int, string>>();
             if (!loading)
@@ -2071,10 +2066,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 pbsList = new SortableBindingList<PlayerBoxScore>();
             }
 
-            foreach (DataRow r in res.Rows)
+            foreach (var ps in list.Values)
             {
-                var ps = new PlayerStats(r, MainWindow.TST);
-                playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.LastName + ", " + ps.FirstName));
+                playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.FullName));
                 if (!loading)
                 {
                     var pbs = new PlayerBoxScore { PlayerID = ps.ID, TeamID = teamID };
@@ -2085,7 +2079,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             for (var i = 0; i < pbsList.Count; i++)
             {
                 var cur = pbsList[i];
-                var name = MainWindow.PST[cur.PlayerID].LastName + ", " + MainWindow.PST[cur.PlayerID].FirstName;
+                var name = MainWindow.PST[cur.PlayerID].FullName;
                 var player = new KeyValuePair<int, string>(cur.PlayerID, name);
                 cur.Name = name;
                 if (!playersList.Contains(player))
