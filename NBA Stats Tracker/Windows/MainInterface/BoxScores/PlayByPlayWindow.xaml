@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-        Title="Play By Play Editor" Height="470" MinHeight="470" Width="960" MinWidth="960"
+        Title="Play By Play Editor" Height="470" MinHeight="470" Width="994" MinWidth="994"
         Loaded="window_Loaded" Closing="window_Closing" WindowStartupLocation="CenterScreen" x:Name="window">
     <Grid>
         <Grid.RowDefinitions>
@@ -245,11 +245,15 @@
                         <Rectangle Height="5" />
                         <CheckBox Name="chkShotIsAssisted" Content="Assisted" />
                         <Rectangle Height="10" />
-                        <CheckBox Name="chkUpdate" Content="Update" />
                     </StackPanel>
                     <Rectangle Width="10" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <Rectangle Height="5" />
+                        <CheckBox Name="chkUpdate" Content="Update" />
+                    </StackPanel>
+                    <Rectangle Width="10" />
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom"
                                 Width="40">
                         <Button Name="btnAdd" Content="Add" FontWeight="Bold" Click="btnAdd_Click" />
