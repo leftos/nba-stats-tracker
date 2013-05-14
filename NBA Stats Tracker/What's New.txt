@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.13.0.2
+		- Fix: Box Scores copied will now have an empty line separating player and team stats, so that they'll be parsed properly when pasted back (and look better, too!)
+		- Fix: Box Scores wouldn't sort by player name properly
+
 	v1.13.0.1
 		- Fix: Fixed crash when editing the Playoff, Team Finished At and Team Started At parameters in the Add Past Stats window
 		- Fix: Fixed crash that occurred sometimes when opening a database while another one is currently open
