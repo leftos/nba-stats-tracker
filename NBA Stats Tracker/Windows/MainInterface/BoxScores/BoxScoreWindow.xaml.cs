@@ -1119,7 +1119,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             if (!_onImport)
             {
-                SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
+                if (_curSeason != MainWindow.Tf.SeasonNum)
+                {
+                    SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
+                }
 
                 _playersT = "Players";
 
