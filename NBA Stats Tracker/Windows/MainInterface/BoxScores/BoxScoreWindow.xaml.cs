@@ -546,7 +546,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         /// <summary>Tries to the parse the current team & player box scores, and check for any errors.</summary>
         /// <exception cref="System.Exception"></exception>
-        private void tryParseBS()
+        private void tryParseBS(bool ignoreScores = false)
         {
             try
             {
@@ -630,7 +630,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 teamName = cmbTeam2.SelectedItem.ToString();
                 MainWindow.TempBSE_BS.PTS2 = Convert.ToUInt16(txtPTS2.Text);
-                if (MainWindow.TempBSE_BS.PTS1 == MainWindow.TempBSE_BS.PTS2)
+                if (!ignoreScores && MainWindow.TempBSE_BS.PTS1 == MainWindow.TempBSE_BS.PTS2)
                 {
                     throwErrorWithMessage("The points can't be the same for both teams. NBA Stats Tracker doesn't support games that end in draw.");
                 }
@@ -2103,7 +2103,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnEditPlayByPlay_Click(object sender, RoutedEventArgs e)
         {
-            tryParseBS();
+            tryParseBS(true);
             if (!MainWindow.TempBSE_BS.Done)
             {
                 return;
