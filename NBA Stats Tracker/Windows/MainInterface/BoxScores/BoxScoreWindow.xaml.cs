@@ -24,12 +24,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Media;
 
@@ -38,6 +36,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using LeftosCommonLibrary.CommonDialogs;
 
     using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
@@ -45,8 +44,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using NBA_Stats_Tracker.Helper.EventHandlers;
     using NBA_Stats_Tracker.Helper.ListExtensions;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
-
-    using SQLite_Database;
 
     #endregion
 
@@ -68,9 +65,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         #endregion
 
-        private static Mode _curMode = Mode.Update;
+        private static Mode curMode = Mode.Update;
 
-        private static TeamBoxScore _curTeamBoxScore;
+        private static TeamBoxScore curTeamBoxScore;
         private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
         private readonly bool _onImport;
         private bool _clickedOK;
@@ -78,7 +75,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private Brush _defaultBackground;
         private bool _loading;
         private bool _minsUpdating;
-        private string _playersT;
         private List<PlayerStatsRow> _pmsrListAway, _pmsrListHome;
         private Dictionary<int, PlayerStats> _pst;
         private List<string> _teams;
@@ -176,18 +172,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
         private ObservableCollection<PlayByPlayEntry> pbpeList { get; set; } 
 
-        private void finishInitialization(Mode curMode)
+        private void finishInitialization(Mode mode)
         {
             _pst = MainWindow.PST;
 
-            _curMode = curMode;
-            prepareWindow(curMode);
+            curMode = mode;
+            prepareWindow(mode);
 
             MainWindow.TempBSE_BS = new TeamBoxScore();
 
-            if (curMode == Mode.Update)
+            if (mode == Mode.Update)
             {
-                _curTeamBoxScore = new TeamBoxScore();
+                curTeamBoxScore = new TeamBoxScore();
             }
 
             try
@@ -207,7 +203,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private void loadBoxScore(int id)
         {
             var bse = MainWindow.BSHist.Single(entry => entry.BS.ID == id);
-            _curTeamBoxScore = bse.BS;
+            curTeamBoxScore = bse.BS;
             loadBoxScore(bse);
         }
 
@@ -361,8 +357,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>Prepares the window based on the mode of function it was opened for.</summary>
-        /// <param name="curMode">The Mode enum instance which determines the function for which the window is opened.</param>
-        private void prepareWindow(Mode curMode)
+        /// <param name="mode">The Mode enum instance which determines the function for which the window is opened.</param>
+        private void prepareWindow(Mode mode)
         {
             _curSeason = MainWindow.CurSeason;
 
@@ -419,12 +415,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             pbpeList = new ObservableCollection<PlayByPlayEntry>();
 
-            _curMode = curMode;
+            curMode = mode;
 
             calculateScoreAway();
             calculateScoreHome();
 
-            if (_curMode == Mode.View || _curMode == Mode.ViewAndIgnore)
+            if (curMode == Mode.View || curMode == Mode.ViewAndIgnore)
             {
                 label1.Content = "";
                 chkDoNotUpdate.Visibility = Visibility.Hidden;
@@ -432,7 +428,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 Title = "View & Edit Box Score";
             }
 
-            if (_curMode == Mode.ViewAndIgnore)
+            if (curMode == Mode.ViewAndIgnore)
             {
                 label1.Content = "Any changes made to the box score will be ignored.";
                 label1.FontWeight = FontWeights.Bold;
@@ -497,7 +493,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (_curMode == Mode.Update)
+            if (curMode == Mode.Update)
             {
                 tryParseBS();
                 if (MainWindow.TempBSE_BS.Done == false)
@@ -507,7 +503,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
             else
             {
-                if (_curMode == Mode.View)
+                if (curMode == Mode.View)
                 {
                     var r = MessageBox.Show(
                         "Do you want to save any changes to this Box Score?",
@@ -564,7 +560,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 try
                 {
-                    MainWindow.TempBSE_BS.ID = _curTeamBoxScore.ID;
+                    MainWindow.TempBSE_BS.ID = curTeamBoxScore.ID;
                 }
                 catch
                 {
@@ -732,7 +728,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     pbs.TeamID = team2;
                 }
 
-                var starters = 0;
                 var pbsLists = new List<SortableBindingList<PlayerBoxScore>>(2) { pbsAwayList, pbsHomeList };
                 var allPlayers = playersListAway.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 foreach (var kvp in playersListHome)
@@ -744,7 +739,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     teamIter++;
                     teamName = teamIter == 1 ? cmbTeam1.SelectedItem.ToString() : cmbTeam2.SelectedItem.ToString();
-                    starters = 0;
+                    var starters = 0;
                     foreach (var pbs in pbsList)
                     {
                         //pbs.PlayerID = 
@@ -1020,12 +1015,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 var data1 =
                     String.Format(
-                        "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t{18}\t{1}\t{2}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10:F3}\t{11}\t{12}\t{13:F3}\t{14}\t{15}\t{16:F3}\t{3}\t{17}",
                         cmbTeam1.SelectedItem,
                         MainWindow.TempBSE_BS.PTS1,
                         MainWindow.TempBSE_BS.REB1,
                         MainWindow.TempBSE_BS.OREB1,
-                        MainWindow.TempBSE_BS.REB1 - MainWindow.TempBSE_BS.OREB1,
                         MainWindow.TempBSE_BS.AST1,
                         MainWindow.TempBSE_BS.STL1,
                         MainWindow.TempBSE_BS.BLK1,
@@ -1044,12 +1038,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 var data2 =
                     String.Format(
-                        "{0}\t\t\t\t{19}\t{1}\t{2}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11:F3}\t{12}\t{13}\t{14:F3}\t{15}\t{16}\t{17:F3}\t{3}\t{18}",
+                        "{0}\t\t\t\t{18}\t{1}\t{2}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10:F3}\t{11}\t{12}\t{13:F3}\t{14}\t{15}\t{16:F3}\t{3}\t{17}",
                         cmbTeam2.SelectedItem,
                         MainWindow.TempBSE_BS.PTS2,
                         MainWindow.TempBSE_BS.REB2,
                         MainWindow.TempBSE_BS.OREB2,
-                        MainWindow.TempBSE_BS.REB2 - MainWindow.TempBSE_BS.OREB2,
                         MainWindow.TempBSE_BS.AST2,
                         MainWindow.TempBSE_BS.STL2,
                         MainWindow.TempBSE_BS.BLK2,
@@ -1125,11 +1118,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
                 }
 
-                _playersT = "Players";
-
                 if (_curSeason != _maxSeason)
                 {
-                    _playersT += "S" + _curSeason;
                 }
             }
             populateTeamsCombo();
@@ -1626,7 +1616,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             for (var i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                var team = "";
+                string team;
                 if (line.StartsWith("\t") && !(lines[i + 1].StartsWith("\t")))
                 {
                     team = lines[i + 1].Split('\t')[0];
@@ -2131,10 +2121,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void anyPBSDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            var dg = sender as DataGrid;
             if (e.EditAction == DataGridEditAction.Commit)
             {
                 var pbs = (e.Row.Item as PlayerBoxScore);
+                if (pbs == null)
+                {
+                    return;
+                }
                 var id = pbs.PlayerID;
                 Dispatcher.BeginInvoke(
                     new Action(() => pbs.Name = MainWindow.PST[id].FullName), System.Windows.Threading.DispatcherPriority.Background);

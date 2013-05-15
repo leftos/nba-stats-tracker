@@ -16,7 +16,7 @@
 
 #endregion
 
-namespace NBA_Stats_Tracker.Data.BoxScores
+namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 {
     using System.Collections.Generic;
     using System.ComponentModel;

@@ -18,6 +18,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores
     using System.Collections;
     using System.Collections.Generic;
 
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
+
     public class PlayByPlayEntryComparerAsc : IComparer<PlayByPlayEntry>
     {
         public int Compare(PlayByPlayEntry x, PlayByPlayEntry y)

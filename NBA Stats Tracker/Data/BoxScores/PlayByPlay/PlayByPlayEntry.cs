@@ -16,7 +16,7 @@
 
 #endregion
 
-namespace NBA_Stats_Tracker.Data.BoxScores
+namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 {
     using System;
     using System.Collections.Generic;
@@ -259,7 +259,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
         private string _displayPlayer2;
 
-        public static Dictionary<int, string> EventTypes = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> EventTypes = new Dictionary<int, string>
             {
                 { -1, "Other" },
                 { 0, "Unknown" },
@@ -277,7 +277,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
                 { 13, "Offensive Rebound" }
             };
 
-        public static Dictionary<int, string> Player2Definition = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> Player2Definition = new Dictionary<int, string>
             {
                 { -1, "2nd Player" },
                 { 0, "2nd Player" },
@@ -292,12 +292,12 @@ namespace NBA_Stats_Tracker.Data.BoxScores
                 { 13, "Shot By" }
             };
 
-        public static List<int> UseOpposingTeamAsPlayer2  = new List<int>
+        public static readonly List<int> UseOpposingTeamAsPlayer2  = new List<int>
             {
                 1, 6, 7, 8, 9, 10, 12
             };
 
-        public static Dictionary<int, string> EventLocations = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> EventLocations = new Dictionary<int, string>
             {
                 { -1, "Other" },
                 { 0, "Unknown" },

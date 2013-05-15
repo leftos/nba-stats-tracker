@@ -28,6 +28,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
     using LeftosCommonLibrary;
 
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Teams;
 
     #endregion
@@ -240,6 +242,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="dict">The dictionary containing the player box score.</param>
         /// <param name="playerID">The player ID.</param>
         /// <param name="teamID">The team.</param>
+        /// <param name="playerName">The player's name.</param>
         public PlayerBoxScore(Dictionary<string, string> dict, int playerID, int teamID, string playerName = "")
         {
             PlayerID = playerID;

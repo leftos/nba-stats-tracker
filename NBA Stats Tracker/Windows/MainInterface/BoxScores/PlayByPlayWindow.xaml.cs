@@ -22,6 +22,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
     using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
     using NBA_Stats_Tracker.Data.Teams;

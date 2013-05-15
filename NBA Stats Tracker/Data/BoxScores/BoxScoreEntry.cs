@@ -22,6 +22,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores
 
     using System.Collections.Generic;
 
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Teams;
 

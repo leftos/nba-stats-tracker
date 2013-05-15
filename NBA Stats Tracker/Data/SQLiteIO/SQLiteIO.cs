@@ -34,6 +34,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
     using LeftosCommonLibrary.CommonDialogs;
 
     using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.PastStats;
     using NBA_Stats_Tracker.Data.Players;

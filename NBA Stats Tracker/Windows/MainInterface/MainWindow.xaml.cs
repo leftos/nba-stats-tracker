@@ -46,6 +46,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
     using Microsoft.Win32;
 
     using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Players.Contracts;
