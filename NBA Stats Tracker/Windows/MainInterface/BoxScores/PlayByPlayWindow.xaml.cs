@@ -457,7 +457,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             txtEventDesc.IsEnabled = cmbEventType.SelectedItem.ToString() == "Other";
 
-            stpShotEvent.IsEnabled = curEventKey == 1;
+            grdShotEvent.IsEnabled = curEventKey == 1;
             txbLocationLabel.Text = curEventKey == 1 ? "Shot Distance" : "Location";
             txtLocationDesc.IsEnabled = false;
             cmbLocationShotDistance.ItemsSource = curEventKey == 1
@@ -513,7 +513,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 return;
             }
-            if (stpShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
+            if (grdShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
             {
                 return;
             }
@@ -604,7 +604,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     EventType = PlayByPlayEntry.EventTypes.Single(item => item.Value == cmbEventType.SelectedItem.ToString()).Key,
                     GameID = _bse.BS.ID,
                     Location =
-                        stpShotEvent.IsEnabled
+                        grdShotEvent.IsEnabled
                             ? -2
                             : PlayByPlayEntry.EventLocations.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString())
                                              .Key,
@@ -619,7 +619,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     Team1PlayerIDs = AwayActive.Select(ps => ps.ID).ToList(),
                     Team2PlayerIDs = HomeActive.Select(ps => ps.ID).ToList(),
                     ShotEntry =
-                        stpShotEvent.IsEnabled
+                        grdShotEvent.IsEnabled
                             ? new ShotEntry(
                                   ShotEntry.ShotDistances.Single(item => item.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key,
                                   ShotEntry.ShotOrigins.Single(item => item.Value == cmbShotOrigin.SelectedItem.ToString()).Key,
@@ -724,7 +724,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     return;
                 }
-                if (stpShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
+                if (grdShotEvent.IsEnabled && (cmbShotOrigin.SelectedIndex == -1 || cmbShotType.SelectedIndex == -1))
                 {
                     return;
                 }

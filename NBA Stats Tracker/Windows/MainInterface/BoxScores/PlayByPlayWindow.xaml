@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition MinHeight="150" />
-            <RowDefinition Height="80" />
+            <RowDefinition Height="83" />
             <RowDefinition />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
@@ -182,42 +182,52 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
-            <StackPanel Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
-                        <TextBlock Text="Event" />
-                        <Rectangle Height="5" />
-                        <ComboBox Name="cmbEventType" SelectionChanged="cmbEventType_SelectionChanged" />
-                        <Rectangle Height="5" />
-                        <TextBox Name="txtEventDesc" />
-                    </StackPanel>
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
-                        <TextBlock Text="Player" />
-                        <Rectangle Height="5" />
-                        <ComboBox Name="cmbPlayer1" SelectionChanged="cmbPlayer1_SelectionChanged">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ComboBoxItem}">
-                                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
-                        </ComboBox>
-                    </StackPanel>
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
-                        <TextBlock Name="txbPlayer2Label" Text="Player 2" />
-                        <Rectangle Height="5" />
-                        <ComboBox Name="cmbPlayer2">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ComboBoxItem}">
-                                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
-                        </ComboBox>
-                    </StackPanel>
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="75"/>
+                <ColumnDefinition Width="0.65*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Margin="10,5,5,5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Event" />
+                    <Rectangle Height="5" />
+                    <ComboBox Name="cmbEventType" SelectionChanged="cmbEventType_SelectionChanged" />
+                    <Rectangle Height="5" />
+                    <TextBox Name="txtEventDesc" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Player" />
+                    <Rectangle Height="5" />
+                    <ComboBox Name="cmbPlayer1" SelectionChanged="cmbPlayer1_SelectionChanged">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ComboBoxItem}">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="2" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Name="txbPlayer2Label" Text="Player 2" />
+                    <Rectangle Height="5" />
+                    <ComboBox Name="cmbPlayer2">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ComboBoxItem}">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="3" Margin="5">
+                    <StackPanel Orientation="Vertical">
                         <TextBlock Name="txbLocationLabel" Text="Location/Shot Dist." />
                         <Rectangle Height="5" />
                         <ComboBox Name="cmbLocationShotDistance"
@@ -225,21 +235,28 @@
                         <Rectangle Height="5" />
                         <TextBox Name="txtLocationDesc" />
                     </StackPanel>
-                </StackPanel>
-                <StackPanel Name="stpShotEvent" Orientation="Horizontal">
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
+            </Grid>
+            <Grid Grid.Column="4" Margin="5" Name="grdShotEvent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" Margin="0,0,5,0">
+                    <StackPanel Orientation="Vertical">
                         <TextBlock Text="Shot Origin" />
                         <Rectangle Height="5" />
                         <ComboBox Name="cmbShotOrigin" />
                     </StackPanel>
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" Width="120">
+                </Grid>
+                <Grid Grid.Column="1" Margin="5,0">
+                    <StackPanel Orientation="Vertical">
                         <TextBlock Text="Shot Type" />
                         <Rectangle Height="5" />
                         <ComboBox Name="cmbShotType" />
                     </StackPanel>
-                    <Rectangle Width="10" />
+                </Grid>
+                <Grid Grid.Column="2" Margin="5,0,0,0">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Height="5" />
                         <CheckBox Name="chkShotIsMade" Content="Made" />
@@ -247,25 +264,23 @@
                         <CheckBox Name="chkShotIsAssisted" Content="Assisted" />
                         <Rectangle Height="10" />
                     </StackPanel>
-                    <Rectangle Width="10" />
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="5" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <Rectangle Height="5" />
+                    <CheckBox Name="chkUpdate" Content="Update" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <Rectangle Height="5" />
-                        <CheckBox Name="chkUpdate" Content="Update" />
-                    </StackPanel>
-                    <Rectangle Width="10" />
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                                Width="40">
-                        <Button Name="btnAdd" Content="Add" FontWeight="Bold" Click="btnAdd_Click" />
-                        <Rectangle Height="3" />
-                        <Button Name="btnEdit" Content="Edit" Click="btnEdit_Click" />
-                        <Rectangle Height="3" />
-                        <Button Name="btnDelete" Content="Del" Click="btnDelete_Click" />
-                        <Rectangle Height="5" />
-                    </StackPanel>
+            </Grid>
+            <Grid Grid.Column="6" Margin="5,5,10,5">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                    <Button Name="btnAdd" Content="Add" FontWeight="Bold" Click="btnAdd_Click"/>
+                    <Rectangle Height="3" />
+                    <Button Name="btnEdit" Content="Edit" Click="btnEdit_Click" />
+                    <Rectangle Height="3" />
+                    <Button Name="btnDelete" Content="Del" Click="btnDelete_Click" />
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Grid>
         <Grid Grid.Row="3">
             <DataGrid Name="dgEvents" Margin="10,5" AutoGenerateColumns="False" IsReadOnly="True"
