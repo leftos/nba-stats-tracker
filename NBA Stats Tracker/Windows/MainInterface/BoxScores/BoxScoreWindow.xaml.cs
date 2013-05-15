@@ -548,23 +548,20 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <exception cref="System.Exception"></exception>
         private void tryParseBS()
         {
-            if (cmbTeam1.SelectedItem.ToString() == cmbTeam2.SelectedItem.ToString())
-            {
-                MessageBox.Show("You can't have the same team in both Home & Away.");
-                return;
-            }
-            if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
-            {
-                MessageBox.Show("The Box Score is incomplete. Make sure you input all stats.");
-                return;
-            }
-            if (cmbSeasonNum.SelectedIndex == -1)
-            {
-                MessageBox.Show("You have to choose a season.");
-                return;
-            }
             try
             {
+                if (cmbTeam1.SelectedItem.ToString() == cmbTeam2.SelectedItem.ToString())
+                {
+                    throwErrorWithMessage("You can't have the same team in both Home & Away.");
+                }
+                if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
+                {
+                    throwErrorWithMessage("The Box Score is incomplete. Make sure you input all stats.");
+                }
+                if (cmbSeasonNum.SelectedIndex == -1)
+                {
+                    throwErrorWithMessage("You have to choose a season.");
+                }
                 try
                 {
                     MainWindow.TempBSE_BS.ID = curTeamBoxScore.ID;
@@ -633,6 +630,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 teamName = cmbTeam2.SelectedItem.ToString();
                 MainWindow.TempBSE_BS.PTS2 = Convert.ToUInt16(txtPTS2.Text);
+                if (MainWindow.TempBSE_BS.PTS1 == MainWindow.TempBSE_BS.PTS2)
+                {
+                    throwErrorWithMessage("The points can't be the same for both teams. NBA Stats Tracker doesn't support games that end in draw.");
+                }
                 MainWindow.TempBSE_BS.REB2 = Convert.ToUInt16(txtREB2.Text);
                 MainWindow.TempBSE_BS.AST2 = Convert.ToUInt16(txtAST2.Text);
                 MainWindow.TempBSE_BS.STL2 = Convert.ToUInt16(txtSTL2.Text);
