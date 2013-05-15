@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.13.1.3
+		- Fix: Plays added that update the team score will have the correct score reported in the list as well
+		- Fix: The Player selected for the Event in Play By Play Editor will not appear in the Player 2 combo-box if the Event is set to anything but Other, Unknown or Offensive Rebound
+
 	v1.13.1.2
 		- Fix: Fixed recent bug that caused Play By Play Editor not to open if the points for both teams were the same (e.g. 0-0, when first creating a box score); all other checks for the validity of the box score still apply
 
