@@ -184,6 +184,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             if (mode == Mode.Update)
             {
                 curTeamBoxScore = new TeamBoxScore();
+                FillTeamBoxScore(curTeamBoxScore);
+                txtMINS1.Text = MainWindow.GameLength.ToString();
             }
 
             try
@@ -213,36 +215,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             var bs = bse.BS;
             MainWindow.TempBSE_BS = bse.BS;
-            txtPTS1.Text = bs.PTS1.ToString();
-            txtREB1.Text = bs.REB1.ToString();
-            txtAST1.Text = bs.AST1.ToString();
-            txtSTL1.Text = bs.STL1.ToString();
-            txtBLK1.Text = bs.BLK1.ToString();
-            txtTO1.Text = bs.TOS1.ToString();
-            txtFGM1.Text = bs.FGM1.ToString();
-            txtFGA1.Text = bs.FGA1.ToString();
-            txt3PM1.Text = bs.TPM1.ToString();
-            txt3PA1.Text = bs.TPA1.ToString();
-            txtFTM1.Text = bs.FTM1.ToString();
-            txtFTA1.Text = bs.FTA1.ToString();
-            txtOREB1.Text = bs.OREB1.ToString();
-            txtFOUL1.Text = bs.FOUL1.ToString();
-            txtMINS1.Text = bs.MINS1.ToString();
-            txtPTS2.Text = bs.PTS2.ToString();
-            txtREB2.Text = bs.REB2.ToString();
-            txtAST2.Text = bs.AST2.ToString();
-            txtSTL2.Text = bs.STL2.ToString();
-            txtBLK2.Text = bs.BLK2.ToString();
-            txtTO2.Text = bs.TOS2.ToString();
-            txtFGM2.Text = bs.FGM2.ToString();
-            txtFGA2.Text = bs.FGA2.ToString();
-            txt3PM2.Text = bs.TPM2.ToString();
-            txt3PA2.Text = bs.TPA2.ToString();
-            txtFTM2.Text = bs.FTM2.ToString();
-            txtFTA2.Text = bs.FTA2.ToString();
-            txtOREB2.Text = bs.OREB2.ToString();
-            txtFOUL2.Text = bs.FOUL2.ToString();
-            txtMINS2.Text = bs.MINS2.ToString();
+            FillTeamBoxScore(bs);
 
             dtpGameDate.SelectedDate = bs.GameDate;
             _curSeason = bs.SeasonNum;
@@ -302,6 +275,40 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             lstPlayByPlay.ItemsSource = pbpeList;
 
             _loading = false;
+        }
+
+        private void FillTeamBoxScore(TeamBoxScore bs)
+        {
+            txtPTS1.Text = bs.PTS1.ToString();
+            txtREB1.Text = bs.REB1.ToString();
+            txtAST1.Text = bs.AST1.ToString();
+            txtSTL1.Text = bs.STL1.ToString();
+            txtBLK1.Text = bs.BLK1.ToString();
+            txtTO1.Text = bs.TOS1.ToString();
+            txtFGM1.Text = bs.FGM1.ToString();
+            txtFGA1.Text = bs.FGA1.ToString();
+            txt3PM1.Text = bs.TPM1.ToString();
+            txt3PA1.Text = bs.TPA1.ToString();
+            txtFTM1.Text = bs.FTM1.ToString();
+            txtFTA1.Text = bs.FTA1.ToString();
+            txtOREB1.Text = bs.OREB1.ToString();
+            txtFOUL1.Text = bs.FOUL1.ToString();
+            txtMINS1.Text = bs.MINS1.ToString();
+            txtPTS2.Text = bs.PTS2.ToString();
+            txtREB2.Text = bs.REB2.ToString();
+            txtAST2.Text = bs.AST2.ToString();
+            txtSTL2.Text = bs.STL2.ToString();
+            txtBLK2.Text = bs.BLK2.ToString();
+            txtTO2.Text = bs.TOS2.ToString();
+            txtFGM2.Text = bs.FGM2.ToString();
+            txtFGA2.Text = bs.FGA2.ToString();
+            txt3PM2.Text = bs.TPM2.ToString();
+            txt3PA2.Text = bs.TPA2.ToString();
+            txtFTM2.Text = bs.FTM2.ToString();
+            txtFTA2.Text = bs.FTA2.ToString();
+            txtOREB2.Text = bs.OREB2.ToString();
+            txtFOUL2.Text = bs.FOUL2.ToString();
+            txtMINS2.Text = bs.MINS2.ToString();
         }
 
         /// <summary>Updates the player box score data grid for the specified team.</summary>
@@ -548,7 +555,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
             if ((txtPTS1.Text == "") || (txtPTS1.Text == "N/A") || (txtPTS2.Text == "") || (txtPTS2.Text == "N/A"))
             {
-                //MessageBox.Show("The Box Score is incomplete. Make sure you input all stats.");
+                MessageBox.Show("The Box Score is incomplete. Make sure you input all stats.");
                 return;
             }
             if (cmbSeasonNum.SelectedIndex == -1)
@@ -853,7 +860,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
             catch
             {
-                MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
+                //MessageBox.Show("The Box Score seems to be invalid. Check that there's no stats missing.");
                 MainWindow.TempBSE_BS.Done = false;
             }
         }
