@@ -430,13 +430,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     if (curPlayerTeam == _t1ID)
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
-                        AwayActive.ToList()
+                        AwayActive.Where(ps => ps.ID != curPlayer.ID).ToList()
                                   .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                     else
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
-                        HomeActive.ToList()
+                        HomeActive.Where(ps => ps.ID != curPlayer.ID).ToList()
                                   .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
                     }
                 }
