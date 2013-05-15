@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.13.1
+		- Improvement: The list of events in Play By Play Window is now displayed in a table instead of a list with all the information readily available
+		- Fix: Clicking Edit in the Play By Play tab of the Box Score window would do nothing in a new box score with some stats missing
+		- Change: New box scores will have the team stats be initially filled with zeros and the default game length
+
 	v1.13.0.3
 		- Fix: Free Throw Made and Missed will no longer require a location to be set in the Play By Play Editor
 		- Fix: Free Throw Made will update the scoring team's points accordingly in the Play By Play Editor
