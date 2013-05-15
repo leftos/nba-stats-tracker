@@ -60,7 +60,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
         {
             task.ContinueWith(
-                c => App.ErrorReport(c.Exception, "Task exception"),
+                c => App.ForceCriticalError(c.Exception, "Task exception"),
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
                 scheduler);
@@ -70,7 +70,7 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
         {
             task.ContinueWith(
-                c => App.ErrorReport(c.Exception, "Task exception"),
+                c => App.ForceCriticalError(c.Exception, "Task exception"),
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
                 scheduler);

@@ -38,9 +38,10 @@ namespace NBA_Stats_Tracker
         public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
         public static bool RealNBAOnly;
 
-        public static readonly string AppDocsPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppDocsPath;
-        public static string SavesPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.SavesPath;
-        public static readonly string AppTempPath = NBA_Stats_Tracker.Windows.MainInterface.MainWindow.AppTempPath;
+        public static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                    + @"\NBA Stats Tracker\";
+
+        public static readonly string AppTempPath = AppDocsPath + @"Temp\";
 
         /// <summary>
         ///     Handles the DispatcherUnhandledException event of the App control. Makes sure that any unhandled exceptions produce an error
@@ -56,43 +57,8 @@ namespace NBA_Stats_Tracker
             var innerExceptionString = e.Exception.InnerException == null
                                            ? "No inner exception information."
                                            : e.Exception.InnerException.Message;
-            var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
-            try
-            {
-                var errorReportPath = AppDocsPath + @"errorlog_unh.txt";
-                var f = new StreamWriter(errorReportPath);
-
-                f.WriteLine(string.Format("Unhandled Exception Error Report for {0}", AppName));
-                f.WriteLine(versionString);
-                f.WriteLine();
-                f.WriteLine("Exception information:");
-                f.Write(exceptionString);
-                f.WriteLine();
-                f.WriteLine();
-                f.WriteLine("Inner Exception information:");
-                f.Write(innerExceptionString);
-                f.Close();
-
-                MessageBox.Show(
-                    AppName + " encountered a critical error and will be terminated.\n\n" + "An Error Log has been saved at \n"
-                    + errorReportPath,
-                    AppName + " Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Process.Start(errorReportPath);
-            }
-            catch (Exception ex)
-            {
-                var s = "Can't create errorlog!\nException: " + ex;
-                s += ex.InnerException != null ? "\nInner Exception: " + ex.InnerException : "";
-                s += "\n\n";
-                s += versionString;
-                s += "Exception Information:\n" + exceptionString + "\n\n";
-                s += "Inner Exception Information:\n" + innerExceptionString;
-                MessageBox.Show(s, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            prepareErrorReport(exceptionString, innerExceptionString, "Unhandled Exception");
 
             // Prevent default unhandled exception processing
             e.Handled = true;
@@ -101,12 +67,26 @@ namespace NBA_Stats_Tracker
         }
 
         /// <summary>Forces a critical error to happen and produces an error-report which includes the stack trace.</summary>
-        /// <param name="e">The e.</param>
-        /// <param name="additional">The additional.</param>
-        public static void ErrorReport(Exception e, string additional = "")
+        /// <param name="e">The exception.</param>
+        /// <param name="additional">Any additional information provided by the developer.</param>
+        public static void ForceCriticalError(Exception e, string additional = "")
         {
             var exceptionString = e.ToString();
             var innerExceptionString = e.InnerException == null ? "No inner exception information." : e.InnerException.Message;
+
+            prepareErrorReport(exceptionString, innerExceptionString, additional);
+
+            Environment.Exit(-1);
+        }
+
+        /// <summary>
+        /// Prepares an error report and saves it to a text file, or shows it on-screen if creating the file fails.
+        /// </summary>
+        /// <param name="exceptionString">The exception information (usually provided by ex.ToString()).</param>
+        /// <param name="innerExceptionString">The inner exception information (if any).</param>
+        /// <param name="additional">Any additional information provided by the developer.</param>
+        private static void prepareErrorReport(string exceptionString, string innerExceptionString, string additional = "")
+        {
             var versionString = "Version " + Assembly.GetExecutingAssembly().GetName().Version;
 
             try
@@ -114,10 +94,13 @@ namespace NBA_Stats_Tracker
                 var errorReportPath = AppDocsPath + @"errorlog.txt";
                 var f = new StreamWriter(errorReportPath);
 
-                f.WriteLine("Forced Exception Error Report for " + AppName);
+                f.WriteLine("Error Report for {0}", AppName);
                 f.WriteLine(versionString);
-                f.WriteLine("Developer information: " + additional);
                 f.WriteLine();
+                if (!String.IsNullOrWhiteSpace(additional))
+                {
+                    f.WriteLine("Developer information: " + additional);
+                }
                 f.WriteLine("Exception information:");
                 f.Write(exceptionString);
                 f.WriteLine();
@@ -145,8 +128,6 @@ namespace NBA_Stats_Tracker
                 s += "Inner Exception Information:\n" + innerExceptionString;
                 MessageBox.Show(s, AppName + " Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            Environment.Exit(-1);
         }
 
         /// <summary>

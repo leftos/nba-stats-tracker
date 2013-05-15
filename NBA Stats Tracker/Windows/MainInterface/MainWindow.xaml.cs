@@ -83,13 +83,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         #endregion
 
-        public static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                                    + @"\NBA Stats Tracker\";
+        public static readonly string PSFiltersPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                      + @"\NBA Stats Tracker\" + @"Search Filters\";
+        public static readonly string ASCFiltersPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                       + @"\NBA Stats Tracker\" + @"Advanced Stats Filters\";
 
-        public static readonly string PSFiltersPath = AppDocsPath + @"Search Filters\";
-        public static readonly string ASCFiltersPath = AppDocsPath + @"Advanced Stats Filters\";
-
-        public static readonly string AppTempPath = AppDocsPath + @"Temp\";
         public static string SavesPath = "";
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
         public static Random Random = new Random();
@@ -221,9 +219,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 Directory.CreateDirectory(ASCFiltersPath);
             }
-            if (Directory.Exists(AppTempPath) == false)
+            var appTempPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                              + @"\NBA Stats Tracker\" + @"Temp\";
+            if (Directory.Exists(appTempPath) == false)
             {
-                Directory.CreateDirectory(AppTempPath);
+                Directory.CreateDirectory(appTempPath);
             }
 
             TST[0] = new TeamStats(-1, "$$NewDB");
@@ -242,7 +242,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
             catch (Exception ex)
             {
-                App.ErrorReport(ex, "Registry.CurrentUser");
+                App.ForceCriticalError(ex, "Registry.CurrentUser");
             }
 
             Debug.Assert(rk != null, "rk != null");
@@ -523,7 +523,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath };
+            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                                                                     + @"\NBA Stats Tracker\" };
             sfd.ShowDialog();
 
             if (sfd.FileName == "")
@@ -587,7 +588,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ofd = new OpenFileDialog
                 {
                     Filter = "NST Database (*.tst)|*.tst",
-                    InitialDirectory = AppDocsPath,
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                       + @"\NBA Stats Tracker\",
                     Title = "Please select the TST file that you want to edit..."
                 };
             ofd.ShowDialog();
@@ -864,14 +866,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 var webClient = new WebClient();
                 var updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
+                var appDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                  + @"\NBA Stats Tracker\";
                 if (!showMessage)
                 {
                     webClient.DownloadFileCompleted += checkForUpdatesCompleted;
-                    webClient.DownloadFileAsync(new Uri(updateUri), AppDocsPath + @"nstversion.txt");
+                    webClient.DownloadFileAsync(new Uri(updateUri), appDocsPath + @"nstversion.txt");
                 }
                 else
                 {
-                    webClient.DownloadFile(new Uri(updateUri), AppDocsPath + @"nstversion.txt");
+                    webClient.DownloadFile(new Uri(updateUri), appDocsPath + @"nstversion.txt");
                     checkForUpdatesCompleted(null, null);
                 }
             }
@@ -891,7 +895,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             string[] versionParts;
             try
             {
-                updateInfo = File.ReadAllLines(AppDocsPath + @"nstversion.txt");
+                updateInfo = File.ReadAllLines(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                               + @"\NBA Stats Tracker\" + @"nstversion.txt");
                 versionParts = updateInfo[0].Split('.');
             }
             catch
@@ -973,7 +978,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
 
             var safefn = Tools.GetSafeFilename(ofd.FileName);
-            var settingsFile = AppDocsPath + safefn + ".cfg";
+            var settingsFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                               + @"\NBA Stats Tracker\" + safefn + ".cfg";
             if (File.Exists(settingsFile))
             {
                 File.Delete(settingsFile);
@@ -1173,7 +1179,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             if (String.IsNullOrWhiteSpace(txtFile.Text))
             {
-                file = AppDocsPath + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
+                file = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                       + @"\NBA Stats Tracker\" + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
                 if (File.Exists(file))
                 {
                     if (App.RealNBAOnly)
@@ -1766,7 +1773,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
-            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = AppDocsPath };
+            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                                                                                     + @"\NBA Stats Tracker\" };
             sfd.ShowDialog();
 
             if (sfd.FileName == "")
@@ -2072,7 +2080,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ofd = new OpenFileDialog
                 {
                     Filter = "NST Database (*.tst)|*.tst",
-                    InitialDirectory = AppDocsPath,
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                                       + @"\NBA Stats Tracker\",
                     Title = "Please select the TST file that you want to import from..."
                 };
             ofd.ShowDialog();
