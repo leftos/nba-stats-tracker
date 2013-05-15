@@ -2156,5 +2156,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 _isManualEditCommit = false;
             }
         }
+
+        private void btnCalculateFromPBP_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var pbs in pbsAwayList)
+            {
+                pbs.CalculateFromPBPEList(pbpeList);
+            }
+
+            foreach (var pbs in pbsHomeList)
+            {
+                pbs.CalculateFromPBPEList(pbpeList);
+            }
+        }
     }
 }

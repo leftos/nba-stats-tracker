@@ -265,6 +265,66 @@ namespace NBA_Stats_Tracker.Data.Players
             FOUL = FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
+        public void CalculateFromPBPEList(IEnumerable<PlayByPlayEntry> pbpeList)
+        {
+            ResetStats();
+
+            var list = pbpeList.Where(pbpe => pbpe.Player1ID == PlayerID).ToList();
+            foreach (var entry in list)
+            {
+                switch (entry.EventType)
+                {
+                    case 1:
+                        FGA++;
+                        if (entry.ShotEntry.IsMade)
+                        {
+                            FGM++;
+                        }
+                        if (entry.ShotEntry.Distance == 5)
+                        {
+                            TPA++;
+                            if (entry.ShotEntry.IsMade)
+                            {
+                                TPM++;
+                            }
+                        }
+                        break;
+                    case 3:
+                        FTA++;
+                        FTM++;
+                        break;
+                    case 4:
+                        FTA++;
+                        break;
+                    case 5:
+                        AST++;
+                        break;
+                    case 6:
+                        STL++;
+                        break;
+                    case 7:
+                        BLK++;
+                        break;
+                    case 8:
+                        TOS++;
+                        break;
+                    case 9:
+                    case 11:
+                        FOUL++;
+                        break;
+                    case 12:
+                        DREB++;
+                        REB++;
+                        break;
+                    case 13:
+                        OREB++;
+                        DREB++;
+                        break;
+                }
+            }
+            CalculatePoints();
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class. Used to cast a LivePlayerBoxScore to a PlayerBoxScore which
         ///     can be saved to the database.

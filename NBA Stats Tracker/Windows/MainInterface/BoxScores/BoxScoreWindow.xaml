@@ -212,8 +212,10 @@
                             PreviewMouseLeftButtonDown="btnTools_PreviewMouseLeftButtonDown">
                         <Button.ContextMenu>
                             <ContextMenu Name="cxmTools">
-                                <MenuItem Header="Replace Team Stats with Accumulated Player Stats"
+                                <MenuItem Header="Calculate Team Stats by summing Player Stats"
                                           Click="btnCalculateTeams_Click" />
+                                <MenuItem Header="Calculate Player Stats from Play By Play"
+                                          Click="btnCalculateFromPBP_Click" />
                                 <MenuItem Header="Check if Team Stats and Player Stats match"
                                           Click="btnCompareTeamAndPlayerStats_Click" />
                                 <MenuItem Header="Copy" Click="btnCopy_Click" />
