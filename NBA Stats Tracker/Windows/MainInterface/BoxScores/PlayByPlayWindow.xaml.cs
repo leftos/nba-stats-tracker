@@ -409,20 +409,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             else
             {
                 var curPlayer = cmbPlayer1.SelectedItem as ComboBoxItemWithIsEnabled;
+                if (curPlayer == null)
+                {
+                    cmbPlayer2.ItemsSource = PlayersComboList2;
+                    return;
+                }
                 var curPlayerTeam = _bse.PBSList.Single(pbs => pbs.PlayerID == curPlayer.ID).TeamID;
+                List<PlayerStats> list;
                 if (PlayByPlayEntry.UseOpposingTeamAsPlayer2.Contains(curEventKey))
                 {
                     if (curPlayerTeam == _t1ID)
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
-                        HomeActive.ToList()
-                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        list = HomeActive.ToList();
                     }
                     else
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
-                        AwayActive.ToList()
-                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        list = AwayActive.ToList();
                     }
                 }
                 else
@@ -430,16 +434,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     if (curPlayerTeam == _t1ID)
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));
-                        AwayActive.Where(ps => ps.ID != curPlayer.ID).ToList()
-                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        list = curEventKey != 13 ? AwayActive.Where(ps => ps.ID != curPlayer.ID).ToList() : AwayActive.ToList();
                     }
                     else
                     {
                         PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(txbHomeTeam.Text, false));
-                        HomeActive.Where(ps => ps.ID != curPlayer.ID).ToList()
-                                  .ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
+                        list = curEventKey != 13 ? HomeActive.Where(ps => ps.ID != curPlayer.ID).ToList() : HomeActive.ToList();
                     }
                 }
+                list.ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
             }
             cmbPlayer2.ItemsSource = PlayersComboList2;
         }
