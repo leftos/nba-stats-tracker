@@ -26,20 +26,20 @@
                 <TextBlock Name="txbAwayTeam" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"
                            Text="Away Team" />
                 <TextBox Name="txtAwayScore" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18"
-                         Text="120" Width="42" TextAlignment="Center" />
+                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=AwayPoints, UpdateSourceTrigger=PropertyChanged}" Width="42" TextAlignment="Center" />
             </Grid>
             <Grid Grid.Column="2" Name="grdPeriod">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock Text="Period" VerticalAlignment="Center" />
                     <Rectangle Width="5" />
                     <TextBox Name="txtPeriod" Width="25" Height="23"
-                             Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=CurrentPeriod}"
+                             Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=CurrentPeriod, UpdateSourceTrigger=PropertyChanged}"
                              TextAlignment="Center" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="4">
                 <TextBox Name="txtHomeScore" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18"
-                         Text="47" Width="42" TextAlignment="Center" />
+                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=HomePoints, UpdateSourceTrigger=PropertyChanged}" Width="42" TextAlignment="Center" />
                 <TextBlock Name="txbHomeTeam" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"
                            Text="Home Team" />
             </Grid>

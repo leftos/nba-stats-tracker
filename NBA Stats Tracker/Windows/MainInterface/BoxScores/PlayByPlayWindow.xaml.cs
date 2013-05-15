@@ -62,6 +62,31 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         private int _currentPeriod;
+
+        public int AwayPoints
+        {
+            get { return _awayPoints; }
+            set
+            {
+                _awayPoints = value;
+                OnPropertyChanged("AwayPoints");
+            }
+        }
+
+        private int _awayPoints;
+
+        public int HomePoints
+        {
+            get { return _homePoints; }
+            set
+            {
+                _homePoints = value;
+                OnPropertyChanged("HomePoints");
+            }
+        }
+
+        private int _homePoints;
+
         private double _savedTimeLeft, _savedShotClock;
         private List<PlayerStats> _savedAwaySubs, _savedHomeSubs, _savedAwayActive, _savedHomeActive;
         private int _savedAwayPoints, _savedHomePoints;
@@ -96,8 +121,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             txbAwayTeam.Text = _tst[_t1ID].DisplayName;
             txbHomeTeam.Text = _tst[_t2ID].DisplayName;
-            txtAwayScore.Text = _bse.BS.PTS1.ToString();
-            txtHomeScore.Text = _bse.BS.PTS2.ToString();
+            AwayPoints = _bse.BS.PTS1;
+            HomePoints = _bse.BS.PTS2;
 
             CurrentPeriod = 1;
 
@@ -522,66 +547,38 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 if (play.EventType == 1 && play.ShotEntry.IsMade)
                 {
-                    try
+                    if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
                     {
-                        if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
+                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
                         {
-                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
-                            {
-                                txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 2).ToString();
-                            }
-                            else
-                            {
-                                txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 2).ToString();
-                            }
+                            AwayPoints += 2;
                         }
-                        else if (play.ShotEntry.Distance == 5)
+                        else
                         {
-                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
-                            {
-                                txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 3).ToString();
-                            }
-                            else
-                            {
-                                txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 3).ToString();
-                            }
+                            HomePoints += 2;
                         }
                     }
-                    catch (FormatException)
+                    else if (play.ShotEntry.Distance == 5)
                     {
-                        MessageBox.Show(
-                            "Tried to update the team scores but they seem to be in a non-numeric format.",
-                            App.AppName,
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
-                    catch
-                    {
+                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                        {
+                            AwayPoints += 3;
+                        }
+                        else
+                        {
+                            HomePoints += 3;
+                        }
                     }
                 }
                 else if (play.EventType == 3)
                 {
-                    try
+                    if (play.Team1PlayerIDs.Contains(play.Player1ID))
                     {
-                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
-                        {
-                            txtAwayScore.Text = (Convert.ToInt32(txtAwayScore.Text) + 1).ToString();
-                        }
-                        else
-                        {
-                            txtHomeScore.Text = (Convert.ToInt32(txtHomeScore.Text) + 1).ToString();
-                        }
+                        AwayPoints++;
                     }
-                    catch (FormatException)
+                    else
                     {
-                        MessageBox.Show(
-                            "Tried to update the team scores but they seem to be in a non-numeric format.",
-                            App.AppName,
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
-                    catch
-                    {
+                        HomePoints++;
                     }
                 }
             }
@@ -614,8 +611,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         (cmbPlayer2.IsEnabled && cmbPlayer2.SelectedIndex != -1)
                             ? (cmbPlayer2.SelectedItem as ComboBoxItemWithIsEnabled).ID
                             : -1,
-                    T1PTS = Convert.ToInt32(txtAwayScore.Text),
-                    T2PTS = Convert.ToInt32(txtHomeScore.Text),
+                    T1PTS = Convert.ToInt32(AwayPoints),
+                    T2PTS = Convert.ToInt32(HomePoints),
                     Team1PlayerIDs = AwayActive.Select(ps => ps.ID).ToList(),
                     Team2PlayerIDs = HomeActive.Select(ps => ps.ID).ToList(),
                     ShotEntry =
@@ -668,8 +665,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 _savedAwaySubs = AwaySubs.ToList();
                 _savedHomeActive = HomeActive.ToList();
                 _savedHomeSubs = HomeSubs.ToList();
-                _savedAwayPoints = Convert.ToInt32(txtAwayScore.Text);
-                _savedHomePoints = Convert.ToInt32(txtHomeScore.Text);
+                _savedAwayPoints = Convert.ToInt32(AwayPoints);
+                _savedHomePoints = Convert.ToInt32(HomePoints);
                 _savedPeriod = CurrentPeriod;
 
                 _timeLeft = selectedPlay.TimeLeft;
@@ -712,8 +709,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 cmbShotType.SelectedItem = selectedPlay.EventType == 1 ? ShotEntry.ShotTypes[selectedPlay.ShotEntry.Type] : null;
                 chkShotIsMade.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsMade;
                 chkShotIsAssisted.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsAssisted;
-                txtAwayScore.Text = selectedPlay.T1PTS.ToString();
-                txtHomeScore.Text = selectedPlay.T2PTS.ToString();
+                AwayPoints = selectedPlay.T1PTS;
+                HomePoints = selectedPlay.T2PTS;
                 CurrentPeriod = selectedPlay.Quarter;
 
                 btnEdit.Content = "Save";
@@ -741,8 +738,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 AwaySubs = new ObservableCollection<PlayerStats>(_savedAwaySubs);
                 HomeActive = new ObservableCollection<PlayerStats>(_savedHomeActive);
                 HomeSubs = new ObservableCollection<PlayerStats>(_savedHomeSubs);
-                txtAwayScore.Text = _savedAwayPoints.ToString();
-                txtHomeScore.Text = _savedHomePoints.ToString();
+                AwayPoints = _savedAwayPoints;
+                HomePoints = _savedHomePoints;
                 CurrentPeriod = _savedPeriod;
 
                 lstAwayActive.ItemsSource = AwayActive;
