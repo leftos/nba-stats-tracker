@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.13.1.2
+		- Fix: Fixed recent bug that caused Play By Play Editor not to open if the points for both teams were the same (e.g. 0-0, when first creating a box score); all other checks for the validity of the box score still apply
+
 	v1.13.1.1
 		- Improvement: The combo-boxes that allow you to set the Event properties in the Play By Play Editor will now automatically adjust their width to the window's width
 

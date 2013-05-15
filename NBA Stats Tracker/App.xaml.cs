@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker
     /// <summary>Interaction logic for App.xaml</summary>
     public partial class App
     {
-        internal const string AppName = "NBA Stats Tracker";
+        public const string AppName = "NBA Stats Tracker";
         public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
         public static bool RealNBAOnly;
 
