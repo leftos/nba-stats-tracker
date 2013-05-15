@@ -257,6 +257,66 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             }
         }
 
+        public string DisplayTimeLeft
+        {
+            get { return TimeLeftToString(TimeLeft); }
+        }
+
+        public string DisplayShotClock
+        {
+            get { return ShotClockToString(ShotClockLeft); }
+        }
+
+        public string DisplayScore
+        {
+            get { return String.Format("{0}-{1}", T1PTS, T2PTS); }
+        }
+
+        public string DisplayLocation
+        {
+            get
+            {
+                if (EventType == 1)
+                {
+                    return ShotEntry.ShotDistances[ShotEntry.Distance];
+                }
+                else
+                {
+                    return Location == -1 ? LocationDesc : EventLocations[Location];
+                }
+            }
+        }
+
+        public string DisplayShotOrigin
+        {
+            get
+            {
+                if (EventType == 1)
+                {
+                    return ShotEntry.ShotOrigins[ShotEntry.Origin];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
+        public string DisplayShotType
+        {
+            get
+            {
+                if (EventType == 1)
+                {
+                    return ShotEntry.ShotTypes[ShotEntry.Type];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
         private string _displayPlayer2;
 
         public static readonly Dictionary<int, string> EventTypes = new Dictionary<int, string>
@@ -292,10 +352,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 { 13, "Shot By" }
             };
 
-        public static readonly List<int> UseOpposingTeamAsPlayer2  = new List<int>
-            {
-                1, 6, 7, 8, 9, 10, 12
-            };
+        public static readonly List<int> UseOpposingTeamAsPlayer2 = new List<int> { 1, 6, 7, 8, 9, 10, 12 };
 
         public static readonly Dictionary<int, string> EventLocations = new Dictionary<int, string>
             {
@@ -338,7 +395,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             ShotEntry = new ShotEntry();
         }
 
-        public PlayByPlayEntry(DataRow row, BoxScoreEntry bse, Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst) : this()
+        public PlayByPlayEntry(DataRow row, BoxScoreEntry bse, Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst)
+            : this()
         {
             ID = ParseCell.GetUInt32(row, "ID");
             GameID = ParseCell.GetInt32(row, "GameID");
@@ -347,7 +405,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             ShotClockLeft = ParseCell.GetDouble(row, "ShotClockLeft");
             Player1ID = ParseCell.GetInt32(row, "P1ID");
             Player2ID = ParseCell.GetInt32(row, "P2ID");
-            
+
             T1PTS = ParseCell.GetInt32(row, "T1CurPTS");
             T2PTS = ParseCell.GetInt32(row, "T2CurPTS");
 
@@ -382,33 +440,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 
         public override string ToString()
         {
-            string eventTypeDescription = "";
-            if (EventType == -1)
-            {
-                eventTypeDescription = EventDesc;
-            }
-            else if (EventType != 1)
-            {
-                eventTypeDescription = EventTypes[EventType];
-            }
-            else
-            {
-                if (ShotEntry.Distance == 5)
-                {
-                    eventTypeDescription += "3PT ";
-                }
-                else if (ShotEntry.Distance != 0)
-                {
-                    eventTypeDescription += "2PT ";
-                }
-                else
-                {
-                    eventTypeDescription += "Shot ";
-                }
-
-                eventTypeDescription += ShotEntry.IsMade ? "Made" : "Missed";
-            }
-            return string.Format(
+            var eventTypeDescription = DisplayEvent;
+            return String.Format(
                 "P{0} - {1:00}:{2:00} ({3:F1}) - {7} - {4}: {5} {6}",
                 Quarter,
                 Convert.ToInt32(Math.Floor(TimeLeft)) / 60,
@@ -420,6 +453,40 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 DisplayTeam);
         }
 
+        public string DisplayEvent
+        {
+            get
+            {
+                string eventTypeDescription = "";
+                if (EventType == -1)
+                {
+                    eventTypeDescription = EventDesc;
+                }
+                else if (EventType != 1)
+                {
+                    eventTypeDescription = EventTypes[EventType];
+                }
+                else
+                {
+                    if (ShotEntry.Distance == 5)
+                    {
+                        eventTypeDescription += "3PT ";
+                    }
+                    else if (ShotEntry.Distance != 0)
+                    {
+                        eventTypeDescription += "2PT ";
+                    }
+                    else
+                    {
+                        eventTypeDescription += "Shot ";
+                    }
+
+                    eventTypeDescription += ShotEntry.IsMade ? "Made" : "Missed";
+                }
+                return eventTypeDescription;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -429,6 +496,95 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public static KeyValuePair<string, string> TimeLeftToStringPair(double timeLeft)
+        {
+            var intPart = Convert.ToInt32(Math.Floor(timeLeft));
+            var decPart = timeLeft - intPart;
+
+            var minutes = intPart / 60;
+            var seconds = intPart % 60;
+
+            var dispDecPart = Convert.ToInt32(decPart * 10);
+            if (dispDecPart == 10)
+            {
+                dispDecPart = 0;
+            }
+
+            var timeLeftIntString = String.Format("{0:00}:{1:00}", minutes, seconds);
+            var timeLeftDecString = String.Format(".{0:0}", dispDecPart);
+
+            return new KeyValuePair<string, string>(timeLeftIntString, timeLeftDecString);
+        }
+
+        public static string TimeLeftToString(double timeLeft)
+        {
+            var intPart = Convert.ToInt32(Math.Floor(timeLeft));
+            var decPart = timeLeft - intPart;
+
+            var minutes = intPart / 60;
+            var seconds = intPart % 60;
+
+            var dispDecPart = Convert.ToInt32(decPart * 10);
+            if (dispDecPart == 10)
+            {
+                dispDecPart = 0;
+            }
+
+            string timeLeftString;
+            if (minutes > 0)
+            {
+                timeLeftString = String.Format("{0:00}:{1:00}", minutes, seconds);
+            }
+            else
+            {
+                timeLeftString = String.Format("{0}.{1:0}", seconds, dispDecPart);
+            }
+
+            return timeLeftString;
+        }
+
+        public static KeyValuePair<string, string> ShotClockToStringPair(double shotClock)
+        {
+            var intPart = Convert.ToInt32(Math.Floor(shotClock));
+            var decPart = shotClock - intPart;
+
+            var dispDecPart = Convert.ToInt32(decPart * 10);
+            if (dispDecPart == 10)
+            {
+                dispDecPart = 0;
+            }
+
+            var intPartString = String.Format("{0:0}", intPart);
+            var decPartString = String.Format(".{0:0}", dispDecPart);
+
+            var pair = new KeyValuePair<string, string>(intPartString, decPartString);
+            return pair;
+        }
+
+        public static string ShotClockToString(double shotClock)
+        {
+            var intPart = Convert.ToInt32(Math.Floor(shotClock));
+            var decPart = shotClock - intPart;
+
+            var dispDecPart = Convert.ToInt32(decPart * 10);
+            if (dispDecPart == 10)
+            {
+                dispDecPart = 0;
+            }
+
+            var intPartString = String.Format("{0:0}", intPart);
+            var decPartString = String.Format(".{0:0}", dispDecPart);
+
+            if (intPart >= 5)
+            {
+                return intPartString;
+            }
+            else
+            {
+                return intPartString + decPartString;
             }
         }
     }

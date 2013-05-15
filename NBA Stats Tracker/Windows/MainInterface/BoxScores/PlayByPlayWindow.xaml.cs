@@ -145,7 +145,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 Plays = new ObservableCollection<PlayByPlayEntry>();
             }
-            lstEvents.ItemsSource = Plays;
+            dgEvents.ItemsSource = Plays;
 
 #if DEBUG
             for (int i = 0; i < 5; i++)
@@ -178,17 +178,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void updateShotClockIndication(double shotClock)
         {
-            var intPart = Convert.ToInt32(Math.Floor(shotClock));
-            var decPart = shotClock - intPart;
+            var pair = PlayByPlayEntry.ShotClockToStringPair(shotClock);
 
-            var dispDecPart = Convert.ToInt32(decPart * 10);
-            if (dispDecPart == 10)
-            {
-                dispDecPart = 0;
-            }
-
-            txbShotClockLeftInt.Text = String.Format("{0:0}", intPart);
-            txbShotClockLeftDec.Text = String.Format(".{0:0}", dispDecPart);
+            txbShotClockLeftInt.Text = pair.Key;
+            txbShotClockLeftDec.Text = pair.Value;
         }
 
         private void _timeLeftTimer_Tick(object sender, EventArgs e)
@@ -204,20 +197,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void updateTimeLeftIndication(double timeLeft)
         {
-            var intPart = Convert.ToInt32(Math.Floor(timeLeft));
-            var decPart = timeLeft - intPart;
+            var pair = PlayByPlayEntry.TimeLeftToStringPair(timeLeft);
 
-            var minutes = intPart / 60;
-            var seconds = intPart % 60;
-
-            var dispDecPart = Convert.ToInt32(decPart * 10);
-            if (dispDecPart == 10)
-            {
-                dispDecPart = 0;
-            }
-
-            txbTimeLeftInt.Text = String.Format("{0:00}:{1:00}", minutes, seconds);
-            txbTimeLeftDec.Text = String.Format(".{0:0}", dispDecPart);
+            txbTimeLeftInt.Text = pair.Key;
+            txbTimeLeftDec.Text = pair.Value;
         }
 
         private double convertTimeStringToDouble(string s)
@@ -604,7 +587,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
             Plays.Add(play);
             Plays.Sort(new PlayByPlayEntryComparerAsc());
-            lstEvents.ItemsSource = Plays;
+            dgEvents.ItemsSource = Plays;
         }
 
         private PlayByPlayEntry createPlayByPlayEntryFromCurrent()
@@ -665,14 +648,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (lstEvents.SelectedIndex == -1)
+            if (dgEvents.SelectedIndex == -1)
             {
                 return;
             }
             if (btnEdit.Content.ToString() == "Edit")
             {
-                var selectedPlay = lstEvents.SelectedItem as PlayByPlayEntry;
-                lstEvents.IsEnabled = false;
+                var selectedPlay = dgEvents.SelectedItem as PlayByPlayEntry;
+                dgEvents.IsEnabled = false;
                 btnSave.IsEnabled = false;
                 btnCancel.IsEnabled = false;
                 btnAdd.IsEnabled = false;
@@ -746,7 +729,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     return;
                 }
                 var play = createPlayByPlayEntryFromCurrent();
-                Plays.Remove(lstEvents.SelectedItem as PlayByPlayEntry);
+                Plays.Remove(dgEvents.SelectedItem as PlayByPlayEntry);
                 Plays.Add(play);
                 Plays.Sort(new PlayByPlayEntryComparerAsc());
 
@@ -769,7 +752,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                 sortPlayerLists();
 
-                lstEvents.IsEnabled = true;
+                dgEvents.IsEnabled = true;
                 btnSave.IsEnabled = true;
                 btnCancel.IsEnabled = true;
                 btnAdd.IsEnabled = true;
@@ -781,12 +764,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (lstEvents.SelectedIndex == -1)
+            if (dgEvents.SelectedIndex == -1)
             {
                 return;
             }
 
-            var selectedPlay = lstEvents.SelectedItem as PlayByPlayEntry;
+            var selectedPlay = dgEvents.SelectedItem as PlayByPlayEntry;
             Plays.Remove(selectedPlay);
         }
 
