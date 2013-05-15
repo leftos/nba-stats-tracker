@@ -44,7 +44,18 @@ namespace NBA_Stats_Tracker.Data.BoxScores
                 }
                 else
                 {
-                    return 0;
+                    if (x.T1PTS > y.T1PTS || x.T2PTS > y.T2PTS)
+                    {
+                        return 1;
+                    }
+                    else if (x.T1PTS < y.T1PTS || x.T2PTS < y.T2PTS)
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
             }
         }

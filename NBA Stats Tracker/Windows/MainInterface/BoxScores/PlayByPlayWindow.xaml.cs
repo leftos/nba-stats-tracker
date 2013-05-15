@@ -584,6 +584,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         HomePoints++;
                     }
                 }
+                play.T1PTS = AwayPoints;
+                play.T2PTS = HomePoints;
             }
             Plays.Add(play);
             Plays.Sort(new PlayByPlayEntryComparerAsc());
