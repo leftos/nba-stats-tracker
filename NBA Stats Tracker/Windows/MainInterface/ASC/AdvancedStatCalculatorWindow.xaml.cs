@@ -500,9 +500,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             }
             else
             {
-                if (cmbTotalsPar.SelectedIndex == -1 || cmbTotalsOp.SelectedIndex == -1)
+                if (cmbTotalsPar.SelectedIndex <= 0)
                 {
-                    return;
+                    if (chkIsStarter.IsChecked == null && chkIsInjured.IsChecked == null && chkIsOut.IsChecked == null)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (cmbTotalsOp.SelectedIndex == -1 || String.IsNullOrWhiteSpace(txtTotalsVal.Text))
+                    {
+                        return;
+                    }
                 }
 
                 var playerID = ((KeyValuePair<int, string>) (((cmbSelectedPlayer)).SelectedItem)).Key;
@@ -549,7 +559,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 {
                     try
                     {
-                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "isStarter"));
+                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "IsStarter"));
                     }
                     catch
                     {
@@ -557,25 +567,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     finally
                     {
-                        string value;
-                        if (chkIsStarter.IsChecked == null)
+                        if (chkIsStarter.IsChecked != null)
                         {
-                            value = "Any";
+                            var value = chkIsStarter.IsChecked == true ? "True" : "False";
+                            filter.Value.Add(new Filter("IsStarter", "=", "", value));
                         }
-                        else if (chkIsStarter.IsChecked == true)
-                        {
-                            value = "True";
-                        }
-                        else
-                        {
-                            value = "False";
-                        }
-                        filter.Value.Add(new Filter("isStarter", "is", "", value));
                     }
 
                     try
                     {
-                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "isInjured"));
+                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "PlayedInjured"));
                     }
                     catch
                     {
@@ -583,25 +584,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     finally
                     {
-                        string value;
-                        if (chkIsInjured.IsChecked == null)
+                        if (chkIsInjured.IsChecked != null)
                         {
-                            value = "Any";
+                            var value = chkIsInjured.IsChecked == true ? "True" : "False";
+                            filter.Value.Add(new Filter("PlayedInjured", "=", "", value));
                         }
-                        else if (chkIsInjured.IsChecked == true)
-                        {
-                            value = "True";
-                        }
-                        else
-                        {
-                            value = "False";
-                        }
-                        filter.Value.Add(new Filter("isInjured", "is", "", value));
                     }
 
                     try
                     {
-                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "isOut"));
+                        filter.Value.Remove(filter.Value.Single(f => f.Parameter1 == "IsOut"));
                     }
                     catch
                     {
@@ -609,20 +601,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     finally
                     {
-                        string value;
-                        if (chkIsOut.IsChecked == null)
+                        if (chkIsOut.IsChecked != null)
                         {
-                            value = "Any";
+                            var value = chkIsOut.IsChecked == true ? "True" : "False";
+                            filter.Value.Add(new Filter("IsOut", "=", "", value));
                         }
-                        else if (chkIsOut.IsChecked == true)
-                        {
-                            value = "True";
-                        }
-                        else
-                        {
-                            value = "False";
-                        }
-                        filter.Value.Add(new Filter("isOut", "is", "", value));
                     }
                 }
             }
