@@ -79,9 +79,7 @@ namespace NBA_Stats_Tracker
             Environment.Exit(-1);
         }
 
-        /// <summary>
-        /// Prepares an error report and saves it to a text file, or shows it on-screen if creating the file fails.
-        /// </summary>
+        /// <summary>Prepares an error report and saves it to a text file, or shows it on-screen if creating the file fails.</summary>
         /// <param name="exceptionString">The exception information (usually provided by ex.ToString()).</param>
         /// <param name="innerExceptionString">The inner exception information (if any).</param>
         /// <param name="additional">Any additional information provided by the developer.</param>

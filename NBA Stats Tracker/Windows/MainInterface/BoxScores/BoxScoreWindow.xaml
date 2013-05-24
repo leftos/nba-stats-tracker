@@ -231,9 +231,11 @@
                               Name="dgvPlayersAway" VerticalAlignment="Stretch" CanUserAddRows="False"
                               CanUserDeleteRows="False" FrozenColumnCount="1"
                               Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}"
-                              RowEditEnding="anyPBSDataGrid_RowEditEnding" CellEditEnding="anyPBSDataGrid_CellEditEnding" >
+                              RowEditEnding="anyPBSDataGrid_RowEditEnding"
+                              CellEditEnding="anyPBSDataGrid_CellEditEnding">
                         <DataGrid.Columns>
-                            <DataGridComboBoxColumn Header="Player" SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}"
+                            <DataGridComboBoxColumn Header="Player"
+                                                    SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}"
                                                     SelectedValuePath="Key" DisplayMemberPath="Value"
                                                     SortMemberPath="Name" x:Name="colPlayerAway"
                                                     CopyingCellClipboardContent="colPlayerAway_CopyingCellClipboardContent" />
@@ -598,10 +600,12 @@
                               HorizontalAlignment="Stretch" Margin="6,6,6,0" Name="dgvPlayersHome"
                               VerticalAlignment="Stretch" FrozenColumnCount="1"
                               Sorting="statColumn_Sorting" d:DataContext="{d:DesignInstance players:PlayerBoxScore}"
-                              RowEditEnding="anyPBSDataGrid_RowEditEnding" CellEditEnding="anyPBSDataGrid_CellEditEnding">
+                              RowEditEnding="anyPBSDataGrid_RowEditEnding"
+                              CellEditEnding="anyPBSDataGrid_CellEditEnding">
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn x:Name="colPlayerHome" DisplayMemberPath="Value" Header="Player"
-                                                    SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}" SortMemberPath="Name"
+                                                    SelectedValueBinding="{Binding PlayerID, UpdateSourceTrigger=PropertyChanged}"
+                                                    SortMemberPath="Name"
                                                     SelectedValuePath="Key"
                                                     CopyingCellClipboardContent="colPlayerHome_CopyingCellClipboardContent" />
                             <DataGridCheckBoxColumn Binding="{Binding IsStarter}" Header="Starter" />

@@ -95,8 +95,10 @@
                                   Click="mnuMiscEditDivisions_Click" />
                         <MenuItem Header="Edit _Game Length..." Name="mnuMiscEditGameLength"
                                   Click="mnuMiscEditGameLength_Click" />
-                        <MenuItem Header="Edit _Number Of Periods/Quarters..." Name="mnuMiscEditPeriods" Click="mnuMiscEditPeriods_Click" />
-                        <MenuItem Header="Edit S_hot Clock Duration..." Name="mnuMiscEditShotClockDuration" Click="mnuMiscEditShotClockDuration_Click" />
+                        <MenuItem Header="Edit _Number Of Periods/Quarters..." Name="mnuMiscEditPeriods"
+                                  Click="mnuMiscEditPeriods_Click" />
+                        <MenuItem Header="Edit S_hot Clock Duration..." Name="mnuMiscEditShotClockDuration"
+                                  Click="mnuMiscEditShotClockDuration_Click" />
                         <MenuItem Header="Edit _Season Length..." Name="mnuMiscEditSeasonLength"
                                   Click="mnuMiscEditSeasonLength_Click" />
                         <MenuItem Header="_Preferred League Leaders">

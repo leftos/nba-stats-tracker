@@ -28,7 +28,6 @@ namespace NBA_Stats_Tracker.Data.Players
 
     using LeftosCommonLibrary;
 
-    using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Teams;
 
@@ -268,68 +267,6 @@ namespace NBA_Stats_Tracker.Data.Players
             FOUL = FOUL.TrySetValue(dict, "FOUL", typeof(UInt16));
         }
 
-        public void CalculateFromPBPEList(IEnumerable<PlayByPlayEntry> pbpeList)
-        {
-            var mins = MINS;
-            ResetStats();
-            MINS = mins;
-
-            var list = pbpeList.Where(pbpe => pbpe.Player1ID == PlayerID).ToList();
-            foreach (var entry in list)
-            {
-                switch (entry.EventType)
-                {
-                    case 1:
-                        FGA++;
-                        if (entry.ShotEntry.IsMade)
-                        {
-                            FGM++;
-                        }
-                        if (entry.ShotEntry.Distance == 5)
-                        {
-                            TPA++;
-                            if (entry.ShotEntry.IsMade)
-                            {
-                                TPM++;
-                            }
-                        }
-                        break;
-                    case 3:
-                        FTA++;
-                        FTM++;
-                        break;
-                    case 4:
-                        FTA++;
-                        break;
-                    case 5:
-                        AST++;
-                        break;
-                    case 6:
-                        STL++;
-                        break;
-                    case 7:
-                        BLK++;
-                        break;
-                    case 8:
-                        TOS++;
-                        break;
-                    case 9:
-                    case 11:
-                        FOUL++;
-                        break;
-                    case 12:
-                        DREB++;
-                        REB++;
-                        break;
-                    case 13:
-                        OREB++;
-                        DREB++;
-                        break;
-                }
-            }
-            CalculatePoints();
-        }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class. Used to cast a LivePlayerBoxScore to a PlayerBoxScore which
         ///     can be saved to the database.
@@ -391,10 +328,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 MINS
         {
-            get
-            {
-                return _mins;
-            }
+            get { return _mins; }
             set
             {
                 _mins = value;
@@ -408,10 +342,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FGM
         {
-            get
-            {
-                return _FGM;
-            }
+            get { return _FGM; }
             set
             {
                 _FGM = value;
@@ -424,10 +355,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FGA
         {
-            get
-            {
-                return _FGA;
-            }
+            get { return _FGA; }
             set
             {
                 _FGA = value;
@@ -442,10 +370,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 TPM
         {
-            get
-            {
-                return _TPM;
-            }
+            get { return _TPM; }
             set
             {
                 _TPM = value;
@@ -458,10 +383,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 TPA
         {
-            get
-            {
-                return _TPA;
-            }
+            get { return _TPA; }
             set
             {
                 _TPA = value;
@@ -476,10 +398,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FTM
         {
-            get
-            {
-                return _FTM;
-            }
+            get { return _FTM; }
             set
             {
                 _FTM = value;
@@ -492,10 +411,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public UInt16 FTA
         {
-            get
-            {
-                return _FTA;
-            }
+            get { return _FTA; }
             set
             {
                 _FTA = value;
@@ -529,6 +445,68 @@ namespace NBA_Stats_Tracker.Data.Players
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+        public void CalculateFromPBPEList(IEnumerable<PlayByPlayEntry> pbpeList)
+        {
+            var mins = MINS;
+            ResetStats();
+            MINS = mins;
+
+            var list = pbpeList.Where(pbpe => pbpe.Player1ID == PlayerID).ToList();
+            foreach (var entry in list)
+            {
+                switch (entry.EventType)
+                {
+                    case 1:
+                        FGA++;
+                        if (entry.ShotEntry.IsMade)
+                        {
+                            FGM++;
+                        }
+                        if (entry.ShotEntry.Distance == 5)
+                        {
+                            TPA++;
+                            if (entry.ShotEntry.IsMade)
+                            {
+                                TPM++;
+                            }
+                        }
+                        break;
+                    case 3:
+                        FTA++;
+                        FTM++;
+                        break;
+                    case 4:
+                        FTA++;
+                        break;
+                    case 5:
+                        AST++;
+                        break;
+                    case 6:
+                        STL++;
+                        break;
+                    case 7:
+                        BLK++;
+                        break;
+                    case 8:
+                        TOS++;
+                        break;
+                    case 9:
+                    case 11:
+                        FOUL++;
+                        break;
+                    case 12:
+                        DREB++;
+                        REB++;
+                        break;
+                    case 13:
+                        OREB++;
+                        DREB++;
+                        break;
+                }
+            }
+            CalculatePoints();
+        }
 
         public void AddInfoFromTeamBoxScore(TeamBoxScore bs, Dictionary<int, TeamStats> tst)
         {

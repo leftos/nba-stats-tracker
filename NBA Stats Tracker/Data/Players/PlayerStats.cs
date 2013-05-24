@@ -35,7 +35,6 @@ namespace NBA_Stats_Tracker.Data.Players
     using NBA_Stats_Tracker.Data.Players.Contracts;
     using NBA_Stats_Tracker.Data.Players.Injuries;
     using NBA_Stats_Tracker.Data.Teams;
-    using NBA_Stats_Tracker.Properties;
     using NBA_Stats_Tracker.Windows.MainInterface;
 
     #endregion
@@ -597,6 +596,42 @@ namespace NBA_Stats_Tracker.Data.Players
         public string Position2S
         {
             get { return PositionToString(Position2); }
+        }
+
+        public string FullNameGivenFirst
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return FirstName + " " + LastName;
+            }
+        }
+
+        public string FullName
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return LastName + ", " + FirstName;
+            }
         }
 
         #region INotifyPropertyChanged Members
@@ -1485,42 +1520,6 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             var newpsr = new PlayerStatsRow(this, playoffs, calcRatings: false).ConvertToLeagueLeader(teamStats, playoffs);
             return new PlayerStats(newpsr, playoffs);
-        }
-
-        public string FullNameGivenFirst
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(FirstName))
-                {
-                    return LastName;
-                }
-
-                if (String.IsNullOrWhiteSpace(LastName))
-                {
-                    return FirstName;
-                }
-
-                return FirstName + " " + LastName;
-            }
-        }
-
-        public string FullName
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(FirstName))
-                {
-                    return LastName;
-                }
-
-                if (String.IsNullOrWhiteSpace(LastName))
-                {
-                    return FirstName;
-                }
-
-                return LastName + ", " + FirstName;
-            }
         }
 
         public override string ToString()

@@ -59,10 +59,7 @@ namespace LeftosCommonLibrary
         /// <summary>Overriden property; returns 32 because of the 32-bit implementation.</summary>
         public override int HashSize
         {
-            get
-            {
-                return 32;
-            }
+            get { return 32; }
         }
 
         /// <summary>

@@ -60,10 +60,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool SupportsSortingCore
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>Gets a value indicating whether the list is sorted.</summary>
@@ -72,30 +69,21 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool IsSortedCore
         {
-            get
-            {
-                return _isSorted;
-            }
+            get { return _isSorted; }
         }
 
         /// <summary>Gets the sorting property descriptor.</summary>
         /// <value>The sorting property descriptor.</value>
         protected override PropertyDescriptor SortPropertyCore
         {
-            get
-            {
-                return _propertyDescriptor;
-            }
+            get { return _propertyDescriptor; }
         }
 
         /// <summary>Gets the sorting direction.</summary>
         /// <value>The sorting direction.</value>
         protected override ListSortDirection SortDirectionCore
         {
-            get
-            {
-                return _listSortDirection;
-            }
+            get { return _listSortDirection; }
         }
 
         /// <summary>Gets a value indicating whether the list supports searching.</summary>
@@ -104,10 +92,7 @@ namespace LeftosCommonLibrary.BeTimvwFramework
         /// </value>
         protected override bool SupportsSearchingCore
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>Applies the sort.</summary>

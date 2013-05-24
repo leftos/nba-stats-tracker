@@ -18,6 +18,8 @@
 
 namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -27,69 +29,11 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 
     using NBA_Stats_Tracker.Annotations;
 
+    #endregion
+
     [Serializable]
     public class ShotEntry : INotifyPropertyChanged
     {
-        public int Distance
-        {
-            get { return _distance; }
-            set
-            {
-                _distance = value;
-                OnPropertyChanged("Distance");
-            }
-        }
-
-        private int _distance;
-
-        public int Origin
-        {
-            get { return _origin; }
-            set
-            {
-                _origin = value;
-                OnPropertyChanged("Origin");
-            }
-        }
-
-        private int _origin;
-
-        public int Type
-        {
-            get { return _type; }
-            set
-            {
-                _type = value;
-                OnPropertyChanged("Type");
-            }
-        }
-
-        private int _type;
-
-        public bool IsMade
-        {
-            get { return _isMade; }
-            set
-            {
-                _isMade = value;
-                OnPropertyChanged("IsMade");
-            }
-        }
-
-        private bool _isMade;
-
-        public bool IsAssisted
-        {
-            get { return _isAssisted; }
-            set
-            {
-                _isAssisted = value;
-                OnPropertyChanged("IsAssisted");
-            }
-        }
-
-        private bool _isAssisted;
-
         public static Dictionary<int, string> ShotDistances = new Dictionary<int, string>
             {
                 { 0, "Unknown" },
@@ -121,6 +65,12 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 { 5, "Tip Shot" }
             };
 
+        private int _distance;
+        private bool _isAssisted;
+        private bool _isMade;
+        private int _origin;
+        private int _type;
+
         public ShotEntry()
         {
         }
@@ -143,7 +93,61 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             IsAssisted = ParseCell.GetBoolean(row, "ShotIsAssisted");
         }
 
+        public int Distance
+        {
+            get { return _distance; }
+            set
+            {
+                _distance = value;
+                OnPropertyChanged("Distance");
+            }
+        }
+
+        public int Origin
+        {
+            get { return _origin; }
+            set
+            {
+                _origin = value;
+                OnPropertyChanged("Origin");
+            }
+        }
+
+        public int Type
+        {
+            get { return _type; }
+            set
+            {
+                _type = value;
+                OnPropertyChanged("Type");
+            }
+        }
+
+        public bool IsMade
+        {
+            get { return _isMade; }
+            set
+            {
+                _isMade = value;
+                OnPropertyChanged("IsMade");
+            }
+        }
+
+        public bool IsAssisted
+        {
+            get { return _isAssisted; }
+            set
+            {
+                _isAssisted = value;
+                OnPropertyChanged("IsAssisted");
+            }
+        }
+
+        #region INotifyPropertyChanged Members
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)

@@ -291,10 +291,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string DivRecord
         {
-            get
-            {
-                return String.Format("{0}-{1}", DivW, DivL);
-            }
+            get { return String.Format("{0}-{1}", DivW, DivL); }
         }
 
         public uint ConfW { get; set; }
@@ -302,10 +299,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string ConfRecord
         {
-            get
-            {
-                return String.Format("{0}-{1}", ConfW, ConfL);
-            }
+            get { return String.Format("{0}-{1}", ConfW, ConfL); }
         }
 
         public uint L10W { get; set; }
@@ -313,10 +307,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public string L10Record
         {
-            get
-            {
-                return String.Format("{0}-{1}", L10W, L10L);
-            }
+            get { return String.Format("{0}-{1}", L10W, L10L); }
         }
 
         public string CurStreak { get; set; }

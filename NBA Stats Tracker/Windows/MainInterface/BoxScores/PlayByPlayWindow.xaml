@@ -26,7 +26,8 @@
                 <TextBlock Name="txbAwayTeam" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"
                            Text="Away Team" />
                 <TextBox Name="txtAwayScore" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18"
-                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=AwayPoints, UpdateSourceTrigger=PropertyChanged}" Width="42" TextAlignment="Center" />
+                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=AwayPoints, UpdateSourceTrigger=PropertyChanged}"
+                         Width="42" TextAlignment="Center" />
             </Grid>
             <Grid Grid.Column="2" Name="grdPeriod">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -39,7 +40,8 @@
             </Grid>
             <Grid Grid.Column="4">
                 <TextBox Name="txtHomeScore" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18"
-                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=HomePoints, UpdateSourceTrigger=PropertyChanged}" Width="42" TextAlignment="Center" />
+                         Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=HomePoints, UpdateSourceTrigger=PropertyChanged}"
+                         Width="42" TextAlignment="Center" />
                 <TextBlock Name="txbHomeTeam" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"
                            Text="Home Team" />
             </Grid>
@@ -183,13 +185,13 @@
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="2.5*"/>
-                <ColumnDefinition Width="75"/>
-                <ColumnDefinition Width="0.65*"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="2.5*" />
+                <ColumnDefinition Width="75" />
+                <ColumnDefinition Width="0.65*" />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" Margin="10,5,5,5">
                 <StackPanel Orientation="Vertical">
@@ -227,20 +229,20 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="3" Margin="5">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Name="txbLocationLabel" Text="Location/Shot Dist." />
-                        <Rectangle Height="5" />
-                        <ComboBox Name="cmbLocationShotDistance"
-                                  SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
-                        <Rectangle Height="5" />
-                        <TextBox Name="txtLocationDesc" />
-                    </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Name="txbLocationLabel" Text="Location/Shot Dist." />
+                    <Rectangle Height="5" />
+                    <ComboBox Name="cmbLocationShotDistance"
+                              SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
+                    <Rectangle Height="5" />
+                    <TextBox Name="txtLocationDesc" />
+                </StackPanel>
             </Grid>
             <Grid Grid.Column="4" Margin="5" Name="grdShotEvent">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="80" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Margin="0,0,5,0">
                     <StackPanel Orientation="Vertical">
@@ -274,7 +276,7 @@
             </Grid>
             <Grid Grid.Column="6" Margin="5,5,10,5">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                    <Button Name="btnAdd" Content="Add" FontWeight="Bold" Click="btnAdd_Click"/>
+                    <Button Name="btnAdd" Content="Add" FontWeight="Bold" Click="btnAdd_Click" />
                     <Rectangle Height="3" />
                     <Button Name="btnEdit" Content="Edit" Click="btnEdit_Click" />
                     <Rectangle Height="3" />
@@ -286,17 +288,17 @@
             <DataGrid Name="dgEvents" Margin="10,5" AutoGenerateColumns="False" IsReadOnly="True"
                       d:DataContext="{d:DesignInstance playByPlay:PlayByPlayEntry}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Quarter" Binding="{Binding Quarter}"/>
+                    <DataGridTextColumn Header="Quarter" Binding="{Binding Quarter}" />
                     <DataGridTextColumn Header="Time Left" Binding="{Binding DisplayTimeLeft}" />
                     <DataGridTextColumn Header="Shot Clock" Binding="{Binding DisplayShotClock}" />
-                    <DataGridTextColumn Header="Score" Binding="{Binding DisplayScore}"/>
-                    <DataGridTextColumn Header="Event" Binding="{Binding DisplayEvent}"/>
-                    <DataGridTextColumn Header="Team" Binding="{Binding DisplayTeam}"/>
-                    <DataGridTextColumn Header="Player" Binding="{Binding DisplayPlayer1}"/>
-                    <DataGridTextColumn Header="Player 2" Binding="{Binding DisplayPlayer2}"/>
-                    <DataGridTextColumn Header="Location/Shot Distance" Binding="{Binding DisplayLocation}"/>
-                    <DataGridTextColumn Header="Shot Origin" Binding="{Binding DisplayShotOrigin}"/>
-                    <DataGridTextColumn Header="Shot Type" Binding="{Binding DisplayShotType}"/>
+                    <DataGridTextColumn Header="Score" Binding="{Binding DisplayScore}" />
+                    <DataGridTextColumn Header="Event" Binding="{Binding DisplayEvent}" />
+                    <DataGridTextColumn Header="Team" Binding="{Binding DisplayTeam}" />
+                    <DataGridTextColumn Header="Player" Binding="{Binding DisplayPlayer1}" />
+                    <DataGridTextColumn Header="Player 2" Binding="{Binding DisplayPlayer2}" />
+                    <DataGridTextColumn Header="Location/Shot Distance" Binding="{Binding DisplayLocation}" />
+                    <DataGridTextColumn Header="Shot Origin" Binding="{Binding DisplayShotOrigin}" />
+                    <DataGridTextColumn Header="Shot Type" Binding="{Binding DisplayShotType}" />
                 </DataGrid.Columns>
             </DataGrid>
             <!--<ListBox Name="lstEvents" Margin="10,5" />-->

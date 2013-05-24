@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
+﻿namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 {
-    /// <summary>
-    /// Interaction logic for ASCSelectPlayers.xaml
-    /// </summary>
+    #region Using Directives
+
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+
+    #endregion
+
+    /// <summary>Interaction logic for ASCSelectPlayers.xaml</summary>
     public partial class ASCSelectPlayers : Window
     {
-        private List<KeyValuePair<int, string>> _list;
-        private List<int> _ids;
+        private readonly List<int> _ids;
+        private readonly List<KeyValuePair<int, string>> _list;
 
         public ASCSelectPlayers()
         {
             InitializeComponent();
         }
 
-        public ASCSelectPlayers(IEnumerable<KeyValuePair<int, string>> list, IEnumerable<int> ids) : this()
+        public ASCSelectPlayers(IEnumerable<KeyValuePair<int, string>> list, IEnumerable<int> ids)
+            : this()
         {
             _list = list.ToList();
             _ids = ids.ToList();
@@ -67,7 +62,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     + lstSelectedPlayers.Items.Count + ".");
                 return;
             }
-            AdvancedStatCalculatorWindow.PlayersOnTheFloor = lstSelectedPlayers.Items.Cast<KeyValuePair<int, string>>().Select(item => item.Key).ToList();
+            AdvancedStatCalculatorWindow.PlayersOnTheFloor =
+                lstSelectedPlayers.Items.Cast<KeyValuePair<int, string>>().Select(item => item.Key).ToList();
             Close();
         }
 

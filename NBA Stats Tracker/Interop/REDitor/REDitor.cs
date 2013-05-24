@@ -173,7 +173,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     for (var i = startAt; i <= 20; i++)
                     {
-                        seasonNames.Add(i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
+                        seasonNames.Add(
+                            i, twoPartSeasonDesc ? string.Format("{0}-{1}", year - i, (year - i + 1)) : (year - i).ToString());
                     }
                     break;
                 }
@@ -491,7 +492,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             prevStats.FTM = Convert.ToUInt16(stats["FTMade"]);
                             prevStats.FTA = Convert.ToUInt16(stats["FTAtt"]);
                             prevStats.PlayerID = playerID;
-                            int yearF = 0;
+                            var yearF = 0;
                             if (nba2KVersion != NBA2KVersion.NBA2K12)
                             {
                                 yearF = Convert.ToInt32(stats["Year"]);
@@ -1814,7 +1815,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             {
                 playerID = SQLiteIO.GetFreeID(
                     MainWindow.CurrentDB,
-                    "Players" + (MainWindow.CurSeason != SQLiteIO.GetMaxSeason(MainWindow.CurrentDB) ? "S" + MainWindow.CurSeason : ""), "ID", new List<int>());
+                    "Players" + (MainWindow.CurSeason != SQLiteIO.GetMaxSeason(MainWindow.CurrentDB) ? "S" + MainWindow.CurSeason : ""),
+                    "ID",
+                    new List<int>());
             }
             else
             {

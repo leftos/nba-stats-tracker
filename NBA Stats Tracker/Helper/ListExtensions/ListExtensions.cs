@@ -26,8 +26,6 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
     using System.ComponentModel;
     using System.Linq;
 
-    using NBA_Stats_Tracker.Data.BoxScores;
-
     #endregion
 
     /// <summary>Extensions for various kinds of .NET list constructs, including BindingList and ObservableCollection.</summary>

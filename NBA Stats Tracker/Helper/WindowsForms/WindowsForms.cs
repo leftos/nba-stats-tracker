@@ -58,10 +58,7 @@ namespace NBA_Stats_Tracker.Helper.WindowsForms
 
             IntPtr IWin32Window.Handle
             {
-                get
-                {
-                    return _handle;
-                }
+                get { return _handle; }
             }
 
             #endregion

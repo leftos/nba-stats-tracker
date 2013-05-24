@@ -589,33 +589,33 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 var psr1 = templist[0];
                 var text = psr1.GetBestStats(5);
-                _best1Text = (startingIndex + 1) + ": " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + ")\n\n"
-                             + text;
+                _best1Text = (startingIndex + 1) + ": " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - "
+                             + psr1.TeamFDisplay + ")\n\n" + text;
 
                 var psr2 = templist[1];
                 text = psr2.GetBestStats(5);
-                _best2Text = (startingIndex + 2) + ": " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - " + psr2.TeamFDisplay + ")\n\n"
-                             + text;
+                _best2Text = (startingIndex + 2) + ": " + psr2.FirstName + " " + psr2.LastName + " (" + psr2.Position1 + " - "
+                             + psr2.TeamFDisplay + ")\n\n" + text;
 
                 var psr3 = templist[2];
                 text = psr3.GetBestStats(5);
-                _best3Text = (startingIndex + 3) + ": " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - " + psr3.TeamFDisplay + ")\n\n"
-                             + text;
+                _best3Text = (startingIndex + 3) + ": " + psr3.FirstName + " " + psr3.LastName + " (" + psr3.Position1 + " - "
+                             + psr3.TeamFDisplay + ")\n\n" + text;
 
                 var psr4 = templist[3];
                 text = psr4.GetBestStats(5);
-                _best4Text = (startingIndex + 4) + ": " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - " + psr4.TeamFDisplay + ")\n\n"
-                             + text;
+                _best4Text = (startingIndex + 4) + ": " + psr4.FirstName + " " + psr4.LastName + " (" + psr4.Position1 + " - "
+                             + psr4.TeamFDisplay + ")\n\n" + text;
 
                 var psr5 = templist[4];
                 text = psr5.GetBestStats(5);
-                _best5Text = (startingIndex + 5) + ": " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - " + psr5.TeamFDisplay + ")\n\n"
-                             + text;
+                _best5Text = (startingIndex + 5) + ": " + psr5.FirstName + " " + psr5.LastName + " (" + psr5.Position1 + " - "
+                             + psr5.TeamFDisplay + ")\n\n" + text;
 
                 var psr6 = templist[5];
                 text = psr6.GetBestStats(5);
-                _best6Text = (startingIndex + 6) + ": " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - " + psr6.TeamFDisplay + ")\n\n"
-                             + text;
+                _best6Text = (startingIndex + 6) + ": " + psr6.FirstName + " " + psr6.LastName + " (" + psr6.Position1 + " - "
+                             + psr6.TeamFDisplay + ")\n\n" + text;
             }
             catch (Exception ex)
             {
@@ -640,32 +640,68 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 var psr1 = templist[0];
                 var text = psr1.GetBestStats(5);
                 _plBest1Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 1), psr1.FirstName, psr1.LastName, psr1.Position1, psr1.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 1),
+                    psr1.FirstName,
+                    psr1.LastName,
+                    psr1.Position1,
+                    psr1.TeamFDisplay,
+                    text);
 
                 var psr2 = templist[1];
                 text = psr2.GetBestStats(5);
                 _plBest2Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 2), psr2.FirstName, psr2.LastName, psr2.Position1, psr2.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 2),
+                    psr2.FirstName,
+                    psr2.LastName,
+                    psr2.Position1,
+                    psr2.TeamFDisplay,
+                    text);
 
                 var psr3 = templist[2];
                 text = psr3.GetBestStats(5);
                 _plBest3Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 3), psr3.FirstName, psr3.LastName, psr3.Position1, psr3.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 3),
+                    psr3.FirstName,
+                    psr3.LastName,
+                    psr3.Position1,
+                    psr3.TeamFDisplay,
+                    text);
 
                 var psr4 = templist[3];
                 text = psr4.GetBestStats(5);
                 _plBest4Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 4), psr4.FirstName, psr4.LastName, psr4.Position1, psr4.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 4),
+                    psr4.FirstName,
+                    psr4.LastName,
+                    psr4.Position1,
+                    psr4.TeamFDisplay,
+                    text);
 
                 var psr5 = templist[4];
                 text = psr5.GetBestStats(5);
                 _plBest5Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 5), psr5.FirstName, psr5.LastName, psr5.Position1, psr5.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 5),
+                    psr5.FirstName,
+                    psr5.LastName,
+                    psr5.Position1,
+                    psr5.TeamFDisplay,
+                    text);
 
                 var psr6 = templist[5];
                 text = psr6.GetBestStats(5);
                 _plBest6Text = string.Format(
-                    "{0}: {1} {2} ({3} - {4})\n\n{5}", (startingIndex + 6), psr6.FirstName, psr6.LastName, psr6.Position1, psr6.TeamFDisplay, text);
+                    "{0}: {1} {2} ({3} - {4})\n\n{5}",
+                    (startingIndex + 6),
+                    psr6.FirstName,
+                    psr6.LastName,
+                    psr6.Position1,
+                    psr6.TeamFDisplay,
+                    text);
             }
             catch (Exception ex)
             {
@@ -2104,6 +2140,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             }
         }
 
+        private void nudBestPage_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            prepareBestPerformers();
+        }
+
         #region Nested type: TeamFilter
 
         /// <summary>
@@ -2118,10 +2159,5 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         }
 
         #endregion
-
-        private void nudBestPage_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            prepareBestPerformers();
-        }
     }
 }

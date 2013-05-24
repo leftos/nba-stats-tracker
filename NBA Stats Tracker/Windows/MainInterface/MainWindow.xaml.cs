@@ -85,6 +85,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static readonly string PSFiltersPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                                                       + @"\NBA Stats Tracker\" + @"Search Filters\";
+
         public static readonly string ASCFiltersPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                                                        + @"\NBA Stats Tracker\" + @"Advanced Stats Filters\";
 
@@ -179,6 +180,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static string LeadersPrefSetting;
         private static string _currentDB;
         private static readonly object _lock = new object();
+        public static List<PlayByPlayEntry> TempBSE_PBPEList = new List<PlayByPlayEntry>();
         public readonly TaskScheduler UIScheduler;
         private DispatcherTimer _dispatcherTimer;
         private DispatcherTimer _marqueeTimer;
@@ -219,8 +221,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 Directory.CreateDirectory(ASCFiltersPath);
             }
-            var appTempPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                              + @"\NBA Stats Tracker\" + @"Temp\";
+            var appTempPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\" + @"Temp\";
             if (Directory.Exists(appTempPath) == false)
             {
                 Directory.CreateDirectory(appTempPath);
@@ -342,43 +343,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //prepareImageCache();
         }
 
-        private static void setDefaultCulture(CultureInfo culture)
-        {
-            Type type = typeof(CultureInfo);
-
-            try
-            {
-                type.InvokeMember("s_userDefaultCulture",
-                                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
-                                    null,
-                                    culture,
-                                    new object[] { culture });
-
-                type.InvokeMember("s_userDefaultUICulture",
-                                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
-                                    null,
-                                    culture,
-                                    new object[] { culture });
-            }
-            catch { }
-
-            try
-            {
-                type.InvokeMember("m_userDefaultCulture",
-                                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
-                                    null,
-                                    culture,
-                                    new object[] { culture });
-
-                type.InvokeMember("m_userDefaultUICulture",
-                                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
-                                    null,
-                                    culture,
-                                    new object[] { culture });
-            }
-            catch { }
-        }
-
         public static string CurrentDB
         {
             get { return _currentDB; }
@@ -425,7 +389,50 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             get { return "PlayoffOpponents" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
         }
 
-        public static List<PlayByPlayEntry> TempBSE_PBPEList = new List<PlayByPlayEntry>();
+        private static void setDefaultCulture(CultureInfo culture)
+        {
+            var type = typeof(CultureInfo);
+
+            try
+            {
+                type.InvokeMember(
+                    "s_userDefaultCulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+
+                type.InvokeMember(
+                    "s_userDefaultUICulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                type.InvokeMember(
+                    "m_userDefaultCulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+
+                type.InvokeMember(
+                    "m_userDefaultUICulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+            }
+            catch
+            {
+            }
+        }
 
         /// <summary>TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program</summary>
         private static void prepareImageCache()
@@ -523,8 +530,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                                                                                     + @"\NBA Stats Tracker\" };
+            var sfd = new SaveFileDialog
+                {
+                    Filter = "NST Database (*.tst)|*.tst",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\"
+                };
             sfd.ShowDialog();
 
             if (sfd.FileName == "")
@@ -588,8 +598,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ofd = new OpenFileDialog
                 {
                     Filter = "NST Database (*.tst)|*.tst",
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                       + @"\NBA Stats Tracker\",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\",
                     Title = "Please select the TST file that you want to edit..."
                 };
             ofd.ShowDialog();
@@ -766,7 +775,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             CurSeason = curSeason;
             MWInstance.cmbSeasonNum.SelectedValue = CurSeason.ToString();
         }
-        
+
         /// <summary>
         ///     Handles the Click event of the btnLoadUpdate control. Opens the Box Score window to allow the user to update the team stats
         ///     by entering a box score.
@@ -866,8 +875,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 var webClient = new WebClient();
                 var updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
-                var appDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                  + @"\NBA Stats Tracker\";
+                var appDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\";
                 if (!showMessage)
                 {
                     webClient.DownloadFileCompleted += checkForUpdatesCompleted;
@@ -895,8 +903,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             string[] versionParts;
             try
             {
-                updateInfo = File.ReadAllLines(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                               + @"\NBA Stats Tracker\" + @"nstversion.txt");
+                updateInfo =
+                    File.ReadAllLines(
+                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\" + @"nstversion.txt");
                 versionParts = updateInfo[0].Split('.');
             }
             catch
@@ -978,8 +987,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
 
             var safefn = Tools.GetSafeFilename(ofd.FileName);
-            var settingsFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                               + @"\NBA Stats Tracker\" + safefn + ".cfg";
+            var settingsFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\" + safefn
+                               + ".cfg";
             if (File.Exists(settingsFile))
             {
                 File.Delete(settingsFile);
@@ -1179,8 +1188,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             if (String.IsNullOrWhiteSpace(txtFile.Text))
             {
-                file = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                       + @"\NBA Stats Tracker\" + "Real NBA Stats " + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
+                file = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\" + "Real NBA Stats "
+                       + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".tst";
                 if (File.Exists(file))
                 {
                     if (App.RealNBAOnly)
@@ -1773,8 +1782,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// </param>
         private void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
-            var sfd = new SaveFileDialog { Filter = "NST Database (*.tst)|*.tst", InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                                                                                     + @"\NBA Stats Tracker\" };
+            var sfd = new SaveFileDialog
+                {
+                    Filter = "NST Database (*.tst)|*.tst",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\"
+                };
             sfd.ShowDialog();
 
             if (sfd.FileName == "")
@@ -2080,8 +2092,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var ofd = new OpenFileDialog
                 {
                     Filter = "NST Database (*.tst)|*.tst",
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                       + @"\NBA Stats Tracker\",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\",
                     Title = "Please select the TST file that you want to import from..."
                 };
             ofd.ShowDialog();
@@ -3205,17 +3216,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             _marqueeTimer.Stop();
         }
 
-        #region Nested type: UpdateInfoContainer
-
-        private struct UpdateInfoContainer
-        {
-            public string CurVersion;
-            public string Message;
-            public string[] UpdateInfo;
-        }
-
-        #endregion
-
         private void mnuMiscEditPeriods_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.IsTSTEmpty())
@@ -3259,8 +3259,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             while (true)
             {
-                var ibw = new InputBoxWindow(
-                    "Insert the shot clock duration (e.g. 24):", ShotClockDuration.ToString());
+                var ibw = new InputBoxWindow("Insert the shot clock duration (e.g. 24):", ShotClockDuration.ToString());
                 if (ibw.ShowDialog() == true)
                 {
                     try
@@ -3283,5 +3282,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             UpdateStatus("Shot Clock Duration saved. Database updated.");
         }
+
+        #region Nested type: UpdateInfoContainer
+
+        private struct UpdateInfoContainer
+        {
+            public string CurVersion;
+            public string Message;
+            public string[] UpdateInfo;
+        }
+
+        #endregion
     }
 }

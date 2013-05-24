@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
+﻿namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 {
+    #region Using Directives
+
+    using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Threading;
 
     using LeftosCommonLibrary;
@@ -29,69 +23,33 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using NBA_Stats_Tracker.Helper.ListExtensions;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
 
-    /// <summary>
-    /// Interaction logic for PlayByPlayWindow.xaml
-    /// </summary>
+    #endregion
+
+    /// <summary>Interaction logic for PlayByPlayWindow.xaml</summary>
     public partial class PlayByPlayWindow : Window, INotifyPropertyChanged
     {
-        private Dictionary<int, TeamStats> _tst;
-        private Dictionary<int, PlayerStats> _pst;
-        private BoxScoreEntry _bse;
-        private int _t1ID;
-        private int _t2ID;
-        private double _timeLeft;
-        private DispatcherTimer _timeLeftTimer, _shotClockTimer;
-        private double _shotClock;
-        private ObservableCollection<PlayerStats> AwaySubs { get; set; }
-        private ObservableCollection<PlayerStats> HomeSubs { get; set; }
-        private ObservableCollection<PlayerStats> AwayActive { get; set; }
-        private ObservableCollection<PlayerStats> HomeActive { get; set; }
-        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
-        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
-        private ObservableCollection<PlayByPlayEntry> Plays { get; set; }
-        public static List<PlayByPlayEntry> SavedPlays { get; set; }
-
-        public int CurrentPeriod
-        {
-            get { return _currentPeriod; }
-            set
-            {
-                _currentPeriod = value;
-                OnPropertyChanged("CurrentPeriod");
-            }
-        }
-
-        private int _currentPeriod;
-
-        public int AwayPoints
-        {
-            get { return _awayPoints; }
-            set
-            {
-                _awayPoints = value;
-                OnPropertyChanged("AwayPoints");
-            }
-        }
-
+        private readonly BoxScoreEntry _bse;
+        private readonly Dictionary<int, PlayerStats> _pst;
+        private readonly int _t1ID;
+        private readonly int _t2ID;
+        private readonly Dictionary<int, TeamStats> _tst;
         private int _awayPoints;
-
-        public int HomePoints
-        {
-            get { return _homePoints; }
-            set
-            {
-                _homePoints = value;
-                OnPropertyChanged("HomePoints");
-            }
-        }
-
+        private int _currentPeriod;
+        private bool _exitedViaButton;
         private int _homePoints;
-
-        private double _savedTimeLeft, _savedShotClock;
-        private List<PlayerStats> _savedAwaySubs, _savedHomeSubs, _savedAwayActive, _savedHomeActive;
-        private int _savedAwayPoints, _savedHomePoints;
+        private List<PlayerStats> _savedAwayActive;
+        private int _savedAwayPoints;
+        private List<PlayerStats> _savedAwaySubs;
+        private List<PlayerStats> _savedHomeActive;
+        private int _savedHomePoints;
+        private List<PlayerStats> _savedHomeSubs;
         private int _savedPeriod;
-        private bool _exitedViaButton = false;
+        private double _savedShotClock;
+        private double _savedTimeLeft;
+        private double _shotClock;
+        private DispatcherTimer _shotClockTimer;
+        private double _timeLeft;
+        private DispatcherTimer _timeLeftTimer;
 
         public PlayByPlayWindow()
         {
@@ -116,6 +74,51 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             Left = Tools.GetRegistrySetting("PBPX", Left);
             Top = Tools.GetRegistrySetting("PBPY", Top);
         }
+
+        private ObservableCollection<PlayerStats> AwaySubs { get; set; }
+        private ObservableCollection<PlayerStats> HomeSubs { get; set; }
+        private ObservableCollection<PlayerStats> AwayActive { get; set; }
+        private ObservableCollection<PlayerStats> HomeActive { get; set; }
+        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList { get; set; }
+        private ObservableCollection<ComboBoxItemWithIsEnabled> PlayersComboList2 { get; set; }
+        private ObservableCollection<PlayByPlayEntry> Plays { get; set; }
+        public static List<PlayByPlayEntry> SavedPlays { get; set; }
+
+        public int CurrentPeriod
+        {
+            get { return _currentPeriod; }
+            set
+            {
+                _currentPeriod = value;
+                OnPropertyChanged("CurrentPeriod");
+            }
+        }
+
+        public int AwayPoints
+        {
+            get { return _awayPoints; }
+            set
+            {
+                _awayPoints = value;
+                OnPropertyChanged("AwayPoints");
+            }
+        }
+
+        public int HomePoints
+        {
+            get { return _homePoints; }
+            set
+            {
+                _homePoints = value;
+                OnPropertyChanged("HomePoints");
+            }
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         private void window_Loaded(object sender, EventArgs e)
         {
@@ -173,7 +176,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             dgEvents.ItemsSource = Plays;
 
 #if DEBUG
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 HomeActive.Add(HomeSubs[0]);
                 HomeSubs.RemoveAt(0);
@@ -240,7 +243,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             double intPart = 0;
             intPart += Convert.ToDouble(intParts[intParts.Length - 1]);
             var factor = 1;
-            for (int i = intParts.Length - 2; i >= 0; i--)
+            for (var i = intParts.Length - 2; i >= 0; i--)
             {
                 factor *= 60;
                 intPart += Convert.ToDouble(intParts[i]) * factor;
@@ -305,14 +308,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnTimeLeftSet_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow(
-                "Enter the time left:", SQLiteIO.GetSetting("LastTimeLeftSet", "0:00"), "NBA Stats Tracker");
+            var ibw = new InputBoxWindow("Enter the time left:", SQLiteIO.GetSetting("LastTimeLeftSet", "0:00"), "NBA Stats Tracker");
             if (ibw.ShowDialog() == false)
             {
                 return;
             }
 
-            double timeLeft = _timeLeft;
+            var timeLeft = _timeLeft;
             try
             {
                 timeLeft = ConvertTimeStringToDouble(InputBoxWindow.UserInput);
@@ -329,14 +331,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnShotClockSet_Click(object sender, RoutedEventArgs e)
         {
-            InputBoxWindow ibw = new InputBoxWindow(
+            var ibw = new InputBoxWindow(
                 "Enter the shot clock left:", SQLiteIO.GetSetting("LastShotClockSet", "0.0"), "NBA Stats Tracker");
             if (ibw.ShowDialog() == false)
             {
                 return;
             }
 
-            double shotClock = _shotClock;
+            var shotClock = _shotClock;
             try
             {
                 shotClock = ConvertTimeStringToDouble(InputBoxWindow.UserInput);
@@ -635,8 +637,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 };
             return play;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)

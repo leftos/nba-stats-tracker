@@ -30,6 +30,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Threading;
 
     using LeftosCommonLibrary;
     using LeftosCommonLibrary.BeTimvwFramework;
@@ -73,6 +74,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private bool _clickedOK;
         private int _curSeason;
         private Brush _defaultBackground;
+        private bool _isManualEditCommit;
         private bool _loading;
         private bool _minsUpdating;
         private List<PlayerStatsRow> _pmsrListAway, _pmsrListHome;
@@ -170,7 +172,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private SortableBindingList<PlayerBoxScore> pbsHomeList { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> playersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
-        private ObservableCollection<PlayByPlayEntry> pbpeList { get; set; } 
+        private ObservableCollection<PlayByPlayEntry> pbpeList { get; set; }
 
         private void finishInitialization(Mode mode)
         {
@@ -632,7 +634,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 MainWindow.TempBSE_BS.PTS2 = Convert.ToUInt16(txtPTS2.Text);
                 if (!ignoreScores && MainWindow.TempBSE_BS.PTS1 == MainWindow.TempBSE_BS.PTS2)
                 {
-                    throwErrorWithMessage("The points can't be the same for both teams. NBA Stats Tracker doesn't support games that end in draw.");
+                    throwErrorWithMessage(
+                        "The points can't be the same for both teams. NBA Stats Tracker doesn't support games that end in draw.");
                 }
                 MainWindow.TempBSE_BS.REB2 = Convert.ToUInt16(txtREB2.Text);
                 MainWindow.TempBSE_BS.AST2 = Convert.ToUInt16(txtAST2.Text);
@@ -692,7 +695,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 }
 
                 if (MainWindow.TempBSE_BS.REB1 - MainWindow.TempBSE_BS.OREB1 > MainWindow.TempBSE_BS.FGA2 - MainWindow.TempBSE_BS.FGM2
-                    || MainWindow.TempBSE_BS.REB2 - MainWindow.TempBSE_BS.OREB2 > MainWindow.TempBSE_BS.FGA1 - MainWindow.TempBSE_BS.FGM1)
+                    || MainWindow.TempBSE_BS.REB2 - MainWindow.TempBSE_BS.OREB2
+                    > MainWindow.TempBSE_BS.FGA1 - MainWindow.TempBSE_BS.FGM1)
                 {
                     throwErrorWithMessage(
                         "The DREB (i.e. REB - OREB) stat for one team can't be higher than the other team's missed FGA (i.e. FGA - FGM).");
@@ -1695,7 +1699,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                             pbsAwayList.Add(
                                 new PlayerBoxScore(
-                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString()), pair.Value));
+                                    dict,
+                                    pair.Key,
+                                    Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam1.SelectedItem.ToString()),
+                                    pair.Value));
                             break;
                         }
                     }
@@ -1736,7 +1743,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
                             pbsHomeList.Add(
                                 new PlayerBoxScore(
-                                    dict, pair.Key, Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString()), pair.Value));
+                                    dict,
+                                    pair.Key,
+                                    Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeam2.SelectedItem.ToString()),
+                                    pair.Value));
                             break;
                         }
                     }
@@ -2112,7 +2122,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             var pbpw = new PlayByPlayWindow(
                 MainWindow.TST,
                 MainWindow.PST,
-                new BoxScoreEntry(MainWindow.TempBSE_BS, MainWindow.TempBSE_PBSLists.SelectMany(list => list).ToList(), MainWindow.TempBSE_PBPEList),
+                new BoxScoreEntry(
+                    MainWindow.TempBSE_BS, MainWindow.TempBSE_PBSLists.SelectMany(list => list).ToList(), MainWindow.TempBSE_PBPEList),
                 MainWindow.TempBSE_BS.Team1ID,
                 MainWindow.TempBSE_BS.Team2ID);
             if (pbpw.ShowDialog() != true)
@@ -2137,19 +2148,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     return;
                 }
                 var id = pbs.PlayerID;
-                Dispatcher.BeginInvoke(
-                    new Action(() => pbs.Name = MainWindow.PST[id].FullName), System.Windows.Threading.DispatcherPriority.Background);
+                Dispatcher.BeginInvoke(new Action(() => pbs.Name = MainWindow.PST[id].FullName), DispatcherPriority.Background);
             }
         }
-
-        private bool _isManualEditCommit;
 
         private void anyPBSDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (!_isManualEditCommit && e.EditAction == DataGridEditAction.Commit)
             {
                 _isManualEditCommit = true;
-                var grid = (DataGrid)sender;
+                var grid = (DataGrid) sender;
                 if (grid != null)
                 {
                     grid.CommitEdit(DataGridEditingUnit.Row, true);

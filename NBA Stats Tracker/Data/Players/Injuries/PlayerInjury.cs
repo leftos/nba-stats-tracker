@@ -159,18 +159,12 @@ namespace NBA_Stats_Tracker.Data.Players.Injuries
 
         public bool IsInjured
         {
-            get
-            {
-                return InjuryType != 0;
-            }
+            get { return InjuryType != 0; }
         }
 
         public string InjuryName
         {
-            get
-            {
-                return InjuryType == -1 ? CustomInjuryName : InjuryTypes[InjuryType];
-            }
+            get { return InjuryType == -1 ? CustomInjuryName : InjuryTypes[InjuryType]; }
         }
 
         public string ApproximateDays

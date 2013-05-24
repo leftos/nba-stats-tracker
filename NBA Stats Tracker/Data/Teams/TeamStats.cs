@@ -195,10 +195,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public int Division
         {
-            get
-            {
-                return _division;
-            }
+            get { return _division; }
             set
             {
                 _division = value;

@@ -25,7 +25,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     using System.ComponentModel;
     using System.IO;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
@@ -772,7 +771,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
             }
 
-            bool stopped = false;
+            var stopped = false;
 
             var totalsFilters = lstTotals.Items.Cast<string>();
             Parallel.ForEach(

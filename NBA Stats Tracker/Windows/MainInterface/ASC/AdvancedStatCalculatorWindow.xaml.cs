@@ -21,7 +21,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
     #region Using Directives
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -95,8 +94,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
         private bool _changingTimeframe;
         private int _curSeason;
-        private bool _loading;
         private double _defaultPBPHeight;
+        private bool _loading;
 
         public AdvancedStatCalculatorWindow()
         {
@@ -744,7 +743,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             var bsToCalculate = new List<BoxScoreEntry>();
             var notBsToCalculate = new List<BoxScoreEntry>();
-            bool doPlays = chkUsePBP.IsChecked == true;
+            var doPlays = chkUsePBP.IsChecked == true;
 
             #region Initialize PBP Filters
 
@@ -919,7 +918,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                             parameter = parameter.Replace("3P", "TP");
                             parameter = parameter.Replace("TO", "TOS");
 
-                            string parameter2 = "";
+                            var parameter2 = "";
                             if (!String.IsNullOrWhiteSpace(option.Parameter2))
                             {
                                 if (!option.Parameter2.StartsWith("Opp"))
@@ -1436,7 +1435,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 var tempbse = bse.Clone();
 
                 // Calculate
-                for (int i = 0; i < tempbse.PBSList.Count; i++)
+                for (var i = 0; i < tempbse.PBSList.Count; i++)
                 {
                     var pbs = tempbse.PBSList[i];
                     if (advpst.ContainsKey(pbs.PlayerID) == false)
@@ -1761,42 +1760,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             Tools.SetRegistrySetting("ASCY", Top);
         }
 
-        #region Nested type: Filter
-
-        private struct Filter
-        {
-            public readonly string Operator;
-            public readonly string Parameter1;
-            public readonly string Parameter2;
-            public readonly string Value;
-
-            public Filter(string parameter1, string oper, string parameter2, string value)
-            {
-                Parameter1 = parameter1;
-                Operator = oper;
-                Parameter2 = parameter2;
-                Value = value;
-            }
-        }
-
-        #endregion
-
-        #region Nested type: Selection
-
-        private struct Selection
-        {
-            public readonly int ID;
-            public readonly SelectionType SelectionType;
-
-            public Selection(SelectionType selectionType, int id)
-            {
-                SelectionType = selectionType;
-                ID = id;
-            }
-        };
-
-        #endregion
-
         private void cmbEventType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbEventType.SelectedIndex == -1)
@@ -1902,10 +1865,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private void updatePOTFToolTip()
         {
             var tt = new ToolTip();
-            string text = "";
+            var text = "";
             foreach (var id in PlayersOnTheFloor)
             {
-                string info = MainWindow.PST[id].FullName + " (";
+                var info = MainWindow.PST[id].FullName + " (";
                 var p1s = MainWindow.PST[id].Position1S;
                 if (!String.IsNullOrWhiteSpace(p1s))
                 {
@@ -1914,9 +1877,45 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 info += MainWindow.TST[MainWindow.PST[id].TeamF].DisplayName + ")";
                 text += info + "\n";
             }
-            text = text.TrimEnd(new char[] { '\n' });
+            text = text.TrimEnd(new[] { '\n' });
             tt.Content = text;
             btnSetPBPPlayers.ToolTip = tt;
         }
+
+        #region Nested type: Filter
+
+        private struct Filter
+        {
+            public readonly string Operator;
+            public readonly string Parameter1;
+            public readonly string Parameter2;
+            public readonly string Value;
+
+            public Filter(string parameter1, string oper, string parameter2, string value)
+            {
+                Parameter1 = parameter1;
+                Operator = oper;
+                Parameter2 = parameter2;
+                Value = value;
+            }
+        }
+
+        #endregion
+
+        #region Nested type: Selection
+
+        private struct Selection
+        {
+            public readonly int ID;
+            public readonly SelectionType SelectionType;
+
+            public Selection(SelectionType selectionType, int id)
+            {
+                SelectionType = selectionType;
+                ID = id;
+            }
+        };
+
+        #endregion
     }
 }

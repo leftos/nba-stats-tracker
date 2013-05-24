@@ -33,14 +33,6 @@ namespace NBA_Stats_Tracker.Data.BoxScores
     [Serializable]
     public class BoxScoreEntry
     {
-        public bool MustUpdate { get; set; }
-        public List<PlayerBoxScore> PBSList { get; set; }
-        public TeamBoxScore BS { get; set; }
-        public string Team1Display { get; set; }
-        public string Team2Display { get; set; }
-        public List<PlayByPlayEntry> PBPEList { get; set; }
-        public List<PlayByPlayEntry> FilteredPBPEList { get; set; } 
-
         public BoxScoreEntry()
         {
             PBSList = new List<PlayerBoxScore>();
@@ -51,7 +43,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores
         ///     Initializes a new instance of the <see cref="BoxScoreEntry" /> class.
         /// </summary>
         /// <param name="bs">The TeamBoxScore to initialize with.</param>
-        public BoxScoreEntry(TeamBoxScore bs) : this()
+        public BoxScoreEntry(TeamBoxScore bs)
+            : this()
         {
             BS = bs;
         }
@@ -68,5 +61,13 @@ namespace NBA_Stats_Tracker.Data.BoxScores
             PBSList = pbsList;
             PBPEList = pbpeList;
         }
+
+        public bool MustUpdate { get; set; }
+        public List<PlayerBoxScore> PBSList { get; set; }
+        public TeamBoxScore BS { get; set; }
+        public string Team1Display { get; set; }
+        public string Team2Display { get; set; }
+        public List<PlayByPlayEntry> PBPEList { get; set; }
+        public List<PlayByPlayEntry> FilteredPBPEList { get; set; }
     }
 }

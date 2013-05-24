@@ -8,7 +8,8 @@
         xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Advanced Stats Calculator" MinHeight="535" Height="600" MinWidth="920" Width="920" Loaded="window_Loaded"
+        Title="Advanced Stats Calculator" MinHeight="535" Height="600" MinWidth="920" Width="920"
+        Loaded="window_Loaded"
         WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Window.Resources>
 
@@ -24,9 +25,9 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="266"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="351"/>
+                        <ColumnDefinition Width="266" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="351" />
                     </Grid.ColumnDefinitions>
                     <GroupBox Header="Step 1: Filter Players By" Margin="10,10,5,5" Grid.Column="0">
                         <Grid>
@@ -131,22 +132,23 @@
                     <GroupBox Header="Step 5: Set Play-By-Play Filters">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="83"/>
-                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="83" />
+                                <RowDefinition Height="35" />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" Name="grdPBP1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="2.5*"/>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="2.5*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid Grid.Column="0" Margin="10,5,5,5">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="Event" />
                                         <Rectangle Height="5" />
-                                        <ComboBox x:Name="cmbEventType" SelectionChanged="cmbEventType_SelectionChanged" />
+                                        <ComboBox x:Name="cmbEventType"
+                                                  SelectionChanged="cmbEventType_SelectionChanged" />
                                         <Rectangle Height="5" />
                                         <TextBox x:Name="txtEventDesc" />
                                     </StackPanel>
@@ -155,14 +157,14 @@
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="Player" />
                                         <Rectangle Height="5" />
-                                        <ComboBox x:Name="cmbPlayer1" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+                                        <ComboBox x:Name="cmbPlayer1" DisplayMemberPath="Value" SelectedValuePath="Key" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Column="2" Margin="5">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock x:Name="txbPlayer2Label" Text="Player 2" />
                                         <Rectangle Height="5" />
-                                        <ComboBox x:Name="cmbPlayer2" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+                                        <ComboBox x:Name="cmbPlayer2" DisplayMemberPath="Value" SelectedValuePath="Key" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Column="3" Margin="5">
@@ -170,16 +172,16 @@
                                         <TextBlock x:Name="txbLocationLabel" Text="Location/Shot Dist." />
                                         <Rectangle Height="5" />
                                         <ComboBox x:Name="cmbLocationShotDistance"
-                        					SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
+                                                  SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
                                         <Rectangle Height="5" />
                                         <TextBox x:Name="txtLocationDesc" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Column="4" Margin="5" x:Name="grdShotEvent">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="80" />
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="0" Margin="0,0,5,0">
                                         <StackPanel Orientation="Vertical">
@@ -210,24 +212,33 @@
                             <Grid Grid.Row="1">
                                 <StackPanel Name="stpPBP2" Orientation="Horizontal" Margin="10,5" Height="22">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-                                        <TextBlock Text="Time Left" Margin="5,2"/>
-                                        <ComboBox x:Name="cmbTimeLeftOp" Margin="5,0" Width="45"/>
-                                        <xctk:MaskedTextBox x:Name="txtTimeLeftPar" Width="50" Mask="00:00.0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                        <TextBlock Text="Time Left" Margin="5,2" />
+                                        <ComboBox x:Name="cmbTimeLeftOp" Margin="5,0" Width="45" />
+                                        <xctk:MaskedTextBox x:Name="txtTimeLeftPar" Width="50" Mask="00:00.0"
+                                                            ValueDataType="{x:Type s:String}"
+                                                            IncludeLiteralsInValue="True" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5,0">
-                                        <TextBlock Text="Shot Clock" Margin="5,2"/>
-                                        <ComboBox x:Name="cmbShotClockOp" Margin="5,0" Width="45"/>
-                                        <xctk:MaskedTextBox x:Name="txtShotClockPar" Width="50" Mask="00.0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                        <TextBlock Text="Shot Clock" Margin="5,2" />
+                                        <ComboBox x:Name="cmbShotClockOp" Margin="5,0" Width="45" />
+                                        <xctk:MaskedTextBox x:Name="txtShotClockPar" Width="50" Mask="00.0"
+                                                            ValueDataType="{x:Type s:String}"
+                                                            IncludeLiteralsInValue="True" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5,0">
-                                        <TextBlock Text="Period" Margin="5,2"/>
-                                        <ComboBox x:Name="cmbPeriodOp" Margin="5,0" Width="45"/>
-                                        <xctk:MaskedTextBox x:Name="txtPeriodPar" Width="30" Mask="0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                        <TextBlock Text="Period" Margin="5,2" />
+                                        <ComboBox x:Name="cmbPeriodOp" Margin="5,0" Width="45" />
+                                        <xctk:MaskedTextBox x:Name="txtPeriodPar" Width="30" Mask="0"
+                                                            ValueDataType="{x:Type s:String}"
+                                                            IncludeLiteralsInValue="True" />
                                     </StackPanel>
-                                    <Button x:Name="btnSetPBPPlayers" Content="Set Players On The Floor" Width="158" Click="btnSetPBPPlayers_Click"/>
+                                    <Button x:Name="btnSetPBPPlayers" Content="Set Players On The Floor" Width="158"
+                                            Click="btnSetPBPPlayers_Click" />
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5" Height="22">
-                                    <CheckBox Name="chkUsePBP" Content="Calculate only matching events" VerticalAlignment="Center" Click="chkUsePBP_Click" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5"
+                                            Height="22">
+                                    <CheckBox Name="chkUsePBP" Content="Calculate only matching events"
+                                              VerticalAlignment="Center" Click="chkUsePBP_Click" />
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -242,15 +253,15 @@
                             Width="75" Click="btnShowAll_Click" />
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Button Content="Load Filters" HorizontalAlignment="Left" Margin="10,5,0,10"
-                            x:Name="btnLoadFilters" Width="75"
-                            Click="btnLoadFilters_Click" />
+                                x:Name="btnLoadFilters" Width="75"
+                                Click="btnLoadFilters_Click" />
                         <Button Content="Save Filters" HorizontalAlignment="Left"
-                            Margin="10,5,0,10" x:Name="btnSaveFilters" Width="75"
-                            Click="btnSaveFilters_Click" />
+                                Margin="10,5,0,10" x:Name="btnSaveFilters" Width="75"
+                                Click="btnSaveFilters_Click" />
                         <Rectangle Width="10"></Rectangle>
                         <Button Content="Hide Play-By-Play Panel" HorizontalAlignment="Left"
-                            Margin="10,5,0,10" x:Name="btnHidePBP" 
-                            Width="144" Click="btnHidePBP_Click" />
+                                Margin="10,5,0,10" x:Name="btnHidePBP"
+                                Width="144" Click="btnHidePBP_Click" />
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -655,7 +666,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        
+
         <TabItem Header="Team Stats" x:Name="tabTeamStats">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
