@@ -270,7 +270,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public void CalculateFromPBPEList(IEnumerable<PlayByPlayEntry> pbpeList)
         {
+            var mins = MINS;
             ResetStats();
+            MINS = mins;
 
             var list = pbpeList.Where(pbpe => pbpe.Player1ID == PlayerID).ToList();
             foreach (var entry in list)
