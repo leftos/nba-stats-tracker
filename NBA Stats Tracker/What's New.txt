@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.14.1.1
+		- Improvement: Pressing Enter while typing in the Quick Find dialog will now automatically launch the selected item, or the first one in the list if none is selected
+
 	v1.14.1
 		- Addition: Added Quick Find dialog (keyboard shortcut: Ctrl-F)
 
