@@ -83,6 +83,7 @@
     <Compile Include="Data\BoxScores\PlayByPlay\PlayByPlayEntryComparerAsc.cs" />
     <Compile Include="Data\Other\Conference.cs" />
     <Compile Include="Data\Other\DBData.cs" />
+    <Compile Include="Data\Other\SearchItem.cs" />
     <Compile Include="Data\Other\Span.cs" />
     <Compile Include="Data\Other\Timeframe.cs" />
     <Compile Include="Data\PastStats\PastPlayerStats.cs" />
@@ -146,6 +147,9 @@
     </Compile>
     <Compile Include="Windows\MainInterface\ASC\AdvancedStatCalculatorWindow.xaml.cs">
       <DependentUpon>AdvancedStatCalculatorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainInterface\ToolWindows\QuickFindWindow.xaml.cs">
+      <DependentUpon>QuickFindWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MiscDialogs\ComboChoiceWindow.xaml.cs">
       <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
@@ -220,6 +224,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\MainInterface\ASC\AdvancedStatCalculatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainInterface\ToolWindows\QuickFindWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

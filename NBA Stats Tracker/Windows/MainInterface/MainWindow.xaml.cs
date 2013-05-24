@@ -168,6 +168,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static RoutedCommand CmndOpen = new RoutedCommand();
         public static RoutedCommand CmndSave = new RoutedCommand();
         public static RoutedCommand CmndExport = new RoutedCommand();
+        public static RoutedCommand CmndFind = new RoutedCommand();
 
         private static List<string> _notables = new List<string>();
 
@@ -324,6 +325,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 PAbbr.MetricsDict.Add(name, double.NaN);
             }
 
+            SearchCache = new List<SearchItem>();
+
             #region Keyboard Shortcuts
 
             CmndImport.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Control));
@@ -338,9 +341,38 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             CmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(CmndSave, btnSaveCurrentSeason_Click));
 
+            CmndFind.InputGestures.Add(new KeyGesture(Key.F, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(CmndFind, QuickFind));
+
             #endregion
 
             //prepareImageCache();
+        }
+
+        private void QuickFind(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SQLiteIO.IsTSTEmpty())
+            {
+                return;
+            }
+
+            var qfw = new QuickFindWindow();
+            if (qfw.ShowDialog() != true)
+            {
+                return;
+            }
+
+            var item = QuickFindWindow.SelectedItem;
+            if (item.Type == SearchItem.SelectionType.Team)
+            {
+                var w = new TeamOverviewWindow(item.ID);
+                w.ShowDialog();
+            }
+            else
+            {
+                var w = new PlayerOverviewWindow(PST[item.ID].TeamF, item.ID);
+                w.ShowDialog();
+            }
         }
 
         public static string CurrentDB
@@ -709,6 +741,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
             //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
             UpdateNotables();
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
+            UpdateSearchCache();
 
             if (_notables.Count > 0)
             {
@@ -728,6 +762,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
             LoadingSeason = false;
             mainGrid.Visibility = Visibility.Visible;
+        }
+
+        public static List<SearchItem> SearchCache;
+        
+        private void UpdateSearchCache()
+        {
+            SearchCache.Clear();
+            foreach (var team in TST)
+            {
+                SearchCache.Add(new SearchItem(SearchItem.SelectionType.Team, team.Key, team.Value.DisplayName));
+            }
+            foreach (var player in PST)
+            {
+                SearchCache.Add(new SearchItem(SearchItem.SelectionType.Player, player.Key, player.Value.FullInfo(TST)));
+            }
         }
 
         public static void LoadMyLeadersCriteria()
@@ -1542,8 +1591,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            var pbpw = new PlayByPlayWindow(TST, PST, BSHist[0], BSHist[0].BS.Team1ID, BSHist[0].BS.Team2ID);
-            pbpw.Show();
+            var qfw = new QuickFindWindow();
+            qfw.ShowDialog();
 #endif
         }
 

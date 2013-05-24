@@ -634,6 +634,12 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        public string FullInfo(IDictionary<int, TeamStats> tst)
+        {
+            return String.Format(
+                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsActive ? tst[TeamF].DisplayName : "Free Agent");
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

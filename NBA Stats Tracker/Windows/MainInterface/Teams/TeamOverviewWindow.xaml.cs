@@ -52,7 +52,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     /// <summary>Shows team information and stats.</summary>
     public partial class TeamOverviewWindow
     {
-        private readonly string _teamToLoad;
+        private readonly string _teamToLoad = "";
+        private readonly int _teamIDToLoad = -1;
         private List<TeamBoxScore> _bsrList = new List<TeamBoxScore>();
         private bool _changingOppRange;
         private bool _changingOppTeam;
@@ -108,6 +109,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             : this()
         {
             _teamToLoad = team;
+        }
+
+        public TeamOverviewWindow(int id)
+            : this()
+        {
+            _teamIDToLoad = id;
         }
 
         protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
@@ -2465,7 +2472,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
             cmbTeam.SelectedIndex = -1;
-            if (!String.IsNullOrWhiteSpace(_teamToLoad))
+            if (_teamIDToLoad != -1)
+            {
+                cmbTeam.SelectedItem = _tst[_teamIDToLoad].DisplayName;
+            }
+            else if (!String.IsNullOrWhiteSpace(_teamToLoad))
             {
                 cmbTeam.SelectedItem = _teamToLoad;
             }

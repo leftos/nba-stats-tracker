@@ -50,16 +50,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
     /// <summary>Interaction logic for AdvancedStatCalculatorWindow.xaml</summary>
     public partial class AdvancedStatCalculatorWindow : Window
     {
-        #region SelectionType enum
-
-        public enum SelectionType
-        {
-            Team,
-            Player
-        };
-
-        #endregion
-
         private readonly Dictionary<Selection, List<Filter>> _filters = new Dictionary<Selection, List<Filter>>();
         private readonly string _folder = App.AppDocsPath + @"\Advanced Stats Filters";
 
@@ -271,17 +261,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             {
                 list = list.Where(ps => !ps.IsActive).ToList();
             }
-            list.ForEach(
-                ps =>
-                playersList.Add(
-                    new KeyValuePair<int, string>(
-                    ps.ID,
-                    String.Format(
-                        "{0}, {1} ({2} - {3})",
-                        ps.LastName,
-                        ps.FirstName,
-                        ps.Position1.ToString(),
-                        ps.IsActive ? MainWindow.TST[ps.TeamF].DisplayName : "Free Agent"))));
+            list.ForEach(ps => playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.FullInfo(MainWindow.TST))));
 
             cmbSelectedPlayer.ItemsSource = playersList;
             var playersListPBP = playersList.ToList();
@@ -468,12 +448,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     KeyValuePair<Selection, List<Filter>> filter;
                     try
                     {
-                        filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
+                        filter = _filters.Single(fil => fil.Key.SelectionType == SearchItem.SelectionType.Team && fil.Key.ID == teamID);
                     }
                     catch
                     {
-                        _filters.Add(new Selection(SelectionType.Team, teamID), new List<Filter>());
-                        filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Team && fil.Key.ID == teamID);
+                        _filters.Add(new Selection(SearchItem.SelectionType.Team, teamID), new List<Filter>());
+                        filter = _filters.Single(fil => fil.Key.SelectionType == SearchItem.SelectionType.Team && fil.Key.ID == teamID);
                     }
                     try
                     {
@@ -519,12 +499,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 KeyValuePair<Selection, List<Filter>> filter;
                 try
                 {
-                    filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
+                    filter = _filters.Single(fil => fil.Key.SelectionType == SearchItem.SelectionType.Player && fil.Key.ID == playerID);
                 }
                 catch
                 {
-                    _filters.Add(new Selection(SelectionType.Player, playerID), new List<Filter>());
-                    filter = _filters.Single(fil => fil.Key.SelectionType == SelectionType.Player && fil.Key.ID == playerID);
+                    _filters.Add(new Selection(SearchItem.SelectionType.Player, playerID), new List<Filter>());
+                    filter = _filters.Single(fil => fil.Key.SelectionType == SearchItem.SelectionType.Player && fil.Key.ID == playerID);
                 }
                 if (cmbTotalsPar.SelectedIndex > 0)
                 {
@@ -618,7 +598,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             foreach (var filter in _filters)
             {
                 string s;
-                if (filter.Key.SelectionType == SelectionType.Team)
+                if (filter.Key.SelectionType == SearchItem.SelectionType.Team)
                 {
                     s = string.Format(
                         "(#T{0}) {1}: ", filter.Key.ID, MainWindow.TST.Values.Single(ts => ts.ID == filter.Key.ID).DisplayName);
@@ -687,8 +667,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 var parameter = criterion[0];
                 var op = criterion[1];
                 var filter = item.Substring(2, 1) == "T"
-                                 ? _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id)
-                                 : _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                                 ? _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Team && f.Key.ID == id)
+                                 : _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Player && f.Key.ID == id);
                 filter.Value.Remove(filter.Value.Single(o => o.Parameter1 == parameter && o.Operator == op));
                 if (filter.Value.Count == 0)
                 {
@@ -861,7 +841,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
                 foreach (var filter in _filters)
                 {
-                    if (filter.Key.SelectionType == SelectionType.Team)
+                    if (filter.Key.SelectionType == SearchItem.SelectionType.Team)
                     {
                         if (!_teamsToHighlight.Contains(filter.Key.ID))
                         {
@@ -1563,24 +1543,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     {
                         try
                         {
-                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                            filter = _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Team && f.Key.ID == id);
                         }
                         catch (InvalidOperationException)
                         {
-                            _filters.Add(new Selection(SelectionType.Team, id), new List<Filter>());
-                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                            _filters.Add(new Selection(SearchItem.SelectionType.Team, id), new List<Filter>());
+                            filter = _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Team && f.Key.ID == id);
                         }
                     }
                     else
                     {
                         try
                         {
-                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                            filter = _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Player && f.Key.ID == id);
                         }
                         catch (InvalidOperationException)
                         {
-                            _filters.Add(new Selection(SelectionType.Player, id), new List<Filter>());
-                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                            _filters.Add(new Selection(SearchItem.SelectionType.Player, id), new List<Filter>());
+                            filter = _filters.Single(f => f.Key.SelectionType == SearchItem.SelectionType.Player && f.Key.ID == id);
                         }
                     }
                     filter.Value.Add(new Filter(parameter, op, par2, val));
@@ -1890,9 +1870,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private struct Selection
         {
             public readonly int ID;
-            public readonly SelectionType SelectionType;
+            public readonly SearchItem.SelectionType SelectionType;
 
-            public Selection(SelectionType selectionType, int id)
+            public Selection(SearchItem.SelectionType selectionType, int id)
             {
                 SelectionType = selectionType;
                 ID = id;

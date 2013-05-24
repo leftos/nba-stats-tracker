@@ -1,4 +1,5 @@
-- Opponent/Defensive Stats when adding up PBPEs in ASC
+- Opponent/Defensive Stats when adding up PBPEs in ASC- Quick Find
+- Bookmarks
 
 - Ultimate Defensive Team
 - Go through all tables, check if they should have paste, implement OnExecutedPaste and database updates

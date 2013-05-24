@@ -48,6 +48,8 @@
                               Click="mnuOptionsIsImperial_Click" />
                 </MenuItem>
                 <MenuItem x:Name="mnuTools" Header="_Tools">
+                    <MenuItem Header="Quick Find..." Name="mnuMiscQuickFind" InputGestureText="Ctrl+F" />
+                    <Separator />
                     <MenuItem Header="_Start New Season..." Name="mnuMiscStartNewSeason"
                               Click="mnuMiscStartNewSeason_Click" />
                     <MenuItem Header="S_eason Settings">
