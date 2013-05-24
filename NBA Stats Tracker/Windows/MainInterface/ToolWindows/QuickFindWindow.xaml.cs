@@ -116,7 +116,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
         private void lstResults_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            var l = (ListBox) sender;
+            var l = (ListBox)sender;
+            if (l.Items.Count == 0)
+            {
+                return;
+            }
             if (l.SelectedIndex == -1)
             {
                 l.SelectedIndex = 0;
@@ -134,6 +138,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             if (e.Key == Key.Enter)
             {
                 e.Handled = true;
+                if (lstResults.Items.Count == 0)
+                {
+                    return;
+                }
                 if (lstResults.SelectedIndex == -1)
                 {
                     lstResults.SelectedIndex = 0;
