@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.14
+		- Addition: Added partial stats calculation based on play-by-play events in Advanced Stats Calculator
+		- Fix: Advanced Stats Calculator in some cases when searching after a team filter had been applied
+		- Fix: Removing all filters for a team and/or player in Advanced Stats Calculator would not fully remove the filter as to the team's and/or player's participation in the box score
+		- Fix: Advanced Stats Calculator would allow you to set a filter with no comparison value
+
 	v1.13.1.3
 		- Fix: Plays added that update the team score will have the correct score reported in the list as well
 		- Fix: The Player selected for the Event in Play By Play Editor will not appear in the Player 2 combo-box if the Event is set to anything but Other, Unknown or Offensive Rebound
