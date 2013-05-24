@@ -132,6 +132,9 @@
     <Compile Include="Windows\MainInterface\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\MainInterface\ASC\ASCSelectPlayers.xaml.cs">
+      <DependentUpon>ASCSelectPlayers.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MainInterface\BoxScores\PlayByPlayWindow.xaml.cs">
       <DependentUpon>PlayByPlayWindow.xaml</DependentUpon>
     </Compile>
@@ -199,6 +202,10 @@
     <Page Include="Windows\MainInterface\AboutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainInterface\ASC\ASCSelectPlayers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainInterface\BoxScores\PlayByPlayWindow.xaml">
       <SubType>Designer</SubType>

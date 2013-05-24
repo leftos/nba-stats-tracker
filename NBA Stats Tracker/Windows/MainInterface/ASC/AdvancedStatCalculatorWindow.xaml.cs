@@ -21,6 +21,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
     #region Using Directives
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -37,11 +38,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
     using Microsoft.Win32;
 
     using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Helper.EventHandlers;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Windows.MainInterface.BoxScores;
 
     #endregion
 
@@ -93,10 +96,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private bool _changingTimeframe;
         private int _curSeason;
         private bool _loading;
+        private double _defaultPBPHeight;
 
         public AdvancedStatCalculatorWindow()
         {
             InitializeComponent();
+            PlayersOnTheFloor = new List<int>();
         }
 
         private ObservableCollection<KeyValuePair<int, string>> playersList { get; set; }
@@ -106,6 +111,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         private ObservableCollection<PlayerStatsRow> psrList_Not { get; set; }
         private ObservableCollection<TeamStatsRow> tsrOppList { get; set; }
         private ObservableCollection<TeamStatsRow> tsrOppList_Not { get; set; }
+
+        public static List<int> PlayersOnTheFloor { get; set; }
 
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -137,7 +144,36 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             cmbTotalsPar.SelectedIndex = 0;
             cmbTotalsOp.SelectedIndex = 3;
             cmbTotalsPar2.SelectedIndex = 0;
+
+            var eventTypes = PlayByPlayEntry.EventTypes.Values.ToList();
+            eventTypes.Insert(0, "Any");
+            cmbEventType.ItemsSource = eventTypes;
+            cmbEventType.SelectedIndex = 0;
+
+            var shotOrigins = ShotEntry.ShotOrigins.Values.ToList();
+            shotOrigins.Insert(0, "Any");
+            cmbShotOrigin.ItemsSource = shotOrigins;
+            cmbShotOrigin.SelectedIndex = 0;
+
+            var shotTypes = ShotEntry.ShotTypes.Values.ToList();
+            shotTypes.Insert(0, "Any");
+            cmbShotType.ItemsSource = shotTypes;
+            cmbShotType.SelectedIndex = 0;
+
+            var pbpNumericOptions = _numericOptions.ToList();
+            pbpNumericOptions.Insert(0, "Any");
+            cmbPeriodOp.ItemsSource = pbpNumericOptions;
+            cmbPeriodOp.SelectedIndex = 0;
+            cmbTimeLeftOp.ItemsSource = pbpNumericOptions;
+            cmbTimeLeftOp.SelectedIndex = 0;
+            cmbShotClockOp.ItemsSource = pbpNumericOptions;
+            cmbShotClockOp.SelectedIndex = 0;
+
+            chkShotIsMade.IsChecked = null;
+            chkShotIsAssisted.IsChecked = null;
             _loading = false;
+
+            _defaultPBPHeight = gdrPlayByPlay.Height.Value;
 
             populateTeamsCombo();
 
@@ -185,7 +221,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             var teams = new List<string>();
             MainWindow.TST.Values.ToList().ForEach(ts => teams.Add(ts.DisplayName));
             teams.Sort();
-            cmbTeamFilter.Items.Add("- Any -");
+            cmbTeamFilter.Items.Add("Any");
             teams.ForEach(
                 delegate(string i)
                     {
@@ -201,7 +237,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
         private void cmbTeamFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            populatePlayersCombo();
+            if (!_loading)
+            {
+                if (cmbTeamFilter.SelectedIndex != -1 && cmbTeamFilter.SelectedItem.ToString() != "Any")
+                {
+                    chkIsActive.IsChecked = true;
+                }
+                populatePlayersCombo();
+            }
         }
 
         private void populatePlayersCombo()
@@ -217,7 +260,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 list = list.Where(ps => ps.Position2.ToString() == cmbPosition2Filter.SelectedItem.ToString()).ToList();
             }
             list = list.OrderBy(ps => ps.LastName).ThenBy(ps => ps.FirstName).ToList();
-            if (chkIsActive.IsChecked.GetValueOrDefault() && cmbTeamFilter.SelectedItem.ToString() != "- Any -")
+            if (chkIsActive.IsChecked.GetValueOrDefault() && cmbTeamFilter.SelectedItem.ToString() != "Any")
             {
                 list =
                     list.Where(
@@ -233,9 +276,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 ps =>
                 playersList.Add(
                     new KeyValuePair<int, string>(
-                    ps.ID, String.Format("{0}, {1} ({2})", ps.LastName, ps.FirstName, ps.Position1.ToString()))));
+                    ps.ID,
+                    String.Format(
+                        "{0}, {1} ({2} - {3})",
+                        ps.LastName,
+                        ps.FirstName,
+                        ps.Position1.ToString(),
+                        ps.IsActive ? MainWindow.TST[ps.TeamF].DisplayName : "Free Agent"))));
 
             cmbSelectedPlayer.ItemsSource = playersList;
+            var playersListPBP = playersList.ToList();
+            playersListPBP.Insert(0, new KeyValuePair<int, string>(-1, "Any"));
+            cmbPlayer1.ItemsSource = playersListPBP;
+            cmbPlayer2.ItemsSource = playersListPBP;
+            cmbPlayer1.SelectedIndex = 0;
+            cmbPlayer2.SelectedIndex = 0;
         }
 
         private void cmbPosition1Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -401,6 +456,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     if (!String.IsNullOrWhiteSpace(cmbTotalsPar2.SelectedItem.ToString()))
                     {
                         txtTotalsVal.Text = "";
+                    }
+                    else
+                    {
+                        if (String.IsNullOrWhiteSpace(txtTotalsVal.Text))
+                        {
+                            return;
+                        }
                     }
 
                     var teamID = Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbSelectedTeam.SelectedItem.ToString());
@@ -646,6 +708,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                                  ? _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id)
                                  : _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
                 filter.Value.Remove(filter.Value.Single(o => o.Parameter1 == parameter && o.Operator == op));
+                if (filter.Value.Count == 0)
+                {
+                    _filters.Remove(filter.Key);
+                }
             }
 
             populateTotalsList();
@@ -678,9 +744,139 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             var bsToCalculate = new List<BoxScoreEntry>();
             var notBsToCalculate = new List<BoxScoreEntry>();
+            bool doPlays = chkUsePBP.IsChecked == true;
+
+            #region Initialize PBP Filters
+
+            int curEventKey;
+            if (cmbEventType.SelectedIndex <= 0)
+            {
+                curEventKey = -2;
+            }
+            else
+            {
+                curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+            }
+
+            int curPlayer1ID;
+            if (cmbPlayer1.SelectedIndex <= 0)
+            {
+                curPlayer1ID = -1;
+            }
+            else
+            {
+                curPlayer1ID = ((KeyValuePair<int, string>) (((cmbPlayer1)).SelectedItem)).Key;
+                _playersToHighlight.Add(curPlayer1ID);
+            }
+
+            int curPlayer2ID;
+            if (cmbPlayer2.SelectedIndex <= 0)
+            {
+                curPlayer2ID = -1;
+            }
+            else
+            {
+                curPlayer2ID = ((KeyValuePair<int, string>) (((cmbPlayer2)).SelectedItem)).Key;
+                _playersToHighlight.Add(curPlayer2ID);
+            }
+
+            int curLocation;
+            if (cmbLocationShotDistance.SelectedIndex <= 0)
+            {
+                curLocation = -2;
+            }
+            else
+            {
+                curLocation = curEventKey == 2
+                                  ? ShotEntry.ShotDistances.Single(
+                                      dist => dist.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key
+                                  : PlayByPlayEntry.EventLocations.Single(
+                                      loc => loc.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
+            }
+
+            int shotOrigin;
+            if (cmbShotOrigin.SelectedIndex <= 0 || cmbShotOrigin.IsEnabled == false)
+            {
+                shotOrigin = -2;
+            }
+            else
+            {
+                shotOrigin = ShotEntry.ShotOrigins.Single(orig => orig.Value == cmbShotOrigin.SelectedItem.ToString()).Key;
+            }
+
+            int shotType;
+            if (cmbShotType.SelectedIndex <= 0 || cmbShotType.IsEnabled == false)
+            {
+                shotType = -2;
+            }
+            else
+            {
+                shotType = ShotEntry.ShotTypes.Single(orig => orig.Value == cmbShotType.SelectedItem.ToString()).Key;
+            }
+
+            var shotIsMade = chkShotIsMade.IsEnabled ? chkShotIsMade.IsChecked : null;
+
+            var shotIsAssisted = chkShotIsAssisted.IsEnabled ? chkShotIsAssisted.IsChecked : null;
+
+            double timeLeft;
+            if (cmbTimeLeftOp.SelectedIndex > 0)
+            {
+                try
+                {
+                    timeLeft = PlayByPlayWindow.ConvertTimeStringToDouble(txtTimeLeftPar.Value as string);
+                }
+                catch
+                {
+                    timeLeft = -1;
+                }
+            }
+            else
+            {
+                timeLeft = -1;
+            }
+
+            double shotClock;
+            if (cmbShotClockOp.SelectedIndex > 0)
+            {
+                try
+                {
+                    shotClock = PlayByPlayWindow.ConvertTimeStringToDouble(txtShotClockPar.Value as string);
+                }
+                catch
+                {
+                    shotClock = -1;
+                }
+            }
+            else
+            {
+                shotClock = -1;
+            }
+
+            int period;
+            if (cmbPeriodOp.SelectedIndex > 0)
+            {
+                try
+                {
+                    period = (txtPeriodPar.Value as string).ToInt32();
+                }
+                catch
+                {
+                    period = Int32.MinValue;
+                }
+            }
+            else
+            {
+                period = Int32.MinValue;
+            }
+
+            #endregion
+
             foreach (var bse in MainWindow.BSHist)
             {
                 var keep = true;
+
+                #region Apply Box Score Filters
+
                 foreach (var filter in _filters)
                 {
                     if (filter.Key.SelectionType == SelectionType.Team)
@@ -723,28 +919,31 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                             parameter = parameter.Replace("3P", "TP");
                             parameter = parameter.Replace("TO", "TOS");
 
-                            string parameter2;
-                            if (!option.Parameter2.StartsWith("Opp"))
+                            string parameter2 = "";
+                            if (!String.IsNullOrWhiteSpace(option.Parameter2))
                             {
-                                switch (option.Parameter2)
+                                if (!option.Parameter2.StartsWith("Opp"))
                                 {
-                                    case "PF":
-                                        parameter2 = "PTS" + p;
-                                        break;
-                                    case "PA":
-                                        parameter2 = "PTS" + oppP;
-                                        break;
-                                    default:
-                                        parameter2 = option.Parameter2 + p;
-                                        break;
+                                    switch (option.Parameter2)
+                                    {
+                                        case "PF":
+                                            parameter2 = "PTS" + p;
+                                            break;
+                                        case "PA":
+                                            parameter2 = "PTS" + oppP;
+                                            break;
+                                        default:
+                                            parameter2 = option.Parameter2 + p;
+                                            break;
+                                    }
                                 }
+                                else
+                                {
+                                    parameter2 = option.Parameter2.Substring(3) + oppP;
+                                }
+                                parameter2 = parameter2.Replace("3P", "TP");
+                                parameter2 = parameter2.Replace("TO", "TOS");
                             }
-                            else
-                            {
-                                parameter2 = option.Parameter2.Substring(3) + oppP;
-                            }
-                            parameter2 = parameter2.Replace("3P", "TP");
-                            parameter2 = parameter2.Replace("TO", "TOS");
                             var context = new ExpressionContext();
 
                             IGenericExpression<bool> ige;
@@ -905,13 +1104,126 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                         }
                     }
                 }
+
+                #endregion
+
+                if (doPlays)
+                {
+                    var pbpeList = bse.PBPEList.ToList();
+
+                    // Event Type
+                    if (curEventKey > -2)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.EventType == curEventKey).ToList();
+                        if (curEventKey == -1)
+                        {
+                            pbpeList = pbpeList.Where(pbpe => pbpe.EventDesc == txtEventDesc.Text).ToList();
+                        }
+                    }
+
+                    // Player 1
+                    if (curPlayer1ID > -1)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.Player1ID == curPlayer1ID).ToList();
+                    }
+
+                    // Player 2
+                    if (curPlayer2ID > -1)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.Player2ID == curPlayer2ID).ToList();
+                    }
+
+                    // Location
+                    if (curLocation > -2)
+                    {
+                        pbpeList = curEventKey == 2
+                                       ? pbpeList.Where(pbpe => pbpe.ShotEntry.Distance == curLocation).ToList()
+                                       : pbpeList.Where(pbpe => pbpe.Location == curLocation).ToList();
+                        if (curLocation == -1)
+                        {
+                            pbpeList = pbpeList.Where(pbpe => pbpe.LocationDesc == txtLocationDesc.Text).ToList();
+                        }
+                    }
+
+                    // Shot Origin
+                    if (shotOrigin > -2)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.ShotEntry.Origin == shotOrigin).ToList();
+                    }
+
+                    // Shot Type
+                    if (shotType > -2)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.ShotEntry.Type == shotType).ToList();
+                    }
+
+                    // Shot Is Made
+                    if (shotIsMade != null)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.ShotEntry.IsMade == (shotIsMade == true)).ToList();
+                    }
+
+                    // Shot Is Assisted
+                    if (shotIsAssisted != null)
+                    {
+                        pbpeList = pbpeList.Where(pbpe => pbpe.ShotEntry.IsAssisted == (shotIsAssisted == true)).ToList();
+                    }
+
+                    // Time Left
+                    if (timeLeft > -0.5)
+                    {
+                        pbpeList =
+                            pbpeList.Where(
+                                pbpe =>
+                                new ExpressionContext().CompileGeneric<bool>(
+                                    string.Format("{0} {1} {2}", pbpe.TimeLeft, cmbTimeLeftOp.SelectedItem.ToString(), timeLeft))
+                                                       .Evaluate()).ToList();
+                    }
+
+                    // Shot Clock
+                    if (shotClock > -0.5)
+                    {
+                        pbpeList =
+                            pbpeList.Where(
+                                pbpe =>
+                                new ExpressionContext().CompileGeneric<bool>(
+                                    string.Format("{0} {1} {2}", pbpe.ShotClockLeft, cmbShotClockOp.SelectedItem.ToString(), shotClock))
+                                                       .Evaluate()).ToList();
+                    }
+
+                    // Period
+                    if (period > Int32.MinValue)
+                    {
+                        pbpeList =
+                            pbpeList.Where(
+                                pbpe =>
+                                new ExpressionContext().CompileGeneric<bool>(
+                                    string.Format("{0} {1} {2}", pbpe.Quarter, cmbPeriodOp.SelectedItem.ToString(), period)).Evaluate())
+                                    .ToList();
+                    }
+
+                    // Players on the floor
+                    pbpeList = PlayersOnTheFloor.Aggregate(
+                        pbpeList,
+                        (current, pid) =>
+                        current.Where(pbpe => pbpe.Team1PlayerIDs.Contains(pid) || pbpe.Team2PlayerIDs.Contains(pid)).ToList());
+
+                    // Check if we should include this box score
+                    if (pbpeList.Count == 0)
+                    {
+                        keep = false;
+                        notBsToCalculate.Add(bse);
+                    }
+
+                    bse.FilteredPBPEList = pbpeList;
+                }
                 if (keep)
                 {
                     bsToCalculate.Add(bse);
                 }
             }
 
-            calculateAdvancedStats(bsToCalculate, notBsToCalculate);
+            calculateAdvancedStats(bsToCalculate, notBsToCalculate, doPlays);
 
             tbcAdv.SelectedItem = tabPlayerStats;
         }
@@ -921,7 +1233,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             return bse.BS.GetType().GetProperty(parameter).GetValue(bse.BS, null);
         }
 
-        private void calculateAdvancedStats(List<BoxScoreEntry> bsToCalculate, List<BoxScoreEntry> notBsToCalculate)
+        private void calculateAdvancedStats(
+            List<BoxScoreEntry> bsToCalculate, List<BoxScoreEntry> notBsToCalculate, bool doPlays = false)
         {
             var advtst = new Dictionary<int, TeamStats>();
             var advtstOpp = new Dictionary<int, TeamStats>();
@@ -937,198 +1250,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             foreach (var bse in bsToCalculate)
             {
-                var team1ID = bse.BS.Team1ID;
-                var team2ID = bse.BS.Team2ID;
-                var bs = bse.BS;
-                if (!advtst.ContainsKey(team1ID))
-                {
-                    advtst.Add(
-                        team1ID,
-                        new TeamStats
-                            {
-                                ID = team1ID,
-                                Name = MainWindow.TST[team1ID].Name,
-                                DisplayName = MainWindow.TST[team1ID].DisplayName
-                            });
-                    advtstOpp.Add(
-                        team1ID,
-                        new TeamStats
-                            {
-                                ID = team1ID,
-                                Name = MainWindow.TST[team1ID].Name,
-                                DisplayName = MainWindow.TST[team1ID].DisplayName
-                            });
-                }
-                var ts1 = advtst[team1ID];
-                var ts1Opp = advtstOpp[team1ID];
-                if (!advtst.ContainsKey(team2ID))
-                {
-                    //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtst.Add(
-                        team2ID,
-                        new TeamStats
-                            {
-                                ID = team2ID,
-                                Name = MainWindow.TST[team2ID].Name,
-                                DisplayName = MainWindow.TST[team2ID].DisplayName
-                            });
-                    advtstOpp.Add(
-                        team2ID,
-                        new TeamStats
-                            {
-                                ID = team2ID,
-                                Name = MainWindow.TST[team2ID].Name,
-                                DisplayName = MainWindow.TST[team2ID].DisplayName
-                            });
-                }
-                var ts2 = advtst[team2ID];
-                var ts2Opp = advtstOpp[team2ID];
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2Opp, ref ts1Opp, true);
-                foreach (var pbs in bse.PBSList)
-                {
-                    if (advpst.All(pair => pair.Key != pbs.PlayerID))
-                    {
-                        advpst.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
-                        advpst[pbs.PlayerID].ResetStats();
-                    }
-                    advpst[pbs.PlayerID].AddBoxScore(pbs, false);
-
-                    var teamID = pbs.TeamID;
-                    if (!advPPtst.ContainsKey(pbs.PlayerID))
-                    {
-                        advPPtst.Add(
-                            pbs.PlayerID,
-                            new TeamStats
-                                {
-                                    ID = teamID,
-                                    Name = MainWindow.TST[teamID].Name,
-                                    DisplayName = MainWindow.TST[teamID].DisplayName
-                                });
-                    }
-                    if (!advPPtstOpp.ContainsKey(pbs.PlayerID))
-                    {
-                        advPPtstOpp.Add(
-                            pbs.PlayerID,
-                            new TeamStats
-                                {
-                                    ID = teamID,
-                                    Name = MainWindow.TST[teamID].Name,
-                                    DisplayName = MainWindow.TST[teamID].DisplayName
-                                });
-                    }
-                    var ts = advPPtst[pbs.PlayerID];
-                    var tsopp = advPPtstOpp[pbs.PlayerID];
-                    if (team1ID == pbs.TeamID)
-                    {
-                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
-                    }
-                    else
-                    {
-                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
-                    }
-                }
+                extractFromBoxScoreEntry(bse, ref advtst, ref advtstOpp, ref advpst, ref advPPtst, ref advPPtstOpp, doPlays);
             }
 
             foreach (var bse in notBsToCalculate)
             {
-                var team1ID = bse.BS.Team1ID;
-                var team2ID = bse.BS.Team2ID;
-                var bs = bse.BS;
-                if (!advtstNot.ContainsKey(team1ID))
-                {
-                    //advTeamOrder.Add(MainWindow.tst[team1ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtstNot.Add(
-                        team1ID,
-                        new TeamStats
-                            {
-                                ID = team1ID,
-                                Name = MainWindow.TST[team1ID].Name,
-                                DisplayName = MainWindow.TST[team1ID].DisplayName
-                            });
-                    advtstOppNot.Add(
-                        team1ID,
-                        new TeamStats
-                            {
-                                ID = team1ID,
-                                Name = MainWindow.TST[team1ID].Name,
-                                DisplayName = MainWindow.TST[team1ID].DisplayName
-                            });
-                }
-                var ts1 = advtstNot[team1ID];
-                var ts1Opp = advtstOppNot[team1ID];
-                if (!advtstNot.ContainsKey(team2ID))
-                {
-                    //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
-                    advtstNot.Add(
-                        team2ID,
-                        new TeamStats
-                            {
-                                ID = team2ID,
-                                Name = MainWindow.TST[team2ID].Name,
-                                DisplayName = MainWindow.TST[team2ID].DisplayName
-                            });
-                    advtstOppNot.Add(
-                        team2ID,
-                        new TeamStats
-                            {
-                                ID = team2ID,
-                                Name = MainWindow.TST[team2ID].Name,
-                                DisplayName = MainWindow.TST[team2ID].DisplayName
-                            });
-                }
-                var ts2 = advtstNot[team2ID];
-                var ts2Opp = advtstOppNot[team2ID];
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
-                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2Opp, ref ts1Opp, true);
-                foreach (var pbs in bse.PBSList)
-                {
-                    if (pbs.IsOut)
-                    {
-                        continue;
-                    }
-
-                    if (advpstNot.All(pair => pair.Key != pbs.PlayerID))
-                    {
-                        advpstNot.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
-                        advpstNot[pbs.PlayerID].ResetStats();
-                    }
-                    advpstNot[pbs.PlayerID].AddBoxScore(pbs, false);
-
-                    var teamID = pbs.TeamID;
-                    if (!advPPtstNot.ContainsKey(pbs.PlayerID))
-                    {
-                        advPPtstNot.Add(
-                            pbs.PlayerID,
-                            new TeamStats
-                                {
-                                    ID = teamID,
-                                    Name = MainWindow.TST[teamID].Name,
-                                    DisplayName = MainWindow.TST[teamID].DisplayName
-                                });
-                    }
-                    if (!advPPtstOppNot.ContainsKey(pbs.PlayerID))
-                    {
-                        advPPtstOppNot.Add(
-                            pbs.PlayerID,
-                            new TeamStats
-                                {
-                                    ID = teamID,
-                                    Name = MainWindow.TST[teamID].Name,
-                                    DisplayName = MainWindow.TST[teamID].DisplayName
-                                });
-                    }
-                    var ts = advPPtstNot[pbs.PlayerID];
-                    var tsopp = advPPtstOppNot[pbs.PlayerID];
-                    if (team1ID == pbs.TeamID)
-                    {
-                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
-                    }
-                    else
-                    {
-                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
-                    }
-                }
+                extractFromBoxScoreEntry(
+                    bse, ref advtstNot, ref advtstOppNot, ref advpstNot, ref advPPtstNot, ref advPPtstOppNot, doPlays);
             }
 
             TeamStats.CalculateAllMetrics(ref advtst, advtstOpp, false);
@@ -1171,6 +1299,174 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             notBsToCalculate.ForEach(bse => bse.BS.PrepareForDisplay(advtstNot));
             dgvBoxScores.ItemsSource = bsToCalculate.Select(bse => bse.BS);
             dgvBoxScoresUnmet.ItemsSource = notBsToCalculate.Select(bse => bse.BS);
+        }
+
+        private void extractFromBoxScoreEntry(
+            BoxScoreEntry bse,
+            ref Dictionary<int, TeamStats> advtst,
+            ref Dictionary<int, TeamStats> advtstOpp,
+            ref Dictionary<int, PlayerStats> advpst,
+            ref Dictionary<int, TeamStats> advPPtst,
+            ref Dictionary<int, TeamStats> advPPtstOpp,
+            bool doPlays)
+        {
+            var team1ID = bse.BS.Team1ID;
+            var team2ID = bse.BS.Team2ID;
+            var bs = bse.BS;
+            if (!advtst.ContainsKey(team1ID))
+            {
+                advtst.Add(
+                    team1ID,
+                    new TeamStats
+                        {
+                            ID = team1ID,
+                            Name = MainWindow.TST[team1ID].Name,
+                            DisplayName = MainWindow.TST[team1ID].DisplayName
+                        });
+                advtstOpp.Add(
+                    team1ID,
+                    new TeamStats
+                        {
+                            ID = team1ID,
+                            Name = MainWindow.TST[team1ID].Name,
+                            DisplayName = MainWindow.TST[team1ID].DisplayName
+                        });
+            }
+            var ts1 = advtst[team1ID];
+            var ts1Opp = advtstOpp[team1ID];
+            if (!advtst.ContainsKey(team2ID))
+            {
+                //advTeamOrder.Add(MainWindow.tst[team2ID].name, advTeamOrder.Any() ? advTeamOrder.Values.Max() + 1 : 0);
+                advtst.Add(
+                    team2ID,
+                    new TeamStats
+                        {
+                            ID = team2ID,
+                            Name = MainWindow.TST[team2ID].Name,
+                            DisplayName = MainWindow.TST[team2ID].DisplayName
+                        });
+                advtstOpp.Add(
+                    team2ID,
+                    new TeamStats
+                        {
+                            ID = team2ID,
+                            Name = MainWindow.TST[team2ID].Name,
+                            DisplayName = MainWindow.TST[team2ID].DisplayName
+                        });
+            }
+            var ts2 = advtst[team2ID];
+            var ts2Opp = advtstOpp[team2ID];
+            if (!doPlays)
+            {
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts1, ref ts2, true);
+                TeamStats.AddTeamStatsFromBoxScore(bs, ref ts2Opp, ref ts1Opp, true);
+            }
+            foreach (var pbs in bse.PBSList)
+            {
+                if (advpst.All(pair => pair.Key != pbs.PlayerID))
+                {
+                    advpst.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
+                    advpst[pbs.PlayerID].ResetStats();
+                }
+                if (!doPlays)
+                {
+                    advpst[pbs.PlayerID].AddBoxScore(pbs, false);
+                }
+
+                var teamID = pbs.TeamID;
+                if (!advPPtst.ContainsKey(pbs.PlayerID))
+                {
+                    advPPtst.Add(
+                        pbs.PlayerID,
+                        new TeamStats
+                            {
+                                ID = teamID,
+                                Name = MainWindow.TST[teamID].Name,
+                                DisplayName = MainWindow.TST[teamID].DisplayName
+                            });
+                }
+                if (!advPPtstOpp.ContainsKey(pbs.PlayerID))
+                {
+                    advPPtstOpp.Add(
+                        pbs.PlayerID,
+                        new TeamStats
+                            {
+                                ID = teamID,
+                                Name = MainWindow.TST[teamID].Name,
+                                DisplayName = MainWindow.TST[teamID].DisplayName
+                            });
+                }
+                if (!doPlays)
+                {
+                    var ts = advPPtst[pbs.PlayerID];
+                    var tsopp = advPPtstOpp[pbs.PlayerID];
+                    if (team1ID == pbs.TeamID)
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
+                    }
+                    else
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
+                    }
+                }
+            }
+
+            if (doPlays)
+            {
+                /*
+                if (cmbPlayer1.SelectedIndex > 0)
+                {
+                    var curPlayer1ID = ((KeyValuePair<int, string>) ((cmbPlayer1).SelectedItem)).Key;
+                    if (advpst.All(pair => pair.Key != curPlayer1ID))
+                    {
+                        advpst.Add(curPlayer1ID, MainWindow.PST[curPlayer1ID].DeepClone());
+                        advpst[curPlayer1ID].ResetStats();
+                    }
+                }
+                if (cmbPlayer2.SelectedIndex > 0)
+                {
+                    var curPlayer2ID = ((KeyValuePair<int, string>) ((cmbPlayer2).SelectedItem)).Key;
+                    if (advpst.All(pair => pair.Key != curPlayer2ID))
+                    {
+                        advpst.Add(curPlayer2ID, MainWindow.PST[curPlayer2ID].DeepClone());
+                        advpst[curPlayer2ID].ResetStats();
+                    }
+                }
+                */
+                var tempbse = bse.Clone();
+
+                // Calculate
+                for (int i = 0; i < tempbse.PBSList.Count; i++)
+                {
+                    var pbs = tempbse.PBSList[i];
+                    if (advpst.ContainsKey(pbs.PlayerID) == false)
+                    {
+                        continue;
+                    }
+                    pbs.CalculateFromPBPEList(tempbse.FilteredPBPEList);
+                    advpst[pbs.PlayerID].AddBoxScore(pbs, false);
+                }
+                var teamBoxScore = tempbse.BS;
+                BoxScoreWindow.CalculateTeamsFromPlayers(
+                    ref teamBoxScore,
+                    tempbse.PBSList.Where(pbs => pbs.TeamID == team1ID).ToList(),
+                    tempbse.PBSList.Where(pbs => pbs.TeamID == team2ID).ToList());
+                TeamStats.AddTeamStatsFromBoxScore(tempbse.BS, ref ts1, ref ts2, true);
+                TeamStats.AddTeamStatsFromBoxScore(tempbse.BS, ref ts2Opp, ref ts1Opp, true);
+                foreach (var pbs in tempbse.PBSList)
+                {
+                    var ts = advPPtst[pbs.PlayerID];
+                    var tsopp = advPPtstOpp[pbs.PlayerID];
+                    if (team1ID == pbs.TeamID)
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref ts, ref tsopp, true);
+                    }
+                    else
+                    {
+                        TeamStats.AddTeamStatsFromBoxScore(bs, ref tsopp, ref ts, true);
+                    }
+                }
+            }
         }
 
         private void highlightAndAddTeams(KeyValuePair<int, TeamStats> pair, ref ObservableCollection<TeamStatsRow> tsrObservable)
@@ -1250,67 +1546,148 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 }
             }
 
+            cmbPosition1Filter.SelectedIndex = 0;
+            cmbPosition2Filter.SelectedIndex = 0;
+            chkIsActive.IsChecked = null;
+            cmbTeamFilter.SelectedIndex = 0;
+
             var lines = File.ReadAllLines(ofd.FileName);
             foreach (var item in lines)
             {
-                var id = Convert.ToInt32(item.Substring(3).Split(')')[0]);
-                var criterion = item.Split(':')[1].Trim().Split(' ');
-                var parameter = criterion[0];
-                var op = criterion[1];
-                string par2;
-                string val;
-                try
+                if (!item.StartsWith("$$"))
                 {
-                    // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-                    Convert.ToDouble(criterion[2]);
-                    // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-                    par2 = "";
-                    val = criterion[2];
-                }
-                catch
-                {
-                    par2 = criterion[2];
-                    val = "";
-                }
-
-                KeyValuePair<Selection, List<Filter>> filter;
-                if (item.Substring(2, 1) == "T")
-                {
+                    var id = Convert.ToInt32(item.Substring(3).Split(')')[0]);
+                    var criterion = item.Split(':')[1].Trim().Split(' ');
+                    var parameter = criterion[0];
+                    var op = criterion[1];
+                    string par2;
+                    string val;
                     try
                     {
-                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        // ReSharper disable ReturnValueOfPureMethodIsNotUsed
+                        Convert.ToDouble(criterion[2]);
+                        // ReSharper restore ReturnValueOfPureMethodIsNotUsed
+                        par2 = "";
+                        val = criterion[2];
                     }
-                    catch (InvalidOperationException)
+                    catch
                     {
-                        _filters.Add(new Selection(SelectionType.Team, id), new List<Filter>());
-                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        par2 = criterion[2];
+                        val = "";
                     }
+
+                    KeyValuePair<Selection, List<Filter>> filter;
+                    if (item.Substring(2, 1) == "T")
+                    {
+                        try
+                        {
+                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            _filters.Add(new Selection(SelectionType.Team, id), new List<Filter>());
+                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Team && f.Key.ID == id);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            _filters.Add(new Selection(SelectionType.Player, id), new List<Filter>());
+                            filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                        }
+                    }
+                    filter.Value.Add(new Filter(parameter, op, par2, val));
                 }
                 else
                 {
-                    try
+                    var realItem = item.Substring(2);
+                    var parts = realItem.Split('$');
+                    var value = parts[1];
+                    switch (parts[0])
                     {
-                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        _filters.Add(new Selection(SelectionType.Player, id), new List<Filter>());
-                        filter = _filters.Single(f => f.Key.SelectionType == SelectionType.Player && f.Key.ID == id);
+                        case "ET":
+                            cmbEventType.SelectedItem = value;
+                            break;
+                        case "ETDesc":
+                            txtEventDesc.Text = value;
+                            break;
+                        case "P1":
+                            try
+                            {
+                                cmbPlayer1.SelectedItem = playersList.Single(p => p.Key == value.ToInt32());
+                            }
+                            catch
+                            {
+                                cmbPlayer1.SelectedIndex = 0;
+                            }
+                            break;
+                        case "P2":
+                            try
+                            {
+                                cmbPlayer2.SelectedItem = playersList.Single(p => p.Key == value.ToInt32());
+                            }
+                            catch
+                            {
+                                cmbPlayer2.SelectedIndex = 0;
+                            }
+                            break;
+                        case "LOC":
+                            cmbLocationShotDistance.SelectedItem = value;
+                            break;
+                        case "LOCDesc":
+                            txtLocationDesc.Text = value;
+                            break;
+                        case "ORIG":
+                            cmbShotOrigin.SelectedItem = value;
+                            break;
+                        case "ST":
+                            cmbShotType.SelectedItem = value;
+                            break;
+                        case "SIM":
+                            chkShotIsMade.IsChecked = value == "Null" ? null : (bool?) Convert.ToBoolean(value);
+                            break;
+                        case "SIA":
+                            chkShotIsMade.IsChecked = value == "Null" ? null : (bool?) Convert.ToBoolean(value);
+                            break;
+                        case "TL":
+                            cmbTimeLeftOp.SelectedItem = value;
+                            txtTimeLeftPar.Text = parts[2];
+                            break;
+                        case "SCL":
+                            cmbShotClockOp.SelectedItem = value;
+                            txtShotClockPar.Text = parts[2];
+                            break;
+                        case "PER":
+                            cmbPeriodOp.SelectedItem = value;
+                            txtPeriodPar.Text = parts[2];
+                            break;
+                        case "POTF":
+                            var players = realItem.Split(new[] { '$' }, 2)[1].Split(
+                                new[] { '$' }, StringSplitOptions.RemoveEmptyEntries);
+                            PlayersOnTheFloor.Clear();
+                            foreach (var player in players)
+                            {
+                                PlayersOnTheFloor.Add(player.ToInt32());
+                            }
+                            break;
+                        case "UsePBP":
+                            chkUsePBP.IsChecked = Convert.ToBoolean(value);
+                            break;
                     }
                 }
-                filter.Value.Add(new Filter(parameter, op, par2, val));
             }
 
             populateTotalsList();
+            updatePOTFToolTip();
         }
 
         private void btnSaveFilters_Click(object sender, RoutedEventArgs e)
         {
-            if (lstTotals.Items.Count == 0)
-            {
-                return;
-            }
-
             var sfd = new SaveFileDialog
                 {
                     InitialDirectory = Path.GetFullPath(_folder),
@@ -1328,7 +1705,29 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
 
             try
             {
-                File.WriteAllLines(sfd.FileName, lstTotals.Items.Cast<string>().ToArray());
+                var list = lstTotals.Items.Cast<string>().ToList();
+                list.Add("$$ET$" + cmbEventType.SelectedItem);
+                list.Add("$$ETDesc$" + txtEventDesc.Text);
+                if (cmbPlayer1.SelectedIndex != -1)
+                {
+                    list.Add("$$P1$" + ((KeyValuePair<int, string>) (cmbPlayer1.SelectedItem)).Key);
+                }
+                if (cmbPlayer2.SelectedIndex != -1)
+                {
+                    list.Add("$$P2$" + ((KeyValuePair<int, string>) (cmbPlayer2.SelectedItem)).Key);
+                }
+                list.Add("$$LOC$" + cmbLocationShotDistance.SelectedItem);
+                list.Add("$$LOCDesc$" + txtLocationDesc.Text);
+                list.Add("$$ORIG$" + cmbShotOrigin.SelectedItem);
+                list.Add("$$ST$" + cmbShotType.SelectedItem);
+                list.Add("$$SIM$" + (chkShotIsMade.IsChecked.HasValue ? chkShotIsMade.IsChecked.ToString() : "Null"));
+                list.Add("$$SIA$" + (chkShotIsAssisted.IsChecked.HasValue ? chkShotIsAssisted.IsChecked.ToString() : "Null"));
+                list.Add("$$TL$" + cmbTimeLeftOp.SelectedItem + "$" + txtTimeLeftPar.Value);
+                list.Add("$$SCL$" + cmbShotClockOp.SelectedItem + "$" + txtShotClockPar.Value);
+                list.Add("$$PER$" + cmbPeriodOp.SelectedItem + "$" + txtPeriodPar.Value);
+                list.Add(PlayersOnTheFloor.Aggregate("$$POTF$", (current, pid) => current + (pid + "$")));
+                list.Add("$$UsePBP$" + (chkUsePBP.IsChecked == true));
+                File.WriteAllLines(sfd.FileName, list);
             }
             catch (Exception ex)
             {
@@ -1397,5 +1796,127 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
         };
 
         #endregion
+
+        private void cmbEventType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbEventType.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            int curEventKey;
+            if (cmbEventType.SelectedIndex == 0)
+            {
+                curEventKey = -2;
+            }
+            else
+            {
+                curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+            }
+
+            txtEventDesc.IsEnabled = cmbEventType.SelectedItem.ToString() == "Other";
+
+            grdShotEvent.IsEnabled = curEventKey == 1;
+            txbLocationLabel.Text = curEventKey == 1 ? "Shot Distance" : "Location";
+            txtLocationDesc.IsEnabled = false;
+            var shotDistances = ShotEntry.ShotDistances.Values.ToList();
+            shotDistances.Insert(0, "Any");
+
+            var eventLocations = PlayByPlayEntry.EventLocations.Values.ToList();
+            eventLocations.Insert(0, "Any");
+
+            cmbLocationShotDistance.ItemsSource = curEventKey == 1 ? shotDistances : eventLocations;
+            cmbLocationShotDistance.SelectedIndex = 0;
+            if (curEventKey == 3 || curEventKey == 4)
+            {
+                cmbLocationShotDistance.IsEnabled = false;
+            }
+            else
+            {
+                cmbLocationShotDistance.IsEnabled = true;
+            }
+
+            try
+            {
+                var definition = PlayByPlayEntry.Player2Definition[curEventKey];
+                txbPlayer2Label.Text = definition;
+                cmbPlayer2.IsEnabled = true;
+            }
+            catch (KeyNotFoundException)
+            {
+                txbPlayer2Label.Text = "Not Applicable";
+                cmbPlayer2.IsEnabled = false;
+            }
+        }
+
+        private void cmbLocationShotDistance_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbLocationShotDistance.SelectedIndex <= 0)
+            {
+                txtLocationDesc.IsEnabled = false;
+                return;
+            }
+
+            var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+            if (curEventKey != 1 && cmbLocationShotDistance.SelectedIndex != -1)
+            {
+                var curDistanceKey =
+                    PlayByPlayEntry.EventLocations.Single(pair => pair.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
+                txtLocationDesc.IsEnabled = (curDistanceKey == -1 && curEventKey != 3 && curEventKey != 4);
+            }
+            else
+            {
+                txtLocationDesc.IsEnabled = false;
+            }
+        }
+
+        private void btnHidePBP_Click(object sender, RoutedEventArgs e)
+        {
+            if (gdrPlayByPlay.Height.Value > 0)
+            {
+                gdrPlayByPlay.Height = new GridLength(0);
+                Height -= _defaultPBPHeight;
+                btnHidePBP.Content = "Show Play-By-Play Panel";
+            }
+            else
+            {
+                Height += _defaultPBPHeight;
+                gdrPlayByPlay.Height = new GridLength(_defaultPBPHeight);
+                btnHidePBP.Content = "Hide Play-By-Play Panel";
+            }
+        }
+
+        private void chkUsePBP_Click(object sender, RoutedEventArgs e)
+        {
+            grdPBP1.IsEnabled = stpPBP2.IsEnabled = chkUsePBP.IsChecked == true;
+        }
+
+        private void btnSetPBPPlayers_Click(object sender, RoutedEventArgs e)
+        {
+            var ascsp = new ASCSelectPlayers(playersList, PlayersOnTheFloor);
+            ascsp.ShowDialog();
+
+            updatePOTFToolTip();
+        }
+
+        private void updatePOTFToolTip()
+        {
+            var tt = new ToolTip();
+            string text = "";
+            foreach (var id in PlayersOnTheFloor)
+            {
+                string info = MainWindow.PST[id].FullName + " (";
+                var p1s = MainWindow.PST[id].Position1S;
+                if (!String.IsNullOrWhiteSpace(p1s))
+                {
+                    info += p1s + " - ";
+                }
+                info += MainWindow.TST[MainWindow.PST[id].TeamF].DisplayName + ")";
+                text += info + "\n";
+            }
+            text = text.TrimEnd(new char[] { '\n' });
+            tt.Content = text;
+            btnSetPBPPlayers.ToolTip = tt;
+        }
     }
 }

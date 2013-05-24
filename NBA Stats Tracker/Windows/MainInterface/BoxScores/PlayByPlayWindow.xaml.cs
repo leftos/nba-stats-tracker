@@ -228,7 +228,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             txbTimeLeftDec.Text = pair.Value;
         }
 
-        private double convertTimeStringToDouble(string s)
+        public static double ConvertTimeStringToDouble(string s)
         {
             var parts = s.Split('.');
             double decPart = 0;
@@ -315,7 +315,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             double timeLeft = _timeLeft;
             try
             {
-                timeLeft = convertTimeStringToDouble(InputBoxWindow.UserInput);
+                timeLeft = ConvertTimeStringToDouble(InputBoxWindow.UserInput);
             }
             catch
             {
@@ -339,7 +339,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             double shotClock = _shotClock;
             try
             {
-                shotClock = convertTimeStringToDouble(InputBoxWindow.UserInput);
+                shotClock = ConvertTimeStringToDouble(InputBoxWindow.UserInput);
             }
             catch
             {

@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         xmlns:boxScores="clr-namespace:NBA_Stats_Tracker.Data.BoxScores"
-        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" mc:Ignorable="d"
-        Title="Advanced Stats Calculator" Height="535" Width="892" Loaded="window_Loaded"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Advanced Stats Calculator" MinHeight="535" Height="600" MinWidth="920" Width="920" Loaded="window_Loaded"
         WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Window.Resources>
 
@@ -14,109 +16,243 @@
     <TabControl x:Name="tbcAdv">
         <TabItem Header="Search">
             <Grid>
-                <GroupBox Header="Step 1: Filter Players By" HorizontalAlignment="Left" Margin="10,10,0,0"
-                          VerticalAlignment="Top" Height="166" Width="256">
-                    <Grid>
-                        <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="10,41,0,0"
-                                  x:Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"
-                                  Click="chkIsActive_Click" />
-                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="64,11,0,0" x:Name="cmbPosition1Filter"
-                                  VerticalAlignment="Top" Width="50"
-                                  SelectionChanged="cmbPosition1Filter_SelectionChanged" />
-                        <Label Content="Position" HorizontalAlignment="Left" Margin="6,10,0,0" x:Name="label5"
-                               VerticalAlignment="Top" />
-                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="179,10,0,0"
-                                  x:Name="cmbPosition2Filter"
-                                  VerticalAlignment="Top" Width="50"
-                                  SelectionChanged="cmbPosition2Filter_SelectionChanged" />
-                        <Label Content="2nd Pos" HorizontalAlignment="Left" Margin="122,10,0,0" x:Name="label6"
-                               VerticalAlignment="Top" />
-                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,37,0,0" x:Name="cmbTeamFilter"
-                                  VerticalAlignment="Top" Width="153" SelectionChanged="cmbTeamFilter_SelectionChanged" />
-                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="135,66,0,0" x:Name="cmbSeasonNum"
-                                  VerticalAlignment="Top" Width="94" DisplayMemberPath="Value"
-                                  SelectedValuePath="Key" SelectionChanged="cmbSeasonNum_SelectionChanged" />
-                        <Label Content="Season" HorizontalAlignment="Left" Margin="84,66,0,0" x:Name="label17"
-                               VerticalAlignment="Top" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="180" />
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="160" Name="gdrPlayByPlay" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="266"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="351"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Step 1: Filter Players By" Margin="10,10,5,5" Grid.Column="0">
+                        <Grid>
+                            <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="10,41,0,0"
+                                      x:Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True"
+                                      IsChecked="{x:Null}"
+                                      Click="chkIsActive_Click" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="64,11,0,0"
+                                      x:Name="cmbPosition1Filter"
+                                      VerticalAlignment="Top" Width="50"
+                                      SelectionChanged="cmbPosition1Filter_SelectionChanged" />
+                            <Label Content="Position" HorizontalAlignment="Left" Margin="6,10,0,0" x:Name="label5"
+                                   VerticalAlignment="Top" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="179,10,0,0"
+                                      x:Name="cmbPosition2Filter"
+                                      VerticalAlignment="Top" Width="50"
+                                      SelectionChanged="cmbPosition2Filter_SelectionChanged" />
+                            <Label Content="2nd Pos" HorizontalAlignment="Left" Margin="122,10,0,0" x:Name="label6"
+                                   VerticalAlignment="Top" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="76,37,0,0" x:Name="cmbTeamFilter"
+                                      VerticalAlignment="Top" Width="153"
+                                      SelectionChanged="cmbTeamFilter_SelectionChanged" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="135,66,0,0" x:Name="cmbSeasonNum"
+                                      VerticalAlignment="Top" Width="94" DisplayMemberPath="Value"
+                                      SelectedValuePath="Key" SelectionChanged="cmbSeasonNum_SelectionChanged" />
+                            <Label Content="Season" HorizontalAlignment="Left" Margin="84,66,0,0" x:Name="label17"
+                                   VerticalAlignment="Top" />
 
-                    </Grid>
-                </GroupBox>
-                <GroupBox Header="Step 2: Select Player or Team" Margin="271,10,362,0" VerticalAlignment="Top"
-                          Height="166">
-                    <Grid>
-                        <ComboBox x:Name="cmbSelectedPlayer" Margin="10,10,10,0" VerticalAlignment="Top"
-                                  DisplayMemberPath="Value" SelectedValuePath="Key" ItemsSource="{Binding PlayersList}"
-                                  SelectionChanged="cmbSelectedPlayer_SelectionChanged" />
-                        <Label Content="or" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" />
-                        <ComboBox x:Name="cmbSelectedTeam" Margin="10,68,10,0" VerticalAlignment="Top"
-                                  SelectionChanged="cmbSelectedTeam_SelectionChanged" />
-                    </Grid>
-                </GroupBox>
-                <GroupBox Header="Step 3: Set Timespan" HorizontalAlignment="Right" Margin="0,10,11,0"
-                          VerticalAlignment="Top" Height="166" Width="346">
-                    <Grid>
-                        <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left"
-                                     Margin="10,14,0,0"
-                                     x:Name="rbStatsAllTime" VerticalAlignment="Top" Checked="rbStatsAllTime_Checked" />
-                        <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="10,36,0,0"
-                                     x:Name="rbStatsBetween" VerticalAlignment="Top" Checked="rbStatsBetween_Checked" />
-                        <DatePicker Height="25" HorizontalAlignment="Left" Margin="27,58,0,0" x:Name="dtpStart"
-                                    VerticalAlignment="Top" Width="115"
-                                    SelectedDateChanged="dtpStart_SelectedDateChanged" />
-                        <DatePicker Height="25" HorizontalAlignment="Left" Margin="177,58,-73,0" x:Name="dtpEnd"
-                                    VerticalAlignment="Top" Width="115"
-                                    SelectedDateChanged="dtpEnd_SelectedDateChanged" />
-                        <Label Content="and" HorizontalAlignment="Left" Margin="143,60,0,0" x:Name="label2"
-                               VerticalAlignment="Top" />
-                        <TextBlock Height="31" HorizontalAlignment="Left" Margin="10,98,-95,-31" x:Name="textBlock1"
-                                   Text="* Availability of stats depends on whether there are box-scores saved for the selected timeframe."
-                                   VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
-                        <ComboBox Height="23" HorizontalAlignment="Left" Margin="125,10,0,0" x:Name="cmbTFSeason"
-                                  VerticalAlignment="Top" Width="167" DisplayMemberPath="Value"
-                                  SelectedValuePath="Key" SelectionChanged="cmbTFSeason_SelectionChanged" />
-                    </Grid>
-                </GroupBox>
-                <GroupBox Header="Step 4: Set Stats Filters" HorizontalAlignment="Left" Margin="10,181,0,40"
-                          Width="830">
-                    <Grid>
-                        <ComboBox Height="22" HorizontalAlignment="Left" Margin="56,10,0,0" x:Name="cmbTotalsPar"
-                                  VerticalAlignment="Top" Width="83" />
-                        <ComboBox Height="22" HorizontalAlignment="Left" Margin="144,10,0,0" x:Name="cmbTotalsOp"
-                                  VerticalAlignment="Top" Width="41" />
-                        <TextBox Height="22" HorizontalAlignment="Left" Margin="278,10,0,0" x:Name="txtTotalsVal"
-                                 VerticalAlignment="Top" Width="66" />
-                        <Button Content="Add" Height="22" Margin="0,10,90,0" x:Name="btnTotalsAdd"
-                                VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
-                                Click="btnTotalsAdd_Click" />
-                        <Button Content="Remove" Height="22" Margin="0,10,10,0" x:Name="btnTotalsDel"
-                                VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
-                                Click="btnTotalsDel_Click" />
-                        <ListBox HorizontalAlignment="Stretch" Margin="10,39,10,10" x:Name="lstTotals"
-                                 VerticalAlignment="Stretch" SelectionMode="Extended" />
-                        <Label Content="Stat" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" />
-                        <CheckBox x:Name="chkIsStarter" Content="Starter" HorizontalAlignment="Left"
-                                  Margin="365,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
-                        <CheckBox x:Name="chkIsInjured" Content="Injured" HorizontalAlignment="Left"
-                                  Margin="422,13,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
-                        <CheckBox x:Name="chkIsOut" Content="DNP" HorizontalAlignment="Left" Margin="481,13,0,0"
-                                  VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
-                        <ComboBox Height="22" HorizontalAlignment="Left" Margin="190,10,0,0" x:Name="cmbTotalsPar2"
-                                  VerticalAlignment="Top" Width="83" SelectionChanged="cmbTotalsPar2_SelectionChanged" />
-                    </Grid>
-                </GroupBox>
-                <Button x:Name="btnSearch" Content="Search" Margin="0,0,171,10" VerticalAlignment="Bottom"
-                        HorizontalAlignment="Right" Width="75" Click="btnSearch_Click" />
-                <Button x:Name="btnClose" Content="Close" Margin="0,0,11,10" VerticalAlignment="Bottom"
-                        HorizontalAlignment="Right" Width="75" Click="btnClose_Click" />
-                <Button x:Name="btnShowAll" Content="Show All" HorizontalAlignment="Right" Margin="0,0,91,10"
-                        VerticalAlignment="Bottom" Width="75" Click="btnShowAll_Click" />
-                <Button Content="Load Filters" HorizontalAlignment="Left" Margin="10,0,0,10"
-                        x:Name="btnLoadFilters" VerticalAlignment="Bottom" Width="75"
-                        Click="btnLoadFilters_Click" />
-                <Button Content="Save Filters" HorizontalAlignment="Left"
-                        Margin="91,0,0,10" x:Name="btnSaveFilters" VerticalAlignment="Bottom" Width="75"
-                        Click="btnSaveFilters_Click" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Step 2: Select Player or Team" Margin="5,10,5,5" Grid.Column="1">
+                        <Grid>
+                            <ComboBox x:Name="cmbSelectedPlayer" Margin="10,10,10,0" VerticalAlignment="Top"
+                                      DisplayMemberPath="Value" SelectedValuePath="Key"
+                                      ItemsSource="{Binding PlayersList}"
+                                      SelectionChanged="cmbSelectedPlayer_SelectionChanged" />
+                            <Label Content="or" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" />
+                            <ComboBox x:Name="cmbSelectedTeam" Margin="10,68,10,0" VerticalAlignment="Top"
+                                      SelectionChanged="cmbSelectedTeam_SelectionChanged" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Step 3: Set Timespan" Margin="5,10,10,5" Grid.Column="2">
+                        <Grid>
+                            <RadioButton Content="All-Time - Season " Height="16" HorizontalAlignment="Left"
+                                         Margin="10,14,0,0"
+                                         x:Name="rbStatsAllTime" VerticalAlignment="Top"
+                                         Checked="rbStatsAllTime_Checked" />
+                            <RadioButton Content="Between*" Height="16" HorizontalAlignment="Left" Margin="10,36,0,0"
+                                         x:Name="rbStatsBetween" VerticalAlignment="Top"
+                                         Checked="rbStatsBetween_Checked" />
+                            <DatePicker Height="25" HorizontalAlignment="Left" Margin="27,58,0,0" x:Name="dtpStart"
+                                        VerticalAlignment="Top" Width="115"
+                                        SelectedDateChanged="dtpStart_SelectedDateChanged" />
+                            <DatePicker Height="25" HorizontalAlignment="Left" Margin="177,58,-73,0" x:Name="dtpEnd"
+                                        VerticalAlignment="Top" Width="115"
+                                        SelectedDateChanged="dtpEnd_SelectedDateChanged" />
+                            <Label Content="and" HorizontalAlignment="Left" Margin="143,60,0,0" x:Name="label2"
+                                   VerticalAlignment="Top" />
+                            <TextBlock Height="31" HorizontalAlignment="Left" Margin="10,98,-95,-31"
+                                       x:Name="textBlock1"
+                                       Text="* Availability of stats depends on whether there are box-scores saved for the selected timeframe."
+                                       VerticalAlignment="Top" TextWrapping="Wrap" Width="304" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="125,10,0,0" x:Name="cmbTFSeason"
+                                      VerticalAlignment="Top" Width="167" DisplayMemberPath="Value"
+                                      SelectedValuePath="Key" SelectionChanged="cmbTFSeason_SelectionChanged" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <GroupBox Header="Step 4: Set Stats Filters" Margin="10,5">
+                        <Grid>
+                            <ComboBox Height="22" HorizontalAlignment="Left" Margin="56,10,0,0" x:Name="cmbTotalsPar"
+                                      VerticalAlignment="Top" Width="83" />
+                            <ComboBox Height="22" HorizontalAlignment="Left" Margin="144,10,0,0" x:Name="cmbTotalsOp"
+                                      VerticalAlignment="Top" Width="41" />
+                            <TextBox Height="22" HorizontalAlignment="Left" Margin="278,10,0,0" x:Name="txtTotalsVal"
+                                     VerticalAlignment="Top" Width="66" />
+                            <Button Content="Add" Height="22" Margin="0,10,90,0" x:Name="btnTotalsAdd"
+                                    VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
+                                    Click="btnTotalsAdd_Click" />
+                            <Button Content="Remove" Height="22" Margin="0,10,10,0" x:Name="btnTotalsDel"
+                                    VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"
+                                    Click="btnTotalsDel_Click" />
+                            <ListBox HorizontalAlignment="Stretch" Margin="10,39,10,10" x:Name="lstTotals"
+                                     VerticalAlignment="Stretch" SelectionMode="Extended" />
+                            <Label Content="Stat" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" />
+                            <CheckBox x:Name="chkIsStarter" Content="Starter" HorizontalAlignment="Left"
+                                      Margin="365,13,0,0" VerticalAlignment="Top" IsThreeState="True"
+                                      IsChecked="{x:Null}" />
+                            <CheckBox x:Name="chkIsInjured" Content="Injured" HorizontalAlignment="Left"
+                                      Margin="422,13,0,0" VerticalAlignment="Top" IsThreeState="True"
+                                      IsChecked="{x:Null}" />
+                            <CheckBox x:Name="chkIsOut" Content="DNP" HorizontalAlignment="Left" Margin="481,13,0,0"
+                                      VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}" />
+                            <ComboBox Height="22" HorizontalAlignment="Left" Margin="190,10,0,0" x:Name="cmbTotalsPar2"
+                                      VerticalAlignment="Top" Width="83"
+                                      SelectionChanged="cmbTotalsPar2_SelectionChanged" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <Grid Grid.Row="2" Margin="10,5">
+                    <GroupBox Header="Step 5: Set Play-By-Play Filters">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="83"/>
+                                <RowDefinition Height="35"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Name="grdPBP1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="2.5*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Margin="10,5,5,5">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="Event" />
+                                        <Rectangle Height="5" />
+                                        <ComboBox x:Name="cmbEventType" SelectionChanged="cmbEventType_SelectionChanged" />
+                                        <Rectangle Height="5" />
+                                        <TextBox x:Name="txtEventDesc" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="1" Margin="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="Player" />
+                                        <Rectangle Height="5" />
+                                        <ComboBox x:Name="cmbPlayer1" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="2" Margin="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock x:Name="txbPlayer2Label" Text="Player 2" />
+                                        <Rectangle Height="5" />
+                                        <ComboBox x:Name="cmbPlayer2" DisplayMemberPath="Value" SelectedValuePath="Key"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="3" Margin="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock x:Name="txbLocationLabel" Text="Location/Shot Dist." />
+                                        <Rectangle Height="5" />
+                                        <ComboBox x:Name="cmbLocationShotDistance"
+                        					SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
+                                        <Rectangle Height="5" />
+                                        <TextBox x:Name="txtLocationDesc" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="4" Margin="5" x:Name="grdShotEvent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="80"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" Margin="0,0,5,0">
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="Shot Origin" />
+                                            <Rectangle Height="5" />
+                                            <ComboBox x:Name="cmbShotOrigin" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid Grid.Column="1" Margin="5,0">
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="Shot Type" />
+                                            <Rectangle Height="5" />
+                                            <ComboBox x:Name="cmbShotType" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid Grid.Column="2" Margin="5,0,0,0">
+                                        <StackPanel Orientation="Vertical">
+                                            <Rectangle Height="5" />
+                                            <CheckBox x:Name="chkShotIsMade" Content="Made" IsThreeState="True" />
+                                            <Rectangle Height="5" />
+                                            <CheckBox x:Name="chkShotIsAssisted" Content="Assisted" IsThreeState="True" />
+                                            <Rectangle Height="10" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
 
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <StackPanel Name="stpPBP2" Orientation="Horizontal" Margin="10,5" Height="22">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
+                                        <TextBlock Text="Time Left" Margin="5,2"/>
+                                        <ComboBox x:Name="cmbTimeLeftOp" Margin="5,0" Width="45"/>
+                                        <xctk:MaskedTextBox x:Name="txtTimeLeftPar" Width="50" Mask="00:00.0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                                        <TextBlock Text="Shot Clock" Margin="5,2"/>
+                                        <ComboBox x:Name="cmbShotClockOp" Margin="5,0" Width="45"/>
+                                        <xctk:MaskedTextBox x:Name="txtShotClockPar" Width="50" Mask="00.0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                                        <TextBlock Text="Period" Margin="5,2"/>
+                                        <ComboBox x:Name="cmbPeriodOp" Margin="5,0" Width="45"/>
+                                        <xctk:MaskedTextBox x:Name="txtPeriodPar" Width="30" Mask="0" ValueDataType="{x:Type s:String}" IncludeLiteralsInValue="True"/>
+                                    </StackPanel>
+                                    <Button x:Name="btnSetPBPPlayers" Content="Set Players On The Floor" Width="158" Click="btnSetPBPPlayers_Click"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5" Height="22">
+                                    <CheckBox Name="chkUsePBP" Content="Calculate only matching events" VerticalAlignment="Center" Click="chkUsePBP_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <Grid Grid.Row="3">
+                    <Button x:Name="btnSearch" Content="Search" Margin="0,5,171,10" VerticalAlignment="Stretch"
+                            HorizontalAlignment="Right" Width="75" Click="btnSearch_Click" />
+                    <Button x:Name="btnClose" Content="Close" Margin="0,5,11,10"
+                            HorizontalAlignment="Right" Width="75" Click="btnClose_Click" />
+                    <Button x:Name="btnShowAll" Content="Show All" HorizontalAlignment="Right" Margin="0,5,91,10"
+                            Width="75" Click="btnShowAll_Click" />
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <Button Content="Load Filters" HorizontalAlignment="Left" Margin="10,5,0,10"
+                            x:Name="btnLoadFilters" Width="75"
+                            Click="btnLoadFilters_Click" />
+                        <Button Content="Save Filters" HorizontalAlignment="Left"
+                            Margin="10,5,0,10" x:Name="btnSaveFilters" Width="75"
+                            Click="btnSaveFilters_Click" />
+                        <Rectangle Width="10"></Rectangle>
+                        <Button Content="Hide Play-By-Play Panel" HorizontalAlignment="Left"
+                            Margin="10,5,0,10" x:Name="btnHidePBP" 
+                            Width="144" Click="btnHidePBP_Click" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </TabItem>
         <TabItem Header="Player Stats" x:Name="tabPlayerStats">
@@ -519,6 +655,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
+        
         <TabItem Header="Team Stats" x:Name="tabTeamStats">
             <Grid>
                 <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
