@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.14.0.1
+		- Fix: Fixed crashes when using the Starter/Injured/Out filters in Advanced Stats Calculator
+		- Fix: Advanced Stats Calculator would allow you to set a filter with no comparison value for players
+
 	v1.14
 		- Addition: Added partial stats calculation based on play-by-play events in Advanced Stats Calculator
 		- Fix: Advanced Stats Calculator in some cases when searching after a team filter had been applied
