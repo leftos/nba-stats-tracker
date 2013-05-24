@@ -9,11 +9,13 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBox Grid.Row="0" Name="txtQuery" Margin="10,10,10,5"
-                 Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=Query, UpdateSourceTrigger=PropertyChanged}" />
-        <ListBox Grid.Row="1" Name="lstResults" Margin="10,5,10,10" PreviewKeyDown="lstResults_PreviewKeyDown" GotKeyboardFocus="lstResults_GotKeyboardFocus">
+                 Text="{Binding ElementName=window, Mode=TwoWay, ValidatesOnExceptions=True, Path=Query, UpdateSourceTrigger=PropertyChanged}"
+                 PreviewKeyDown="txtQuery_PreviewKeyDown" />
+        <ListBox Grid.Row="1" Name="lstResults" Margin="10,5,10,10" PreviewKeyDown="lstResults_PreviewKeyDown"
+                 GotKeyboardFocus="lstResults_GotKeyboardFocus">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <EventSetter Event="MouseDoubleClick" Handler="result_MouseDoubleClick"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="result_MouseDoubleClick" />
                 </Style>
             </ListBox.ItemContainerStyle>
 

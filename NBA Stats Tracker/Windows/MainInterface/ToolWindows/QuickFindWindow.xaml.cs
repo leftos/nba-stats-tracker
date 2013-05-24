@@ -24,7 +24,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
     /// Interaction logic for QuickFindWindow.xaml
     /// </summary>
     public partial class QuickFindWindow : Window, INotifyPropertyChanged
-    {  
+    {
         public QuickFindWindow()
         {
             InitializeComponent();
@@ -47,7 +47,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                     lstResults.ItemsSource = null;
                     return;
                 }
-                lstResults.ItemsSource = MainWindow.SearchCache.Where(item => item.Description.ToLowerInvariant().Contains(_query.ToLowerInvariant())).ToList();
+                lstResults.ItemsSource =
+                    MainWindow.SearchCache.Where(item => item.Description.ToLowerInvariant().Contains(_query.ToLowerInvariant()))
+                              .ToList();
             }
         }
 
@@ -124,6 +126,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             if (lbi != null)
             {
                 lbi.Focus();
+            }
+        }
+
+        private void txtQuery_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                if (lstResults.SelectedIndex == -1)
+                {
+                    lstResults.SelectedIndex = 0;
+                }
+                selectAndClose();
             }
         }
     }
