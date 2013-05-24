@@ -29,6 +29,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Teams;
 
+    [Serializable]
     public class PlayByPlayEntry : INotifyPropertyChanged
     {
         public uint ID
@@ -339,6 +340,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 
         public static readonly Dictionary<int, string> Player2Definition = new Dictionary<int, string>
             {
+                { -2, "2nd Player" },
                 { -1, "2nd Player" },
                 { 0, "2nd Player" },
                 { 1, "Shot Defender" },

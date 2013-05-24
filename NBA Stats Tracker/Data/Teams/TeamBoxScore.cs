@@ -33,6 +33,7 @@ namespace NBA_Stats_Tracker.Data.Teams
     #endregion
 
     /// <summary>Contains all the information for the teams' performances in a game.</summary>
+    [Serializable]
     public class TeamBoxScore
     {
         /// <summary>

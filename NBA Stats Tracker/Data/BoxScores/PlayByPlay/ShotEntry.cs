@@ -18,6 +18,7 @@
 
 namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Data;
@@ -26,6 +27,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 
     using NBA_Stats_Tracker.Annotations;
 
+    [Serializable]
     public class ShotEntry : INotifyPropertyChanged
     {
         public int Distance
