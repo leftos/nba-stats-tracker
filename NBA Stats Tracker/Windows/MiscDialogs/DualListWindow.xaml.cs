@@ -76,6 +76,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private bool _changed = true;
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, PlayerStats> _pst;
+        private Dictionary<int, List<int>> _rosters;
 
         private DualListWindow()
         {
@@ -105,6 +106,10 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                           .OrderBy(ts => ts.DisplayName)
                           .Select(ts => new KeyValuePair<int, string>(ts.ID, ts.DisplayName))
                           .ToList();
+
+            _rosters = teamsList.ToDictionary(
+                team => team.Key, team => MainWindow.PST.Where(ps => ps.Value.TeamF == team.Key).Select(ps => ps.Key).ToList());
+
             cmbTeam1.ItemsSource = cmbTeam2.ItemsSource = teamsList;
             cmbTeam1.SelectedValuePath = cmbTeam2.SelectedValuePath = "Key";
             cmbTeam1.DisplayMemberPath = cmbTeam2.DisplayMemberPath = "Value";
@@ -116,8 +121,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             cmbTeam1.SelectedValue = team1;
             cmbTeam2.SelectedValue = team2;
 
-            txbDescription.Text = "Trade players between any two teams. If you switch teams after making any trades but before "
-                                  + "pressing OK, the trades will be lost. To save any trades between two teams, you must click OK.";
+            txbDescription.Text = "Trade players between any teams";
         }
 
         /// <summary>
@@ -310,6 +314,13 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 {
                     _shownPlayers.Add(item);
                     _hiddenPlayers.Remove(item);
+                    if (_mode == Mode.TradePlayers)
+                    {
+                        var teamID1 = ((KeyValuePair<int, string>)cmbTeam1.SelectedItem).Key;
+                        var teamID2 = ((KeyValuePair<int, string>)cmbTeam2.SelectedItem).Key;
+                        _rosters[teamID1].Add(item.Key);
+                        _rosters[teamID2].Remove(item.Key);
+                    }
                 }
                 _shownPlayers.Sort(ListExtensions.KVPStringComparison);
             }
@@ -346,6 +357,13 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 {
                     _hiddenPlayers.Add(item);
                     _shownPlayers.Remove(item);
+                    if (_mode == Mode.TradePlayers)
+                    {
+                        var teamID1 = ((KeyValuePair<int, string>)cmbTeam1.SelectedItem).Key;
+                        var teamID2 = ((KeyValuePair<int, string>)cmbTeam2.SelectedItem).Key;
+                        _rosters[teamID2].Add(item.Key);
+                        _rosters[teamID1].Remove(item.Key);
+                    }
                 }
                 _hiddenPlayers.Sort(ListExtensions.KVPStringComparison);
             }
@@ -517,32 +535,21 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
             else if (_mode == Mode.TradePlayers)
             {
-                foreach (var player in _shownPlayers)
+                foreach (var pair in _rosters)
                 {
-                    var newTeam = (int) cmbTeam1.SelectedValue;
-                    var oldTeam = MainWindow.PST[player.Key].TeamF;
-                    var oldTeamS = MainWindow.PST[player.Key].TeamS;
-                    if (newTeam != oldTeam)
+                    var newTeam = pair.Key;
+                    foreach (var pID in pair.Value)
                     {
-                        if (oldTeamS == -1)
+                        var oldTeam = MainWindow.PST[pID].TeamF;
+                        var oldTeamS = MainWindow.PST[pID].TeamS;
+                        if (newTeam != oldTeam)
                         {
-                            MainWindow.PST[player.Key].TeamS = MainWindow.PST[player.Key].TeamF;
+                            if (oldTeamS == -1)
+                            {
+                                MainWindow.PST[pID].TeamS = MainWindow.PST[pID].TeamF;
+                            }
+                            MainWindow.PST[pID].TeamF = newTeam;
                         }
-                        MainWindow.PST[player.Key].TeamF = newTeam;
-                    }
-                }
-                foreach (var player in _hiddenPlayers)
-                {
-                    var newTeam = (int) cmbTeam2.SelectedValue;
-                    var oldTeam = MainWindow.PST[player.Key].TeamF;
-                    var oldTeamS = MainWindow.PST[player.Key].TeamS;
-                    if (newTeam != oldTeam)
-                    {
-                        if (oldTeamS == -1)
-                        {
-                            MainWindow.PST[player.Key].TeamS = MainWindow.PST[player.Key].TeamF;
-                        }
-                        MainWindow.PST[player.Key].TeamF = newTeam;
                     }
                 }
 
@@ -661,7 +668,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 var id = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
                 var players =
-                    _pst.Where(ps => ps.Value.TeamF == id)
+                    _pst.Where(ps => _rosters[id].Contains(ps.Key))
                         .OrderBy(ps => ps.Value.FullName)
                         .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
                         .ToList();
@@ -673,7 +680,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 var id = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
                 var players =
-                    _pst.Where(ps => ps.Value.TeamF == id)
+                    _pst.Where(ps => _rosters[id].Contains(ps.Key))
                         .OrderBy(ps => ps.Value.FullName)
                         .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
                         .ToList();
