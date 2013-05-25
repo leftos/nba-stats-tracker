@@ -1759,7 +1759,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
+        public void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
             StartProgressWatchTimer();

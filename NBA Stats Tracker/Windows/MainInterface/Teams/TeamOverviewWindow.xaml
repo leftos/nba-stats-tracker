@@ -45,11 +45,15 @@
                 </TabItem>
                 <TabItem Header="Roster" Name="tabTeamRoster" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                     <Grid VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="35" />
+                        </Grid.RowDefinitions>
                         <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"
                                   Name="dgvTeamRoster" VerticalAlignment="Stretch"
                                   MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
                                   FrozenColumnCount="2" Style="{StaticResource DataGridStyle}"
-                                  Sorting="statColumn_Sorting">
+                                  Sorting="statColumn_Sorting" Grid.Row="0">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
@@ -75,6 +79,9 @@
                                 <DataGridTextColumn Binding="{Binding ContractY7, StringFormat=C0}" Header="Year 7" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        <StackPanel Grid.Row="1" Margin="10,5" HorizontalAlignment="Right">
+                            <Button Name="btnTrade" Content="Trade Players" Width="115" Click="btnTrade_Click" />
+                        </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Player Stats" Name="tabPlayerStats">

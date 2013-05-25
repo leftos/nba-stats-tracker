@@ -3106,5 +3106,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             Clipboard.SetText(all);
         }
+
+        private void btnTrade_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new DualListWindow(MainWindow.TST, MainWindow.PST, _curTeam, _curTeam == 0 ? 1 : 0);
+            var res = w.ShowDialog();
+
+            if (res == true)
+            {
+                MessageBox.Show("Players traded successfully. The database will be saved now. This may take a few moments.");
+                MainWindow.MWInstance.btnSaveCurrentSeason_Click(null, null);
+                linkInternalsToMainWindow();
+                cmbTeam_SelectionChanged(null, null);
+            }
+        }
     }
 }
