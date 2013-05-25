@@ -199,6 +199,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
             }
+
+            dgvPlayersAway.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
+            dgvPlayersHome.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
             IsEnabled = true;
         }
 
