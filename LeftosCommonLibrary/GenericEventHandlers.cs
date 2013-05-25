@@ -59,7 +59,7 @@ namespace LeftosCommonLibrary
             var rowDataIndex = 0;
             for (var i = minRowIndex; i <= maxRowIndex && rowDataIndex < rowData.Count; i++, rowDataIndex++)
             {
-                if (s.CanUserAddRows && i == maxRowIndex + 1)
+                if (s.CanUserAddRows && i == maxRowIndex)
                 {
                     // add a new row to be pasted to
                     var cv = CollectionViewSource.GetDefaultView(s.Items);
