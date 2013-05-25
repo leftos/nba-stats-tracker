@@ -4,25 +4,54 @@
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
         Loaded="window_Loaded">
     <Grid>
-        <Label Content="Current Season: " HorizontalAlignment="Left" Margin="12,12,0,0" Name="lblCurSeason"
-               VerticalAlignment="Top" />
-        <ListBox Height="296" HorizontalAlignment="Left" Margin="12,70,0,0" Name="lstEnabled" VerticalAlignment="Top"
-                 Width="237" SelectionMode="Extended" />
-        <ListBox Height="296" HorizontalAlignment="Left" Margin="372,70,0,0" Name="lstDisabled" VerticalAlignment="Top"
-                 Width="237" SelectionMode="Extended" />
-        <Button Content="&lt; Enable" Height="23" HorizontalAlignment="Left" Margin="255,154,0,0" Name="btnEnable"
-                VerticalAlignment="Top" Width="111" Click="btnEnable_Click" />
-        <Button Content="Disable &gt;" Height="23" HorizontalAlignment="Left" Margin="255,183,0,0" Name="btnDisable"
-                VerticalAlignment="Top" Width="111" Click="btnDisable_Click" />
-        <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="192,371,0,0" Name="btnOK"
-                VerticalAlignment="Top" Width="111" Click="btnOK_Click" />
-        <Label Content="Enabled Teams" HorizontalAlignment="Left" Margin="12,41,0,0" x:Name="lblEnabled"
-               VerticalAlignment="Top" />
-        <Label Content="Disabled Teams" HorizontalAlignment="Left" Margin="372,41,0,0" x:Name="lblDisabled"
-               VerticalAlignment="Top" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="317,371,0,0" Name="btnCancel"
-                VerticalAlignment="Top" Width="111" Click="btnCancel_Click" />
-        <Button Content="Load Active Teams" Height="23" HorizontalAlignment="Left" Margin="255,232,0,0"
-                Name="btnLoadList" VerticalAlignment="Top" Width="111" Click="btnLoadList_Click" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="30" />
+            <RowDefinition />
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="10,10,10,5">
+            <Label Content="Current Season: " HorizontalAlignment="Left" Name="lblDescription"
+                   VerticalAlignment="Top" />
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="0" Margin="10,5,5,5">
+            <Label Content="Enabled Teams" HorizontalAlignment="Left" x:Name="lblEnabled"
+                   VerticalAlignment="Bottom" />
+            <ComboBox HorizontalAlignment="Left" x:Name="cmbTeam1"
+                      VerticalAlignment="Bottom" Width="150" />
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="2" Margin="5,5,10,5">
+            <Label Content="Disabled Teams" HorizontalAlignment="Left" x:Name="lblDisabled"
+                   VerticalAlignment="Bottom" />
+            <ComboBox HorizontalAlignment="Left" x:Name="cmbTeam2"
+                      VerticalAlignment="Bottom" Width="150" />
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="0" Margin="10,5,5,5">
+            <ListBox Name="lstEnabled" SelectionMode="Extended" />
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="2" Margin="5,5,10,5">
+            <ListBox Name="lstDisabled" SelectionMode="Extended" />
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1" Margin="5">
+            <StackPanel VerticalAlignment="Center">
+                <Button Content="&lt; Enable" Height="23" Name="btnEnable" Click="btnEnable_Click" />
+                <Rectangle Height="6" />
+                <Button Content="Disable &gt;" Height="23" Name="btnDisable" Click="btnDisable_Click" />
+                <Rectangle Height="28" />
+                <Button Content="Load Active Teams" Height="23" Name="btnLoadList" Click="btnLoadList_Click" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="3" Grid.ColumnSpan="3">
+            <Button Content="OK" Height="23" Margin="0,0,126,10" Name="btnOK"
+                VerticalAlignment="Bottom" Click="btnOK_Click" HorizontalAlignment="Right" Width="111" />
+            <Button Content="Cancel" Margin="0,0,10,10" Name="btnCancel" Click="btnCancel_Click" Height="23"
+                VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="111" />
+        </Grid>
     </Grid>
 </Window>
