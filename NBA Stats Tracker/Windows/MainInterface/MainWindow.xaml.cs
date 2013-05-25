@@ -3275,7 +3275,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             while (true)
             {
                 var ibw = new InputBoxWindow(
-                    "Insert the number of periods (e.g. quarters, havles, etc.) in a game (e.g. 4):", NumberOfPeriods.ToString());
+                    "Insert the number of periods (e.g. quarters, halves, etc.) in a game (e.g. 4):", NumberOfPeriods.ToString());
                 if (ibw.ShowDialog() == true)
                 {
                     try
