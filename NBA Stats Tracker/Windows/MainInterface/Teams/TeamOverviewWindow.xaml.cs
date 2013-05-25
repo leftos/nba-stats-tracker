@@ -2813,6 +2813,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
+                e.Handled = true;
+
                 var dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 foreach (var dict in dictList)
@@ -2884,6 +2886,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
+                e.Handled = true;
+
                 var dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 var list = Equals(sender, dgvPlayerStats) ? _psrList : _plPSRList;

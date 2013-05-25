@@ -1762,6 +1762,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
+                e.Handled = true;
+
                 var dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
 
                 var isSeason = rbSeason.IsChecked.GetValueOrDefault();
@@ -1861,6 +1863,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         {
             if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
+                e.Handled = true;
+
                 var dictList = CSV.DictionaryListFromTSVString(Clipboard.GetText());
                 var dg = (DataGrid) sender;
                 var isSeason = rbSeason.IsChecked.GetValueOrDefault();
