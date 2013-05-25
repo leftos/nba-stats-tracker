@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.14.2.1
+		- Improvement: Player Trade selections will now be remembered even if the user switches teams in the Trade Players dialog
+
 	v1.14.2
 		- Addition: Added Player Trades between two teams (Team Overview -> Roster -> Trade Players)
 		- Improvement: Add Players dialog now supports pasting
