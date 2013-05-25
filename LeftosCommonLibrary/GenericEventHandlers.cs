@@ -176,12 +176,11 @@ namespace LeftosCommonLibrary
         }
 
         /// <summary>
-        ///     When added to the RowEditEnding event of a WPF DataGrid, if the user presses Tab while on the last cell of a row, the focus is
-        ///     switched to the first cell of the next row, instead of another control altogether.
+        ///     Switches the focus to the new row when the user presses tab on the last column of the last item row in a WPF DataGrid.
         ///     <see cref="Any_PreviewKeyDown_CheckTab" /> and <see cref="Any_PreviewKeyUp_CheckTab" /> should also be added as event handlers to
         ///     the control.
         /// </summary>
-        /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised..</param>
+        /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised.</param>
         /// <param name="e">
         ///     The <see cref="DataGridRowEditEndingEventArgs" /> instance containing the event data.
         /// </param>
@@ -190,12 +189,18 @@ namespace LeftosCommonLibrary
             if (_isTabPressed && e.EditAction == DataGridEditAction.Commit)
             {
                 var dataGrid = sender as DataGrid;
+                if (dataGrid == null)
+                {
+                    return;
+                }
 
-                Debug.Assert(dataGrid != null, "dataGrid != null");
                 if (e.Row.Item == dataGrid.Items[dataGrid.Items.Count - 2])
                 {
                     var parentWindow = Window.GetWindow(dataGrid);
-                    Debug.Assert(parentWindow != null, "parentWindow != null");
+                    if (parentWindow == null)
+                    {
+                        return;
+                    }
                     parentWindow.Dispatcher.BeginInvoke(
                         new DispatcherOperationCallback(
                             param =>
@@ -207,6 +212,46 @@ namespace LeftosCommonLibrary
                                     //dataGrid.BeginEdit();
                                     return null;
                                 }),
+                        DispatcherPriority.Background,
+                        new object[] { null });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Switches focus to the next column of the WPF DataGrid when enter is pressed on the last cell of a column.
+        /// </summary>
+        /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised.</param>
+        /// <param name="e">The <see cref="DataGridCellEditEndingEventArgs"/> instance containing the event data.</param>
+        public static void WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var dataGrid = sender as DataGrid;
+                if (dataGrid == null)
+                {
+                    return;
+                }
+
+                if (dataGrid.SelectedItem == dataGrid.Items[dataGrid.Items.Count - 1])
+                {
+                    var oldColumn = dataGrid.Columns.IndexOf(dataGrid.CurrentCell.Column);
+                    var parentWindow = Window.GetWindow(dataGrid);
+                    if (parentWindow == null)
+                    {
+                        return;
+                    }
+                    parentWindow.Dispatcher.BeginInvoke(
+                        new DispatcherOperationCallback(
+                            param =>
+                            {
+                                dataGrid.Focus();
+                                dataGrid.SelectedIndex = 0;
+                                dataGrid.CurrentCell = new DataGridCellInfo(dataGrid.Items[0], dataGrid.Columns[oldColumn + 1]);
+
+                                //dataGrid.BeginEdit();
+                                return null;
+                            }),
                         DispatcherPriority.Background,
                         new object[] { null });
                 }
