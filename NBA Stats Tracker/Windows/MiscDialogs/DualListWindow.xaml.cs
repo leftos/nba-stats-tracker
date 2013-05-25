@@ -55,7 +55,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             REDitor,
             HiddenTeams,
             HiddenPlayers,
-            PickBoxScore,
             TradePlayers
         }
 
@@ -122,6 +121,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             cmbTeam2.SelectedValue = team2;
 
             txbDescription.Text = "Trade players between any teams";
+            Title = "Trade Players";
         }
 
         /// <summary>
@@ -241,38 +241,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 lstDisabled.ItemsSource = _hiddenPlayers;
 
                 btnLoadList.Visibility = Visibility.Hidden;
-            }
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DualListWindow" /> class. Used to pick one out of the available box scores to import.
-        /// </summary>
-        /// <param name="mode">The mode.</param>
-        public DualListWindow(Mode mode)
-            : this()
-        {
-            _mode = mode;
-
-            if (mode == Mode.PickBoxScore)
-            {
-                btnLoadList.Visibility = Visibility.Hidden;
-                var candidates = REDitor.TeamsThatPlayedAGame;
-                txbDescription.Text = "Select the two teams that you want to extract the box score for";
-
-                if (candidates.Count > 2)
-                {
-                    foreach (var team in candidates)
-                    {
-                        lstDisabled.Items.Add(MainWindow.TST[team].DisplayName);
-                    }
-                }
-                else if (candidates.Count == 2)
-                {
-                    foreach (var team in candidates)
-                    {
-                        lstEnabled.Items.Add(MainWindow.TST[team].DisplayName);
-                    }
-                }
             }
         }
 
@@ -503,36 +471,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 DialogResult = true;
                 Close();
             }
-            else if (_mode == Mode.PickBoxScore)
-            {
-                if (lstEnabled.Items.Count != 2)
-                {
-                    return;
-                }
-
-                var r = MessageBox.Show(
-                    "Is " + lstEnabled.Items[0] + " the Home Team?", "NBA Stats Tracker", MessageBoxButton.YesNoCancel);
-                if (r == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
-
-                REDitor.PickedTeams = new List<int>();
-
-                if (r == MessageBoxResult.Yes)
-                {
-                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
-                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
-                }
-                else
-                {
-                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[0].ToString()));
-                    REDitor.PickedTeams.Add(getTeamIDFromDisplayName(lstEnabled.Items[1].ToString()));
-                }
-
-                DialogResult = true;
-                Close();
-            }
             else if (_mode == Mode.TradePlayers)
             {
                 foreach (var pair in _rosters)
@@ -633,28 +571,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
                 _changed = false;
             }
-        }
-
-        /// <summary>
-        ///     Handles the Loaded event of the Window control. Automates the OK button click if there's just two teams to pick as far as box
-        ///     score goes.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void window_Loaded(object sender, RoutedEventArgs e)
-        {
-            Dispatcher.BeginInvoke(
-                DispatcherPriority.ContextIdle,
-                new Action(
-                    () =>
-                        {
-                            if (_mode == Mode.PickBoxScore && lstEnabled.Items.Count == 2)
-                            {
-                                btnOK_Click(null, null);
-                            }
-                        }));
         }
 
         private void cmbTeam1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
