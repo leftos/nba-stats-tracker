@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.14.2
+		- Addition: Added Player Trades between two teams (Team Overview -> Roster -> Trade Players)
+		- Improvement: Add Players dialog now supports pasting
+		- Improvement: When the user presses Enter at the last row of any of the editable tabs of the Box Score dialog, the focus will move to the first cell of the next column
+
 	v1.14.1.1
 		- Improvement: Pressing Enter while typing in the Quick Find dialog will now automatically launch the selected item, or the first one in the list if none is selected
 
