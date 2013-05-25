@@ -115,6 +115,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
             cmbTeam1.SelectedValue = team1;
             cmbTeam2.SelectedValue = team2;
+
+            txbDescription.Text = "Trade players between any two teams. If you switch teams after making any trades but before "
+                                  + "pressing OK, the trades will be lost. To save any trades between two teams, you must click OK.";
         }
 
         /// <summary>
@@ -128,7 +131,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             _validTeams = validTeams;
             _mode = Mode.REDitor;
 
-            lblDescription.Content = "NST couldn't determine all the teams in your save. Please enable them.";
+            txbDescription.Text = "NST couldn't determine all the teams in your save. Please enable them.";
 
             foreach (var team in validTeams)
             {
@@ -167,7 +170,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             _curSeason = curSeason;
             _maxSeason = maxSeason;
 
-            lblDescription.Content = "Current Season: " + _curSeason + "/" + _maxSeason;
+            txbDescription.Text = "Current Season: " + _curSeason + "/" + _maxSeason;
 
             var db = new SQLiteDatabase(_currentDB);
 
@@ -250,7 +253,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 btnLoadList.Visibility = Visibility.Hidden;
                 var candidates = REDitor.TeamsThatPlayedAGame;
-                lblDescription.Content = "Select the two teams that you want to extract the box score for";
+                txbDescription.Text = "Select the two teams that you want to extract the box score for";
 
                 if (candidates.Count > 2)
                 {
@@ -649,34 +652,39 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
         private void cmbTeam1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (cmbTeam1.SelectedIndex == -1)
+            refreshPlayerLists();
+        }
+
+        private void refreshPlayerLists()
+        {
+            if (cmbTeam1.SelectedIndex != -1)
             {
-                return;
+                var id = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
+                var players =
+                    _pst.Where(ps => ps.Value.TeamF == id)
+                        .OrderBy(ps => ps.Value.FullName)
+                        .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
+                        .ToList();
+                _shownPlayers = new BindingList<KeyValuePair<int, string>>(players);
+                lstEnabled.ItemsSource = _shownPlayers;
             }
-            var id = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
-            var players =
-                _pst.Where(ps => ps.Value.TeamF == id)
-                    .OrderBy(ps => ps.Value.FullName)
-                    .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
-                    .ToList();
-            _shownPlayers = new BindingList<KeyValuePair<int, string>>(players);
-            lstEnabled.ItemsSource = _shownPlayers;
+
+            if (cmbTeam2.SelectedIndex != -1)
+            {
+                var id = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
+                var players =
+                    _pst.Where(ps => ps.Value.TeamF == id)
+                        .OrderBy(ps => ps.Value.FullName)
+                        .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
+                        .ToList();
+                _hiddenPlayers = new BindingList<KeyValuePair<int, string>>(players);
+                lstDisabled.ItemsSource = _hiddenPlayers;
+            }
         }
 
         private void cmbTeam2_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (cmbTeam2.SelectedIndex == -1)
-            {
-                return;
-            }
-            var id = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
-            var players =
-                _pst.Where(ps => ps.Value.TeamF == id)
-                    .OrderBy(ps => ps.Value.FullName)
-                    .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
-                    .ToList();
-            _hiddenPlayers = new BindingList<KeyValuePair<int, string>>(players);
-            lstDisabled.ItemsSource = _hiddenPlayers;
+            refreshPlayerLists();
         }
     }
 }

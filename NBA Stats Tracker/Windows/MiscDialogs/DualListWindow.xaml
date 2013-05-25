@@ -5,7 +5,7 @@
         Loaded="window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="52" />
             <RowDefinition Height="35" />
             <RowDefinition />
             <RowDefinition Height="40"></RowDefinition>
@@ -16,8 +16,8 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="10,10,10,5">
-            <Label Content="Current Season: " HorizontalAlignment="Left" Name="lblDescription"
-                   VerticalAlignment="Top" />
+            <TextBlock Text="Current Season: " HorizontalAlignment="Left" Name="txbDescription"
+                   VerticalAlignment="Top" TextWrapping="Wrap"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Margin="10,5,5,5">
             <Label Content="Enabled Teams" HorizontalAlignment="Left" x:Name="lblEnabled"
