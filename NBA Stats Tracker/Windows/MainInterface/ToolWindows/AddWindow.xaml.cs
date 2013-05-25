@@ -23,12 +23,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Windows;
+    using System.Windows.Input;
 
     using LeftosCommonLibrary;
 
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
+    using NBA_Stats_Tracker.Helper.ListExtensions;
 
     #endregion
 
@@ -43,11 +46,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
             _pst = pst;
 
-            teams = new ObservableCollection<KeyValuePair<string, int>>();
-            foreach (var kvp in MainWindow.TST)
-            {
-                teams.Add(new KeyValuePair<string, int>(kvp.Value.DisplayName, kvp.Key));
-            }
+            var teamsList =
+                MainWindow.TST.Values.ToList()
+                          .OrderBy(ts => ts.DisplayName)
+                          .Select(ts => new KeyValuePair<string, int>(ts.DisplayName, ts.ID))
+                          .ToList();
+            teams = new ObservableCollection<KeyValuePair<string, int>>(teamsList);
 
             players = new ObservableCollection<Player>();
 
@@ -99,6 +103,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
         {
             MainWindow.AddInfo = "";
             Close();
+        }
+
+        private void dgvAddPlayers_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.V && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                e.Handled = true;
+
+                GenericEventHandlers.OnExecutedPaste(sender, null);
+            }
         }
     }
 }

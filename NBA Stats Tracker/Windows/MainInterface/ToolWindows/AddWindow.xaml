@@ -2,6 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Data="clr-namespace:NBA_Stats_Tracker.Data"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         Title="Add Teams/Players" Height="373" Width="575"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -23,9 +25,11 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Players" Name="tabPlayers">
-                <Grid Name="grid1">
+                <Grid>
                     <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="0" Name="dgvAddPlayers"
-                              VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True">
+                              VerticalAlignment="Stretch" CanUserAddRows="True" CanUserDeleteRows="True"
+                              PreviewKeyDown="dgvAddPlayers_PreviewKeyDown"
+                              d:DataContext="{d:DesignInstance players:Player}" ClipboardCopyMode="IncludeHeader">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
                             <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
