@@ -47,9 +47,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                     lstResults.ItemsSource = null;
                     return;
                 }
-                lstResults.ItemsSource =
-                    MainWindow.SearchCache.Where(item => item.Description.ToLowerInvariant().Contains(_query.ToLowerInvariant()))
-                              .ToList();
+                var parts = _query.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var results = parts.Aggregate(
+                    MainWindow.SearchCache,
+                    (current, part) =>
+                    current.Where(item => item.Description.ToLowerInvariant().Contains(part.ToLowerInvariant())).ToList());
+                lstResults.ItemsSource = results;
+                lstResults.SelectedIndex = 0;
             }
         }
 
