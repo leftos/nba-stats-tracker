@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.14.2.2
+		- Fix: Quick Find will now handle search queries as a collection of words instead of a contiguous phrase which needs to exist in whole
+		- Fix: Old Player Stats would not be imported if no player had an entry for the user-specified starting year
+		- Fix: Old Player Stats for a player would stop being imported when encountering an empty entry, instead of continuing to look for other ones in the rest of the player's history
+
 	v1.14.2.1
 		- Improvement: Player Trade selections will now be remembered even if the user switches teams in the Trade Players dialog
 
