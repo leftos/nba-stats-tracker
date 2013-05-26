@@ -237,7 +237,7 @@ namespace LeftosCommonLibrary
         ///     if set to <c>true</c> [keep duplicates].
         /// </param>
         /// <returns></returns>
-        public static List<string> SplitLinesToList(string text, bool keepDuplicates = true)
+        public static IEnumerable<string> SplitLinesToList(string text, bool keepDuplicates = true)
         {
             var arr = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             if (keepDuplicates)
@@ -323,8 +323,8 @@ namespace LeftosCommonLibrary
         /// <returns></returns>
         public static bool CheckForBalancedBracketing(string incomingString)
         {
-            const char leftParenthesis = '(';
-            const char rightParenthesis = ')';
+            const char LeftParenthesis = '(';
+            const char RightParenthesis = ')';
             uint bracketCount = 0;
 
             try
@@ -335,10 +335,10 @@ namespace LeftosCommonLibrary
                     {
                         switch (t)
                         {
-                            case leftParenthesis:
+                            case LeftParenthesis:
                                 bracketCount++;
                                 continue;
-                            case rightParenthesis:
+                            case RightParenthesis:
                                 bracketCount--;
                                 continue;
                             default:

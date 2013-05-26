@@ -26,7 +26,7 @@ namespace LeftosCommonLibrary
     #endregion
 
     /// <summary>Methods to parse a DataRowCell into common data-types.</summary>
-    public class ParseCell
+    public static class ParseCell
     {
         /// <summary>Gets an unsigned 16-bit integer from the specified column of the given DataRow.</summary>
         /// <param name="r">The row.</param>

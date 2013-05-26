@@ -22,7 +22,6 @@ namespace LeftosCommonLibrary
 
     using System;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
@@ -35,7 +34,7 @@ namespace LeftosCommonLibrary
     /// <summary>Implements event handlers that improve the behavior WPF controls.</summary>
     public static class GenericEventHandlers
     {
-        private static bool _isTabPressed;
+        private static bool isTabPressed;
 
         /// <summary>Handles pasting the data into a data-bound DataGrid.</summary>
         /// <param name="sender">The DataGrid instance to paste into.</param>
@@ -89,7 +88,7 @@ namespace LeftosCommonLibrary
                     string propertyName;
                     try
                     {
-                        propertyName = ((column as DataGridBoundColumn).Binding as Binding).Path.Path;
+                        propertyName = ((Binding) ((DataGridBoundColumn) column).Binding).Path.Path;
                     }
                     catch
                     {
@@ -186,7 +185,7 @@ namespace LeftosCommonLibrary
         /// </param>
         public static void WPFDataGrid_RowEditEnding_GoToNewRowOnTab(object sender, DataGridRowEditEndingEventArgs e)
         {
-            if (_isTabPressed && e.EditAction == DataGridEditAction.Commit)
+            if (isTabPressed && e.EditAction == DataGridEditAction.Commit)
             {
                 var dataGrid = sender as DataGrid;
                 if (dataGrid == null)
@@ -267,7 +266,7 @@ namespace LeftosCommonLibrary
         {
             if (e.Key == Key.Tab)
             {
-                _isTabPressed = true;
+                isTabPressed = true;
             }
         }
 
@@ -280,7 +279,7 @@ namespace LeftosCommonLibrary
         {
             if (e.Key == Key.Tab)
             {
-                _isTabPressed = false;
+                isTabPressed = false;
             }
         }
 

@@ -74,7 +74,7 @@ namespace LeftosCommonLibrary.CommonDialogs
             }
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void window_Closing(object sender, CancelEventArgs e)
         {
             if (!CanClose)
             {

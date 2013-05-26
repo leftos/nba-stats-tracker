@@ -35,7 +35,7 @@ namespace NBA_Stats_Tracker
     public partial class App
     {
         public const string AppName = "NBA Stats Tracker";
-        public const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
+        private const string AppRegistryKey = @"SOFTWARE\Lefteris Aslanoglou\NBA Stats Tracker";
         public static bool RealNBAOnly;
 
         public static readonly string AppDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)

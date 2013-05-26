@@ -33,8 +33,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
     using Microsoft.Win32;
 
-    using NBA_Stats_Tracker.Data.Players;
-    using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Helper.ListExtensions;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
     using NBA_Stats_Tracker.Interop.REDitor;
@@ -73,9 +71,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private readonly List<Dictionary<string, string>> _validTeams;
 
         private bool _changed = true;
-        private Dictionary<int, TeamStats> _tst;
-        private Dictionary<int, PlayerStats> _pst;
-        private Dictionary<int, List<int>> _rosters;
+        private readonly Dictionary<int, List<int>> _rosters;
 
         private DualListWindow()
         {
@@ -85,14 +81,11 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             cmbTeam2.Visibility = Visibility.Collapsed;
         }
 
-        public DualListWindow(Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst, int team1, int team2)
+        public DualListWindow(int team1, int team2)
             : this()
         {
             _mode = Mode.TradePlayers;
-
-            _tst = tst;
-            _pst = pst;
-
+            
             cmbTeam1.Visibility = Visibility.Visible;
             cmbTeam2.Visibility = Visibility.Visible;
 
@@ -584,7 +577,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 var id = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
                 var players =
-                    _pst.Where(ps => _rosters[id].Contains(ps.Key))
+                    MainWindow.PST.Where(ps => _rosters[id].Contains(ps.Key))
                         .OrderBy(ps => ps.Value.FullName)
                         .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
                         .ToList();
@@ -596,7 +589,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             {
                 var id = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
                 var players =
-                    _pst.Where(ps => _rosters[id].Contains(ps.Key))
+                    MainWindow.PST.Where(ps => _rosters[id].Contains(ps.Key))
                         .OrderBy(ps => ps.Value.FullName)
                         .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
                         .ToList();

@@ -73,7 +73,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// <summary>Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.</summary>
         /// <param name="activeTeams">The active teams.</param>
         /// <param name="folder">The default import/export folder.</param>
-        public static void CreateSettingsFile(List<Dictionary<string, string>> activeTeams, string folder)
+        private static void createSettingsFile(IEnumerable<Dictionary<string, string>> activeTeams, string folder)
         {
             var s1 = "Folder$$" + folder + "\n";
             var s2 = activeTeams.Aggregate("Active$$", (current, team) => current + (team["ID"] + "$%"));
@@ -131,7 +131,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 list.Add(i + " seasons ago");
             }
 
-            int startAt;
             var ccw = new ComboChoiceWindow("Add player stats starting from...", list);
             if (ccw.ShowDialog() != true)
             {
@@ -139,7 +138,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return;
             }
 
-            startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
+            int startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
 
             var seasonNames = new Dictionary<int, string>();
             if (nba2KVersion == NBA2KVersion.NBA2K12)
@@ -214,7 +213,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 if (MainWindow.SelectedTeamsChanged)
                 {
-                    CreateSettingsFile(activeTeams, folder);
+                    createSettingsFile(activeTeams, folder);
                 }
             }
 
@@ -607,7 +606,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 if (MainWindow.SelectedTeamsChanged)
                 {
-                    CreateSettingsFile(activeTeams, folder);
+                    createSettingsFile(activeTeams, folder);
                 }
             }
 
@@ -1401,7 +1400,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 if (MainWindow.SelectedTeamsChanged)
                 {
-                    CreateSettingsFile(activeTeams, folder);
+                    createSettingsFile(activeTeams, folder);
                 }
             }
 

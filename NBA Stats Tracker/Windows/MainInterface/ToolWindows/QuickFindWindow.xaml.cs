@@ -51,7 +51,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                 var results = parts.Aggregate(
                     MainWindow.SearchCache,
                     (current, part) =>
-                    current.Where(item => item.Description.ToLowerInvariant().Contains(part.ToLowerInvariant())).ToList());
+                    current.Where(item => item.Description.ToUpperInvariant().Contains(part.ToUpperInvariant())).ToList());
                 lstResults.ItemsSource = results;
                 lstResults.SelectedIndex = 0;
             }

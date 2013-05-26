@@ -48,7 +48,7 @@ namespace LeftosCommonLibrary
         /// </summary>
         public static bool ReplaceREDitorSortingChars;
 
-        private static readonly char[] _redSortingChars = new[] { '^', Convert.ToChar(65533), '?' };
+        private static readonly char[] REDSortingChars = new[] { '^', Convert.ToChar(65533), '?' };
 
         private static char detectSeparator(string path)
         {
@@ -167,7 +167,7 @@ namespace LeftosCommonLibrary
                     for (var i = 0; i < headers.Length; i++)
                     {
                         var firstChar = Convert.ToChar(headers[i].Substring(0, 1));
-                        if (_redSortingChars.Contains(firstChar))
+                        if (REDSortingChars.Contains(firstChar))
                         {
                             headers[i] = headers[i].Split(new[] { " ", "\r\n", "\n" }, 2, StringSplitOptions.None)[1];
                             break;
@@ -206,7 +206,7 @@ namespace LeftosCommonLibrary
                         for (var i = 0; i < headers.Length; i++)
                         {
                             var firstChar = Convert.ToChar(headers[i].Substring(0, 1));
-                            if (_redSortingChars.Contains(firstChar))
+                            if (REDSortingChars.Contains(firstChar))
                             {
                                 headers[i] = headers[i].Split(new[] { " ", "\r\n", "\n" }, 2, StringSplitOptions.None)[1];
                                 break;
@@ -464,8 +464,6 @@ namespace LeftosCommonLibrary
         {
             IList<int> separatorsCount = new int[separators.Count];
 
-            int character;
-
             var row = 0;
 
             var quoted = false;
@@ -473,7 +471,7 @@ namespace LeftosCommonLibrary
 
             while (row < rowCount)
             {
-                character = reader.Read();
+                var character = reader.Read();
 
                 switch (character)
                 {

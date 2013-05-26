@@ -369,12 +369,12 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
 
         public string DisplayTimeLeft
         {
-            get { return TimeLeftToString(TimeLeft); }
+            get { return timeLeftToString(TimeLeft); }
         }
 
         public string DisplayShotClock
         {
-            get { return ShotClockToString(ShotClockLeft); }
+            get { return shotClockToString(ShotClockLeft); }
         }
 
         public string DisplayScore
@@ -478,7 +478,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 ShotClockLeft,
                 eventTypeDescription,
                 DisplayPlayer1,
-                DisplayPlayer2 != "" ? "(" + DisplayPlayer2 + ")" : "",
+                !String.IsNullOrWhiteSpace(DisplayPlayer2) ? "(" + DisplayPlayer2 + ")" : "",
                 DisplayTeam);
         }
 
@@ -512,7 +512,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             return new KeyValuePair<string, string>(timeLeftIntString, timeLeftDecString);
         }
 
-        public static string TimeLeftToString(double timeLeft)
+        private static string timeLeftToString(double timeLeft)
         {
             var intPart = Convert.ToInt32(Math.Floor(timeLeft));
             var decPart = timeLeft - intPart;
@@ -557,7 +557,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             return pair;
         }
 
-        public static string ShotClockToString(double shotClock)
+        private static string shotClockToString(double shotClock)
         {
             var intPart = Convert.ToInt32(Math.Floor(shotClock));
             var decPart = shotClock - intPart;

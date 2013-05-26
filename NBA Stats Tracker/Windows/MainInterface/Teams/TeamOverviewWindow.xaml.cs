@@ -117,7 +117,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _teamIDToLoad = id;
         }
 
-        protected ObservableCollection<PlayerHighsRow> recordsList { get; set; }
+        private ObservableCollection<PlayerHighsRow> recordsList { get; set; }
 
         /// <summary>Populates the teams combo.</summary>
         private void populateTeamsCombo()
@@ -370,8 +370,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             // Rankings can only be shown based on total stats
             // ...for now
-            DataRow dr2;
-            dr2 = _dtOv.NewRow();
+            DataRow dr2 = _dtOv.NewRow();
 
             dr2["Type"] = "Rankings";
             dr2["Wins (W%)"] = _seasonRankings.RankingsPerGame[id][TAbbr.Wp];
@@ -599,23 +598,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             var id = _curTeam;
 
             var dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Home"], ref dr, "Home");
+            createDataRowFromTeamStats(splitTeamStats[id]["Home"], ref dr, "Home");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Away"], ref dr, "Away");
-            _dtSs.Rows.Add(dr);
-
-            dr = _dtSs.NewRow();
-            dr["Type"] = " ";
-            _dtSs.Rows.Add(dr);
-
-            dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Wins"], ref dr, "Wins");
-            _dtSs.Rows.Add(dr);
-
-            dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Losses"], ref dr, "Losses");
+            createDataRowFromTeamStats(splitTeamStats[id]["Away"], ref dr, "Away");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
@@ -623,11 +610,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Season"], ref dr, "Season");
+            createDataRowFromTeamStats(splitTeamStats[id]["Wins"], ref dr, "Wins");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Playoffs"], ref dr, "Playoffs");
+            createDataRowFromTeamStats(splitTeamStats[id]["Losses"], ref dr, "Losses");
+            _dtSs.Rows.Add(dr);
+
+            dr = _dtSs.NewRow();
+            dr["Type"] = " ";
+            _dtSs.Rows.Add(dr);
+
+            dr = _dtSs.NewRow();
+            createDataRowFromTeamStats(splitTeamStats[id]["Season"], ref dr, "Season");
+            _dtSs.Rows.Add(dr);
+
+            dr = _dtSs.NewRow();
+            createDataRowFromTeamStats(splitTeamStats[id]["Playoffs"], ref dr, "Playoffs");
             _dtSs.Rows.Add(dr);
 
             #region Per Opponent
@@ -649,7 +648,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 }
 
                 dr = _dtSs.NewRow();
-                CreateDataRowFromTeamStats(splitTeamStats[id]["vs " + name], ref dr, "vs " + name);
+                createDataRowFromTeamStats(splitTeamStats[id]["vs " + name], ref dr, "vs " + name);
                 _dtSs.Rows.Add(dr);
             }
 
@@ -660,11 +659,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["vs >= .500"], ref dr, "vs >= .500");
+            createDataRowFromTeamStats(splitTeamStats[id]["vs >= .500"], ref dr, "vs >= .500");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["vs < .500"], ref dr, "vs < .500");
+            createDataRowFromTeamStats(splitTeamStats[id]["vs < .500"], ref dr, "vs < .500");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
@@ -672,11 +671,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Last 10"], ref dr, "Last 10");
+            createDataRowFromTeamStats(splitTeamStats[id]["Last 10"], ref dr, "Last 10");
             _dtSs.Rows.Add(dr);
 
             dr = _dtSs.NewRow();
-            CreateDataRowFromTeamStats(splitTeamStats[id]["Before"], ref dr, "Before");
+            createDataRowFromTeamStats(splitTeamStats[id]["Before"], ref dr, "Before");
             _dtSs.Rows.Add(dr);
 
             #region Monthly split stats
@@ -689,7 +688,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 dr = _dtSs.NewRow();
                 var labeldt = new DateTime(Convert.ToInt32(sspair.Key.Substring(2, 4)), Convert.ToInt32(sspair.Key.Substring(7, 2)), 1);
-                CreateDataRowFromTeamStats(sspair.Value, ref dr, labeldt.Year.ToString() + " " + String.Format("{0:MMMM}", labeldt));
+                createDataRowFromTeamStats(sspair.Value, ref dr, labeldt.Year.ToString() + " " + String.Format("{0:MMMM}", labeldt));
                 _dtSs.Rows.Add(dr);
             }
 
@@ -732,9 +731,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 return;
             }
-
-            new DataTable();
-
+            
             //DataRow dr;
 
             _dtBS.Clear();
@@ -795,8 +792,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             txbPlayer5.Text = "";
             txbPlayer6.Text = "";
 
-            PlayerStatsRow psr1;
-            string text;
             try
             {
                 var templist = _psrList.ToList();
@@ -813,8 +808,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
                 templist.Reverse();
 
-                psr1 = templist[0];
-                text = psr1.GetBestStats(5);
+                var psr1 = templist[0];
+                var text = psr1.GetBestStats(5);
                 txbPlayer1.Text = "1: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")"
                                   + (psr1.IsInjured ? " (Injured)" : "") + "\n\n" + text;
 
@@ -1114,7 +1109,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _maxSeason = SQLiteIO.GetMaxSeason(currentDB);
 
             var ts = _tst[_curTeam];
-            TeamStats tsopp;
             var tsAllSeasons = new TeamStats(-1, "All Seasons");
             var tsAllPlayoffs = new TeamStats(-1, "All Playoffs");
             var tsAll = new TeamStats(-1, "All Games");
@@ -1124,12 +1118,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             var drcur = _dtYea.NewRow();
             var drcurPl = _dtYea.NewRow();
-            CreateDataRowFromTeamStats(ts, ref drcur, "Season " + MainWindow.GetSeasonName(_curSeason));
+            createDataRowFromTeamStats(ts, ref drcur, "Season " + MainWindow.GetSeasonName(_curSeason));
 
             var playedInPlayoffs = false;
             if (ts.PlRecord[0] + ts.PlRecord[1] > 0)
             {
-                CreateDataRowFromTeamStats(ts, ref drcurPl, "Playoffs " + MainWindow.GetSeasonName(_curSeason), true);
+                createDataRowFromTeamStats(ts, ref drcurPl, "Playoffs " + MainWindow.GetSeasonName(_curSeason), true);
                 playedInPlayoffs = true;
             }
 
@@ -1143,14 +1137,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 if (ParseCell.GetBoolean(dr, "isPlayoff"))
                 {
                     SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, true);
-                    CreateDataRowFromTeamStats(ts, ref dr4, "Playoffs " + ParseCell.GetString(dr, "SeasonName"), true);
+                    createDataRowFromTeamStats(ts, ref dr4, "Playoffs " + ParseCell.GetString(dr, "SeasonName"), true);
                     tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
                     tsAll.AddTeamStats(ts, Span.Playoffs);
                 }
                 else
                 {
                     SQLiteIO.GetTeamStatsFromDataRow(ref ts, dr, false);
-                    CreateDataRowFromTeamStats(ts, ref dr4, "Season " + ParseCell.GetString(dr, "SeasonName"), false);
+                    createDataRowFromTeamStats(ts, ref dr4, "Season " + ParseCell.GetString(dr, "SeasonName"), false);
                     tsAllSeasons.AddTeamStats(ts, Span.Season);
                     tsAll.AddTeamStats(ts, Span.Season);
                 }
@@ -1162,15 +1156,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 if (j != _curSeason)
                 {
+                    TeamStats tsopp;
                     SQLiteIO.GetTeamStatsFromDatabase(MainWindow.CurrentDB, _curTeam, j, out ts, out tsopp);
                     var dr3 = _dtYea.NewRow();
                     var dr3Pl = _dtYea.NewRow();
-                    CreateDataRowFromTeamStats(ts, ref dr3, "Season " + MainWindow.GetSeasonName(j));
+                    createDataRowFromTeamStats(ts, ref dr3, "Season " + MainWindow.GetSeasonName(j));
 
                     _dtYea.Rows.Add(dr3);
                     if (ts.PlRecord[0] + ts.PlRecord[1] > 0)
                     {
-                        CreateDataRowFromTeamStats(ts, ref dr3Pl, "Playoffs " + MainWindow.GetSeasonName(j), true);
+                        createDataRowFromTeamStats(ts, ref dr3Pl, "Playoffs " + MainWindow.GetSeasonName(j), true);
                         _dtYea.Rows.Add(dr3Pl);
                     }
 
@@ -1191,16 +1186,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _dtYea.Rows.Add(_dtYea.NewRow());
 
             drcur = _dtYea.NewRow();
-            CreateDataRowFromTeamStats(tsAllSeasons, ref drcur, "All Seasons");
+            createDataRowFromTeamStats(tsAllSeasons, ref drcur, "All Seasons");
             _dtYea.Rows.Add(drcur);
             drcur = _dtYea.NewRow();
-            CreateDataRowFromTeamStats(tsAllPlayoffs, ref drcur, "All Playoffs");
+            createDataRowFromTeamStats(tsAllPlayoffs, ref drcur, "All Playoffs");
             _dtYea.Rows.Add(drcur);
 
             _dtYea.Rows.Add(_dtYea.NewRow());
 
             drcur = _dtYea.NewRow();
-            CreateDataRowFromTeamStats(tsAll, ref drcur, "All Games");
+            createDataRowFromTeamStats(tsAll, ref drcur, "All Games");
             _dtYea.Rows.Add(drcur);
 
             var dvYea = new DataView(_dtYea) { AllowNew = false, AllowEdit = false };
@@ -2208,25 +2203,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             var dr = _dtHTH.NewRow();
 
-            CreateDataRowFromTeamStats(ts, ref dr, "Averages");
+            createDataRowFromTeamStats(ts, ref dr, "Averages");
 
             _dtHTH.Rows.Add(dr);
 
             dr = _dtHTH.NewRow();
 
-            CreateDataRowFromTeamStats(tsopp, ref dr, "Opp Avg");
+            createDataRowFromTeamStats(tsopp, ref dr, "Opp Avg");
 
             _dtHTH.Rows.Add(dr);
 
             dr = _dtHTH.NewRow();
 
-            CreateDataRowFromTeamStats(ts, ref dr, "Playoffs", true);
+            createDataRowFromTeamStats(ts, ref dr, "Playoffs", true);
 
             _dtHTH.Rows.Add(dr);
 
             dr = _dtHTH.NewRow();
 
-            CreateDataRowFromTeamStats(tsopp, ref dr, "Opp Pl Avg", true);
+            createDataRowFromTeamStats(tsopp, ref dr, "Opp Pl Avg", true);
 
             _dtHTH.Rows.Add(dr);
 
@@ -2246,7 +2241,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the row will present the team's playoff stats; otherwise, the regular season's.
         /// </param>
-        public static void CreateDataRowFromTeamStats(TeamStats ts, ref DataRow dr, string title, bool playoffs = false)
+        private static void createDataRowFromTeamStats(TeamStats ts, ref DataRow dr, string title, bool playoffs = false)
         {
             try
             {
@@ -3109,7 +3104,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
         private void btnTrade_Click(object sender, RoutedEventArgs e)
         {
-            var w = new DualListWindow(MainWindow.TST, MainWindow.PST, _curTeam, _curTeam == 0 ? 1 : 0);
+            var w = new DualListWindow(_curTeam, _curTeam == 0 ? 1 : 0);
             var res = w.ShowDialog();
 
             if (res == true)

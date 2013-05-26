@@ -41,7 +41,7 @@ namespace NBA_Stats_Tracker.Data.Other
             SeasonNum = 1;
         }
 
-        public bool IsBetween { get; set; }
+        public bool IsBetween { get; private set; }
         public int SeasonNum { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

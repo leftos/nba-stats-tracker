@@ -46,7 +46,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
             if (isTeam)
             {
-                PTSList = new ObservableCollection<PastTeamStats>();
+                ptsList = new ObservableCollection<PastTeamStats>();
                 dgGamesPlayedColumn.Visibility = Visibility.Collapsed;
                 dgGamesStartedColumn.Visibility = Visibility.Collapsed;
                 dgPlayerPointsColumn.Visibility = Visibility.Collapsed;
@@ -54,45 +54,45 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                 dgTeamSColumn.Visibility = Visibility.Collapsed;
                 var qr = "SELECT * FROM PastTeamStats WHERE TeamID = " + id + " ORDER BY \"SOrder\"";
                 var dt = MainWindow.DB.GetDataTable(qr);
-                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => PTSList.Add(new PastTeamStats(dr)));
-                dgStats.ItemsSource = PTSList;
+                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ptsList.Add(new PastTeamStats(dr)));
+                dgStats.ItemsSource = ptsList;
             }
             else
             {
-                PPSList = new ObservableCollection<PastPlayerStats>();
+                ppsList = new ObservableCollection<PastPlayerStats>();
                 dgWinsColumn.Visibility = Visibility.Collapsed;
                 dgLossesColumn.Visibility = Visibility.Collapsed;
                 dgTeamPointsAgainstColumn.Visibility = Visibility.Collapsed;
                 dgTeamPointsForColumn.Visibility = Visibility.Collapsed;
                 var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + id + " ORDER BY \"SOrder\"";
                 var dt = MainWindow.DB.GetDataTable(qr);
-                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => PPSList.Add(new PastPlayerStats(dr)));
-                dgStats.ItemsSource = PPSList;
+                dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
+                dgStats.ItemsSource = ppsList;
             }
         }
 
-        public static ObservableCollection<PastTeamStats> PTSList { get; set; }
-        public static ObservableCollection<PastPlayerStats> PPSList { get; set; }
+        private static ObservableCollection<PastTeamStats> ptsList { get; set; }
+        private static ObservableCollection<PastPlayerStats> ppsList { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             if (_isTeam)
             {
-                foreach (var pts in PTSList)
+                foreach (var pts in ptsList)
                 {
                     pts.EndEdit();
                     pts.TeamID = _id;
                 }
-                SQLiteIO.SavePastTeamStatsToDatabase(MainWindow.DB, new List<PastTeamStats>(PTSList));
+                SQLiteIO.SavePastTeamStatsToDatabase(MainWindow.DB, new List<PastTeamStats>(ptsList));
             }
             else
             {
-                foreach (var pps in PPSList)
+                foreach (var pps in ppsList)
                 {
                     pps.EndEdit();
                     pps.PlayerID = _id;
                 }
-                SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.DB, new List<PastPlayerStats>(PPSList));
+                SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.DB, new List<PastPlayerStats>(ppsList));
             }
 
             DialogResult = true;

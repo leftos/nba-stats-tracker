@@ -34,7 +34,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
     [Serializable]
     public class ShotEntry : INotifyPropertyChanged
     {
-        public static Dictionary<int, string> ShotDistances = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> ShotDistances = new Dictionary<int, string>
             {
                 { 0, "Unknown" },
                 { 1, "Under the basket" },
@@ -44,7 +44,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 { 5, "Beyond 3pt" }
             };
 
-        public static Dictionary<int, string> ShotOrigins = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> ShotOrigins = new Dictionary<int, string>
             {
                 { 0, "Unknown" },
                 { 1, "Under the basket" },
@@ -55,7 +55,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 { 6, "Right" }
             };
 
-        public static Dictionary<int, string> ShotTypes = new Dictionary<int, string>
+        public static readonly Dictionary<int, string> ShotTypes = new Dictionary<int, string>
             {
                 { 0, "Unknown" },
                 { 1, "Dunk" },

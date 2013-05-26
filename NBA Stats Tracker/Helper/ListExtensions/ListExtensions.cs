@@ -129,7 +129,7 @@ namespace NBA_Stats_Tracker.Helper.ListExtensions
         /// <summary>Implements a comparison between the values of two int-string KeyValuePairs.</summary>
         public static int KVPStringComparison(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
         {
-            return String.Compare(kvp1.Value, kvp2.Value);
+            return String.Compare(kvp1.Value, kvp2.Value, StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }

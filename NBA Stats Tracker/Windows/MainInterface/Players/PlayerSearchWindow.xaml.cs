@@ -404,7 +404,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 for (var i = 0; i < item.Length; i++)
                 {
                     var c1 = item[i];
-                    char c2;
                     if (_numericOperators.Contains(c1.ToString()))
                     {
                         foreach (var id in includedIDs)
@@ -423,6 +422,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     {
                         try
                         {
+                            char c2;
                             try
                             {
                                 c2 = item[i + 1];
@@ -1397,7 +1397,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         break;
 
                     case "TF":
-                        if (parts[1].ToLowerInvariant() == "true")
+                        if (parts[1].ToUpperInvariant() == "true")
                         {
                             dtpStart.SelectedDate = Convert.ToDateTime(parts[2]);
                             dtpEnd.SelectedDate = Convert.ToDateTime(parts[3]);

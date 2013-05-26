@@ -66,7 +66,7 @@ namespace SQLite_Database
         /// <returns>A DataTable containing the result set.</returns>
         public DataTable GetDataTable(string sql, bool queryHasDuplicateColumns = false)
         {
-            var dt = new DataTable();
+            DataTable dt;
 
             try
             {
@@ -176,7 +176,6 @@ namespace SQLite_Database
                     rowsUpdated = mycommand.ExecuteNonQuery();
                     sqLiteTransaction.Commit();
                 }
-                cnn.Close();
             }
             return rowsUpdated;
         }

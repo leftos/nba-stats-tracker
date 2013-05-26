@@ -27,9 +27,9 @@ namespace NBA_Stats_Tracker.Data.Teams
     /// <summary>Used to determine the team ranking for each stat.</summary>
     public class TeamRankings
     {
-        public Dictionary<int, Dictionary<string, int>> RankingsMetrics;
-        public int[][] RankingsPerGame;
-        public int[][] RankingsTotal;
+        public readonly Dictionary<int, Dictionary<string, int>> RankingsMetrics;
+        public readonly int[][] RankingsPerGame;
+        public readonly int[][] RankingsTotal;
 
         public TeamRankings()
         {

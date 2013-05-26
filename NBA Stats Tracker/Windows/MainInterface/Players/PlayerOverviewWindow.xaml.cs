@@ -274,7 +274,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     MainWindow.PST.Values.Where(
                         ps => ps.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.IsHidden && ps.IsActive)
                               .ToList();
-                list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
+                list.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
                 list.ForEach(
                     delegate(PlayerStats ps)
                         {
@@ -287,7 +287,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             else
             {
                 var list = MainWindow.PST.Values.Where(ps => !ps.IsHidden && !ps.IsActive).ToList();
-                list.Sort((ps1, ps2) => ps1.LastName.CompareTo(ps2.LastName));
+                list.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
                 list.ForEach(
                     delegate(PlayerStats ps)
                         {
@@ -678,7 +678,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private void updateOverviewAndBoxScores()
         {
             var ts = _psr.IsActive ? MainWindow.TST[_psr.TeamF] : new TeamStats();
-            var tsopp = new TeamStats(ts.ID, "Opponents");
 
             grdOverview.DataContext = _psr;
 
@@ -1180,8 +1179,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void refresh()
         {
-            PlayerStats ps;
-
             MainWindow.ChangeSeason(_curSeason);
 
             populateTeamsCombo();
@@ -1189,7 +1186,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (cmbPlayer.SelectedIndex != -1)
             {
-                ps = createPlayerStatsFromCurrent();
+                var ps = createPlayerStatsFromCurrent();
 
                 var oldOwn = ps.ID;
                 var oldOpp = selectedOppPlayerID;

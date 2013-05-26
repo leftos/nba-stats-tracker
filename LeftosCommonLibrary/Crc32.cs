@@ -32,7 +32,7 @@ namespace LeftosCommonLibrary
     {
         private const UInt32 DefaultPolynomial = 0xedb88320;
         private const UInt32 DefaultSeed = 0xffffffff;
-        private static UInt32[] _defaultTable;
+        private static UInt32[] defaultTable;
 
         private readonly UInt32 _seed;
         private readonly UInt32[] _table;
@@ -120,9 +120,9 @@ namespace LeftosCommonLibrary
 
         private static UInt32[] initializeTable(UInt32 polynomial)
         {
-            if (polynomial == DefaultPolynomial && _defaultTable != null)
+            if (polynomial == DefaultPolynomial && defaultTable != null)
             {
-                return _defaultTable;
+                return defaultTable;
             }
 
             var createTable = new UInt32[256];
@@ -145,7 +145,7 @@ namespace LeftosCommonLibrary
 
             if (polynomial == DefaultPolynomial)
             {
-                _defaultTable = createTable;
+                defaultTable = createTable;
             }
 
             return createTable;

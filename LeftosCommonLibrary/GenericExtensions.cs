@@ -79,15 +79,19 @@ namespace LeftosCommonLibrary
                 var parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
                 foreach (var part in parts)
                 {
+                    // ReSharper disable ReturnValueOfPureMethodIsNotUsed
                     Convert.ChangeType(part, type);
+                    // ReSharper restore ReturnValueOfPureMethodIsNotUsed
                 }
                 row[key] = s;
             }
             catch (FormatException)
             {
+                Tools.WriteToTrace(string.Format("FormatException for key {0} with value {1}", key, dict[key]));
             }
             catch (KeyNotFoundException)
             {
+                Tools.WriteToTrace(string.Format("KeyNotFoundException for key {0}", key));
             }
         }
 
@@ -252,7 +256,9 @@ namespace LeftosCommonLibrary
                 var parts = s.Split(new[] { splitCharacter }, StringSplitOptions.None);
                 foreach (var part in parts)
                 {
+                    // ReSharper disable ReturnValueOfPureMethodIsNotUsed
                     Convert.ChangeType(part, type);
+                    // ReSharper restore ReturnValueOfPureMethodIsNotUsed
                 }
                 var ret = (T) Convert.ChangeType(s, typeof(T));
                 return ret;
@@ -329,7 +335,6 @@ namespace LeftosCommonLibrary
         /// <returns>The copy of the object.</returns>
         private static T deepClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
         {
-            T result;
             var t = original.GetType();
 
             Object tmpResult;
@@ -340,6 +345,7 @@ namespace LeftosCommonLibrary
             }
             else
             {
+                T result;
                 if (!t.IsArray)
                 {
                     /* Create new instance, at this point you pass parameters to

@@ -182,13 +182,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _sem = new Semaphore(1, 1);
         }
 
-        protected List<TeamStatsRow> pl_Lssr { get; set; }
-        protected List<TeamStatsRow> pl_TSRList { get; set; }
-        protected List<TeamStatsRow> pl_OppTSRList { get; set; }
+        private List<TeamStatsRow> pl_Lssr { get; set; }
+        private List<TeamStatsRow> pl_TSRList { get; set; }
+        private List<TeamStatsRow> pl_OppTSRList { get; set; }
 
-        protected List<TeamStatsRow> oppTSRList { get; set; }
-        protected List<TeamStatsRow> lssr { get; set; }
-        protected List<TeamStatsRow> TSRList { get; set; }
+        private List<TeamStatsRow> oppTSRList { get; set; }
+        private List<TeamStatsRow> lssr { get; set; }
+        private List<TeamStatsRow> TSRList { get; set; }
 
         private void populateSituationalsCombo()
         {
@@ -1734,7 +1734,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             foreach (var ps in plist)
             {
                 var pInsts =
-                    dictList.FindAll(dict => dict["Name"].ToLowerInvariant() == (ps.FirstName + " " + ps.LastName).ToLowerInvariant())
+                    dictList.FindAll(dict => dict["Name"].ToUpperInvariant() == (ps.FirstName + " " + ps.LastName).ToUpperInvariant())
                             .ToList();
                 foreach (var pInst in pInsts)
                 {
@@ -2006,8 +2006,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 var pInsts =
                     dictList.FindAll(
                         dict =>
-                        dict["First_Name"].ToLowerInvariant() == ps.FirstName.ToLowerInvariant()
-                        && dict["Last_Name"].ToLowerInvariant() == ps.LastName.ToLowerInvariant()).ToList();
+                        dict["First_Name"].ToUpperInvariant() == ps.FirstName.ToUpperInvariant()
+                        && dict["Last_Name"].ToUpperInvariant() == ps.LastName.ToUpperInvariant()).ToList();
                 foreach (var pInst in pInsts)
                 {
                     foreach (var ratingName in ratingNames)

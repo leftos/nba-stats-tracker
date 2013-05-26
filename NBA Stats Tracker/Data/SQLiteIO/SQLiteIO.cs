@@ -90,7 +90,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             Dictionary<string, string> settingsDict;
             try
             {
-                settingsDict = GetAllSettings(oldDB);
+                settingsDict = getAllSettings(oldDB);
             }
             catch
             {
@@ -100,7 +100,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             List<PastTeamStats> ptsList;
             try
             {
-                ptsList = GetAllPastTeamStats(oldDB);
+                ptsList = getAllPastTeamStats(oldDB);
             }
             catch
             {
@@ -110,7 +110,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             List<PastPlayerStats> ppsList;
             try
             {
-                ppsList = GetAllPastPlayerStats(oldDB);
+                ppsList = getAllPastPlayerStats(oldDB);
             }
             catch
             {
@@ -164,26 +164,26 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return true;
         }
 
-        private static List<PastTeamStats> GetAllPastTeamStats(string file)
+        private static List<PastTeamStats> getAllPastTeamStats(string file)
         {
             var db = new SQLiteDatabase(file);
-            var q = "SELECT * FROM PastTeamStats";
+            const string q = "SELECT * FROM PastTeamStats";
             var res = db.GetDataTable(q);
             return res.Rows.Cast<DataRow>().AsParallel().Select(dr => new PastTeamStats(dr)).ToList();
         }
 
-        private static List<PastPlayerStats> GetAllPastPlayerStats(string file)
+        private static List<PastPlayerStats> getAllPastPlayerStats(string file)
         {
             var db = new SQLiteDatabase(file);
-            var q = "SELECT * FROM PastPlayerStats";
+            const string q = "SELECT * FROM PastPlayerStats";
             var res = db.GetDataTable(q);
             return res.Rows.Cast<DataRow>().AsParallel().Select(dr => new PastPlayerStats(dr)).ToList();
         }
 
-        private static Dictionary<string, string> GetAllSettings(string file)
+        private static Dictionary<string, string> getAllSettings(string file)
         {
             var db = new SQLiteDatabase(file);
-            var q = "SELECT Setting, Value FROM Misc";
+            const string q = "SELECT Setting, Value FROM Misc";
             var res = db.GetDataTable(q);
             var dict = res.Rows.Cast<DataRow>()
                           .AsParallel()
@@ -252,7 +252,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         /// <summary>Saves the conferences and divisions to a specified database.</summary>
         /// <param name="file">The database.</param>
-        public static void SaveConferencesAndDivisions(string file)
+        private static void SaveConferencesAndDivisions(string file)
         {
             var db = new SQLiteDatabase(file);
             db.ClearTable("Conferences");
@@ -359,7 +359,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 var doneCount = 0;
                 foreach (var bse in MainWindow.BSHist)
                 {
-                    var q2 = "select HASH from GameResults";
+                    const string q2 = "select HASH from GameResults";
                     var hashes = MainWindow.DB.GetDataTable(q2).Rows.Cast<DataRow>().Select(dr => dr[0].ToString()).ToList();
                     string md5;
                     do
@@ -1172,8 +1172,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         private static void createPastPlayerAndTeamStatsTables(SQLiteDatabase db)
         {
-            string qr;
-            qr = string.Format(@"DROP TABLE IF EXISTS ""{0}""", "PastPlayerStats");
+            var qr = "DROP TABLE IF EXISTS \"PastPlayerStats\"";
             db.ExecuteNonQuery(qr);
             qr =
                 string.Format(
@@ -1181,7 +1180,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     "PastPlayerStats");
             db.ExecuteNonQuery(qr);
 
-            qr = string.Format(@"DROP TABLE IF EXISTS ""{0}""", "PastTeamStats");
+            qr = "DROP TABLE IF EXISTS \"PastTeamStats\"";
             db.ExecuteNonQuery(qr);
             qr =
                 string.Format(
@@ -1194,7 +1193,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="file">The database.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">The database requested doesn't exist.</exception>
-        public static int GetMaxSeasonSafe(string file)
+        private static int getMaxSeasonSafe(string file)
         {
             try
             {
@@ -1252,7 +1251,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
                 else
                 {
-                    return GetMaxSeasonSafe(file);
+                    return getMaxSeasonSafe(file);
                 }
             }
         }
@@ -1629,7 +1628,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
         public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
-            LoadSeason(
+            loadSeason(
                 MainWindow.CurrentDB,
                 out MainWindow.TST,
                 out MainWindow.TSTOpp,
@@ -1649,7 +1648,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
         public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
         {
-            LoadSeason(
+            loadSeason(
                 file,
                 out MainWindow.TST,
                 out MainWindow.TSTOpp,
@@ -1677,7 +1676,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="doNotLoadBoxScores">
         ///     if set to <c>true</c>, box scores will not be parsed.
         /// </param>
-        public static void LoadSeason(
+        private static void loadSeason(
             string file,
             out Dictionary<int, TeamStats> tst,
             out Dictionary<int, TeamStats> tstOpp,
@@ -1721,7 +1720,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             Interlocked.Exchange(
                 ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading divisions and conferences..."));
-            LoadDivisionsAndConferences(file);
+            loadDivisionsAndConferences(file);
 
             MainWindow.Tf.SeasonNum = curSeason;
             if (mustSave)
@@ -1806,7 +1805,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         /// <summary>Loads the divisions and conferences.</summary>
         /// <param name="file">The file.</param>
-        public static void LoadDivisionsAndConferences(string file)
+        private static void loadDivisionsAndConferences(string file)
         {
             var db = new SQLiteDatabase(file);
 
@@ -2076,7 +2075,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (
                 res.Rows.Cast<DataRow>()
                    .ToList()
-                   .Any(dr => ParseCell.GetString(dr, "name").ToLowerInvariant().Contains("shotismade text")))
+                   .Any(dr => ParseCell.GetString(dr, "name").ToUpperInvariant().Contains("shotismade text")))
             {
                 qr = "DROP TABLE PlayByPlay";
                 db.ExecuteNonQuery(qr);
@@ -2204,7 +2203,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return bsHist;
         }
 
-        public static List<BoxScoreEntry> GetTimeframedBoxScoresFromDatabase(
+        private static List<BoxScoreEntry> getTimeframedBoxScoresFromDatabase(
             string file, DateTime startDate, DateTime endDate, Dictionary<int, TeamStats> tst, Dictionary<int, PlayerStats> pst)
         {
             var db = new SQLiteDatabase(file);
@@ -2212,7 +2211,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var q = "select * from GameResults";
             q = SQLiteDatabase.AddDateRangeToSQLQuery(q, startDate, endDate, true);
             var res2 = db.GetDataTable(q);
-            var displayNames = GetTimeframedDisplayNames(file, startDate, endDate);
+            var displayNames = getTimeframedDisplayNames(file, startDate, endDate);
 
             var bsHist = ParseBoxScores(tst, pst, res2, displayNames, db);
             return bsHist;
@@ -2230,7 +2229,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             return displayNames;
         }
 
-        public static Dictionary<int, string> GetTimeframedDisplayNames(string file, DateTime startDate, DateTime endDate)
+        private static Dictionary<int, string> getTimeframedDisplayNames(string file, DateTime startDate, DateTime endDate)
         {
             var displayNames = new Dictionary<int, string>();
 
@@ -2371,7 +2370,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
             catch (Exception ex)
             {
-                if (ex.Message.ToLowerInvariant().Contains("no such table"))
+                if (ex.Message.ToUpperInvariant().Contains("no such table"))
                 {
                     return pst;
                 }
@@ -2393,7 +2392,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
             catch (Exception ex)
             {
-                if (ex.Message.ToLowerInvariant().Contains("no such table"))
+                if (ex.Message.ToUpperInvariant().Contains("no such table"))
                 {
                     return pst;
                 }
@@ -2452,7 +2451,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             }
         }
 
-        public static void RepairDB(ref Dictionary<int, PlayerStats> pst)
+        private static void repairDB(ref Dictionary<int, PlayerStats> pst)
         {
             var list = pst.Keys.ToList();
             foreach (var key in list)
@@ -2607,9 +2606,6 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var maxSeason = GetMaxSeason(MainWindow.CurrentDB);
             var db = MainWindow.DB;
 
-            string q;
-            DataTable res;
-
             #region Prepare Teams & Players Dictionaries
 
             var displayNames = new Dictionary<int, string>();
@@ -2632,8 +2628,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading teams..."));
                 foreach (var i in seasons)
                 {
-                    q = "SELECT * FROM Teams" + AddSuffix(i, maxSeason) + " WHERE isHidden LIKE \"False\"";
-                    res = db.GetDataTable(q);
+                    var q = "SELECT * FROM Teams" + AddSuffix(i, maxSeason) + " WHERE isHidden LIKE \"False\"";
+                    var res = db.GetDataTable(q);
                     foreach (DataRow dr in res.Rows)
                     {
                         var teamID = ParseCell.GetInt32(dr, "ID");
@@ -2687,7 +2683,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             displayNames.Add(-1, "");
 
-            RepairDB(ref pst);
+            repairDB(ref pst);
 
             #endregion
 
@@ -2696,7 +2692,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Loading box scores..."));
             var bsHist = !tf.IsBetween
                              ? GetSeasonBoxScoresFromDatabase(MainWindow.CurrentDB, tf.SeasonNum, maxSeason, tst, pst)
-                             : GetTimeframedBoxScoresFromDatabase(MainWindow.CurrentDB, tf.StartDate, tf.EndDate, tst, pst);
+                             : getTimeframedBoxScoresFromDatabase(MainWindow.CurrentDB, tf.StartDate, tf.EndDate, tst, pst);
 
             bsHist.Sort((bse1, bse2) => bse1.BS.GameDate.CompareTo(bse2.BS.GameDate));
             bsHist.Reverse();
@@ -2723,8 +2719,8 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 }
             }
 
-            var better500 = "vs >= .500";
-            var worse500 = "vs < .500";
+            const string better500 = "vs >= .500";
+            const string worse500 = "vs < .500";
             var teams = tst.Keys;
             foreach (var id in teams)
             {

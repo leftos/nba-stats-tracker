@@ -142,7 +142,7 @@
             var awayPlayersIDs = _bse.PBSList.Where(pbs => pbs.TeamID == _t1ID).Select(pbs => pbs.PlayerID).ToList();
             AwaySubs = new ObservableCollection<PlayerStats>();
             awayPlayersIDs.ForEach(id => AwaySubs.Add(_pst[id]));
-            AwaySubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            AwaySubs.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
             lstAwaySubs.ItemsSource = AwaySubs;
 
             AwayActive = new ObservableCollection<PlayerStats>();
@@ -151,7 +151,7 @@
             var homePlayersIDs = _bse.PBSList.Where(pbs => pbs.TeamID == _t2ID).Select(pbs => pbs.PlayerID).ToList();
             HomeSubs = new ObservableCollection<PlayerStats>();
             homePlayersIDs.ForEach(id => HomeSubs.Add(_pst[id]));
-            HomeSubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            HomeSubs.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
             lstHomeSubs.ItemsSource = HomeSubs;
 
             HomeActive = new ObservableCollection<PlayerStats>();
@@ -382,10 +382,10 @@
 
         private void sortPlayerLists()
         {
-            AwaySubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
-            AwayActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
-            HomeSubs.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
-            HomeActive.Sort((ps1, ps2) => ps1.FullName.CompareTo(ps2.FullName));
+            AwaySubs.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
+            AwayActive.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
+            HomeSubs.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
+            HomeActive.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
 
             PlayersComboList.Clear();
             PlayersComboList.Add(new ComboBoxItemWithIsEnabled(txbAwayTeam.Text, false));

@@ -30,13 +30,13 @@ namespace NBA_Stats_Tracker.Data.Players
     /// <summary>Used to determine the player ranking for each stat.</summary>
     public class PlayerRankings
     {
-        public int PerGameCount = new PlayerStats().PerGame.Length;
-        public Dictionary<int, Dictionary<string, int>> RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-        public Dictionary<int, int[]> RankingsPerGame = new Dictionary<int, int[]>();
-        public Dictionary<int, int[]> RankingsTotal = new Dictionary<int, int[]>();
-        public Dictionary<string, Dictionary<int, int>> RevRankingsMetrics = new Dictionary<string, Dictionary<int, int>>();
-        public Dictionary<int, Dictionary<int, int>> RevRankingsPerGame = new Dictionary<int, Dictionary<int, int>>();
-        public Dictionary<int, Dictionary<int, int>> RevRankingsTotals = new Dictionary<int, Dictionary<int, int>>();
+        private static readonly int PerGameCount = new PlayerStats().PerGame.Length;
+        public readonly Dictionary<int, Dictionary<string, int>> RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
+        public readonly Dictionary<int, int[]> RankingsPerGame = new Dictionary<int, int[]>();
+        public readonly Dictionary<int, int[]> RankingsTotal = new Dictionary<int, int[]>();
+        public readonly Dictionary<string, Dictionary<int, int>> RevRankingsMetrics = new Dictionary<string, Dictionary<int, int>>();
+        public readonly Dictionary<int, Dictionary<int, int>> RevRankingsPerGame = new Dictionary<int, Dictionary<int, int>>();
+        public readonly Dictionary<int, Dictionary<int, int>> RevRankingsTotals = new Dictionary<int, Dictionary<int, int>>();
 
         public PlayerRankings()
         {

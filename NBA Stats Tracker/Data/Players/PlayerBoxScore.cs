@@ -63,6 +63,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerBoxScore" /> class.
         /// </summary>
         /// <param name="r">The DataRow containing the player's box score.</param>
+        /// <param name="tst">The Team Stats dictionary from which to add missing information to the instance.</param>
         public PlayerBoxScore(DataRow r, Dictionary<int, TeamStats> tst)
         {
             PlayerID = ParseCell.GetInt32(r, "PlayerID");
@@ -553,12 +554,10 @@ namespace NBA_Stats_Tracker.Data.Players
             GmScE = ps.Metrics["GmScE"];
         }
 
-        /// <summary>Calculates the metrics of a player's performance.</summary>
-        /// <param name="gameID">The game ID.</param>
-        /// <param name="r">
-        ///     The SQLite DataRow containing the player's box score. Should be the result of an INNER JOIN'ed query between
-        ///     PlayerResults and GameResults.
-        /// </param>
+        /// <summary>
+        /// Calculates the metrics of a player's performance.
+        /// </summary>
+        /// <param name="bs">The game's box score from which to calculate the metrics.</param>
         public void CalcMetrics(TeamBoxScore bs)
         {
             var ts = new TeamStats(TeamID);

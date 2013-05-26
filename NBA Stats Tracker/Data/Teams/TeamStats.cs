@@ -1619,11 +1619,11 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="res">The result of the query containing the box score records.</param>
         /// <param name="ts">The TeamStats instance to be modified.</param>
         /// <param name="tsopp">The opposing TeamStats instance to be modified..</param>
-        public static void AddToTeamStatsFromSQLBoxScores(DataTable res, ref TeamStats ts, ref TeamStats tsopp)
+        private static void addToTeamStatsFromSQLBoxScores(DataTable res, ref TeamStats ts, ref TeamStats tsopp)
         {
             foreach (DataRow r in res.Rows)
             {
-                AddToTeamStatsFromSQLBoxScore(r, ref ts, ref tsopp);
+                addToTeamStatsFromSQLBoxScore(r, ref ts, ref tsopp);
             }
         }
 
@@ -1631,7 +1631,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="r">The result of the query containing the box score record.</param>
         /// <param name="ts">The TeamStats instance to be modified.</param>
         /// <param name="tsopp">The opposing TeamStats instance to be modified.</param>
-        public static void AddToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
+        private static void addToTeamStatsFromSQLBoxScore(DataRow r, ref TeamStats ts, ref TeamStats tsopp)
         {
             var playoffs = ParseCell.GetBoolean(r, "isPlayoff");
             if (!playoffs)

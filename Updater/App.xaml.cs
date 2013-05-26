@@ -63,14 +63,14 @@ namespace Updater
             }
             installerProc.WaitForExit();
 
-            var installDir = GetRegistrySetting(
+            var installDir = getRegistrySetting(
                 "InstallDir", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\NBA Stats Tracker");
             Process.Start(installDir + @"\NBA Stats Tracker.exe");
 
             Environment.Exit(0);
         }
 
-        private static string GetRegistrySetting(string setting, string defaultValue)
+        private static string getRegistrySetting(string setting, string defaultValue)
         {
             var rk = Registry.CurrentUser;
             var settingValue = defaultValue;

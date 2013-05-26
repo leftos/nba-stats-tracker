@@ -135,6 +135,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="player">A Player instance containing the information to initialize with.</param>
+        /// <param name="fromAddScreen">Determines whether the instance is being created from the AddWindow.</param>
         public PlayerStats(Player player, bool fromAddScreen = false)
             : this()
         {
@@ -165,6 +166,7 @@ namespace NBA_Stats_Tracker.Data.Players
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
         /// </summary>
         /// <param name="dataRow">A row of an SQLite query result containing player information.</param>
+        /// <param name="tst">The Team Stats dictionary from which to add additional information.</param>
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the row is assumed to contain playoff stats.
         /// </param>
@@ -323,6 +325,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="firstName">The first name.</param>
         /// <param name="position1">The primary position.</param>
         /// <param name="position2">The secondary position.</param>
+        /// <param name="yearsPro">The amount of years this player has been in the league.</param>
         /// <param name="teamF">The team the player is currently with.</param>
         /// <param name="teamS">The team the player started the season with.</param>
         /// <param name="isActive">
@@ -331,9 +334,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="isHidden">
         ///     if set to <c>true</c> the player is hidden for this season.
         /// </param>
-        /// <param name="isInjured">
-        ///     if set to <c>true</c> the player is injured.
-        /// </param>
+        /// <param name="injury">The PlayerInjury instance containing information about the player's injury, if any.</param>
         /// <param name="isAllStar">
         ///     if set to <c>true</c> is an All-Star this season.
         /// </param>
@@ -344,6 +345,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c> the row is assumed to contain playoff stats.
         /// </param>
+        /// <param name="yearOfBirth">The year the player was born.</param>
         public PlayerStats(
             int id,
             string lastName,
@@ -716,7 +718,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CareerHighs[PAbbr.FOUL] = phr.FOUL;
         }
 
-        public void CalculateSeasonHighs(List<BoxScoreEntry> bsList)
+        public void CalculateSeasonHighs(IEnumerable<BoxScoreEntry> bsList)
         {
             /*
             var allTimePBSList = new List<PlayerBoxScore>();
@@ -850,8 +852,10 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg(true);
         }
 
-        /// <summary>Updates the playoff stats.</summary>
-        /// <param name="dataRow">The data row containing the playoff stats.</param>
+        /// <summary>
+        /// Updates the playoff stats.
+        /// </summary>
+        /// <param name="pl_psr">The Playoffs PlayerStatsRow instance to get the stats from.</param>
         public void UpdatePlayoffStats(PlayerStatsRow pl_psr)
         {
             PlTotals[PAbbr.GP] = pl_psr.GP;
@@ -926,6 +930,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="tsopp">The player's team's opponents' stats</param>
         /// <param name="ls">The total league stats</param>
         /// <param name="leagueOv">Whether CalcMetrics is being called from the League Overview screen</param>
+        /// <param name="GmScOnly">Whether to only calculate the GmSc metric.</param>
+        /// <param name="playoffs">Whether to calculate the metrics based on the playoffs stats.</param>
         public void CalcMetrics(
             TeamStats ts, TeamStats tsopp, TeamStats ls, bool leagueOv = false, bool GmScOnly = false, bool playoffs = false)
         {
@@ -1020,7 +1026,7 @@ namespace NBA_Stats_Tracker.Data.Players
                            / (pstats[PAbbr.MINS] * (tstats[TAbbr.FGA] + 0.44 * tstats[TAbbr.FTA] + tstats[TAbbr.TOS]));
                 tempMetrics.Add("USG%", USGp);
 
-                CalculateRates(pstats, ref tempMetrics);
+                calculateRates(pstats, ref tempMetrics);
                 // PER preparations
                 var lREB = lstats[TAbbr.OREB] + lstats[TAbbr.DREB];
                 var factor = (2 / 3) - (0.5 * (lstats[TAbbr.AST] / lstats[TAbbr.FGM])) / (2 * (lstats[TAbbr.FGM] / lstats[TAbbr.FTM]));
@@ -1134,7 +1140,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public static void CalculateRates(double[] pstats, ref Dictionary<string, double> tempMetrics)
+        private static void calculateRates(double[] pstats, ref Dictionary<string, double> tempMetrics)
         {
             var pREB = pstats[PAbbr.OREB] + pstats[PAbbr.DREB];
 
@@ -1182,7 +1188,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the PER is calculated for the player's playoff stats.
         /// </param>
-        public void CalcPER(double lgAvgPER, bool playoffs = false)
+        private void calcPER(double lgAvgPER, bool playoffs = false)
         {
             try
             {
@@ -1376,6 +1382,7 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the metrics will be calculated for the playoff stats.
         /// </param>
+        /// <param name="teamsPerPlayer">if set to <c>true</c>, the team stats dictionary is assumed to be per player.</param>
         public static void CalculateAllMetrics(
             ref Dictionary<int, PlayerStats> playerStats,
             Dictionary<int, TeamStats> teamStats,
@@ -1470,11 +1477,11 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 if (!playoffs)
                 {
-                    playerStats[playerid].CalcPER(lgAvgPER);
+                    playerStats[playerid].calcPER(lgAvgPER);
                 }
                 else
                 {
-                    playerStats[playerid].CalcPER(plLgAvgPER, true);
+                    playerStats[playerid].calcPER(plLgAvgPER, true);
                 }
             }
         }
@@ -1487,7 +1494,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 pstatsD[i] = Convert.ToDouble(pstats[i]);
             }
 
-            CalculateRates(pstatsD, ref tempMetrics);
+            calculateRates(pstatsD, ref tempMetrics);
         }
 
         public void UpdateContract(PlayerStatsRow psr)

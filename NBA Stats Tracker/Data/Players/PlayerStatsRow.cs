@@ -52,6 +52,8 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the interface provided will show playoff stats.
         /// </param>
+        /// <param name="calcRatings">Whether to calculate the player's NBA 2K ratings.</param>
+        /// <param name="teamName">A custom team name.</param>
         public PlayerStatsRow(PlayerStats ps, bool playoffs = false, bool calcRatings = true, string teamName = null)
             : this()
         {
@@ -1464,7 +1466,6 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>Edits a player's stats row to adjust for the rules and requirements of the NBA's League Leaders standings.</summary>
-        /// <param name="psr">The player stats row.</param>
         /// <param name="teamStats">The player's team stats.</param>
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the playoff stats will be edited; otherwise, the regular season's.

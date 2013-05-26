@@ -91,7 +91,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         public static string SavesPath = "";
         public static readonly string AppPath = Environment.CurrentDirectory + "\\";
-        public static Random Random = new Random();
+        public static readonly Random Random = new Random();
 
         public static int BaseYear = DateTime.Now.Year;
 
@@ -162,13 +162,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public static SQLiteDatabase DB;
         public static bool LoadingSeason;
         private static bool _showUpdateMessage;
-        public static Dictionary<string, string> ImageDict = new Dictionary<string, string>();
 
-        public static RoutedCommand CmndImport = new RoutedCommand();
-        public static RoutedCommand CmndOpen = new RoutedCommand();
-        public static RoutedCommand CmndSave = new RoutedCommand();
-        public static RoutedCommand CmndExport = new RoutedCommand();
-        public static RoutedCommand CmndFind = new RoutedCommand();
+        private static readonly RoutedCommand CmndImport = new RoutedCommand();
+        private static readonly RoutedCommand CmndOpen = new RoutedCommand();
+        private static readonly RoutedCommand CmndSave = new RoutedCommand();
+        private static readonly RoutedCommand CmndExport = new RoutedCommand();
+        private static readonly RoutedCommand CmndFind = new RoutedCommand();
 
         private static List<string> _notables = new List<string>();
 
@@ -465,21 +464,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
             }
         }
-
-        /// <summary>TODO: To be used to build a dictionary of all available images for teams and players to use throughout the program</summary>
-        private static void prepareImageCache()
-        {
-            var curTeamsPath = AppPath + @"Images\Teams\Current";
-            var curTeamsImages = Directory.GetFiles(curTeamsPath);
-            foreach (var file in curTeamsImages)
-            {
-                if (!ImageDict.ContainsKey(Path.GetFileNameWithoutExtension(file)))
-                {
-                    ImageDict.Add(Path.GetFileNameWithoutExtension(file), Path.GetFullPath(file));
-                }
-            }
-        }
-
+        
         /// <summary>
         ///     Handles the Click event of the btnImport2K12 control. Asks the user for the folder containing the NBA 2K12 save (in the case
         ///     of the old method), or the REDitor-exported CSV files.
@@ -528,7 +513,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            if (fbd.SelectedPath == "")
+            if (String.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 return;
             }
@@ -569,7 +554,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 };
             sfd.ShowDialog();
 
-            if (sfd.FileName == "")
+            if (String.IsNullOrWhiteSpace(sfd.FileName))
             {
                 return;
             }
@@ -578,7 +563,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             IsEnabled = false;
 
-            StartProgressWatchTimer();
+            startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, 10, "Saving new database...");
             Task.Factory.StartNew(() => SQLiteIO.SaveDatabaseAs(file))
                 .FailFastOnException(UIScheduler)
@@ -588,7 +573,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         private void finishSavingAs(Task<bool> task, string file)
         {
-            FinishLoadingDatabase();
+            finishLoadingDatabase();
             StopProgressWatchTimer();
             IsEnabled = true;
             if (task.Result)
@@ -635,12 +620,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 };
             ofd.ShowDialog();
 
-            if (ofd.FileName == "")
+            if (String.IsNullOrWhiteSpace(ofd.FileName))
             {
                 return;
             }
 
-            PopulateSeasonCombo(ofd.FileName);
+            populateSeasonCombo(ofd.FileName);
 
             txtFile.Text = ofd.FileName;
             CurrentDB = txtFile.Text;
@@ -657,17 +642,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            StartProgressWatchTimer();
+            startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
             Task.Factory.StartNew(() => SQLiteIO.LoadSeason())
                 .FailFastOnException(UIScheduler)
-                .ContinueWith(t => FinishLoadingDatabase(), UIScheduler)
+                .ContinueWith(t => finishLoadingDatabase(), UIScheduler)
                 .FailFastOnException(UIScheduler);
 
             //SQLiteIO.LoadSeason();
         }
 
-        public void StartProgressWatchTimer()
+        private void startProgressWatchTimer()
         {
             if (_watchTimerRunning)
             {
@@ -713,10 +698,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             DBData dbData;
             SQLiteIO.PopulateAll(Tf, out dbData);
-            ParseDBData(dbData);
+            parseDBData(dbData);
         }
 
-        public static void ParseDBData(DBData dbData)
+        private static void parseDBData(DBData dbData)
         {
             TST = dbData.TST;
             TSTOpp = dbData.TSTOpp;
@@ -731,7 +716,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             BSHist = dbData.BSHist;
         }
 
-        public void FinishLoadingDatabase(bool leaveProgressOpen = false)
+        private void finishLoadingDatabase(bool leaveProgressOpen = false)
         {
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
@@ -740,7 +725,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
             //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
-            UpdateNotables();
+            updateNotables();
             Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
             UpdateSearchCache();
 
@@ -895,7 +880,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 BSHist.Single(bse => bse.BS.ID == TempBSE_BS.ID).BS = TempBSE_BS;
             }
 
-            StartProgressWatchTimer();
+            startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             Task.Factory.StartNew(
                 () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
@@ -923,7 +908,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             try
             {
                 var webClient = new WebClient();
-                var updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
+                const string updateUri = "http://students.ceid.upatras.gr/~aslanoglou/nstversion.txt";
                 var appDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\NBA Stats Tracker\";
                 if (!showMessage)
                 {
@@ -1030,7 +1015,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 ofd.InitialDirectory = SavesPath;
             }
             ofd.ShowDialog();
-            if (ofd.FileName == "")
+            if (String.IsNullOrWhiteSpace(ofd.FileName))
             {
                 return;
             }
@@ -1101,7 +1086,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            if (fbd.SelectedPath == "")
+            if (String.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 return;
             }
@@ -1426,7 +1411,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         }
                         SQLiteIO.SaveSeasonToDatabase(file, TST, TSTOpp, PST, CurSeason, maxSeason);
                         txtFile.Text = file;
-                        PopulateSeasonCombo(file);
+                        populateSeasonCombo(file);
                         SQLiteIO.LoadSeason(file, CurSeason);
 
                         txbWait.Visibility = Visibility.Hidden;
@@ -1483,21 +1468,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
         /// <summary>Populates the season combo using a specified NST database file.</summary>
         /// <param name="file">The file from which to determine the available seasons.</param>
-        public void PopulateSeasonCombo(string file)
+        private void populateSeasonCombo(string file)
         {
             DB = new SQLiteDatabase(file);
 
-            GenerateSeasons();
+            generateSeasons();
         }
 
         /// <summary>Populates the season combo using the current database.</summary>
-        public void PopulateSeasonCombo()
+        private void populateSeasonCombo()
         {
-            PopulateSeasonCombo(CurrentDB);
+            populateSeasonCombo(CurrentDB);
         }
 
         /// <summary>Generates the entries used to populate the season combo.</summary>
-        public void GenerateSeasons()
+        private void generateSeasons()
         {
             const string qr = "SELECT * FROM SeasonNames ORDER BY ID DESC";
             var dataTable = DB.GetDataTable(qr);
@@ -1762,7 +1747,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         public void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
-            StartProgressWatchTimer();
+            startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
             if (Tf.IsBetween)
             {
@@ -1864,7 +1849,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             txtFile.Text = sfd.FileName;
             CurrentDB = txtFile.Text;
-            PopulateSeasonCombo();
+            populateSeasonCombo();
             ChangeSeason(1);
 
             SQLiteIO.SetSetting("Game Length", 48);
@@ -2070,7 +2055,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         ps.Value.CalcAvg();
                     }
 
-                    PopulateSeasonCombo();
+                    populateSeasonCombo();
                     SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, CurSeason);
                     ChangeSeason(CurSeason);
                     Tf = new Timeframe(CurSeason);
@@ -2094,7 +2079,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
-            StartProgressWatchTimer();
+            startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving all seasons...");
             Task.Factory.StartNew(() => SQLiteIO.SaveAllSeasons(CurrentDB))
                 .FailFastOnException(UIScheduler)
@@ -2146,7 +2131,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 };
             ofd.ShowDialog();
 
-            if (ofd.FileName == "")
+            if (String.IsNullOrWhiteSpace(ofd.FileName))
             {
                 return;
             }
@@ -2670,17 +2655,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             lock (_lock)
             {
                 Task.Factory.StartNew(
-                    () => MWInstance.StartProgressWatchTimer(),
+                    () => MWInstance.startProgressWatchTimer(),
                     CancellationToken.None,
                     TaskCreationOptions.None,
                     MWInstance.UIScheduler).Wait();
                 DBData dbData;
                 SQLiteIO.PopulateAll(Tf, out dbData);
-                ParseDBData(dbData);
+                parseDBData(dbData);
                 if (!onlyPopulate)
                 {
                     Task.Factory.StartNew(
-                        () => MWInstance.FinishLoadingDatabase(leaveProgressWindowOpen),
+                        () => MWInstance.finishLoadingDatabase(leaveProgressWindowOpen),
                         CancellationToken.None,
                         TaskCreationOptions.None,
                         MWInstance.UIScheduler).Wait();
@@ -2688,7 +2673,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
         }
 
-        public static void UpdateNotables()
+        private static void updateNotables()
         {
             Dictionary<int, PlayerStats> pstLeaders;
             SeasonLeadersRankings = PlayerRankings.CalculateLeadersRankings(out pstLeaders);
@@ -3097,7 +3082,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            if (fbd.SelectedPath == "")
+            if (String.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 return;
             }
@@ -3134,7 +3119,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             mnuMiscPreferMyLeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "NBA");
             LoadMyLeadersCriteria();
-            UpdateNotables();
+            updateNotables();
         }
 
         private void mnuMiscPreferMyLeaders_Checked(object sender, RoutedEventArgs e)
@@ -3146,7 +3131,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             mnuMiscPreferNBALeaders.IsChecked = false;
             SQLiteIO.SetSetting("Leaders", "My");
             LoadMyLeadersCriteria();
-            UpdateNotables();
+            updateNotables();
         }
 
         private void mnuMiscImportOldPlayerStats2K12_Click(object sender, RoutedEventArgs e)
@@ -3164,7 +3149,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            if (fbd.SelectedPath == "")
+            if (String.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 return;
             }
