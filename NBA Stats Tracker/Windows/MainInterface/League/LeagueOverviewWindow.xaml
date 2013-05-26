@@ -2960,7 +2960,7 @@
                             <TextBlock Margin="6" Name="txbSubs" TextWrapping="Wrap" />
                         </Grid>
                         <ComboBox x:Name="cmbUTCriteria" Margin="0,6,6,0" VerticalAlignment="Top"
-                                  HorizontalAlignment="Right" Width="143"
+                                  HorizontalAlignment="Right" Width="182"
                                   SelectionChanged="cmbUTCriteria_SelectionChanged" />
                     </Grid>
                 </TabItem>

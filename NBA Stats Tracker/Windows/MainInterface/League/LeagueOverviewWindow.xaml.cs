@@ -78,7 +78,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private readonly SQLiteDatabase _db = new SQLiteDatabase(MainWindow.CurrentDB);
         private readonly DataTable _dtBS;
-        private readonly List<string> _uTeamCriteria = new List<string> { "All Players", "League Leaders", "My League Leaders" };
+
+        private readonly List<string> _uTeamCriteria = new List<string>
+            {
+                "All Players (GmSc)",
+                "All Players (PER)",
+                "League Leaders (GmSc)",
+                "League Leaders (PER)",
+                "My League Leaders (GmSc)",
+                "My League Leaders (PER)"
+            };
 
         private readonly List<string> _uTeamOptions = new List<string>
             {
@@ -578,11 +587,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _best5Text = "";
             _best6Text = "";
 
+            var useGmSc = cmbUTCriteria.SelectedItem.ToString().Contains("GmSc");
+
             var templist = new List<PlayerStatsRow>();
             try
             {
                 templist = psrList.ToList();
-                templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                templist.Sort((pmsr1, pmsr2) => useGmSc ? pmsr1.GmSc.CompareTo(pmsr2.GmSc) : pmsr1.PER.CompareTo(pmsr2.PER));
                 templist.Reverse();
                 var startingIndex = (Convert.ToInt32(nudBestPage.Value) - 1) * 6;
                 templist = templist.Skip(startingIndex).ToList();
@@ -632,7 +643,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             try
             {
                 templist = plPSRList.ToList();
-                templist.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                templist.Sort((pmsr1, pmsr2) => useGmSc ? pmsr1.GmSc.CompareTo(pmsr2.GmSc) : pmsr1.PER.CompareTo(pmsr2.PER));
                 templist.Reverse();
                 var startingIndex = (Convert.ToInt32(nudBestPage.Value) - 1) * 6;
                 templist = templist.Skip(startingIndex).ToList();
@@ -736,11 +747,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _plSubsText = "";
             }
 
+            bool useGmSc = cmbUTCriteria.SelectedItem.ToString().Contains("GmSc");
+
             if (type.StartsWith("All-Rookie"))
             {
                 psrList = psrList.Where(ps => ps.YearsPro == 1).ToList();
             }
-            psrList = psrList.OrderByDescending(ps => ps.GmSc).ToList();
+            psrList = psrList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
 
             string text;
             PlayerStatsRow psr1;
@@ -749,23 +762,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             var pgList =
                 psrList.Where(row => (row.Position1 == Position.PG || row.Position2 == Position.PG)) // && row.isInjured == false)
                        .Take(10).ToList();
-            pgList = pgList.OrderByDescending(ps => ps.GmSc).ToList();
+            pgList = pgList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
             var sgList =
                 psrList.Where(row => (row.Position1 == Position.SG || row.Position2 == Position.SG)) // && row.isInjured == false)
                        .Take(10).ToList();
-            sgList = sgList.OrderByDescending(ps => ps.GmSc).ToList();
+            sgList = sgList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
             var sfList =
                 psrList.Where(row => (row.Position1 == Position.SF || row.Position2 == Position.SF)) // && row.isInjured == false)
                        .Take(10).ToList();
-            sfList = sfList.OrderByDescending(ps => ps.GmSc).ToList();
+            sfList = sfList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
             var pfList =
                 psrList.Where(row => (row.Position1 == Position.PF || row.Position2 == Position.PF)) // && row.isInjured == false)
                        .Take(10).ToList();
-            pfList = pfList.OrderByDescending(ps => ps.GmSc).ToList();
+            pfList = pfList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
             var cList =
                 psrList.Where(row => (row.Position1 == Position.C || row.Position2 == Position.C)) // && row.isInjured == false)
                        .Take(10).ToList();
-            cList = cList.OrderByDescending(ps => ps.GmSc).ToList();
+            cList = cList.OrderByDescending(ps => useGmSc ? ps.GmSc : ps.PER).ToList();
             var permutations = new List<StartingFivePermutation>();
 
             var max = Double.MinValue;
@@ -782,7 +795,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                 double sum = 0;
                                 var pInP = 0;
                                 var perm = new List<int>(5) { pg.ID };
-                                sum += pg.GmSc;
+                                sum += useGmSc ? pg.GmSc : pg.PER;
                                 if (pg.Position1S == "PG")
                                 {
                                     pInP++;
@@ -792,7 +805,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                     continue;
                                 }
                                 perm.Add(sg.ID);
-                                sum += sg.GmSc;
+                                sum += useGmSc ? sg.GmSc : sg.PER;
                                 if (sg.Position1S == "SG")
                                 {
                                     pInP++;
@@ -802,7 +815,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                     continue;
                                 }
                                 perm.Add(sf.ID);
-                                sum += sf.GmSc;
+                                sum += useGmSc ? sf.GmSc : sf.PER;
                                 if (sf.Position1S == "SF")
                                 {
                                     pInP++;
@@ -812,7 +825,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                     continue;
                                 }
                                 perm.Add(pf.ID);
-                                sum += pf.GmSc;
+                                sum += useGmSc ? pf.GmSc : pf.PER;
                                 if (pf.Position1S == "PF")
                                 {
                                     pInP++;
@@ -822,7 +835,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                     continue;
                                 }
                                 perm.Add(c.ID);
-                                sum += c.GmSc;
+                                sum += useGmSc ? c.GmSc : c.PER;
                                 if (c.Position1S == "C")
                                 {
                                     pInP++;
@@ -2067,7 +2080,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
         private void prepareUltimateTeam()
         {
-            switch (cmbUTCriteria.SelectedItem.ToString())
+            switch (cmbUTCriteria.SelectedItem.ToString().Split('(')[0].Trim())
             {
                 case "All Players":
                     calculateUltimateTeam(_psrList, cmbSituational.SelectedItem.ToString());
@@ -2096,7 +2109,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             prepareUltimateTeam();
             prepareBestPerformers();
 
-            if (cmbUTCriteria.SelectedItem.ToString() == "League Leaders")
+            if (cmbUTCriteria.SelectedItem.ToString().Split('(')[0].Trim() == "League Leaders")
             {
                 txbStartingPG.Text =
                     "Ultimate Team can't be calculated with League Leaders filtering. Other features (e.g. \"Best Performers\" "
@@ -2111,7 +2124,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 nudBestPage.Value = 1;
             }
 
-            switch (cmbUTCriteria.SelectedItem.ToString())
+            switch (cmbUTCriteria.SelectedItem.ToString().Split('(')[0].Trim())
             {
                 case "All Players":
                     calculateBestPerformers(_psrList, _plPSRList);
