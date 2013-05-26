@@ -277,6 +277,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var validPlayers = players.FindAll(player => isValidPlayer(player, nba2KVersion));
 
+            var endAt = nba2KVersion == NBA2KVersion.NBA2K13 ? 19 : 20;
+
             var pw = new ProgressWindow("Please wait as player career stats are being imported...");
             pw.Show();
             var bw = new BackgroundWorker { WorkerReportsProgress = true };
@@ -423,7 +425,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
                         var dt = MainWindow.DB.GetDataTable(qr);
                         dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
-                        for (var j = startAt; j <= 20; j++)
+                        for (var j = startAt; j < endAt; j++)
                         {
                             var statEntryID = player["StatY" + j];
                             if (statEntryID == "-1")
