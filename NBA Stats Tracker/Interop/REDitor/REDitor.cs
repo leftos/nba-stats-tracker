@@ -179,23 +179,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     break;
                 }
             }
-            else
-            {
-                var year = -1;
-                for (var j = 0; j < players.Count; j++)
-                {
-                    if (players[j]["StatY" + startAt] != "-1")
-                    {
-                        year = playerStats.Single(stats => stats["ID"] == players[j]["StatY" + startAt])["Year"].ToInt32();
-                        break;
-                    }
-                }
-                if (year == -1)
-                {
-                    MessageBox.Show("There were no players with stats starting " + startAt + " years ago.");
-                    MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(-2);
-                }
-            }
 
             initializeLegalTeamTypes(nba2KVersion);
 
@@ -445,7 +428,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             var statEntryID = player["StatY" + j];
                             if (statEntryID == "-1")
                             {
-                                break;
+                                continue;
                             }
                             var stats = playerStats.Single(d => d["ID"] == statEntryID);
                             var prevStats = new PastPlayerStats();
