@@ -209,7 +209,7 @@ Development Credits
 		Uses the Extended WPF Toolkit (http://wpftoolkit.codeplex.com/)
 		Uses the LumenWorks Framework (http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 		Uses the SoftwareArchitects ScrollSynchronizer (http://www.codeproject.com/Articles/39244/Scroll-Synchronization) with minor personal edits
-		Uses the Ciloci Fast Lightweight Expression Evaluator (http://flee.codeplex.com)
+		Uses the C# port of the Ciloci Fast Lightweight Expression Evaluator (http://fleesharp.codeplex.com)
 		Uses an Object DeepCloning Code Example by Felix K. (http://stackoverflow.com/a/8026574/427338)
 		Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
 		Uses a Sortable Binding List implementation by Tim Van Wassenhove (http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/)
