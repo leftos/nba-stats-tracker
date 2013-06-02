@@ -1,4 +1,11 @@
 NBA Stats Tracker - Version History
+	
+	v1.15.1
+		- Addition: Added Shot Chart in Team & Player Overview's Advanced Shooting Stats
+		- Addition: When editing Play-By-Play information, the shot location can be selected from a floor chart
+		- Improvement: The Play-By-Play window will try to remember the 2nd player selected when switching event types
+		- Improvement: The Play-By-Play window will provide a correct set of shot origins depending on the shot distance
+		- Improvement: Missed shots will no longer be able to be recorded as assisted (Play-By-Play)
 
 	v1.15.0.2
 		- Fix: SAEDREB% (Shot Attempts Ending in Defensive Rebound %) was being calculated wrong
