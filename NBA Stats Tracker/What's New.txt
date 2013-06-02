@@ -1,7 +1,8 @@
 NBA Stats Tracker - Version History
 
 	v1.15
-		- Addition: Team & Player Overview now include accumulated shooting and other play-by-play stats, such as blocks received, technical fouls, charges drawn, etc.
+		- Addition: Team & Player Overview now include accumulated shooting and other play-by-play stats, such as blocks received, technical fouls, charges drawn, etc. in the new Advanced Stats tab
+		- Addition: Team & Player Overview now include metric stats for that specific team/player in the new Advanced Stats tab
 		- Fix: Fixed crash when trying to save a box score that includes play by play entries other than Shot Attempts
 
 	v1.14.2.3
