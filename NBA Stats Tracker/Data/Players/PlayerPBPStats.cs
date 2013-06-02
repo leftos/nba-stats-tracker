@@ -324,7 +324,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public double SAEDREBp
         {
-            get { return 1.0 - SAEOREB; }
+            get { return 1.0 - SAEOREBp; }
         }
 
         #region INotifyPropertyChanged Members
