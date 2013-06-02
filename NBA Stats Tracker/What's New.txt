@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.15.0.2
+		- Fix: SAEDREB% (Shot Attempts Ending in Defensive Rebound %) was being calculated wrong
+
 	v1.15.0.1
 		- Addition: Added Assited Field Goal % to Advanced Shooting Stats in Team & Player Overview
 
