@@ -48,7 +48,7 @@
                         <StackPanel>
                             <GroupBox Header="Metric Stats" Padding="2,5" Grid.Row="0">
                                 <DataGrid Name="dgMetrics" Style="{StaticResource DataGridStyle}"
-                                          AutoGenerateColumns="False" Height="70"
+                                          AutoGenerateColumns="False" Height="50"
                                           IsReadOnly="True" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Binding="{Binding Name}" Header="Team" />
