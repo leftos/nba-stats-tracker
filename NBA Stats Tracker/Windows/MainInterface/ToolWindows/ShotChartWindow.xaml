@@ -3,6 +3,42 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Shot Chart" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Image Name="imgShotChart" Height="397" Width="478" />
+        <Image Name="imgShotChart" Height="397" Width="478" Source="..\..\..\Images\FloorChart.png" />
+        <Grid Name="grdButtons">
+
+            <Button Name="btn3PTLeft" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top" Width="32"
+                    Height="32" Click="shotButton_Click" />
+            <Button Name="btn3PTMidLeft" HorizontalAlignment="Left" Margin="70,212,0,0" VerticalAlignment="Top"
+                    Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn3PTMid" HorizontalAlignment="Left" Margin="223,258,0,0" VerticalAlignment="Top" Width="32"
+                    Height="32" Click="shotButton_Click" />
+            <Button Name="btn3PTMidRight" HorizontalAlignment="Right" Margin="0,212,70,0" VerticalAlignment="Top"
+                    Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn3PTRight" HorizontalAlignment="Right" Margin="0,143,10,0" VerticalAlignment="Top"
+                    Width="32" Height="32" Click="shotButton_Click" />
+
+            <Button Name="btn16Left" HorizontalAlignment="Left" Margin="47,85,0,0" VerticalAlignment="Top" Width="32"
+                    Height="32" Click="shotButton_Click" />
+            <Button Name="btn16MidLeft" HorizontalAlignment="Left" Margin="111,170,0,0" VerticalAlignment="Top"
+                    Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn16Mid" HorizontalAlignment="Left" Margin="223,202,0,0" VerticalAlignment="Top" Width="32"
+                    Height="32" Click="shotButton_Click" />
+            <Button Name="btn16MidRight" HorizontalAlignment="Right" Margin="0,170,108,0" VerticalAlignment="Top"
+                    Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn16Right" HorizontalAlignment="Right" Margin="0,85,44,0" VerticalAlignment="Top" Width="32"
+                    Height="32" Click="shotButton_Click" />
+
+            <Button Name="btn10Left" HorizontalAlignment="Left" Margin="99,53,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn10MidLeft" HorizontalAlignment="Left" Margin="155,124,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn10Mid" HorizontalAlignment="Left" Margin="223,155,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn10MidRight" HorizontalAlignment="Right" Margin="0,124,146,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btn10Right" HorizontalAlignment="Right" Margin="0,53,87,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+
+            <Button Name="btnCloseLeft" HorizontalAlignment="Left" Margin="146,33,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btnCloseMid" HorizontalAlignment="Left" Margin="223,107,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+            <Button Name="btnCloseRight" HorizontalAlignment="Right" Margin="0,33,146,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+
+            <Button Name="btnUnder" HorizontalAlignment="Left" Margin="223,23,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+        </Grid>
     </Grid>
 </Window>

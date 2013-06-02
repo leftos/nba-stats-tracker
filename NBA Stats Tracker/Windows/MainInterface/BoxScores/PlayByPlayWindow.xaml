@@ -249,6 +249,8 @@
                         <TextBlock Text="Shot Origin" />
                         <Rectangle Height="5" />
                         <ComboBox Name="cmbShotOrigin" />
+                        <Rectangle Height="5" />
+                        <Button Name="btnSelectFromChart" Content="Select From Chart" Click="btnSelectFromChart_Click" />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Column="1" Margin="5,0">
@@ -299,6 +301,7 @@
                     <DataGridTextColumn Header="Location/Shot Distance" Binding="{Binding DisplayLocation}" />
                     <DataGridTextColumn Header="Shot Origin" Binding="{Binding DisplayShotOrigin}" />
                     <DataGridTextColumn Header="Shot Type" Binding="{Binding DisplayShotType}" />
+                    <DataGridCheckBoxColumn Header="Assisted" Binding="{Binding ShotEntry.IsAssisted}" />
                 </DataGrid.Columns>
             </DataGrid>
             <!--<ListBox Name="lstEvents" Margin="10,5" />-->

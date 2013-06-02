@@ -9,6 +9,7 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Data;
     using System.Windows.Threading;
 
     using LeftosCommonLibrary;
@@ -22,6 +23,7 @@
     using NBA_Stats_Tracker.Data.Teams;
     using NBA_Stats_Tracker.Helper.ListExtensions;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
+    using NBA_Stats_Tracker.Windows.MainInterface.ToolWindows;
 
     #endregion
 
@@ -398,6 +400,8 @@
 
         private void populatePlayer2Combo()
         {
+            var oldPlayer2 = cmbPlayer2.SelectedIndex != -1 ? cmbPlayer2.SelectedItem.ToString() : "";
+
             PlayersComboList2.Clear();
             if (cmbEventType.SelectedIndex == -1)
             {
@@ -447,6 +451,11 @@
                 list.ForEach(ps => PlayersComboList2.Add(new ComboBoxItemWithIsEnabled(ps.ToString(), true, ps.ID)));
             }
             cmbPlayer2.ItemsSource = PlayersComboList2;
+
+            if (cmbPlayer2.ItemsSource.Cast<ComboBoxItemWithIsEnabled>().Any(o => o.Item == oldPlayer2))
+            {
+                cmbPlayer2.SelectedItem = cmbPlayer2.ItemsSource.Cast<ComboBoxItemWithIsEnabled>().Single(o => o.Item == oldPlayer2);
+            }
         }
 
         private void btnHomeDoSubs_Click(object sender, RoutedEventArgs e)
@@ -519,16 +528,55 @@
 
         private void cmbLocationShotDistance_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cmbLocationShotDistance.SelectedIndex == -1)
+            {
+                txtLocationDesc.IsEnabled = false;
+                return;
+            }
+
             var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
-            if (curEventKey != 1 && cmbLocationShotDistance.SelectedIndex != -1)
+            var curValue = cmbLocationShotDistance.SelectedItem.ToString();
+            var oldOrigin = cmbShotOrigin.SelectedIndex != -1 ? cmbShotOrigin.SelectedItem.ToString() : "Unknown";
+
+            if (curEventKey != 1)
             {
                 var curDistanceKey =
-                    PlayByPlayEntry.EventLocations.Single(pair => pair.Value == cmbLocationShotDistance.SelectedItem.ToString()).Key;
+                    PlayByPlayEntry.EventLocations.Single(pair => pair.Value == curValue).Key;
                 txtLocationDesc.IsEnabled = (curDistanceKey == -1 && curEventKey != 3 && curEventKey != 4);
             }
             else
             {
                 txtLocationDesc.IsEnabled = false;
+
+                if (curEventKey == 1)
+                {
+                    var curDistanceKey =
+                        ShotEntry.ShotDistances.Single(pair => pair.Value == curValue).Key;
+                    var origins = ShotEntry.ShotOrigins.Values.ToList();
+                    if (curDistanceKey == 1)
+                    {
+                        cmbShotOrigin.ItemsSource = new List<string> { origins[1] };
+                    }
+                    else if (curDistanceKey == 2)
+                    {
+                        cmbShotOrigin.ItemsSource = new List<string> {origins[0], origins[2], origins[4], origins[6]};
+                    }
+                    else
+                    {
+                        var list = new List<string> { origins[0] };
+                        list.AddRange(origins.Skip(2));
+                        cmbShotOrigin.ItemsSource = list;
+                    }
+                }
+            }
+
+            if (cmbShotOrigin.ItemsSource.Cast<string>().Contains(oldOrigin))
+            {
+                cmbShotOrigin.SelectedItem = curValue;
+            }
+            else
+            {
+                cmbShotOrigin.SelectedIndex = 0;
             }
         }
 
@@ -550,29 +598,36 @@
             var play = createPlayByPlayEntryFromCurrent();
             if (chkUpdate.IsChecked == true)
             {
-                if (play.EventType == PlayByPlayEntry.ShotAttemptEventType && play.ShotEntry.IsMade)
+                if (play.EventType == PlayByPlayEntry.ShotAttemptEventType)
                 {
-                    if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
+                    if (play.ShotEntry.IsMade)
                     {
-                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                        if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
                         {
-                            AwayPoints += 2;
+                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                            {
+                                AwayPoints += 2;
+                            }
+                            else
+                            {
+                                HomePoints += 2;
+                            }
                         }
-                        else
+                        else if (play.ShotEntry.Distance == 5)
                         {
-                            HomePoints += 2;
+                            if (play.Team1PlayerIDs.Contains(play.Player1ID))
+                            {
+                                AwayPoints += 3;
+                            }
+                            else
+                            {
+                                HomePoints += 3;
+                            }
                         }
                     }
-                    else if (play.ShotEntry.Distance == 5)
+                    else
                     {
-                        if (play.Team1PlayerIDs.Contains(play.Player1ID))
-                        {
-                            AwayPoints += 3;
-                        }
-                        else
-                        {
-                            HomePoints += 3;
-                        }
+                        play.ShotEntry.IsAssisted = false;
                     }
                 }
                 else if (play.EventType == 3)
@@ -801,6 +856,62 @@
             _exitedViaButton = true;
             DialogResult = true;
             Close();
+        }
+
+        private void btnSelectFromChart_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new ShotChartWindow();
+            w.ShowDialog();
+
+            bool close = false;
+
+            var button = ShotChartWindow.LastButtonPressed;
+            if (button.Contains("3PT"))
+            {
+                cmbLocationShotDistance.SelectedIndex = 5;
+            }
+            else if (button.Contains("16"))
+            {
+                cmbLocationShotDistance.SelectedIndex = 4;
+            }
+            else if (button.Contains("10"))
+            {
+                cmbLocationShotDistance.SelectedIndex = 3;
+            }
+            else if (button.Contains("Close"))
+            {
+                cmbLocationShotDistance.SelectedIndex = 2;
+                close = true;
+            }
+            else
+            {
+                cmbLocationShotDistance.SelectedIndex = 1;
+            }
+
+            if (button.Contains("MidLeft"))
+            {
+                cmbShotOrigin.SelectedIndex = 2;
+            }
+            else if (button.Contains("MidRight"))
+            {
+                cmbShotOrigin.SelectedIndex = 4;
+            }
+            else if (button.Contains("Left"))
+            {
+                cmbShotOrigin.SelectedIndex = 1;
+            }
+            else if (button.Contains("Mid"))
+            {
+                cmbShotOrigin.SelectedIndex = close ? 2 : 3;
+            }
+            else if (button.Contains("Right"))
+            {
+                cmbShotOrigin.SelectedIndex = close ? 3 : 5;
+            }
+            else
+            {
+                cmbShotOrigin.SelectedIndex = 0;
+            }
         }
     }
 }

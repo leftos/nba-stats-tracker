@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
     using System.Drawing;
+    using System.Drawing.Imaging;
     using System.Drawing.Text;
     using System.IO;
 
@@ -47,14 +48,29 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
         public ShotChartWindow()
         {
             InitializeComponent();
+
+            var bmi = new BitmapImage();
+            bmi.BeginInit();
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            var ms = new MemoryStream();
+            Properties.Resources.FloorChart.Save(ms, ImageFormat.Png);
+            bmi.StreamSource = ms;
+            bmi.EndInit();
+
+            imgShotChart.Source = bmi;
+
+            grdButtons.Visibility = Visibility.Visible;
+            LastButtonPressed = "";
         }
+
+        public static string LastButtonPressed { get; set; }
 
         public ShotChartWindow(Dictionary<int, PlayerPBPStats> pbpsList)
             : this()
         {
             _pbpsList = pbpsList;
 
-            
+            grdButtons.Visibility = Visibility.Hidden;
 
             var list = new List<Image> { Properties.Resources.Default_001 };
             for (int i = 2; i <= 15; i++)
@@ -126,6 +142,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
             g.Dispose();
             canvas.Dispose();
+        }
+
+        private void shotButton_Click(object sender, RoutedEventArgs e)
+        {
+            LastButtonPressed = ((Button) sender).Name;
+            Close();
         }
     }
 }
