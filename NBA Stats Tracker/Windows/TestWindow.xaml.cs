@@ -20,7 +20,16 @@ namespace NBA_Stats_Tracker.Windows
 {
     #region Using Directives
 
+    using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.Drawing.Text;
+    using System.IO;
+    using System.Linq;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
 
     #endregion
 
@@ -30,12 +39,37 @@ namespace NBA_Stats_Tracker.Windows
         public TestWindow()
         {
             InitializeComponent();
-        }
 
-        public TestWindow(DataSet ds)
-            : this()
-        {
-            dataGrid1.DataContext = ds.Tables[0].DefaultView;
+            var rng = new Random();
+
+            var nameList = new List<string> { "Default", "Red", "Grey", "Blue" };
+
+            var list = new List<Image> { Properties.Resources.Default_001 };
+            for (int i = 2; i <= 15; i++)
+            {
+                list.Add((Image) Properties.Resources.ResourceManager.GetObject(nameList[rng.Next(4)] + "_0" + String.Format("{0:00}", i)));
+            }
+
+            Image canvas = new Bitmap(478, 397);
+            var frame = new Rectangle(0, 0, 478, 397);
+            var g = Graphics.FromImage(canvas);
+
+            list.ForEach(o => g.DrawImage(o, frame, frame, GraphicsUnit.Pixel));
+
+            var tempFile = App.AppTempPath + "\\temp.png";
+            File.Delete(tempFile);
+            canvas.Save(tempFile);
+
+            var bmi = new BitmapImage();
+            bmi.BeginInit();
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            bmi.UriSource = new Uri(tempFile, UriKind.Absolute);
+            bmi.EndInit();
+
+            imageControl.Source = bmi;
+            
+            g.Dispose();
+            canvas.Dispose();
         }
     }
 }

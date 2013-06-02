@@ -1575,8 +1575,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            var qfw = new QuickFindWindow();
-            qfw.ShowDialog();
+            var w = new TestWindow();
+            w.ShowDialog();
 #endif
         }
 

@@ -1,3 +1,4 @@
+- Shooting Charts
 - Opponent/Defensive Stats when adding up PBPEs in ASC
 - Bookmarks
 
