@@ -29,33 +29,42 @@ namespace NBA_Stats_Tracker.Data.Players
 
     #endregion
 
-    public class PlayerShootingStats : INotifyPropertyChanged
+    public class PlayerPBPStats : INotifyPropertyChanged
     {
         private uint _assisted;
+        private uint _astRec;
+        private uint _blkRec;
+        private uint _chrgRec;
         private uint _defassisted;
         private uint _deffga;
         private uint _deffgm;
         private string _description;
         private uint _fga;
         private uint _fgm;
+        private uint _foulRec;
 
         private uint _gp;
+        private uint _ofoul;
+        private uint _saeoreb;
+        private uint _stlRec;
+        private uint _tech;
+        private uint _tosRec;
 
-        public PlayerShootingStats()
+        public PlayerPBPStats()
         {
             ResetStats();
         }
 
-        public PlayerShootingStats(uint gp)
+        public PlayerPBPStats(uint gp)
             : this()
         {
             GP = gp;
         }
 
-        public PlayerShootingStats(uint gp, IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1)
+        public PlayerPBPStats(uint gp, IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1)
             : this(gp)
         {
-            Add(pbpeList, distance, origin, type, false);
+            AddOffensiveShots(pbpeList, distance, origin, type, false);
         }
 
         public string Description
@@ -162,6 +171,152 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        public uint ASTRec
+        {
+            get { return _astRec; }
+            set
+            {
+                _astRec = value;
+                OnPropertyChanged("ASTRec");
+            }
+        }
+
+        public double ASTRecPG
+        {
+            get { return (double) _astRec / _gp; }
+        }
+
+        public uint STLRec
+        {
+            get { return _stlRec; }
+            set
+            {
+                _stlRec = value;
+                OnPropertyChanged("STLRec");
+            }
+        }
+
+        public double STLRecPG
+        {
+            get { return (double) _stlRec / _gp; }
+        }
+
+        public uint BLKRec
+        {
+            get { return _blkRec; }
+            set
+            {
+                _blkRec = value;
+                OnPropertyChanged("BLKRec");
+            }
+        }
+
+        public double BLKRecPG
+        {
+            get { return (double) _blkRec / _gp; }
+        }
+
+        public uint TOSRec
+        {
+            get { return _tosRec; }
+            set
+            {
+                _tosRec = value;
+                OnPropertyChanged("TOSRec");
+            }
+        }
+
+        public double TOSRecPG
+        {
+            get { return (double) _tosRec / _gp; }
+        }
+
+        public uint FOULRec
+        {
+            get { return _foulRec; }
+            set
+            {
+                _foulRec = value;
+                OnPropertyChanged("FOULRec");
+            }
+        }
+
+        public double FOULRecPG
+        {
+            get { return (double) _foulRec / _gp; }
+        }
+
+        public uint CHRGRec
+        {
+            get { return _chrgRec; }
+            set
+            {
+                _chrgRec = value;
+                OnPropertyChanged("CHRGRec");
+            }
+        }
+
+        public double CHRGRecPG
+        {
+            get { return (double) _chrgRec / _gp; }
+        }
+
+        public uint TECH
+        {
+            get { return _tech; }
+            set
+            {
+                _tech = value;
+                OnPropertyChanged("TECH");
+            }
+        }
+
+        public double TECHPG
+        {
+            get { return (double) _tech / _gp; }
+        }
+
+        public uint OFOUL
+        {
+            get { return _ofoul; }
+            set
+            {
+                _ofoul = value;
+                OnPropertyChanged("OFOUL");
+            }
+        }
+
+        public double OFOULPG
+        {
+            get { return (double) _ofoul / _gp; }
+        }
+
+        /// <summary>Shot Attempts Ending in Offensive Rebound</summary>
+        public uint SAEOREB
+        {
+            get { return _saeoreb; }
+            set
+            {
+                _saeoreb = value;
+                OnPropertyChanged("SAEOREB");
+            }
+        }
+
+        public double SAEOREBPG
+        {
+            get { return (double) _saeoreb / _gp; }
+        }
+
+        public double SAEOREBp
+        {
+            get { return ((double) _saeoreb / (_fga - _fgm)); }
+        }
+
+        public double SAEDREBp
+        {
+            get { return 1.0 - SAEOREB; }
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -190,7 +345,7 @@ namespace NBA_Stats_Tracker.Data.Players
             DefAssisted = 0;
         }
 
-        public void Add(
+        public void AddOffensiveShots(
             IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1, bool addGamePlayed = true)
         {
             if (addGamePlayed)
@@ -225,7 +380,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public void AddDef(
+        public void AddDefensiveShots(
             IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1, bool addGamePlayed = true)
         {
             if (addGamePlayed)
@@ -260,8 +415,19 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public void AddBoth(
+        public void AddShots(
             int playerID,
+            IEnumerable<PlayByPlayEntry> pbpeList,
+            int distance = -1,
+            int origin = -1,
+            int type = -1,
+            bool addGamePlayed = true)
+        {
+            AddShots(new List<int> { playerID }, pbpeList, distance, origin, type, addGamePlayed);
+        }
+
+        public void AddShots(
+            List<int> teamPlayerIDs,
             IEnumerable<PlayByPlayEntry> pbpeList,
             int distance = -1,
             int origin = -1,
@@ -288,7 +454,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     continue;
                 }
 
-                if (e.Player1ID == playerID)
+                if (teamPlayerIDs.Contains(e.Player1ID))
                 {
                     FGA++;
                     if (e.ShotEntry.IsMade)
@@ -300,7 +466,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         Assisted++;
                     }
                 }
-                else if (e.Player2ID == playerID)
+                else if (teamPlayerIDs.Contains(e.Player2ID))
                 {
                     DefFGA++;
                     if (e.ShotEntry.IsMade)
@@ -315,6 +481,73 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        public void AddOtherStats(List<int> teamPlayerIDs, IEnumerable<PlayByPlayEntry> pbpeList, bool addGamePlayed = true)
+        {
+            if (addGamePlayed)
+            {
+                GP++;
+            }
+
+            foreach (var e in pbpeList)
+            {
+                switch (e.EventType)
+                {
+                    case 5:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            ASTRec++;
+                        }
+                        break;
+                    case 6:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            STLRec++;
+                        }
+                        break;
+                    case 7:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            BLKRec++;
+                        }
+                        break;
+                    case 8:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            TOSRec++;
+                        }
+                        break;
+                    case 9:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            FOULRec++;
+                        }
+                        break;
+                    case 10:
+                        if (teamPlayerIDs.Contains(e.Player1ID))
+                        {
+                            CHRGRec++;
+                        }
+                        else if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            OFOUL++;
+                        }
+                        break;
+                    case 11:
+                        if (teamPlayerIDs.Contains(e.Player1ID))
+                        {
+                            TECH++;
+                        }
+                        break;
+                    case 13:
+                        if (teamPlayerIDs.Contains(e.Player2ID))
+                        {
+                            SAEOREB++;
+                        }
+                        break;
+                }
+            }
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -323,6 +556,11 @@ namespace NBA_Stats_Tracker.Data.Players
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public void AddOtherStats(int playerID, List<PlayByPlayEntry> playerPBPEList, bool addGamePlayed)
+        {
+            AddOtherStats(new List<int> { playerID }, playerPBPEList, addGamePlayed);
         }
     }
 }

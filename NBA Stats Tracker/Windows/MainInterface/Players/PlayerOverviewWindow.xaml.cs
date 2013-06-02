@@ -265,6 +265,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvHTHBoxScores.ItemsSource = null;
             dgvSplitStats.ItemsSource = null;
             dgvYearly.ItemsSource = null;
+            dgMetrics.ItemsSource = null;
+            dgOther.ItemsSource = null;
+            dgShooting.ItemsSource = null;
             grpPlayoffsFacts.Visibility = Visibility.Collapsed;
             grpPlayoffsLeadersFacts.Visibility = Visibility.Collapsed;
             grpPlayoffsScoutingReport.Visibility = Visibility.Collapsed;
@@ -1023,12 +1026,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             dgMetrics.ItemsSource = new List<PlayerStatsRow> { _psr };
 
-            updateShootingStats();
+            updatePBPStats();
         }
 
-        private void updateShootingStats()
+        private void updatePBPStats()
         {
             dgShooting.ItemsSource = null;
+            dgOther.ItemsSource = null;
 
             if (_psr == null || _psr.ID == -1)
             {
@@ -1053,21 +1057,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 type = ShotEntry.ShotTypes.Single(o => o.Value == cmbShotType.SelectedItem.ToString()).Key;
             }
-            var shstList =
-                ShotEntry.ShotDistances.Values.Select(distance => new PlayerShootingStats { Description = distance }).ToList();
-            shstList.Add(new PlayerShootingStats { Description = "Total" });
+            var shstList = ShotEntry.ShotDistances.Values.Select(distance => new PlayerPBPStats { Description = distance }).ToList();
+            shstList.Add(new PlayerPBPStats { Description = "Total" });
             var lastIndex = shstList.Count - 1;
+
             foreach (var bse in _bseList)
             {
                 var playerPBPEList = bse.PBPEList.Where(o => o.Player1ID == _psr.ID || o.Player2ID == _psr.ID).ToList();
                 foreach (var pair in ShotEntry.ShotDistances)
                 {
-                    shstList.Single(o => o.Description == pair.Value).AddBoth(_psr.ID, playerPBPEList, pair.Key, origin, type);
+                    shstList.Single(o => o.Description == pair.Value).AddShots(_psr.ID, playerPBPEList, pair.Key, origin, type);
                 }
-                shstList[lastIndex].AddBoth(_psr.ID, playerPBPEList, -1, origin, type);
+                shstList[lastIndex].AddShots(_psr.ID, playerPBPEList, -1, origin, type);
+                shstList[lastIndex].AddOtherStats(_psr.ID, playerPBPEList, false);
             }
 
             dgShooting.ItemsSource = shstList;
+            dgOther.ItemsSource = new List<PlayerPBPStats> { shstList[lastIndex] };
         }
 
         /// <summary>
@@ -2186,7 +2192,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 return;
             }
 
-            updateShootingStats();
+            updatePBPStats();
         }
 
         private void cmbShotType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2196,7 +2202,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 return;
             }
 
-            updateShootingStats();
+            updatePBPStats();
         }
     }
 }

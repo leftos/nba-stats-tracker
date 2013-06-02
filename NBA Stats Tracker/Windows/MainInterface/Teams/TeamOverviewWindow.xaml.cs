@@ -34,6 +34,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     using LeftosCommonLibrary;
     using LeftosCommonLibrary.CommonDialogs;
 
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
@@ -54,7 +56,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     {
         private readonly int _teamIDToLoad = -1;
         private readonly string _teamToLoad = "";
-        private List<TeamBoxScore> _bsrList = new List<TeamBoxScore>();
+        private List<BoxScoreEntry> _bseList;
         private bool _changingOppRange;
         private bool _changingOppTeam;
         private bool _changingTimeframe;
@@ -82,6 +84,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private ObservableCollection<PlayerStatsRow> _psrList;
         private Dictionary<int, PlayerStats> _pst;
         private TeamRankings _seasonRankings;
+        private List<TeamBoxScore> _tbsList = new List<TeamBoxScore>();
         private string _teamBestC = "";
         private string _teamBestF = "";
         private string _teamBestG = "";
@@ -301,17 +304,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _curts = _tst[id];
             _curtsopp = _tstOpp[id];
 
-            _bsrList = new List<TeamBoxScore>();
+            _tbsList = new List<TeamBoxScore>();
 
             #region Prepare Team Overview
 
-            var boxScoreEntries = MainWindow.BSHist.Where(bse => bse.BS.Team1ID == _curTeam || bse.BS.Team2ID == _curTeam);
+            _bseList = MainWindow.BSHist.Where(bse => bse.BS.Team1ID == _curTeam || bse.BS.Team2ID == _curTeam).ToList();
 
-            foreach (var r in boxScoreEntries)
+            foreach (var r in _bseList)
             {
                 var bsr = r.BS.DeepClone();
                 bsr.PrepareForDisplay(_tst, _curTeam);
-                _bsrList.Add(bsr);
+                _tbsList.Add(bsr);
             }
 
             #region Regular Season
@@ -579,9 +582,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             createViewAndUpdateOverview();
 
-            dgvBoxScores.ItemsSource = _bsrList;
+            dgvBoxScores.ItemsSource = _tbsList;
 
             #endregion
+
+            dgMetrics.ItemsSource = new List<TeamStatsRow> { new TeamStatsRow(_curts) };
+
+            updatePBPStats();
         }
 
         /// <summary>Creates a DataView based on the current overview DataTable and refreshes the DataGrid.</summary>
@@ -717,6 +724,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 dgvPlayerStats.ItemsSource = null;
                 dgvMetricStats.ItemsSource = null;
                 dgvTeamRoster.ItemsSource = null;
+                dgMetrics.ItemsSource = null;
+                dgOther.ItemsSource = null;
+                dgShooting.ItemsSource = null;
 
                 if (cmbTeam.SelectedIndex == -1)
                 {
@@ -3114,6 +3124,75 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 linkInternalsToMainWindow();
                 cmbTeam_SelectionChanged(null, null);
             }
+        }
+
+        private void cmbShotOrigin_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbShotOrigin.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            updatePBPStats();
+        }
+
+        private void updatePBPStats()
+        {
+            dgShooting.ItemsSource = null;
+            dgOther.ItemsSource = null;
+
+            if (_curts == null || _curts.ID == -1)
+            {
+                return;
+            }
+
+            int origin;
+            if (cmbShotOrigin.SelectedIndex <= 0)
+            {
+                origin = -1;
+            }
+            else
+            {
+                origin = ShotEntry.ShotOrigins.Single(o => o.Value == cmbShotOrigin.SelectedItem.ToString()).Key;
+            }
+            int type;
+            if (cmbShotType.SelectedIndex <= 0)
+            {
+                type = -1;
+            }
+            else
+            {
+                type = ShotEntry.ShotTypes.Single(o => o.Value == cmbShotType.SelectedItem.ToString()).Key;
+            }
+            var shstList = ShotEntry.ShotDistances.Values.Select(distance => new PlayerPBPStats { Description = distance }).ToList();
+            shstList.Add(new PlayerPBPStats { Description = "Total" });
+            var lastIndex = shstList.Count - 1;
+
+            foreach (var bse in _bseList)
+            {
+                var teamPlayerIDs = bse.PBSList.Where(o => o.TeamID == _curts.ID).Select(o => o.PlayerID).ToList();
+                var teamPBPEList =
+                    bse.PBPEList.Where(o => teamPlayerIDs.Contains(o.Player1ID) || teamPlayerIDs.Contains(o.Player2ID)).ToList();
+                foreach (var pair in ShotEntry.ShotDistances)
+                {
+                    shstList.Single(o => o.Description == pair.Value).AddShots(teamPlayerIDs, teamPBPEList, pair.Key, origin, type);
+                }
+                shstList[lastIndex].AddShots(teamPlayerIDs, teamPBPEList, -1, origin, type);
+                shstList[lastIndex].AddOtherStats(teamPlayerIDs, teamPBPEList, false);
+            }
+
+            dgShooting.ItemsSource = shstList;
+            dgOther.ItemsSource = new List<PlayerPBPStats> { shstList[lastIndex] };
+        }
+
+        private void cmbShotType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbShotType.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            updatePBPStats();
         }
     }
 }

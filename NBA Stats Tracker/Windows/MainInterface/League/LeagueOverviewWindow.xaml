@@ -184,7 +184,8 @@
                                   IsReadOnly="True" Sorting="statColumn_Sorting"
                                   LayoutUpdated="dgvTeamMetricStats_LayoutUpdated"
                                   LoadingRow="dg_LoadingRow" RowHeaderWidth="25"
-                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick">
+                                  MouseDoubleClick="anyTeamDataGrid_MouseDoubleClick"
+                                  d:DataContext="{d:DesignInstance teams:TeamStatsRow}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Name}" Header="Team" />
                                 <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"

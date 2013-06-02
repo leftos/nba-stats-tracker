@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.15
+		- Fix: Fixed crash when trying to save a box score that includes play by play entries other than Shot Attempts
+
 	v1.14.2.3
 		- Addition: League Overview's Best Performers and Ultimate Team can now be calculated based on PER as well
 
