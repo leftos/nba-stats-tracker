@@ -27,7 +27,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
     using System.IO;
     using System.Linq;
     using System.Windows;
-    using System.Windows.Threading;
+    using System.Windows.Controls;
 
     using LeftosCommonLibrary;
 
@@ -35,7 +35,6 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
 
     using NBA_Stats_Tracker.Helper.ListExtensions;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
-    using NBA_Stats_Tracker.Interop.REDitor;
     using NBA_Stats_Tracker.Windows.MainInterface;
 
     using SQLite_Database;
@@ -61,17 +60,17 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
         private readonly int _curSeason;
         private readonly string _currentDB;
 
-        private BindingList<KeyValuePair<int, string>> _hiddenPlayers = new BindingList<KeyValuePair<int, string>>();
         private readonly int _maxSeason;
 
         private readonly Mode _mode;
         private readonly string _playersT;
+        private readonly Dictionary<int, List<int>> _rosters;
 
-        private BindingList<KeyValuePair<int, string>> _shownPlayers = new BindingList<KeyValuePair<int, string>>();
         private readonly List<Dictionary<string, string>> _validTeams;
 
         private bool _changed = true;
-        private readonly Dictionary<int, List<int>> _rosters;
+        private BindingList<KeyValuePair<int, string>> _hiddenPlayers = new BindingList<KeyValuePair<int, string>>();
+        private BindingList<KeyValuePair<int, string>> _shownPlayers = new BindingList<KeyValuePair<int, string>>();
 
         private DualListWindow()
         {
@@ -85,7 +84,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             : this()
         {
             _mode = Mode.TradePlayers;
-            
+
             cmbTeam1.Visibility = Visibility.Visible;
             cmbTeam2.Visibility = Visibility.Visible;
 
@@ -277,8 +276,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     _hiddenPlayers.Remove(item);
                     if (_mode == Mode.TradePlayers)
                     {
-                        var teamID1 = ((KeyValuePair<int, string>)cmbTeam1.SelectedItem).Key;
-                        var teamID2 = ((KeyValuePair<int, string>)cmbTeam2.SelectedItem).Key;
+                        var teamID1 = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
+                        var teamID2 = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
                         _rosters[teamID1].Add(item.Key);
                         _rosters[teamID2].Remove(item.Key);
                     }
@@ -320,8 +319,8 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                     _shownPlayers.Remove(item);
                     if (_mode == Mode.TradePlayers)
                     {
-                        var teamID1 = ((KeyValuePair<int, string>)cmbTeam1.SelectedItem).Key;
-                        var teamID2 = ((KeyValuePair<int, string>)cmbTeam2.SelectedItem).Key;
+                        var teamID1 = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
+                        var teamID2 = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
                         _rosters[teamID2].Add(item.Key);
                         _rosters[teamID1].Remove(item.Key);
                     }
@@ -566,7 +565,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             }
         }
 
-        private void cmbTeam1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void cmbTeam1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             refreshPlayerLists();
         }
@@ -578,9 +577,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 var id = ((KeyValuePair<int, string>) cmbTeam1.SelectedItem).Key;
                 var players =
                     MainWindow.PST.Where(ps => _rosters[id].Contains(ps.Key))
-                        .OrderBy(ps => ps.Value.FullName)
-                        .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
-                        .ToList();
+                              .OrderBy(ps => ps.Value.FullName)
+                              .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
+                              .ToList();
                 _shownPlayers = new BindingList<KeyValuePair<int, string>>(players);
                 lstEnabled.ItemsSource = _shownPlayers;
             }
@@ -590,15 +589,15 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                 var id = ((KeyValuePair<int, string>) cmbTeam2.SelectedItem).Key;
                 var players =
                     MainWindow.PST.Where(ps => _rosters[id].Contains(ps.Key))
-                        .OrderBy(ps => ps.Value.FullName)
-                        .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
-                        .ToList();
+                              .OrderBy(ps => ps.Value.FullName)
+                              .Select(ps => new KeyValuePair<int, string>(ps.Key, ps.Value.FullName))
+                              .ToList();
                 _hiddenPlayers = new BindingList<KeyValuePair<int, string>>(players);
                 lstDisabled.ItemsSource = _hiddenPlayers;
             }
         }
 
-        private void cmbTeam2_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void cmbTeam2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             refreshPlayerLists();
         }

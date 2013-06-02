@@ -1,4 +1,5 @@
 - Opponent/Defensive Stats when adding up PBPEs in ASC
+- Accumulate Shooting & Defensive stats for players and teams
 - Bookmarks
 
 - Ultimate Defensive Team

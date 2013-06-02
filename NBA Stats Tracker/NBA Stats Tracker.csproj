@@ -99,6 +99,7 @@
     <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
     <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
     <Compile Include="Data\Players\PlayerHighsRow.cs" />
+    <Compile Include="Data\Players\PlayerShootingStats.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
     <Compile Include="Data\Players\PAbbr.cs" />
     <Compile Include="Data\Teams\TeamStreakComparerAsc.cs" />

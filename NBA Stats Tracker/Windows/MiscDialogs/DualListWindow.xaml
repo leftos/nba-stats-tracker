@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="10,10,10,5">
             <TextBlock Text="Current Season: " HorizontalAlignment="Left" Name="txbDescription"
-                   VerticalAlignment="Top" TextWrapping="Wrap"/>
+                       VerticalAlignment="Top" TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Margin="10,5,5,5">
             <Label Content="Enabled Teams" HorizontalAlignment="Left" x:Name="lblEnabled"
@@ -48,9 +48,9 @@
         </Grid>
         <Grid Grid.Row="3" Grid.ColumnSpan="3">
             <Button Content="OK" Height="23" Margin="0,0,126,10" Name="btnOK"
-                VerticalAlignment="Bottom" Click="btnOK_Click" HorizontalAlignment="Right" Width="111" />
+                    VerticalAlignment="Bottom" Click="btnOK_Click" HorizontalAlignment="Right" Width="111" />
             <Button Content="Cancel" Margin="0,0,10,10" Name="btnCancel" Click="btnCancel_Click" Height="23"
-                VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="111" />
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="111" />
         </Grid>
     </Grid>
 </Window>

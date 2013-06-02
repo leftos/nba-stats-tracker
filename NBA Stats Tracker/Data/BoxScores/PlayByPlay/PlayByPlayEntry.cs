@@ -36,6 +36,8 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
     [Serializable]
     public class PlayByPlayEntry : INotifyPropertyChanged
     {
+        public const int ShotAttemptEventType = 1;
+
         public static readonly Dictionary<int, string> EventTypes = new Dictionary<int, string>
             {
                 { -1, "Other" },
@@ -171,7 +173,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
             DisplayPlayer1 = pst[Player1ID].FullName;
             DisplayPlayer2 = pst[Player2ID].FullName;
 
-            if (EventType == 1)
+            if (EventType == ShotAttemptEventType)
             {
                 ShotEntry = new ShotEntry(row);
             }
@@ -386,7 +388,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
         {
             get
             {
-                if (EventType == 1)
+                if (EventType == ShotAttemptEventType)
                 {
                     return ShotEntry.ShotDistances[ShotEntry.Distance];
                 }
@@ -401,7 +403,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
         {
             get
             {
-                if (EventType == 1)
+                if (EventType == ShotAttemptEventType)
                 {
                     return ShotEntry.ShotOrigins[ShotEntry.Origin];
                 }
@@ -416,7 +418,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
         {
             get
             {
-                if (EventType == 1)
+                if (EventType == ShotAttemptEventType)
                 {
                     return ShotEntry.ShotTypes[ShotEntry.Type];
                 }
@@ -436,7 +438,7 @@ namespace NBA_Stats_Tracker.Data.BoxScores.PlayByPlay
                 {
                     eventTypeDescription = EventDesc;
                 }
-                else if (EventType != 1)
+                else if (EventType != ShotAttemptEventType)
                 {
                     eventTypeDescription = EventTypes[EventType];
                 }

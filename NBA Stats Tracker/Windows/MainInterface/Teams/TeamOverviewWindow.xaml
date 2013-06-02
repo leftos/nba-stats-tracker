@@ -46,7 +46,7 @@
                 <TabItem Header="Roster" Name="tabTeamRoster" d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
+                            <RowDefinition />
                             <RowDefinition Height="35" />
                         </Grid.RowDefinitions>
                         <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Margin="6,6,6,0"

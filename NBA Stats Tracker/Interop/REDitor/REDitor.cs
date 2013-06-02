@@ -138,7 +138,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 return;
             }
 
-            int startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
+            var startAt = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(' ')[0]);
 
             var seasonNames = new Dictionary<int, string>();
             if (nba2KVersion == NBA2KVersion.NBA2K12)

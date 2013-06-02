@@ -181,6 +181,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private static string _currentDB;
         private static readonly object _lock = new object();
         public static List<PlayByPlayEntry> TempBSE_PBPEList = new List<PlayByPlayEntry>();
+        public static List<SearchItem> SearchCache;
         public readonly TaskScheduler UIScheduler;
         private DispatcherTimer _dispatcherTimer;
         private DispatcherTimer _marqueeTimer;
@@ -348,32 +349,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //prepareImageCache();
         }
 
-        private void QuickFind(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SQLiteIO.IsTSTEmpty())
-            {
-                return;
-            }
-
-            var qfw = new QuickFindWindow();
-            if (qfw.ShowDialog() != true)
-            {
-                return;
-            }
-
-            var item = QuickFindWindow.SelectedItem;
-            if (item.Type == SearchItem.SelectionType.Team)
-            {
-                var w = new TeamOverviewWindow(item.ID);
-                w.ShowDialog();
-            }
-            else
-            {
-                var w = new PlayerOverviewWindow(PST[item.ID].TeamF, item.ID);
-                w.ShowDialog();
-            }
-        }
-
         public static string CurrentDB
         {
             get { return _currentDB; }
@@ -420,6 +395,32 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             get { return "PlayoffOpponents" + SQLiteIO.AddSuffix(Tf.SeasonNum, SQLiteIO.GetMaxSeason(CurrentDB)); }
         }
 
+        private void QuickFind(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SQLiteIO.IsTSTEmpty())
+            {
+                return;
+            }
+
+            var qfw = new QuickFindWindow();
+            if (qfw.ShowDialog() != true)
+            {
+                return;
+            }
+
+            var item = QuickFindWindow.SelectedItem;
+            if (item.Type == SearchItem.SelectionType.Team)
+            {
+                var w = new TeamOverviewWindow(item.ID);
+                w.ShowDialog();
+            }
+            else
+            {
+                var w = new PlayerOverviewWindow(PST[item.ID].TeamF, item.ID);
+                w.ShowDialog();
+            }
+        }
+
         private static void setDefaultCulture(CultureInfo culture)
         {
             var type = typeof(CultureInfo);
@@ -464,7 +465,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
             }
         }
-        
+
         /// <summary>
         ///     Handles the Click event of the btnImport2K12 control. Asks the user for the folder containing the NBA 2K12 save (in the case
         ///     of the old method), or the REDitor-exported CSV files.
@@ -749,8 +750,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             mainGrid.Visibility = Visibility.Visible;
         }
 
-        public static List<SearchItem> SearchCache;
-        
         private void UpdateSearchCache()
         {
             SearchCache.Clear();

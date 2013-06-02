@@ -636,17 +636,17 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public string FullInfo(IDictionary<int, TeamStats> tst)
-        {
-            return String.Format(
-                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsActive ? tst[TeamF].DisplayName : "Free Agent");
-        }
-
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+        public string FullInfo(IDictionary<int, TeamStats> tst)
+        {
+            return String.Format(
+                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsActive ? tst[TeamF].DisplayName : "Free Agent");
+        }
 
         public static string PositionToString(Position position)
         {
@@ -852,9 +852,7 @@ namespace NBA_Stats_Tracker.Data.Players
             CalcAvg(true);
         }
 
-        /// <summary>
-        /// Updates the playoff stats.
-        /// </summary>
+        /// <summary>Updates the playoff stats.</summary>
         /// <param name="pl_psr">The Playoffs PlayerStatsRow instance to get the stats from.</param>
         public void UpdatePlayoffStats(PlayerStatsRow pl_psr)
         {
@@ -1382,7 +1380,9 @@ namespace NBA_Stats_Tracker.Data.Players
         /// <param name="playoffs">
         ///     if set to <c>true</c>, the metrics will be calculated for the playoff stats.
         /// </param>
-        /// <param name="teamsPerPlayer">if set to <c>true</c>, the team stats dictionary is assumed to be per player.</param>
+        /// <param name="teamsPerPlayer">
+        ///     if set to <c>true</c>, the team stats dictionary is assumed to be per player.
+        /// </param>
         public static void CalculateAllMetrics(
             ref Dictionary<int, PlayerStats> playerStats,
             Dictionary<int, TeamStats> teamStats,

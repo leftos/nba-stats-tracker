@@ -559,7 +559,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     throwErrorWithMessage("You can't have the same team in both Home & Away.");
                 }
-                if (String.IsNullOrWhiteSpace(txtPTS1.Text) || txtPTS1.Text == "N/A" || String.IsNullOrWhiteSpace(txtPTS2.Text) || txtPTS2.Text == "N/A")
+                if (String.IsNullOrWhiteSpace(txtPTS1.Text) || txtPTS1.Text == "N/A" || String.IsNullOrWhiteSpace(txtPTS2.Text)
+                    || txtPTS2.Text == "N/A")
                 {
                     throwErrorWithMessage("The Box Score is incomplete. Make sure you input all stats.");
                 }

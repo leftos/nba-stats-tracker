@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
+﻿namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
+    #region Using Directives
+
+    using System;
     using System.ComponentModel;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
 
     using LeftosCommonLibrary;
 
     using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.Other;
 
-    /// <summary>
-    /// Interaction logic for QuickFindWindow.xaml
-    /// </summary>
+    #endregion
+
+    /// <summary>Interaction logic for QuickFindWindow.xaml</summary>
     public partial class QuickFindWindow : Window, INotifyPropertyChanged
     {
+        private string _query;
+        private bool _userSelected;
+
         public QuickFindWindow()
         {
             InitializeComponent();
@@ -57,10 +54,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             }
         }
 
-        private string _query;
-        private bool _userSelected;
+        public static SearchItem SelectedItem { get; private set; }
+
+        #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
@@ -107,8 +107,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             Close();
         }
 
-        public static SearchItem SelectedItem { get; private set; }
-
         private void lstResults_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && lstResults.SelectedItem != null)
@@ -120,7 +118,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
         private void lstResults_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            var l = (ListBox)sender;
+            var l = (ListBox) sender;
             if (l.Items.Count == 0)
             {
                 return;

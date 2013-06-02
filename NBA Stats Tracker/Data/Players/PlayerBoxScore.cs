@@ -554,9 +554,7 @@ namespace NBA_Stats_Tracker.Data.Players
             GmScE = ps.Metrics["GmScE"];
         }
 
-        /// <summary>
-        /// Calculates the metrics of a player's performance.
-        /// </summary>
+        /// <summary>Calculates the metrics of a player's performance.</summary>
         /// <param name="bs">The game's box score from which to calculate the metrics.</param>
         public void CalcMetrics(TeamBoxScore bs)
         {

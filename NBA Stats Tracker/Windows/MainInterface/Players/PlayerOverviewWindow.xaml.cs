@@ -37,6 +37,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
     using LeftosCommonLibrary;
 
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Other;
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.Players.Injuries;
@@ -59,6 +61,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     {
         private readonly SQLiteDatabase _db = new SQLiteDatabase(MainWindow.CurrentDB);
         private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
+        private List<BoxScoreEntry> _bseList;
 
         private bool _changingTimeframe;
         private PlayerRankings _cumPlayoffsRankingsActive, _cumPlayoffsRankingsPosition, _cumPlayoffsRankingsTeam;
@@ -214,6 +217,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             getActivePlayers();
             populateGraphStatCombo();
+
+            var shotOrigins = ShotEntry.ShotOrigins.Values.ToList();
+            shotOrigins.Insert(0, "Any");
+            cmbShotOrigin.ItemsSource = shotOrigins;
+            cmbShotOrigin.SelectedIndex = 0;
+
+            var shotTypes = ShotEntry.ShotTypes.Values.ToList();
+            shotTypes.Insert(0, "Any");
+            cmbShotType.ItemsSource = shotTypes;
+            cmbShotType.SelectedIndex = 0;
         }
 
         /// <summary>Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.</summary>
@@ -688,11 +701,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _rankingsPosition = new PlayerRankings(_playersSamePosition);
             _plRankingsPosition = new PlayerRankings(_playersSamePosition, true);
 
-            foreach (var bse in
-                MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID && !pbs.IsOut)).ToList())
+            _bseList = MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID)).ToList();
+
+            foreach (var bse in _bseList)
             {
                 var pbs = new PlayerBoxScore();
                 pbs = bse.PBSList.Single(pbs1 => pbs1.PlayerID == _psr.ID);
+                if (pbs.IsOut)
+                {
+                    continue;
+                }
                 pbs.AddInfoFromTeamBoxScore(bse.BS, MainWindow.TST);
                 pbs.CalcMetrics(bse.BS);
                 _pbsList.Add(pbs);
@@ -1002,6 +1020,54 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbGraphStat_SelectionChanged(null, null);
 
             #endregion
+
+            dgMetrics.ItemsSource = new List<PlayerStatsRow> { _psr };
+
+            updateShootingStats();
+        }
+
+        private void updateShootingStats()
+        {
+            dgShooting.ItemsSource = null;
+
+            if (_psr == null || _psr.ID == -1)
+            {
+                return;
+            }
+
+            int origin;
+            if (cmbShotOrigin.SelectedIndex <= 0)
+            {
+                origin = -1;
+            }
+            else
+            {
+                origin = ShotEntry.ShotOrigins.Single(o => o.Value == cmbShotOrigin.SelectedItem.ToString()).Key;
+            }
+            int type;
+            if (cmbShotType.SelectedIndex <= 0)
+            {
+                type = -1;
+            }
+            else
+            {
+                type = ShotEntry.ShotTypes.Single(o => o.Value == cmbShotType.SelectedItem.ToString()).Key;
+            }
+            var shstList =
+                ShotEntry.ShotDistances.Values.Select(distance => new PlayerShootingStats { Description = distance }).ToList();
+            shstList.Add(new PlayerShootingStats { Description = "Total" });
+            var lastIndex = shstList.Count - 1;
+            foreach (var bse in _bseList)
+            {
+                var playerPBPEList = bse.PBPEList.Where(o => o.Player1ID == _psr.ID || o.Player2ID == _psr.ID).ToList();
+                foreach (var pair in ShotEntry.ShotDistances)
+                {
+                    shstList.Single(o => o.Description == pair.Value).AddBoth(_psr.ID, playerPBPEList, pair.Key, origin, type);
+                }
+                shstList[lastIndex].AddBoth(_psr.ID, playerPBPEList, -1, origin, type);
+            }
+
+            dgShooting.ItemsSource = shstList;
         }
 
         /// <summary>
@@ -2111,6 +2177,26 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                   : new PlayerInjury(PlayerInjuryWindow.CustomInjuryName, PlayerInjuryWindow.InjuryDaysLeft);
             }
             chkIsInjured.IsChecked = _psr.IsInjured;
+        }
+
+        private void cmbShotOrigin_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbShotOrigin.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            updateShootingStats();
+        }
+
+        private void cmbShotType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbShotType.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            updateShootingStats();
         }
     }
 }

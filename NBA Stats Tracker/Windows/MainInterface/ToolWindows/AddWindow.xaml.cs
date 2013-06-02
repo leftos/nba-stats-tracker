@@ -31,7 +31,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 
     using NBA_Stats_Tracker.Data.Players;
     using NBA_Stats_Tracker.Data.SQLiteIO;
-    using NBA_Stats_Tracker.Helper.ListExtensions;
 
     #endregion
 

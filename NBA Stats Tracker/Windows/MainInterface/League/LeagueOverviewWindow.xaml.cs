@@ -747,7 +747,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _plSubsText = "";
             }
 
-            bool useGmSc = cmbUTCriteria.SelectedItem.ToString().Contains("GmSc");
+            var useGmSc = cmbUTCriteria.SelectedItem.ToString().Contains("GmSc");
 
             if (type.StartsWith("All-Rookie"))
             {

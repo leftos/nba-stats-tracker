@@ -550,7 +550,7 @@
             var play = createPlayByPlayEntryFromCurrent();
             if (chkUpdate.IsChecked == true)
             {
-                if (play.EventType == 1 && play.ShotEntry.IsMade)
+                if (play.EventType == PlayByPlayEntry.ShotAttemptEventType && play.ShotEntry.IsMade)
                 {
                     if (play.ShotEntry.Distance > 0 && play.ShotEntry.Distance < 5)
                     {
@@ -706,14 +706,20 @@
                 cmbPlayer2.SelectedItem = selectedPlay.Player2ID != -1
                                               ? PlayersComboList2.Single(item => item.ID == selectedPlay.Player2ID)
                                               : null;
-                cmbLocationShotDistance.SelectedItem = selectedPlay.EventType != 1
+                cmbLocationShotDistance.SelectedItem = selectedPlay.EventType != PlayByPlayEntry.ShotAttemptEventType
                                                            ? PlayByPlayEntry.EventLocations[selectedPlay.Location]
                                                            : ShotEntry.ShotDistances[selectedPlay.ShotEntry.Distance];
                 txtLocationDesc.Text = selectedPlay.LocationDesc;
-                cmbShotOrigin.SelectedItem = selectedPlay.EventType == 1 ? ShotEntry.ShotOrigins[selectedPlay.ShotEntry.Origin] : null;
-                cmbShotType.SelectedItem = selectedPlay.EventType == 1 ? ShotEntry.ShotTypes[selectedPlay.ShotEntry.Type] : null;
-                chkShotIsMade.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsMade;
-                chkShotIsAssisted.IsChecked = selectedPlay.EventType == 1 && selectedPlay.ShotEntry.IsAssisted;
+                cmbShotOrigin.SelectedItem = selectedPlay.EventType == PlayByPlayEntry.ShotAttemptEventType
+                                                 ? ShotEntry.ShotOrigins[selectedPlay.ShotEntry.Origin]
+                                                 : null;
+                cmbShotType.SelectedItem = selectedPlay.EventType == PlayByPlayEntry.ShotAttemptEventType
+                                               ? ShotEntry.ShotTypes[selectedPlay.ShotEntry.Type]
+                                               : null;
+                chkShotIsMade.IsChecked = selectedPlay.EventType == PlayByPlayEntry.ShotAttemptEventType
+                                          && selectedPlay.ShotEntry.IsMade;
+                chkShotIsAssisted.IsChecked = selectedPlay.EventType == PlayByPlayEntry.ShotAttemptEventType
+                                              && selectedPlay.ShotEntry.IsAssisted;
                 AwayPoints = selectedPlay.T1PTS;
                 HomePoints = selectedPlay.T2PTS;
                 CurrentPeriod = selectedPlay.Quarter;

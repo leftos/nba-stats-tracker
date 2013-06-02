@@ -52,8 +52,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     /// <summary>Shows team information and stats.</summary>
     public partial class TeamOverviewWindow
     {
-        private readonly string _teamToLoad = "";
         private readonly int _teamIDToLoad = -1;
+        private readonly string _teamToLoad = "";
         private List<TeamBoxScore> _bsrList = new List<TeamBoxScore>();
         private bool _changingOppRange;
         private bool _changingOppTeam;
@@ -370,7 +370,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             // Rankings can only be shown based on total stats
             // ...for now
-            DataRow dr2 = _dtOv.NewRow();
+            var dr2 = _dtOv.NewRow();
 
             dr2["Type"] = "Rankings";
             dr2["Wins (W%)"] = _seasonRankings.RankingsPerGame[id][TAbbr.Wp];
@@ -731,7 +731,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 return;
             }
-            
+
             //DataRow dr;
 
             _dtBS.Clear();

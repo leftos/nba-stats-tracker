@@ -20,15 +20,19 @@ namespace NBA_Stats_Tracker.Data.Other
 {
     public class SearchItem
     {
+        #region SelectionType enum
+
         public enum SelectionType
         {
             Team,
             Player
         };
 
-        public SelectionType Type;
-        public int ID;
+        #endregion
+
         public string Description;
+        public int ID;
+        public SelectionType Type;
 
         public SearchItem()
         {
