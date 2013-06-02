@@ -153,6 +153,9 @@
     <Compile Include="Windows\MainInterface\ToolWindows\QuickFindWindow.xaml.cs">
       <DependentUpon>QuickFindWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\MainInterface\ToolWindows\ShotChartWindow.xaml.cs">
+      <DependentUpon>ShotChartWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MiscDialogs\ComboChoiceWindow.xaml.cs">
       <DependentUpon>ComboChoiceWindow.xaml</DependentUpon>
     </Compile>
@@ -230,6 +233,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainInterface\ToolWindows\QuickFindWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainInterface\ToolWindows\ShotChartWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

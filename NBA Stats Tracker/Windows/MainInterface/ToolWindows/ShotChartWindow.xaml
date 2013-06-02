@@ -1,0 +1,8 @@
+﻿<Window x:Class="NBA_Stats_Tracker.Windows.MainInterface.ToolWindows.ShotChartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Shot Chart" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Image Name="imgShotChart" Height="397" Width="478" />
+    </Grid>
+</Window>

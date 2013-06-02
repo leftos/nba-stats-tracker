@@ -3194,5 +3194,54 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             updatePBPStats();
         }
+
+        private void btnShotChart_Click(object sender, RoutedEventArgs e)
+        {
+            if (_curts == null || _curts.ID == -1 || _bseList == null)
+            {
+                return;
+            }
+
+            var dict = new Dictionary<int, PlayerPBPStats>();
+            for (var i = 2; i <= 15; i++)
+            {
+                dict.Add(i, new PlayerPBPStats());
+            }
+
+            foreach (var bse in _bseList)
+            {
+                var teamPlayerIDs = bse.PBSList.Where(o => o.TeamID == _curts.ID).Select(o => o.PlayerID).ToList();
+                var list =
+                    bse.PBPEList.Where(o => teamPlayerIDs.Contains(o.Player1ID) || teamPlayerIDs.Contains(o.Player2ID)).ToList();
+
+                dict[2].AddShots(teamPlayerIDs, list, 1);
+
+                dict[3].AddShots(teamPlayerIDs, list, 2, 6);
+                dict[3].AddShots(teamPlayerIDs, list, 2, 5);
+                dict[4].AddShots(teamPlayerIDs, list, 2, 4);
+                dict[5].AddShots(teamPlayerIDs, list, 2, 3);
+                dict[5].AddShots(teamPlayerIDs, list, 2, 2);
+
+                dict[6].AddShots(teamPlayerIDs, list, 3, 6);
+                dict[7].AddShots(teamPlayerIDs, list, 3, 5);
+                dict[8].AddShots(teamPlayerIDs, list, 3, 4);
+                dict[9].AddShots(teamPlayerIDs, list, 3, 3);
+                dict[10].AddShots(teamPlayerIDs, list, 3, 2);
+                dict[6].AddShots(teamPlayerIDs, list, 4, 6);
+                dict[7].AddShots(teamPlayerIDs, list, 4, 5);
+                dict[8].AddShots(teamPlayerIDs, list, 4, 4);
+                dict[9].AddShots(teamPlayerIDs, list, 4, 3);
+                dict[10].AddShots(teamPlayerIDs, list, 4, 2);
+
+                dict[11].AddShots(teamPlayerIDs, list, 5, 6);
+                dict[12].AddShots(teamPlayerIDs, list, 5, 5);
+                dict[13].AddShots(teamPlayerIDs, list, 5, 4);
+                dict[14].AddShots(teamPlayerIDs, list, 5, 3);
+                dict[15].AddShots(teamPlayerIDs, list, 5, 2);
+            }
+
+            var w = new ShotChartWindow(dict);
+            w.ShowDialog();
+        }
     }
 }

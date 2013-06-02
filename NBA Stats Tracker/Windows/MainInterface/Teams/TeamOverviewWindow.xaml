@@ -301,6 +301,9 @@
                                         <ComboBox Name="cmbShotType" Width="120"
                                                   SelectionChanged="cmbShotType_SelectionChanged" />
                                     </StackPanel>
+                                    <StackPanel Height="23" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Name="btnShotChart" Content="Shot Chart" Width ="92" Click="btnShotChart_Click" />
+                                    </StackPanel>
                                     <DataGrid Name="dgShooting" Grid.Row="1" Margin="0,2" FrozenColumnCount="1"
                                               CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                                               AutoGenerateColumns="False" Height="170"

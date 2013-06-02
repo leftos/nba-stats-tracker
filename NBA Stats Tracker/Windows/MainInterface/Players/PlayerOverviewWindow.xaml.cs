@@ -88,6 +88,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private int _selectedPlayerID = -1;
         private ObservableCollection<PlayerStatsRow> _splitPSRs;
         private List<string> _teams;
+        private List<PlayerPBPStats> _shstList;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
@@ -1057,23 +1058,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 type = ShotEntry.ShotTypes.Single(o => o.Value == cmbShotType.SelectedItem.ToString()).Key;
             }
-            var shstList = ShotEntry.ShotDistances.Values.Select(distance => new PlayerPBPStats { Description = distance }).ToList();
-            shstList.Add(new PlayerPBPStats { Description = "Total" });
-            var lastIndex = shstList.Count - 1;
+            _shstList = ShotEntry.ShotDistances.Values.Select(distance => new PlayerPBPStats { Description = distance }).ToList();
+            _shstList.Add(new PlayerPBPStats { Description = "Total" });
+            var lastIndex = _shstList.Count - 1;
 
             foreach (var bse in _bseList)
             {
                 var playerPBPEList = bse.PBPEList.Where(o => o.Player1ID == _psr.ID || o.Player2ID == _psr.ID).ToList();
                 foreach (var pair in ShotEntry.ShotDistances)
                 {
-                    shstList.Single(o => o.Description == pair.Value).AddShots(_psr.ID, playerPBPEList, pair.Key, origin, type);
+                    _shstList.Single(o => o.Description == pair.Value).AddShots(_psr.ID, playerPBPEList, pair.Key, origin, type);
                 }
-                shstList[lastIndex].AddShots(_psr.ID, playerPBPEList, -1, origin, type);
-                shstList[lastIndex].AddOtherStats(_psr.ID, playerPBPEList, false);
+                _shstList[lastIndex].AddShots(_psr.ID, playerPBPEList, -1, origin, type);
+                _shstList[lastIndex].AddOtherStats(_psr.ID, playerPBPEList, false);
             }
 
-            dgShooting.ItemsSource = shstList;
-            dgOther.ItemsSource = new List<PlayerPBPStats> { shstList[lastIndex] };
+            dgShooting.ItemsSource = _shstList;
+            dgOther.ItemsSource = new List<PlayerPBPStats> { _shstList[lastIndex] };
         }
 
         /// <summary>
@@ -2203,6 +2204,54 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             updatePBPStats();
+        }
+
+        private void btnShotChart_Click(object sender, RoutedEventArgs e)
+        {
+            if (_psr == null || _psr.ID == -1 || _bseList == null)
+            {
+                return;
+            }
+
+            var dict = new Dictionary<int, PlayerPBPStats>();
+            for (var i = 2; i <= 15; i++)
+            {
+                dict.Add(i, new PlayerPBPStats());
+            }
+            
+            foreach (var bse in _bseList)
+            {
+                var pID = _psr.ID;
+                var list = bse.PBPEList.Where(o => o.Player1ID == pID || o.Player2ID == pID).ToList();
+
+                dict[2].AddShots(pID, list, 1);
+                
+                dict[3].AddShots(pID, list, 2, 6);
+                dict[3].AddShots(pID, list, 2, 5);
+                dict[4].AddShots(pID, list, 2, 4);
+                dict[5].AddShots(pID, list, 2, 3);
+                dict[5].AddShots(pID, list, 2, 2);
+
+                dict[6].AddShots(pID, list, 3, 6);
+                dict[7].AddShots(pID, list, 3, 5);
+                dict[8].AddShots(pID, list, 3, 4);
+                dict[9].AddShots(pID, list, 3, 3);
+                dict[10].AddShots(pID, list, 3, 2);
+                dict[6].AddShots(pID, list, 4, 6);
+                dict[7].AddShots(pID, list, 4, 5);
+                dict[8].AddShots(pID, list, 4, 4);
+                dict[9].AddShots(pID, list, 4, 3);
+                dict[10].AddShots(pID, list, 4, 2);
+
+                dict[11].AddShots(pID, list, 5, 6);
+                dict[12].AddShots(pID, list, 5, 5);
+                dict[13].AddShots(pID, list, 5, 4);
+                dict[14].AddShots(pID, list, 5, 3);
+                dict[15].AddShots(pID, list, 5, 2);
+            }
+
+            var w = new ShotChartWindow(dict);
+            w.ShowDialog();
         }
     }
 }

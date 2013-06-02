@@ -303,7 +303,7 @@
             </DataGrid>
             <!--<ListBox Name="lstEvents" Margin="10,5" />-->
         </Grid>
-        <Grid Grid.Row="4" Margin="10,5,10,10">
+        <Grid Grid.Row="4" Height="23" Margin="10,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Name="btnSave" Content="Save &amp; Close" Width="92" Click="btnSave_Click" />
                 <Rectangle Width="10" />
