@@ -1,11 +1,7 @@
-1.15.0.0
+1.15.0.1
 http://forums.nba-live.com/downloads.php?view=detail&df_id=4184
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
 http://forums.nba-live.com/viewtopic.php?f=149&t=91237
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
-
-	Version 1.14 introduces the new, improved Advanced Stats Calculator, which can now calculate partial stats based on play by play criteria, allowing you to go deeper than ever before.
-
-	Version 1.13 introduces the Play By Play Editor! You can now insert play by play information for any of the games you keep track of. This is merely a preview of a series of upcoming features, including calculating the box score based on the play by play information, and using that information to do analysis such as partial stats calculations. Soon, queries such as "How well does Player X shoot between 10 and 16 feet when guarded by Player Y and when there's less than 8 seconds on the clock?" will be doable, providing an unparalleled level of analysis.
-
-	Version 1.12.0.10 has subtle UI changes that reflect the fact that NBA Stats Tracker is able to import and export from NBA 2K13 savegames using the newly-released REDitor Modding Center.
+	
+	Version 1.15 introduces the Advanced Stats tab in Team & Player Overview, which provides the Metric Stats, Shooting Stats, as well as other stats collected from play-by-play information such as charges drawn, technical fouls, own shots blocked, etc.

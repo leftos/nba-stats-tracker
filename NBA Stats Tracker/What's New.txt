@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.15.0.1
+		- Addition: Added Assited Field Goal % to Advanced Shooting Stats in Team & Player Overview
+
 	v1.15
 		- Addition: Team & Player Overview now include accumulated shooting and other play-by-play stats, such as blocks received, technical fouls, charges drawn, etc. in the new Advanced Stats tab
 		- Addition: Team & Player Overview now include metric stats for that specific team/player in the new Advanced Stats tab
