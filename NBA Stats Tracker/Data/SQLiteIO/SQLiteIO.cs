@@ -488,11 +488,11 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                                     { "EventDesc", pbpe.EventDesc },
                                     { "Location", pbpe.Location.ToString() },
                                     { "LocationDesc", pbpe.LocationDesc },
-                                    { "ShotDistance", pbpe.ShotEntry.Distance.ToString() },
-                                    { "ShotOrigin", pbpe.ShotEntry.Origin.ToString() },
-                                    { "ShotType", pbpe.ShotEntry.Type.ToString() },
-                                    { "ShotIsMade", pbpe.ShotEntry.IsMade.ToString() },
-                                    { "ShotIsAssisted", pbpe.ShotEntry.IsAssisted.ToString() }
+                                    { "ShotDistance", pbpe.ShotEntry != null ? pbpe.ShotEntry.Distance.ToString() : "" },
+                                    { "ShotOrigin", pbpe.ShotEntry != null ? pbpe.ShotEntry.Origin.ToString() : "" },
+                                    { "ShotType", pbpe.ShotEntry != null ? pbpe.ShotEntry.Type.ToString() : "" },
+                                    { "ShotIsMade", pbpe.ShotEntry != null ? pbpe.ShotEntry.IsMade.ToString() : "" },
+                                    { "ShotIsAssisted", pbpe.ShotEntry != null ? pbpe.ShotEntry.IsAssisted.ToString() : "" }
                                 };
 
                             sqlinsert2.Add(dict2);
