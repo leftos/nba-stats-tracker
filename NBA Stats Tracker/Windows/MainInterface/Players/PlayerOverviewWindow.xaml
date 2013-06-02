@@ -492,7 +492,8 @@
                                             <DataGridTextColumn Header="FG%" Binding="{Binding FGp, StringFormat=F3}" />
                                             <DataGridTextColumn Header="FGeff"
                                                                 Binding="{Binding FGeff, StringFormat=F2}" />
-                                            <DataGridTextColumn Header="Assisted" Binding="{Binding Assisted}" />
+                                            <DataGridTextColumn Header="Asst" Binding="{Binding Assisted}" />
+                                            <DataGridTextColumn Header="Asst%" Binding="{Binding Assistedp, StringFormat=F3}" />
                                             <DataGridTextColumn Header="Defensive" />
                                             <DataGridTextColumn Header="FGM" Binding="{Binding DefFGM}" />
                                             <DataGridTextColumn Header="FGA" Binding="{Binding DefFGA}" />
@@ -500,7 +501,8 @@
                                                                 Binding="{Binding DefFGp, StringFormat=F3}" />
                                             <DataGridTextColumn Header="FGeff"
                                                                 Binding="{Binding DefFGeff, StringFormat=F2}" />
-                                            <DataGridTextColumn Header="Assisted" Binding="{Binding DefAssisted}" />
+                                            <DataGridTextColumn Header="Asst" Binding="{Binding DefAssisted}" />
+                                            <DataGridTextColumn Header="Asst%" Binding="{Binding DefAssistedp, StringFormat=F3}" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>

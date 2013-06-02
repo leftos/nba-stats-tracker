@@ -129,6 +129,11 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        public double Assistedp
+        {
+            get { return (double) _assisted / _fgm; }
+        }
+
         public uint DefFGM
         {
             get { return _deffgm; }
@@ -169,6 +174,11 @@ namespace NBA_Stats_Tracker.Data.Players
                 _defassisted = value;
                 OnPropertyChanged("DefAssisted");
             }
+        }
+
+        public double DefAssistedp
+        {
+            get { return (double) _defassisted / _deffgm; }
         }
 
         public uint ASTRec
