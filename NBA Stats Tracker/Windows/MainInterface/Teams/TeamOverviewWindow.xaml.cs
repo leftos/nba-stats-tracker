@@ -770,6 +770,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             updateScoutingReport();
 
             updateRecords();
+
+            tbcTeamOverview_SelectionChanged(null, null);
         }
 
         private void updateRecords()
@@ -3226,25 +3228,63 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private void rbPlayerStatsSeason_Click(object sender, RoutedEventArgs e)
         {
             rbMetricStatsSeason.IsChecked = true;
+            rbShootingStatsSeason.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
         private void rbPlayerStatsPlayoff_Click(object sender, RoutedEventArgs e)
         {
             rbMetricStatsPlayoff.IsChecked = true;
+            rbShootingStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
         private void rbMetricStatsSeason_Click(object sender, RoutedEventArgs e)
         {
             rbPlayerStatsSeason.IsChecked = true;
+            rbShootingStatsSeason.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
         private void rbMetricStatsPlayoff_Click(object sender, RoutedEventArgs e)
         {
             rbPlayerStatsPlayoff.IsChecked = true;
+            rbShootingStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
+        }
+
+        private void tbcTeamOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Equals(tbcTeamOverview.SelectedItem, tabShootingStats))
+            {
+                updatePlayerShootingStats();
+            }
+        }
+
+        private void updatePlayerShootingStats()
+        {
+            var psrList = rbShootingStatsSeason.IsChecked == true ? _psrList : _plPSRList;
+            foreach (var psr in psrList)
+            {
+                psr.PopulatePBPSList(_bseList);
+            }
+            dgvPlayerShootingStats.ItemsSource = psrList;
+        }
+
+        private void rbShootingStatsSeason_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsSeason.IsChecked = true;
+            rbMetricStatsSeason.IsChecked = true;
+            updatePlayerAndMetricStats();
+            updatePlayerShootingStats();
+        }
+
+        private void rbShootingStatsPlayoff_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsPlayoff.IsChecked = true;
+            rbMetricStatsPlayoff.IsChecked = true;
+            updatePlayerAndMetricStats();
+            updatePlayerShootingStats();
         }
     }
 }

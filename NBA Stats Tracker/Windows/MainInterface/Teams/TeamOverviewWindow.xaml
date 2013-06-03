@@ -24,7 +24,8 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
-            <TabControl Margin="0,0,0,188" Name="tbcTeamOverview" Padding="0">
+            <TabControl Margin="0,0,0,188" Name="tbcTeamOverview" Padding="0"
+                        SelectionChanged="tbcTeamOverview_SelectionChanged">
                 <TabItem Header="Overview" Name="tabOverview">
                     <Grid VerticalAlignment="Stretch">
                         <DataGrid AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="6,6,6,0"
@@ -985,6 +986,168 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Player Shooting Stats" Name="tabShootingStats">
+                    <Grid VerticalAlignment="Stretch" Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="24" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" Height="23" HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                            <RadioButton Name="rbShootingStatsSeason" Content="Season" IsChecked="True"
+                                         Click="rbShootingStatsSeason_Click" />
+                            <Rectangle Width="10" />
+                            <RadioButton Name="rbShootingStatsPlayoff" Content="Playoffs"
+                                         Click="rbShootingStatsPlayoff_Click" />
+                        </StackPanel>
+                        <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
+                                  FrozenColumnCount="2" Grid.Row="1"
+                                  HorizontalAlignment="Stretch" Name="dgvPlayerShootingStats"
+                                  VerticalAlignment="Stretch" IsReadOnly="True"
+                                  Sorting="statColumn_Sorting" MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick"
+                                  d:DataContext="{d:DesignInstance players:PlayerStatsRow}">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="FontFamily" Value="Arial Narrow" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
+                                <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team"
+                                                    Visibility="Collapsed" />
+                                <DataGridTextColumn Header="Offensive" />
+                                <DataGridTextColumn Header="Unknown" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[0].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[0].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[0].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[0].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[0].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[0].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="At-Rim" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[1].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[1].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[1].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[1].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[1].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[1].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="3-10ft" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[2].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[2].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[2].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[2].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[2].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[2].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="10-16ft" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[3].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[3].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[3].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[3].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[3].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[3].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="16ft-3pt" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[4].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[4].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[4].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[4].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[4].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[4].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="Beyond 3pt" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[5].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[5].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[5].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[5].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[5].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[5].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="Total" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[6].FGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[6].FGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[6].FGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[6].FGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[6].Assisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[6].Assistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="Defensive" />
+                                <DataGridTextColumn Header="Unknown" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[0].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[0].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[0].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[0].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[0].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[0].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="At-Rim" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[1].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[1].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[1].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[1].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[1].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[1].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="3-10ft" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[2].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[2].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[2].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[2].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[2].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[2].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="10-16ft" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[3].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[3].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[3].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[3].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[3].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[3].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="16ft-3pt" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[4].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[4].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[4].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[4].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[4].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[4].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="Beyond 3pt" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[5].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[5].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[5].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[5].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[5].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[5].DefAssistedp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="Total" />
+                                <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[6].DefFGM}" />
+                                <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[6].DefFGA}" />
+                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[6].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FGeff"
+                                                    Binding="{Binding PBPSList[6].DefFGeff, StringFormat=F2}" />
+                                <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[6].DefAssisted}" />
+                                <DataGridTextColumn Header="Asst%"
+                                                    Binding="{Binding PBPSList[6].DefAssistedp, StringFormat=F3}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

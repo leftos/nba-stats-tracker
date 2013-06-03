@@ -29,6 +29,8 @@ namespace NBA_Stats_Tracker.Data.Players
     using LeftosCommonLibrary;
 
     using NBA_Stats_Tracker.Annotations;
+    using NBA_Stats_Tracker.Data.BoxScores;
+    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Players.Contracts;
     using NBA_Stats_Tracker.Data.Players.Injuries;
     using NBA_Stats_Tracker.Data.Teams;
@@ -43,6 +45,8 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public PlayerStatsRow()
         {
+            Custom = new List<double>();
+            PBPSList = new List<PlayerPBPStats>();
         }
 
         /// <summary>
@@ -1629,6 +1633,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public double REBp { get; set; }
         public double PPR { get; set; }
 
+        #endregion
+
         public string TeamSDisplay { get; set; }
 
         public List<double> Custom { get; set; }
@@ -1669,6 +1675,22 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        #endregion
+        public List<PlayerPBPStats> PBPSList { get; set; }
+
+        public void PopulatePBPSList(IEnumerable<BoxScoreEntry> bseList)
+        {
+            PBPSList.Clear();
+            var plBSEList = bseList.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == ID)).ToList();
+            for (int i = 0; i < 7; i++)
+            {
+                PBPSList.Add(new PlayerPBPStats());
+            }
+            foreach (var bse in plBSEList)
+            {
+                var pbpeList = bse.PBPEList;
+                var list = PBPSList;
+                PlayerPBPStats.AddShotsToList(ref list, new List<int> { ID }, pbpeList);
+            }
+        }
     }
 }

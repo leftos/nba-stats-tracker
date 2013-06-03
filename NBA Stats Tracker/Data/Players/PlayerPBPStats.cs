@@ -25,6 +25,7 @@ namespace NBA_Stats_Tracker.Data.Players
     using System.Linq;
 
     using NBA_Stats_Tracker.Annotations;
+    using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
 
     #endregion
@@ -457,7 +458,6 @@ namespace NBA_Stats_Tracker.Data.Players
                             listEntry.Assisted++;
                         }
                     }
-                    lastEntry.AddShots(listEntry);
                 }
                 else if (teamPlayerIDs.Contains(e.Player2ID))
                 {
@@ -471,8 +471,27 @@ namespace NBA_Stats_Tracker.Data.Players
                             listEntry.DefAssisted++;
                         }
                     }
-                    lastEntry.AddShots(listEntry);
                 }
+            }
+            lastEntry.ResetStats();
+            for (int i = 0; i < shstList.Count - 1; i++)
+            {
+                var listEntry = shstList[i];
+                lastEntry.AddShots(listEntry);
+            }
+        }
+
+        public static void AddShotsToList(
+            ref List<PlayerPBPStats> shstList,
+            List<int> teamPlayerIDs,
+            IEnumerable<BoxScoreEntry> bseList,
+            int origin = -1,
+            int type = -1,
+            bool addGamePlayed = true)
+        {
+            foreach (var bse in bseList.Where(bse => bse.PBSList.Any(pbs => teamPlayerIDs.Contains(pbs.PlayerID))))
+            {
+                AddShotsToList(ref shstList, teamPlayerIDs, bse.PBPEList, origin, type, addGamePlayed);
             }
         }
 
