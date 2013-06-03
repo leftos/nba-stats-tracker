@@ -1,5 +1,12 @@
 NBA Stats Tracker - Version History
 
+	v1.16
+		- Addition: Added Team Shooting Stats, Team Other Stats, Player Shooting Stats and Player Other Stats to League Overview
+		- Addition: Added Player Shooting Stats and Player Other Stats to Team Overview
+		- Improvement: Team Overview now has both season & playoff stats for players in the same tab
+		- Addition: Added Defensive Shot Charts
+		- Fix: Fixed Shot Chart displaying some shot information in the wrong areas
+
 	v1.15.2
 		- Improvement: Shot Chart has been updated to include separate areas for all the shot distances available
 		- Addition: When editing Play-By-Play information for events other than shots, you can select the location by using the floor chart
