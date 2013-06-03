@@ -494,7 +494,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     value = 3;
                     break;
                 case 3:
-                    value = 5;
+                    value = 6;
                     break;
                 case 4:
                     value = 11;
@@ -505,7 +505,14 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             if (origin > 1)
             {
-                value += origin - 2;
+                if (distance != 2)
+                {
+                    value += origin - 2;
+                }
+                else
+                {
+                    value += (origin - 2) / 2;
+                }
             }
             return value;
         }
