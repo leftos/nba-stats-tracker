@@ -376,41 +376,46 @@ namespace NBA_Stats_Tracker.Data.Players
 
             foreach (var e in pbpeList.Where(e => e.EventType == PlayByPlayEntry.ShotAttemptEventType).ToList())
             {
-                if (distance != -1 && e.ShotEntry.Distance != distance)
-                {
-                    continue;
-                }
-                if (origin != -1 && e.ShotEntry.Origin != origin)
-                {
-                    continue;
-                }
-                if (type != -1 && e.ShotEntry.Type != type)
-                {
-                    continue;
-                }
+                AddShotsFromSingleEntry(teamPlayerIDs, distance, origin, type, e);
+            }
+        }
 
-                if (teamPlayerIDs.Contains(e.Player1ID))
+        private void AddShotsFromSingleEntry(List<int> teamPlayerIDs, int distance, int origin, int type, PlayByPlayEntry e)
+        {
+            if (distance != -1 && e.ShotEntry.Distance != distance)
+            {
+                return;
+            }
+            if (origin != -1 && e.ShotEntry.Origin != origin)
+            {
+                return;
+            }
+            if (type != -1 && e.ShotEntry.Type != type)
+            {
+                return;
+            }
+
+            if (teamPlayerIDs.Contains(e.Player1ID))
+            {
+                FGA++;
+                if (e.ShotEntry.IsMade)
                 {
-                    FGA++;
-                    if (e.ShotEntry.IsMade)
+                    FGM++;
+                    if (e.ShotEntry.IsAssisted)
                     {
-                        FGM++;
-                        if (e.ShotEntry.IsAssisted)
-                        {
-                            Assisted++;
-                        }
+                        Assisted++;
                     }
                 }
-                else if (teamPlayerIDs.Contains(e.Player2ID))
+            }
+            else if (teamPlayerIDs.Contains(e.Player2ID))
+            {
+                DefFGA++;
+                if (e.ShotEntry.IsMade)
                 {
-                    DefFGA++;
-                    if (e.ShotEntry.IsMade)
+                    DefFGM++;
+                    if (e.ShotEntry.IsAssisted)
                     {
-                        DefFGM++;
-                        if (e.ShotEntry.IsAssisted)
-                        {
-                            DefAssisted++;
-                        }
+                        DefAssisted++;
                     }
                 }
             }

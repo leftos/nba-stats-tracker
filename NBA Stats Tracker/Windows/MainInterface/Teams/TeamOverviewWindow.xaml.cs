@@ -90,6 +90,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private string _teamBestG = "";
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, TeamStats> _tstOpp;
+        private List<BoxScoreEntry> _bseListSea, _bseListPl;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -309,6 +310,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             #region Prepare Team Overview
 
             _bseList = MainWindow.BSHist.Where(bse => bse.BS.Team1ID == _curTeam || bse.BS.Team2ID == _curTeam).ToList();
+            _bseListSea = _bseList.Where(bse => bse.BS.IsPlayoff == false).ToList();
+            _bseListPl = _bseList.Where(bse => bse.BS.IsPlayoff == true).ToList();
 
             foreach (var r in _bseList)
             {
@@ -2486,6 +2489,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbShotType.ItemsSource = shotTypes;
             cmbShotType.SelectedIndex = 0;
 
+            _bseListSea = new List<BoxScoreEntry>();
+            _bseListPl = new List<BoxScoreEntry>();
+
             cmbTeam.SelectedIndex = -1;
             if (_teamIDToLoad != -1)
             {
@@ -3229,6 +3235,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             rbMetricStatsSeason.IsChecked = true;
             rbShootingStatsSeason.IsChecked = true;
+            rbOtherStatsSeason.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
@@ -3236,6 +3243,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             rbMetricStatsPlayoff.IsChecked = true;
             rbShootingStatsPlayoff.IsChecked = true;
+            rbOtherStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
@@ -3243,6 +3251,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             rbPlayerStatsSeason.IsChecked = true;
             rbShootingStatsSeason.IsChecked = true;
+            rbOtherStatsSeason.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
@@ -3250,12 +3259,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             rbPlayerStatsPlayoff.IsChecked = true;
             rbShootingStatsPlayoff.IsChecked = true;
+            rbOtherStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
         }
 
         private void tbcTeamOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Equals(tbcTeamOverview.SelectedItem, tabShootingStats))
+            if (Equals(tbcTeamOverview.SelectedItem, tabShootingStats) || Equals(tbcTeamOverview.SelectedItem, tabOtherStats))
             {
                 updatePlayerShootingStats();
             }
@@ -3263,18 +3273,28 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
         private void updatePlayerShootingStats()
         {
+            dgvPlayerShootingStats.ItemsSource = null;
+            dgvPlayerOtherStats.ItemsSource = null;
+            if (_curts == null || _curts.ID == -1 || _psrList == null)
+            {
+                return;
+            }
+
             var psrList = rbShootingStatsSeason.IsChecked == true ? _psrList : _plPSRList;
+            var bseList = rbShootingStatsSeason.IsChecked == true ? _bseListSea : _bseListPl;
             foreach (var psr in psrList)
             {
-                psr.PopulatePBPSList(_bseList);
+                psr.PopulatePBPSList(bseList);
             }
             dgvPlayerShootingStats.ItemsSource = psrList;
+            dgvPlayerOtherStats.ItemsSource = dgvPlayerShootingStats.ItemsSource;
         }
 
         private void rbShootingStatsSeason_Click(object sender, RoutedEventArgs e)
         {
             rbPlayerStatsSeason.IsChecked = true;
             rbMetricStatsSeason.IsChecked = true;
+            rbOtherStatsSeason.IsChecked = true;
             updatePlayerAndMetricStats();
             updatePlayerShootingStats();
         }
@@ -3283,6 +3303,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             rbPlayerStatsPlayoff.IsChecked = true;
             rbMetricStatsPlayoff.IsChecked = true;
+            rbOtherStatsPlayoff.IsChecked = true;
+            updatePlayerAndMetricStats();
+            updatePlayerShootingStats();
+        }
+
+        private void rbOtherStatsSeason_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsSeason.IsChecked = true;
+            rbMetricStatsSeason.IsChecked = true;
+            rbShootingStatsSeason.IsChecked = true;
+            updatePlayerAndMetricStats();
+            updatePlayerShootingStats();
+        }
+
+        private void rbOtherStatsPlayoff_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsPlayoff.IsChecked = true;
+            rbMetricStatsPlayoff.IsChecked = true;
+            rbShootingStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
             updatePlayerShootingStats();
         }

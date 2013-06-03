@@ -1690,6 +1690,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 var pbpeList = bse.PBPEList;
                 var list = PBPSList;
                 PlayerPBPStats.AddShotsToList(ref list, new List<int> { ID }, pbpeList);
+                PBPSList[6].AddOtherStats(ID, pbpeList, false);
             }
         }
     }

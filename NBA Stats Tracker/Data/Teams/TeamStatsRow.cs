@@ -26,13 +26,20 @@ namespace NBA_Stats_Tracker.Data.Teams
 
     using LeftosCommonLibrary;
 
+    using NBA_Stats_Tracker.Data.BoxScores;
     using NBA_Stats_Tracker.Data.Players;
 
     #endregion
 
     public class TeamStatsRow
     {
+        public TeamStatsRow()
+        {
+            PBPSList = new List<PlayerPBPStats>();
+        }
+
         public TeamStatsRow(TeamStats ts, bool playoffs = false)
+            : this()
         {
             ID = ts.ID;
             Name = ts.Name;
@@ -368,5 +375,25 @@ namespace NBA_Stats_Tracker.Data.Teams
             CCount = teamPlayers.Count(ps => ps.Position1 == Position.C);
             InjuredCount = teamPlayers.Count(ps => ps.Injury.IsInjured);
         }
+
+        public void PopulatePBPSList(IEnumerable<BoxScoreEntry> bseList)
+        {
+            PBPSList.Clear();
+            var teamBSEList = bseList.Where(bse => bse.BS.Team1ID == ID || bse.BS.Team2ID == ID).ToList();
+            for (var i = 0; i < 7; i++)
+            {
+                PBPSList.Add(new PlayerPBPStats());
+            }
+            foreach (var bse in teamBSEList)
+            {
+                var pbpeList = bse.PBPEList;
+                var list = PBPSList;
+                var teamPlayerIDs = bse.PBSList.Where(pbs => pbs.TeamID == ID).Select(pbs => pbs.PlayerID).ToList();
+                PlayerPBPStats.AddShotsToList(ref list, teamPlayerIDs, pbpeList);
+                PBPSList[6].AddOtherStats(teamPlayerIDs, pbpeList, false);
+            }
+        }
+
+        public List<PlayerPBPStats> PBPSList { get; set; }
     }
 }

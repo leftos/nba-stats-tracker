@@ -167,7 +167,17 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
         /// </param>
         public static void StatColumn_Sorting(DataGrid sender, DataGridSortingEventArgs e)
         {
-            var namesNotToSortDescendingFirst = new List<string> { "Player", "Last Name", "First Name", "Team", "Returns", "Injury" };
+            var namesNotToSortDescendingFirst = new List<string>
+                {
+                    "Player",
+                    "Last Name",
+                    "First Name",
+                    "Team",
+                    "Name",
+                    "Location",
+                    "Returns",
+                    "Injury"
+                };
             if (e.Column.Header.ToString() == "Returns")
             {
                 e.Handled = true;

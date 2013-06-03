@@ -1,4 +1,4 @@
-- Accumulate shooting and other stats in League Overview
+- Add Padding to TemplateColumns
 - Opponent/Defensive Stats when adding up PBPEs in ASC
 - Bookmarks
 
