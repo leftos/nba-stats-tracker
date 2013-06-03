@@ -9,7 +9,6 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Threading;
 
@@ -882,7 +881,7 @@
             var w = new ShotChartWindow(curEventKey != PlayByPlayEntry.ShotAttemptEventType);
             w.ShowDialog();
 
-            bool close = false;
+            var close = false;
 
             var button = ShotChartWindow.LastButtonPressed;
 

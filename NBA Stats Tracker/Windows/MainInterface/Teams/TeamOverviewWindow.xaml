@@ -302,7 +302,8 @@
                                                   SelectionChanged="cmbShotType_SelectionChanged" />
                                     </StackPanel>
                                     <StackPanel Height="23" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Name="btnShotChart" Content="Shot Chart" Width ="92" Click="btnShotChart_Click" />
+                                        <Button Name="btnShotChart" Content="Shot Chart" Width="92"
+                                                Click="btnShotChart_Click" />
                                     </StackPanel>
                                     <DataGrid Name="dgShooting" Grid.Row="1" Margin="0,2" FrozenColumnCount="1"
                                               CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
@@ -316,7 +317,8 @@
                                             <DataGridTextColumn Header="FGeff"
                                                                 Binding="{Binding FGeff, StringFormat=F2}" />
                                             <DataGridTextColumn Header="Asst" Binding="{Binding Assisted}" />
-                                            <DataGridTextColumn Header="Asst%" Binding="{Binding Assistedp, StringFormat=F3}" />
+                                            <DataGridTextColumn Header="Asst%"
+                                                                Binding="{Binding Assistedp, StringFormat=F3}" />
                                             <DataGridTextColumn Header="Defensive" />
                                             <DataGridTextColumn Header="FGM" Binding="{Binding DefFGM}" />
                                             <DataGridTextColumn Header="FGA" Binding="{Binding DefFGA}" />
@@ -325,7 +327,8 @@
                                             <DataGridTextColumn Header="FGeff"
                                                                 Binding="{Binding DefFGeff, StringFormat=F2}" />
                                             <DataGridTextColumn Header="Asst" Binding="{Binding DefAssisted}" />
-                                            <DataGridTextColumn Header="Asst%" Binding="{Binding DefAssistedp, StringFormat=F3}" />
+                                            <DataGridTextColumn Header="Asst%"
+                                                                Binding="{Binding DefAssistedp, StringFormat=F3}" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>

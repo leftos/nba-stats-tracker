@@ -22,13 +22,8 @@ namespace NBA_Stats_Tracker.Windows
 
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.Drawing.Text;
     using System.IO;
-    using System.Linq;
-    using System.Windows.Media;
     using System.Windows.Media.Imaging;
 
     #endregion
@@ -45,9 +40,10 @@ namespace NBA_Stats_Tracker.Windows
             var nameList = new List<string> { "Default", "Red", "Grey", "Blue" };
 
             var list = new List<Image> { Properties.Resources.Default_001 };
-            for (int i = 2; i <= 15; i++)
+            for (var i = 2; i <= 15; i++)
             {
-                list.Add((Image) Properties.Resources.ResourceManager.GetObject(nameList[rng.Next(4)] + "_0" + String.Format("{0:00}", i)));
+                list.Add(
+                    (Image) Properties.Resources.ResourceManager.GetObject(nameList[rng.Next(4)] + "_0" + String.Format("{0:00}", i)));
             }
 
             Image canvas = new Bitmap(478, 397);
@@ -67,7 +63,7 @@ namespace NBA_Stats_Tracker.Windows
             bmi.EndInit();
 
             imageControl.Source = bmi;
-            
+
             g.Dispose();
             canvas.Dispose();
         }

@@ -86,9 +86,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private PlayerRankings _rankingsPosition;
         private PlayerRankings _rankingsTeam;
         private int _selectedPlayerID = -1;
+        private List<PlayerPBPStats> _shstList;
         private ObservableCollection<PlayerStatsRow> _splitPSRs;
         private List<string> _teams;
-        private List<PlayerPBPStats> _shstList;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.

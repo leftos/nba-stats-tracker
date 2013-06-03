@@ -64,7 +64,7 @@
         <StackPanel VerticalAlignment="Center" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <RadioButton Name="rbOffensive" Content="Offensive Half" FontSize="14" IsChecked="True" />
             <Rectangle Width="10" />
-            <RadioButton Name="rbDefensive" Content="Defensive Half" FontSize="14"/>
+            <RadioButton Name="rbDefensive" Content="Defensive Half" FontSize="14" />
         </StackPanel>
     </Grid>
 </Window>

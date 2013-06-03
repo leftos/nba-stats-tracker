@@ -1,59 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
+﻿namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
 {
+    #region Using Directives
+
+    using System;
+    using System.Collections.Generic;
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Drawing.Imaging;
     using System.Drawing.Text;
     using System.IO;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media.Imaging;
 
-    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Players;
 
-    /// <summary>
-    /// Interaction logic for ShotChartWindow.xaml
-    /// </summary>
+    using Image = System.Drawing.Image;
+    using Point = System.Drawing.Point;
+
+    #endregion
+
+    /// <summary>Interaction logic for ShotChartWindow.xaml</summary>
     public partial class ShotChartWindow : Window
     {
-        private readonly Dictionary<int, PlayerPBPStats> _pbpsList;
-
-        private static readonly Dictionary<int, KeyValuePair<int, int>> XyDict = new Dictionary<int, KeyValuePair<int, int>> {
+        private static readonly Dictionary<int, KeyValuePair<int, int>> XyDict = new Dictionary<int, KeyValuePair<int, int>>
+            {
                 { 2, new KeyValuePair<int, int>(293, 75) },
-
                 { 3, new KeyValuePair<int, int>(226, 75) },
                 { 4, new KeyValuePair<int, int>(293, 128) },
                 { 5, new KeyValuePair<int, int>(360, 75) },
-
                 { 6, new KeyValuePair<int, int>(155, 70) },
                 { 7, new KeyValuePair<int, int>(186, 168) },
                 { 8, new KeyValuePair<int, int>(293, 210) },
                 { 9, new KeyValuePair<int, int>(400, 168) },
                 { 10, new KeyValuePair<int, int>(431, 70) },
-
                 { 11, new KeyValuePair<int, int>(87, 145) },
                 { 12, new KeyValuePair<int, int>(150, 250) },
                 { 13, new KeyValuePair<int, int>(293, 297) },
                 { 14, new KeyValuePair<int, int>(436, 250) },
                 { 15, new KeyValuePair<int, int>(499, 145) },
-
                 { 16, new KeyValuePair<int, int>(32, 122) },
                 { 17, new KeyValuePair<int, int>(90, 337) },
                 { 18, new KeyValuePair<int, int>(293, 390) },
                 { 19, new KeyValuePair<int, int>(496, 337) },
                 { 20, new KeyValuePair<int, int>(554, 122) }
             };
+
+        private readonly Dictionary<int, PlayerPBPStats> _pbpsList;
 
         public ShotChartWindow(bool showHalves = false)
         {
@@ -79,8 +72,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             }
         }
 
-        public static string LastButtonPressed { get; set; }
-
         public ShotChartWindow(Dictionary<int, PlayerPBPStats> pbpsList)
             : this()
         {
@@ -89,7 +80,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             grdButtons.Visibility = Visibility.Hidden;
 
             var list = new List<Image> { Properties.Resources.Default_001 };
-            for (int i = 2; i <= 20; i++)
+            for (var i = 2; i <= 20; i++)
             {
                 if (pbpsList[i].FGp >= 0.5)
                 {
@@ -126,7 +117,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             foreach (var pair in XyDict)
             {
                 var s = _pbpsList[pair.Key];
-                string fgpString = "";
+                var fgpString = "";
                 if (!Double.IsNaN(s.FGp))
                 {
                     if (s.FGM == s.FGA)
@@ -173,13 +164,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
             canvas.Dispose();
         }
 
+        public static string LastButtonPressed { get; set; }
+
+        public static string LastHalfSelected { get; set; }
+
         private void shotButton_Click(object sender, RoutedEventArgs e)
         {
             LastButtonPressed = ((Button) sender).Name;
             LastHalfSelected = rbOffensive.IsChecked == true ? "Offensive" : "Defensive";
             Close();
         }
-
-        public static string LastHalfSelected { get; set; }
     }
 }

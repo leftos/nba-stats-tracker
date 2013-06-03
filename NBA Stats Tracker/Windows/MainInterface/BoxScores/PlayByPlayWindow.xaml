@@ -234,7 +234,8 @@
                     <Rectangle Height="5" />
                     <ComboBox Name="cmbLocationShotDistance"
                               SelectionChanged="cmbLocationShotDistance_SelectionChanged"
-                              PreviewMouseRightButtonDown="cmbLocationShotDistance_PreviewMouseRightButtonDown" />
+                              PreviewMouseRightButtonDown="cmbLocationShotDistance_PreviewMouseRightButtonDown"
+                              ToolTip="Right-click to select the location from a floor chart." />
                     <Rectangle Height="5" />
                     <TextBox Name="txtLocationDesc" />
                 </StackPanel>
