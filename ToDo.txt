@@ -1,4 +1,4 @@
-- Shooting Charts
+- Accumulate shooting and other stats in League Overview
 - Opponent/Defensive Stats when adding up PBPEs in ASC
 - Bookmarks
 
@@ -12,9 +12,7 @@
 - More Copy To Clipboard
 - Double-double, triple-double
 - Power Rankings with short reports
-- Split Shooting Stats
 - Anonymous Usage Information
-- Play-by-play analysis
 - Add custom columns to all Metrics tabs
 
 - Implement Compare to Real again sometime

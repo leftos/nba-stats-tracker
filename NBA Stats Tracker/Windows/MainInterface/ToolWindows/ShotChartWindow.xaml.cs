@@ -148,14 +148,13 @@
                 gp.Dispose();
             }
 
-            var tempFile = App.AppTempPath + "\\temp.png";
-            File.Delete(tempFile);
-            canvas.Save(tempFile);
+            var ms = new MemoryStream();
+            canvas.Save(ms, ImageFormat.Png);
 
             var bmi = new BitmapImage();
             bmi.BeginInit();
             bmi.CacheOption = BitmapCacheOption.OnLoad;
-            bmi.UriSource = new Uri(tempFile, UriKind.Absolute);
+            bmi.StreamSource = ms;
             bmi.EndInit();
 
             imgShotChart.Source = bmi;
@@ -164,9 +163,9 @@
             canvas.Dispose();
         }
 
-        public static string LastButtonPressed { get; set; }
+        public static string LastButtonPressed { get; private set; }
 
-        public static string LastHalfSelected { get; set; }
+        public static string LastHalfSelected { get; private set; }
 
         private void shotButton_Click(object sender, RoutedEventArgs e)
         {
