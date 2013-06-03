@@ -2476,6 +2476,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgvYearly.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
+            var shotOrigins = ShotEntry.ShotOrigins.Values.ToList();
+            shotOrigins.Insert(0, "Any");
+            cmbShotOrigin.ItemsSource = shotOrigins;
+            cmbShotOrigin.SelectedIndex = 0;
+
+            var shotTypes = ShotEntry.ShotTypes.Values.ToList();
+            shotTypes.Insert(0, "Any");
+            cmbShotType.ItemsSource = shotTypes;
+            cmbShotType.SelectedIndex = 0;
+
             cmbTeam.SelectedIndex = -1;
             if (_teamIDToLoad != -1)
             {
@@ -3173,11 +3183,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 var teamPlayerIDs = bse.PBSList.Where(o => o.TeamID == _curts.ID).Select(o => o.PlayerID).ToList();
                 var teamPBPEList =
                     bse.PBPEList.Where(o => teamPlayerIDs.Contains(o.Player1ID) || teamPlayerIDs.Contains(o.Player2ID)).ToList();
-                foreach (var pair in ShotEntry.ShotDistances)
-                {
-                    shstList.Single(o => o.Description == pair.Value).AddShots(teamPlayerIDs, teamPBPEList, pair.Key, origin, type);
-                }
-                shstList[lastIndex].AddShots(teamPlayerIDs, teamPBPEList, -1, origin, type);
+                PlayerPBPStats.AddShotsToList(ref shstList, teamPlayerIDs, teamPBPEList, origin, type);
                 shstList[lastIndex].AddOtherStats(teamPlayerIDs, teamPBPEList, false);
             }
 
@@ -3203,7 +3209,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
 
             var dict = new Dictionary<int, PlayerPBPStats>();
-            for (var i = 2; i <= 15; i++)
+            for (var i = 1; i <= 20; i++)
             {
                 dict.Add(i, new PlayerPBPStats());
             }
@@ -3211,33 +3217,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             foreach (var bse in _bseList)
             {
                 var teamPlayerIDs = bse.PBSList.Where(o => o.TeamID == _curts.ID).Select(o => o.PlayerID).ToList();
-                var list =
-                    bse.PBPEList.Where(o => teamPlayerIDs.Contains(o.Player1ID) || teamPlayerIDs.Contains(o.Player2ID)).ToList();
-
-                dict[2].AddShots(teamPlayerIDs, list, 1);
-
-                dict[3].AddShots(teamPlayerIDs, list, 2, 6);
-                dict[3].AddShots(teamPlayerIDs, list, 2, 5);
-                dict[4].AddShots(teamPlayerIDs, list, 2, 4);
-                dict[5].AddShots(teamPlayerIDs, list, 2, 3);
-                dict[5].AddShots(teamPlayerIDs, list, 2, 2);
-
-                dict[6].AddShots(teamPlayerIDs, list, 3, 6);
-                dict[7].AddShots(teamPlayerIDs, list, 3, 5);
-                dict[8].AddShots(teamPlayerIDs, list, 3, 4);
-                dict[9].AddShots(teamPlayerIDs, list, 3, 3);
-                dict[10].AddShots(teamPlayerIDs, list, 3, 2);
-                dict[6].AddShots(teamPlayerIDs, list, 4, 6);
-                dict[7].AddShots(teamPlayerIDs, list, 4, 5);
-                dict[8].AddShots(teamPlayerIDs, list, 4, 4);
-                dict[9].AddShots(teamPlayerIDs, list, 4, 3);
-                dict[10].AddShots(teamPlayerIDs, list, 4, 2);
-
-                dict[11].AddShots(teamPlayerIDs, list, 5, 6);
-                dict[12].AddShots(teamPlayerIDs, list, 5, 5);
-                dict[13].AddShots(teamPlayerIDs, list, 5, 4);
-                dict[14].AddShots(teamPlayerIDs, list, 5, 3);
-                dict[15].AddShots(teamPlayerIDs, list, 5, 2);
+                var list = bse.PBPEList.Where(o => teamPlayerIDs.Contains(o.Player1ID) || teamPlayerIDs.Contains(o.Player2ID)).ToList();
+                PlayerPBPStats.AddShotsToDictionary(ref dict, teamPlayerIDs, list);
             }
 
             var w = new ShotChartWindow(dict);

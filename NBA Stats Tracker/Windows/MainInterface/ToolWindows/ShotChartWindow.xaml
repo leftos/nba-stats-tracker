@@ -2,43 +2,69 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Shot Chart" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Image Name="imgShotChart" Height="397" Width="478" Source="..\..\..\Images\FloorChart.png" />
-        <Grid Name="grdButtons">
+    <Grid Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="551" />
+            <RowDefinition Height="29" Name="rowHalves" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Image Name="imgShotChart" Source="..\..\..\Images\FloorChart.png"
+                   VerticalAlignment="Stretch" />
+            <Grid Name="grdButtons">
 
-            <Button Name="btn3PTLeft" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top" Width="32"
-                    Height="32" Click="shotButton_Click" />
-            <Button Name="btn3PTMidLeft" HorizontalAlignment="Left" Margin="70,212,0,0" VerticalAlignment="Top"
-                    Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn3PTMid" HorizontalAlignment="Left" Margin="223,258,0,0" VerticalAlignment="Top" Width="32"
-                    Height="32" Click="shotButton_Click" />
-            <Button Name="btn3PTMidRight" HorizontalAlignment="Right" Margin="0,212,70,0" VerticalAlignment="Top"
-                    Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn3PTRight" HorizontalAlignment="Right" Margin="0,143,10,0" VerticalAlignment="Top"
-                    Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn3PTLeft" HorizontalAlignment="Left" Margin="17,130,0,0" VerticalAlignment="Top"
+                        Width="32"
+                        Height="32" Click="shotButton_Click" />
+                <Button Name="btn3PTMidLeft" HorizontalAlignment="Left" Margin="78,300,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn3PTMid" HorizontalAlignment="Center" Margin="0,365,0,0" VerticalAlignment="Top"
+                        Width="32"
+                        Height="32" Click="shotButton_Click" />
+                <Button Name="btn3PTMidRight" HorizontalAlignment="Right" Margin="0,300,78,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn3PTRight" HorizontalAlignment="Right" Margin="0,130,17,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
 
-            <Button Name="btn16Left" HorizontalAlignment="Left" Margin="47,85,0,0" VerticalAlignment="Top" Width="32"
-                    Height="32" Click="shotButton_Click" />
-            <Button Name="btn16MidLeft" HorizontalAlignment="Left" Margin="111,170,0,0" VerticalAlignment="Top"
-                    Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn16Mid" HorizontalAlignment="Left" Margin="223,202,0,0" VerticalAlignment="Top" Width="32"
-                    Height="32" Click="shotButton_Click" />
-            <Button Name="btn16MidRight" HorizontalAlignment="Right" Margin="0,170,108,0" VerticalAlignment="Top"
-                    Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn16Right" HorizontalAlignment="Right" Margin="0,85,44,0" VerticalAlignment="Top" Width="32"
-                    Height="32" Click="shotButton_Click" />
+                <Button Name="btn16Left" HorizontalAlignment="Left" Margin="68,85,0,0" VerticalAlignment="Top"
+                        Width="32"
+                        Height="32" Click="shotButton_Click" />
+                <Button Name="btn16MidLeft" HorizontalAlignment="Left" Margin="139,235,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn16Mid" HorizontalAlignment="Center" Margin="0,285,0,0" VerticalAlignment="Top"
+                        Width="32"
+                        Height="32" Click="shotButton_Click" />
+                <Button Name="btn16MidRight" HorizontalAlignment="Right" Margin="0,235,139,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn16Right" HorizontalAlignment="Right" Margin="0,85,68,0" VerticalAlignment="Top"
+                        Width="32"
+                        Height="32" Click="shotButton_Click" />
 
-            <Button Name="btn10Left" HorizontalAlignment="Left" Margin="99,53,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn10MidLeft" HorizontalAlignment="Left" Margin="155,124,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn10Mid" HorizontalAlignment="Left" Margin="223,155,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn10MidRight" HorizontalAlignment="Right" Margin="0,124,146,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btn10Right" HorizontalAlignment="Right" Margin="0,53,87,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn10Left" HorizontalAlignment="Left" Margin="142,53,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn10MidLeft" HorizontalAlignment="Left" Margin="168,147,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn10Mid" HorizontalAlignment="Center" Margin="0,195,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn10MidRight" HorizontalAlignment="Right" Margin="0,147,168,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btn10Right" HorizontalAlignment="Right" Margin="0,53,142,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
 
-            <Button Name="btnCloseLeft" HorizontalAlignment="Left" Margin="146,33,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btnCloseMid" HorizontalAlignment="Left" Margin="223,107,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
-            <Button Name="btnCloseRight" HorizontalAlignment="Right" Margin="0,33,146,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btnCloseLeft" HorizontalAlignment="Left" Margin="216,53,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btnCloseMid" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btnCloseRight" HorizontalAlignment="Right" Margin="0,53,216,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
 
-            <Button Name="btnUnder" HorizontalAlignment="Left" Margin="223,23,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="shotButton_Click" />
+                <Button Name="btnUnder" HorizontalAlignment="Center" Margin="0,53,0,0" VerticalAlignment="Top"
+                        Width="32" Height="32" Click="shotButton_Click" />
+            </Grid>
         </Grid>
+        <StackPanel VerticalAlignment="Center" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <RadioButton Name="rbOffensive" Content="Offensive Half" FontSize="14" IsChecked="True" />
+            <Rectangle Width="10" />
+            <RadioButton Name="rbDefensive" Content="Defensive Half" FontSize="14"/>
+        </StackPanel>
     </Grid>
 </Window>

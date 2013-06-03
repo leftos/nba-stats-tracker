@@ -61,12 +61,6 @@ namespace NBA_Stats_Tracker.Data.Players
             GP = gp;
         }
 
-        public PlayerPBPStats(uint gp, IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1)
-            : this(gp)
-        {
-            AddOffensiveShots(pbpeList, distance, origin, type, false);
-        }
-
         public string Description
         {
             get { return _description; }
@@ -355,76 +349,6 @@ namespace NBA_Stats_Tracker.Data.Players
             DefAssisted = 0;
         }
 
-        public void AddOffensiveShots(
-            IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1, bool addGamePlayed = true)
-        {
-            if (addGamePlayed)
-            {
-                GP++;
-            }
-
-            foreach (var e in pbpeList.Where(e => e.EventType == PlayByPlayEntry.ShotAttemptEventType).ToList())
-            {
-                if (distance != -1 && e.ShotEntry.Distance != distance)
-                {
-                    continue;
-                }
-                if (origin != -1 && e.ShotEntry.Origin != origin)
-                {
-                    continue;
-                }
-                if (type != -1 && e.ShotEntry.Type != type)
-                {
-                    continue;
-                }
-
-                FGA++;
-                if (e.ShotEntry.IsMade)
-                {
-                    FGM++;
-                }
-                if (e.ShotEntry.IsAssisted)
-                {
-                    Assisted++;
-                }
-            }
-        }
-
-        public void AddDefensiveShots(
-            IEnumerable<PlayByPlayEntry> pbpeList, int distance = -1, int origin = -1, int type = -1, bool addGamePlayed = true)
-        {
-            if (addGamePlayed)
-            {
-                GP++;
-            }
-
-            foreach (var e in pbpeList.Where(e => e.EventType == PlayByPlayEntry.ShotAttemptEventType).ToList())
-            {
-                if (distance != -1 && e.ShotEntry.Distance != distance)
-                {
-                    continue;
-                }
-                if (origin != -1 && e.ShotEntry.Origin != origin)
-                {
-                    continue;
-                }
-                if (type != -1 && e.ShotEntry.Type != type)
-                {
-                    continue;
-                }
-
-                DefFGA++;
-                if (e.ShotEntry.IsMade)
-                {
-                    DefFGM++;
-                }
-                if (e.ShotEntry.IsAssisted)
-                {
-                    DefAssisted++;
-                }
-            }
-        }
-
         public void AddShots(
             int playerID,
             IEnumerable<PlayByPlayEntry> pbpeList,
@@ -470,10 +394,10 @@ namespace NBA_Stats_Tracker.Data.Players
                     if (e.ShotEntry.IsMade)
                     {
                         FGM++;
-                    }
-                    if (e.ShotEntry.IsAssisted)
-                    {
-                        Assisted++;
+                        if (e.ShotEntry.IsAssisted)
+                        {
+                            Assisted++;
+                        }
                     }
                 }
                 else if (teamPlayerIDs.Contains(e.Player2ID))
@@ -482,10 +406,139 @@ namespace NBA_Stats_Tracker.Data.Players
                     if (e.ShotEntry.IsMade)
                     {
                         DefFGM++;
+                        if (e.ShotEntry.IsAssisted)
+                        {
+                            DefAssisted++;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void AddShotsToList(
+            ref List<PlayerPBPStats> shstList,
+            List<int> teamPlayerIDs,
+            IEnumerable<PlayByPlayEntry> pbpeList,
+            int origin = -1,
+            int type = -1,
+            bool addGamePlayed = true)
+        {
+            if (addGamePlayed)
+            {
+                foreach (var o in shstList)
+                {
+                    o.GP++;
+                }
+            }
+
+            var lastIndex = shstList.Count - 1;
+            var lastEntry = shstList[lastIndex];
+
+            foreach (var e in pbpeList.Where(e => e.EventType == PlayByPlayEntry.ShotAttemptEventType).ToList())
+            {
+                if (origin != -1 && e.ShotEntry.Origin != origin)
+                {
+                    continue;
+                }
+                if (type != -1 && e.ShotEntry.Type != type)
+                {
+                    continue;
+                }
+
+                if (teamPlayerIDs.Contains(e.Player1ID))
+                {
+                    var listEntry = shstList[e.ShotEntry.Distance];
+                    listEntry.FGA++;
+                    if (e.ShotEntry.IsMade)
+                    {
+                        listEntry.FGM++;
+                        if (e.ShotEntry.IsAssisted)
+                        {
+                            listEntry.Assisted++;
+                        }
+                    }
+                    lastEntry.AddShots(listEntry);
+                }
+                else if (teamPlayerIDs.Contains(e.Player2ID))
+                {
+                    var listEntry = shstList[e.ShotEntry.Distance];
+                    listEntry.DefFGA++;
+                    if (e.ShotEntry.IsMade)
+                    {
+                        listEntry.DefFGM++;
+                        if (e.ShotEntry.IsAssisted)
+                        {
+                            listEntry.DefAssisted++;
+                        }
+                    }
+                    lastEntry.AddShots(listEntry);
+                }
+            }
+        }
+
+        private static int getDictKey(int distance, int origin)
+        {
+            if (distance == 0 || origin == 0)
+            {
+                return 1;
+            }
+            else if (distance == 1)
+            {
+                return 2;
+            }
+
+            var value = 1;
+            switch (distance)
+            {
+                case 2:
+                    value = 3;
+                    break;
+                case 3:
+                    value = 5;
+                    break;
+                case 4:
+                    value = 11;
+                    break;
+                case 5:
+                    value = 16;
+                    break;
+            }
+            if (origin > 1)
+            {
+                value += origin - 2;
+            }
+            return value;
+        }
+
+        public static void AddShotsToDictionary(
+            ref Dictionary<int, PlayerPBPStats> dict, List<int> playerIDs, IEnumerable<PlayByPlayEntry> pbpeList)
+        {
+            foreach (var e in pbpeList.Where(e => e.EventType == PlayByPlayEntry.ShotAttemptEventType).ToList())
+            {
+                if (playerIDs.Contains(e.Player1ID))
+                {
+                    var dictEntry = dict[getDictKey(e.ShotEntry.Distance, e.ShotEntry.Origin)];
+                    dictEntry.FGA++;
+                    if (e.ShotEntry.IsMade)
+                    {
+                        dictEntry.FGM++;
                     }
                     if (e.ShotEntry.IsAssisted)
                     {
-                        DefAssisted++;
+                        dictEntry.Assisted++;
+                    }
+                }
+                else if (playerIDs.Contains(e.Player2ID))
+                {
+                    var dictEntry = dict[getDictKey(e.ShotEntry.Distance, e.ShotEntry.Origin)];
+                    dictEntry.DefFGA++;
+                    if (e.ShotEntry.IsMade)
+                    {
+                        dictEntry.DefFGM++;
+                    }
+                    if (e.ShotEntry.IsAssisted)
+                    {
+                        dictEntry.DefAssisted++;
                     }
                 }
             }
@@ -568,9 +621,19 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public void AddOtherStats(int playerID, List<PlayByPlayEntry> playerPBPEList, bool addGamePlayed)
+        public void AddOtherStats(int playerID, IEnumerable<PlayByPlayEntry> playerPBPEList, bool addGamePlayed)
         {
             AddOtherStats(new List<int> { playerID }, playerPBPEList, addGamePlayed);
+        }
+
+        public void AddShots(PlayerPBPStats s)
+        {
+            FGM += s.FGM;
+            FGA += s.FGA;
+            Assisted += s.Assisted;
+            DefFGM += s.DefFGM;
+            DefFGA += s.DefFGA;
+            DefAssisted += s.DefAssisted;
         }
     }
 }

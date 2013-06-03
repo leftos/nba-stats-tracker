@@ -10,6 +10,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
+    using System.Windows.Input;
     using System.Windows.Threading;
 
     using LeftosCommonLibrary;
@@ -257,7 +258,10 @@
         {
             if (!_exitedViaButton)
             {
-                e.Cancel = true;
+                if (askToExit() != MessageBoxResult.Yes)
+                {
+                    e.Cancel = true;
+                }
             }
 
             Tools.SetRegistrySetting("PBPHeight", Height);
@@ -496,10 +500,10 @@
 
             txtEventDesc.IsEnabled = cmbEventType.SelectedItem.ToString() == "Other";
 
-            grdShotEvent.IsEnabled = curEventKey == 1;
-            txbLocationLabel.Text = curEventKey == 1 ? "Shot Distance" : "Location";
+            grdShotEvent.IsEnabled = curEventKey == PlayByPlayEntry.ShotAttemptEventType;
+            txbLocationLabel.Text = curEventKey == PlayByPlayEntry.ShotAttemptEventType ? "Shot Distance" : "Location";
             txtLocationDesc.IsEnabled = false;
-            cmbLocationShotDistance.ItemsSource = curEventKey == 1
+            cmbLocationShotDistance.ItemsSource = curEventKey == PlayByPlayEntry.ShotAttemptEventType
                                                       ? ShotEntry.ShotDistances.Values
                                                       : PlayByPlayEntry.EventLocations.Values;
             if (curEventKey == 3 || curEventKey == 4)
@@ -540,18 +544,16 @@
 
             if (curEventKey != 1)
             {
-                var curDistanceKey =
-                    PlayByPlayEntry.EventLocations.Single(pair => pair.Value == curValue).Key;
+                var curDistanceKey = PlayByPlayEntry.EventLocations.Single(pair => pair.Value == curValue).Key;
                 txtLocationDesc.IsEnabled = (curDistanceKey == -1 && curEventKey != 3 && curEventKey != 4);
             }
             else
             {
                 txtLocationDesc.IsEnabled = false;
 
-                if (curEventKey == 1)
+                if (curEventKey == PlayByPlayEntry.ShotAttemptEventType)
                 {
-                    var curDistanceKey =
-                        ShotEntry.ShotDistances.Single(pair => pair.Value == curValue).Key;
+                    var curDistanceKey = ShotEntry.ShotDistances.Single(pair => pair.Value == curValue).Key;
                     var origins = ShotEntry.ShotOrigins.Values.ToList();
                     if (curDistanceKey == 1)
                     {
@@ -559,7 +561,7 @@
                     }
                     else if (curDistanceKey == 2)
                     {
-                        cmbShotOrigin.ItemsSource = new List<string> {origins[0], origins[2], origins[4], origins[6]};
+                        cmbShotOrigin.ItemsSource = new List<string> { origins[0], origins[2], origins[4], origins[6] };
                     }
                     else
                     {
@@ -838,16 +840,21 @@
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(
-                "Are you sure you want to exit the Play By Play Editor without saving changes?",
-                App.AppName,
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (askToExit() == MessageBoxResult.Yes)
             {
                 _exitedViaButton = true;
                 DialogResult = false;
                 Close();
             }
+        }
+
+        private MessageBoxResult askToExit()
+        {
+            return MessageBox.Show(
+                "Are you sure you want to exit the Play By Play Editor without saving changes?",
+                App.AppName,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -858,60 +865,126 @@
             Close();
         }
 
-        private void btnSelectFromChart_Click(object sender, RoutedEventArgs e)
+        private void selectFromChart()
         {
-            var w = new ShotChartWindow();
+            if (cmbEventType.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            var curEventKey = PlayByPlayEntry.EventTypes.Single(pair => pair.Value == cmbEventType.SelectedItem.ToString()).Key;
+
+            if (curEventKey == 3 || curEventKey == 4)
+            {
+                return;
+            }
+
+            var w = new ShotChartWindow(curEventKey != PlayByPlayEntry.ShotAttemptEventType);
             w.ShowDialog();
 
             bool close = false;
 
             var button = ShotChartWindow.LastButtonPressed;
-            if (button.Contains("3PT"))
+
+            if (String.IsNullOrEmpty(button))
             {
-                cmbLocationShotDistance.SelectedIndex = 5;
-            }
-            else if (button.Contains("16"))
-            {
-                cmbLocationShotDistance.SelectedIndex = 4;
-            }
-            else if (button.Contains("10"))
-            {
-                cmbLocationShotDistance.SelectedIndex = 3;
-            }
-            else if (button.Contains("Close"))
-            {
-                cmbLocationShotDistance.SelectedIndex = 2;
-                close = true;
-            }
-            else
-            {
-                cmbLocationShotDistance.SelectedIndex = 1;
+                return;
             }
 
-            if (button.Contains("MidLeft"))
+            if (curEventKey == PlayByPlayEntry.ShotAttemptEventType)
             {
-                cmbShotOrigin.SelectedIndex = 2;
-            }
-            else if (button.Contains("MidRight"))
-            {
-                cmbShotOrigin.SelectedIndex = 4;
-            }
-            else if (button.Contains("Left"))
-            {
-                cmbShotOrigin.SelectedIndex = 1;
-            }
-            else if (button.Contains("Mid"))
-            {
-                cmbShotOrigin.SelectedIndex = close ? 2 : 3;
-            }
-            else if (button.Contains("Right"))
-            {
-                cmbShotOrigin.SelectedIndex = close ? 3 : 5;
+                if (button.Contains("3PT"))
+                {
+                    cmbLocationShotDistance.SelectedIndex = 5;
+                }
+                else if (button.Contains("16"))
+                {
+                    cmbLocationShotDistance.SelectedIndex = 4;
+                }
+                else if (button.Contains("10"))
+                {
+                    cmbLocationShotDistance.SelectedIndex = 3;
+                }
+                else if (button.Contains("Close"))
+                {
+                    cmbLocationShotDistance.SelectedIndex = 2;
+                    close = true;
+                }
+                else
+                {
+                    cmbLocationShotDistance.SelectedIndex = 1;
+                }
+
+                if (button.Contains("MidLeft"))
+                {
+                    cmbShotOrigin.SelectedIndex = 2;
+                }
+                else if (button.Contains("MidRight"))
+                {
+                    cmbShotOrigin.SelectedIndex = 4;
+                }
+                else if (button.Contains("Left"))
+                {
+                    cmbShotOrigin.SelectedIndex = 1;
+                }
+                else if (button.Contains("Mid"))
+                {
+                    cmbShotOrigin.SelectedIndex = close ? 2 : 3;
+                }
+                else if (button.Contains("Right"))
+                {
+                    cmbShotOrigin.SelectedIndex = close ? 3 : 5;
+                }
+                else
+                {
+                    cmbShotOrigin.SelectedIndex = 0;
+                }
             }
             else
             {
-                cmbShotOrigin.SelectedIndex = 0;
+                var key = ShotChartWindow.LastHalfSelected == "Offensive" ? 100 : 200;
+                if (button.Contains("3PT"))
+                {
+                    key += 30;
+                }
+                else if (button.Contains("16"))
+                {
+                    key += 20;
+                }
+                else if (button.Contains("10"))
+                {
+                    key += 10;
+                }
+                else if (button.Contains("Close"))
+                {
+                    key += 10;
+                    close = true;
+                }
+
+                if (button.Contains("MidLeft"))
+                {
+                    key += 1;
+                }
+                else if (button.Contains("MidRight"))
+                {
+                    key += 3;
+                }
+                else if (button.Contains("Mid"))
+                {
+                    key += close ? 1 : 2;
+                }
+                else if (button.Contains("Right"))
+                {
+                    key += close ? 2 : 4;
+                }
+                cmbLocationShotDistance.SelectedItem = PlayByPlayEntry.EventLocations[key];
             }
+        }
+
+        private void cmbLocationShotDistance_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            selectFromChart();
+            e.Handled = true;
         }
     }
 }

@@ -213,6 +213,56 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Blue_016 {
+            get {
+                object obj = ResourceManager.GetObject("Blue_016", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Blue_017 {
+            get {
+                object obj = ResourceManager.GetObject("Blue_017", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Blue_018 {
+            get {
+                object obj = ResourceManager.GetObject("Blue_018", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Blue_019 {
+            get {
+                object obj = ResourceManager.GetObject("Blue_019", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Blue_020 {
+            get {
+                object obj = ResourceManager.GetObject("Blue_020", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Default_001 {
             get {
                 object obj = ResourceManager.GetObject("Default_001", resourceCulture);
@@ -363,6 +413,56 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Default_016 {
+            get {
+                object obj = ResourceManager.GetObject("Default_016", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_017 {
+            get {
+                object obj = ResourceManager.GetObject("Default_017", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_018 {
+            get {
+                object obj = ResourceManager.GetObject("Default_018", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_019 {
+            get {
+                object obj = ResourceManager.GetObject("Default_019", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Default_020 {
+            get {
+                object obj = ResourceManager.GetObject("Default_020", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap FloorChart {
             get {
                 object obj = ResourceManager.GetObject("FloorChart", resourceCulture);
@@ -373,9 +473,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_001 {
+        internal static System.Drawing.Bitmap Gray_001 {
             get {
-                object obj = ResourceManager.GetObject("Grey_001", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_001", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -383,9 +483,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_002 {
+        internal static System.Drawing.Bitmap Gray_002 {
             get {
-                object obj = ResourceManager.GetObject("Grey_002", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_002", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -393,9 +493,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_003 {
+        internal static System.Drawing.Bitmap Gray_003 {
             get {
-                object obj = ResourceManager.GetObject("Grey_003", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_003", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -403,9 +503,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_004 {
+        internal static System.Drawing.Bitmap Gray_004 {
             get {
-                object obj = ResourceManager.GetObject("Grey_004", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_004", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -413,9 +513,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_005 {
+        internal static System.Drawing.Bitmap Gray_005 {
             get {
-                object obj = ResourceManager.GetObject("Grey_005", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_005", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -423,9 +523,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_006 {
+        internal static System.Drawing.Bitmap Gray_006 {
             get {
-                object obj = ResourceManager.GetObject("Grey_006", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_006", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -433,9 +533,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_007 {
+        internal static System.Drawing.Bitmap Gray_007 {
             get {
-                object obj = ResourceManager.GetObject("Grey_007", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_007", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -443,9 +543,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_008 {
+        internal static System.Drawing.Bitmap Gray_008 {
             get {
-                object obj = ResourceManager.GetObject("Grey_008", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_008", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -453,9 +553,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_009 {
+        internal static System.Drawing.Bitmap Gray_009 {
             get {
-                object obj = ResourceManager.GetObject("Grey_009", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_009", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -463,9 +563,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_010 {
+        internal static System.Drawing.Bitmap Gray_010 {
             get {
-                object obj = ResourceManager.GetObject("Grey_010", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_010", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -473,9 +573,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_011 {
+        internal static System.Drawing.Bitmap Gray_011 {
             get {
-                object obj = ResourceManager.GetObject("Grey_011", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_011", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -483,9 +583,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_012 {
+        internal static System.Drawing.Bitmap Gray_012 {
             get {
-                object obj = ResourceManager.GetObject("Grey_012", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_012", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -493,9 +593,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_013 {
+        internal static System.Drawing.Bitmap Gray_013 {
             get {
-                object obj = ResourceManager.GetObject("Grey_013", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_013", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -503,9 +603,9 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_014 {
+        internal static System.Drawing.Bitmap Gray_014 {
             get {
-                object obj = ResourceManager.GetObject("Grey_014", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_014", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -513,9 +613,59 @@ namespace NBA_Stats_Tracker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Grey_015 {
+        internal static System.Drawing.Bitmap Gray_015 {
             get {
-                object obj = ResourceManager.GetObject("Grey_015", resourceCulture);
+                object obj = ResourceManager.GetObject("Gray_015", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_016 {
+            get {
+                object obj = ResourceManager.GetObject("Gray_016", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_017 {
+            get {
+                object obj = ResourceManager.GetObject("Gray_017", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_018 {
+            get {
+                object obj = ResourceManager.GetObject("Gray_018", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_019 {
+            get {
+                object obj = ResourceManager.GetObject("Gray_019", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_020 {
+            get {
+                object obj = ResourceManager.GetObject("Gray_020", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -666,6 +816,56 @@ namespace NBA_Stats_Tracker.Properties {
         internal static System.Drawing.Bitmap Red_015 {
             get {
                 object obj = ResourceManager.GetObject("Red_015", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red_016 {
+            get {
+                object obj = ResourceManager.GetObject("Red_016", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red_017 {
+            get {
+                object obj = ResourceManager.GetObject("Red_017", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red_018 {
+            get {
+                object obj = ResourceManager.GetObject("Red_018", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red_019 {
+            get {
+                object obj = ResourceManager.GetObject("Red_019", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red_020 {
+            get {
+                object obj = ResourceManager.GetObject("Red_020", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

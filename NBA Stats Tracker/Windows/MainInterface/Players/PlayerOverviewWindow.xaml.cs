@@ -1061,16 +1061,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _shstList = ShotEntry.ShotDistances.Values.Select(distance => new PlayerPBPStats { Description = distance }).ToList();
             _shstList.Add(new PlayerPBPStats { Description = "Total" });
             var lastIndex = _shstList.Count - 1;
+            var pIDList = new List<int> { _psr.ID };
 
             foreach (var bse in _bseList)
             {
                 var playerPBPEList = bse.PBPEList.Where(o => o.Player1ID == _psr.ID || o.Player2ID == _psr.ID).ToList();
-                foreach (var pair in ShotEntry.ShotDistances)
-                {
-                    _shstList.Single(o => o.Description == pair.Value).AddShots(_psr.ID, playerPBPEList, pair.Key, origin, type);
-                }
-                _shstList[lastIndex].AddShots(_psr.ID, playerPBPEList, -1, origin, type);
-                _shstList[lastIndex].AddOtherStats(_psr.ID, playerPBPEList, false);
+                PlayerPBPStats.AddShotsToList(ref _shstList, pIDList, playerPBPEList, origin, type);
+                _shstList[lastIndex].AddOtherStats(pIDList, playerPBPEList, false);
             }
 
             dgShooting.ItemsSource = _shstList;
@@ -2214,40 +2211,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             var dict = new Dictionary<int, PlayerPBPStats>();
-            for (var i = 2; i <= 15; i++)
+            for (var i = 2; i <= 20; i++)
             {
                 dict.Add(i, new PlayerPBPStats());
             }
-            
+
+            var pIDList = new List<int> { _psr.ID };
             foreach (var bse in _bseList)
             {
-                var pID = _psr.ID;
-                var list = bse.PBPEList.Where(o => o.Player1ID == pID || o.Player2ID == pID).ToList();
-
-                dict[2].AddShots(pID, list, 1);
-                
-                dict[3].AddShots(pID, list, 2, 6);
-                dict[3].AddShots(pID, list, 2, 5);
-                dict[4].AddShots(pID, list, 2, 4);
-                dict[5].AddShots(pID, list, 2, 3);
-                dict[5].AddShots(pID, list, 2, 2);
-
-                dict[6].AddShots(pID, list, 3, 6);
-                dict[7].AddShots(pID, list, 3, 5);
-                dict[8].AddShots(pID, list, 3, 4);
-                dict[9].AddShots(pID, list, 3, 3);
-                dict[10].AddShots(pID, list, 3, 2);
-                dict[6].AddShots(pID, list, 4, 6);
-                dict[7].AddShots(pID, list, 4, 5);
-                dict[8].AddShots(pID, list, 4, 4);
-                dict[9].AddShots(pID, list, 4, 3);
-                dict[10].AddShots(pID, list, 4, 2);
-
-                dict[11].AddShots(pID, list, 5, 6);
-                dict[12].AddShots(pID, list, 5, 5);
-                dict[13].AddShots(pID, list, 5, 4);
-                dict[14].AddShots(pID, list, 5, 3);
-                dict[15].AddShots(pID, list, 5, 2);
+                var list = bse.PBPEList.Where(o => o.Player1ID == _psr.ID || o.Player2ID == _psr.ID).ToList();
+                PlayerPBPStats.AddShotsToDictionary(ref dict, pIDList, list);
             }
 
             var w = new ShotChartWindow(dict);

@@ -233,7 +233,8 @@
                     <TextBlock Name="txbLocationLabel" Text="Location/Shot Dist." />
                     <Rectangle Height="5" />
                     <ComboBox Name="cmbLocationShotDistance"
-                              SelectionChanged="cmbLocationShotDistance_SelectionChanged" />
+                              SelectionChanged="cmbLocationShotDistance_SelectionChanged"
+                              PreviewMouseRightButtonDown="cmbLocationShotDistance_PreviewMouseRightButtonDown" />
                     <Rectangle Height="5" />
                     <TextBox Name="txtLocationDesc" />
                 </StackPanel>
@@ -250,7 +251,6 @@
                         <Rectangle Height="5" />
                         <ComboBox Name="cmbShotOrigin" />
                         <Rectangle Height="5" />
-                        <Button Name="btnSelectFromChart" Content="Select From Chart" Click="btnSelectFromChart_Click" />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Column="1" Margin="5,0">
