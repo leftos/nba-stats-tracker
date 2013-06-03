@@ -1,4 +1,9 @@
 NBA Stats Tracker - Version History
+
+	v1.15.2
+		- Improvement: Shot Chart has been updated to include separate areas for all the shot distances available
+		- Addition: When editing Play-By-Play information for events other than shots, you can select the location by using the floor chart
+		- Change: The "Select From Chart" button in the Play-By-Play Editor has been removed; the same functionality is now available by right-clicking the Location/Shot Distance drop-down
 	
 	v1.15.1
 		- Addition: Added Shot Chart in Team & Player Overview's Advanced Shooting Stats
