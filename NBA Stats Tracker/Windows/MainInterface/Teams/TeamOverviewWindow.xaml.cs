@@ -1095,12 +1095,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             _psrList.Sort((row1, row2) => String.CompareOrdinal(row1.LastName, row2.LastName));
             _plPSRList.Sort((row1, row2) => String.CompareOrdinal(row1.LastName, row2.LastName));
 
-            dgvPlayerStats.ItemsSource = _psrList;
-            dgvMetricStats.ItemsSource = _psrList;
+            dgvPlayerStats.ItemsSource = rbPlayerStatsSeason.IsChecked == true ? _psrList : _plPSRList;
+            dgvMetricStats.ItemsSource = dgvPlayerStats.ItemsSource;
             dgvTeamRoster.ItemsSource = _psrList;
             dgvTeamRoster.CanUserAddRows = false;
-            dgvPlayerPlayoffStats.ItemsSource = _plPSRList;
-            dgvPlayoffMetricStats.ItemsSource = _plPSRList;
         }
 
         /// <summary>Updates the head to head tab.</summary>
@@ -3223,6 +3221,30 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             var w = new ShotChartWindow(dict, Equals(sender, btnShotChartOff));
             w.ShowDialog();
+        }
+
+        private void rbPlayerStatsSeason_Click(object sender, RoutedEventArgs e)
+        {
+            rbMetricStatsSeason.IsChecked = true;
+            updatePlayerAndMetricStats();
+        }
+
+        private void rbPlayerStatsPlayoff_Click(object sender, RoutedEventArgs e)
+        {
+            rbMetricStatsPlayoff.IsChecked = true;
+            updatePlayerAndMetricStats();
+        }
+
+        private void rbMetricStatsSeason_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsSeason.IsChecked = true;
+            updatePlayerAndMetricStats();
+        }
+
+        private void rbMetricStatsPlayoff_Click(object sender, RoutedEventArgs e)
+        {
+            rbPlayerStatsPlayoff.IsChecked = true;
+            updatePlayerAndMetricStats();
         }
     }
 }
