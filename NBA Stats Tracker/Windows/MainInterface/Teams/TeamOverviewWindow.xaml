@@ -311,7 +311,8 @@
                                     <DataGrid Name="dgShooting" Grid.Row="1" Margin="0,2" FrozenColumnCount="1"
                                               CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                                               AutoGenerateColumns="False" Height="170"
-                                              d:DataContext="{d:DesignInstance players:PlayerPBPStats}">
+                                              d:DataContext="{d:DesignInstance players:PlayerPBPStats}"
+                                              Style="{StaticResource DataGridStyle}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Distance" Binding="{Binding Description}" />
                                             <DataGridTextColumn Header="FGM" Binding="{Binding FGM}" />
@@ -571,10 +572,13 @@
                             <RowDefinition Height="24" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" Height="23" HorizontalAlignment="Right" Orientation="Horizontal">
-                            <RadioButton Name="rbPlayerStatsSeason" Content="Season" IsChecked="True" Click="rbPlayerStatsSeason_Click" />
+                        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" Height="23" HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                            <RadioButton Name="rbPlayerStatsSeason" Content="Season" IsChecked="True"
+                                         Click="rbPlayerStatsSeason_Click" />
                             <Rectangle Width="10" />
-                            <RadioButton Name="rbPlayerStatsPlayoff" Content="Playoffs" Click="rbPlayerStatsPlayoff_Click" />
+                            <RadioButton Name="rbPlayerStatsPlayoff" Content="Playoffs"
+                                         Click="rbPlayerStatsPlayoff_Click" />
                         </StackPanel>
                         <DataGrid Grid.Row="1" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
                                   Name="dgvPlayerStats" VerticalAlignment="Stretch"
@@ -630,20 +634,23 @@
                         </DataGrid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Metric Stats" Name="tabMetricStats">
+                <TabItem Header="Player Metric Stats" Name="tabMetricStats">
                     <Grid VerticalAlignment="Stretch" Margin="6">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="24" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" Height="23" HorizontalAlignment="Right" Orientation="Horizontal">
-                            <RadioButton Name="rbMetricStatsSeason" Content="Season" IsChecked="True" Click="rbMetricStatsSeason_Click" />
+                        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" Height="23" HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                            <RadioButton Name="rbMetricStatsSeason" Content="Season" IsChecked="True"
+                                         Click="rbMetricStatsSeason_Click" />
                             <Rectangle Width="10" />
-                            <RadioButton Name="rbMetricStatsPlayoff" Content="Playoffs" Click="rbMetricStatsPlayoff_Click" />
+                            <RadioButton Name="rbMetricStatsPlayoff" Content="Playoffs"
+                                         Click="rbMetricStatsPlayoff_Click" />
                         </StackPanel>
                         <DataGrid Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
                                   FrozenColumnCount="2" Grid.Row="1"
-                                  HorizontalAlignment="Stretch"  Name="dgvMetricStats"
+                                  HorizontalAlignment="Stretch" Name="dgvMetricStats"
                                   VerticalAlignment="Stretch" IsReadOnly="True"
                                   Sorting="statColumn_Sorting" MouseDoubleClick="anyPlayerDataGrid_MouseDoubleClick">
                             <DataGrid.Columns>

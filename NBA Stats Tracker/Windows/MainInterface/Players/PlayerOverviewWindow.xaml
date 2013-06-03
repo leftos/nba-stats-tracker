@@ -491,7 +491,8 @@
                                     <DataGrid Name="dgShooting" Grid.Row="1" Margin="0,2" FrozenColumnCount="1"
                                               CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                                               AutoGenerateColumns="False" Height="170"
-                                              d:DataContext="{d:DesignInstance players:PlayerPBPStats}">
+                                              d:DataContext="{d:DesignInstance players:PlayerPBPStats}"
+                                              Style="{StaticResource DataGridStyle}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Distance" Binding="{Binding Description}" />
                                             <DataGridTextColumn Header="FGM" Binding="{Binding FGM}" />
