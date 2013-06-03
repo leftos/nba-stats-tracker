@@ -2223,7 +2223,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 PlayerPBPStats.AddShotsToDictionary(ref dict, pIDList, list);
             }
 
-            var w = new ShotChartWindow(dict);
+            var w = new ShotChartWindow(dict, Equals(sender, btnShotChartOff));
             w.ShowDialog();
         }
     }

@@ -3221,7 +3221,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 PlayerPBPStats.AddShotsToDictionary(ref dict, teamPlayerIDs, list);
             }
 
-            var w = new ShotChartWindow(dict);
+            var w = new ShotChartWindow(dict, Equals(sender, btnShotChartOff));
             w.ShowDialog();
         }
     }

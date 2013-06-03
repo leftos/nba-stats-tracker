@@ -72,7 +72,7 @@
             }
         }
 
-        public ShotChartWindow(Dictionary<int, PlayerPBPStats> pbpsList)
+        public ShotChartWindow(Dictionary<int, PlayerPBPStats> pbpsList, bool showOffense = true)
             : this()
         {
             _pbpsList = pbpsList;
@@ -82,15 +82,15 @@
             var list = new List<Image> { Properties.Resources.Default_001 };
             for (var i = 2; i <= 20; i++)
             {
-                if (pbpsList[i].FGp >= 0.5)
+                if ((showOffense && pbpsList[i].FGp >= 0.5) || (!showOffense && pbpsList[i].DefFGp >= 0.5))
                 {
                     list.Add((Image) Properties.Resources.ResourceManager.GetObject("Red_0" + String.Format("{0:00}", i)));
                 }
-                else if (pbpsList[i].FGp >= 0.4)
+                else if ((showOffense && pbpsList[i].FGp >= 0.4) || (!showOffense && pbpsList[i].DefFGp >= 0.4))
                 {
                     list.Add((Image) Properties.Resources.ResourceManager.GetObject("Gray_0" + String.Format("{0:00}", i)));
                 }
-                else if (pbpsList[i].FGA > 0)
+                else if ((showOffense && pbpsList[i].FGA > 0) || (!showOffense && pbpsList[i].DefFGA > 0))
                 {
                     list.Add((Image) Properties.Resources.ResourceManager.GetObject("Blue_0" + String.Format("{0:00}", i)));
                 }
@@ -120,19 +120,19 @@
                 var fgpString = "";
                 if (!Double.IsNaN(s.FGp))
                 {
-                    if (s.FGM == s.FGA)
+                    if ((showOffense && s.FGM == s.FGA) || (!showOffense && s.DefFGM == s.DefFGA))
                     {
                         fgpString = "1.";
                     }
                     else
                     {
-                        fgpString = String.Format("{0:F3}", s.FGp).Substring(1);
+                        fgpString = String.Format("{0:F3}", showOffense ? s.FGp : s.DefFGp).Substring(1);
                     }
                 }
 
                 var gp = new GraphicsPath();
                 gp.AddString(
-                    String.Format("{0}-{1}\n{2}", s.FGM, s.FGA, fgpString),
+                    String.Format("{0}-{1}\n{2}", showOffense ? s.FGM : s.DefFGM, showOffense ? s.FGA : s.DefFGA, fgpString),
                     new FontFamily("Tahoma"),
                     (int) System.Drawing.FontStyle.Bold,
                     16,

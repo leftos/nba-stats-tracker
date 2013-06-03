@@ -302,7 +302,10 @@
                                                   SelectionChanged="cmbShotType_SelectionChanged" />
                                     </StackPanel>
                                     <StackPanel Height="23" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Name="btnShotChart" Content="Shot Chart" Width="92"
+                                        <Button Name="btnShotChartOff" Content="Offensive Shot Chart" Width="125"
+                                                Click="btnShotChart_Click" />
+                                        <Rectangle Width="10" />
+                                        <Button Name="btnShotChartDef" Content="Defensive Shot Chart" Width="125"
                                                 Click="btnShotChart_Click" />
                                     </StackPanel>
                                     <DataGrid Name="dgShooting" Grid.Row="1" Margin="0,2" FrozenColumnCount="1"
