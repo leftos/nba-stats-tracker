@@ -479,7 +479,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 }
             }
             lastEntry.ResetStats();
-            for (int i = 0; i < shstList.Count - 1; i++)
+            for (var i = 0; i < shstList.Count - 1; i++)
             {
                 var listEntry = shstList[i];
                 lastEntry.AddShots(listEntry);

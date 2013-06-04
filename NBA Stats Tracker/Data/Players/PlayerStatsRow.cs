@@ -30,7 +30,6 @@ namespace NBA_Stats_Tracker.Data.Players
 
     using NBA_Stats_Tracker.Annotations;
     using NBA_Stats_Tracker.Data.BoxScores;
-    using NBA_Stats_Tracker.Data.BoxScores.PlayByPlay;
     using NBA_Stats_Tracker.Data.Players.Contracts;
     using NBA_Stats_Tracker.Data.Players.Injuries;
     using NBA_Stats_Tracker.Data.Teams;
@@ -558,6 +557,47 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         public bool IsActive { get; set; }
+        public string TeamSDisplay { get; set; }
+
+        public List<double> Custom { get; set; }
+
+        public string FullNameGivenFirst
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return FirstName + " " + LastName;
+            }
+        }
+
+        public string FullName
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(FirstName))
+                {
+                    return LastName;
+                }
+
+                if (String.IsNullOrWhiteSpace(LastName))
+                {
+                    return FirstName;
+                }
+
+                return LastName + ", " + FirstName;
+            }
+        }
+
+        public List<PlayerPBPStats> PBPSList { get; set; }
 
         #region INotifyPropertyChanged Members
 
@@ -1624,64 +1664,11 @@ namespace NBA_Stats_Tracker.Data.Players
             return newpsr;
         }
 
-        #region Metrics that require opponents' stats
-
-        public double PER { get; set; }
-        public double BLKp { get; set; }
-        public double DREBp { get; set; }
-        public double OREBp { get; set; }
-        public double REBp { get; set; }
-        public double PPR { get; set; }
-
-        #endregion
-
-        public string TeamSDisplay { get; set; }
-
-        public List<double> Custom { get; set; }
-
-        public string FullNameGivenFirst
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(FirstName))
-                {
-                    return LastName;
-                }
-
-                if (String.IsNullOrWhiteSpace(LastName))
-                {
-                    return FirstName;
-                }
-
-                return FirstName + " " + LastName;
-            }
-        }
-
-        public string FullName
-        {
-            get
-            {
-                if (String.IsNullOrWhiteSpace(FirstName))
-                {
-                    return LastName;
-                }
-
-                if (String.IsNullOrWhiteSpace(LastName))
-                {
-                    return FirstName;
-                }
-
-                return LastName + ", " + FirstName;
-            }
-        }
-
-        public List<PlayerPBPStats> PBPSList { get; set; }
-
         public void PopulatePBPSList(IEnumerable<BoxScoreEntry> bseList)
         {
             PBPSList.Clear();
             var plBSEList = bseList.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == ID)).ToList();
-            for (int i = 0; i < 7; i++)
+            for (var i = 0; i < 7; i++)
             {
                 PBPSList.Add(new PlayerPBPStats());
             }
@@ -1693,5 +1680,16 @@ namespace NBA_Stats_Tracker.Data.Players
                 PBPSList[6].AddOtherStats(ID, pbpeList, false);
             }
         }
+
+        #region Metrics that require opponents' stats
+
+        public double PER { get; set; }
+        public double BLKp { get; set; }
+        public double DREBp { get; set; }
+        public double OREBp { get; set; }
+        public double REBp { get; set; }
+        public double PPR { get; set; }
+
+        #endregion
     }
 }

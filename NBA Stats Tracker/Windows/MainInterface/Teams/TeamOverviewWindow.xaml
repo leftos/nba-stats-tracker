@@ -1088,7 +1088,8 @@
                                 <DataGridTextColumn Header="Unknown" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[0].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[0].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[0].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[0].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[0].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[0].DefAssisted}" />
@@ -1097,7 +1098,8 @@
                                 <DataGridTextColumn Header="At-Rim" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[1].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[1].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[1].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[1].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[1].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[1].DefAssisted}" />
@@ -1106,7 +1108,8 @@
                                 <DataGridTextColumn Header="3-10ft" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[2].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[2].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[2].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[2].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[2].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[2].DefAssisted}" />
@@ -1115,7 +1118,8 @@
                                 <DataGridTextColumn Header="10-16ft" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[3].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[3].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[3].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[3].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[3].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[3].DefAssisted}" />
@@ -1124,7 +1128,8 @@
                                 <DataGridTextColumn Header="16ft-3pt" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[4].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[4].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[4].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[4].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[4].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[4].DefAssisted}" />
@@ -1133,7 +1138,8 @@
                                 <DataGridTextColumn Header="Beyond 3pt" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[5].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[5].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[5].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[5].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[5].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[5].DefAssisted}" />
@@ -1142,7 +1148,8 @@
                                 <DataGridTextColumn Header="Total" />
                                 <DataGridTextColumn Header="FGM" Binding="{Binding PBPSList[6].DefFGM}" />
                                 <DataGridTextColumn Header="FGA" Binding="{Binding PBPSList[6].DefFGA}" />
-                                <DataGridTextColumn Header="FG%" Binding="{Binding PBPSList[6].DefFGp, StringFormat=F3}" />
+                                <DataGridTextColumn Header="FG%"
+                                                    Binding="{Binding PBPSList[6].DefFGp, StringFormat=F3}" />
                                 <DataGridTextColumn Header="FGeff"
                                                     Binding="{Binding PBPSList[6].DefFGeff, StringFormat=F2}" />
                                 <DataGridTextColumn Header="Asst" Binding="{Binding PBPSList[6].DefAssisted}" />
@@ -1180,7 +1187,8 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding LastName}" Header="Last Name" />
                                 <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
-                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team" Visibility="Collapsed" />
+                                <DataGridTextColumn Binding="{Binding TeamFDisplay}" Header="Team"
+                                                    Visibility="Collapsed" />
                                 <DataGridTemplateColumn Header="GP (BS)" SortMemberPath="GP"
                                                         ClipboardContentBinding="{Binding PBPSList[6].GP}">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -1199,7 +1207,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].ASTRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has received an assist per game."
@@ -1213,7 +1222,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].STLRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times the ball was stolen from this team per game."
@@ -1227,7 +1237,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].BLKRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock Text="Times this team was blocked per game."
                                                                TextWrapping="Wrap" MaxWidth="400" />
@@ -1240,7 +1251,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].TOSRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has forced a turnover per game."
@@ -1254,7 +1266,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].FOULRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has been fouled per game."
@@ -1268,7 +1281,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].CHRGRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has drawn a charge per game."
@@ -1282,7 +1296,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].OFOULPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has committed an offensive foul by way of a charge per game."
@@ -1310,7 +1325,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Number of shot attempts this team has made that ended in an offensive rebound per game."
@@ -1324,7 +1340,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an offensive rebound."
@@ -1338,7 +1355,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEDREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an defensive rebound."

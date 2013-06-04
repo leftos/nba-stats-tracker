@@ -76,6 +76,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 { "TCommitFl", "TCommFoul" }
             };
 
+        private readonly List<BoxScoreEntry> _bseListPl;
+        private readonly List<BoxScoreEntry> _bseListSea;
+
         private readonly SQLiteDatabase _db = new SQLiteDatabase(MainWindow.CurrentDB);
         private readonly DataTable _dtBS;
 
@@ -112,8 +115,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private string _filterDescription;
         private TeamFilter _filterType;
         private List<PlayerStatsRow> _lPSR;
+        private int _lastShownShootingSeason;
+        private int _lastShownTeamShootingSeason;
         private List<PlayerStatsRow> _leadersList;
+        private List<TeamStatsRow> _lssrPl;
+        private List<TeamStatsRow> _lssrSea;
         private List<PlayerStatsRow> _myLeadersList;
+        private List<TeamStatsRow> _oppTSRListPl;
+
+        private List<TeamStatsRow> _oppTSRListSea;
         private string _plBest1Text, _plBest2Text, _plBest3Text, _plBest4Text, _plBest5Text, _plBest6Text;
         private string _plCText;
         private List<PlayerStatsRow> _plLeadersList;
@@ -121,10 +131,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private List<PlayerStatsRow> _plMyLeadersList;
         private string _plPFText;
         private string _plPGText;
-        private List<PlayerStatsRow> _psrListPl;
         private string _plSFText;
         private string _plSGText;
         private string _plSubsText;
+        private List<PlayerStatsRow> _psrListPl;
         private List<PlayerStatsRow> _psrListSea;
         private bool _reload;
         private string _sCText;
@@ -135,8 +145,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private string _sSubsText;
 
         private Dictionary<int, Dictionary<string, TeamStats>> _splitTeamStats;
+        private List<TeamStatsRow> _tsrListPl;
+        private List<TeamStatsRow> _tsrListSea;
         private Dictionary<int, TeamStats> _tstOpp;
-        private int _lastShownShootingSeason;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LeagueOverviewWindow" /> class.
@@ -201,16 +212,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             _sem = new Semaphore(1, 1);
         }
-
-        private List<TeamStatsRow> _lssrPl;
-        private List<TeamStatsRow> _tsrListPl;
-        private List<TeamStatsRow> _oppTSRListPl;
-
-        private List<TeamStatsRow> _oppTSRListSea;
-        private List<TeamStatsRow> _lssrSea;
-        private List<TeamStatsRow> _tsrListSea;
-        private List<BoxScoreEntry> _bseListSea, _bseListPl;
-        private int _lastShownTeamShootingSeason;
 
         private void populateSituationalsCombo()
         {
@@ -599,25 +600,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     {
                         throw e.Error;
                     }
-                        var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-                        dgvPlayerStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                        dgvLeaguePlayerStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
-                        dgvMetricStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                        dgvLeagueMetricStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
-                        dgvRatings.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                        dgvContracts.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                        dgvLeaders.ItemsSource = isSeason ? _leadersList : _plLeadersList;
-                        dgvMyLeaders.ItemsSource = isSeason ? _myLeadersList : _plMyLeadersList;
+                    var isSeason = rbSeason.IsChecked.GetValueOrDefault();
+                    dgvPlayerStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+                    dgvLeaguePlayerStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
+                    dgvMetricStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+                    dgvLeagueMetricStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
+                    dgvRatings.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+                    dgvContracts.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+                    dgvLeaders.ItemsSource = isSeason ? _leadersList : _plLeadersList;
+                    dgvMyLeaders.ItemsSource = isSeason ? _myLeadersList : _plMyLeadersList;
 
-                        populateSituationalsCombo();
+                    populateSituationalsCombo();
 
-                        updateUltimateTeamTextboxes(isSeason);
-                        updateBestPerformersTextboxes(isSeason);
+                    updateUltimateTeamTextboxes(isSeason);
+                    updateBestPerformersTextboxes(isSeason);
 
-                        tbcLeagueOverview.Visibility = Visibility.Visible;
-                        txbStatus.FontWeight = FontWeights.Normal;
-                        txbStatus.Text = _message;
-                        _sem.Release();
+                    tbcLeagueOverview.Visibility = Visibility.Visible;
+                    txbStatus.FontWeight = FontWeights.Normal;
+                    txbStatus.Text = _message;
+                    _sem.Release();
                 };
 
             tbcLeagueOverview.Visibility = Visibility.Hidden;
@@ -636,8 +637,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             var playerCount = -1;
 
             worker1.DoWork += delegate
-            {
-                _sem.WaitOne();
+                {
+                    _sem.WaitOne();
                     playerCount = _psrListSea.Count;
 
                     for (var i = 0; i < _psrListSea.Count; i++)

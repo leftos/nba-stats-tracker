@@ -848,7 +848,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].ASTRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has received an assist per game."
@@ -862,7 +863,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].STLRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times the ball was stolen from this team per game."
@@ -876,7 +878,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].BLKRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock Text="Times this team was blocked per game."
                                                                TextWrapping="Wrap" MaxWidth="400" />
@@ -889,7 +892,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].TOSRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has forced a turnover per game."
@@ -903,7 +907,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].FOULRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has been fouled per game."
@@ -917,7 +922,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].CHRGRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has drawn a charge per game."
@@ -931,7 +937,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].OFOULPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has committed an offensive foul by way of a charge per game."
@@ -959,7 +966,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Number of shot attempts this team has made that ended in an offensive rebound per game."
@@ -973,7 +981,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an offensive rebound."
@@ -987,7 +996,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEDREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an defensive rebound."
@@ -3424,7 +3434,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].ASTRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].ASTRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has received an assist per game."
@@ -3438,7 +3449,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].STLRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].STLRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times the ball was stolen from this team per game."
@@ -3452,7 +3464,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].BLKRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].BLKRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock Text="Times this team was blocked per game."
                                                                TextWrapping="Wrap" MaxWidth="400" />
@@ -3465,7 +3478,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].TOSRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].TOSRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has forced a turnover per game."
@@ -3479,7 +3493,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].FOULRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].FOULRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has been fouled per game."
@@ -3493,7 +3508,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].CHRGRecPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].CHRGRecPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has drawn a charge per game."
@@ -3507,7 +3523,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].OFOULPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].OFOULPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Times this team has committed an offensive foul by way of a charge per game."
@@ -3535,7 +3552,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBPG}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBPG, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Number of shot attempts this team has made that ended in an offensive rebound per game."
@@ -3549,7 +3567,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEOREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEOREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an offensive rebound."
@@ -3563,7 +3582,8 @@
                                                         ClipboardContentBinding="{Binding PBPSList[6].SAEDREBp}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}" Padding="2,0">
+                                            <TextBlock Text="{Binding PBPSList[6].SAEDREBp, StringFormat=F2}"
+                                                       Padding="2,0">
                                                 <TextBlock.ToolTip>
                                                     <TextBlock
                                                         Text="Percentage of this team's missed shots that ended in an defensive rebound."

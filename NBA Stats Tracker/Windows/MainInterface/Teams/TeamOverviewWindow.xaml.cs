@@ -57,6 +57,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private readonly int _teamIDToLoad = -1;
         private readonly string _teamToLoad = "";
         private List<BoxScoreEntry> _bseList;
+        private List<BoxScoreEntry> _bseListPl;
+        private List<BoxScoreEntry> _bseListSea;
         private bool _changingOppRange;
         private bool _changingOppTeam;
         private bool _changingTimeframe;
@@ -90,7 +92,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private string _teamBestG = "";
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, TeamStats> _tstOpp;
-        private List<BoxScoreEntry> _bseListSea, _bseListPl;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -311,7 +312,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             _bseList = MainWindow.BSHist.Where(bse => bse.BS.Team1ID == _curTeam || bse.BS.Team2ID == _curTeam).ToList();
             _bseListSea = _bseList.Where(bse => bse.BS.IsPlayoff == false).ToList();
-            _bseListPl = _bseList.Where(bse => bse.BS.IsPlayoff == true).ToList();
+            _bseListPl = _bseList.Where(bse => bse.BS.IsPlayoff).ToList();
 
             foreach (var r in _bseList)
             {

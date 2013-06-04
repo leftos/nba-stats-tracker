@@ -217,11 +217,11 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        /// Switches focus to the next column of the WPF DataGrid when enter is pressed on the last cell of a column.
-        /// </summary>
+        /// <summary>Switches focus to the next column of the WPF DataGrid when enter is pressed on the last cell of a column.</summary>
         /// <param name="sender">The WPF DataGrid (or compatible) control from which the event was raised.</param>
-        /// <param name="e">The <see cref="DataGridCellEditEndingEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">
+        ///     The <see cref="DataGridCellEditEndingEventArgs" /> instance containing the event data.
+        /// </param>
         public static void WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -243,14 +243,14 @@ namespace LeftosCommonLibrary
                     parentWindow.Dispatcher.BeginInvoke(
                         new DispatcherOperationCallback(
                             param =>
-                            {
-                                dataGrid.Focus();
-                                dataGrid.SelectedIndex = 0;
-                                dataGrid.CurrentCell = new DataGridCellInfo(dataGrid.Items[0], dataGrid.Columns[oldColumn + 1]);
+                                {
+                                    dataGrid.Focus();
+                                    dataGrid.SelectedIndex = 0;
+                                    dataGrid.CurrentCell = new DataGridCellInfo(dataGrid.Items[0], dataGrid.Columns[oldColumn + 1]);
 
-                                //dataGrid.BeginEdit();
-                                return null;
-                            }),
+                                    //dataGrid.BeginEdit();
+                                    return null;
+                                }),
                         DispatcherPriority.Background,
                         new object[] { null });
                 }

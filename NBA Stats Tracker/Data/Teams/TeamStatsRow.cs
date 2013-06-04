@@ -323,6 +323,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
         public bool Highlight { get; set; }
         public int InjuredCount { get; set; }
+        public List<PlayerPBPStats> PBPSList { get; set; }
 
         public static void TryChangeTSR(ref TeamStatsRow tsr, Dictionary<string, string> dict)
         {
@@ -393,7 +394,5 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PBPSList[6].AddOtherStats(teamPlayerIDs, pbpeList, false);
             }
         }
-
-        public List<PlayerPBPStats> PBPSList { get; set; }
     }
 }
