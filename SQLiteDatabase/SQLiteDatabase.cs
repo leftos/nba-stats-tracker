@@ -464,21 +464,8 @@ namespace SQLite_Database
             {
                 query = query.Remove(query.Length - 1);
             }
-
-            if (!addWhere)
-            {
-                query = String.Concat(
-                    query,
-                    String.Format(
-                        " AND (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart), ConvertDateTimeToSQLite(dEnd)));
-            }
-            else
-            {
-                query = String.Concat(
-                    query,
-                    String.Format(
-                        " WHERE (Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart), ConvertDateTimeToSQLite(dEnd)));
-            }
+            query += addWhere ? " WHERE " : " AND ";
+            query += String.Format("(Date >= '{0}' AND Date <= '{1}')", ConvertDateTimeToSQLite(dStart), ConvertDateTimeToSQLite(dEnd));
             return query;
         }
     }
