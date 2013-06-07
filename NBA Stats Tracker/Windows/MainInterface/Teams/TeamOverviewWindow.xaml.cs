@@ -892,27 +892,27 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             var pgList =
                 _psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG") && row.IsInjured == false)
                         .ToList();
-            pgList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
+            pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             pgList.Reverse();
             var sgList =
                 _psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG") && row.IsInjured == false)
                         .ToList();
-            sgList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
+            sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             sgList.Reverse();
             var sfList =
                 _psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF") && row.IsInjured == false)
                         .ToList();
-            sfList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
+            sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             sfList.Reverse();
             var pfList =
                 _psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF") && row.IsInjured == false)
                         .ToList();
-            pfList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
+            pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             pfList.Reverse();
             var cList =
                 _psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C") && row.IsInjured == false)
                         .ToList();
-            cList.Sort((pmsr1, pmsr2) => comparePSRs(property, pmsr1, pmsr2));
+            cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             cList.Reverse();
             var permutations = new List<StartingFivePermutation>();
 
@@ -1076,13 +1076,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             catch (Exception)
             {
             }
-        }
-
-        private static int comparePSRs(string property, PlayerStatsRow pmsr1, PlayerStatsRow pmsr2)
-        {
-            return
-                Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr1, null))
-                       .CompareTo(Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null)));
         }
 
         /// <summary>Calculates the player and metric stats and updates the corresponding tabs.</summary>

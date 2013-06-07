@@ -72,6 +72,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private bool _changingTimeframe;
         private int _curSeason;
+        private List<PlayerStatsRow> _psrListPl;
+        private List<PlayerStatsRow> _psrListSea;
+        private ICollectionView _psrViewPl;
+        private ICollectionView _psrViewSea;
+        private List<string> _customMetricNames;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class. Prepares the window by populating all the combo-boxes.
@@ -141,6 +146,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             comparisons.Insert(0, "All");
             cmbCustomComp.ItemsSource = comparisons;
             cmbCustomComp.SelectedIndex = 0;
+
+            _customMetricNames = new List<string>();
 
             //chkIsActive.IsChecked = null;
             //cmbTeam.SelectedItem = "- Any -";
@@ -363,14 +370,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             var pstDict = filteredPST.ToDictionary(ps => ps.Value.ID, ps => ps.Value);
-            var psrListSea = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
-            var psrListPl = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
+            _psrListSea = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps)).ToList();
+            _psrListPl = pstDict.Values.AsParallel().Select(ps => new PlayerStatsRow(ps, true)).ToList();
             var tsrListSea = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts)).ToList();
             var tsrListPl = MainWindow.TST.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
             var tsrOppListSea = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts)).ToList();
             var tsrOppListPl = MainWindow.TSTOpp.Values.Select(ts => new TeamStatsRow(ts, true)).ToList();
 
             #region Custom Expressions parsing
+
+            _customMetricNames.Clear();
 
             dgvPlayerStats.Columns.SkipWhile(col => col.Header.ToString() != "Custom")
                           .Skip(1)
@@ -466,7 +475,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 if (!ignoredIDs.Contains(id))
                                 {
                                     string val;
-                                    curPSR = psrListSea.Single(psr => psr.ID == id);
+                                    curPSR = _psrListSea.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
                                         val =
@@ -502,7 +511,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 if (!ignoredPlIDs.Contains(id))
                                 {
                                     string plVal;
-                                    curPSRPl = psrListPl.Single(psr => psr.ID == id);
+                                    curPSRPl = _psrListPl.Single(psr => psr.ID == id);
                                     if (isPlayer)
                                     {
                                         plVal =
@@ -570,8 +579,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 }
                 foreach (var id in includedIDs)
                 {
-                    curPSR = psrListSea.Single(psr => psr.ID == id);
-                    curPSRPl = psrListPl.Single(psr => psr.ID == id);
+                    curPSR = _psrListSea.Single(psr => psr.ID == id);
+                    curPSRPl = _psrListPl.Single(psr => psr.ID == id);
                     if (!ignoredIDs.Contains(id))
                     {
                         try
@@ -633,54 +642,60 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                         StringFormat = "{0:F" + decimalPoints + "}"
                                     }
                         });
+                _customMetricNames.Add(name);
                 j++;
             }
 
+            populateSituationalsCombo();
+
             #endregion Custom Expressions parsing
 
-            var psrView = CollectionViewSource.GetDefaultView(psrListSea);
-            psrView.Filter = filter;
+            _psrViewSea = CollectionViewSource.GetDefaultView(_psrListSea);
+            _psrViewSea.Filter = filter;
 
-            var plPSRView = CollectionViewSource.GetDefaultView(psrListPl);
-            plPSRView.Filter = filter;
+            _psrViewPl = CollectionViewSource.GetDefaultView(_psrListPl);
+            _psrViewPl.Filter = filter;
 
-            dgvPlayerStats.ItemsSource = psrView;
-            dgvPlayoffStats.ItemsSource = plPSRView;
+            dgvPlayerStats.ItemsSource = _psrViewSea;
+            dgvPlayoffStats.ItemsSource = _psrViewPl;
 
             string sortColumn;
             foreach (var item in lstMetrics.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("%", "p");
-                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewSea.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewPl.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (var item in lstAvg.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("%", "p");
-                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewSea.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewPl.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
             foreach (var item in lstTotals.Items.Cast<string>())
             {
                 sortColumn = item.Split(' ')[0];
                 sortColumn = sortColumn.Replace("3P", "TP");
                 sortColumn = sortColumn.Replace("TO", "TOS");
-                psrView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
-                plPSRView.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewSea.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
+                _psrViewPl.SortDescriptions.Add(new SortDescription(sortColumn, ListSortDirection.Descending));
             }
 
-            if (psrView.SortDescriptions.Count == 0)
+            if (_psrViewSea.SortDescriptions.Count == 0)
             {
                 dgvPlayerStats.Columns.Single(col => col.Header.ToString() == "GmSc").SortDirection = ListSortDirection.Descending;
                 dgvPlayoffStats.Columns.Single(col => col.Header.ToString() == "GmSc").SortDirection = ListSortDirection.Descending;
-                psrView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
-                plPSRView.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+                _psrViewSea.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
+                _psrViewPl.SortDescriptions.Add(new SortDescription("GmSc", ListSortDirection.Descending));
             }
 
             tbcPlayerSearch.SelectedItem = tabResults;
+
+            cmbSituationalSea_SelectionChanged(null, null);
+            cmbSituationalPl_SelectionChanged(null, null);
 
             if (!String.IsNullOrWhiteSpace(message))
             {
@@ -1622,6 +1637,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 rbStatsAllTime.IsChecked = true;
             }
             _changingTimeframe = false;
+
+            populateSituationalsCombo();
         }
 
         private void anyCustomTotalsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1888,6 +1905,352 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             Tools.SetRegistrySetting("APSWidth", Width);
             Tools.SetRegistrySetting("APSX", Left);
             Tools.SetRegistrySetting("APSY", Top);
+        }
+
+        private void cmbSituationalSea_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbSituationalSea.SelectedIndex == -1 || _psrViewSea == null || _psrViewSea.IsEmpty)
+            {
+                txbStartingPGSea.Text = "";
+                txbStartingSGSea.Text = "";
+                txbStartingSFSea.Text = "";
+                txbStartingPFSea.Text = "";
+                txbStartingCSea.Text = "";
+                txbSubsSea.Text = "";
+                return;
+            }
+            calculateSituational(cmbSituationalSea.SelectedItem.ToString(), false);
+        }
+
+        private void cmbSituationalPl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbSituationalPl.SelectedIndex == -1 || _psrViewPl == null || _psrViewPl.IsEmpty)
+            {
+                txbStartingPGPl.Text = "";
+                txbStartingSGPl.Text = "";
+                txbStartingSFPl.Text = "";
+                txbStartingPFPl.Text = "";
+                txbStartingCPl.Text = "";
+                txbSubsPl.Text = "";
+                return;
+            }
+            calculateSituational(cmbSituationalPl.SelectedItem.ToString(), true);
+        }
+
+        private void calculateSituational(string property, bool playoffs)
+        {
+            var txbStartingPG = !playoffs ? txbStartingPGSea : txbStartingPGPl;
+            var txbStartingSG = !playoffs ? txbStartingSGSea : txbStartingSGPl;
+            var txbStartingSF = !playoffs ? txbStartingSFSea : txbStartingSFPl;
+            var txbStartingPF = !playoffs ? txbStartingPFSea : txbStartingPFPl;
+            var txbStartingC = !playoffs ? txbStartingCSea : txbStartingCPl;
+            var txbSubs = !playoffs ? txbSubsSea : txbSubsPl;
+            var psrList = !playoffs ? _psrViewSea.Cast<PlayerStatsRow>().ToList() : _psrViewPl.Cast<PlayerStatsRow>().ToList();
+
+            txbStartingPG.Text = "";
+            txbStartingSG.Text = "";
+            txbStartingSF.Text = "";
+            txbStartingPF.Text = "";
+            txbStartingC.Text = "";
+            txbSubs.Text = "";
+
+            string text;
+            PlayerStatsRow psr1;
+            var tempList = new List<PlayerStatsRow>();
+
+            if (_customMetricNames.Contains(property))
+            {
+                property = "Custom[" + _customMetricNames.IndexOf(property) + "]";
+            }
+            else
+            {
+                property = property.Replace("%", "p").Replace("3", "T");
+            }
+
+            var pgList =
+                psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG"))
+                    // && row.IsInjured == false)
+                       .Take(10).ToList();
+            pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            pgList.Reverse();
+            var sgList =
+                psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG"))
+                    // && row.IsInjured == false)
+                       .Take(10).ToList();
+            sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            sgList.Reverse();
+            var sfList =
+                psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF"))
+                    // && row.IsInjured == false)
+                       .Take(10).ToList();
+            sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            sfList.Reverse();
+            var pfList =
+                psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF"))
+                    // && row.IsInjured == false)
+                       .Take(10).ToList();
+            pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            pfList.Reverse();
+            var cList =
+                psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C"))
+                    // && row.IsInjured == false)
+                       .Take(10).ToList();
+            cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            cList.Reverse();
+            var permutations = new List<StartingFivePermutation>();
+
+            var max = Double.MinValue;
+            foreach (var pg in pgList)
+            {
+                foreach (var sg in sgList)
+                {
+                    foreach (var sf in sfList)
+                    {
+                        foreach (var pf in pfList)
+                        {
+                            foreach (var c in cList)
+                            {
+                                double sum = 0;
+                                var pInP = 0;
+                                var perm = new List<int>(5) { pg.ID };
+                                sum += pg.GetValue<double>(property);
+                                if (pg.Position1.ToString() == "PG")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(sg.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(sg.ID);
+                                sum += sg.GetValue<double>(property);
+                                if (sg.Position1.ToString() == "SG")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(sf.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(sf.ID);
+                                sum += sf.GetValue<double>(property);
+                                if (sf.Position1.ToString() == "SF")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(pf.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(pf.ID);
+                                sum += pf.GetValue<double>(property);
+                                if (pf.Position1.ToString() == "PF")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(c.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(c.ID);
+                                sum += c.GetValue<double>(property);
+                                if (c.Position1.ToString() == "C")
+                                {
+                                    pInP++;
+                                }
+
+                                if (sum > max)
+                                {
+                                    max = sum;
+                                }
+
+                                permutations.Add(
+                                    new StartingFivePermutation { IDList = perm, PlayersInPrimaryPosition = pInP, Sum = sum });
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<int> usedIDs;
+            try
+            {
+                var bestPerm =
+                    permutations.Where(perm => perm.Sum.Equals(max)).OrderByDescending(perm => perm.PlayersInPrimaryPosition).First();
+                usedIDs = bestPerm.IDList.ToList();
+                bestPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            try
+            {
+                psr1 = tempList[0];
+                text = psr1.GetBestStats(5);
+                txbStartingPG.Text = "PG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                psr1 = tempList[1];
+                text = psr1.GetBestStats(5);
+                txbStartingSG.Text = "SG: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                psr1 = tempList[2];
+                text = psr1.GetBestStats(5);
+                txbStartingSF.Text = "SF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                psr1 = tempList[3];
+                text = psr1.GetBestStats(5);
+                txbStartingPF.Text = "PF: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                psr1 = tempList[4];
+                text = psr1.GetBestStats(5);
+                txbStartingC.Text = "C: " + psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + ")\n\n" + text;
+            }
+            catch (Exception)
+            {
+            }
+
+            var idCountToSkip = usedIDs.Count;
+            var i = 0;
+            try
+            {
+                while (usedIDs.Contains(pgList[i].ID))
+                {
+                    i++;
+                }
+                usedIDs.Add(pgList[i].ID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's substitute PG: " + ex.Message);
+            }
+
+            try
+            {
+                i = 0;
+                while (usedIDs.Contains(sgList[i].ID))
+                {
+                    i++;
+                }
+                usedIDs.Add(sgList[i].ID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's substitute SG: " + ex.Message);
+            }
+
+            try
+            {
+                i = 0;
+                while (usedIDs.Contains(sfList[i].ID))
+                {
+                    i++;
+                }
+                usedIDs.Add(sfList[i].ID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's substitute SF: " + ex.Message);
+            }
+
+            try
+            {
+                i = 0;
+                while (usedIDs.Contains(pfList[i].ID))
+                {
+                    i++;
+                }
+                usedIDs.Add(pfList[i].ID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's substitute PF: " + ex.Message);
+            }
+
+            try
+            {
+                i = 0;
+                while (usedIDs.Contains(cList[i].ID))
+                {
+                    i++;
+                }
+                usedIDs.Add(cList[i].ID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's substitute C: " + ex.Message);
+            }
+
+            try
+            {
+                var count = usedIDs.Count - idCountToSkip + 5;
+                for (var j = count + 1; j <= 12; j++)
+                {
+                    i = 0;
+                    while (usedIDs.Contains(psrList[i].ID))
+                    {
+                        i++;
+                    }
+                    usedIDs.Add(psrList[i].ID);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown while trying to calculate ultimate team's other substitutes: " + ex.Message);
+            }
+
+            usedIDs.Skip(idCountToSkip).ToList().ForEach(id => tempList.Add(psrList.Single(row => row.ID == id)));
+            var displayText = "Subs: ";
+            for (i = 5; i < usedIDs.Count - idCountToSkip + 5; i++)
+            {
+                psr1 = tempList[i];
+                //text = psr1.GetBestStats(5);
+                displayText += psr1.FirstName + " " + psr1.LastName + " (" + psr1.Position1 + " - " + psr1.TeamFDisplay + "), ";
+            }
+            displayText = displayText.TrimEnd(new[] { ' ', ',' });
+            txbSubs.Text = displayText;
+        }
+
+        private void populateSituationalsCombo()
+        {
+            var situationals = new List<string>();
+            var temp = new List<string>();
+            temp.AddRange(PAbbr.MetricsNames);
+            temp.AddRange(PAbbr.PerGame.Values);
+            temp.AddRange(PAbbr.Totals.Values);
+            var psrProps = typeof(PlayerStatsRow).GetProperties().Select(prop => prop.Name).ToList();
+            situationals.AddRange(
+                from t in temp let realName = t.Replace("%", "p").Replace("3", "T") where psrProps.Contains(realName) select t);
+            situationals.InsertRange(0, _customMetricNames);
+            cmbSituationalSea.ItemsSource = situationals;
+            cmbSituationalPl.ItemsSource = cmbSituationalSea.ItemsSource;
+            cmbSituationalSea.SelectedIndex = 0;
+            cmbSituationalPl.SelectedIndex = 0;
         }
     }
 }

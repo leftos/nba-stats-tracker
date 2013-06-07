@@ -357,7 +357,8 @@
                             Click="btnSaveFilters_Click" Grid.Row="1" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Results (Season)" Name="tabResults">
+            <TabItem Header="Season" IsEnabled="False" />
+            <TabItem Header="Results" Name="tabResults">
                 <Grid>
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
@@ -784,7 +785,56 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Results (Playoffs)" Name="tabPlayoffResults">
+            <TabItem Header="Recommended Team" Name="tabStartingFiveSea">
+                <Grid Margin="6" ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35" />
+                        <RowDefinition Height="45*" />
+                        <RowDefinition Height="45*" />
+                        <RowDefinition Height="45" />
+                    </Grid.RowDefinitions>
+                    <ComboBox HorizontalAlignment="Center" Margin="6" Width="120"
+                              Name="cmbSituationalSea" SelectionChanged="cmbSituationalSea_SelectionChanged" />
+                    <Grid Grid.Row="1" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="30*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPGSea"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="0" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSFSea"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingCSea"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" />
+                    </Grid>
+                    <Grid Grid.Row="2" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*" />
+                            <ColumnDefinition Width="35*" />
+                            <ColumnDefinition Width="10*" />
+                            <ColumnDefinition Width="35*" />
+                            <ColumnDefinition Width="10*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSGSea"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="1" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPFSea"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="3" />
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <TextBlock Margin="6" Name="txbSubsSea" TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Playoffs" IsEnabled="False" />
+            <TabItem Header="Results" Name="tabPlayoffResults">
                 <Grid>
                     <DataGrid LoadingRow="dg_LoadingRow" RowHeaderWidth="25" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch"
@@ -1209,6 +1259,54 @@
                             <DataGridTextColumn Header="Custom" />
                         </DataGrid.Columns>
                     </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Recommended Team" Name="tabStartingFivePl">
+                <Grid Margin="6" ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35" />
+                        <RowDefinition Height="45*" />
+                        <RowDefinition Height="45*" />
+                        <RowDefinition Height="45" />
+                    </Grid.RowDefinitions>
+                    <ComboBox HorizontalAlignment="Center" Margin="6" Width="120"
+                              Name="cmbSituationalPl" SelectionChanged="cmbSituationalPl_SelectionChanged" />
+                    <Grid Grid.Row="1" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="30*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPGPl"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="0" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSFPl"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingCPl"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" />
+                    </Grid>
+                    <Grid Grid.Row="2" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*" />
+                            <ColumnDefinition Width="35*" />
+                            <ColumnDefinition Width="10*" />
+                            <ColumnDefinition Width="35*" />
+                            <ColumnDefinition Width="10*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingSGPl"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="1" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Stretch" Margin="6" Name="txbStartingPFPl"
+                                   Text=""
+                                   TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="3" />
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <TextBlock Margin="6" Name="txbSubsPl" TextWrapping="Wrap" />
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>

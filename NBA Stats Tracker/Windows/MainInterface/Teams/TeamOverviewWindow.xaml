@@ -1410,7 +1410,6 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="Recommended Situationals" Name="tabStartingFive">
-
                     <Grid Margin="6" ShowGridLines="False">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="35" />

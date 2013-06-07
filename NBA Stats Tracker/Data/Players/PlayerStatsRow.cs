@@ -21,6 +21,7 @@ namespace NBA_Stats_Tracker.Data.Players
     #region Using Directives
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
@@ -1462,48 +1463,48 @@ namespace NBA_Stats_Tracker.Data.Players
                 newpsr.DREB = 0;
                 newpsr.BLK = 0;
                 newpsr.AST = 0;
-                newpsr.TOS = uint.MaxValue;
+                newpsr.TOS = UInt32.MaxValue;
                 newpsr.STL = 0;
-                newpsr.FOUL = uint.MaxValue;
+                newpsr.FOUL = UInt32.MaxValue;
 
-                newpsr.FGp = float.NaN;
-                newpsr.FGeff = float.NaN;
-                newpsr.TPp = float.NaN;
-                newpsr.TPeff = float.NaN;
-                newpsr.FTp = float.NaN;
-                newpsr.FTeff = float.NaN;
-                newpsr.PPG = float.NaN;
-                newpsr.RPG = float.NaN;
-                newpsr.DRPG = float.NaN;
-                newpsr.ORPG = float.NaN;
-                newpsr.APG = float.NaN;
-                newpsr.SPG = float.NaN;
-                newpsr.BPG = float.NaN;
+                newpsr.FGp = Single.NaN;
+                newpsr.FGeff = Single.NaN;
+                newpsr.TPp = Single.NaN;
+                newpsr.TPeff = Single.NaN;
+                newpsr.FTp = Single.NaN;
+                newpsr.FTeff = Single.NaN;
+                newpsr.PPG = Single.NaN;
+                newpsr.RPG = Single.NaN;
+                newpsr.DRPG = Single.NaN;
+                newpsr.ORPG = Single.NaN;
+                newpsr.APG = Single.NaN;
+                newpsr.SPG = Single.NaN;
+                newpsr.BPG = Single.NaN;
 
-                newpsr.GmSc = double.NaN;
-                newpsr.PTSR = double.NaN;
-                newpsr.REBR = double.NaN;
-                newpsr.OREBR = double.NaN;
-                newpsr.ASTR = double.NaN;
-                newpsr.BLKR = double.NaN;
-                newpsr.STLR = double.NaN;
-                newpsr.TOR = double.NaN;
-                newpsr.FTR = double.NaN;
-                newpsr.FTAR = double.NaN;
-                newpsr.GmScE = double.NaN;
-                newpsr.EFF = double.NaN;
-                newpsr.EFGp = double.NaN;
-                newpsr.TSp = double.NaN;
-                newpsr.ASTp = double.NaN;
-                newpsr.STLp = double.NaN;
-                newpsr.TOp = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PER = double.NaN;
-                newpsr.BLKp = double.NaN;
-                newpsr.DREBp = double.NaN;
-                newpsr.OREBp = double.NaN;
-                newpsr.REBp = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.GmSc = Double.NaN;
+                newpsr.PTSR = Double.NaN;
+                newpsr.REBR = Double.NaN;
+                newpsr.OREBR = Double.NaN;
+                newpsr.ASTR = Double.NaN;
+                newpsr.BLKR = Double.NaN;
+                newpsr.STLR = Double.NaN;
+                newpsr.TOR = Double.NaN;
+                newpsr.FTR = Double.NaN;
+                newpsr.FTAR = Double.NaN;
+                newpsr.GmScE = Double.NaN;
+                newpsr.EFF = Double.NaN;
+                newpsr.EFGp = Double.NaN;
+                newpsr.TSp = Double.NaN;
+                newpsr.ASTp = Double.NaN;
+                newpsr.STLp = Double.NaN;
+                newpsr.TOp = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PER = Double.NaN;
+                newpsr.BLKp = Double.NaN;
+                newpsr.DREBp = Double.NaN;
+                newpsr.OREBp = Double.NaN;
+                newpsr.REBp = Double.NaN;
+                newpsr.PPR = Double.NaN;
             }
 
             return newpsr;
@@ -1539,59 +1540,59 @@ namespace NBA_Stats_Tracker.Data.Players
                 //newpsr.PTS = 0;
                 newpsr.FGM = 0;
                 newpsr.FGA = 0;
-                newpsr.TSp = double.NaN;
-                newpsr.EFGp = double.NaN;
-                newpsr.GmSc = double.NaN;
-                newpsr.GmScE = double.NaN;
-                newpsr.PTSR = double.NaN;
-                newpsr.EFF = double.NaN;
-                newpsr.FTR = double.NaN;
-                newpsr.FTAR = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PER = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.TSp = Double.NaN;
+                newpsr.EFGp = Double.NaN;
+                newpsr.GmSc = Double.NaN;
+                newpsr.GmScE = Double.NaN;
+                newpsr.PTSR = Double.NaN;
+                newpsr.EFF = Double.NaN;
+                newpsr.FTR = Double.NaN;
+                newpsr.FTAR = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PER = Double.NaN;
+                newpsr.PPR = Double.NaN;
 
-                newpsr.FGp = float.NaN;
-                newpsr.FGeff = float.NaN;
+                newpsr.FGp = Single.NaN;
+                newpsr.FGeff = Single.NaN;
             }
             if (TPM < tpmRequired)
             {
                 //newpsr.PTS = 0;
                 newpsr.TPM = 0;
                 newpsr.TPA = 0;
-                newpsr.TSp = double.NaN;
-                newpsr.EFGp = double.NaN;
-                newpsr.GmSc = double.NaN;
-                newpsr.GmScE = double.NaN;
-                newpsr.PTSR = double.NaN;
-                newpsr.EFF = double.NaN;
-                newpsr.FTR = double.NaN;
-                newpsr.FTAR = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PER = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.TSp = Double.NaN;
+                newpsr.EFGp = Double.NaN;
+                newpsr.GmSc = Double.NaN;
+                newpsr.GmScE = Double.NaN;
+                newpsr.PTSR = Double.NaN;
+                newpsr.EFF = Double.NaN;
+                newpsr.FTR = Double.NaN;
+                newpsr.FTAR = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PER = Double.NaN;
+                newpsr.PPR = Double.NaN;
 
-                newpsr.TPp = float.NaN;
-                newpsr.TPeff = float.NaN;
+                newpsr.TPp = Single.NaN;
+                newpsr.TPeff = Single.NaN;
             }
             if (FTM < ftmRequired)
             {
                 //newpsr.PTS = 0;
                 newpsr.FTM = 0;
                 newpsr.FTA = 0;
-                newpsr.TSp = double.NaN;
-                newpsr.GmSc = double.NaN;
-                newpsr.GmScE = double.NaN;
-                newpsr.PTSR = double.NaN;
-                newpsr.EFF = double.NaN;
-                newpsr.FTR = double.NaN;
-                newpsr.FTAR = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PER = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.TSp = Double.NaN;
+                newpsr.GmSc = Double.NaN;
+                newpsr.GmScE = Double.NaN;
+                newpsr.PTSR = Double.NaN;
+                newpsr.EFF = Double.NaN;
+                newpsr.FTR = Double.NaN;
+                newpsr.FTAR = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PER = Double.NaN;
+                newpsr.PPR = Double.NaN;
 
-                newpsr.FTp = float.NaN;
-                newpsr.FTeff = float.NaN;
+                newpsr.FTp = Single.NaN;
+                newpsr.FTeff = Single.NaN;
             }
 
             if (gamesPlayer >= gamesRequired)
@@ -1600,66 +1601,66 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             else
             {
-                newpsr.GmSc = double.NaN;
-                newpsr.GmScE = double.NaN;
-                newpsr.EFF = double.NaN;
-                newpsr.PER = double.NaN;
-                newpsr.TOS = uint.MaxValue;
-                newpsr.FOUL = uint.MaxValue;
-                newpsr.TOR = double.NaN;
+                newpsr.GmSc = Double.NaN;
+                newpsr.GmScE = Double.NaN;
+                newpsr.EFF = Double.NaN;
+                newpsr.PER = Double.NaN;
+                newpsr.TOS = UInt32.MaxValue;
+                newpsr.FOUL = UInt32.MaxValue;
+                newpsr.TOR = Double.NaN;
             }
 
             if (PTS < ptsRequired)
             {
-                newpsr.PPG = float.NaN;
+                newpsr.PPG = Single.NaN;
                 newpsr.PTS = 0;
-                newpsr.TSp = double.NaN;
-                newpsr.EFGp = double.NaN;
-                newpsr.PTSR = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.TSp = Double.NaN;
+                newpsr.EFGp = Double.NaN;
+                newpsr.PTSR = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PPR = Double.NaN;
             }
             if (REB < rebRequired)
             {
-                newpsr.RPG = float.NaN;
-                newpsr.DRPG = float.NaN;
-                newpsr.ORPG = float.NaN;
+                newpsr.RPG = Single.NaN;
+                newpsr.DRPG = Single.NaN;
+                newpsr.ORPG = Single.NaN;
 
                 newpsr.REB = 0;
                 newpsr.OREB = 0;
                 newpsr.DREB = 0;
-                newpsr.REBR = double.NaN;
-                newpsr.OREBR = double.NaN;
-                newpsr.DREBp = double.NaN;
-                newpsr.OREBp = double.NaN;
-                newpsr.REBp = double.NaN;
+                newpsr.REBR = Double.NaN;
+                newpsr.OREBR = Double.NaN;
+                newpsr.DREBp = Double.NaN;
+                newpsr.OREBp = Double.NaN;
+                newpsr.REBp = Double.NaN;
             }
             if (AST < astRequired)
             {
-                newpsr.APG = float.NaN;
+                newpsr.APG = Single.NaN;
                 newpsr.AST = 0;
-                newpsr.ASTp = double.NaN;
-                newpsr.ASTR = double.NaN;
-                newpsr.USGp = double.NaN;
-                newpsr.PPR = double.NaN;
+                newpsr.ASTp = Double.NaN;
+                newpsr.ASTR = Double.NaN;
+                newpsr.USGp = Double.NaN;
+                newpsr.PPR = Double.NaN;
             }
             if (STL < stlRequired)
             {
-                newpsr.SPG = float.NaN;
+                newpsr.SPG = Single.NaN;
                 newpsr.STL = 0;
-                newpsr.STLp = double.NaN;
-                newpsr.STLR = double.NaN;
+                newpsr.STLp = Double.NaN;
+                newpsr.STLR = Double.NaN;
             }
             if (BLK < blkRequired)
             {
-                newpsr.BPG = float.NaN;
+                newpsr.BPG = Single.NaN;
                 newpsr.BLK = 0;
-                newpsr.BLKp = double.NaN;
-                newpsr.BLKR = double.NaN;
+                newpsr.BLKp = Double.NaN;
+                newpsr.BLKR = Double.NaN;
             }
             if (MINS < minRequired)
             {
-                newpsr.MPG = float.NaN;
+                newpsr.MPG = Single.NaN;
             }
             return newpsr;
         }
@@ -1678,6 +1679,41 @@ namespace NBA_Stats_Tracker.Data.Players
                 var list = PBPSList;
                 PlayerPBPStats.AddShotsToList(ref list, new List<int> { ID }, pbpeList);
                 PBPSList[6].AddOtherStats(ID, pbpeList, false);
+            }
+        }
+
+        public static int Compare(string property, PlayerStatsRow pmsr1, PlayerStatsRow pmsr2)
+        {
+            if (property.Contains("["))
+            {
+                var index = property.Split('[')[1].Split(']')[0].ToInt32();
+                property = property.Split('[')[0];
+                return
+                    Convert.ToDouble((typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr1, null) as IList)[index])
+                           .CompareTo(
+                               Convert.ToDouble((typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null) as IList)[index]));
+            }
+            else
+            {
+                return
+                    Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr1, null))
+                           .CompareTo(Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null)));
+            }
+        }
+
+        public T GetValue<T>(string property)
+        {
+            if (property.Contains("["))
+            {
+                var index = property.Split('[')[1].Split(']')[0].ToInt32();
+                property = property.Split('[')[0];
+                return
+                    (T)
+                    Convert.ChangeType((typeof(PlayerStatsRow).GetProperty(property).GetValue(this, null) as IList)[index], typeof(T));
+            }
+            else
+            {
+                return (T) Convert.ChangeType(typeof(PlayerStatsRow).GetProperty(property).GetValue(this, null), typeof(T));
             }
         }
 
