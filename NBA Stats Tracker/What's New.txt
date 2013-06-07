@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.16.1
+		- Addition: Added Recommended Team tabs in Advanced Player Search, allowing you to get recommendations for the starting five and substitutes based on all stats, including custom metrics
+
 	v1.16
 		- Addition: Added Team Shooting Stats, Team Other Stats, Player Shooting Stats and Player Other Stats to League Overview
 		- Addition: Added Player Shooting Stats and Player Other Stats to Team Overview
