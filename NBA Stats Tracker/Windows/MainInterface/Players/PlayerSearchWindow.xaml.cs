@@ -52,6 +52,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
     {
         private readonly List<string> _contractOptions = new List<string> { "Any", "None", "Team", "Player", "Team2Yr" };
         private readonly List<string> _customExpressions = new List<string>();
+        private readonly List<string> _customMetricNames;
         private readonly string _folder = App.AppDocsPath + @"\Search Filters";
         private readonly List<string> _metrics = PAbbr.MetricsNames;
 
@@ -69,14 +70,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private readonly List<string> _teamPerGame = TAbbr.ExtendedPerGame;
         private readonly List<string> _teamTotals = TAbbr.ExtendedTotals;
         private readonly List<string> _totals = PAbbr.ExtendedTotals;
+        private List<PlayerStatsRow> _cList;
 
         private bool _changingTimeframe;
         private int _curSeason;
+        private bool _fixingPageValue;
+        private string _lastPropertyUsed;
+        private List<StartingFivePermutation> _permutations;
+        private List<PlayerStatsRow> _pfList;
+        private List<PlayerStatsRow> _pgList;
         private List<PlayerStatsRow> _psrListPl;
         private List<PlayerStatsRow> _psrListSea;
         private ICollectionView _psrViewPl;
         private ICollectionView _psrViewSea;
-        private List<string> _customMetricNames;
+        private List<PlayerStatsRow> _sfList;
+        private List<PlayerStatsRow> _sgList;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class. Prepares the window by populating all the combo-boxes.
@@ -693,6 +701,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             tbcPlayerSearch.SelectedItem = tabResults;
+
+            _lastPropertyUsed = "";
 
             cmbSituationalSea_SelectionChanged(null, null);
             cmbSituationalPl_SelectionChanged(null, null);
@@ -1939,6 +1949,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void calculateSituational(string property, bool playoffs)
         {
+            if (nudSituationalSea.Value == null || nudSituationalSea.Value < 1)
+            {
+                nudSituationalSea.Value = 1;
+            }
+            if (((nudSituationalSea.Value - 1) * 5) + 1 > _psrListSea.Count)
+            {
+                nudSituationalSea.Value = ((_psrListSea.Count - 1) / 5) + 1;
+            }
+
             var txbStartingPG = !playoffs ? txbStartingPGSea : txbStartingPGPl;
             var txbStartingSG = !playoffs ? txbStartingSGSea : txbStartingSGPl;
             var txbStartingSF = !playoffs ? txbStartingSFSea : txbStartingSFPl;
@@ -1967,118 +1986,52 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 property = property.Replace("%", "p").Replace("3", "T");
             }
 
-            var pgList =
-                psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG"))
-                    // && row.IsInjured == false)
-                       .Take(10).ToList();
-            pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
-            pgList.Reverse();
-            var sgList =
-                psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG"))
-                    // && row.IsInjured == false)
-                       .Take(10).ToList();
-            sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
-            sgList.Reverse();
-            var sfList =
-                psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF"))
-                    // && row.IsInjured == false)
-                       .Take(10).ToList();
-            sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
-            sfList.Reverse();
-            var pfList =
-                psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF"))
-                    // && row.IsInjured == false)
-                       .Take(10).ToList();
-            pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
-            pfList.Reverse();
-            var cList =
-                psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C"))
-                    // && row.IsInjured == false)
-                       .Take(10).ToList();
-            cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
-            cList.Reverse();
-            var permutations = new List<StartingFivePermutation>();
-
-            var max = Double.MinValue;
-            foreach (var pg in pgList)
+            if (property != _lastPropertyUsed || _lastPropertyUsed == "")
             {
-                foreach (var sg in sgList)
-                {
-                    foreach (var sf in sfList)
-                    {
-                        foreach (var pf in pfList)
-                        {
-                            foreach (var c in cList)
-                            {
-                                double sum = 0;
-                                var pInP = 0;
-                                var perm = new List<int>(5) { pg.ID };
-                                sum += pg.GetValue<double>(property);
-                                if (pg.Position1.ToString() == "PG")
-                                {
-                                    pInP++;
-                                }
-                                if (perm.Contains(sg.ID))
-                                {
-                                    continue;
-                                }
-                                perm.Add(sg.ID);
-                                sum += sg.GetValue<double>(property);
-                                if (sg.Position1.ToString() == "SG")
-                                {
-                                    pInP++;
-                                }
-                                if (perm.Contains(sf.ID))
-                                {
-                                    continue;
-                                }
-                                perm.Add(sf.ID);
-                                sum += sf.GetValue<double>(property);
-                                if (sf.Position1.ToString() == "SF")
-                                {
-                                    pInP++;
-                                }
-                                if (perm.Contains(pf.ID))
-                                {
-                                    continue;
-                                }
-                                perm.Add(pf.ID);
-                                sum += pf.GetValue<double>(property);
-                                if (pf.Position1.ToString() == "PF")
-                                {
-                                    pInP++;
-                                }
-                                if (perm.Contains(c.ID))
-                                {
-                                    continue;
-                                }
-                                perm.Add(c.ID);
-                                sum += c.GetValue<double>(property);
-                                if (c.Position1.ToString() == "C")
-                                {
-                                    pInP++;
-                                }
-
-                                if (sum > max)
-                                {
-                                    max = sum;
-                                }
-
-                                permutations.Add(
-                                    new StartingFivePermutation { IDList = perm, PlayersInPrimaryPosition = pInP, Sum = sum });
-                            }
-                        }
-                    }
-                }
+                recalculatePermutations(property, psrList);
+                _lastPropertyUsed = property;
             }
 
-            List<int> usedIDs;
+            var permutations = _permutations.ToList();
+
+            var usedIDs = new List<int>();
+            var nudSituational = !playoffs ? nudSituationalSea : nudSituationalSea;
+            var permToGet = nudSituational.Value;
+            int i;
             try
             {
-                var bestPerm =
-                    permutations.Where(perm => perm.Sum.Equals(max)).OrderByDescending(perm => perm.PlayersInPrimaryPosition).First();
-                usedIDs = bestPerm.IDList.ToList();
-                bestPerm.IDList.ForEach(i1 => tempList.Add(psrList.Single(row => row.ID == i1)));
+                for (i = 0; i < permToGet; i++)
+                {
+                    permutations.RemoveAll(p => usedIDs.Any(id => p.IDList.Contains(id)));
+                    StartingFivePermutation curPerm;
+                    try
+                    {
+                        curPerm =
+                            permutations.OrderByDescending(perm => perm.Sum)
+                                        .ThenByDescending(perm => perm.PlayersInPrimaryPosition)
+                                        .First();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        if (permToGet > 1)
+                        {
+                            _fixingPageValue = true;
+                            nudSituational.Value = --permToGet;
+                            _fixingPageValue = false;
+                            i = -1;
+                            permutations = _permutations.ToList();
+                            usedIDs.Clear();
+                            continue;
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    usedIDs.AddRange(curPerm.IDList);
+                    tempList.Clear();
+                    tempList.AddRange(curPerm.IDList.Select(id => psrList.Single(row => row.ID == id)).ToList());
+                }
             }
             catch (Exception)
             {
@@ -2136,14 +2089,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
 
             var idCountToSkip = usedIDs.Count;
-            var i = 0;
+            i = 0;
             try
             {
-                while (usedIDs.Contains(pgList[i].ID))
+                while (usedIDs.Contains(_pgList[i].ID))
                 {
                     i++;
                 }
-                usedIDs.Add(pgList[i].ID);
+                usedIDs.Add(_pgList[i].ID);
             }
             catch (Exception ex)
             {
@@ -2153,11 +2106,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             try
             {
                 i = 0;
-                while (usedIDs.Contains(sgList[i].ID))
+                while (usedIDs.Contains(_sgList[i].ID))
                 {
                     i++;
                 }
-                usedIDs.Add(sgList[i].ID);
+                usedIDs.Add(_sgList[i].ID);
             }
             catch (Exception ex)
             {
@@ -2167,11 +2120,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             try
             {
                 i = 0;
-                while (usedIDs.Contains(sfList[i].ID))
+                while (usedIDs.Contains(_sfList[i].ID))
                 {
                     i++;
                 }
-                usedIDs.Add(sfList[i].ID);
+                usedIDs.Add(_sfList[i].ID);
             }
             catch (Exception ex)
             {
@@ -2181,11 +2134,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             try
             {
                 i = 0;
-                while (usedIDs.Contains(pfList[i].ID))
+                while (usedIDs.Contains(_pfList[i].ID))
                 {
                     i++;
                 }
-                usedIDs.Add(pfList[i].ID);
+                usedIDs.Add(_pfList[i].ID);
             }
             catch (Exception ex)
             {
@@ -2195,11 +2148,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             try
             {
                 i = 0;
-                while (usedIDs.Contains(cList[i].ID))
+                while (usedIDs.Contains(_cList[i].ID))
                 {
                     i++;
                 }
-                usedIDs.Add(cList[i].ID);
+                usedIDs.Add(_cList[i].ID);
             }
             catch (Exception ex)
             {
@@ -2236,6 +2189,109 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             txbSubs.Text = displayText;
         }
 
+        private void recalculatePermutations(string property, List<PlayerStatsRow> psrList)
+        {
+            _pgList = psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG"))
+                // && row.IsInjured == false)
+                             .Take(10).ToList();
+            _pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _pgList.Reverse();
+            _sgList = psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG"))
+                // && row.IsInjured == false)
+                             .Take(10).ToList();
+            _sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _sgList.Reverse();
+            _sfList = psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF"))
+                // && row.IsInjured == false)
+                             .Take(10).ToList();
+            _sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _sfList.Reverse();
+            _pfList = psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF"))
+                // && row.IsInjured == false)
+                             .Take(10).ToList();
+            _pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _pfList.Reverse();
+            _cList = psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C"))
+                // && row.IsInjured == false)
+                            .Take(10).ToList();
+            _cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _cList.Reverse();
+            _permutations = new List<StartingFivePermutation>();
+
+            var max = Double.MinValue;
+            foreach (var pg in _pgList)
+            {
+                foreach (var sg in _sgList)
+                {
+                    foreach (var sf in _sfList)
+                    {
+                        foreach (var pf in _pfList)
+                        {
+                            foreach (var c in _cList)
+                            {
+                                double sum = 0;
+                                var pInP = 0;
+                                var perm = new List<int>(5) { pg.ID };
+                                sum += pg.GetValue<double>(property);
+                                if (pg.Position1.ToString() == "PG")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(sg.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(sg.ID);
+                                sum += sg.GetValue<double>(property);
+                                if (sg.Position1.ToString() == "SG")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(sf.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(sf.ID);
+                                sum += sf.GetValue<double>(property);
+                                if (sf.Position1.ToString() == "SF")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(pf.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(pf.ID);
+                                sum += pf.GetValue<double>(property);
+                                if (pf.Position1.ToString() == "PF")
+                                {
+                                    pInP++;
+                                }
+                                if (perm.Contains(c.ID))
+                                {
+                                    continue;
+                                }
+                                perm.Add(c.ID);
+                                sum += c.GetValue<double>(property);
+                                if (c.Position1.ToString() == "C")
+                                {
+                                    pInP++;
+                                }
+
+                                if (sum > max)
+                                {
+                                    max = sum;
+                                }
+
+                                _permutations.Add(
+                                    new StartingFivePermutation { IDList = perm, PlayersInPrimaryPosition = pInP, Sum = sum });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void populateSituationalsCombo()
         {
             var situationals = new List<string>();
@@ -2251,6 +2307,26 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbSituationalPl.ItemsSource = cmbSituationalSea.ItemsSource;
             cmbSituationalSea.SelectedIndex = 0;
             cmbSituationalPl.SelectedIndex = 0;
+        }
+
+        private void nudSituationalSea_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_fixingPageValue)
+            {
+                return;
+            }
+
+            cmbSituationalSea_SelectionChanged(null, null);
+        }
+
+        private void nudSituationalPl_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_fixingPageValue)
+            {
+                return;
+            }
+
+            cmbSituationalPl_SelectionChanged(null, null);
         }
     }
 }

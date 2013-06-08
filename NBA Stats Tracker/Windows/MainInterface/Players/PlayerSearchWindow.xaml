@@ -5,7 +5,8 @@
         xmlns:Helper="clr-namespace:NBA_Stats_Tracker.Helper"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d" Title="Player Search"
+        xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" Title="Player Search"
         Height="535.71" Width="961.717"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded" Closing="Window_Closing">
@@ -793,8 +794,14 @@
                         <RowDefinition Height="45*" />
                         <RowDefinition Height="45" />
                     </Grid.RowDefinitions>
-                    <ComboBox HorizontalAlignment="Center" Margin="6" Width="120"
-                              Name="cmbSituationalSea" SelectionChanged="cmbSituationalSea_SelectionChanged" />
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Height="23">
+                        <ComboBox HorizontalAlignment="Center" Width="120"
+                                  Name="cmbSituationalSea" SelectionChanged="cmbSituationalSea_SelectionChanged" />
+                        <Rectangle Width="20" />
+                        <TextBlock Text="Page" VerticalAlignment="Center" />
+                        <Rectangle Width="10" />
+                        <xctk:IntegerUpDown Name="nudSituationalSea" ValueChanged="nudSituationalSea_ValueChanged" />
+                    </StackPanel>
                     <Grid Grid.Row="1" Margin="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30*" />
@@ -1269,8 +1276,14 @@
                         <RowDefinition Height="45*" />
                         <RowDefinition Height="45" />
                     </Grid.RowDefinitions>
-                    <ComboBox HorizontalAlignment="Center" Margin="6" Width="120"
-                              Name="cmbSituationalPl" SelectionChanged="cmbSituationalPl_SelectionChanged" />
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Height="23">
+                        <ComboBox HorizontalAlignment="Center" Width="120"
+                                  Name="cmbSituationalPl" SelectionChanged="cmbSituationalPl_SelectionChanged" />
+                        <Rectangle Width="20" />
+                        <TextBlock Text="Page" VerticalAlignment="Center" />
+                        <Rectangle Width="10" />
+                        <xctk:IntegerUpDown Name="nudSituationalPl" ValueChanged="nudSituationalPl_ValueChanged" />
+                    </StackPanel>
                     <Grid Grid.Row="1" Margin="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30*" />
