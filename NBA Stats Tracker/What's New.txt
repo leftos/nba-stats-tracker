@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.16.2
+		- Improvement: Recommended Team tabs in Advanced Player Search now feature pages, giving you further possible starting fives and substitutes beyond the best one
+
 	v1.16.1
 		- Addition: Added Recommended Team tabs in Advanced Player Search, allowing you to get recommendations for the starting five and substitutes based on all stats, including custom metrics
 
