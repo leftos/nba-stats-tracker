@@ -2342,6 +2342,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 nudBestPage.Value = 1;
             }
+            if (((nudBestPage.Value - 1) * 6) + 1 > _psrListSea.Count)
+            {
+                nudBestPage.Value = ((_psrListSea.Count - 1) / 6) + 1;
+            }
 
             switch (cmbUTCriteria.SelectedItem.ToString().Split('(')[0].Trim())
             {

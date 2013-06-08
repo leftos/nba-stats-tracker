@@ -3642,8 +3642,7 @@
                                    TextWrapping="Wrap" Text="Page" VerticalAlignment="Top" />
                         <xctk:IntegerUpDown x:Name="nudBestPage" Grid.Column="2" Grid.Row="2"
                                             HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,7"
-                                            ValueChanged="nudBestPage_ValueChanged">
-                        </xctk:IntegerUpDown>
+                                            ValueChanged="nudBestPage_ValueChanged" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Ultimate Team" Name="tabStartingFive">
