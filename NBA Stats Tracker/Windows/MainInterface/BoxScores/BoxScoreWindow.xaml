@@ -435,7 +435,8 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="STL%" SortMemberPath="STLp"
-                                                    ClipboardContentBinding="{Binding STLp}">
+                                                    ClipboardContentBinding="{Binding STLp}"
+                                                    Visibility="Collapsed">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding STLp, StringFormat=F3}">
@@ -804,7 +805,8 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="STL%" SortMemberPath="STLp"
-                                                    ClipboardContentBinding="{Binding STLp}">
+                                                    ClipboardContentBinding="{Binding STLp}"
+                                                    Visibility="Collapsed">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding STLp, StringFormat=F3}">
