@@ -43,13 +43,12 @@
 // End
 
 #define MyAppSetupName 'NBA Stats Tracker'
-#define MyAppVersion ''
-#define MyAppVerInfo ''
 #define CompiledPath 'E:\Development\Visual Studio 2010\Projects\NBA Stats Tracker\NBA Stats Tracker\bin\Release'
+#define MyAppVersion GetFileVersion(CompiledPath + "\NBA Stats Tracker.exe")
 [Setup]
 AppName={#MyAppSetupName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
+AppVerName={#MyAppSetupName} {#MyAppVersion}
 AppCopyright=Copyright © Lefteris Aslanoglou 2011-2013
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany=Lefteris Aslanoglou
@@ -57,7 +56,7 @@ AppPublisher=Lefteris Aslanoglou
 ;AppPublisherURL=http://...
 ;AppSupportURL=http://...
 ;AppUpdatesURL=http://...
-OutputBaseFilename={#MyAppSetupName} {#MyAppVersion} {#MyAppVerInfo}
+OutputBaseFilename={#MyAppSetupName}
 DefaultGroupName={#MyAppSetupName}
 DefaultDirName={code:GetDefaultDir}
 UninstallDisplayIcon={app}\NBA Stats Tracker.exe
