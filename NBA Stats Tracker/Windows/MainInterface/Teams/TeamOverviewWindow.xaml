@@ -1599,6 +1599,9 @@
                             <RowDefinition Height="35" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
+                        <CheckBox Content="Hide Injured Players" Height="16" HorizontalAlignment="Left"
+                                  Margin="12,11,0,0"
+                                  Name="chkMatchupHideInjured" VerticalAlignment="Top" Click="chkMatchupHideInjured_Click" />
                         <StackPanel ClipToBounds="True" Grid.Row="0" Orientation="Horizontal"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"

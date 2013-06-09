@@ -2497,6 +2497,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
 
             cmbOppTeam.SelectedIndex = -1;
+
+            chkHTHHideInjured.IsChecked = SQLiteIO.GetSetting("HTHHideInjured", true);
+            chkMatchupHideInjured.IsChecked = chkHTHHideInjured.IsChecked;
             //Following line commented out to allow for faster loading of Team Overview
             //cmbOppTeam.SelectedIndex = 1;
 
@@ -3005,6 +3008,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void chkHTHHideInjured_Click(object sender, RoutedEventArgs e)
         {
+            chkMatchupHideInjured.IsChecked = chkHTHHideInjured.IsChecked;
+            SQLiteIO.SetSetting("HTHHideInjured", chkHTHHideInjured.IsChecked == true);
+
             cmbOppTeam_SelectionChanged(null, null);
         }
 
@@ -3318,6 +3324,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             rbShootingStatsPlayoff.IsChecked = true;
             updatePlayerAndMetricStats();
             updatePlayerShootingStats();
+        }
+
+        private void chkMatchupHideInjured_Click(object sender, RoutedEventArgs e)
+        {
+            chkHTHHideInjured.IsChecked = chkMatchupHideInjured.IsChecked;
+            SQLiteIO.SetSetting("HTHHideInjured", chkHTHHideInjured.IsChecked == true);
+
+            cmbOppTeam_SelectionChanged(null, null);
         }
     }
 }
