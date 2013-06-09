@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.2.1
+		- Improvement: The Hide Injured Players option in Team Overview's Head-To-Head Best Performers affected Matchup Preview, but since that may not have been obvious to the user, it has been mirrored into the latter tab as well
+		- Improvement: The Hide Injured Players option's setting will be remembered
+		- Removal: Removed STL% column from Box Scores' Metric Stats tabs, since it can't be calculated for a single box score
+
 	v1.16.2
 		- Improvement: Recommended Team tabs in Advanced Player Search now feature pages, giving you further possible starting fives and substitutes beyond the best one
 
