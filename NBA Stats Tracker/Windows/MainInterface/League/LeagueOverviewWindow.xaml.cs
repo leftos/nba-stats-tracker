@@ -518,7 +518,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                         var psr = new PlayerStatsRow(kvp.Value);
                         var plPSR = new PlayerStatsRow(kvp.Value, true);
 
-                        if (psr.IsActive)
+                        if (psr.IsSigned)
                         {
                             if (!inCurrentFilter(_tst[psr.TeamF]))
                             {
@@ -534,7 +534,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                                 continue;
                             }
 
-                            psr.TeamFDisplay = "- Inactive -";
+                            psr.TeamFDisplay = "- Free Agency -";
                             plPSR.TeamFDisplay = psr.TeamFDisplay;
                         }
                         _psrListSea.Add(psr);
@@ -553,7 +553,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                     foreach (var psr in _psrListSea)
                     {
-                        if (psr.IsActive)
+                        if (psr.IsSigned)
                         {
                             _leadersList.Add(psr.ConvertToLeagueLeader(_tst));
                             _myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst));
@@ -561,7 +561,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     }
                     foreach (var psr in _psrListPl)
                     {
-                        if (psr.IsActive)
+                        if (psr.IsSigned)
                         {
                             _plLeadersList.Add(psr.ConvertToLeagueLeader(_tst, true));
                             _plMyLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst, true));

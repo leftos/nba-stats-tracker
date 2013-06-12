@@ -61,11 +61,11 @@ namespace NBA_Stats_Tracker.Data.Teams
             {
                 return 0;
             }
-            else if (s1 == "- Inactive -")
+            else if (s1 == "- Free Agency -")
             {
                 return 1;
             }
-            else if (s2 == "- Inactive -")
+            else if (s2 == "- Free Agency -")
             {
                 return -1;
             }

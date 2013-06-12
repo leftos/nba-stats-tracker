@@ -101,6 +101,9 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
             _rosters = teamsList.ToDictionary(
                 team => team.Key, team => MainWindow.PST.Where(ps => ps.Value.TeamF == team.Key).Select(ps => ps.Key).ToList());
 
+            teamsList.Add(new KeyValuePair<int, string>(-1, "- Free Agency -"));
+            _rosters.Add(-1, MainWindow.PST.Where(ps => !ps.Value.IsHidden && !ps.Value.IsSigned).Select(ps => ps.Key).ToList());
+
             cmbTeam1.ItemsSource = cmbTeam2.ItemsSource = teamsList;
             cmbTeam1.SelectedValuePath = cmbTeam2.SelectedValuePath = "Key";
             cmbTeam1.DisplayMemberPath = cmbTeam2.DisplayMemberPath = "Value";
@@ -479,6 +482,7 @@ namespace NBA_Stats_Tracker.Windows.MiscDialogs
                                 MainWindow.PST[pID].TeamS = MainWindow.PST[pID].TeamF;
                             }
                             MainWindow.PST[pID].TeamF = newTeam;
+                            MainWindow.PST[pID].IsSigned = newTeam != -1;
                         }
                     }
                 }

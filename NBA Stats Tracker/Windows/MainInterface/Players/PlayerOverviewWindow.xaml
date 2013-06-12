@@ -46,8 +46,8 @@
                                   IsChecked="{Binding IsInjured, Mode=OneWay}"
                                   ToolTip="{Binding InjuryStatus, Mode=OneWay}" x:Name="chkIsInjured"
                                   VerticalAlignment="Top" Click="chkIsInjured_Click" />
-                        <CheckBox Height="16" Margin="0,44,6,0" Content="Active" HorizontalAlignment="Right"
-                                  x:Name="chkIsActive" VerticalAlignment="Top" />
+                        <CheckBox Height="16" Margin="0,44,6,0" Content="Signed" HorizontalAlignment="Right"
+                                  IsChecked="{Binding IsSigned}" x:Name="chkIsActive" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="73,44,0,0" Content="All-Star" HorizontalAlignment="Left"
                                   IsChecked="{Binding IsAllStar}" x:Name="chkIsAllStar" VerticalAlignment="Top" />
                         <CheckBox Height="16" Margin="143,44,0,0" Content="Champion" HorizontalAlignment="Left"

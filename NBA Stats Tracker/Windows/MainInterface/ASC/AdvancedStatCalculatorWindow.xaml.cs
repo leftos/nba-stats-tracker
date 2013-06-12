@@ -254,12 +254,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                 list =
                     list.Where(
                         ps =>
-                        ps.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeamFilter.SelectedItem.ToString()) && ps.IsActive)
+                        ps.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbTeamFilter.SelectedItem.ToString()) && ps.IsSigned)
                         .ToList();
             }
             else if (chkIsActive.IsChecked == false)
             {
-                list = list.Where(ps => !ps.IsActive).ToList();
+                list = list.Where(ps => !ps.IsSigned).ToList();
             }
             list.ForEach(ps => playersList.Add(new KeyValuePair<int, string>(ps.ID, ps.FullInfo(MainWindow.TST))));
 
@@ -613,7 +613,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     }
                     catch (Exception)
                     {
-                        teamName = "Inactive";
+                        teamName = "Free Agency";
                     }
                     s = String.Format(
                         "(#P{4}) {0}, {1} ({2} - {3}): ", player.LastName, player.FirstName, player.Position1, teamName, player.ID);

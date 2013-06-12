@@ -64,8 +64,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private List<BoxScoreEntry> _bseList;
 
         private bool _changingTimeframe;
-        private PlayerRankings _cumPlayoffsRankingsActive, _cumPlayoffsRankingsPosition, _cumPlayoffsRankingsTeam;
-        private PlayerRankings _cumSeasonRankingsActive, _cumSeasonRankingsPosition, _cumSeasonRankingsTeam;
+        private PlayerRankings _cumPlayoffsRankingsAll, _cumPlayoffsRankingsPosition, _cumPlayoffsRankingsTeam;
+        private PlayerRankings _cumSeasonRankingsAll, _cumSeasonRankingsPosition, _cumSeasonRankingsTeam;
         private int _curSeason = MainWindow.CurSeason;
         private DataTable _dtOv;
         private List<PlayerBoxScore> _hthAllPBS;
@@ -113,7 +113,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         public PlayerOverviewWindow(int team, int playerID)
             : this()
         {
-            cmbTeam.SelectedItem = team != -1 ? MainWindow.TST[team].DisplayName : "- Inactive -";
+            cmbTeam.SelectedItem = team != -1 ? MainWindow.TST[team].DisplayName : "- Free Agency -";
             cmbPlayer.SelectedValue = playerID.ToString();
         }
 
@@ -146,7 +146,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             _teams.Sort();
 
-            _teams.Add("- Inactive -");
+            _teams.Add("- Free Agency -");
 
             cmbTeam.ItemsSource = _teams;
             cmbOppTeam.ItemsSource = _teams;
@@ -214,8 +214,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             grpSeasonLeadersFacts.Visibility = Visibility.Collapsed;
             grpSeasonScoutingReport.Visibility = Visibility.Collapsed;
 
-            chkIsActive.SetBinding(ToggleButton.IsCheckedProperty, new Binding("IsActive") { Source = _psr });
-
             getActivePlayers();
             populateGraphStatCombo();
 
@@ -233,7 +231,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <summary>Gets a player stats dictionary of only the active players, and calculates their rankingsPerGame.</summary>
         private void getActivePlayers()
         {
-            _playersActive = MainWindow.PST.Where(ps => ps.Value.IsActive && !ps.Value.IsHidden)
+            _playersActive = MainWindow.PST.Where(ps => ps.Value.IsSigned && !ps.Value.IsHidden)
                                        .ToDictionary(ps => ps.Key, ps => ps.Value);
             _rankingsActive = new PlayerRankings(_playersActive);
             _plRankingsActive = new PlayerRankings(_playersActive, true);
@@ -285,11 +283,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             playersList = new ObservableCollection<KeyValuePair<int, string>>();
             _playersSameTeam = new Dictionary<int, PlayerStats>();
-            if (cmbTeam.SelectedItem.ToString() != "- Inactive -")
+            if (cmbTeam.SelectedItem.ToString() != "- Free Agency -")
             {
                 var list =
                     MainWindow.PST.Values.Where(
-                        ps => ps.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.IsHidden && ps.IsActive)
+                        ps => ps.TeamF == GetTeamIDFromDisplayName(cmbTeam.SelectedItem.ToString()) && !ps.IsHidden && ps.IsSigned)
                               .ToList();
                 list.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
                 list.ForEach(
@@ -303,7 +301,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
             else
             {
-                var list = MainWindow.PST.Values.Where(ps => !ps.IsHidden && !ps.IsActive).ToList();
+                var list = MainWindow.PST.Values.Where(ps => !ps.IsHidden && !ps.IsSigned).ToList();
                 list.Sort((ps1, ps2) => String.Compare(ps1.FullName, ps2.FullName, StringComparison.CurrentCultureIgnoreCase));
                 list.ForEach(
                     delegate(PlayerStats ps)
@@ -357,14 +355,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             updateYearlyReport();
 
-            _cumSeasonRankingsActive = PlayerRankings.CalculateActiveRankings();
+            _cumSeasonRankingsAll = PlayerRankings.CalculateAllRankings();
             _cumSeasonRankingsPosition =
                 new PlayerRankings(
                     MainWindow.PST.Where(ps => ps.Value.Position1 == _psr.Position1).ToDictionary(r => r.Key, r => r.Value));
             _cumSeasonRankingsTeam =
                 new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.TeamF == _psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
 
-            _cumPlayoffsRankingsActive = PlayerRankings.CalculateActiveRankings(true);
+            _cumPlayoffsRankingsAll = PlayerRankings.CalculateAllRankings(true);
             _cumPlayoffsRankingsPosition =
                 new PlayerRankings(
                     MainWindow.PST.Where(ps => ps.Value.Position1 == _psr.Position1).ToDictionary(r => r.Key, r => r.Value), true);
@@ -517,10 +515,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 grpSeasonLeadersFacts.Visibility = Visibility.Visible;
 
                 var msg = new PlayerStatsRow(MainWindow.PST[id], false, false).ScoutingReport(
-                    _cumSeasonRankingsActive, _cumSeasonRankingsTeam, _cumSeasonRankingsPosition, _pbsList, txbGame1.Text);
+                    _cumSeasonRankingsAll, _cumSeasonRankingsTeam, _cumSeasonRankingsPosition, _pbsList, txbGame1.Text);
                 txbSeasonScoutingReport.Text = msg;
 
-                var facts = getFacts(id, _cumSeasonRankingsActive);
+                var facts = getFacts(id, _cumSeasonRankingsAll);
                 txbSeasonFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
@@ -548,10 +546,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 grpPlayoffsLeadersFacts.Visibility = Visibility.Visible;
 
                 var msg = new PlayerStatsRow(MainWindow.PST[id], true, false).ScoutingReport(
-                    _cumPlayoffsRankingsActive, _cumPlayoffsRankingsTeam, _cumPlayoffsRankingsPosition, _pbsList, txbGame1.Text);
+                    _cumPlayoffsRankingsAll, _cumPlayoffsRankingsTeam, _cumPlayoffsRankingsPosition, _pbsList, txbGame1.Text);
                 txbPlayoffsScoutingReport.Text = msg;
 
-                var facts = getFacts(id, _cumPlayoffsRankingsActive, false, true);
+                var facts = getFacts(id, _cumPlayoffsRankingsAll, false, true);
                 txbPlayoffsFacts.Text = aggregateFacts(facts);
                 if (facts.Count == 0)
                 {
@@ -694,12 +692,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <summary>Updates the overview tab and prepares the available box scores for the current timeframe.</summary>
         private void updateOverviewAndBoxScores()
         {
-            var ts = _psr.IsActive ? MainWindow.TST[_psr.TeamF] : new TeamStats();
+            var ts = _psr.IsSigned ? MainWindow.TST[_psr.TeamF] : new TeamStats();
 
             grdOverview.DataContext = _psr;
 
             _playersSamePosition =
-                MainWindow.PST.Where(ps => ps.Value.Position1 == _psr.Position1 && ps.Value.IsActive)
+                MainWindow.PST.Where(ps => ps.Value.Position1 == _psr.Position1 && ps.Value.IsSigned)
                           .ToDictionary(ps => ps.Value.ID, ps => ps.Value);
 
             _rankingsPosition = new PlayerRankings(_playersSamePosition);
@@ -770,7 +768,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             #region Rankings
 
-            if (_psr.IsActive)
+            if (_psr.IsSigned)
             {
                 var id = _selectedPlayerID;
 
@@ -917,7 +915,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             #region Rankings
 
-            if (_psr.IsActive)
+            if (_psr.IsSigned)
             {
                 var id = Convert.ToInt32(_selectedPlayerID);
 
@@ -1268,7 +1266,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 try
                 {
                     var newps = MainWindow.PST[oldOwn];
-                    if (newps.IsActive)
+                    if (newps.IsSigned)
                     {
                         try
                         {
@@ -1286,7 +1284,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     }
                     else
                     {
-                        cmbTeam.SelectedItem = "- Inactive -";
+                        cmbTeam.SelectedItem = "- Free Agency -";
                     }
                     cmbPlayer.SelectedIndex = -1;
                     cmbPlayer.SelectedValue = newps.ID;
@@ -1294,7 +1292,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     if (oldOpp != -1)
                     {
                         var newOpp = MainWindow.PST[oldOpp];
-                        if (newOpp.IsActive)
+                        if (newOpp.IsSigned)
                         {
                             try
                             {
@@ -1310,7 +1308,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         }
                         else
                         {
-                            cmbOppTeam.SelectedItem = "- Inactive -";
+                            cmbOppTeam.SelectedItem = "- Free Agency -";
                         }
                         cmbOppPlayer.SelectedIndex = -1;
                         cmbOppPlayer.SelectedValue = newOpp.ID;
@@ -1332,41 +1330,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbGraphStat_SelectionChanged(null, null);
             MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
-        }
-
-        /// <summary>
-        ///     Handles the Click event of the btnScoutingReport control. Displays a quick overview of the player's performance in a natural
-        ///     language scouting report.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void btnScoutingReport_Click(object sender, RoutedEventArgs e)
-        {
-            if (cmbPlayer.SelectedIndex == -1)
-            {
-                return;
-            }
-
-            var temppst = new Dictionary<int, PlayerStats>();
-            foreach (var kvp in MainWindow.PST)
-            {
-                var i = kvp.Key;
-                temppst.Add(i, kvp.Value.DeepClone());
-                temppst[i].ResetStats();
-                temppst[i].AddPlayerStats(MainWindow.PST[i], true);
-            }
-
-            var cumRankingsActive = PlayerRankings.CalculateActiveRankings();
-            var cumRankingsPosition =
-                new PlayerRankings(
-                    MainWindow.PST.Where(ps => ps.Value.Position1 == _psr.Position1).ToDictionary(r => r.Key, r => r.Value));
-            var cumRankingsTeam =
-                new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.TeamF == _psr.TeamF).ToDictionary(r => r.Key, r => r.Value));
-
-            new PlayerStatsRow(temppst[_psr.ID]).ScoutingReport(
-                cumRankingsActive, cumRankingsTeam, cumRankingsPosition, _pbsList.ToList(), txbGame1.Text);
         }
 
         /// <summary>Handles the Click event of the btnSavePlayer control. Saves the current player's stats to the database.</summary>
@@ -1403,7 +1366,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             getActivePlayers();
             cmbTeam.SelectedIndex = -1;
-            cmbTeam.SelectedItem = ps.IsActive ? MainWindow.TST[ps.TeamF].DisplayName : "- Inactive -";
+            cmbTeam.SelectedItem = ps.IsSigned ? MainWindow.TST[ps.TeamF].DisplayName : "- Free Agency -";
             cmbPlayer.SelectedIndex = -1;
             cmbPlayer.SelectedValue = ps.ID;
             //cmbPlayer.SelectedValue = ps.LastName + " " + ps.FirstName + " (" + ps.Position1 + ")";
@@ -1627,17 +1590,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             _oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
             List<KeyValuePair<int, PlayerStats>> list;
-            if (cmbOppTeam.SelectedItem.ToString() != "- Inactive -")
+            if (cmbOppTeam.SelectedItem.ToString() != "- Free Agency -")
             {
                 list =
                     MainWindow.PST.Where(
                         ps =>
                         ps.Value.TeamF == Misc.GetTeamIDFromDisplayName(MainWindow.TST, cmbOppTeam.SelectedItem.ToString())
-                        && ps.Value.IsActive).ToList();
+                        && ps.Value.IsSigned).ToList();
             }
             else
             {
-                list = MainWindow.PST.Where(ps => !ps.Value.IsActive).ToList();
+                list = MainWindow.PST.Where(ps => !ps.Value.IsSigned).ToList();
             }
             list = list.Where(ps => !ps.Value.IsHidden).OrderBy(ps => ps.Value.FullName).ToList();
 

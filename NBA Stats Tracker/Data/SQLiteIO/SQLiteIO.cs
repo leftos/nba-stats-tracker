@@ -860,7 +860,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "FirstName", ps.FirstName },
                         { "Position1", ps.Position1.ToString() },
                         { "Position2", ps.Position2.ToString() },
-                        { "isActive", ps.IsActive.ToString() },
+                        { "isActive", ps.IsSigned.ToString() },
                         { "YearOfBirth", ps.YearOfBirth.ToString() },
                         { "YearsPro", ps.YearsPro.ToString() },
                         { "isHidden", ps.IsHidden.ToString() },
@@ -2457,9 +2457,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             foreach (var key in list)
             {
                 var ps = pst[key];
-                if (ps.IsActive && ps.TeamF == -1)
+                if (ps.IsSigned && ps.TeamF == -1)
                 {
-                    ps.IsActive = false;
+                    ps.IsSigned = false;
                 }
             }
         }

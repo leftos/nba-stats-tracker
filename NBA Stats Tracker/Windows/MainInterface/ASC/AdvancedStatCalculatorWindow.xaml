@@ -31,7 +31,7 @@
                     </Grid.ColumnDefinitions>
                     <GroupBox Header="Step 1: Filter Players By" Margin="10,10,5,5" Grid.Column="0">
                         <Grid>
-                            <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="10,41,0,0"
+                            <CheckBox Content="Signed" Height="16" HorizontalAlignment="Left" Margin="10,37,0,0"
                                       x:Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True"
                                       IsChecked="{x:Null}"
                                       Click="chkIsActive_Click" />

@@ -171,16 +171,23 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
+        public static PlayerRankings CalculateAllRankings(bool playoffs = false)
+        {
+            var cumRankingsAll =
+                new PlayerRankings(MainWindow.PST.Where(ps => !ps.Value.IsHidden).ToDictionary(r => r.Key, r => r.Value), playoffs);
+            return cumRankingsAll;
+        }
+
         public static PlayerRankings CalculateActiveRankings(bool playoffs = false)
         {
             var cumRankingsActive =
-                new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.IsActive).ToDictionary(r => r.Key, r => r.Value), playoffs);
+                new PlayerRankings(MainWindow.PST.Where(ps => ps.Value.IsSigned).ToDictionary(r => r.Key, r => r.Value), playoffs);
             return cumRankingsActive;
         }
 
         public static PlayerRankings CalculateLeadersRankings(out Dictionary<int, PlayerStats> pstLeaders, bool playoffs = false)
         {
-            var pstActive = MainWindow.PST.Where(ps => ps.Value.IsActive).ToDictionary(ps => ps.Key, ps => ps.Value);
+            var pstActive = MainWindow.PST.Where(ps => ps.Value.IsSigned).ToDictionary(ps => ps.Key, ps => ps.Value);
             var listOfKeys = pstActive.Keys.ToList();
             foreach (var key in listOfKeys)
             {

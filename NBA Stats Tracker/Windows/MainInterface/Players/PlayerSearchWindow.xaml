@@ -36,10 +36,10 @@
                                 <CheckBox Content="Injured" Height="16" HorizontalAlignment="Left" Margin="558,12,0,0"
                                           Name="chkIsInjured" VerticalAlignment="Top" IsThreeState="True"
                                           IsChecked="{x:Null}" Width="54" />
-                                <CheckBox Content="Active" Height="16" HorizontalAlignment="Left" Margin="310,43,0,0"
+                                <CheckBox Content="Signed" Height="16" HorizontalAlignment="Left" Margin="310,43,0,0"
                                           Name="chkIsActive" VerticalAlignment="Top" IsThreeState="True"
                                           IsChecked="{x:Null}"
-                                          Click="chkIsActive_Click" Width="49" />
+                                          Click="chkIsActive_Click" Width="61" />
                                 <CheckBox Content="All-Star" Height="16" HorizontalAlignment="Left" Margin="558,34,0,0"
                                           Name="chkIsAllStar" VerticalAlignment="Top" IsThreeState="True"
                                           IsChecked="{x:Null}" Width="56" />

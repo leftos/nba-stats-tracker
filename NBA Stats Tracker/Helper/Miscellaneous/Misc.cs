@@ -35,7 +35,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     {
         public static int GetTeamIDFromDisplayName(Dictionary<int, TeamStats> teamStats, string displayName)
         {
-            if (displayName == "- Inactive -")
+            if (displayName == "- Free Agency -")
             {
                 return -1;
             }

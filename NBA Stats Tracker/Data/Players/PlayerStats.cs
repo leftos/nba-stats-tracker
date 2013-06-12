@@ -49,9 +49,41 @@ namespace NBA_Stats_Tracker.Data.Players
         public double Height;
         public int ID;
         public PlayerInjury Injury;
-        public bool IsActive;
+
+        public bool IsSigned
+        {
+            get { return _isSigned; }
+            set
+            {
+                _isSigned = value;
+                if (!_isSigned)
+                {
+                    TeamF = -1;
+                }
+                OnPropertyChanged("IsSigned");
+            }
+        }
+
+        private bool _isSigned;
+
         public bool IsAllStar;
-        public bool IsHidden;
+
+        public bool IsHidden
+        {
+            get { return _isHidden; }
+            set
+            {
+                _isHidden = value;
+                if (_isHidden)
+                {
+                    IsSigned = false;
+                }
+                OnPropertyChanged("IsHidden");
+            }
+        }
+
+        private bool _isHidden;
+
         public bool IsNBAChampion;
         public string LastName;
         public Dictionary<string, double> Metrics = new Dictionary<string, double>(PAbbr.MetricsNames.Count);
@@ -99,7 +131,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
 
             Contract = new PlayerContract();
-            IsActive = false;
+            IsSigned = false;
             IsHidden = false;
             Injury = new PlayerInjury();
             IsAllStar = false;
@@ -145,7 +177,7 @@ namespace NBA_Stats_Tracker.Data.Players
             Position1 = player.Position1;
             Position2 = player.Position2;
             TeamF = player.Team;
-            IsActive = TeamF != -1;
+            IsSigned = TeamF != -1;
             if (!fromAddScreen)
             {
                 Height = Convert.ToDouble(player.Height);
@@ -221,7 +253,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         TeamS = -1;
                     }
                 }
-                IsActive = ParseCell.GetBoolean(dataRow, "isActive");
+                IsSigned = ParseCell.GetBoolean(dataRow, "isActive");
 
                 // Backwards compatibility with databases that didn't have the field
                 try
@@ -374,7 +406,7 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamS = teamS;
             YearOfBirth = yearOfBirth;
             YearsPro = yearsPro;
-            IsActive = isActive;
+            IsSigned = isActive;
             IsHidden = isHidden;
             IsAllStar = isAllStar;
             Injury = injury;
@@ -561,7 +593,7 @@ namespace NBA_Stats_Tracker.Data.Players
             TeamS = playerStatsRow.TeamS;
             YearOfBirth = playerStatsRow.YearOfBirth;
             YearsPro = playerStatsRow.YearsPro;
-            IsActive = playerStatsRow.IsActive;
+            IsSigned = playerStatsRow.IsSigned;
             IsHidden = playerStatsRow.IsHidden;
             IsAllStar = playerStatsRow.IsAllStar;
             Injury = PlayerInjury.InjuryTypes.ContainsValue(playerStatsRow.InjuryName)
@@ -645,7 +677,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public string FullInfo(IDictionary<int, TeamStats> tst)
         {
             return String.Format(
-                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsActive ? tst[TeamF].DisplayName : "Free Agent");
+                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsSigned ? tst[TeamF].DisplayName : "Free Agent");
         }
 
         public static string PositionToString(Position position)

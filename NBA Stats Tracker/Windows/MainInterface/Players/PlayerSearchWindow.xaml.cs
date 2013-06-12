@@ -337,11 +337,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (chkIsActive.IsChecked.GetValueOrDefault())
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.IsActive);
+                filteredPST = filteredPST.Where(pair => pair.Value.IsSigned);
             }
             else if (chkIsActive.IsChecked != null)
             {
-                filteredPST = filteredPST.Where(pair => !pair.Value.IsActive);
+                filteredPST = filteredPST.Where(pair => !pair.Value.IsSigned);
             }
 
             if (chkIsInjured.IsChecked.GetValueOrDefault())
@@ -999,7 +999,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
         }
 
-        /// <summary>Handles the SelectionChanged event of the cmbTeam control. Switches the IsActive criterion to true if a team is selected.</summary>
+        /// <summary>Handles the SelectionChanged event of the cmbTeam control. Switches the IsSigned criterion to true if a team is selected.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
@@ -1013,7 +1013,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         }
 
         /// <summary>
-        ///     Handles the Click event of the chkIsActive control. Switches the currently selected team to the "Any" option if the IsActive
+        ///     Handles the Click event of the chkIsActive control. Switches the currently selected team to the "Any" option if the IsSigned
         ///     criterion is set to true; otherwise, resets the teams combo-box to no selection.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

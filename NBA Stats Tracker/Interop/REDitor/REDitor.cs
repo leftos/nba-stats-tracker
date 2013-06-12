@@ -314,7 +314,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             if (pst.ContainsKey(playerID) && pst[playerID].LastName == lastName && pst[playerID].FirstName == firstName)
                             {
-                                pst[playerID].IsActive = false;
+                                pst[playerID].IsSigned = false;
                                 pst[playerID].TeamF = -1;
                                 pst[playerID].IsHidden = true;
                             }
@@ -372,7 +372,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                             pair.Value.FirstName,
                                             pair.Value.LastName,
                                             pair.Value.YearOfBirth);
-                                        if (pair.Value.IsActive)
+                                        if (pair.Value.IsSigned)
                                         {
                                             choice += String.Format(", plays in {0}", pair.Value.TeamF);
                                         }
@@ -815,7 +815,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         if (pst.ContainsKey(playerID) && pst[playerID].LastName == lastName && pst[playerID].FirstName == firstName)
                         {
-                            pst[playerID].IsActive = false;
+                            pst[playerID].IsSigned = false;
                             pst[playerID].TeamF = -1;
                             pst[playerID].IsHidden = true;
                         }
@@ -899,7 +899,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                         pair.Value.FirstName,
                                         pair.Value.LastName,
                                         pair.Value.YearOfBirth);
-                                    if (pair.Value.IsActive)
+                                    if (pair.Value.IsSigned)
                                     {
                                         choice += String.Format(", plays in {0}", tst[pair.Value.TeamF].DisplayName);
                                     }
@@ -983,7 +983,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         curPlayer.TeamF = pTeam;
                         curPlayer.TeamS = Convert.ToInt32(team2);
 
-                        curPlayer.IsActive = (player["IsFA"] != "1" && teamReal != "-1");
+                        curPlayer.IsSigned = (player["IsFA"] != "1" && teamReal != "-1");
 
                         curPlayer.Totals[PAbbr.GP] = Convert.ToUInt16(playerSeasonStats["GamesP"]);
                         curPlayer.Totals[PAbbr.GS] = Convert.ToUInt16(playerSeasonStats["GamesS"]);
@@ -1030,7 +1030,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         curPlayer.TeamF = pTeam;
 
-                        curPlayer.IsActive = player["IsFA"] != "1";
+                        curPlayer.IsSigned = player["IsFA"] != "1";
 
                         curPlayer.CalcAvg();
                     }
@@ -1083,7 +1083,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     if (oldPlayer.TeamF != curPlayer.TeamF)
                     {
                         string msg;
-                        if (curPlayer.IsActive && oldPlayer.IsActive)
+                        if (curPlayer.IsSigned && oldPlayer.IsSigned)
                         {
                             msg = String.Format(
                                 "{0} was traded from the {1} to the {2}.",
@@ -1092,18 +1092,18 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 tst[curPlayer.TeamF].DisplayName);
                             tradesList.Add(msg);
                         }
-                        else if (oldPlayer.IsActive)
+                        else if (oldPlayer.IsSigned)
                         {
                             msg = String.Format("{0} was released from the {1}.", name, tst[oldPlayer.TeamF].DisplayName);
                             waiversList.Add(msg);
                         }
                     }
 
-                    if (oldPlayer.Contract.GetYears() < curPlayer.Contract.GetYears() && curPlayer.IsActive)
+                    if (oldPlayer.Contract.GetYears() < curPlayer.Contract.GetYears() && curPlayer.IsSigned)
                     {
                         var msg = name;
                         bool reSigned;
-                        if (!oldPlayer.IsActive && curPlayer.IsActive)
+                        if (!oldPlayer.IsSigned && curPlayer.IsSigned)
                         {
                             reSigned = false;
                             msg += " signed ";
@@ -1701,7 +1701,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.TeamF = Convert.ToInt32(team1);
                         ps.TeamS = Convert.ToInt32(team2);
 
-                        ps.IsActive = team1 != "-1";
+                        ps.IsSigned = team1 != "-1";
 
                         ps.Totals[PAbbr.GP] = Convert.ToUInt16(playerSeasonStats["GamesP"]);
                         ps.Totals[PAbbr.GS] = Convert.ToUInt16(playerSeasonStats["GamesS"]);
@@ -1746,7 +1746,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         ps.TeamF = -1;
 
-                        ps.IsActive = false;
+                        ps.IsSigned = false;
 
                         ps.CalcAvg();
                     }

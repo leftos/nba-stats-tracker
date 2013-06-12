@@ -85,7 +85,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     TeamSDisplay = "Unknown";
                 }
             }
-            IsActive = ps.IsActive;
+            IsSigned = ps.IsSigned;
             IsHidden = ps.IsHidden;
             IsAllStar = ps.IsAllStar;
             Injury = ps.Injury.DeepClone(null);
@@ -557,7 +557,23 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public bool IsActive { get; set; }
+
+        public bool IsSigned
+        {
+            get { return _isSigned; }
+            set
+            {
+                _isSigned = value;
+                if (!_isSigned)
+                {
+                    TeamF = -1;
+                }
+                OnPropertyChanged("IsSigned");
+            }
+        }
+
+        private bool _isSigned;
+
         public string TeamSDisplay { get; set; }
 
         public List<double> Custom { get; set; }
@@ -986,13 +1002,13 @@ namespace NBA_Stats_Tracker.Data.Players
         }
 
         /// <summary>Shows a scouting report for the player in natural language.</summary>
-        /// <param name="rankingsActive">The rankingsPerGame of currently active players.</param>
+        /// <param name="rankingsAll">The rankingsPerGame of currently active players.</param>
         /// <param name="rankingsTeam">The rankingsPerGame of the players in the same team.</param>
         /// <param name="rankingsPosition">The rankingsPerGame of the players in the same position.</param>
         /// <param name="pbsIList">The list of the player's available box scores.</param>
         /// <param name="bestGame">The well-formatted string from the player's best game.</param>
         public string ScoutingReport(
-            PlayerRankings rankingsActive,
+            PlayerRankings rankingsAll,
             PlayerRankings rankingsTeam,
             PlayerRankings rankingsPosition,
             IEnumerable<PlayerBoxScore> pbsIList,
@@ -1015,7 +1031,7 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             s += ", ";
 
-            if (IsActive)
+            if (IsSigned)
             {
                 s += String.Format("who currently plays for the {0}.", TeamFDisplay);
             }
@@ -1037,8 +1053,12 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (rankingsTeam.RankingsPerGame[ID][PAbbr.PPG] <= 3)
             {
-                s += String.Format(
-                    "One of the best scorers in the team, #{0} among his teammates. ", rankingsTeam.RankingsPerGame[ID][PAbbr.PPG]);
+                s +=
+                    String.Format(
+                        IsSigned
+                            ? "One of the best scorers in the team, #{0} among his teammates. "
+                            : "One of the best scorers in Free Agency, #{0} among free agents.",
+                        rankingsTeam.RankingsPerGame[ID][PAbbr.PPG]);
             }
             if (rankingsPosition.RankingsPerGame[ID][PAbbr.PPG] <= 10)
             {
@@ -1048,11 +1068,11 @@ namespace NBA_Stats_Tracker.Data.Players
                         rankingsPosition.RankingsPerGame[ID][PAbbr.PPG],
                         Position1);
             }
-            if (rankingsActive.RankingsPerGame[ID][PAbbr.PPG] <= 20)
+            if (rankingsAll.RankingsPerGame[ID][PAbbr.PPG] <= 20)
             {
                 s += String.Format(
                     "He's actually one of the best in the league in scoring, rated #{0} overall. ",
-                    rankingsActive.RankingsPerGame[ID][PAbbr.PPG]);
+                    rankingsAll.RankingsPerGame[ID][PAbbr.PPG]);
             }
 
             var statList = GetBestStatsList(5);
@@ -1069,11 +1089,15 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Shooting, one of his main strengths. He's averaging {0} as far as field goals go. Percentage-wise, his performance "
                                 + "ranks him at #{1} overall. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.FGp]);
+                                rankingsAll.RankingsPerGame[ID][PAbbr.FGp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.FGp] <= 3)
                         {
-                            s += String.Format(
-                                "Top from the floor in his team, ranks at #{0} ", rankingsTeam.RankingsPerGame[ID][PAbbr.FGp]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "Top from the floor in his team, ranks at #{0} "
+                                        : "Top from the floor among free agents, ranks at #{0} ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.FGp]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.FGp] <= 10)
                         {
@@ -1086,14 +1110,17 @@ namespace NBA_Stats_Tracker.Data.Players
                     case "3P":
                         s +=
                             String.Format(
-                                "His 3-point shooting is another area of focus. His three-point shooting PerGame {0}. #{1} in the league in 3P%. ",
+                                "His 3-point shooting is another area of focus. His three-point shooting average is {0}. #{1} in the league in 3P%. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.TPp]);
+                                rankingsAll.RankingsPerGame[ID][PAbbr.TPp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.TPp] <= 3)
                         {
-                            s += String.Format(
-                                "One of the best guys from the arc in his team, ranks at #{0} ",
-                                rankingsTeam.RankingsPerGame[ID][PAbbr.TPp]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "One of the best guys from the arc in his team, ranks at #{0} "
+                                        : "One of the best guys from the arc in free agency, ranks at #{0} ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.TPp]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.TPp] <= 10)
                         {
@@ -1109,12 +1136,14 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Take a look at his free throw stats: He's averaging {0} from the line, which "
                                 + "ranks him at #{1} overall. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.FTp]);
+                                rankingsAll.RankingsPerGame[ID][PAbbr.FTp]);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.FTp] <= 3)
                         {
                             s +=
                                 String.Format(
-                                    "Coach might prefer him to get all the fouls late in the game, as he ranks #{0} in his team. ",
+                                    IsSigned
+                                        ? "Coach might prefer him to get all the fouls late in the game, as he ranks #{0} in his team. "
+                                        : "Might be a good acquisition as far as free throw shooting goes, #{0} in free agency. ",
                                     rankingsTeam.RankingsPerGame[ID][PAbbr.FTp]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.FTp] <= 10)
@@ -1131,13 +1160,16 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Crashing the offensive glass, one of his main strengths. His average offensive boards per game are at {0}, which "
                                 + "ranks him at #{1} overall. He grabs {2:F1} offensive rebounds every 36 minutes. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.ORPG],
+                                rankingsAll.RankingsPerGame[ID][PAbbr.ORPG],
                                 OREBR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG] <= 3)
                         {
-                            s += String.Format(
-                                "One of the main guys to worry about below your basket, #{0} in his team. ",
-                                rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "One of the main guys to worry about below your basket, #{0} in his team. "
+                                        : "One of the best free agents in getting his team's missed shots back, #{0} between free agents. ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.ORPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.ORPG] <= 10)
                         {
@@ -1153,12 +1185,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "He makes a point of crashing the boards. His RPG are at {0} ({2:F1} per 36 minutes), which "
                                 + "ranks him at #{1} overall. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.RPG],
+                                rankingsAll.RankingsPerGame[ID][PAbbr.RPG],
                                 REBR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.RPG] <= 3)
                         {
-                            s += String.Format(
-                                "One of the top rebounders in his team, #{0} actually. ", rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
+                            s += String.Format(IsSigned?
+                                "One of the top rebounders in his team, #{0} actually. " : "One of the top rebounders in free agency, #{0} actually. ", rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.RPG] <= 10)
                         {
@@ -1174,12 +1206,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Keep him in mind when he's in your face. His BPG are at {0} ({2:F1} per 36 minutes), which "
                                 + "ranks him at #{1} overall. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.BPG],
+                                rankingsAll.RankingsPerGame[ID][PAbbr.BPG],
                                 BLKR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.BPG] <= 3)
                         {
-                            s += String.Format(
-                                "Among the top blockers in the team, ranked at #{0}. ", rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
+                            s += String.Format(IsSigned?
+                                "Among the top blockers in the team, ranked at #{0}. " : "Among the top unsigned blockers, ranked at #{0}. ", rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.BPG] <= 10)
                         {
@@ -1194,12 +1226,12 @@ namespace NBA_Stats_Tracker.Data.Players
                             String.Format(
                                 "Assisting the ball, an important aspect of his game. He does {0} APG ({2:F1} per 36 minutes), ranking him at #{1} overall. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.APG],
+                                rankingsAll.RankingsPerGame[ID][PAbbr.APG],
                                 ASTR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.APG] <= 3)
                         {
-                            s += String.Format(
-                                "#{0} as far as playmakers in the team go. ", rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
+                            s += String.Format(IsSigned ?
+                                "#{0} as far as playmakers in the team go. " : "#{0} as far as playmakers in the free agency list go. ", rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.APG] <= 10)
                         {
@@ -1215,12 +1247,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 "Tries to keep his hands active; keep in mind his {0} SPG ({2:F1} per 36 minutes). His performance in taking the ball away has "
                                 + "ranked him at #{1} in the league. ",
                                 stat.Value,
-                                rankingsActive.RankingsPerGame[ID][PAbbr.SPG],
+                                rankingsAll.RankingsPerGame[ID][PAbbr.SPG],
                                 STLR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.SPG] <= 3)
                         {
-                            s += String.Format(
-                                "#{0} in taking the ball away among his teammates. ", rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
+                            s += String.Format(IsSigned ?
+                                "#{0} in taking the ball away among his teammates. " : "#{0} in taking the ball away among free agents. ", rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.SPG] <= 10)
                         {
@@ -1321,9 +1353,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
             s += "\n\nAccording to his rankings in the league, his best areas are ";
             var dict = new Dictionary<int, int>();
-            for (var k = 0; k < rankingsActive.RankingsPerGame[ID].Length; k++)
+            for (var k = 0; k < rankingsAll.RankingsPerGame[ID].Length; k++)
             {
-                dict.Add(k, rankingsActive.RankingsPerGame[ID][k]);
+                dict.Add(k, rankingsAll.RankingsPerGame[ID][k]);
             }
             var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             var m = 0;
@@ -1337,50 +1369,50 @@ namespace NBA_Stats_Tracker.Data.Players
                 switch (strengths[m])
                 {
                     case PAbbr.APG:
-                        s += String.Format("assists (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.APG], APG);
+                        s += String.Format("assists (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.APG], APG);
                         break;
                     case PAbbr.BPG:
-                        s += String.Format("blocks (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.BPG], BPG);
+                        s += String.Format("blocks (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.BPG], BPG);
                         break;
                     case PAbbr.DRPG:
-                        s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.DRPG], DRPG);
+                        s += String.Format("defensive rebounds (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.DRPG], DRPG);
                         break;
                     case PAbbr.FGeff:
                         s += String.Format(
                             "field goals (#{0}, {1:F1} per game on {2:F3}), ",
-                            rankingsActive.RankingsPerGame[ID][PAbbr.FGeff],
+                            rankingsAll.RankingsPerGame[ID][PAbbr.FGeff],
                             (double) FGM / GP,
                             FGp);
                         break;
                     case PAbbr.FPG:
-                        s += String.Format("fouls (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.FPG], FPG);
+                        s += String.Format("fouls (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.FPG], FPG);
                         break;
                     case PAbbr.FTeff:
                         s += String.Format(
                             "free throws (#{0}, {1:F1} per game on {2:F3}), ",
-                            rankingsActive.RankingsPerGame[ID][PAbbr.FTeff],
+                            rankingsAll.RankingsPerGame[ID][PAbbr.FTeff],
                             (double) FTM / GP,
                             FTp);
                         break;
                     case PAbbr.ORPG:
-                        s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.ORPG], ORPG);
+                        s += String.Format("offensive rebounds (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.ORPG], ORPG);
                         break;
                     case PAbbr.PPG:
-                        s += String.Format("scoring (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.PPG], PPG);
+                        s += String.Format("scoring (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.PPG], PPG);
                         break;
                     case PAbbr.RPG:
-                        s += String.Format("rebounds (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.RPG], RPG);
+                        s += String.Format("rebounds (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.RPG], RPG);
                         break;
                     case PAbbr.SPG:
-                        s += String.Format("steals (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.SPG], SPG);
+                        s += String.Format("steals (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.SPG], SPG);
                         break;
                     case PAbbr.TPG:
-                        s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsActive.RankingsPerGame[ID][PAbbr.TPG], TPG);
+                        s += String.Format("turnovers (#{0}, {1:F1}), ", rankingsAll.RankingsPerGame[ID][PAbbr.TPG], TPG);
                         break;
                     case PAbbr.TPeff:
                         s += String.Format(
                             "three-pointers (#{0}, {1:F1} per game on {2:F3}), ",
-                            rankingsActive.RankingsPerGame[ID][PAbbr.TPeff],
+                            rankingsAll.RankingsPerGame[ID][PAbbr.TPeff],
                             (double) TPM / GP,
                             TPp);
                         break;
