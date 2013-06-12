@@ -1,5 +1,11 @@
 NBA Stats Tracker - Version History
 
+	v1.16.2.2
+		- Fix: Fixed various issues regarding Free Agency, including the tool crashing when trying to view a Free Agent in Player Overview, and the "Active" checkbox not updating properly
+		- Change: "Active", which denoted players signed with a team, has been renamed to "Signed"
+		- Change: "- Inactive -" as a team entry, denoting the free agency, has been renamed to "- Free Agency -"
+		- Improvement: The Trade Players window now allows you to release players to free agency and sign free agents to teams in bulk
+
 	v1.16.2.1
 		- Improvement: The Hide Injured Players option in Team Overview's Head-To-Head Best Performers affected Matchup Preview, but since that may not have been obvious to the user, it has been mirrored into the latter tab as well
 		- Improvement: The Hide Injured Players option's setting will be remembered
