@@ -51,9 +51,9 @@ namespace LeftosCommonLibrary
         /// <exception cref="System.Exception">Couldn't access or create application's registry key.</exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
-            var rk = Registry.CurrentUser;
             try
             {
+                var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
                 try
                 {
                     rk = rk.OpenSubKey(AppRegistryKey, true);
@@ -89,15 +89,10 @@ namespace LeftosCommonLibrary
         /// <exception cref="System.Exception">The application doesn't have access to HKEY_CURRENT_USER.</exception>
         public static T GetRegistrySetting<T>(string setting, T defaultValue)
         {
-            var rk = Registry.CurrentUser;
             var settingValue = defaultValue;
             try
             {
-                if (rk == null)
-                {
-                    throw new Exception("The application doesn't have access to HKEY_CURRENT_USER.");
-                }
-
+                var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
                 rk = rk.OpenSubKey(AppRegistryKey);
                 if (rk != null)
                 {
