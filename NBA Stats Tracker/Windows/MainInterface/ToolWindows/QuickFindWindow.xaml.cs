@@ -150,6 +150,40 @@
                 }
                 selectAndClose();
             }
+            else if (e.Key == Key.Down)
+            {
+                e.Handled = true;
+                if (lstResults.Items.Count == 0 || lstResults.SelectedIndex == lstResults.Items.Count - 1)
+                {
+                    return;
+                }
+                if (lstResults.SelectedIndex == -1)
+                {
+                    lstResults.SelectedIndex = 0;
+                }
+                else
+                {
+                    lstResults.SelectedIndex++;
+                }
+                lstResults.ScrollIntoView(lstResults.Items[lstResults.SelectedIndex]);
+            }
+            else if (e.Key == Key.Up)
+            {
+                e.Handled = true;
+                if (lstResults.Items.Count == 0 || lstResults.SelectedIndex == 0)
+                {
+                    return;
+                }
+                if (lstResults.SelectedIndex == -1)
+                {
+                    lstResults.SelectedIndex = 0;
+                }
+                else
+                {
+                    lstResults.SelectedIndex--;
+                }
+                lstResults.ScrollIntoView(lstResults.Items[lstResults.SelectedIndex]);
+            }
         }
     }
 }
