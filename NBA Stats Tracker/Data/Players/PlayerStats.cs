@@ -50,39 +50,7 @@ namespace NBA_Stats_Tracker.Data.Players
         public int ID;
         public PlayerInjury Injury;
 
-        public bool IsSigned
-        {
-            get { return _isSigned; }
-            set
-            {
-                _isSigned = value;
-                if (!_isSigned)
-                {
-                    TeamF = -1;
-                }
-                OnPropertyChanged("IsSigned");
-            }
-        }
-
-        private bool _isSigned;
-
         public bool IsAllStar;
-
-        public bool IsHidden
-        {
-            get { return _isHidden; }
-            set
-            {
-                _isHidden = value;
-                if (_isHidden)
-                {
-                    IsSigned = false;
-                }
-                OnPropertyChanged("IsHidden");
-            }
-        }
-
-        private bool _isHidden;
 
         public bool IsNBAChampion;
         public string LastName;
@@ -99,6 +67,8 @@ namespace NBA_Stats_Tracker.Data.Players
         public double Weight;
         public int YearOfBirth;
         public int YearsPro;
+        private bool _isHidden;
+        private bool _isSigned;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerStats" /> class.
@@ -620,6 +590,34 @@ namespace NBA_Stats_Tracker.Data.Players
             Weight = playerStatsRow.Weight;
 
             CalcAvg();
+        }
+
+        public bool IsSigned
+        {
+            get { return _isSigned; }
+            set
+            {
+                _isSigned = value;
+                if (!_isSigned)
+                {
+                    TeamF = -1;
+                }
+                OnPropertyChanged("IsSigned");
+            }
+        }
+
+        public bool IsHidden
+        {
+            get { return _isHidden; }
+            set
+            {
+                _isHidden = value;
+                if (_isHidden)
+                {
+                    IsSigned = false;
+                }
+                OnPropertyChanged("IsHidden");
+            }
         }
 
         public string Position1S

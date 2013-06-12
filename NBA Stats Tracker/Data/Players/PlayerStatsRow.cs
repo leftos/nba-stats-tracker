@@ -42,6 +42,7 @@ namespace NBA_Stats_Tracker.Data.Players
     public class PlayerStatsRow : INotifyPropertyChanged
     {
         private PlayerInjury _injury;
+        private bool _isSigned;
 
         public PlayerStatsRow()
         {
@@ -557,7 +558,6 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-
         public bool IsSigned
         {
             get { return _isSigned; }
@@ -571,8 +571,6 @@ namespace NBA_Stats_Tracker.Data.Players
                 OnPropertyChanged("IsSigned");
             }
         }
-
-        private bool _isSigned;
 
         public string TeamSDisplay { get; set; }
 
@@ -1189,8 +1187,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 REBR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.RPG] <= 3)
                         {
-                            s += String.Format(IsSigned?
-                                "One of the top rebounders in his team, #{0} actually. " : "One of the top rebounders in free agency, #{0} actually. ", rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "One of the top rebounders in his team, #{0} actually. "
+                                        : "One of the top rebounders in free agency, #{0} actually. ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.RPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.RPG] <= 10)
                         {
@@ -1210,8 +1212,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 BLKR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.BPG] <= 3)
                         {
-                            s += String.Format(IsSigned?
-                                "Among the top blockers in the team, ranked at #{0}. " : "Among the top unsigned blockers, ranked at #{0}. ", rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "Among the top blockers in the team, ranked at #{0}. "
+                                        : "Among the top unsigned blockers, ranked at #{0}. ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.BPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.BPG] <= 10)
                         {
@@ -1230,8 +1236,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 ASTR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.APG] <= 3)
                         {
-                            s += String.Format(IsSigned ?
-                                "#{0} as far as playmakers in the team go. " : "#{0} as far as playmakers in the free agency list go. ", rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "#{0} as far as playmakers in the team go. "
+                                        : "#{0} as far as playmakers in the free agency list go. ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.APG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.APG] <= 10)
                         {
@@ -1251,8 +1261,12 @@ namespace NBA_Stats_Tracker.Data.Players
                                 STLR);
                         if (rankingsTeam.RankingsPerGame[ID][PAbbr.SPG] <= 3)
                         {
-                            s += String.Format(IsSigned ?
-                                "#{0} in taking the ball away among his teammates. " : "#{0} in taking the ball away among free agents. ", rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
+                            s +=
+                                String.Format(
+                                    IsSigned
+                                        ? "#{0} in taking the ball away among his teammates. "
+                                        : "#{0} in taking the ball away among free agents. ",
+                                    rankingsTeam.RankingsPerGame[ID][PAbbr.SPG]);
                         }
                         if (rankingsPosition.RankingsPerGame[ID][PAbbr.SPG] <= 10)
                         {
