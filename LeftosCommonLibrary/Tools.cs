@@ -28,7 +28,6 @@ namespace LeftosCommonLibrary
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    using System.Windows;
     using System.Windows.Controls;
 
     using Microsoft.Win32;
@@ -48,37 +47,46 @@ namespace LeftosCommonLibrary
         /// <typeparam name="T"></typeparam>
         /// <param name="setting">The setting.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.Exception">Couldn't access or create application's registry key.</exception>
+        /// <exception cref="System.Exception">KeyCreateError: Thrown if the key could neither be opened nor created.</exception>
         public static void SetRegistrySetting<T>(string setting, T value)
         {
+            SetRegistrySetting(AppRegistryKey, setting, value);
+        }
+
+        /// <summary>Sets a registry setting using a user-defined key.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="setting">The setting.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.Exception">KeyCreateError: Thrown if the key could neither be opened nor created.</exception>
+        public static void SetRegistrySetting<T>(string key, string setting, T value)
+        {
+            var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
             try
             {
-                var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
-                try
+                rk = rk.OpenSubKey(key, true);
+                if (rk == null)
                 {
-                    rk = rk.OpenSubKey(AppRegistryKey, true);
+                    rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+                    rk = rk.OpenSubKey(key, true);
                     if (rk == null)
                     {
                         throw new Exception();
                     }
                 }
-                catch (Exception)
-                {
-                    rk = Registry.CurrentUser;
-                    rk.CreateSubKey(AppRegistryKey);
-                    rk = rk.OpenSubKey(AppRegistryKey, true);
-                    if (rk == null)
-                    {
-                        throw new Exception("Couldn't access or create application's registry key.");
-                    }
-                }
-
-                rk.SetValue(setting, value);
             }
-            catch
+            catch (Exception)
             {
-                MessageBox.Show("Couldn't save setting " + setting + ".", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+                rk.CreateSubKey(key);
+                rk = rk.OpenSubKey(key, true);
+                if (rk == null)
+                {
+                    throw new Exception("KeyCreateError");
+                }
             }
+
+            rk.SetValue(setting, value);
         }
 
         /// <summary>Gets a registry setting using the AppRegistryKey field as the key.</summary>
@@ -86,20 +94,49 @@ namespace LeftosCommonLibrary
         /// <param name="setting">The setting.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>The registry setting's value.</returns>
-        /// <exception cref="System.Exception">The application doesn't have access to HKEY_CURRENT_USER.</exception>
+        /// <exception cref="System.Exception">KeyOpenError: Thrown if the key couldn't be opened.</exception>
         public static T GetRegistrySetting<T>(string setting, T defaultValue)
+        {
+            return GetRegistrySetting(AppRegistryKey, setting, defaultValue);
+        }
+
+        /// <summary>Gets a registry setting using the AppRegistryKey field as the key.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="setting">The setting.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>The registry setting's value.</returns>
+        /// <exception cref="System.Exception">KeyOpenError: Thrown if the key couldn't be opened.</exception>
+        public static T GetRegistrySetting<T>(string key, string setting, T defaultValue)
         {
             var settingValue = defaultValue;
             try
             {
                 var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
-                rk = rk.OpenSubKey(AppRegistryKey);
+                rk = rk.OpenSubKey(key);
                 if (rk != null)
                 {
                     settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof(T)));
                 }
+                else
+                {
+                    rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+                    rk = rk.OpenSubKey(key);
+                    if (rk != null)
+                    {
+                        settingValue = (T) (Convert.ChangeType(rk.GetValue(setting, defaultValue), typeof(T)));
+                    }
+                    else
+                    {
+                        throw new Exception("KeyOpenError");
+                    }
+                }
             }
-            catch
+            catch (InvalidCastException)
+            {
+                settingValue = defaultValue;
+            }
+            catch (FormatException)
             {
                 settingValue = defaultValue;
             }
