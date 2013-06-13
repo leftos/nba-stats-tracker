@@ -513,21 +513,21 @@ namespace NBA_Stats_Tracker.Data.Teams
         }
 
         /// <summary>Adds the team stats from a TeamStats instance to the current stats.</summary>
-        /// <param name="ts">The team stats to add.</param>
+        /// <param name="rhs">The team stats to add.</param>
         /// <param name="mode">The time-span.</param>
         /// <exception cref="System.Exception">Team Add Stats called with invalid parameter.</exception>
-        public void AddTeamStats(TeamStats ts, Span mode)
+        public void AddTeamStats(TeamStats rhs, Span mode)
         {
             switch (mode)
             {
                 case Span.Season:
                 {
-                    Record[0] += ts.Record[0];
-                    Record[1] += ts.Record[1];
+                    Record[0] += rhs.Record[0];
+                    Record[1] += rhs.Record[1];
 
                     for (var i = 0; i < Totals.Length; i++)
                     {
-                        Totals[i] += ts.Totals[i];
+                        Totals[i] += rhs.Totals[i];
                     }
 
                     CalcAvg();
@@ -535,12 +535,33 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
                 case Span.Playoffs:
                 {
-                    PlRecord[0] += ts.PlRecord[0];
-                    PlRecord[1] += ts.PlRecord[1];
+                    PlRecord[0] += rhs.PlRecord[0];
+                    PlRecord[1] += rhs.PlRecord[1];
 
                     for (var i = 0; i < PlTotals.Length; i++)
                     {
-                        PlTotals[i] += ts.PlTotals[i];
+                        PlTotals[i] += rhs.PlTotals[i];
+                    }
+
+                    CalcAvg();
+                    break;
+                }
+                case Span.SeasonAndPlayoffsToSeason:
+                {
+                    Record[0] += rhs.Record[0];
+                    Record[1] += rhs.Record[1];
+
+                    for (var i = 0; i < Totals.Length; i++)
+                    {
+                        Totals[i] += rhs.Totals[i];
+                    }
+
+                    Record[0] += rhs.PlRecord[0];
+                    Record[1] += rhs.PlRecord[1];
+
+                    for (var i = 0; i < PlTotals.Length; i++)
+                    {
+                        Totals[i] += rhs.PlTotals[i];
                     }
 
                     CalcAvg();
@@ -548,23 +569,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
                 case Span.SeasonAndPlayoffs:
                 {
-                    Record[0] += ts.Record[0];
-                    Record[1] += ts.Record[1];
-
-                    for (var i = 0; i < Totals.Length; i++)
-                    {
-                        Totals[i] += ts.Totals[i];
-                    }
-
-                    Record[0] += ts.PlRecord[0];
-                    Record[1] += ts.PlRecord[1];
-
-                    for (var i = 0; i < PlTotals.Length; i++)
-                    {
-                        Totals[i] += ts.PlTotals[i];
-                    }
-
-                    CalcAvg();
+                    AddTeamStats(rhs, Span.Season);
+                    AddTeamStats(rhs, Span.Playoffs);
                     break;
                 }
                 default:

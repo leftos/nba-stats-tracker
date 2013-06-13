@@ -23,7 +23,7 @@ namespace NBA_Stats_Tracker.Data.Other
     {
         Season,
         Playoffs,
-        SeasonAndPlayoffsToSeason,
-        SeasonAndPlayoffs
+        SeasonAndPlayoffs,
+        SeasonAndPlayoffsToSeason
     }
 }

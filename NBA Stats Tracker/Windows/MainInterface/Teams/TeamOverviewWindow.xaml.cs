@@ -1121,7 +1121,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             var tsAll = new TeamStats(-1, "All Games");
             tsAllSeasons.AddTeamStats(ts, Span.Season);
             tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
-            tsAll.AddTeamStats(ts, Span.SeasonAndPlayoffs);
+            tsAll.AddTeamStats(ts, Span.SeasonAndPlayoffsToSeason);
 
             var drcur = _dtYea.NewRow();
             var drcurPl = _dtYea.NewRow();
@@ -1178,7 +1178,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
                     tsAllSeasons.AddTeamStats(ts, Span.Season);
                     tsAllPlayoffs.AddTeamStats(ts, Span.Playoffs);
-                    tsAll.AddTeamStats(ts, Span.SeasonAndPlayoffs);
+                    tsAll.AddTeamStats(ts, Span.SeasonAndPlayoffsToSeason);
                 }
                 else
                 {
@@ -2150,8 +2150,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             //ts.CalcMetrics(tsopp);
             //tsopp.CalcMetrics(ts);
             var ls = new TeamStats();
-            ls.AddTeamStats(ts, Span.SeasonAndPlayoffs);
-            ls.AddTeamStats(tsopp, Span.SeasonAndPlayoffs);
+            ls.AddTeamStats(ts, Span.SeasonAndPlayoffsToSeason);
+            ls.AddTeamStats(tsopp, Span.SeasonAndPlayoffsToSeason);
             var keys = _pst.Keys.ToList();
             teamPMSRList = new List<PlayerStatsRow>();
             oppPMSRList = new List<PlayerStatsRow>();
