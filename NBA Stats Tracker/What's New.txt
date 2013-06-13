@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.16.2.3
+		- Addition: STL% column reintroduced to Box Score Window's Metric Stats tabs, now is properly calculated (the league stats will be based on the stats of the two teams for that game, so it will only be relative to the pace of that game; STL% is normally calculated by taking into account the average pace of the whole league, which isn't feasible in the scope of a box score)
+
 	v1.16.2.2
 		- Fix: Fixed various issues regarding Free Agency, including the tool crashing when trying to view a Free Agent in Player Overview, and the "Active" checkbox not updating properly
 		- Change: "Active", which denoted players signed with a team, has been renamed to "Signed"
