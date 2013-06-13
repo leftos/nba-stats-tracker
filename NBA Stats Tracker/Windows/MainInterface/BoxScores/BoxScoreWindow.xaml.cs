@@ -1582,6 +1582,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
 
             ts.CalcMetrics(tsopp);
+            tsopp.CalcMetrics(ts);
+            var ls = new TeamStats(-1);
+            ls.AddTeamStats(ts, Span.SeasonAndPlayoffsToSeason);
+            ls.AddTeamStats(tsopp, Span.SeasonAndPlayoffsToSeason);
 
             var pmsrList = new List<PlayerStatsRow>();
 
@@ -1597,7 +1601,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 var ps = _pst[pbs.PlayerID].Clone();
                 ps.ResetStats();
                 ps.AddBoxScore(pbs, bs.IsPlayoff);
-                ps.CalcMetrics(ts, tsopp, new TeamStats(-1));
+                ps.CalcMetrics(ts, tsopp, ls);
                 pmsrList.Add(new PlayerStatsRow(ps));
             }
 
