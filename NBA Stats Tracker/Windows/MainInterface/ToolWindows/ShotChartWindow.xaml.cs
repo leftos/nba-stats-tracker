@@ -114,6 +114,9 @@
             strFormat.Alignment = StringAlignment.Center;
             strFormat.LineAlignment = StringAlignment.Center;
 
+            var totalFGM = 0U;
+            var totalFGA = 0U;
+
             foreach (var pair in XyDict)
             {
                 var s = _pbpsList[pair.Key];
@@ -146,7 +149,13 @@
                 brush.Dispose();
                 pen.Dispose();
                 gp.Dispose();
+
+                totalFGM += s.FGM;
+                totalFGA += s.FGA;
             }
+
+            var totalFGp = (double) totalFGM / totalFGA;
+            Title += String.Format(" - {0}-{1} ({2:F3})", totalFGM, totalFGA, totalFGp);
 
             var ms = new MemoryStream();
             canvas.Save(ms, ImageFormat.Png);
