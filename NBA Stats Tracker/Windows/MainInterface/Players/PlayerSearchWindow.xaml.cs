@@ -70,14 +70,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private readonly List<string> _teamPerGame = TAbbr.ExtendedPerGame;
         private readonly List<string> _teamTotals = TAbbr.ExtendedTotals;
         private readonly List<string> _totals = PAbbr.ExtendedTotals;
-        private List<PlayerStatsRow> _cList;
 
+        private List<PlayerStatsRow> _cList;
         private bool _changingTimeframe;
+        private IEnumerable<string> _contractYears;
+        private string _contractYearsLeftOp;
+        private string _contractYearsLeftVal;
         private int _curSeason;
         private bool _fixingPageValue;
+        private string _heightOp;
+        private string _heightVal;
         private string _lastPropertyUsed;
+        private IEnumerable<string> _metricFilters;
         private List<StartingFivePermutation> _permutations;
         private List<PlayerStatsRow> _pfList;
+        private IEnumerable<string> _pgFilters;
         private List<PlayerStatsRow> _pgList;
         private List<PlayerStatsRow> _psrListPl;
         private List<PlayerStatsRow> _psrListSea;
@@ -85,6 +92,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private ICollectionView _psrViewSea;
         private List<PlayerStatsRow> _sfList;
         private List<PlayerStatsRow> _sgList;
+        private IEnumerable<string> _totalsFilters;
+        private string _weightOp;
+        private string _weightVal;
+        private string _yearsProOp;
+        private string _yearsProVal;
+        private string _yobOp;
+        private string _yobVal;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerSearchWindow" /> class. Prepares the window by populating all the combo-boxes.
@@ -299,7 +313,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        private async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             dgvPlayerStats.ItemsSource = null;
             var pst = MainWindow.PST;
@@ -321,12 +335,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (cmbPosition1.SelectedIndex != -1 && cmbPosition1.SelectedItem.ToString() != "Any")
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.Position1.ToString() == cmbPosition1.SelectedItem.ToString());
+                filteredPST = filteredPST.Where(pair => pair.Value.Position1S == cmbPosition1.SelectedItem.ToString());
             }
 
             if (cmbPosition2.SelectedIndex != -1 && cmbPosition2.SelectedItem.ToString() != "Any")
             {
-                filteredPST = filteredPST.Where(pair => pair.Value.Position2.ToString() == cmbPosition2.SelectedItem.ToString());
+                filteredPST = filteredPST.Where(pair => pair.Value.Position2S == cmbPosition2.SelectedItem.ToString());
             }
 
             if (cmbContractOpt.SelectedIndex != -1 && cmbContractOpt.SelectedItem.ToString() != "Any")
@@ -658,11 +672,30 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             #endregion Custom Expressions parsing
 
+            IsEnabled = false;
+            var pw = new ProgressWindow("Please wait while players are filtered...", false, false);
+            pw.Show();
+
+            _yearsProVal = txtYearsProVal.Text;
+            _yearsProOp = cmbYearsProOp.SelectedItem.ToString();
+            _yobVal = txtYOBVal.Text;
+            _yobOp = cmbYOBOp.SelectedItem.ToString();
+            _heightVal = txtHeightVal.Text;
+            _heightOp = cmbHeightOp.SelectedItem.ToString();
+            _weightVal = txtWeightVal.Text;
+            _weightOp = cmbWeightOp.SelectedItem.ToString();
+            _contractYearsLeftVal = txtContractYLeftVal.Text;
+            _contractYearsLeftOp = cmbContractYLeftOp.SelectedItem.ToString();
+            _contractYears = lstContract.Items.Cast<string>();
+            _totalsFilters = lstTotals.Items.Cast<string>();
+            _pgFilters = lstAvg.Items.Cast<string>();
+            _metricFilters = lstMetrics.Items.Cast<string>();
+
             _psrViewSea = CollectionViewSource.GetDefaultView(_psrListSea);
-            _psrViewSea.Filter = filter;
+            await TaskEx.Run(() => _psrViewSea.Filter = filter);
 
             _psrViewPl = CollectionViewSource.GetDefaultView(_psrListPl);
-            _psrViewPl.Filter = filter;
+            await TaskEx.Run(() => _psrViewPl.Filter = filter);
 
             dgvPlayerStats.ItemsSource = _psrViewSea;
             dgvPlayoffStats.ItemsSource = _psrViewPl;
@@ -704,8 +737,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             _lastPropertyUsed = "";
 
-            cmbSituationalSea_SelectionChanged(null, null);
-            cmbSituationalPl_SelectionChanged(null, null);
+            await prepareSituationalSeason();
+            await prepareSituationalPlayoffs();
+
+            IsEnabled = true;
+            pw.CanClose = true;
+            pw.Close();
 
             if (!String.IsNullOrWhiteSpace(message))
             {
@@ -728,62 +765,63 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var keep = true;
             var context = new ExpressionContext();
             IGenericExpression<bool> ige;
-            if (!String.IsNullOrWhiteSpace(txtYearsProVal.Text))
+
+            if (!String.IsNullOrWhiteSpace(_yearsProVal))
             {
-                ige = context.CompileGeneric<bool>(psr.YearsPro.ToString() + cmbYearsProOp.SelectedItem + txtYearsProVal.Text);
+                ige = context.CompileGeneric<bool>(psr.YearsPro.ToString() + _yearsProOp + _yearsProVal);
                 if (ige.Evaluate() == false)
                 {
                     return false;
                 }
             }
-            if (!String.IsNullOrWhiteSpace(txtYOBVal.Text))
+            if (!String.IsNullOrWhiteSpace(_yobVal))
             {
                 context = new ExpressionContext();
-                ige = context.CompileGeneric<bool>(psr.YearOfBirth.ToString() + cmbYOBOp.SelectedItem + txtYOBVal.Text);
+                ige = context.CompileGeneric<bool>(psr.YearOfBirth.ToString() + _yobOp + _yobVal);
                 if (ige.Evaluate() == false)
                 {
                     return false;
                 }
             }
-            if (!String.IsNullOrWhiteSpace(txtHeightVal.Text))
+            if (!String.IsNullOrWhiteSpace(_heightVal))
             {
                 var metricHeight = MainWindow.IsImperial
-                                       ? PlayerStatsRow.ConvertImperialHeightToMetric(txtHeightVal.Text)
-                                       : Convert.ToDouble(txtHeightVal.Text);
+                                       ? PlayerStatsRow.ConvertImperialHeightToMetric(_heightVal)
+                                       : Convert.ToDouble(_heightVal);
                 context = new ExpressionContext();
-                ige = context.CompileGeneric<bool>(psr.Height.ToString() + cmbHeightOp.SelectedItem + metricHeight.ToString());
+                ige = context.CompileGeneric<bool>(psr.Height.ToString() + _heightOp + metricHeight.ToString());
                 if (ige.Evaluate() == false)
                 {
                     return false;
                 }
             }
-            if (!String.IsNullOrWhiteSpace(txtWeightVal.Text))
+            if (!String.IsNullOrWhiteSpace(_weightVal))
             {
                 var imperialWeight = MainWindow.IsImperial
-                                         ? Convert.ToDouble(txtWeightVal.Text)
-                                         : PlayerStatsRow.ConvertMetricWeightToImperial(txtWeightVal.Text);
+                                         ? Convert.ToDouble(_weightVal)
+                                         : PlayerStatsRow.ConvertMetricWeightToImperial(_weightVal);
                 context = new ExpressionContext();
-                ige = context.CompileGeneric<bool>(psr.Weight.ToString() + cmbWeightOp.SelectedItem + imperialWeight.ToString());
+                ige = context.CompileGeneric<bool>(psr.Weight.ToString() + _weightOp + imperialWeight.ToString());
                 if (ige.Evaluate() == false)
                 {
                     return false;
                 }
             }
-            if (!String.IsNullOrWhiteSpace(txtContractYLeftVal.Text))
+            if (!String.IsNullOrWhiteSpace(_contractYearsLeftVal))
             {
                 context = new ExpressionContext();
                 ige =
                     context.CompileGeneric<bool>(
                         (chkExcludeOption.IsChecked.GetValueOrDefault()
                              ? psr.ContractYearsMinusOption.ToString()
-                             : psr.ContractYears.ToString()) + cmbContractYLeftOp.SelectedItem + txtContractYLeftVal.Text);
+                             : psr.ContractYears.ToString()) + _contractYearsLeftOp + _contractYearsLeftVal);
                 if (ige.Evaluate() == false)
                 {
                     return false;
                 }
             }
 
-            foreach (var contractYear in lstContract.Items.Cast<string>())
+            foreach (var contractYear in _contractYears)
             {
                 var parts = contractYear.Split(' ');
                 ige =
@@ -798,9 +836,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             var stopped = false;
 
-            var totalsFilters = lstTotals.Items.Cast<string>();
             Parallel.ForEach(
-                totalsFilters,
+                _totalsFilters,
                 (item, loopState) =>
                     {
                         var parts = item.Split(' ');
@@ -822,9 +859,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 return false;
             }
 
-            var pgFilters = lstAvg.Items.Cast<string>();
             Parallel.ForEach(
-                pgFilters,
+                _pgFilters,
                 (item, loopState) =>
                     {
                         var parts = item.Split(' ');
@@ -853,9 +889,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 return false;
             }
 
-            var metricFilters = lstMetrics.Items.Cast<string>();
             Parallel.ForEach(
-                metricFilters,
+                _metricFilters,
                 (item, loopState) =>
                     {
                         var parts = item.Split(' ');
@@ -1286,7 +1321,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                     case "YearsPro":
                         cmbYearsProOp.SelectedItem = parts[1];
-                        txtYearsProVal.Text = parts[2];
+                        _yearsProVal = parts[2];
                         break;
 
                     case "Height":
@@ -1458,7 +1493,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             s += String.Format("FirstName\t{0}\t{1}\n", cmbFirstNameSetting.SelectedItem, txtFirstName.Text);
             s += String.Format("Position\t{0}\t{1}\n", cmbPosition1.SelectedItem, cmbPosition2.SelectedItem);
             s += String.Format("YearOfBirth\t{0}\t{1}\n", cmbYOBOp.SelectedItem, txtYOBVal.Text);
-            s += String.Format("YearsPro\t{0}\t{1}\n", cmbYearsProOp.SelectedItem, txtYearsProVal.Text);
+            s += String.Format("YearsPro\t{0}\t{1}\n", cmbYearsProOp.SelectedItem, _yearsProVal);
             s += String.Format("Height\t{0}\t{1}\n", cmbHeightOp.SelectedItem, txtHeightVal.Text);
             s += String.Format("Weight\t{0}\t{1}\n", cmbWeightOp.SelectedItem, txtWeightVal.Text);
             s += String.Format("ContractYLeft\t{0}\t{1}\n", cmbContractYLeftOp.SelectedItem, txtContractYLeftVal.Text);
@@ -1909,46 +1944,67 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             Tools.SetRegistrySetting("APSY", Top);
         }
 
-        private void cmbSituationalSea_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSituationalSea_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            await prepareSituationalSeason();
+        }
+
+        private async Task prepareSituationalSeason()
+        {
+            txbStartingPGSea.Text = "";
+            txbStartingSGSea.Text = "";
+            txbStartingSFSea.Text = "";
+            txbStartingPFSea.Text = "";
+            txbStartingCSea.Text = "";
+            txbSubsSea.Text = "";
+
             if (cmbSituationalSea.SelectedIndex == -1 || _psrViewSea == null || _psrViewSea.IsEmpty)
             {
-                txbStartingPGSea.Text = "";
-                txbStartingSGSea.Text = "";
-                txbStartingSFSea.Text = "";
-                txbStartingPFSea.Text = "";
-                txbStartingCSea.Text = "";
-                txbSubsSea.Text = "";
                 return;
             }
-            calculateSituational(cmbSituationalSea.SelectedItem.ToString(), false);
+
+            txbStartingPGSea.Text = "Please wait...";
+            await calculateSituational(cmbSituationalSea.SelectedItem.ToString(), false);
         }
 
-        private void cmbSituationalPl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSituationalPl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            await prepareSituationalPlayoffs();
+        }
+
+        private async Task prepareSituationalPlayoffs()
+        {
+            txbStartingPGPl.Text = "";
+            txbStartingSGPl.Text = "";
+            txbStartingSFPl.Text = "";
+            txbStartingPFPl.Text = "";
+            txbStartingCPl.Text = "";
+            txbSubsPl.Text = "";
+
             if (cmbSituationalPl.SelectedIndex == -1 || _psrViewPl == null || _psrViewPl.IsEmpty)
             {
-                txbStartingPGPl.Text = "";
-                txbStartingSGPl.Text = "";
-                txbStartingSFPl.Text = "";
-                txbStartingPFPl.Text = "";
-                txbStartingCPl.Text = "";
-                txbSubsPl.Text = "";
                 return;
             }
-            calculateSituational(cmbSituationalPl.SelectedItem.ToString(), true);
+
+            txbStartingPGPl.Text = "Please wait...";
+            await calculateSituational(cmbSituationalPl.SelectedItem.ToString(), true);
         }
 
-        private void calculateSituational(string property, bool playoffs)
+        private async Task calculateSituational(string property, bool playoffs)
         {
-            if (nudSituationalSea.Value == null || nudSituationalSea.Value < 1)
+            var nudSituational = !playoffs ? nudSituationalSea : nudSituationalPl;
+            var psrList = !playoffs ? _psrViewSea.Cast<PlayerStatsRow>().ToList() : _psrViewPl.Cast<PlayerStatsRow>().ToList();
+
+            _fixingPageValue = true;
+            if (nudSituational.Value == null || nudSituational.Value < 1)
             {
-                nudSituationalSea.Value = 1;
+                nudSituational.Value = 1;
             }
-            if (((nudSituationalSea.Value - 1) * 5) + 1 > _psrListSea.Count)
+            if (((nudSituational.Value - 1) * 5) + 1 > psrList.Count)
             {
-                nudSituationalSea.Value = ((_psrListSea.Count - 1) / 5) + 1;
+                nudSituational.Value = ((psrList.Count - 1) / 5) + 1;
             }
+            _fixingPageValue = false;
 
             var txbStartingPG = !playoffs ? txbStartingPGSea : txbStartingPGPl;
             var txbStartingSG = !playoffs ? txbStartingSGSea : txbStartingSGPl;
@@ -1956,14 +2012,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var txbStartingPF = !playoffs ? txbStartingPFSea : txbStartingPFPl;
             var txbStartingC = !playoffs ? txbStartingCSea : txbStartingCPl;
             var txbSubs = !playoffs ? txbSubsSea : txbSubsPl;
-            var psrList = !playoffs ? _psrViewSea.Cast<PlayerStatsRow>().ToList() : _psrViewPl.Cast<PlayerStatsRow>().ToList();
-
-            txbStartingPG.Text = "";
-            txbStartingSG.Text = "";
-            txbStartingSF.Text = "";
-            txbStartingPF.Text = "";
-            txbStartingC.Text = "";
-            txbSubs.Text = "";
 
             string text;
             PlayerStatsRow psr1;
@@ -1980,14 +2028,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (property != _lastPropertyUsed || _lastPropertyUsed == "")
             {
-                recalculatePermutations(property, psrList);
+                await TaskEx.Run(() => recalculatePermutations(property, psrList));
                 _lastPropertyUsed = property;
             }
 
             var permutations = _permutations.ToList();
 
             var usedIDs = new List<int>();
-            var nudSituational = !playoffs ? nudSituationalSea : nudSituationalSea;
             var permToGet = nudSituational.Value;
             int i;
             try
@@ -2183,27 +2230,27 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void recalculatePermutations(string property, List<PlayerStatsRow> psrList)
         {
-            _pgList = psrList.Where(row => (row.Position1.ToString() == "PG" || row.Position2.ToString() == "PG"))
+            _pgList = psrList.Where(row => (row.Position1S == "PG" || row.Position2S == "PG"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
             _pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             _pgList.Reverse();
-            _sgList = psrList.Where(row => (row.Position1.ToString() == "SG" || row.Position2.ToString() == "SG"))
+            _sgList = psrList.Where(row => (row.Position1S == "SG" || row.Position2S == "SG"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
             _sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             _sgList.Reverse();
-            _sfList = psrList.Where(row => (row.Position1.ToString() == "SF" || row.Position2.ToString() == "SF"))
+            _sfList = psrList.Where(row => (row.Position1S == "SF" || row.Position2S == "SF"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
             _sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             _sfList.Reverse();
-            _pfList = psrList.Where(row => (row.Position1.ToString() == "PF" || row.Position2.ToString() == "PF"))
+            _pfList = psrList.Where(row => (row.Position1S == "PF" || row.Position2S == "PF"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
             _pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
             _pfList.Reverse();
-            _cList = psrList.Where(row => (row.Position1.ToString() == "C" || row.Position2.ToString() == "C"))
+            _cList = psrList.Where(row => (row.Position1S == "C" || row.Position2S == "C"))
                 // && row.IsInjured == false)
                             .Take(10).ToList();
             _cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
@@ -2225,7 +2272,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 var pInP = 0;
                                 var perm = new List<int>(5) { pg.ID };
                                 sum += pg.GetValue<double>(property);
-                                if (pg.Position1.ToString() == "PG")
+                                if (pg.Position1S == "PG")
                                 {
                                     pInP++;
                                 }
@@ -2235,7 +2282,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 }
                                 perm.Add(sg.ID);
                                 sum += sg.GetValue<double>(property);
-                                if (sg.Position1.ToString() == "SG")
+                                if (sg.Position1S == "SG")
                                 {
                                     pInP++;
                                 }
@@ -2245,7 +2292,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 }
                                 perm.Add(sf.ID);
                                 sum += sf.GetValue<double>(property);
-                                if (sf.Position1.ToString() == "SF")
+                                if (sf.Position1S == "SF")
                                 {
                                     pInP++;
                                 }
@@ -2255,7 +2302,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 }
                                 perm.Add(pf.ID);
                                 sum += pf.GetValue<double>(property);
-                                if (pf.Position1.ToString() == "PF")
+                                if (pf.Position1S == "PF")
                                 {
                                     pInP++;
                                 }
@@ -2265,7 +2312,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                                 }
                                 perm.Add(c.ID);
                                 sum += c.GetValue<double>(property);
-                                if (c.Position1.ToString() == "C")
+                                if (c.Position1S == "C")
                                 {
                                     pInP++;
                                 }
