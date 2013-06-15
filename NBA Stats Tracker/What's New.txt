@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.16.3
+		- Addition: Added Records tab to Box Score window, presenting any career highs set or matched by any players
+		- Addition: Shot Chart window will now show the total FGM, FGA and FG% in the window's title
+
 	v1.16.2.3
 		- Addition: STL% column reintroduced to Box Score Window's Metric Stats tabs, now is properly calculated (the league stats will be based on the stats of the two teams for that game, so it will only be relative to the pace of that game; STL% is normally calculated by taking into account the average pace of the whole league, which isn't feasible in the scope of a box score)
 
