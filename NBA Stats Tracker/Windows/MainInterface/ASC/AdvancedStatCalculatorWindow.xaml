@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         xmlns:boxScores="clr-namespace:NBA_Stats_Tracker.Data.BoxScores"
-        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
+        xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
         mc:Ignorable="d"
         Title="Advanced Stats Calculator" MinHeight="535" Height="600" MinWidth="920" Width="920"
         Loaded="window_Loaded"

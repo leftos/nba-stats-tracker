@@ -6,7 +6,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" Title="Player Search"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d" Title="Player Search"
         Height="535.71" Width="961.717"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded" Closing="Window_Closing">
