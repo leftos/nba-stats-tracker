@@ -77,7 +77,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private bool _isManualEditCommit;
         private bool _loading;
         private bool _minsUpdating;
-        private List<PlayerStatsRow> _pmsrListAway, _pmsrListHome;
+        private List<PlayerStatsRow> _psrListAway, _psrListHome;
         private Dictionary<int, PlayerStats> _pst;
         private List<string> _teams;
 
@@ -1354,7 +1354,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         }
 
         /// <summary>
-        ///     Handles the SelectionChanged event of the tabControl1 control. Updates the metric stats for each team's players and
+        ///     Handles the SelectionChanged event of the tbcBoxScore control. Updates the metric stats for each team's players and
         ///     calculates the best performers on-demand.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -1365,20 +1365,121 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             if (e.OriginalSource is TabControl)
             {
-                if (Equals(tabControl1.SelectedItem, tabAwayMetric))
+                if (Equals(tbcBoxScore.SelectedItem, tabAwayMetric))
                 {
                     updateMetric(1);
                 }
-                else if (Equals(tabControl1.SelectedItem, tabHomeMetric))
+                else if (Equals(tbcBoxScore.SelectedItem, tabHomeMetric))
                 {
                     updateMetric(2);
                 }
-                else if (Equals(tabControl1.SelectedItem, tabBest))
+                else if (Equals(tbcBoxScore.SelectedItem, tabBest))
                 {
                     updateMetric(1);
                     updateMetric(2);
                     updateBest();
                 }
+                else if (Equals(tbcBoxScore.SelectedItem, tabRecords))
+                {
+                    updateRecords();
+                }
+            }
+        }
+
+        private void updateRecords()
+        {
+            calculateRecords(ref txbAwayRecords, pbsAwayList);
+            calculateRecords(ref txbHomeRecords, pbsHomeList);
+        }
+
+        private void calculateRecords(ref TextBlock txbRecords, IEnumerable<PlayerBoxScore> pbsList)
+        {
+            const string NoRecordsMsg = "No records set for this team.";
+            txbRecords.Text = "";
+            foreach (var pbs in pbsList)
+            {
+                var ps = MainWindow.PST[pbs.PlayerID];
+                var playerBSCount = MainWindow.BSHist.Count(bse => bse.PBSList.Any(e => e.PlayerID == ps.ID && !e.IsOut));
+                var playerGP = ps.Totals[PAbbr.GP];
+                if (playerGP <= 1 || playerBSCount <= 1)
+                {
+                    continue;
+                }
+                var ch = ps.CareerHighs;
+                var info = playerBSCount != playerGP ? " (Incomplete data)" : "";
+                var playerIntroText = ps.FullNameGivenFirst + info + ": ";
+                var text = playerIntroText;
+                if (pbs.AST > 0 && pbs.AST >= ch[PAbbr.AST])
+                {
+                    text += String.Format("AST ({0}), ", pbs.AST);
+                }
+                if (pbs.BLK > 0 && pbs.BLK >= ch[PAbbr.BLK])
+                {
+                    text += String.Format("BLK ({0}), ", pbs.BLK);
+                }
+                if (pbs.DREB > 0 && pbs.DREB >= ch[PAbbr.DREB])
+                {
+                    text += String.Format("DREB ({0}), ", pbs.DREB);
+                }
+                if (pbs.OREB > 0 && pbs.OREB >= ch[PAbbr.OREB])
+                {
+                    text += String.Format("OREB ({0}), ", pbs.OREB);
+                }
+                if (pbs.REB > 0 && pbs.REB >= ch[PAbbr.REB])
+                {
+                    text += String.Format("REB ({0}), ", pbs.REB);
+                }
+                if (pbs.STL > 0 && pbs.STL >= ch[PAbbr.STL])
+                {
+                    text += String.Format("STL ({0}), ", pbs.STL);
+                }
+                if (pbs.TOS > 0 && pbs.TOS >= ch[PAbbr.TOS])
+                {
+                    text += String.Format("TOS ({0}), ", pbs.TOS);
+                }
+                if (pbs.FGM > 0 && pbs.FGM >= ch[PAbbr.FGM])
+                {
+                    text += String.Format("FGM ({0}), ", pbs.FGM);
+                }
+                if (pbs.FGA > 0 && pbs.FGA >= ch[PAbbr.FGA])
+                {
+                    text += String.Format("FGA ({0}), ", pbs.FGA);
+                }
+                if (pbs.TPM > 0 && pbs.TPM >= ch[PAbbr.TPM])
+                {
+                    text += String.Format("TPM ({0}), ", pbs.TPM);
+                }
+                if (pbs.TPA > 0 && pbs.TPA >= ch[PAbbr.TPA])
+                {
+                    text += String.Format("TPA ({0}), ", pbs.TPA);
+                }
+                if (pbs.FTM > 0 && pbs.FTM >= ch[PAbbr.FTM])
+                {
+                    text += String.Format("FTM ({0}), ", pbs.FTM);
+                }
+                if (pbs.FTA > 0 && pbs.FTA >= ch[PAbbr.FTA])
+                {
+                    text += String.Format("FTA ({0}), ", pbs.FTA);
+                }
+                if (pbs.PTS > 0 && pbs.PTS >= ch[PAbbr.PTS])
+                {
+                    text += String.Format("PTS ({0}), ", pbs.PTS);
+                }
+                if (pbs.MINS > 0 && pbs.MINS >= ch[PAbbr.MINS])
+                {
+                    text += String.Format("MINS ({0}), ", pbs.MINS);
+                }
+                if (text == playerIntroText)
+                {
+                    continue;
+                }
+                text = text.TrimEnd(new[] { ',', ' ' });
+                txbRecords.Text += text + "\n";
+            }
+            txbRecords.Text = txbRecords.Text.TrimEnd(new[] { '\n' });
+            if (String.IsNullOrWhiteSpace(txbRecords.Text))
+            {
+                txbRecords.Text = NoRecordsMsg;
             }
         }
 
@@ -1387,16 +1488,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         {
             try
             {
-                if (_pmsrListAway.Count == 0 && _pmsrListHome.Count == 0)
+                if (_psrListAway.Count == 0 && _psrListHome.Count == 0)
                 {
                     return;
                 }
 
-                _pmsrListAway.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                _pmsrListAway.Reverse();
+                _psrListAway.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                _psrListAway.Reverse();
 
-                _pmsrListHome.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
-                _pmsrListHome.Reverse();
+                _psrListHome.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
+                _psrListHome.Reverse();
             }
             catch (Exception)
             {
@@ -1422,13 +1523,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             txbHome2.Text = "";
             txbHome3.Text = "";
 
-            var skipaway = _pmsrListAway.Count == 0;
-            var skiphome = _pmsrListHome.Count == 0;
+            var skipaway = _psrListAway.Count == 0;
+            var skiphome = _psrListHome.Count == 0;
 
             //if (skiphome || (!skipaway && pmsrListAway[0].GmSc > pmsrListHome[0].GmSc))
             if (skiphome || (!skipaway && Convert.ToInt32(txtPTS1.Text) > Convert.ToInt32(txtPTS2.Text)))
             {
-                var bestID = _pmsrListAway[0].ID;
+                var bestID = _psrListAway[0].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == bestID)
@@ -1442,7 +1543,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             }
             else
             {
-                var bestID = _pmsrListHome[0].ID;
+                var bestID = _psrListHome[0].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == bestID)
@@ -1460,9 +1561,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             txbMVP.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")";
             txbMVPStats.Text = teamBest + "\n\n" + text;
 
-            if (_pmsrListAway.Count > awayid)
+            if (_psrListAway.Count > awayid)
             {
-                var id2 = _pmsrListAway[awayid++].ID;
+                var id2 = _psrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id2)
@@ -1476,9 +1577,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 txbAway1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (_pmsrListAway.Count > awayid)
+            if (_psrListAway.Count > awayid)
             {
-                var id3 = _pmsrListAway[awayid++].ID;
+                var id3 = _psrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id3)
@@ -1492,9 +1593,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 txbAway2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (_pmsrListAway.Count > awayid)
+            if (_psrListAway.Count > awayid)
             {
-                var id4 = _pmsrListAway[awayid++].ID;
+                var id4 = _psrListAway[awayid++].ID;
                 foreach (var pbs in pbsAwayList)
                 {
                     if (pbs.PlayerID == id4)
@@ -1508,9 +1609,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 txbAway3.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (_pmsrListHome.Count > homeid)
+            if (_psrListHome.Count > homeid)
             {
-                var id2 = _pmsrListHome[homeid++].ID;
+                var id2 = _psrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id2)
@@ -1524,9 +1625,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 txbHome1.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (_pmsrListHome.Count > homeid)
+            if (_psrListHome.Count > homeid)
             {
-                var id3 = _pmsrListHome[homeid++].ID;
+                var id3 = _psrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id3)
@@ -1540,9 +1641,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 txbHome2.Text = ps.FirstName + " " + ps.LastName + " (" + ps.Position1 + ")\n\n" + text;
             }
 
-            if (_pmsrListHome.Count > homeid)
+            if (_psrListHome.Count > homeid)
             {
-                var id4 = _pmsrListHome[homeid++].ID;
+                var id4 = _psrListHome[homeid++].ID;
                 foreach (var pbs in pbsHomeList)
                 {
                     if (pbs.PlayerID == id4)
@@ -1610,13 +1711,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             if (team == 1)
             {
-                _pmsrListAway = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricAway.ItemsSource = _pmsrListAway;
+                _psrListAway = new List<PlayerStatsRow>(pmsrList);
+                dgvMetricAway.ItemsSource = _psrListAway;
             }
             else
             {
-                _pmsrListHome = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricHome.ItemsSource = _pmsrListHome;
+                _psrListHome = new List<PlayerStatsRow>(pmsrList);
+                dgvMetricHome.ItemsSource = _psrListHome;
             }
         }
 

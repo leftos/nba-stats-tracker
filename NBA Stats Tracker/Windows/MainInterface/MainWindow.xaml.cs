@@ -3017,7 +3017,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         bw.ReportProgress(Convert.ToInt32((double) 100 * i / plCount));
                         var pID = PST.Keys.ToList()[i];
                         PST[pID].CalculateSeasonHighs(BSHist);
-                        var fail = false;
                         for (var k = 0; k < highsCount; k++)
                         {
                             try
@@ -3030,12 +3029,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                 {
                                     PST[pID].CareerHighs[j] = 0;
                                 }
-                                fail = true;
                                 break;
-                            }
-                            if (fail)
-                            {
-                                continue;
                             }
                         }
                     }

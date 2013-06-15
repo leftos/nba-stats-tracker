@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen" MinWidth="682" MinHeight="359"
         Closing="window_Closing">
     <Grid>
-        <TabControl HorizontalAlignment="Stretch" Name="tabControl1" VerticalAlignment="Stretch" Margin="0"
+        <TabControl HorizontalAlignment="Stretch" Name="tbcBoxScore" VerticalAlignment="Stretch" Margin="0"
                     SelectionChanged="tabControl1_SelectionChanged" Padding="6">
             <TabItem Header="Teams" Name="tabTeams" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                      Margin="0">
@@ -1027,6 +1027,22 @@
                                 Margin="6" VerticalAlignment="Center" Width="150" Click="btnCopyBestToClipboard_Click" />
                     </Grid>
                 </Grid>
+            </TabItem>
+            <TabItem Header="Records" Name="tabRecords">
+                <ScrollViewer>
+                    <StackPanel>
+                        <GroupBox Name="grpAwayRecords" Header="Away Team" Padding="3" Margin="5">
+                            <TextBlock Name="txbAwayRecords" Text="No records set for this team." TextWrapping="Wrap" />
+                        </GroupBox>
+                        <GroupBox Name="grpHomeRecords" Header="Home Team" Padding="3" Margin="5">
+                            <TextBlock Name="txbHomeRecords" Text="No records set for this team." TextWrapping="Wrap" />
+                        </GroupBox>
+                        <TextBlock FontStyle="Italic" Margin="5" HorizontalAlignment="Right">
+                            Records shown here are either records set or matched.<LineBreak />
+                            Incomplete data means that the player has played more games than there are box scores for.
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Play By Play">
                 <Grid>

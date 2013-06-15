@@ -750,21 +750,6 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public void CalculateSeasonHighs(IEnumerable<BoxScoreEntry> bsList)
         {
-            /*
-            var allTimePBSList = new List<PlayerBoxScore>();
-            var db = new SQLite_Database.SQLiteDatabase(MainWindow.currentDB);
-            string q = "select * from PlayerResults where PlayerID = " + ID;
-            var res = db.GetDataTable(q);
-            foreach (DataRow dr in res.Rows)
-            {
-                allTimePBSList.Add(new PlayerBoxScore(dr));
-                q = "select SeasonNum from GameResults where GameID = " + Tools.getInt(dr, "GameID");
-                int seasonNum = Convert.ToInt32(db.ExecuteScalar(q));
-                allTimePBSList.Last().SeasonNum = seasonNum;
-            }
-            var seasons = allTimePBSList.GroupBy(pbs => pbs.SeasonNum).Select(g => g.Key).ToList();
-            */
-
             var bsListWithPlayer = bsList.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == ID)).ToList();
             var seasonsList = bsListWithPlayer.GroupBy(bse => bse.BS.SeasonNum).Select(pair => pair.Key).ToList();
             var allTimePBSList = bsListWithPlayer.Select(bse => bse.PBSList.Single(pbs => pbs.PlayerID == ID)).ToList();
