@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.4
+		- Improvement: Improved Advanced Player Search speed
+		- Improvement: Program will no longer be unresponsive while making a search in Advanced Player Search or changing criteria for the Recommended Team tabs
+		- Change: Changed background processing technique from Tasks to Async/Await (this is a behind-the-scenes change, shouldn't affect the end-user)
+
 	v1.16.3
 		- Addition: Added Records tab to Box Score window, presenting any career highs set or matched by any players
 		- Addition: Shot Chart window will now show the total FGM, FGA and FG% in the window's title
