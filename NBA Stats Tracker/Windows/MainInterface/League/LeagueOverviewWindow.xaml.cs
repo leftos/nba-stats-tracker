@@ -31,6 +31,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Input;
+    using System.Windows.Threading;
 
     using LeftosCommonLibrary;
     using LeftosCommonLibrary.CommonDialogs;
@@ -60,7 +61,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         private static int _lastShownTeamSeason;
         private static int _lastShownBoxSeason;
         private static string _message;
-        private static Semaphore _sem;
 
         private readonly Dictionary<string, string> REtoREDitor = new Dictionary<string, string>
             {
@@ -209,8 +209,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             dgvLeagueTeamStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvLeagueTeamMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvRatings.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-
-            _sem = new Semaphore(1, 1);
         }
 
         private void populateSituationalsCombo()
@@ -351,7 +349,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void tbcLeagueOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //try
             //{
@@ -397,7 +395,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 if (doIt)
                 {
-                    preparePlayerStats();
+                    await preparePlayerStats();
                     _lastShownPlayerSeason = _curSeason;
                 }
             }
@@ -407,7 +405,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 var doIt = false;
                 if (_reload || _lastShownPlayerSeason != _curSeason)
                 {
-                    preparePlayerStats();
+                    await preparePlayerStats();
                     _lastShownPlayerSeason = _curSeason;
                     doIt = true;
                 }
@@ -424,7 +422,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 if (doIt)
                 {
-                    preparePlayerShootingStats();
+                    await preparePlayerShootingStats();
                     _lastShownShootingSeason = _curSeason;
                 }
             }
@@ -449,7 +447,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
                 if (doIt)
                 {
-                    prepareTeamShootingStats();
+                    await prepareTeamShootingStats();
                     _lastShownTeamShootingSeason = _curSeason;
                 }
             }
@@ -475,10 +473,97 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _reload = false;
         }
 
-        /// <summary>Prepares and presents the player stats.</summary>
-        private void preparePlayerStats()
+        private async Task preparePlayerStatsAsync()
         {
-            _sem.WaitOne();
+            _psrListSea = new List<PlayerStatsRow>();
+            _lPSR = new List<PlayerStatsRow>();
+
+            _psrListPl = new List<PlayerStatsRow>();
+            _plLpsr = new List<PlayerStatsRow>();
+
+            var playerCount = _pst.Count;
+            for (var i = 0; i < _pst.Count; i++)
+            {
+                var ps = _pst[_pst.Keys.ElementAt(i)];
+                Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => updatePlayerStatsCalcProgress(i+1, playerCount)));
+                await TaskEx.Run(() => doPlayer(ps));
+            }
+            var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
+            _lPSR.Add(new PlayerStatsRow(leagueAverages));
+            _plLpsr.Add(new PlayerStatsRow(leagueAverages, true));
+
+            _psrListSea.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
+            _psrListSea.Reverse();
+
+            _psrListPl.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
+            _psrListPl.Reverse();
+
+            foreach (var psr in _psrListSea)
+            {
+                if (psr.IsSigned)
+                {
+                    _leadersList.Add(psr.ConvertToLeagueLeader(_tst));
+                    _myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst));
+                }
+            }
+            foreach (var psr in _psrListPl)
+            {
+                if (psr.IsSigned)
+                {
+                    _plLeadersList.Add(psr.ConvertToLeagueLeader(_tst, true));
+                    _plMyLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst, true));
+                }
+            }
+
+            _leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+            _leadersList.Reverse();
+
+            _plLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+            _plLeadersList.Reverse();
+
+            _myLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+            _myLeadersList.Reverse();
+
+            _plMyLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
+            _plMyLeadersList.Reverse();
+        }
+
+        private bool doPlayer(PlayerStats ps)
+        {
+            if (ps.IsHidden)
+            {
+                return true;
+            }
+            var psr = new PlayerStatsRow(ps);
+            var plPSR = new PlayerStatsRow(ps, true);
+
+            if (psr.IsSigned)
+            {
+                if (!inCurrentFilter(_tst[psr.TeamF]))
+                {
+                    return true;
+                }
+                psr.TeamFDisplay = _tst[psr.TeamF].DisplayName;
+                plPSR.TeamFDisplay = psr.TeamFDisplay;
+            }
+            else
+            {
+                if (_filterType != TeamFilter.League)
+                {
+                    return true;
+                }
+
+                psr.TeamFDisplay = "- Free Agency -";
+                plPSR.TeamFDisplay = psr.TeamFDisplay;
+            }
+            _psrListSea.Add(psr);
+            _psrListPl.Add(plPSR);
+            return false;
+        }
+
+        /// <summary>Prepares and presents the player stats.</summary>
+        private async Task preparePlayerStats()
+        {
             _psrListSea = new List<PlayerStatsRow>();
             _lPSR = new List<PlayerStatsRow>();
 
@@ -491,265 +576,137 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             _myLeadersList = new List<PlayerStatsRow>();
             _plMyLeadersList = new List<PlayerStatsRow>();
 
-            var worker1 = new BackgroundWorker { WorkerReportsProgress = true };
-
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while player averages and metric stats are being calculated...";
+            grdMain.Visibility = Visibility.Hidden;
 
-            var i = 0;
+            await TaskEx.Run(() => preparePlayerStatsAsync());
 
-            var playerCount = -1;
+            var isSeason = rbSeason.IsChecked.GetValueOrDefault();
+            dgvPlayerStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+            dgvLeaguePlayerStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
+            dgvMetricStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+            dgvLeagueMetricStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
+            dgvRatings.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+            dgvContracts.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+            dgvLeaders.ItemsSource = isSeason ? _leadersList : _plLeadersList;
+            dgvMyLeaders.ItemsSource = isSeason ? _myLeadersList : _plMyLeadersList;
 
-            worker1.DoWork += delegate
-                {
-                    _psrListSea = new List<PlayerStatsRow>();
-                    _lPSR = new List<PlayerStatsRow>();
+            populateSituationalsCombo();
 
-                    _psrListPl = new List<PlayerStatsRow>();
-                    _plLpsr = new List<PlayerStatsRow>();
+            updateUltimateTeamTextboxes(isSeason);
+            updateBestPerformersTextboxes(isSeason);
 
-                    playerCount = _pst.Count;
-                    foreach (var kvp in _pst)
-                    {
-                        if (kvp.Value.IsHidden)
-                        {
-                            continue;
-                        }
-                        var psr = new PlayerStatsRow(kvp.Value);
-                        var plPSR = new PlayerStatsRow(kvp.Value, true);
-
-                        if (psr.IsSigned)
-                        {
-                            if (!inCurrentFilter(_tst[psr.TeamF]))
-                            {
-                                continue;
-                            }
-                            psr.TeamFDisplay = _tst[psr.TeamF].DisplayName;
-                            plPSR.TeamFDisplay = psr.TeamFDisplay;
-                        }
-                        else
-                        {
-                            if (_filterType != TeamFilter.League)
-                            {
-                                continue;
-                            }
-
-                            psr.TeamFDisplay = "- Free Agency -";
-                            plPSR.TeamFDisplay = psr.TeamFDisplay;
-                        }
-                        _psrListSea.Add(psr);
-                        _psrListPl.Add(plPSR);
-                        worker1.ReportProgress(1);
-                    }
-                    var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
-                    _lPSR.Add(new PlayerStatsRow(leagueAverages));
-                    _plLpsr.Add(new PlayerStatsRow(leagueAverages, true));
-
-                    _psrListSea.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
-                    _psrListSea.Reverse();
-
-                    _psrListPl.Sort((psr1, psr2) => psr1.GmSc.CompareTo(psr2.GmSc));
-                    _psrListPl.Reverse();
-
-                    foreach (var psr in _psrListSea)
-                    {
-                        if (psr.IsSigned)
-                        {
-                            _leadersList.Add(psr.ConvertToLeagueLeader(_tst));
-                            _myLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst));
-                        }
-                    }
-                    foreach (var psr in _psrListPl)
-                    {
-                        if (psr.IsSigned)
-                        {
-                            _plLeadersList.Add(psr.ConvertToLeagueLeader(_tst, true));
-                            _plMyLeadersList.Add(psr.ConvertToMyLeagueLeader(_tst, true));
-                        }
-                    }
-
-                    _leadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                    _leadersList.Reverse();
-
-                    _plLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                    _plLeadersList.Reverse();
-
-                    _myLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                    _myLeadersList.Reverse();
-
-                    _plMyLeadersList.Sort((psr1, psr2) => psr1.PPG.CompareTo(psr2.PPG));
-                    _plMyLeadersList.Reverse();
-                };
-
-            worker1.ProgressChanged += delegate
-                {
-                    if (++i < playerCount)
-                    {
-                        txbStatus.Text = "Please wait while player averages and metric stats are being calculated (" + i + "/"
-                                         + playerCount + " completed)...";
-                    }
-                    else
-                    {
-                        txbStatus.Text = "Please wait as best performers and best starting 5 are being calculated...";
-                    }
-                };
-
-            worker1.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e)
-                {
-                    if (e.Error != null)
-                    {
-                        throw e.Error;
-                    }
-                    var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-                    dgvPlayerStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                    dgvLeaguePlayerStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
-                    dgvMetricStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                    dgvLeagueMetricStats.ItemsSource = isSeason ? _lPSR : _plLpsr;
-                    dgvRatings.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                    dgvContracts.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                    dgvLeaders.ItemsSource = isSeason ? _leadersList : _plLeadersList;
-                    dgvMyLeaders.ItemsSource = isSeason ? _myLeadersList : _plMyLeadersList;
-
-                    populateSituationalsCombo();
-
-                    updateUltimateTeamTextboxes(isSeason);
-                    updateBestPerformersTextboxes(isSeason);
-
-                    tbcLeagueOverview.Visibility = Visibility.Visible;
-                    txbStatus.FontWeight = FontWeights.Normal;
-                    txbStatus.Text = _message;
-                    _sem.Release();
-                };
-
-            tbcLeagueOverview.Visibility = Visibility.Hidden;
-            worker1.RunWorkerAsync();
+            grdMain.Visibility = Visibility.Visible;
+            txbStatus.FontWeight = FontWeights.Normal;
+            txbStatus.Text = _message;
         }
 
-        private void preparePlayerShootingStats()
+        private void updatePlayerStatsCalcProgress(int i, int playerCount)
         {
-            var worker1 = new BackgroundWorker { WorkerReportsProgress = true };
+            if (i < playerCount)
+            {
+                txbStatus.Text = "Please wait while player averages and metric stats are being calculated (" + i + "/" + playerCount
+                                 + " completed)...";
+            }
+            else
+            {
+                txbStatus.Text = "Please wait as best performers and best starting 5 are being calculated...";
+            }
+        }
 
+        private async Task preparePlayerShootingStats()
+        {
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while player shooting stats are being calculated...";
+            grdMain.Visibility = Visibility.Hidden;
+            
+            await TaskEx.Run(() => doPlayerShootingStats());
 
-            var doneCount = 0;
+            var isSeason = rbSeason.IsChecked.GetValueOrDefault();
 
-            var playerCount = -1;
+            dgvPlayerShootingStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
+            dgvPlayerOtherStats.ItemsSource = dgvPlayerShootingStats.ItemsSource;
 
-            worker1.DoWork += delegate
-                {
-                    _sem.WaitOne();
-                    playerCount = _psrListSea.Count;
-
-                    for (var i = 0; i < _psrListSea.Count; i++)
-                    {
-                        _psrListSea[i].PopulatePBPSList(_bseListSea);
-                        if (i < _psrListPl.Count)
-                        {
-                            _psrListPl[i].PopulatePBPSList(_bseListPl);
-                        }
-                        worker1.ReportProgress(1);
-                    }
-                };
-
-            worker1.ProgressChanged += delegate
-                {
-                    txbStatus.FontWeight = FontWeights.Bold;
-                    tbcLeagueOverview.Visibility = Visibility.Hidden;
-                    if (++doneCount < playerCount)
-                    {
-                        txbStatus.Text = "Please wait while player shooting stats are being calculated (" + doneCount + "/"
-                                         + playerCount + " completed)...";
-                    }
-                    else
-                    {
-                        txbStatus.Text = "Please wait just a bit longer...";
-                    }
-                };
-
-            worker1.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e)
-                {
-                    if (e.Error != null)
-                    {
-                        MessageBox.Show(e.Error.ToString());
-                    }
-                    var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-
-                    dgvPlayerShootingStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
-                    dgvPlayerOtherStats.ItemsSource = dgvPlayerShootingStats.ItemsSource;
-
-                    tbcLeagueOverview.Visibility = Visibility.Visible;
-                    txbStatus.FontWeight = FontWeights.Normal;
-                    txbStatus.Text = _message;
-                    _sem.Release();
-                };
-
-            tbcLeagueOverview.Visibility = Visibility.Hidden;
-            worker1.RunWorkerAsync();
+            grdMain.Visibility = Visibility.Visible;
+            txbStatus.FontWeight = FontWeights.Normal;
+            txbStatus.Text = _message;
         }
 
-        private void prepareTeamShootingStats()
+        private void doPlayerShootingStats()
         {
-            var worker1 = new BackgroundWorker { WorkerReportsProgress = true };
+            var playerCount = _psrListSea.Count;
 
+            for (var i = 0; i < _psrListSea.Count; i++)
+            {
+                _psrListSea[i].PopulatePBPSList(_bseListSea);
+                if (i < _psrListPl.Count)
+                {
+                    _psrListPl[i].PopulatePBPSList(_bseListPl);
+                }
+                Dispatcher.Invoke(
+                    DispatcherPriority.Background, new Action(() => { updatePlayerShootingStatsCalcProgress(i+1, playerCount); }));
+            }
+        }
+
+        private void updatePlayerShootingStatsCalcProgress(int doneCount, int playerCount)
+        {
+            if (doneCount < playerCount)
+            {
+                txbStatus.Text = "Please wait while player shooting stats are being calculated (" + doneCount + "/" + playerCount
+                                 + " completed)...";
+            }
+            else
+            {
+                txbStatus.Text = "Please wait just a bit longer...";
+            }
+        }
+
+        private void doTeamShootingStats()
+        {
+            var teamCount = _tsrListSea.Count;
+
+            for (var i = 0; i < teamCount; i++)
+            {
+                _tsrListSea[i].PopulatePBPSList(_bseListSea);
+                if (i < _tsrListPl.Count)
+                {
+                    _tsrListPl[i].PopulatePBPSList(_bseListPl);
+                }
+                Dispatcher.Invoke(
+                    DispatcherPriority.Background, new Action(() => updateTeamShootingStatsCalcProgress(i + 1, teamCount)));
+            }
+        }
+
+        private void updateTeamShootingStatsCalcProgress(int doneCount, int teamCount)
+        {
+            if (doneCount < teamCount)
+            {
+                txbStatus.Text = "Please wait while team shooting stats are being calculated (" + doneCount + "/" + teamCount
+                                 + " completed)...";
+            }
+            else
+            {
+                txbStatus.Text = "Please wait just a bit longer...";
+            }
+        }
+
+        private async Task prepareTeamShootingStats()
+        {
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while team shooting stats are being calculated...";
+            grdMain.Visibility = Visibility.Hidden;
 
-            var doneCount = 0;
+            await TaskEx.Run(() => doTeamShootingStats());
 
-            var teamCount = -1;
+            var isSeason = rbSeason.IsChecked.GetValueOrDefault();
 
-            worker1.DoWork += delegate
-                {
-                    _sem.WaitOne();
+            dgvTeamShootingStats.ItemsSource = isSeason ? _tsrListSea : _tsrListPl;
+            dgvTeamOtherStats.ItemsSource = dgvTeamShootingStats.ItemsSource;
 
-                    teamCount = _tsrListSea.Count;
-
-                    for (var i = 0; i < _tsrListSea.Count; i++)
-                    {
-                        _tsrListSea[i].PopulatePBPSList(_bseListSea);
-                        if (i < _tsrListPl.Count)
-                        {
-                            _tsrListPl[i].PopulatePBPSList(_bseListPl);
-                        }
-                        worker1.ReportProgress(1);
-                    }
-                };
-
-            worker1.ProgressChanged += delegate
-                {
-                    txbStatus.FontWeight = FontWeights.Bold;
-                    tbcLeagueOverview.Visibility = Visibility.Hidden;
-                    if (++doneCount < teamCount)
-                    {
-                        txbStatus.Text = "Please wait while team shooting stats are being calculated (" + doneCount + "/" + teamCount
-                                         + " completed)...";
-                    }
-                    else
-                    {
-                        txbStatus.Text = "Please wait just a bit longer...";
-                    }
-                };
-
-            worker1.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e)
-                {
-                    if (e.Error != null)
-                    {
-                        MessageBox.Show(e.Error.ToString());
-                    }
-                    var isSeason = rbSeason.IsChecked.GetValueOrDefault();
-
-                    dgvTeamShootingStats.ItemsSource = isSeason ? _tsrListSea : _tsrListPl;
-                    dgvTeamOtherStats.ItemsSource = dgvTeamShootingStats.ItemsSource;
-
-                    tbcLeagueOverview.Visibility = Visibility.Visible;
-                    txbStatus.FontWeight = FontWeights.Normal;
-                    txbStatus.Text = _message;
-                    _sem.Release();
-                };
-
-            tbcLeagueOverview.Visibility = Visibility.Hidden;
-            worker1.RunWorkerAsync();
+            grdMain.Visibility = Visibility.Visible;
+            txbStatus.FontWeight = FontWeights.Normal;
+            txbStatus.Text = _message;
         }
 
         private void updateBestPerformersTextboxes(bool isSeason)
@@ -2181,7 +2138,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             }
         }
 
-        private void btnSetRatingsCriteria_Click(object sender, RoutedEventArgs e)
+        private async void btnSetRatingsCriteria_Click(object sender, RoutedEventArgs e)
         {
             var ibw =
                 new InputBoxWindow(
@@ -2203,7 +2160,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             MainWindow.LoadRatingsCriteria();
 
-            preparePlayerStats();
+            await preparePlayerStats();
         }
 
         private void btnExportLREDitorRatings_Click(object sender, RoutedEventArgs e)
@@ -2262,7 +2219,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 MessageBoxImage.Information);
         }
 
-        private void btnSetMyLeadersCriteria_Click(object sender, RoutedEventArgs e)
+        private async void btnSetMyLeadersCriteria_Click(object sender, RoutedEventArgs e)
         {
             var ibw =
                 new InputBoxWindow(
@@ -2284,7 +2241,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             MainWindow.LoadMyLeadersCriteria();
 
-            preparePlayerStats();
+            await preparePlayerStats();
         }
 
         private void cmbSituational_SelectionChanged(object sender, SelectionChangedEventArgs e)

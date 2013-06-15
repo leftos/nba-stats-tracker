@@ -10,7 +10,7 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         Closing="window_Closing" MinWidth="800" MinHeight="469">
     <Grid>
-        <Grid Margin="0,0,0,25">
+        <Grid Margin="0,0,0,25" Name="grdMain">
             <TabControl Margin="0,0,250,12" Name="tbcLeagueOverview" Padding="0"
                         SelectionChanged="tbcLeagueOverview_SelectionChanged">
                 <TabItem Header="Team Stats" Name="tabTeamStats">
