@@ -824,6 +824,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             tabTeam1.Header = cmbTeam1.SelectedItem;
             tabAwayMetric.Header = cmbTeam1.SelectedItem + " Metric Stats";
             grpAway.Header = cmbTeam1.SelectedItem;
+            grpAwayRecords.Header = cmbTeam1.SelectedItem;
             updateDataGrid(1);
         }
 
@@ -838,6 +839,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             tabTeam2.Header = cmbTeam2.SelectedItem;
             tabHomeMetric.Header = cmbTeam2.SelectedItem + " Metric Stats";
             grpHome.Header = cmbTeam2.SelectedItem;
+            grpHomeRecords.Header = cmbTeam2.SelectedItem;
             updateDataGrid(2);
         }
 
@@ -1322,7 +1324,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void calculateRecords(ref TextBlock txbRecords, IEnumerable<PlayerBoxScore> pbsList)
         {
-            const string NoRecordsMsg = "No records set for this team.";
+            const string NoRecordsMsg = "No records set or matched for this team.";
             txbRecords.Text = "";
             foreach (var pbs in pbsList)
             {
