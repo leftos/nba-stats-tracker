@@ -22,10 +22,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Data;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Forms;
 
@@ -101,7 +101,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             sw.Close();
         }
 
-        public static void ImportOldPlayerCareerStats(Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> tst, string folder)
+        public static async Task ImportOldPlayerCareerStats(
+            Dictionary<int, PlayerStats> pst, Dictionary<int, TeamStats> tst, string folder)
         {
             if (tst.Count != 30)
             {
@@ -280,237 +281,231 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var pw = new ProgressWindow("Please wait as player career stats are being imported...");
             pw.Show();
-            var bw = new BackgroundWorker { WorkerReportsProgress = true };
-            bw.DoWork += delegate
-                {
-                    var count = validPlayers.Count;
-                    var ppsList = new List<PastPlayerStats>();
-                    for (var i = 0; i < count; i++)
+
+            await TaskEx.Run(
+                () =>
                     {
-                        var percentProgress = i * 100 / count;
-                        if (percentProgress % 5 == 0)
+                        var count = validPlayers.Count;
+                        var ppsList = new List<PastPlayerStats>();
+                        for (var i = 0; i < count; i++)
                         {
-                            bw.ReportProgress(percentProgress);
-                        }
-                        var player = validPlayers[i];
-                        var playerID = Convert.ToInt32(player["ID"]);
-
-                        var lastName = player["Last_Name"];
-                        var firstName = player["First_Name"];
-
-                        int pTeam;
-                        var curTeam = new TeamStats();
-                        try
-                        {
-                            pTeam = rosters.Single(r => r.Value.Contains(playerID)).Key;
-                            curTeam = tst[pTeam];
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            pTeam = -1;
-                        }
-
-                        if (!activeTeamsIDs.Contains(pTeam) && player["IsFA"] != "1")
-                        {
-                            if (pst.ContainsKey(playerID) && pst[playerID].LastName == lastName && pst[playerID].FirstName == firstName)
+                            var percentProgress = i * 100 / count;
+                            if (percentProgress % 5 == 0)
                             {
-                                pst[playerID].IsSigned = false;
-                                pst[playerID].TeamF = -1;
-                                pst[playerID].IsHidden = true;
+                                MainWindow.AppInvoke(() => pw.SetProgressBarValue(percentProgress));
                             }
-                            continue;
-                        }
+                            var player = validPlayers[i];
+                            var playerID = Convert.ToInt32(player["ID"]);
 
-                        #region Match Player
+                            var lastName = player["Last_Name"];
+                            var firstName = player["First_Name"];
 
-                        if (pst.ContainsKey(playerID) && (pst[playerID].LastName != lastName || pst[playerID].FirstName != firstName))
-                        {
-                            var candidates =
-                                pst.Where(
-                                    pair =>
-                                    pair.Value.LastName == lastName && pair.Value.FirstName == firstName
-                                    && pair.Value.IsHidden == false).ToList();
-                            if (candidates.Count > 0)
+                            int pTeam;
+                            var curTeam = new TeamStats();
+                            try
                             {
-                                var found = false;
-                                var c2 = candidates.Where(pair => tst.ContainsKey(pair.Value.TeamF)).ToList();
-                                if (c2.Count() == 1)
+                                pTeam = rosters.Single(r => r.Value.Contains(playerID)).Key;
+                                curTeam = tst[pTeam];
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                pTeam = -1;
+                            }
+
+                            if (!activeTeamsIDs.Contains(pTeam) && player["IsFA"] != "1")
+                            {
+                                if (pst.ContainsKey(playerID) && pst[playerID].LastName == lastName
+                                    && pst[playerID].FirstName == firstName)
                                 {
-                                    playerID = c2.First().Value.ID;
-                                    found = true;
+                                    pst[playerID].IsSigned = false;
+                                    pst[playerID].TeamF = -1;
+                                    pst[playerID].IsHidden = true;
                                 }
-                                else
+                                continue;
+                            }
+
+                            #region Match Player
+
+                            if (pst.ContainsKey(playerID)
+                                && (pst[playerID].LastName != lastName || pst[playerID].FirstName != firstName))
+                            {
+                                var candidates =
+                                    pst.Where(
+                                        pair =>
+                                        pair.Value.LastName == lastName && pair.Value.FirstName == firstName
+                                        && pair.Value.IsHidden == false).ToList();
+                                if (candidates.Count > 0)
                                 {
-                                    var c4 =
-                                        candidates.Where(pair => pair.Value.YearOfBirth.ToString() == player["BirthYear"]).ToList();
-                                    if (c4.Count == 1)
+                                    var found = false;
+                                    var c2 = candidates.Where(pair => tst.ContainsKey(pair.Value.TeamF)).ToList();
+                                    if (c2.Count() == 1)
                                     {
-                                        playerID = c4.First().Value.ID;
+                                        playerID = c2.First().Value.ID;
                                         found = true;
                                     }
                                     else
                                     {
-                                        if (pTeam != -1)
+                                        var c4 =
+                                            candidates.Where(pair => pair.Value.YearOfBirth.ToString() == player["BirthYear"]).ToList();
+                                        if (c4.Count == 1)
                                         {
-                                            var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
-                                            if (c3.Count == 1)
-                                            {
-                                                playerID = c3.First().Value.ID;
-                                                found = true;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (!found)
-                                {
-                                    var choices = new List<string>();
-                                    foreach (var pair in candidates)
-                                    {
-                                        var choice = String.Format(
-                                            "{0}: {1} {2} (Born {3}",
-                                            pair.Value.ID,
-                                            pair.Value.FirstName,
-                                            pair.Value.LastName,
-                                            pair.Value.YearOfBirth);
-                                        if (pair.Value.IsSigned)
-                                        {
-                                            choice += String.Format(", plays in {0}", pair.Value.TeamF);
+                                            playerID = c4.First().Value.ID;
+                                            found = true;
                                         }
                                         else
                                         {
-                                            choice += ", free agent";
+                                            if (pTeam != -1)
+                                            {
+                                                var c3 = candidates.Where(pair => pair.Value.TeamF == curTeam.ID).ToList();
+                                                if (c3.Count == 1)
+                                                {
+                                                    playerID = c3.First().Value.ID;
+                                                    found = true;
+                                                }
+                                            }
                                         }
-                                        choice += ")";
-                                        choices.Add(choice);
                                     }
-                                    var message = String.Format(
-                                        "{0}: {1} {2} (Born {3}",
-                                        player["ID"],
-                                        player["First_Name"],
-                                        player["Last_Name"],
-                                        player["BirthYear"]);
-                                    if (pTeam != -1)
+                                    if (!found)
                                     {
-                                        message += String.Format(", plays in {0}", curTeam.DisplayName);
-                                    }
-                                    else
-                                    {
-                                        message += ", free agent";
-                                    }
-                                    message += ")";
-                                    ccw = new ComboChoiceWindow(message, choices);
-                                    if (ccw.ShowDialog() != true)
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        playerID = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(':')[0]);
+                                        var choices = new List<string>();
+                                        foreach (var pair in candidates)
+                                        {
+                                            var choice = String.Format(
+                                                "{0}: {1} {2} (Born {3}",
+                                                pair.Value.ID,
+                                                pair.Value.FirstName,
+                                                pair.Value.LastName,
+                                                pair.Value.YearOfBirth);
+                                            if (pair.Value.IsSigned)
+                                            {
+                                                choice += String.Format(", plays in {0}", pair.Value.TeamF);
+                                            }
+                                            else
+                                            {
+                                                choice += ", free agent";
+                                            }
+                                            choice += ")";
+                                            choices.Add(choice);
+                                        }
+                                        var message = String.Format(
+                                            "{0}: {1} {2} (Born {3}",
+                                            player["ID"],
+                                            player["First_Name"],
+                                            player["Last_Name"],
+                                            player["BirthYear"]);
+                                        if (pTeam != -1)
+                                        {
+                                            message += String.Format(", plays in {0}", curTeam.DisplayName);
+                                        }
+                                        else
+                                        {
+                                            message += ", free agent";
+                                        }
+                                        message += ")";
+                                        ccw = new ComboChoiceWindow(message, choices);
+                                        if (ccw.ShowDialog() != true)
+                                        {
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            playerID = Convert.ToInt32(ComboChoiceWindow.UserChoice.Split(':')[0]);
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    continue;
+                                }
                             }
-                            else
+                            else if (!pst.ContainsKey(playerID))
                             {
                                 continue;
                             }
-                        }
-                        else if (!pst.ContainsKey(playerID))
-                        {
-                            continue;
-                        }
 
-                        #endregion Match Player
+                            #endregion Match Player
 
-                        var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
-                        var dt = MainWindow.DB.GetDataTable(qr);
-                        dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
-                        for (var j = startAt; j < endAt; j++)
-                        {
-                            var statEntryID = player["StatY" + j];
-                            if (statEntryID == "-1")
+                            var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + playerID + " ORDER BY \"SOrder\"";
+                            var dt = MainWindow.DB.GetDataTable(qr);
+                            dt.Rows.Cast<DataRow>().ToList().ForEach(dr => ppsList.Add(new PastPlayerStats(dr)));
+                            for (var j = startAt; j < endAt; j++)
                             {
-                                continue;
-                            }
-                            var stats = playerStats.Single(d => d["ID"] == statEntryID);
-                            var prevStats = new PastPlayerStats();
-                            var teamID2 = stats["TeamID2"];
-                            var teamID1 = stats["TeamID1"];
-                            if (teamID2 == "-1")
-                            {
-                                if (teamID1 != "-1")
+                                var statEntryID = player["StatY" + j];
+                                if (statEntryID == "-1")
                                 {
-                                    prevStats.TeamFName = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                    continue;
                                 }
-                            }
-                            else
-                            {
-                                prevStats.TeamFName = teams.Single(team => team["ID"] == teamID2)["Name"];
-                                if (teamID1 != "-1")
+                                var stats = playerStats.Single(d => d["ID"] == statEntryID);
+                                var prevStats = new PastPlayerStats();
+                                var teamID2 = stats["TeamID2"];
+                                var teamID1 = stats["TeamID1"];
+                                if (teamID2 == "-1")
                                 {
-                                    prevStats.TeamSName = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                    if (teamID1 != "-1")
+                                    {
+                                        prevStats.TeamFName = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                    }
                                 }
+                                else
+                                {
+                                    prevStats.TeamFName = teams.Single(team => team["ID"] == teamID2)["Name"];
+                                    if (teamID1 != "-1")
+                                    {
+                                        prevStats.TeamSName = teams.Single(team => team["ID"] == teamID1)["Name"];
+                                    }
+                                }
+                                prevStats.GP = Convert.ToUInt16(stats["GamesP"]);
+                                prevStats.GS = Convert.ToUInt16(stats["GamesS"]);
+                                prevStats.MINS = Convert.ToUInt16(stats["Minutes"]);
+                                prevStats.PTS = Convert.ToUInt16(stats["Points"]);
+                                prevStats.DREB = Convert.ToUInt16(stats["DRebs"]);
+                                prevStats.OREB = Convert.ToUInt16(stats["ORebs"]);
+                                prevStats.AST = Convert.ToUInt16(stats["Assists"]);
+                                prevStats.STL = Convert.ToUInt16(stats["Steals"]);
+                                prevStats.BLK = Convert.ToUInt16(stats["Blocks"]);
+                                prevStats.TOS = Convert.ToUInt16(stats["TOs"]);
+                                prevStats.FOUL = Convert.ToUInt16(stats["Fouls"]);
+                                prevStats.FGM = Convert.ToUInt16(stats["FGMade"]);
+                                prevStats.FGA = Convert.ToUInt16(stats["FGAtt"]);
+                                try
+                                {
+                                    prevStats.TPM = Convert.ToUInt16(stats["3PTMade"]);
+                                    prevStats.TPA = Convert.ToUInt16(stats["3PTAtt"]);
+                                }
+                                catch (KeyNotFoundException)
+                                {
+                                    prevStats.TPM = Convert.ToUInt16(stats["TPTMade"]);
+                                    prevStats.TPA = Convert.ToUInt16(stats["TPTAtt"]);
+                                }
+                                prevStats.FTM = Convert.ToUInt16(stats["FTMade"]);
+                                prevStats.FTA = Convert.ToUInt16(stats["FTAtt"]);
+                                prevStats.PlayerID = playerID;
+                                var yearF = 0;
+                                if (nba2KVersion != NBA2KVersion.NBA2K12)
+                                {
+                                    yearF = Convert.ToInt32(stats["Year"]);
+                                }
+                                prevStats.SeasonName = nba2KVersion == NBA2KVersion.NBA2K12
+                                                           ? seasonNames[j]
+                                                           : String.Format("{0}-{1}", yearF - 1, yearF);
+                                prevStats.IsPlayoff = false;
+                                prevStats.Order = nba2KVersion == NBA2KVersion.NBA2K12 ? 20 - j : yearF;
+                                prevStats.EndEdit();
+                                ppsList.Add(prevStats);
                             }
-                            prevStats.GP = Convert.ToUInt16(stats["GamesP"]);
-                            prevStats.GS = Convert.ToUInt16(stats["GamesS"]);
-                            prevStats.MINS = Convert.ToUInt16(stats["Minutes"]);
-                            prevStats.PTS = Convert.ToUInt16(stats["Points"]);
-                            prevStats.DREB = Convert.ToUInt16(stats["DRebs"]);
-                            prevStats.OREB = Convert.ToUInt16(stats["ORebs"]);
-                            prevStats.AST = Convert.ToUInt16(stats["Assists"]);
-                            prevStats.STL = Convert.ToUInt16(stats["Steals"]);
-                            prevStats.BLK = Convert.ToUInt16(stats["Blocks"]);
-                            prevStats.TOS = Convert.ToUInt16(stats["TOs"]);
-                            prevStats.FOUL = Convert.ToUInt16(stats["Fouls"]);
-                            prevStats.FGM = Convert.ToUInt16(stats["FGMade"]);
-                            prevStats.FGA = Convert.ToUInt16(stats["FGAtt"]);
-                            try
-                            {
-                                prevStats.TPM = Convert.ToUInt16(stats["3PTMade"]);
-                                prevStats.TPA = Convert.ToUInt16(stats["3PTAtt"]);
-                            }
-                            catch (KeyNotFoundException)
-                            {
-                                prevStats.TPM = Convert.ToUInt16(stats["TPTMade"]);
-                                prevStats.TPA = Convert.ToUInt16(stats["TPTAtt"]);
-                            }
-                            prevStats.FTM = Convert.ToUInt16(stats["FTMade"]);
-                            prevStats.FTA = Convert.ToUInt16(stats["FTAtt"]);
-                            prevStats.PlayerID = playerID;
-                            var yearF = 0;
-                            if (nba2KVersion != NBA2KVersion.NBA2K12)
-                            {
-                                yearF = Convert.ToInt32(stats["Year"]);
-                            }
-                            prevStats.SeasonName = nba2KVersion == NBA2KVersion.NBA2K12
-                                                       ? seasonNames[j]
-                                                       : String.Format("{0}-{1}", yearF - 1, yearF);
-                            prevStats.IsPlayoff = false;
-                            prevStats.Order = nba2KVersion == NBA2KVersion.NBA2K12 ? 20 - j : yearF;
-                            prevStats.EndEdit();
-                            ppsList.Add(prevStats);
                         }
-                    }
-                    bw.ReportProgress(99, "Please wait while the player career stats are being saved...");
-                    SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.DB, ppsList);
-                };
+                        MainWindow.AppInvoke(
+                            () =>
+                                {
+                                    pw.SetProgressBarValue(99);
+                                    pw.SetMessage("Please wait while the player career stats are being saved...");
+                                });
+                        SQLiteIO.SavePastPlayerStatsToDatabase(MainWindow.DB, ppsList);
+                    });
 
-            bw.RunWorkerCompleted += delegate
-                {
-                    pw.CanClose = true;
-                    pw.Close();
-                    MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(0);
-                };
-
-            bw.ProgressChanged += delegate(object sender, ProgressChangedEventArgs args)
-                {
-                    pw.SetProgressBarValue(args.ProgressPercentage);
-                    if (args.UserState != null)
-                    {
-                        pw.SetMessage(args.UserState.ToString());
-                    }
-                };
-
-            bw.RunWorkerAsync();
+            pw.CanClose = true;
+            pw.Close();
+            MainWindow.MWInstance.OnImportOldPlayerStatsCompleted(0);
         }
 
         private static bool isValidPlayer(Dictionary<string, string> player, NBA2KVersion nba2KVersion)

@@ -1202,50 +1202,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvSplitStats.ItemsSource = splitPSRsCollection;
         }
 
-        private void updateData()
+        private async Task updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler)
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler);
-        }
-
-        /// <summary>
-        ///     Handles the SelectionChanged event of the cmbSeasonNum control. Loads the specified season's team and player stats and tries
-        ///     to automatically switch to the same player again, if he exists in the specified season and isn't hidden.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">
-        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
-        /// </param>
-        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!_changingTimeframe)
-            {
-                _changingTimeframe = true;
-                rbStatsAllTime.IsChecked = true;
-                _changingTimeframe = false;
-
-                try
-                {
-                    _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
-                }
-                catch (Exception)
-                {
-                    return;
-                }
-
-                if (!(MainWindow.Tf.SeasonNum == _curSeason && !MainWindow.Tf.IsBetween))
-                {
-                    MainWindow.Tf = new Timeframe(_curSeason);
-                    updateData();
-                }
-            }
-        }
-
-        private void refresh()
-        {
+            await MainWindow.UpdateAllData(true);
             MainWindow.ChangeSeason(_curSeason);
 
             populateTeamsCombo();
@@ -1329,6 +1289,39 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             cmbGraphStat_SelectionChanged(null, null);
             MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
+        }
+
+        /// <summary>
+        ///     Handles the SelectionChanged event of the cmbSeasonNum control. Loads the specified season's team and player stats and tries
+        ///     to automatically switch to the same player again, if he exists in the specified season and isn't hidden.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">
+        ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
+        /// </param>
+        private async void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_changingTimeframe)
+            {
+                _changingTimeframe = true;
+                rbStatsAllTime.IsChecked = true;
+                _changingTimeframe = false;
+
+                try
+                {
+                    _curSeason = ((KeyValuePair<int, string>) (((cmbSeasonNum)).SelectedItem)).Key;
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+
+                if (!(MainWindow.Tf.SeasonNum == _curSeason && !MainWindow.Tf.IsBetween))
+                {
+                    MainWindow.Tf = new Timeframe(_curSeason);
+                    await updateData();
+                }
+            }
         }
 
         /// <summary>Handles the Click event of the btnSavePlayer control. Saves the current player's stats to the database.</summary>
@@ -1498,12 +1491,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
                 MainWindow.Tf = new Timeframe(_curSeason);
-                updateData();
+                await updateData();
             }
         }
 
@@ -1512,12 +1505,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                updateData();
+                await updateData();
             }
         }
 
@@ -1529,7 +1522,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1539,7 +1532,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     dtpEnd.SelectedDate = dtpStart.SelectedDate.GetValueOrDefault().AddMonths(1).AddDays(-1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                updateData();
+                await updateData();
                 rbStatsBetween.IsChecked = true;
                 _changingTimeframe = false;
             }
@@ -1553,7 +1546,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1563,7 +1556,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     dtpStart.SelectedDate = dtpEnd.SelectedDate.GetValueOrDefault().AddMonths(-1).AddDays(1);
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                updateData();
+                await updateData();
                 rbStatsBetween.IsChecked = true;
                 _changingTimeframe = false;
             }
@@ -1727,7 +1720,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
         /// </param>
-        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
@@ -1739,7 +1732,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 {
                     if (bsw.ShowDialog() == true)
                     {
-                        updateData();
+                        await updateData();
                     }
                 }
                 catch
@@ -1756,7 +1749,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
         /// </param>
-        private void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvHTHBoxScores.SelectedCells.Count > 0)
             {
@@ -1768,7 +1761,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 {
                     if (bsw.ShowDialog() == true)
                     {
-                        updateData();
+                        await updateData();
                     }
                 }
                 catch

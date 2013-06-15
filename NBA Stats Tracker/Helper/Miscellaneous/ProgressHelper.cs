@@ -4,7 +4,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
 
     using System;
     using System.Threading;
-    using System.Threading.Tasks;
 
     #endregion
 
@@ -25,11 +24,6 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
         public static void UpdateProgress(string message)
         {
             Interlocked.Exchange(ref Progress, new ProgressInfo(Progress, message));
-        }
-
-        public static void DoInScheduler(Action a, TaskScheduler scheduler)
-        {
-            Task.Factory.StartNew(() => a, CancellationToken.None, TaskCreationOptions.None, scheduler).Wait();
         }
     }
 }

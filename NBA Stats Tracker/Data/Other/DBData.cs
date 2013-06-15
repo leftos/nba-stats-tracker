@@ -30,17 +30,32 @@ namespace NBA_Stats_Tracker.Data.Other
 
     public class DBData
     {
-        public readonly List<BoxScoreEntry> BSHist;
-        public readonly Dictionary<int, string> DisplayNames;
-        public readonly Dictionary<int, PlayerStats> PST;
-        public readonly PlayerRankings PlayoffPlayerRankings;
-        public readonly TeamRankings PlayoffTeamRankings;
-        public readonly PlayerRankings SeasonPlayerRankings;
-        public readonly TeamRankings SeasonTeamRankings;
-        public readonly Dictionary<int, Dictionary<string, PlayerStats>> SplitPlayerStats;
-        public readonly Dictionary<int, Dictionary<string, TeamStats>> SplitTeamStats;
-        public readonly Dictionary<int, TeamStats> TST;
-        public readonly Dictionary<int, TeamStats> TSTOpp;
+        public List<BoxScoreEntry> BSHist;
+        public Dictionary<int, string> DisplayNames;
+        public Dictionary<int, PlayerStats> PST;
+        public PlayerRankings PlayoffPlayerRankings;
+        public TeamRankings PlayoffTeamRankings;
+        public PlayerRankings SeasonPlayerRankings;
+        public TeamRankings SeasonTeamRankings;
+        public Dictionary<int, Dictionary<string, PlayerStats>> SplitPlayerStats;
+        public Dictionary<int, Dictionary<string, TeamStats>> SplitTeamStats;
+        public Dictionary<int, TeamStats> TST;
+        public Dictionary<int, TeamStats> TSTOpp;
+
+        public DBData()
+        {
+            BSHist = new List<BoxScoreEntry>();
+            DisplayNames = new Dictionary<int, string>();
+            PST = new Dictionary<int, PlayerStats>();
+            SeasonPlayerRankings = new PlayerRankings();
+            PlayoffPlayerRankings = new PlayerRankings();
+            PlayoffTeamRankings = new TeamRankings();
+            SplitPlayerStats = new Dictionary<int, Dictionary<string, PlayerStats>>();
+            SplitTeamStats = new Dictionary<int, Dictionary<string, TeamStats>>();
+            TST = new Dictionary<int, TeamStats>();
+            TSTOpp = new Dictionary<int, TeamStats>();
+            SeasonTeamRankings = new TeamRankings();
+        }
 
         public DBData(
             Dictionary<int, TeamStats> tst,

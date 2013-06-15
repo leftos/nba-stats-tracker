@@ -52,7 +52,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
     using NBA_Stats_Tracker.Data.Players.Contracts;
     using NBA_Stats_Tracker.Data.SQLiteIO;
     using NBA_Stats_Tracker.Data.Teams;
-    using NBA_Stats_Tracker.Helper.EventHandlers;
     using NBA_Stats_Tracker.Helper.Miscellaneous;
     using NBA_Stats_Tracker.Helper.WindowsForms;
     using NBA_Stats_Tracker.Interop.BR;
@@ -189,7 +188,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         private double _progress;
         private Semaphore _sem;
         private bool _watchTimerRunning;
-        private BackgroundWorker _worker1 = new BackgroundWorker();
         private DispatcherTimer dt;
 
         /// <summary>
@@ -336,7 +334,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             CommandBindings.Add(new CommandBinding(CmndExport, btnExport2K12_Click));
 
             CmndOpen.InputGestures.Add(new KeyGesture(Key.O, ModifierKeys.Control));
-            CommandBindings.Add(new CommandBinding(CmndOpen, FileOpen));
+            CommandBindings.Add(new CommandBinding(CmndOpen, btnOpen_Click));
 
             CmndSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(CmndSave, btnSaveCurrentSeason_Click));
@@ -474,7 +472,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnImport2K12_Click(object sender, RoutedEventArgs e)
+        private async void btnImport2K12_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(CurrentDB))
             {
@@ -498,7 +496,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData();
+                await UpdateAllData();
             }
 
             var fbd = new FolderBrowserDialog
@@ -541,7 +539,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
+        private async void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrWhiteSpace(CurrentDB))
             {
@@ -566,18 +564,36 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, 10, "Saving new database...");
-            Task.Factory.StartNew(() => SQLiteIO.SaveDatabaseAs(file))
-                .FailFastOnException(UIScheduler)
-                .ContinueWith(t => finishSavingAs(t, file), UIScheduler)
-                .FailFastOnException(UIScheduler);
-        }
+            var result = await SQLiteIO.SaveDatabaseAs(file);
+            GameLength = SQLiteIO.GetSetting("Game Length", 48);
+            SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
+            NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
+            ShotClockDuration = SQLiteIO.GetSetting("Shot Clock Duration", 24);
 
-        private void finishSavingAs(Task<bool> task, string file)
-        {
-            finishLoadingDatabase();
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
+            //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
+            updateNotables();
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
+            UpdateSearchCache();
+
+            if (_notables.Count > 0)
+            {
+                _marqueeTimer.Start();
+            }
+
+            mnuTools.IsEnabled = true;
+            grdAnalysis.IsEnabled = true;
+            grdUpdate.IsEnabled = true;
+
             StopProgressWatchTimer();
             IsEnabled = true;
-            if (task.Result)
+
+            UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
+            LoadingSeason = false;
+            mainGrid.Visibility = Visibility.Visible;
+            StopProgressWatchTimer();
+            IsEnabled = true;
+            if (result)
             {
                 txtFile.Text = file;
                 UpdateStatus("All seasons saved successfully.");
@@ -607,7 +623,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void FileOpen(object sender, RoutedEventArgs e)
+        private async Task FileOpen()
         {
             LoadingSeason = true;
             TST = new Dictionary<int, TeamStats>();
@@ -645,10 +661,37 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
-            Task.Factory.StartNew(() => SQLiteIO.LoadSeason())
-                .FailFastOnException(UIScheduler)
-                .ContinueWith(t => finishLoadingDatabase(), UIScheduler)
-                .FailFastOnException(UIScheduler);
+            parseDBData(await TaskEx.Run(() => SQLiteIO.LoadSeason()));
+
+            GameLength = SQLiteIO.GetSetting("Game Length", 48);
+            SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
+            NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
+            ShotClockDuration = SQLiteIO.GetSetting("Shot Clock Duration", 24);
+
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
+            //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
+            updateNotables();
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
+            UpdateSearchCache();
+
+            if (_notables.Count > 0)
+            {
+                _marqueeTimer.Start();
+            }
+
+            mnuTools.IsEnabled = true;
+            grdAnalysis.IsEnabled = true;
+            grdUpdate.IsEnabled = true;
+
+            if (!false)
+            {
+                StopProgressWatchTimer();
+                IsEnabled = true;
+            }
+
+            UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
+            LoadingSeason = false;
+            mainGrid.Visibility = Visibility.Visible;
 
             //SQLiteIO.LoadSeason();
         }
@@ -695,13 +738,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
         }
 
-        private void doPopulateAll()
-        {
-            DBData dbData;
-            SQLiteIO.PopulateAll(Tf, out dbData);
-            parseDBData(dbData);
-        }
-
         private static void parseDBData(DBData dbData)
         {
             TST = dbData.TST;
@@ -715,39 +751,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             PlayoffPlayerRankings = dbData.PlayoffPlayerRankings;
             DisplayNames = dbData.DisplayNames;
             BSHist = dbData.BSHist;
-        }
-
-        private void finishLoadingDatabase(bool leaveProgressOpen = false)
-        {
-            GameLength = SQLiteIO.GetSetting("Game Length", 48);
-            SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
-            NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
-            ShotClockDuration = SQLiteIO.GetSetting("Shot Clock Duration", 24);
-
-            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
-            //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
-            updateNotables();
-            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
-            UpdateSearchCache();
-
-            if (_notables.Count > 0)
-            {
-                _marqueeTimer.Start();
-            }
-
-            mnuTools.IsEnabled = true;
-            grdAnalysis.IsEnabled = true;
-            grdUpdate.IsEnabled = true;
-
-            if (!leaveProgressOpen)
-            {
-                StopProgressWatchTimer();
-                IsEnabled = true;
-            }
-
-            UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
-            LoadingSeason = false;
-            mainGrid.Visibility = Visibility.Visible;
         }
 
         private void UpdateSearchCache()
@@ -817,7 +820,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
+        private async void btnLoadUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.IsTSTEmpty())
             {
@@ -829,14 +832,14 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             var bsW = new BoxScoreWindow();
             bsW.ShowDialog();
 
-            parseBoxScoreResult();
+            await parseBoxScoreResult();
         }
 
         /// <summary>
         ///     Parses the local box score instance; adds the stats to the according teams and players and adds the box score to the box
         ///     score history.
         /// </summary>
-        private void parseBoxScoreResult()
+        private async Task parseBoxScoreResult()
         {
             if (TempBSE_BS.Done == false)
             {
@@ -881,17 +884,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
-            Task.Factory.StartNew(
-                () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                .FailFastOnException(UIScheduler)
-                .ContinueWith(t => UpdateAllData())
-                .FailFastOnException(UIScheduler)
-                .ContinueWith(t => finishParsingBoxScore(), UIScheduler)
-                .FailFastOnException(UIScheduler);
-        }
-
-        private void finishParsingBoxScore()
-        {
+            await
+                TaskEx.Run(
+                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+            await UpdateAllData();
             UpdateStatus("One or more Box Scores have been added/updated. Database saved.");
             StopProgressWatchTimer();
             IsEnabled = true;
@@ -1044,7 +1040,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnExport2K12_Click(object sender, RoutedEventArgs e)
+        private async void btnExport2K12_Click(object sender, RoutedEventArgs e)
         {
             if (TST.Count != 30)
             {
@@ -1069,7 +1065,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (Tf.IsBetween)
             {
                 Tf = new Timeframe(CurSeason);
-                UpdateAllData();
+                await UpdateAllData();
             }
 
             var fbd = new FolderBrowserDialog
@@ -1193,7 +1189,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
+        private async void mnuFileGetRealStats_Click(object sender, RoutedEventArgs e)
         {
             var file = "";
 
@@ -1250,7 +1246,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                                 MessageBoxResult.No);
                         if (r == MessageBoxResult.No)
                         {
-                            SQLiteIO.LoadSeason(file);
+                            await SQLiteIO.LoadSeason(file);
                             txtFile.Text = file;
                             return;
                         }
@@ -1352,84 +1348,77 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         k++;
                     });
 
-            _worker1 = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
+            foreach (var kvp in teamNamesShort)
+            {
+                await TaskEx.Run(() => doGetRealTeam(kvp, teamOrder, teamDivisions, realTSTOpp, realPST));
+                AppInvoke(getRealStats_UpdateProgressBar);
+            }
+            // TODO: Re-enable once Playoffs start
+            BR.AddPlayoffTeamStats(ref RealTST, ref realTSTOpp);
 
-            _worker1.DoWork += delegate
+            if (RealTST[0].Name != "Canceled")
+            {
+                TST = RealTST;
+                TSTOpp = realTSTOpp;
+                PST = realPST;
+                if (CurSeason == 0)
                 {
-                    foreach (var kvp in teamNamesShort)
-                    {
-                        Dictionary<int, PlayerStats> temppst;
-                        TeamStats realts;
-                        TeamStats realtsopp;
-                        BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
-                        var id = teamOrder[kvp.Key];
-                        RealTST[id] = realts;
-                        RealTST[id].Division = teamDivisions[realts.Name];
-                        RealTST[id].Conference = Divisions.Single(d => d.ID == RealTST[id].Division).ConferenceID;
-                        realTSTOpp[id] = realtsopp;
-                        realTSTOpp[id].ID = id;
-                        realTSTOpp[id].Division = RealTST[id].Division;
-                        realTSTOpp[id].Conference = RealTST[id].Conference;
-                        foreach (var kvp2 in temppst)
-                        {
-                            kvp2.Value.ID = realPST.Count;
-                            realPST.Add(realPST.Count, kvp2.Value);
-                        }
-                        _worker1.ReportProgress(1);
-                    }
-                    // TODO: Re-enable once Playoffs start
-                    BR.AddPlayoffTeamStats(ref RealTST, ref realTSTOpp);
-                };
-
-            _worker1.ProgressChanged += delegate
+                    CurSeason = 1;
+                }
+                int maxSeason;
+                if (File.Exists(file))
                 {
-                    _sem.WaitOne();
-                    getRealStats_UpdateProgressBar();
-                    _sem.Release();
-                };
-
-            _worker1.RunWorkerCompleted += delegate
+                    maxSeason = SQLiteIO.GetMaxSeason(file);
+                }
+                else
                 {
-                    if (RealTST[0].Name != "Canceled")
-                    {
-                        TST = RealTST;
-                        TSTOpp = realTSTOpp;
-                        PST = realPST;
-                        if (CurSeason == 0)
-                        {
-                            CurSeason = 1;
-                        }
-                        int maxSeason;
-                        if (File.Exists(file))
-                        {
-                            maxSeason = SQLiteIO.GetMaxSeason(file);
-                        }
-                        else
-                        {
-                            maxSeason = 0;
-                        }
-                        SQLiteIO.SaveSeasonToDatabase(file, TST, TSTOpp, PST, CurSeason, maxSeason);
-                        txtFile.Text = file;
-                        populateSeasonCombo(file);
-                        SQLiteIO.LoadSeason(file, CurSeason);
+                    maxSeason = 0;
+                }
+                SQLiteIO.SaveSeasonToDatabase(file, TST, TSTOpp, PST, CurSeason, maxSeason);
+                txtFile.Text = file;
+                populateSeasonCombo(file);
+                await SQLiteIO.LoadSeason(file, CurSeason);
 
-                        txbWait.Visibility = Visibility.Hidden;
-                        mainGrid.Visibility = Visibility.Visible;
+                txbWait.Visibility = Visibility.Hidden;
+                mainGrid.Visibility = Visibility.Visible;
 
-                        mnuTools.IsEnabled = true;
-                        grdAnalysis.IsEnabled = true;
-                        grdUpdate.IsEnabled = true;
+                mnuTools.IsEnabled = true;
+                grdAnalysis.IsEnabled = true;
+                grdUpdate.IsEnabled = true;
 
-                        UpdateStatus("The download of real NBA stats is done.");
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "The download of real NBA stats was cancelled. Please reload the current database, if any, before continuing work.");
-                    }
-                };
+                UpdateStatus("The download of real NBA stats is done.");
+            }
+            else
+            {
+                MessageBox.Show(
+                    "The download of real NBA stats was cancelled. Please reload the current database, if any, before continuing work.");
+            }
+        }
 
-            _worker1.RunWorkerAsync();
+        private static void doGetRealTeam(
+            KeyValuePair<string, string> kvp,
+            Dictionary<string, int> teamOrder,
+            Dictionary<string, int> teamDivisions,
+            Dictionary<int, TeamStats> realTSTOpp,
+            Dictionary<int, PlayerStats> realPST)
+        {
+            Dictionary<int, PlayerStats> temppst;
+            TeamStats realts;
+            TeamStats realtsopp;
+            BR.ImportRealStats(kvp, out realts, out realtsopp, out temppst);
+            var id = teamOrder[kvp.Key];
+            RealTST[id] = realts;
+            RealTST[id].Division = teamDivisions[realts.Name];
+            RealTST[id].Conference = Divisions.Single(d => d.ID == RealTST[id].Division).ConferenceID;
+            realTSTOpp[id] = realtsopp;
+            realTSTOpp[id].ID = id;
+            realTSTOpp[id].Division = RealTST[id].Division;
+            realTSTOpp[id].Conference = RealTST[id].Conference;
+            foreach (var kvp2 in temppst)
+            {
+                kvp2.Value.ID = realPST.Count;
+                realPST.Add(realPST.Count, kvp2.Value);
+            }
         }
 
         /// <summary>Updates the progress bar during the download of the real NBA stats.</summary>
@@ -1503,7 +1492,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
             {
@@ -1521,10 +1510,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (!LoadingSeason)
             {
                 IsEnabled = false;
-                Task.Factory.StartNew(() => UpdateAllData())
-                    .FailFastOnException(UIScheduler)
-                    .ContinueWith(t => { IsEnabled = true; }, UIScheduler)
-                    .FailFastOnException(UIScheduler);
+                await UpdateAllData();
+                IsEnabled = true;
             }
         }
 
@@ -1601,7 +1588,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         }
 
         /// <summary>Updates a specific box score using the local box score instance.</summary>
-        public static void UpdateBoxScore()
+        public static async Task UpdateBoxScore()
         {
             if (TempBSE_BS.ID == -1 || !TempBSE_BS.Done)
             {
@@ -1618,7 +1605,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             MessageBox.Show("The database will now save to update the box score. This could take a few moments.");
             SQLiteIO.SaveSeasonToDatabase();
-            UpdateAllData();
+            await UpdateAllData();
         }
 
         /// <summary>Handles the Click event of the btnTeamOverview control. Displays the Team Overview window.</summary>
@@ -1648,9 +1635,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnOpen_Click(object sender, RoutedEventArgs e)
+        private async void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            FileOpen(null, null);
+            await FileOpen();
         }
 
         /// <summary>
@@ -1743,40 +1730,27 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        public void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
+        public async void btnSaveCurrentSeason_Click(object sender, RoutedEventArgs e)
         {
+            if (Tf.IsBetween)
+            {
+                Misc.ShowInformativeMessage(
+                    "The current timeframe is set to between specific dates. To save the season, switch to "
+                    + "a season timeframe, do any changes you want, and save.");
+                return;
+            }
+
             IsEnabled = false;
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
-            if (Tf.IsBetween)
-            {
-                Tf = new Timeframe(CurSeason);
-                Task.Factory.StartNew(() => UpdateAllData(true))
-                    .FailFastOnException(UIScheduler)
-                    .ContinueWith(
-                        t => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .FailFastOnException(UIScheduler)
-                    .ContinueWith(t => UpdateAllData(true))
-                    .FailFastOnException(UIScheduler)
-                    .ContinueWith(t => finishSavingSeason(), UIScheduler)
-                    .FailFastOnException(UIScheduler);
-            }
-            else
-            {
-                Task.Factory.StartNew(
-                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)))
-                    .ContinueWith(t => UpdateAllData(true))
-                    .ContinueWith(t => finishSavingSeason(), UIScheduler)
-                    .FailFastOnException(UIScheduler);
-            }
-        }
-
-        private void finishSavingSeason()
-        {
+            await
+                TaskEx.Run(
+                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+            await UpdateAllData(true);
             StopProgressWatchTimer();
             txtFile.Text = CurrentDB;
-            IsEnabled = true;
             MWInstance.UpdateStatus("File saved successfully. Season " + CurSeason.ToString() + " updated.");
+            IsEnabled = true;
         }
 
         /// <summary>Handles the Click event of the btnLeagueOverview control. Displays the League Overview window.</summary>
@@ -1813,7 +1787,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuFileNew_Click(object sender, RoutedEventArgs e)
+        private async void mnuFileNew_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog
                 {
@@ -1859,13 +1833,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             grdUpdate.IsEnabled = true;
 
             MWInstance.IsEnabled = false;
-            Task.Factory.StartNew(() => UpdateAllData()).FailFastOnException(UIScheduler).ContinueWith(
-                t =>
-                    {
-                        StopProgressWatchTimer();
-                        MWInstance.IsEnabled = true;
-                    },
-                UIScheduler).FailFastOnException(UIScheduler);
+            await UpdateAllData();
+            StopProgressWatchTimer();
+            MWInstance.IsEnabled = true;
         }
 
         /// <summary>Handles the Click event of the btnAdd control. Allows the user to add teams or players the database.</summary>
@@ -1948,7 +1918,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuMiscStartNewSeason_Click(object sender, RoutedEventArgs e)
+        private async void mnuMiscStartNewSeason_Click(object sender, RoutedEventArgs e)
         {
             if (!SQLiteIO.IsTSTEmpty())
             {
@@ -2059,13 +2029,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ChangeSeason(CurSeason);
                     Tf = new Timeframe(CurSeason);
                     IsEnabled = false;
-                    Task.Factory.StartNew(() => UpdateAllData()).FailFastOnException(UIScheduler).ContinueWith(
-                        t =>
-                            {
-                                UpdateStatus("New season started. Database saved.");
-                                IsEnabled = true;
-                            },
-                        UIScheduler).FailFastOnException(UIScheduler);
+                    await UpdateAllData();
+                    UpdateStatus("New season started. Database saved.");
+                    IsEnabled = true;
                 }
             }
         }
@@ -2075,19 +2041,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
+        private async void btnSaveAllSeasons_Click(object sender, RoutedEventArgs e)
         {
             IsEnabled = false;
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving all seasons...");
-            Task.Factory.StartNew(() => SQLiteIO.SaveAllSeasons(CurrentDB))
-                .FailFastOnException(UIScheduler)
-                .ContinueWith(t => finishSavingAllSeasons(), UIScheduler)
-                .FailFastOnException(UIScheduler);
-        }
-
-        private void finishSavingAllSeasons()
-        {
+            await TaskEx.Run(() => SQLiteIO.SaveAllSeasons(CurrentDB));
             UpdateStatus("All seasons saved successfully!");
             StopProgressWatchTimer();
             IsEnabled = true;
@@ -2253,7 +2212,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuMiscDeleteBoxScores_Click(object sender, RoutedEventArgs e)
+        private async void mnuMiscDeleteBoxScores_Click(object sender, RoutedEventArgs e)
         {
             if (SQLiteIO.IsTSTEmpty())
             {
@@ -2262,7 +2221,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             var bslw = new BoxScoreListWindow();
             bslw.ShowDialog();
-            SQLiteIO.LoadSeason();
+            await SQLiteIO.LoadSeason();
         }
 
         /// <summary>
@@ -2450,7 +2409,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void mnuMiscLiveBoxScore_Click(object sender, RoutedEventArgs e)
+        private async void mnuMiscLiveBoxScore_Click(object sender, RoutedEventArgs e)
         {
             var lbsw = new LiveBoxScoreWindow();
             if (lbsw.ShowDialog() == true)
@@ -2458,7 +2417,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 var bsw = new BoxScoreWindow(TempLiveBSE);
                 bsw.ShowDialog();
 
-                parseBoxScoreResult();
+                await parseBoxScoreResult();
             }
         }
 
@@ -2649,27 +2608,50 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             ascw.ShowDialog();
         }
 
-        public static void UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
+        public static void AppInvoke(Action a)
         {
-            lock (_lock)
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, a);
+        }
+
+        public static async Task UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)
+        {
+            MWInstance.startProgressWatchTimer();
+            var dbData = new DBData();
+            dbData = await TaskEx.Run(() => SQLiteIO.PopulateAll(Tf));
+            parseDBData(dbData);
+            if (onlyPopulate)
             {
-                Task.Factory.StartNew(
-                    () => MWInstance.startProgressWatchTimer(),
-                    CancellationToken.None,
-                    TaskCreationOptions.None,
-                    MWInstance.UIScheduler).Wait();
-                DBData dbData;
-                SQLiteIO.PopulateAll(Tf, out dbData);
-                parseDBData(dbData);
-                if (!onlyPopulate)
-                {
-                    Task.Factory.StartNew(
-                        () => MWInstance.finishLoadingDatabase(leaveProgressWindowOpen),
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        MWInstance.UIScheduler).Wait();
-                }
+                return;
             }
+            GameLength = SQLiteIO.GetSetting("Game Length", 48);
+            SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
+            NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
+            ShotClockDuration = SQLiteIO.GetSetting("Shot Clock Duration", 24);
+
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating notables..."));
+            //MessageBox.Show(SQLiteIO.Progress.CurrentStage.ToString());
+            updateNotables();
+            Interlocked.Exchange(ref ProgressHelper.Progress, new ProgressInfo(ProgressHelper.Progress, "Updating search cache..."));
+            MWInstance.UpdateSearchCache();
+
+            if (_notables.Count > 0)
+            {
+                MWInstance._marqueeTimer.Start();
+            }
+
+            MWInstance.mnuTools.IsEnabled = true;
+            MWInstance.grdAnalysis.IsEnabled = true;
+            MWInstance.grdUpdate.IsEnabled = true;
+
+            if (!leaveProgressWindowOpen)
+            {
+                MWInstance.StopProgressWatchTimer();
+                MWInstance.IsEnabled = true;
+            }
+
+            MWInstance.UpdateStatus(String.Format("{0} teams & {1} players loaded successfully!", TST.Count, PST.Count));
+            LoadingSeason = false;
+            MWInstance.mainGrid.Visibility = Visibility.Visible;
         }
 
         private static void updateNotables()
@@ -3005,50 +2987,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             return s;
         }
 
-        private void mnuMiscRecalculateCareerHighs_Click(object sender, RoutedEventArgs e)
-        {
-            var bw = new BackgroundWorker { WorkerReportsProgress = true };
-            bw.DoWork += delegate
-                {
-                    var highsCount = PST.FirstOrDefault().Value.CareerHighs.Length;
-                    var plCount = PST.Keys.Count();
-                    for (var i = 0; i < plCount; i++)
-                    {
-                        bw.ReportProgress(Convert.ToInt32((double) 100 * i / plCount));
-                        var pID = PST.Keys.ToList()[i];
-                        PST[pID].CalculateSeasonHighs(BSHist);
-                        for (var k = 0; k < highsCount; k++)
-                        {
-                            try
-                            {
-                                PST[pID].CareerHighs[k] = SeasonHighs[pID].Select(sh => sh.Value[k]).Max();
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                for (var j = 0; j < highsCount; j++)
-                                {
-                                    PST[pID].CareerHighs[j] = 0;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                };
-
-            bw.RunWorkerCompleted += delegate
-                {
-                    mainGrid.Visibility = Visibility.Visible;
-                    UpdateStatus("Calculated career highs from season highs. Confirm you want this by saving the database.");
-                };
-
-            bw.ProgressChanged +=
-                delegate(object o, ProgressChangedEventArgs args)
-                    { status.Content = "Updating (" + args.ProgressPercentage + "% complete)..."; };
-
-            mainGrid.Visibility = Visibility.Hidden;
-            bw.RunWorkerAsync();
-        }
-
         private void mnuMiscImportPrevYear2K12_Click(object sender, RoutedEventArgs e)
         {
             if (
@@ -3127,7 +3065,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             updateNotables();
         }
 
-        private void mnuMiscImportOldPlayerStats2K12_Click(object sender, RoutedEventArgs e)
+        private async void mnuMiscImportOldPlayerStats2K12_Click(object sender, RoutedEventArgs e)
         {
             var fbd = new FolderBrowserDialog
                 {
@@ -3151,7 +3089,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             mainGrid.Visibility = Visibility.Hidden;
 
-            REDitor.ImportOldPlayerCareerStats(PST, TST, fbd.SelectedPath);
+            await REDitor.ImportOldPlayerCareerStats(PST, TST, fbd.SelectedPath);
         }
 
         public void OnImportOldPlayerStatsCompleted(int result)

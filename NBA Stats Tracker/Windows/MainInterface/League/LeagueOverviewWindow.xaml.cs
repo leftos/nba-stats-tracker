@@ -25,7 +25,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
     using System.ComponentModel;
     using System.Data;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
@@ -285,7 +284,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -296,7 +295,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
 
-                updateData();
+                await updateData();
             }
         }
 
@@ -308,7 +307,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -319,18 +318,35 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 }
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
 
-                updateData();
+                await updateData();
             }
         }
 
-        private void updateData()
+        private async Task updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                .ContinueWith(t => linkInternalsToMainWindow())
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                .ContinueWith(t => refresh(rbStatsBetween.IsChecked.GetValueOrDefault()), MainWindow.MWInstance.UIScheduler);
+            await MainWindow.UpdateAllData(true);
+            linkInternalsToMainWindow();
+            if (rbStatsBetween.IsChecked != true)
+            {
+                _reload = true;
+                tbcLeagueOverview_SelectionChanged(null, null);
+            }
+            else
+            {
+                _lastShownTeamSeason = 0;
+                _lastShownPlayerSeason = 0;
+                _lastShownShootingSeason = 0;
+                _lastShownTeamShootingSeason = 0;
+                _lastShownBoxSeason = 0;
+                rbStatsBetween.IsChecked = true;
+                _reload = true;
+                tbcLeagueOverview_SelectionChanged(null, null);
+            }
+            _changingTimeframe = false;
+
+            MainWindow.MWInstance.StopProgressWatchTimer();
+            IsEnabled = true;
         }
 
         /// <summary>Populates the season combo.</summary>
@@ -485,7 +501,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             for (var i = 0; i < _pst.Count; i++)
             {
                 var ps = _pst[_pst.Keys.ElementAt(i)];
-                Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => updatePlayerStatsCalcProgress(i+1, playerCount)));
+                Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => updatePlayerStatsCalcProgress(i + 1, playerCount)));
                 await TaskEx.Run(() => doPlayer(ps));
             }
             var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
@@ -620,7 +636,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             txbStatus.FontWeight = FontWeights.Bold;
             txbStatus.Text = "Please wait while player shooting stats are being calculated...";
             grdMain.Visibility = Visibility.Hidden;
-            
+
             await TaskEx.Run(() => doPlayerShootingStats());
 
             var isSeason = rbSeason.IsChecked.GetValueOrDefault();
@@ -645,7 +661,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     _psrListPl[i].PopulatePBPSList(_bseListPl);
                 }
                 Dispatcher.Invoke(
-                    DispatcherPriority.Background, new Action(() => { updatePlayerShootingStatsCalcProgress(i+1, playerCount); }));
+                    DispatcherPriority.Background, new Action(() => { updatePlayerShootingStatsCalcProgress(i + 1, playerCount); }));
             }
         }
 
@@ -1526,7 +1542,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1534,7 +1550,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _reload = true;
                 MainWindow.Tf = new Timeframe(_curSeason);
 
-                updateData();
+                await updateData();
             }
         }
 
@@ -1546,7 +1562,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1554,7 +1570,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                 _reload = true;
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
 
-                updateData();
+                await updateData();
             }
         }
 
@@ -1576,7 +1592,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
             {
@@ -1592,31 +1608,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
 
             MainWindow.Tf = new Timeframe(_curSeason);
 
-            updateData();
-        }
-
-        private void refresh(bool between)
-        {
-            if (!between)
-            {
-                _reload = true;
-                tbcLeagueOverview_SelectionChanged(null, null);
-            }
-            else
-            {
-                _lastShownTeamSeason = 0;
-                _lastShownPlayerSeason = 0;
-                _lastShownShootingSeason = 0;
-                _lastShownTeamShootingSeason = 0;
-                _lastShownBoxSeason = 0;
-                rbStatsBetween.IsChecked = true;
-                _reload = true;
-                tbcLeagueOverview_SelectionChanged(null, null);
-            }
-            _changingTimeframe = false;
-
-            MainWindow.MWInstance.StopProgressWatchTimer();
-            IsEnabled = true;
+            await updateData();
         }
 
         private void linkInternalsToMainWindow()
@@ -1633,7 +1625,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
         /// </param>
-        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
@@ -1646,7 +1638,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
                     if (bsw.ShowDialog() == true)
                     {
                         _reload = true;
-                        updateData();
+                        await updateData();
                         tbcLeagueOverview_SelectionChanged(null, null);
                     }
                 }

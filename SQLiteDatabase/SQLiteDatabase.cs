@@ -118,7 +118,6 @@ namespace SQLite_Database
                         DataType = Type.GetType(dataRow["DataType"].ToString()),
                         ReadOnly = (bool) dataRow["IsReadOnly"],
                         AutoIncrement = (bool) dataRow["IsAutoIncrement"],
-
                         /* Commented below line because it allowed the runtime to assume a column's values should be unique
                          * even when a table had multiple columns as primary keys, and thus throw exceptions when not appropriate. */
                         //Unique = (bool) dataRow["IsUnique"]

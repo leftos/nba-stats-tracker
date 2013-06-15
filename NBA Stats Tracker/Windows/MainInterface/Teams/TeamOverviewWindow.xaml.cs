@@ -1215,7 +1215,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
+        private async void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
         {
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
@@ -1359,7 +1359,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             SQLiteIO.SaveSeasonToDatabase(
                 MainWindow.CurrentDB, _tst, _tstOpp, playersToUpdate, _curSeason, _maxSeason, partialUpdate: true);
-            updateData();
+            await updateData();
         }
 
         /// <summary>Gets the value of the specified cell from the dgvTeamStats DataGrid.</summary>
@@ -1407,7 +1407,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dtpEnd.SelectedDate.GetValueOrDefault() == _lastEndDate)
             {
@@ -1426,23 +1426,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            updateData();
+            await updateData();
             _changingTimeframe = false;
         }
 
-        private void updateData()
+        private async Task updateData()
         {
             IsEnabled = false;
-            Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                .ContinueWith(linkInternalsToMainWindow)
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                .ContinueWith(t => refresh(), MainWindow.MWInstance.UIScheduler)
-                .FailFastOnException(MainWindow.MWInstance.UIScheduler);
-        }
-
-        private void refresh()
-        {
+            await MainWindow.UpdateAllData(true);
+            linkInternalsToMainWindow();
             var curTeam = cmbTeam.SelectedIndex == -1 ? -1 : _curTeam;
             populateTeamsCombo();
             try
@@ -1470,7 +1462,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void dtpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dtpEnd.SelectedDate.GetValueOrDefault() == _lastEndDate)
             {
@@ -1489,7 +1481,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
             rbStatsBetween.IsChecked = true;
-            updateData();
+            await updateData();
             _changingTimeframe = false;
         }
 
@@ -1498,7 +1490,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsAllTime_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1506,7 +1498,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 _lastEndDate = DateTime.MinValue;
                 _lastStartDate = DateTime.MinValue;
                 MainWindow.Tf = new Timeframe(_curSeason);
-                updateData();
+                await updateData();
                 _changingTimeframe = false;
             }
         }
@@ -1516,7 +1508,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
+        private async void rbStatsBetween_Checked(object sender, RoutedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -1524,7 +1516,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 _lastEndDate = DateTime.MinValue;
                 _lastStartDate = DateTime.MinValue;
                 MainWindow.Tf = new Timeframe(dtpStart.SelectedDate.GetValueOrDefault(), dtpEnd.SelectedDate.GetValueOrDefault());
-                updateData();
+                await updateData();
                 _changingTimeframe = false;
             }
         }
@@ -1537,7 +1529,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
         /// </param>
-        private void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void dgvBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvBoxScores.SelectedCells.Count > 0)
             {
@@ -1548,7 +1540,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     if (bsw.ShowDialog() == true)
                     {
-                        updateData();
+                        await updateData();
                     }
                 }
                 catch
@@ -2661,7 +2653,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_changingTimeframe)
             {
@@ -2684,7 +2676,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
                 MainWindow.Tf = new Timeframe(_curSeason);
                 MainWindow.ChangeSeason(_curSeason);
-                updateData();
+                await updateData();
                 /*
                 SQLiteIO.LoadSeason(_curSeason);
 
@@ -2717,7 +2709,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// <param name="e">
         ///     The <see cref="MouseButtonEventArgs" /> instance containing the event data.
         /// </param>
-        private void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void dgvHTHBoxScores_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dgvHTHBoxScores.SelectedCells.Count > 0)
             {
@@ -2729,7 +2721,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     if (bsw.ShowDialog() == true)
                     {
-                        updateData();
+                        await updateData();
                     }
                 }
                 catch

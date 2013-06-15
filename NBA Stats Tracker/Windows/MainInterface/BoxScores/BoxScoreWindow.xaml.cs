@@ -25,7 +25,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
-    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -69,6 +68,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private static Mode curMode = Mode.Update;
 
         private static TeamBoxScore curTeamBoxScore;
+        private readonly BoxScoreEntry _bseToLoad;
+        private readonly int _idToLoad = -1;
         private readonly int _maxSeason = SQLiteIO.GetMaxSeason(MainWindow.CurrentDB);
         private readonly bool _onImport;
         private bool _clickedOK;
@@ -84,36 +85,23 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreWindow" /> class.
         /// </summary>
-        /// <param name="curMode">The Mode enum instance which determines the function for which the window is opened.</param>
-        public BoxScoreWindow(Mode curMode = Mode.Update)
+        /// <param name="mode">The Mode enum instance which determines the function for which the window is opened.</param>
+        public BoxScoreWindow(Mode mode = Mode.Update)
         {
             InitializeComponent();
             _clickedOK = false;
-
-            if (MainWindow.Tf.IsBetween)
-            {
-                MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
-                IsEnabled = false;
-                Task.Factory.StartNew(() => MainWindow.UpdateAllData(true))
-                    .FailFastOnException(MainWindow.MWInstance.UIScheduler)
-                    .ContinueWith(t => finishInitialization(curMode), MainWindow.MWInstance.UIScheduler)
-                    .FailFastOnException(MainWindow.MWInstance.UIScheduler);
-            }
-            else
-            {
-                finishInitialization(curMode);
-            }
+            curMode = mode;
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BoxScoreWindow" /> class.
         /// </summary>
-        /// <param name="curMode">The Mode enum instance which determines the function for which the window is opened.</param>
+        /// <param name="mode">The Mode enum instance which determines the function for which the window is opened.</param>
         /// <param name="id">The ID of the box score to be viewed.</param>
-        public BoxScoreWindow(Mode curMode, int id)
-            : this(curMode)
+        public BoxScoreWindow(Mode mode, int id)
+            : this(mode)
         {
-            loadBoxScore(id);
+            _idToLoad = id;
         }
 
         /// <summary>
@@ -126,7 +114,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         public BoxScoreWindow(BoxScoreEntry bse, bool onImport = false)
             : this()
         {
-            loadBoxScore(bse);
+            _bseToLoad = bse;
             _onImport = onImport;
 
             if (onImport)
@@ -137,35 +125,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 cmbTeam2.IsEnabled = false;
                 btnCalculateTeams_Click(null, null);
             }
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BoxScoreWindow" /> class.
-        /// </summary>
-        /// <param name="bse">The Box Score Entry from which to load the box score to be viewed.</param>
-        /// <param name="pst">The player stats dictionary to use for this instance.</param>
-        /// <param name="onImport">
-        ///     if set to <c>true</c>, a box score is being imported into the database, and the window is prepared accordingly.
-        /// </param>
-        public BoxScoreWindow(BoxScoreEntry bse, Dictionary<int, PlayerStats> pst, bool onImport)
-            : this()
-        {
-            _pst = pst;
-
-            loadBoxScore(bse);
-            _onImport = onImport;
-
-            if (onImport)
-            {
-                MainWindow.TempBSE_BS = bse.BS;
-                chkDoNotUpdate.IsEnabled = false;
-                cmbSeasonNum.IsEnabled = false;
-                cmbTeam1.IsEnabled = false;
-                cmbTeam2.IsEnabled = false;
-                btnCalculateTeams_Click(null, null);
-            }
-
-            btnOK_Click(null, null);
         }
 
         private SortableBindingList<PlayerBoxScore> pbsAwayList { get; set; }
@@ -173,37 +132,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         private ObservableCollection<KeyValuePair<int, string>> playersListAway { get; set; }
         private ObservableCollection<KeyValuePair<int, string>> playersListHome { get; set; }
         private ObservableCollection<PlayByPlayEntry> pbpeList { get; set; }
-
-        private void finishInitialization(Mode mode)
-        {
-            _pst = MainWindow.PST;
-
-            curMode = mode;
-            prepareWindow(mode);
-
-            MainWindow.TempBSE_BS = new TeamBoxScore();
-
-            if (mode == Mode.Update)
-            {
-                curTeamBoxScore = new TeamBoxScore();
-                FillTeamBoxScore(curTeamBoxScore);
-                txtMINS1.Text = MainWindow.GameLength.ToString();
-            }
-
-            try
-            {
-                ProgressWindow.PwInstance.CanClose = true;
-                ProgressWindow.PwInstance.Close();
-            }
-            catch
-            {
-                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
-            }
-
-            dgvPlayersAway.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
-            dgvPlayersHome.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
-            IsEnabled = true;
-        }
 
         /// <summary>Finds the requested box score and loads it.</summary>
         /// <param name="id">The ID of the box score.</param>
@@ -503,7 +431,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             cmbSeasonNum.SelectedItem = _curSeason.ToString();
         }
 
-        private void btnOK_Click(object sender, RoutedEventArgs e)
+        private async void btnOK_Click(object sender, RoutedEventArgs e)
         {
             if (curMode == Mode.Update)
             {
@@ -535,7 +463,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                             return;
                         }
 
-                        MainWindow.UpdateBoxScore();
+                        await MainWindow.UpdateBoxScore();
                         DialogResult = true;
                     }
                     else
@@ -1117,7 +1045,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <param name="e">
         ///     The <see cref="SelectionChangedEventArgs" /> instance containing the event data.
         /// </param>
-        private void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void cmbSeasonNum_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbSeasonNum.SelectedIndex == -1)
             {
@@ -1131,7 +1059,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 if (_curSeason != MainWindow.Tf.SeasonNum)
                 {
-                    SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
+                    await SQLiteIO.LoadSeason(MainWindow.CurrentDB, _curSeason, doNotLoadBoxScores: true);
                 }
 
                 if (_curSeason != _maxSeason)
@@ -2286,6 +2214,51 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 pbs.CalculateFromPBPEList(pbpeList);
             }
+        }
+
+        private async void window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow.Tf.IsBetween)
+            {
+                MainWindow.Tf = new Timeframe(MainWindow.Tf.SeasonNum);
+                IsEnabled = false;
+                await MainWindow.UpdateAllData(true);
+            }
+            _pst = MainWindow.PST;
+
+            prepareWindow(curMode);
+
+            MainWindow.TempBSE_BS = new TeamBoxScore();
+
+            if (curMode == Mode.Update)
+            {
+                curTeamBoxScore = new TeamBoxScore();
+                FillTeamBoxScore(curTeamBoxScore);
+                txtMINS1.Text = MainWindow.GameLength.ToString();
+            }
+
+            try
+            {
+                ProgressWindow.PwInstance.CanClose = true;
+                ProgressWindow.PwInstance.Close();
+            }
+            catch
+            {
+                Console.WriteLine("ProgressWindow couldn't be closed; maybe it wasn't open.");
+            }
+
+            if (_bseToLoad != null)
+            {
+                loadBoxScore(_bseToLoad);
+            }
+            else if (_idToLoad != -1)
+            {
+                loadBoxScore(_idToLoad);
+            }
+
+            dgvPlayersAway.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
+            dgvPlayersHome.PreviewKeyDown += GenericEventHandlers.WPFDataGrid_PreviewKeyDown_GoToNextColumnOnEnter;
+            IsEnabled = true;
         }
     }
 }

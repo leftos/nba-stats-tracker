@@ -6,7 +6,7 @@
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players" mc:Ignorable="d"
         Title="Insert Box Score" Height="400" Width="682"
         WindowStartupLocation="CenterScreen" MinWidth="682" MinHeight="359"
-        Closing="window_Closing">
+        Closing="window_Closing" Loaded="window_Loaded">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" Name="tbcBoxScore" VerticalAlignment="Stretch" Margin="0"
                     SelectionChanged="tabControl1_SelectionChanged" Padding="6">

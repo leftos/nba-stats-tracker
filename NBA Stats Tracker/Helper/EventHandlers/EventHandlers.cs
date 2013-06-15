@@ -25,8 +25,6 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     using System.ComponentModel;
     using System.Data;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -42,41 +40,6 @@ namespace NBA_Stats_Tracker.Helper.EventHandlers
     /// <summary>Implements Event Handlers used by multiple controls from all over NBA Stats Tracker.</summary>
     public static class EventHandlers
     {
-        public static Task StartNewAndWatchExceptions(
-            this TaskFactory taskFactory, Action action, TaskScheduler actionScheduler, TaskScheduler exceptionScheduler)
-        {
-            return
-                taskFactory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, actionScheduler)
-                           .FailFastOnException(exceptionScheduler);
-        }
-
-        public static Task ContinueWithAndWatchExceptions(
-            this Task task, Action<Task> action, TaskScheduler actionScheduler, TaskScheduler exceptionScheduler)
-        {
-            task.ContinueWith(action, actionScheduler).FailFastOnException(exceptionScheduler);
-            return task;
-        }
-
-        public static Task FailFastOnException(this Task task, TaskScheduler scheduler)
-        {
-            task.ContinueWith(
-                c => App.ForceCriticalError(c.Exception, "Task exception"),
-                CancellationToken.None,
-                TaskContinuationOptions.OnlyOnFaulted,
-                scheduler);
-            return task;
-        }
-
-        public static Task<T> FailFastOnException<T>(this Task<T> task, TaskScheduler scheduler)
-        {
-            task.ContinueWith(
-                c => App.ForceCriticalError(c.Exception, "Task exception"),
-                CancellationToken.None,
-                TaskContinuationOptions.OnlyOnFaulted,
-                scheduler);
-            return task;
-        }
-
         /// <summary>Handles the MouseDoubleClick event of any WPF DataGrid control containing PlayerStatsRow entries.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">

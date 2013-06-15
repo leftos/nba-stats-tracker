@@ -71,7 +71,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <returns>
         ///     <c>true</c> if the operation succeeded, <c>false</c> otherwise.
         /// </returns>
-        public static bool RecreateDatabaseAs(string file)
+        public static async Task RecreateDatabaseAs(string file)
         {
             var oldDB = MainWindow.CurrentDB + ".tmp";
             File.Copy(MainWindow.CurrentDB, oldDB, true);
@@ -83,7 +83,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             catch
             {
                 MessageBox.Show("Error while trying to overwrite file. Make sure the file is not in use by another program.");
-                return false;
+                return;
             }
 
             ProgressHelper.UpdateProgress("Loading settings...");
@@ -125,7 +125,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 PrepareNewDB(db, i, count, true);
             }
-            SaveAllSeasons(file);
+            await TaskEx.Run(() => SaveAllSeasons(file));
             var db1 = new SQLiteDatabase(file);
             ProgressHelper.UpdateProgress("Saving settings...");
             foreach (var setting in settingsDict)
@@ -139,10 +139,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             MainWindow.CurrentDB = file;
             File.Delete(oldDB);
-            return true;
         }
 
-        public static bool SaveDatabaseAs(string file)
+        public static async Task<bool> SaveDatabaseAs(string file)
         {
             var oldDB = MainWindow.CurrentDB + ".tmp";
             File.Copy(MainWindow.CurrentDB, oldDB, true);
@@ -157,7 +156,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 return false;
             }
 
-            saveCurrentAndCopyToNew(file, oldDB, GetMaxSeason(oldDB));
+            await saveCurrentAndCopyToNew(file, oldDB, GetMaxSeason(oldDB));
 
             MainWindow.CurrentDB = file;
             File.Delete(oldDB);
@@ -193,7 +192,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
         /// <summary>Saves all seasons to the specified database.</summary>
         /// <param name="file">The file.</param>
-        public static void SaveAllSeasons(string file)
+        public static async Task SaveAllSeasons(string file)
         {
             var oldDB = MainWindow.CurrentDB;
             var oldSeason = MainWindow.CurSeason;
@@ -203,12 +202,12 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             if (MainWindow.Tf.IsBetween)
             {
                 MainWindow.Tf = new Timeframe(oldSeason);
-                MainWindow.UpdateAllData();
+                await MainWindow.UpdateAllData();
             }
-            doSaveAllSeasons(file, maxSeason, oldSeason, oldDB);
+            await doSaveAllSeasons(file, maxSeason, oldSeason, oldDB);
         }
 
-        private static void doSaveAllSeasons(string file, int maxSeason, int oldSeason, string oldDB)
+        private static async Task doSaveAllSeasons(string file, int maxSeason, int oldSeason, string oldDB)
         {
             var steps = maxSeason * 2;
             var curStep = 0;
@@ -222,13 +221,13 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                     MainWindow.CurrentDB = oldDB;
                     MainWindow.Tf = new Timeframe(i);
                     ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Loading season {2}...", (++curStep), steps, i));
-                    MainWindow.UpdateAllData(onlyPopulate: true);
+                    await MainWindow.UpdateAllData(onlyPopulate: true);
                     ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Saving season {2}...", (++curStep), steps, i));
                     SaveSeasonToDatabase(file, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, i, maxSeason);
                 }
             }
             ProgressHelper.UpdateProgress(string.Format("Step {0}/{1}: Loading current season...", (++curStep), steps));
-            LoadSeason(file, oldSeason);
+            await LoadSeason(file, oldSeason);
         }
 
         private static void updateMWStatusViaDispatcher(string msg)
@@ -238,7 +237,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             //doInScheduler(() => MainWindow.MWInstance.UpdateStatus(msg, true), MainWindow.MWInstance.UIScheduler);
         }
 
-        private static void saveCurrentAndCopyToNew(string file, string oldDB, int maxSeason)
+        private static async Task saveCurrentAndCopyToNew(string file, string oldDB, int maxSeason)
         {
             ProgressHelper.UpdateProgress("Saving current season...");
             SaveSeasonToDatabase(oldDB, MainWindow.TST, MainWindow.TSTOpp, MainWindow.PST, MainWindow.CurSeason, maxSeason);
@@ -247,7 +246,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             File.Copy(oldDB, file);
 
             ProgressHelper.UpdateProgress("Reloading current season...");
-            LoadSeason(file, MainWindow.CurSeason);
+            await LoadSeason(file, MainWindow.CurSeason);
         }
 
         /// <summary>Saves the conferences and divisions to a specified database.</summary>
@@ -517,7 +516,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
-            ProgressHelper.DoInScheduler(() => MainWindow.MWInstance.txtFile.Text = file, MainWindow.MWInstance.UIScheduler);
+            MainWindow.AppInvoke(() => MainWindow.MWInstance.txtFile.Text = file);
             MainWindow.CurrentDB = file;
 
             //}
@@ -1626,43 +1625,15 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         }
 
         /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
-        public static void LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
+        public static async Task<DBData> LoadSeason(int season = 0, bool doNotLoadBoxScores = false)
         {
-            loadSeason(
-                MainWindow.CurrentDB,
-                out MainWindow.TST,
-                out MainWindow.TSTOpp,
-                out MainWindow.PST,
-                ref MainWindow.BSHist,
-                out MainWindow.SplitTeamStats,
-                out MainWindow.SplitPlayerStats,
-                out MainWindow.SeasonTeamRankings,
-                out MainWindow.SeasonPlayerRankings,
-                out MainWindow.PlayoffTeamRankings,
-                out MainWindow.PlayoffPlayerRankings,
-                out MainWindow.DisplayNames,
-                season == 0 ? MainWindow.CurSeason : season,
-                doNotLoadBoxScores);
+            return await LoadSeason(MainWindow.CurrentDB, season, doNotLoadBoxScores);
         }
 
         /// <summary>Default implementation of LoadSeason; calls LoadSeason to update MainWindow data</summary>
-        public static void LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
+        public static async Task<DBData> LoadSeason(string file, int season = 0, bool doNotLoadBoxScores = false)
         {
-            loadSeason(
-                file,
-                out MainWindow.TST,
-                out MainWindow.TSTOpp,
-                out MainWindow.PST,
-                ref MainWindow.BSHist,
-                out MainWindow.SplitTeamStats,
-                out MainWindow.SplitPlayerStats,
-                out MainWindow.SeasonTeamRankings,
-                out MainWindow.SeasonPlayerRankings,
-                out MainWindow.PlayoffTeamRankings,
-                out MainWindow.PlayoffPlayerRankings,
-                out MainWindow.DisplayNames,
-                season == 0 ? MainWindow.CurSeason : season,
-                doNotLoadBoxScores);
+            return await loadSeason(file, season == 0 ? MainWindow.CurSeason : season, doNotLoadBoxScores);
         }
 
         /// <summary>Loads a specific season from the specified database.</summary>
@@ -1676,22 +1647,9 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
         /// <param name="doNotLoadBoxScores">
         ///     if set to <c>true</c>, box scores will not be parsed.
         /// </param>
-        private static void loadSeason(
-            string file,
-            out Dictionary<int, TeamStats> tst,
-            out Dictionary<int, TeamStats> tstOpp,
-            out Dictionary<int, PlayerStats> pst,
-            ref List<BoxScoreEntry> bsHist,
-            out Dictionary<int, Dictionary<string, TeamStats>> splitTeamStats,
-            out Dictionary<int, Dictionary<string, PlayerStats>> splitPlayerStats,
-            out TeamRankings teamRankings,
-            out PlayerRankings playerRankings,
-            out TeamRankings playoffTeamRankings,
-            out PlayerRankings playoffPlayerRankings,
-            out Dictionary<int, string> displayNames,
-            int curSeason = 0,
-            bool doNotLoadBoxScores = false)
+        private static async Task<DBData> loadSeason(string file, int curSeason = 0, bool doNotLoadBoxScores = false)
         {
+            var dbData = new DBData();
             MainWindow.LoadingSeason = true;
 
             var mustSave = false;
@@ -1728,47 +1686,35 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 Interlocked.Exchange(
                     ref ProgressHelper.Progress,
                     new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading teams..."));
-                GetAllTeamStatsFromDatabase(file, curSeason, out tst, out tstOpp);
+                GetAllTeamStatsFromDatabase(file, curSeason, out dbData.TST, out dbData.TSTOpp);
                 Interlocked.Exchange(
                     ref ProgressHelper.Progress,
                     new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading players..."));
-                pst = GetPlayersFromDatabase(file, tst, tstOpp, curSeason, maxSeason);
+                dbData.PST = GetPlayersFromDatabase(file, dbData.TST, dbData.TSTOpp, curSeason, maxSeason);
                 Interlocked.Exchange(
                     ref ProgressHelper.Progress,
                     new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; loading box scores..."));
                 if (!doNotLoadBoxScores)
                 {
-                    bsHist = GetSeasonBoxScoresFromDatabase(file, curSeason, maxSeason, tst, pst);
+                    dbData.BSHist = GetSeasonBoxScoresFromDatabase(file, curSeason, maxSeason, dbData.TST, dbData.PST);
                 }
 
-                splitTeamStats = null;
-                splitPlayerStats = null;
-                teamRankings = null;
-                playerRankings = null;
-                playoffTeamRankings = null;
-                playoffPlayerRankings = null;
-                displayNames = null;
+                dbData.SplitTeamStats = null;
+                dbData.SplitPlayerStats = null;
+                dbData.SeasonTeamRankings = null;
+                dbData.SeasonPlayerRankings = null;
+                dbData.PlayoffTeamRankings = null;
+                dbData.PlayoffPlayerRankings = null;
+                dbData.DisplayNames = null;
             }
             else
             {
-                DBData dbData;
-                PopulateAll(MainWindow.Tf, out dbData);
-                tst = dbData.TST;
-                tstOpp = dbData.TSTOpp;
-                pst = dbData.PST;
-                teamRankings = dbData.SeasonTeamRankings;
-                playoffTeamRankings = dbData.PlayoffTeamRankings;
-                splitTeamStats = dbData.SplitTeamStats;
-                splitPlayerStats = dbData.SplitPlayerStats;
-                playerRankings = dbData.SeasonPlayerRankings;
-                playoffPlayerRankings = dbData.PlayoffPlayerRankings;
-                displayNames = dbData.DisplayNames;
-                bsHist = dbData.BSHist;
+                dbData = PopulateAll(MainWindow.Tf);
             }
 
             MainWindow.CurrentDB = file;
 
-            ProgressHelper.DoInScheduler(() => MainWindow.ChangeSeason(curSeason), uiScheduler);
+            MainWindow.AppInvoke(() => MainWindow.ChangeSeason(curSeason));
 
             if (mustSave)
             {
@@ -1795,12 +1741,14 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 Interlocked.Exchange(
                     ref ProgressHelper.Progress,
                     new ProgressInfo(ProgressHelper.Progress, "Database must be upgraded; saving new database..."));
-                RecreateDatabaseAs(file);
+                await RecreateDatabaseAs(file);
                 File.Delete(backupName);
                 _upgrading = false;
             }
 
             MainWindow.LoadingSeason = false;
+
+            return dbData;
         }
 
         /// <summary>Loads the divisions and conferences.</summary>
@@ -2595,7 +2543,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 MainWindow.CurrentDB, MainWindow.TST, MainWindow.TSTOpp, MainWindow.CurSeason, GetMaxSeason(MainWindow.CurrentDB));
         }
 
-        public static bool PopulateAll(Timeframe tf, out DBData dbData)
+        public static DBData PopulateAll(Timeframe tf)
         {
             var tst = new Dictionary<int, TeamStats>();
             var tstOpp = new Dictionary<int, TeamStats>();
@@ -3097,7 +3045,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             var playerRankings = new PlayerRankings(pst);
             var playoffPlayerRankings = new PlayerRankings(pst, true);
 
-            dbData = new DBData(
+            var dbData = new DBData(
                 tst,
                 tstOpp,
                 splitTeamStats,
@@ -3110,7 +3058,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 bsHist,
                 displayNames);
 
-            return true;
+            return dbData;
         }
 
         private static void findTeamByName(

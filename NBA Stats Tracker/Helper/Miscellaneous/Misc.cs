@@ -23,6 +23,7 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Windows;
     using System.Windows.Media.Imaging;
 
     using NBA_Stats_Tracker.Data.Teams;
@@ -124,6 +125,11 @@ namespace NBA_Stats_Tracker.Helper.Miscellaneous
                     return "Unknown";
                 }
             }
+        }
+
+        public static void ShowInformativeMessage(string msg)
+        {
+            MessageBox.Show(msg, App.AppName, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
