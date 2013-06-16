@@ -1,5 +1,12 @@
 NBA Stats Tracker - Version History
 
+	v1.16.6
+		- Addition: Player Career Highs will be updated from the NBA 2K13 save on each import
+		- Addition: New Player Career Highs will be reported on each import
+		- Removal: Turnovers and Minutes career-highs will no longer be reported in Box Score window's Records tab
+		- Fix: When using the NBA 2K Import/Export features, the dialog that prompts the user to select the folder will automatically scroll to put the initially selected folder into view when it opens
+		- Fix: Fixed Export to NBA 2K12/2K13 save not working when the Compatibility Check option was unchecked
+
 	v1.16.5
 		- Improvement: The application now targets .NET Framework 4.5 to make use of its new features, including the native implementation of Async/Await which allows for detailed stack traces on exceptions
 		- Fix: Team names will now be shown correctly in the Records tab of the Box Score window

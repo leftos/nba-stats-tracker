@@ -1038,7 +1038,7 @@
                             <TextBlock Name="txbHomeRecords" Text="No records set for this team." TextWrapping="Wrap" />
                         </GroupBox>
                         <TextBlock FontStyle="Italic" Margin="5" HorizontalAlignment="Right">
-                            Records shown here are either records set or matched.<LineBreak />
+                            Records shown here are career-highs either set or matched.<LineBreak />
                             Incomplete data means that the player has played more games than there are box scores for.
                         </TextBlock>
                     </StackPanel>
