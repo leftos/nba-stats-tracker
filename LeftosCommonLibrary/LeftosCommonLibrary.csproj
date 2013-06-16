@@ -47,6 +47,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -60,6 +61,7 @@
     <Compile Include="CommonDialogs\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FolderBrowserLauncher.cs" />
     <Compile Include="ParseCell.cs" />
     <Compile Include="BeTimvwFramework\PropertyComparer.cs" />
     <Compile Include="BeTimvwFramework\SortableBindingList.cs" />

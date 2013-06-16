@@ -505,8 +505,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastImportDir", "")
                 };
-            var dr = fbd.ShowDialog(this.GetIWin32Window());
-
+            var dr = FolderBrowserLauncher.ShowFolderBrowser(fbd, this.GetIWin32Window());
             if (dr != System.Windows.Forms.DialogResult.OK)
             {
                 return;
@@ -1080,7 +1079,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     ShowNewFolderButton = false,
                     SelectedPath = Tools.GetRegistrySetting("LastExportDir", "")
                 };
-            var dr = fbd.ShowDialog(this.GetIWin32Window());
+            var dr = FolderBrowserLauncher.ShowFolderBrowser(fbd, this.GetIWin32Window());
 
             if (dr != System.Windows.Forms.DialogResult.OK)
             {
