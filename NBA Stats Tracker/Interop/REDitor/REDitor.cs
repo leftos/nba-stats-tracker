@@ -1642,7 +1642,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                         ps.IsSigned = team1 != "-1";
 
-                        importPlayerStats(ps, playerSeasonStats, nba2KVersion);
+                        importPlayerStats(ps, playerSeasonStats, nba2KVersion, false);
 
                         ps.CalcAvg();
                     }

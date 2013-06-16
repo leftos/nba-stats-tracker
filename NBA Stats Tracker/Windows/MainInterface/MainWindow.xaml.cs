@@ -525,9 +525,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             var result = await Task.Run(() => REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath));
 
-            status.Content = "Ready";
-            status.FontWeight = FontWeights.Normal;
             IsEnabled = true;
+            status.FontWeight = FontWeights.Normal;
+            status.Content = "Ready";
 
             if (result != 0)
             {
