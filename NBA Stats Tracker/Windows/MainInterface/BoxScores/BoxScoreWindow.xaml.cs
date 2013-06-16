@@ -1359,10 +1359,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     text += String.Format("STL ({0}), ", pbs.STL);
                 }
-                if (pbs.TOS > 0 && pbs.TOS >= ch[PAbbr.TOS])
-                {
-                    text += String.Format("TOS ({0}), ", pbs.TOS);
-                }
                 if (pbs.FGM > 0 && pbs.FGM >= ch[PAbbr.FGM])
                 {
                     text += String.Format("FGM ({0}), ", pbs.FGM);
@@ -1391,10 +1387,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 {
                     text += String.Format("PTS ({0}), ", pbs.PTS);
                 }
+                /*
+                if (pbs.TOS > 0 && pbs.TOS >= ch[PAbbr.TOS])
+                {
+                    text += String.Format("TOS ({0}), ", pbs.TOS);
+                }
                 if (pbs.MINS > 0 && pbs.MINS >= ch[PAbbr.MINS])
                 {
                     text += String.Format("MINS ({0}), ", pbs.MINS);
                 }
+                */
                 if (text == playerIntroText)
                 {
                     continue;
