@@ -502,7 +502,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             {
                 var ps = _pst[_pst.Keys.ElementAt(i)];
                 Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => updatePlayerStatsCalcProgress(i + 1, playerCount)));
-                await TaskEx.Run(() => doPlayer(ps));
+                await Task.Run(() => doPlayer(ps));
             }
             var leagueAverages = PlayerStats.CalculateLeagueAverages(_pst, _tst);
             _lPSR.Add(new PlayerStatsRow(leagueAverages));
@@ -596,7 +596,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             txbStatus.Text = "Please wait while player averages and metric stats are being calculated...";
             grdMain.Visibility = Visibility.Hidden;
 
-            await TaskEx.Run(() => preparePlayerStatsAsync());
+            await Task.Run(() => preparePlayerStatsAsync());
 
             var isSeason = rbSeason.IsChecked.GetValueOrDefault();
             dgvPlayerStats.ItemsSource = isSeason ? _psrListSea : _psrListPl;
@@ -637,7 +637,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             txbStatus.Text = "Please wait while player shooting stats are being calculated...";
             grdMain.Visibility = Visibility.Hidden;
 
-            await TaskEx.Run(() => doPlayerShootingStats());
+            await Task.Run(() => doPlayerShootingStats());
 
             var isSeason = rbSeason.IsChecked.GetValueOrDefault();
 
@@ -713,7 +713,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.League
             txbStatus.Text = "Please wait while team shooting stats are being calculated...";
             grdMain.Visibility = Visibility.Hidden;
 
-            await TaskEx.Run(() => doTeamShootingStats());
+            await Task.Run(() => doTeamShootingStats());
 
             var isSeason = rbSeason.IsChecked.GetValueOrDefault();
 

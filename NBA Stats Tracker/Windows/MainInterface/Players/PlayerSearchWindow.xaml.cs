@@ -692,10 +692,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _metricFilters = lstMetrics.Items.Cast<string>();
 
             _psrViewSea = CollectionViewSource.GetDefaultView(_psrListSea);
-            await TaskEx.Run(() => _psrViewSea.Filter = filter);
+            await Task.Run(() => _psrViewSea.Filter = filter);
 
             _psrViewPl = CollectionViewSource.GetDefaultView(_psrListPl);
-            await TaskEx.Run(() => _psrViewPl.Filter = filter);
+            await Task.Run(() => _psrViewPl.Filter = filter);
 
             dgvPlayerStats.ItemsSource = _psrViewSea;
             dgvPlayoffStats.ItemsSource = _psrViewPl;
@@ -2028,7 +2028,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             if (property != _lastPropertyUsed || _lastPropertyUsed == "")
             {
-                await TaskEx.Run(() => recalculatePermutations(property, psrList));
+                await Task.Run(() => recalculatePermutations(property, psrList));
                 _lastPropertyUsed = property;
             }
 

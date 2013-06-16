@@ -125,7 +125,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 PrepareNewDB(db, i, count, true);
             }
-            await TaskEx.Run(() => SaveAllSeasons(file));
+            await Task.Run(() => SaveAllSeasons(file));
             var db1 = new SQLiteDatabase(file);
             ProgressHelper.UpdateProgress("Saving settings...");
             foreach (var setting in settingsDict)

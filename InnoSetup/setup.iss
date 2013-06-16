@@ -24,7 +24,8 @@
 
 // dotnet_Passive enabled shows the .NET/VC2010 installation progress, as it can take quite some time
 #define dotnet_Passive
-#define use_dotnetfx40full
+//#define use_dotnetfx40full
+#define use_dotnetfx45full
 #define use_vc2010
 
 //#define use_mdac28
@@ -77,8 +78,8 @@ MinVersion=0,5.01
 PrivilegesRequired=admin
 ArchitecturesAllowed=x86 x64 ia64
 ArchitecturesInstallIn64BitMode=x64 ia64
-AppSupportURL=http://forums.nba-live.com/viewtopic.php?f=143&t=84110
-AppUpdatesURL=http://forums.nba-live.com/viewtopic.php?f=143&t=84110
+AppSupportURL=http://forums.nba-live.com/viewtopic.php?f=149&t=91237
+AppUpdatesURL=http://forums.nba-live.com/viewtopic.php?f=149&t=91237
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -117,6 +118,7 @@ Name: "{app}\Images"
 
 #include "scripts\products\winversion.iss"
 #include "scripts\products\fileversion.iss"
+#include "scripts\products\dotnetfxversion.iss"
 
 #ifdef use_iis
 #include "scripts\products\iis.iss"
@@ -185,6 +187,10 @@ Name: "{app}\Images"
 #endif
 #ifdef use_vc2010
 #include "scripts\products\vc2010.iss"
+#endif
+
+#ifdef use_dotnetfx45full
+#include "scripts\products\dotnetfx45full.iss"
 #endif
 
 #ifdef use_mdac28
@@ -303,6 +309,10 @@ begin
 
 #ifdef use_dotnetfx40client
   dotnetfx40client(false);
+#endif
+
+#ifdef use_dotnetfx45full
+   dotnetfx45full();
 #endif
 
 	// Visual C++ 2010 Redistributable

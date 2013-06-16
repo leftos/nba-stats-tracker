@@ -282,7 +282,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var pw = new ProgressWindow("Please wait as player career stats are being imported...");
             pw.Show();
 
-            await TaskEx.Run(
+            await Task.Run(
                 () =>
                     {
                         var count = validPlayers.Count;

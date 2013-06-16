@@ -661,7 +661,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Loading database...");
-            parseDBData(await TaskEx.Run(() => SQLiteIO.LoadSeason()));
+            parseDBData(await Task.Run(() => SQLiteIO.LoadSeason()));
 
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
@@ -884,8 +884,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Inserting box score to database...");
             await
-                TaskEx.Run(
-                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+                Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
             await UpdateAllData();
             UpdateStatus("One or more Box Scores have been added/updated. Database saved.");
             StopProgressWatchTimer();
@@ -1349,7 +1348,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             foreach (var kvp in teamNamesShort)
             {
-                await TaskEx.Run(() => doGetRealTeam(kvp, teamOrder, teamDivisions, realTSTOpp, realPST));
+                await Task.Run(() => doGetRealTeam(kvp, teamOrder, teamDivisions, realTSTOpp, realPST));
                 AppInvoke(getRealStats_UpdateProgressBar);
             }
             // TODO: Re-enable once Playoffs start
@@ -1743,8 +1742,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
             await
-                TaskEx.Run(
-                    () => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+                Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
             await UpdateAllData(true);
             StopProgressWatchTimer();
             txtFile.Text = CurrentDB;
@@ -2045,7 +2043,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             IsEnabled = false;
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving all seasons...");
-            await TaskEx.Run(() => SQLiteIO.SaveAllSeasons(CurrentDB));
+            await Task.Run(() => SQLiteIO.SaveAllSeasons(CurrentDB));
             UpdateStatus("All seasons saved successfully!");
             StopProgressWatchTimer();
             IsEnabled = true;
@@ -2616,7 +2614,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             MWInstance.startProgressWatchTimer();
             var dbData = new DBData();
-            dbData = await TaskEx.Run(() => SQLiteIO.PopulateAll(Tf));
+            dbData = await Task.Run(() => SQLiteIO.PopulateAll(Tf));
             parseDBData(dbData);
             if (onlyPopulate)
             {
