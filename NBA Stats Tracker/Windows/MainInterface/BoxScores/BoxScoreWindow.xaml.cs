@@ -1331,10 +1331,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 var ps = MainWindow.PST[pbs.PlayerID];
                 var playerBSCount = MainWindow.BSHist.Count(bse => bse.PBSList.Any(e => e.PlayerID == ps.ID && !e.IsOut));
                 var playerGP = ps.Totals[PAbbr.GP];
-                if (playerGP <= 1 || playerBSCount <= 1)
-                {
-                    continue;
-                }
                 var ch = ps.CareerHighs;
                 var info = playerBSCount != playerGP ? " (Incomplete data)" : "";
                 var playerIntroText = ps.FullNameGivenFirst + info + ": ";
