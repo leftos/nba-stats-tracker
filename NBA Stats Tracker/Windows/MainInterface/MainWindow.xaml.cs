@@ -519,7 +519,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             Tools.SetRegistrySetting("LastImportDir", fbd.SelectedPath);
 
-            var result = REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath);
+            IsEnabled = false;
+            status.Content = "Please wait...";
+            status.FontWeight = FontWeights.Bold;
+
+            var result = await Task.Run(() => REDitor.ImportCurrentYear(ref TST, ref TSTOpp, ref PST, fbd.SelectedPath));
+
+            status.Content = "Ready";
+            status.FontWeight = FontWeights.Normal;
+            IsEnabled = true;
 
             if (result != 0)
             {
@@ -531,7 +539,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
-            UpdateStatus("NBA 2K12 stats imported successfully! Verify that you want this by saving the current season.");
+            UpdateStatus("NBA 2K12/2K13 stats imported successfully! Please save the current season!");
         }
 
         /// <summary>Handles the Click event of the mnuFileSaveAs control. Allows the user to save the database to a different file.</summary>
@@ -564,7 +572,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, 10, "Saving new database...");
-            var result = await SQLiteIO.SaveDatabaseAs(file);
+            var result = await Task.Run(() => SQLiteIO.SaveDatabaseAs(file));
             GameLength = SQLiteIO.GetSetting("Game Length", 48);
             SeasonLength = SQLiteIO.GetSetting("Season Length", 82);
             NumberOfPeriods = SQLiteIO.GetSetting("NumberOfPeriods", 4);
@@ -1084,6 +1092,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
+            IsEnabled = false;
+
             Tools.SetRegistrySetting("LastExportDir", fbd.SelectedPath);
 
             if (mnuOptionsCompatibilityCheck.IsChecked)
@@ -1091,11 +1101,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 var temptst = new Dictionary<int, TeamStats>();
                 var temptstOpp = new Dictionary<int, TeamStats>();
                 var temppst = new Dictionary<int, PlayerStats>();
-                var result = REDitor.ImportCurrentYear(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true);
+                var result =
+                    await Task.Run(() => REDitor.ImportCurrentYear(ref temptst, ref temptstOpp, ref temppst, fbd.SelectedPath, true));
 
                 if (result != 0)
                 {
                     MessageBox.Show("Export failed.");
+                    IsEnabled = true;
                     return;
                 }
 
@@ -1143,19 +1155,22 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
 
                     if (r == MessageBoxResult.No)
                     {
+                        IsEnabled = true;
                         return;
                     }
                 }
-
-                var eresult = REDitor.ExportCurrentYear(TST, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
-
-                if (eresult != 0)
-                {
-                    MessageBox.Show("Export failed.");
-                    return;
-                }
-                UpdateStatus("Injected at " + fbd.SelectedPath + " successfully!");
             }
+
+            var eresult = REDitor.ExportCurrentYear(TST, PST, fbd.SelectedPath, mnuOptionsExportTeamsOnly.IsChecked);
+
+            IsEnabled = true;
+
+            if (eresult != 0)
+            {
+                MessageBox.Show("Export failed.");
+                return;
+            }
+            UpdateStatus("Exported to " + fbd.SelectedPath + " successfully!");
         }
 
         /// <summary>Handles the Click event of the mnuHelpReadme control. Opens the Readme file with the default txt file handler.</summary>

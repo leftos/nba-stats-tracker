@@ -68,7 +68,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         public static List<int> TeamsThatPlayedAGame;
         public static List<int> PickedTeams;
         public static DateTime SelectedDate;
-        private static List<string> _legalTTypes;
+        private static List<string> legalTTypes;
 
         /// <summary>Creates a settings file. Settings files include teams participating in the save, as well as the default import/export folder.</summary>
         /// <param name="activeTeams">The active teams.</param>
@@ -185,7 +185,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var validTeams = teams.FindAll(
                 delegate(Dictionary<string, string> team)
                     {
-                        if (_legalTTypes.IndexOf(team["TType"]) != -1)
+                        if (legalTTypes.IndexOf(team["TType"]) != -1)
                         {
                             return true;
                         }
@@ -573,7 +573,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var validTeams = teams.FindAll(
                 delegate(Dictionary<string, string> team)
                     {
-                        if (_legalTTypes.IndexOf(team["TType"]) != -1)
+                        if (legalTTypes.IndexOf(team["TType"]) != -1)
                         {
                             return true;
                         }
@@ -790,10 +790,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     var lastName = player["Last_Name"];
                     var firstName = player["First_Name"];
 
-#if DEBUG
-                    //if (LastName == "Felton") System.Diagnostics.Debugger.Break();
-#endif
-
                     int pTeam;
                     var curTeam = new TeamStats();
                     try
@@ -980,42 +976,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                         curPlayer.IsSigned = (player["IsFA"] != "1" && teamReal != "-1");
 
-                        curPlayer.Totals[PAbbr.GP] = Convert.ToUInt16(playerSeasonStats["GamesP"]);
-                        curPlayer.Totals[PAbbr.GS] = Convert.ToUInt16(playerSeasonStats["GamesS"]);
-                        curPlayer.Totals[PAbbr.MINS] = Convert.ToUInt16(playerSeasonStats["Minutes"]);
-                        curPlayer.Totals[PAbbr.PTS] = Convert.ToUInt16(playerSeasonStats["Points"]);
-                        curPlayer.Totals[PAbbr.DREB] = Convert.ToUInt16(playerSeasonStats["DRebs"]);
-                        curPlayer.Totals[PAbbr.OREB] = Convert.ToUInt16(playerSeasonStats["ORebs"]);
-                        curPlayer.Totals[PAbbr.AST] = Convert.ToUInt16(playerSeasonStats["Assists"]);
-                        curPlayer.Totals[PAbbr.STL] = Convert.ToUInt16(playerSeasonStats["Steals"]);
-                        curPlayer.Totals[PAbbr.BLK] = Convert.ToUInt16(playerSeasonStats["Blocks"]);
-                        curPlayer.Totals[PAbbr.TOS] = Convert.ToUInt16(playerSeasonStats["TOs"]);
-                        curPlayer.Totals[PAbbr.FOUL] = Convert.ToUInt16(playerSeasonStats["Fouls"]);
-                        curPlayer.Totals[PAbbr.FGM] = Convert.ToUInt16(playerSeasonStats["FGMade"]);
-                        curPlayer.Totals[PAbbr.FGA] = Convert.ToUInt16(playerSeasonStats["FGAtt"]);
-                        try
-                        {
-                            curPlayer.Totals[PAbbr.TPM] = Convert.ToUInt16(playerSeasonStats["3PTMade"]);
-                            curPlayer.Totals[PAbbr.TPA] = Convert.ToUInt16(playerSeasonStats["3PTAtt"]);
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            curPlayer.Totals[PAbbr.TPM] = Convert.ToUInt16(playerSeasonStats["TPTMade"]);
-                            curPlayer.Totals[PAbbr.TPA] = Convert.ToUInt16(playerSeasonStats["TPTAtt"]);
-                        }
-                        curPlayer.Totals[PAbbr.FTM] = Convert.ToUInt16(playerSeasonStats["FTMade"]);
-                        curPlayer.Totals[PAbbr.FTA] = Convert.ToUInt16(playerSeasonStats["FTAtt"]);
-
-                        if (nba2KVersion == NBA2KVersion.NBA2K12)
-                        {
-                            curPlayer.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAStar"]));
-                            curPlayer.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsChamp"]));
-                        }
-                        else if (nba2KVersion == NBA2KVersion.NBA2K13)
-                        {
-                            curPlayer.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAllStar"]));
-                            curPlayer.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsNBAChamp"]));
-                        }
+                        importPlayerStats(curPlayer, playerSeasonStats, nba2KVersion, false);
 
                         curPlayer.CalcAvg();
 
@@ -1032,44 +993,14 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (playerPlayoffStats != null)
                     {
-                        curPlayer.PlTotals[PAbbr.GP] = Convert.ToUInt16(playerPlayoffStats["GamesP"]);
-                        curPlayer.PlTotals[PAbbr.GS] = Convert.ToUInt16(playerPlayoffStats["GamesS"]);
-                        curPlayer.PlTotals[PAbbr.MINS] = Convert.ToUInt16(playerPlayoffStats["Minutes"]);
-                        curPlayer.PlTotals[PAbbr.PTS] = Convert.ToUInt16(playerPlayoffStats["Points"]);
-                        curPlayer.PlTotals[PAbbr.DREB] = Convert.ToUInt16(playerPlayoffStats["DRebs"]);
-                        curPlayer.PlTotals[PAbbr.OREB] = Convert.ToUInt16(playerPlayoffStats["ORebs"]);
-                        curPlayer.PlTotals[PAbbr.AST] = Convert.ToUInt16(playerPlayoffStats["Assists"]);
-                        curPlayer.PlTotals[PAbbr.STL] = Convert.ToUInt16(playerPlayoffStats["Steals"]);
-                        curPlayer.PlTotals[PAbbr.BLK] = Convert.ToUInt16(playerPlayoffStats["Blocks"]);
-                        curPlayer.PlTotals[PAbbr.TOS] = Convert.ToUInt16(playerPlayoffStats["TOs"]);
-                        curPlayer.PlTotals[PAbbr.FOUL] = Convert.ToUInt16(playerPlayoffStats["Fouls"]);
-                        curPlayer.PlTotals[PAbbr.FGM] = Convert.ToUInt16(playerPlayoffStats["FGMade"]);
-                        curPlayer.PlTotals[PAbbr.FGA] = Convert.ToUInt16(playerPlayoffStats["FGAtt"]);
-                        try
-                        {
-                            curPlayer.PlTotals[PAbbr.TPM] = Convert.ToUInt16(playerPlayoffStats["3PTMade"]);
-                            curPlayer.PlTotals[PAbbr.TPA] = Convert.ToUInt16(playerPlayoffStats["3PTAtt"]);
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            curPlayer.PlTotals[PAbbr.TPM] = Convert.ToUInt16(playerPlayoffStats["TPTMade"]);
-                            curPlayer.PlTotals[PAbbr.TPA] = Convert.ToUInt16(playerPlayoffStats["TPTAtt"]);
-                        }
-                        curPlayer.PlTotals[PAbbr.FTM] = Convert.ToUInt16(playerPlayoffStats["FTMade"]);
-                        curPlayer.PlTotals[PAbbr.FTA] = Convert.ToUInt16(playerPlayoffStats["FTAtt"]);
-
-                        if (nba2KVersion == NBA2KVersion.NBA2K12)
-                        {
-                            curPlayer.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAStar"]));
-                            curPlayer.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerPlayoffStats["IsChamp"]));
-                        }
-                        else if (nba2KVersion == NBA2KVersion.NBA2K13)
-                        {
-                            curPlayer.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAllStar"]));
-                            curPlayer.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsNBAChamp"]));
-                        }
+                        importPlayerStats(curPlayer, playerPlayoffStats, nba2KVersion, true);
 
                         curPlayer.CalcAvg();
+                    }
+
+                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    {
+                        importPlayerCareerHighs(curPlayer, player);
                     }
 
                     #region Import Messsages
@@ -1168,7 +1099,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 msg += "\n\nImport will continue, but there will be some stats missing." + "\n\nTo avoid this problem, either\n"
                        + "1) disable the duplicate occurences via (Miscellaneous > Enable/Disable Players For This Season...), or\n"
                        + "2) transfer the correct instance of the player to their current team.";
-                MessageBox.Show(msg);
+                MainWindow.AppInvoke(() => MessageBox.Show(msg));
             }
 
             #endregion
@@ -1192,10 +1123,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                 if (TeamsThatPlayedAGame.Count >= 2)
                 {
-                    PickedTeams = new List<int>();
-                    var dlw = new PickGamesWindow(TeamsThatPlayedAGame);
+                    bool? result = null;
 
-                    if (dlw.ShowDialog() == true)
+                    PickedTeams = new List<int>();
+                    MainWindow.AppInvoke(
+                        () =>
+                            {
+                                var dlw = new PickGamesWindow(TeamsThatPlayedAGame);
+                                result = dlw.ShowDialog();
+                            });
+
+                    if (result == true)
                     {
                         for (var i = 0; i <= PickedTeams.Count - 2; i += 2)
                         {
@@ -1213,14 +1151,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             if (teamBoxScore.PTS1 != getDiff(tst, oldTST, t1, TAbbr.PF, teamBoxScore.IsPlayoff)
                                 || teamBoxScore.PTS2 != getDiff(tst, oldTST, t2, TAbbr.PF, teamBoxScore.IsPlayoff))
                             {
-                                MessageBox.Show(
-                                    String.Format(
-                                        "{0} @ {1} won't have its box-score imported because it couldn't be properly calculated. A possible reason for this is that one or more players participating in that game has been since traded away from the teams.",
-                                        tst[t1].DisplayName,
-                                        tst[t2].DisplayName),
-                                    "NBA Stats Tracker",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Exclamation);
+                                var localtst = tst;
+                                MainWindow.AppInvoke(
+                                    () =>
+                                    MessageBox.Show(
+                                        String.Format(
+                                            "{0} @ {1} won't have its box-score imported because it couldn't be properly calculated. A possible reason for this is that one or more players participating in that game has been since traded away from the teams.",
+                                            localtst[t1].DisplayName,
+                                            localtst[t2].DisplayName),
+                                        "NBA Stats Tracker",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Exclamation));
                                 continue;
                             }
 
@@ -1312,9 +1253,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             if (importMessages.Count > 0)
             {
                 importMessages.Add("");
-                var cmw = new CopyableMessageWindow(
-                    importMessages.Aggregate((m1, m2) => m1 + "\n" + m2), "League News", TextAlignment.Left);
-                cmw.ShowDialog();
+                MainWindow.AppInvoke(
+                    () =>
+                        {
+                            var cmw = new CopyableMessageWindow(importMessages.Aggregate((m1, m2) => m1 + "\n" + m2), "League News");
+                            cmw.ShowDialog();
+                        });
             }
 
             return 0;
@@ -1325,10 +1269,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             switch (nba2KVersion)
             {
                 case NBA2KVersion.NBA2K12:
-                    _legalTTypes = new List<string> { "0", "4" };
+                    legalTTypes = new List<string> { "0", "4" };
                     break;
                 case NBA2KVersion.NBA2K13:
-                    _legalTTypes = new List<string> { "0", "21" };
+                    legalTTypes = new List<string> { "0", "21" };
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1360,7 +1304,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var validTeams = teams.FindAll(
                 delegate(Dictionary<string, string> team)
                     {
-                        if (_legalTTypes.IndexOf(team["TType"]) != -1)
+                        if (legalTTypes.IndexOf(team["TType"]) != -1)
                         {
                             return true;
                         }
@@ -1698,42 +1642,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                         ps.IsSigned = team1 != "-1";
 
-                        ps.Totals[PAbbr.GP] = Convert.ToUInt16(playerSeasonStats["GamesP"]);
-                        ps.Totals[PAbbr.GS] = Convert.ToUInt16(playerSeasonStats["GamesS"]);
-                        ps.Totals[PAbbr.MINS] = Convert.ToUInt16(playerSeasonStats["Minutes"]);
-                        ps.Totals[PAbbr.PTS] = Convert.ToUInt16(playerSeasonStats["Points"]);
-                        ps.Totals[PAbbr.DREB] = Convert.ToUInt16(playerSeasonStats["DRebs"]);
-                        ps.Totals[PAbbr.OREB] = Convert.ToUInt16(playerSeasonStats["ORebs"]);
-                        ps.Totals[PAbbr.AST] = Convert.ToUInt16(playerSeasonStats["Assists"]);
-                        ps.Totals[PAbbr.STL] = Convert.ToUInt16(playerSeasonStats["Steals"]);
-                        ps.Totals[PAbbr.BLK] = Convert.ToUInt16(playerSeasonStats["Blocks"]);
-                        ps.Totals[PAbbr.TOS] = Convert.ToUInt16(playerSeasonStats["TOs"]);
-                        ps.Totals[PAbbr.FOUL] = Convert.ToUInt16(playerSeasonStats["Fouls"]);
-                        ps.Totals[PAbbr.FGM] = Convert.ToUInt16(playerSeasonStats["FGMade"]);
-                        ps.Totals[PAbbr.FGA] = Convert.ToUInt16(playerSeasonStats["FGAtt"]);
-                        try
-                        {
-                            ps.Totals[PAbbr.TPM] = Convert.ToUInt16(playerSeasonStats["3PTMade"]);
-                            ps.Totals[PAbbr.TPA] = Convert.ToUInt16(playerSeasonStats["3PTAtt"]);
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            ps.Totals[PAbbr.TPM] = Convert.ToUInt16(playerSeasonStats["TPTMade"]);
-                            ps.Totals[PAbbr.TPA] = Convert.ToUInt16(playerSeasonStats["TPTAtt"]);
-                        }
-                        ps.Totals[PAbbr.FTM] = Convert.ToUInt16(playerSeasonStats["FTMade"]);
-                        ps.Totals[PAbbr.FTA] = Convert.ToUInt16(playerSeasonStats["FTAtt"]);
-
-                        if (nba2KVersion == NBA2KVersion.NBA2K12)
-                        {
-                            ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAStar"]));
-                            ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsChamp"]));
-                        }
-                        else if (nba2KVersion == NBA2KVersion.NBA2K13)
-                        {
-                            ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsAllStar"]));
-                            ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(playerSeasonStats["IsNBAChamp"]));
-                        }
+                        importPlayerStats(ps, playerSeasonStats, nba2KVersion);
 
                         ps.CalcAvg();
                     }
@@ -1744,6 +1653,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.IsSigned = false;
 
                         ps.CalcAvg();
+                    }
+
+                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    {
+                        importPlayerCareerHighs(ps, player);
                     }
                 }
             }
@@ -1763,6 +1677,64 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             #endregion
 
             return 0;
+        }
+
+        private static void importPlayerStats(PlayerStats ps, Dictionary<string, string> redPlayerStats, NBA2KVersion nba2KVersion, bool playoffs)
+        {
+            var arr = !playoffs ? ps.Totals : ps.PlTotals;
+            arr[PAbbr.GP] = Convert.ToUInt16(redPlayerStats["GamesP"]);
+            arr[PAbbr.GS] = Convert.ToUInt16(redPlayerStats["GamesS"]);
+            arr[PAbbr.MINS] = Convert.ToUInt16(redPlayerStats["Minutes"]);
+            arr[PAbbr.PTS] = Convert.ToUInt16(redPlayerStats["Points"]);
+            arr[PAbbr.DREB] = Convert.ToUInt16(redPlayerStats["DRebs"]);
+            arr[PAbbr.OREB] = Convert.ToUInt16(redPlayerStats["ORebs"]);
+            arr[PAbbr.AST] = Convert.ToUInt16(redPlayerStats["Assists"]);
+            arr[PAbbr.STL] = Convert.ToUInt16(redPlayerStats["Steals"]);
+            arr[PAbbr.BLK] = Convert.ToUInt16(redPlayerStats["Blocks"]);
+            arr[PAbbr.TOS] = Convert.ToUInt16(redPlayerStats["TOs"]);
+            arr[PAbbr.FOUL] = Convert.ToUInt16(redPlayerStats["Fouls"]);
+            arr[PAbbr.FGM] = Convert.ToUInt16(redPlayerStats["FGMade"]);
+            arr[PAbbr.FGA] = Convert.ToUInt16(redPlayerStats["FGAtt"]);
+            try
+            {
+                arr[PAbbr.TPM] = Convert.ToUInt16(redPlayerStats["3PTMade"]);
+                arr[PAbbr.TPA] = Convert.ToUInt16(redPlayerStats["3PTAtt"]);
+            }
+            catch (KeyNotFoundException)
+            {
+                arr[PAbbr.TPM] = Convert.ToUInt16(redPlayerStats["TPTMade"]);
+                arr[PAbbr.TPA] = Convert.ToUInt16(redPlayerStats["TPTAtt"]);
+            }
+            arr[PAbbr.FTM] = Convert.ToUInt16(redPlayerStats["FTMade"]);
+            arr[PAbbr.FTA] = Convert.ToUInt16(redPlayerStats["FTAtt"]);
+
+            if (nba2KVersion == NBA2KVersion.NBA2K12)
+            {
+                ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsAStar"]));
+                ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsChamp"]));
+            }
+            else if (nba2KVersion == NBA2KVersion.NBA2K13)
+            {
+                ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsAllStar"]));
+                ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsNBAChamp"]));
+            }
+        }
+
+        private static void importPlayerCareerHighs(PlayerStats ps, Dictionary<string, string> redPlayer)
+        {
+            ps.CareerHighs[PAbbr.PTS] = Convert.ToUInt16(redPlayer["GH_CarPts"]);
+            ps.CareerHighs[PAbbr.FGM] = Convert.ToUInt16(redPlayer["GH_CarFGM"]);
+            ps.CareerHighs[PAbbr.FGA] = Convert.ToUInt16(redPlayer["GH_CarFGA"]);
+            ps.CareerHighs[PAbbr.TPM] = Convert.ToUInt16(redPlayer["GH_Car3PM"]);
+            ps.CareerHighs[PAbbr.TPA] = Convert.ToUInt16(redPlayer["GH_Car3PA"]);
+            ps.CareerHighs[PAbbr.FTM] = Convert.ToUInt16(redPlayer["GH_CarFTM"]);
+            ps.CareerHighs[PAbbr.FTA] = Convert.ToUInt16(redPlayer["GH_CarFTA"]);
+            ps.CareerHighs[PAbbr.OREB] = Convert.ToUInt16(redPlayer["GH_CarOReb"]);
+            ps.CareerHighs[PAbbr.DREB] = Convert.ToUInt16(redPlayer["GH_CarDReb"]);
+            ps.CareerHighs[PAbbr.REB] = Convert.ToUInt16(redPlayer["GH_CarRebs"]);
+            ps.CareerHighs[PAbbr.AST] = Convert.ToUInt16(redPlayer["GH_CarAst"]);
+            ps.CareerHighs[PAbbr.STL] = Convert.ToUInt16(redPlayer["GH_CarStl"]);
+            ps.CareerHighs[PAbbr.BLK] = Convert.ToUInt16(redPlayer["GH_CarBlk"]);
         }
 
         /// <summary>Creates the NBA divisions and conferences.</summary>
