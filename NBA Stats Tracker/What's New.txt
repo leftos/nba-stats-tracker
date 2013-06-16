@@ -1,6 +1,7 @@
 NBA Stats Tracker - Version History
 
-	vX
+	v1.16.5
+		- Improvement: The application now targets .NET Framework 4.5 to make use of its new features, including the native implementation of Async/Await which allows for detailed stack traces on exceptions
 		- Fix: Team names will now be shown correctly in the Records tab of the Box Score window
 
 	v1.16.4
