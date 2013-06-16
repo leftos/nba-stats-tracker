@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	vX
+		- Fix: Team names will now be shown correctly in the Records tab of the Box Score window
+
 	v1.16.4
 		- Improvement: Improved Advanced Player Search speed
 		- Improvement: Program will no longer be unresponsive while making a search in Advanced Player Search or changing criteria for the Recommended Team tabs

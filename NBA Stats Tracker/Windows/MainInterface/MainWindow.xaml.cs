@@ -708,7 +708,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             if (!IsActive)
             {
                 var pw = new ProgressWindow("", false);
-                pw.Topmost = true;
                 pw.Show();
             }
             dt = new DispatcherTimer();
