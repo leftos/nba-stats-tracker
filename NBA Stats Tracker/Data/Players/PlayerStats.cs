@@ -672,10 +672,13 @@ namespace NBA_Stats_Tracker.Data.Players
 
         #endregion
 
-        public string FullInfo(IDictionary<int, TeamStats> tst)
+        public string FullInfo(IDictionary<int, TeamStats> tst, bool givenFirst = false, bool showPosition = true)
         {
             return String.Format(
-                "{0}, {1} ({2}{3})", LastName, FirstName, Position1S + " - ", IsSigned ? tst[TeamF].DisplayName : "Free Agent");
+                "{0} ({1}{2})",
+                givenFirst ? FullNameGivenFirst : FullName,
+                showPosition ? Position1S + " - " : "",
+                IsSigned ? tst[TeamF].DisplayName : "Free Agent");
         }
 
         public static string PositionToString(Position position)

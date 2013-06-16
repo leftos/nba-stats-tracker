@@ -567,6 +567,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             var injuredList = new List<string>();
             var reInjuredList = new List<string>();
             var recoveredList = new List<string>();
+            var newRecordsList = new List<string>();
 
             #region Import Teams & Team Stats
 
@@ -1086,6 +1087,38 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         }
                     }
 
+                    var count = 0;
+                    var recMsg = "";
+                    for (var i = 0; i < curPlayer.CareerHighs.Count(); i++)
+                    {
+                        if (i == PAbbr.MINS || i == PAbbr.TOS || i == PAbbr.FOUL)
+                        {
+                            continue;
+                        }
+                        if (oldPlayer.CareerHighs[i] != 0 && oldPlayer.CareerHighs[i] < curPlayer.CareerHighs[i])
+                        {
+                            if (count == 0)
+                            {
+                                recMsg = 
+                                    string.Format(
+                                        "{0} has a new career-high in {1} ({2})",
+                                        curPlayer.FullInfo(tst, true, false),
+                                        PAbbr.CHTotals[i],
+                                        curPlayer.CareerHighs[i]);
+                            }
+                            else
+                            {
+                                recMsg += string.Format(", {0} ({1})", PAbbr.CHTotals[i], curPlayer.CareerHighs[i]);
+                            }
+                            count++;
+                        }
+                    }
+                    recMsg += ".";
+                    if (count > 0)
+                    {
+                        newRecordsList.Add(recMsg);
+                    }
+
                     #endregion
                 }
             }
@@ -1248,6 +1281,16 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     importMessages.AddRange(recoveredList);
                     importMessages.Add("");
                 }
+                importMessages.Add("");
+                importMessages.Add("");
+            }
+            if (newRecordsList.Count > 0)
+            {
+                importMessages.Add("New Career Highs");
+                importMessages.Add("========================================");
+                importMessages.Add("");
+                importMessages.AddRange(newRecordsList);
+                importMessages.Add("");
             }
 
             if (importMessages.Count > 0)
@@ -1679,7 +1722,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             return 0;
         }
 
-        private static void importPlayerStats(PlayerStats ps, Dictionary<string, string> redPlayerStats, NBA2KVersion nba2KVersion, bool playoffs)
+        private static void importPlayerStats(
+            PlayerStats ps, Dictionary<string, string> redPlayerStats, NBA2KVersion nba2KVersion, bool playoffs)
         {
             var arr = !playoffs ? ps.Totals : ps.PlTotals;
             arr[PAbbr.GP] = Convert.ToUInt16(redPlayerStats["GamesP"]);
