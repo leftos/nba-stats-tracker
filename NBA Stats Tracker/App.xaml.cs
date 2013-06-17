@@ -90,6 +90,10 @@ namespace NBA_Stats_Tracker
             try
             {
                 var errorReportPath = AppDocsPath + @"errorlog.txt";
+                if (!Directory.Exists(AppDocsPath))
+                {
+                    Directory.CreateDirectory(AppDocsPath);
+                }
                 var f = new StreamWriter(errorReportPath);
 
                 f.WriteLine("Error Report for {0}", AppName);
