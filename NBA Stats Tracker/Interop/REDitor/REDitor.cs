@@ -292,7 +292,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             var percentProgress = i * 100 / count;
                             if (percentProgress % 5 == 0)
                             {
-                                MainWindow.AppInvoke(() => pw.SetProgressBarValue(percentProgress));
+                                Tools.AppInvoke(() => pw.SetProgressBarValue(percentProgress));
                             }
                             var player = validPlayers[i];
                             var playerID = Convert.ToInt32(player["ID"]);
@@ -494,7 +494,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 ppsList.Add(prevStats);
                             }
                         }
-                        MainWindow.AppInvoke(
+                        Tools.AppInvoke(
                             () =>
                                 {
                                     pw.SetProgressBarValue(99);
@@ -1132,7 +1132,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 msg += "\n\nImport will continue, but there will be some stats missing." + "\n\nTo avoid this problem, either\n"
                        + "1) disable the duplicate occurences via (Miscellaneous > Enable/Disable Players For This Season...), or\n"
                        + "2) transfer the correct instance of the player to their current team.";
-                MainWindow.AppInvoke(() => MessageBox.Show(msg));
+                Tools.AppInvoke(() => MessageBox.Show(msg));
             }
 
             #endregion
@@ -1159,7 +1159,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     bool? result = null;
 
                     PickedTeams = new List<int>();
-                    MainWindow.AppInvoke(
+                    Tools.AppInvoke(
                         () =>
                             {
                                 var dlw = new PickGamesWindow(TeamsThatPlayedAGame);
@@ -1185,7 +1185,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 || teamBoxScore.PTS2 != getDiff(tst, oldTST, t2, TAbbr.PF, teamBoxScore.IsPlayoff))
                             {
                                 var localtst = tst;
-                                MainWindow.AppInvoke(
+                                Tools.AppInvoke(
                                     () =>
                                     MessageBox.Show(
                                         String.Format(
@@ -1296,7 +1296,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             if (importMessages.Count > 0)
             {
                 importMessages.Add("");
-                MainWindow.AppInvoke(
+                Tools.AppInvoke(
                     () =>
                         {
                             var cmw = new CopyableMessageWindow(importMessages.Aggregate((m1, m2) => m1 + "\n" + m2), "League News");

@@ -28,7 +28,9 @@ namespace LeftosCommonLibrary
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Threading;
 
     using Microsoft.Win32;
 
@@ -424,6 +426,16 @@ namespace LeftosCommonLibrary
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Invokes an action to happen in the application's dispatcher. Can be used by threads that aren't the UI one
+        /// to be run on the UI.
+        /// </summary>
+        /// <param name="a">The action to be invoked.</param>
+        public static void AppInvoke(Action a)
+        {
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, a);
         }
     }
 }

@@ -1363,7 +1363,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             foreach (var kvp in teamNamesShort)
             {
                 await Task.Run(() => doGetRealTeam(kvp, teamOrder, teamDivisions, realTSTOpp, realPST));
-                AppInvoke(getRealStats_UpdateProgressBar);
+                Tools.AppInvoke(getRealStats_UpdateProgressBar);
             }
             // TODO: Re-enable once Playoffs start
             BR.AddPlayoffTeamStats(ref RealTST, ref realTSTOpp);
@@ -2617,11 +2617,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         {
             var ascw = new AdvancedStatCalculatorWindow();
             ascw.ShowDialog();
-        }
-
-        public static void AppInvoke(Action a)
-        {
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, a);
         }
 
         public static async Task UpdateAllData(bool leaveProgressWindowOpen = false, bool onlyPopulate = false)

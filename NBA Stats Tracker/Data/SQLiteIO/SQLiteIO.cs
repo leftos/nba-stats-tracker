@@ -516,7 +516,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             #endregion
 
-            MainWindow.AppInvoke(() => MainWindow.MWInstance.txtFile.Text = file);
+            Tools.AppInvoke(() => MainWindow.MWInstance.txtFile.Text = file);
             MainWindow.CurrentDB = file;
 
             //}
@@ -1714,7 +1714,7 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
 
             MainWindow.CurrentDB = file;
 
-            MainWindow.AppInvoke(() => MainWindow.ChangeSeason(curSeason));
+            Tools.AppInvoke(() => MainWindow.ChangeSeason(curSeason));
 
             if (mustSave)
             {
