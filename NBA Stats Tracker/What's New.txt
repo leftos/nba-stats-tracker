@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.16.6.1
+		- Fix: Fixed startup crash if the registry key wasn't found
+
 	v1.16.6
 		- Addition: Player Career Highs will be updated from the NBA 2K13 save on each import
 		- Addition: New Player Career Highs will be reported on each import
