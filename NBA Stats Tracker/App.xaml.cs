@@ -166,6 +166,7 @@ namespace NBA_Stats_Tracker
 
             Tools.AppName = AppName;
             Tools.AppRegistryKey = AppRegistryKey;
+            Tools.OpenRegistryKey(true);
 
             Trace.Listeners.Clear();
 

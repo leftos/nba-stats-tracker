@@ -43,6 +43,62 @@ namespace LeftosCommonLibrary
         /// <summary>The application's registry key; used by GetRegistrySetting and SetRegistrySetting for example.</summary>
         public static string AppRegistryKey = "";
 
+        /// <summary>Tries to open the AppRegistryKey registry key.</summary>
+        /// <param name="createIfNotExists">
+        ///     if set to <c>true</c>, the key will be created if it doesn't exist already.
+        /// </param>
+        /// <returns>The opened registry key.</returns>
+        public static RegistryKey OpenRegistryKey(bool createIfNotExists = false)
+        {
+            return OpenRegistryKey(AppRegistryKey, createIfNotExists);
+        }
+
+        /// <summary>Opens a registry key.</summary>
+        /// <param name="key">The registry key to be opened.</param>
+        /// <param name="createIfNotExists">
+        ///     if set to <c>true</c>, the key will be created if it doesn't exist already.
+        /// </param>
+        /// <returns>The opened registry key.</returns>
+        /// <exception cref="System.Exception">
+        ///     KeyCreateError is thrown if the key can't be created, KeyOpenError is thrown if the key can't be
+        ///     opened.
+        /// </exception>
+        public static RegistryKey OpenRegistryKey(string key, bool createIfNotExists = false)
+        {
+            var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+            try
+            {
+                rk = rk.OpenSubKey(key, true);
+                if (rk == null)
+                {
+                    rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+                    rk = rk.OpenSubKey(key, true);
+                    if (rk == null)
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (createIfNotExists)
+                {
+                    rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+                    rk.CreateSubKey(key);
+                    rk = rk.OpenSubKey(key, true);
+                    if (rk == null)
+                    {
+                        throw new Exception("KeyCreateError");
+                    }
+                }
+                else
+                {
+                    throw new Exception("KeyOpenError");
+                }
+            }
+            return rk;
+        }
+
         /// <summary>Sets a registry setting using the AppRegistryKey field as the key.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="setting">The setting.</param>
@@ -61,30 +117,7 @@ namespace LeftosCommonLibrary
         /// <exception cref="System.Exception">KeyCreateError: Thrown if the key could neither be opened nor created.</exception>
         public static void SetRegistrySetting<T>(string key, string setting, T value)
         {
-            var rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
-            try
-            {
-                rk = rk.OpenSubKey(key, true);
-                if (rk == null)
-                {
-                    rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
-                    rk = rk.OpenSubKey(key, true);
-                    if (rk == null)
-                    {
-                        throw new Exception();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                rk = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
-                rk.CreateSubKey(key);
-                rk = rk.OpenSubKey(key, true);
-                if (rk == null)
-                {
-                    throw new Exception("KeyCreateError");
-                }
-            }
+            var rk = OpenRegistryKey(key);
 
             rk.SetValue(setting, value);
         }
