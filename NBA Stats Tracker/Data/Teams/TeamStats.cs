@@ -368,115 +368,117 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// </param>
         public void CalcMetrics(TeamStats tsopp, bool playoffs = false)
         {
-            var tempMetrics = new Dictionary<string, double>();
+            var tempMetricsOwn = new Dictionary<string, double>();
 
-            var tempTotals = new double[Totals.Length];
+            var tempTotalsOwn = new double[Totals.Length];
             for (var i = 0; i < Totals.Length; i++)
             {
                 if (!playoffs)
                 {
-                    tempTotals[i] = Totals[i];
+                    tempTotalsOwn[i] = Totals[i];
                 }
                 else
                 {
-                    tempTotals[i] = PlTotals[i];
+                    tempTotalsOwn[i] = PlTotals[i];
                 }
             }
 
-            var toppstats = new double[tsopp.Totals.Length];
+            var tempTotalsOpp = new double[tsopp.Totals.Length];
             for (var i = 0; i < tsopp.Totals.Length; i++)
             {
                 if (!playoffs)
                 {
-                    toppstats[i] = tsopp.Totals[i];
+                    tempTotalsOpp[i] = tsopp.Totals[i];
                 }
                 else
                 {
-                    toppstats[i] = tsopp.PlTotals[i];
+                    tempTotalsOpp[i] = tsopp.PlTotals[i];
                 }
             }
 
             var games = (!playoffs) ? GetGames() : GetPlayoffGames();
 
-            var poss = calcPossMetric(tempTotals, toppstats);
-            tempMetrics.Add("Poss", poss);
-            tempMetrics.Add("PossPG", poss / games);
+            var poss = calcPossMetric(tempTotalsOwn, tempTotalsOpp);
+            tempMetricsOwn.Add("Poss", poss);
+            tempMetricsOwn.Add("PossPG", poss / games);
 
-            poss = calcPossMetric(toppstats, tempTotals);
-
-            var toppmetrics = (!playoffs) ? tsopp.Metrics : tsopp.PlMetrics;
+            var tempMetricsOpp = (!playoffs) ? tsopp.Metrics : tsopp.PlMetrics;
             try
             {
-                toppmetrics.Add("Poss", poss);
+                tempMetricsOpp.Add("Poss", poss);
+            }
+            catch (ArgumentException)
+            {
+                tempMetricsOpp["Poss"] = poss;
             }
             catch
             {
                 Console.WriteLine("Possessions metric couldn't be calculated for team " + ID);
             }
 
-            var pace = MainWindow.GameLength * ((tempMetrics["Poss"] + toppmetrics["Poss"]) / (2 * (tempTotals[TAbbr.MINS])));
-            tempMetrics.Add("Pace", pace);
+            var pace = MainWindow.GameLength * ((tempMetricsOwn["Poss"] + tempMetricsOpp["Poss"]) / (2 * (tempTotalsOwn[TAbbr.MINS])));
+            tempMetricsOwn.Add("Pace", pace);
 
-            var ortg = (tempTotals[TAbbr.PF] / tempMetrics["Poss"]) * 100;
-            tempMetrics.Add("ORTG", ortg);
+            var ortg = (tempTotalsOwn[TAbbr.PF] / tempMetricsOwn["Poss"]) * 100;
+            tempMetricsOwn.Add("ORTG", ortg);
 
-            var drtg = (tempTotals[TAbbr.PA] / tempMetrics["Poss"]) * 100;
-            tempMetrics.Add("DRTG", drtg);
+            var drtg = (tempTotalsOwn[TAbbr.PA] / tempMetricsOwn["Poss"]) * 100;
+            tempMetricsOwn.Add("DRTG", drtg);
 
-            var astP = (tempTotals[TAbbr.AST])
-                       / (tempTotals[TAbbr.FGA] + tempTotals[TAbbr.FTA] * 0.44 + tempTotals[TAbbr.AST] + tempTotals[TAbbr.TOS]);
-            tempMetrics.Add("AST%", astP);
+            var astP = (tempTotalsOwn[TAbbr.AST])
+                       / (tempTotalsOwn[TAbbr.FGA] + tempTotalsOwn[TAbbr.FTA] * 0.44 + tempTotalsOwn[TAbbr.AST] + tempTotalsOwn[TAbbr.TOS]);
+            tempMetricsOwn.Add("AST%", astP);
 
-            var drebP = tempTotals[TAbbr.DREB] / (tempTotals[TAbbr.DREB] + toppstats[TAbbr.OREB]);
-            tempMetrics.Add("DREB%", drebP);
+            var drebP = tempTotalsOwn[TAbbr.DREB] / (tempTotalsOwn[TAbbr.DREB] + tempTotalsOpp[TAbbr.OREB]);
+            tempMetricsOwn.Add("DREB%", drebP);
 
-            var efgP = (tempTotals[TAbbr.FGM] + tempTotals[TAbbr.TPM] * 0.5) / tempTotals[TAbbr.FGA];
-            tempMetrics.Add("EFG%", efgP);
+            var efgP = (tempTotalsOwn[TAbbr.FGM] + tempTotalsOwn[TAbbr.TPM] * 0.5) / tempTotalsOwn[TAbbr.FGA];
+            tempMetricsOwn.Add("EFG%", efgP);
 
             var effD = ortg - drtg;
-            tempMetrics.Add("EFFd", effD);
+            tempMetricsOwn.Add("EFFd", effD);
 
-            var tor = tempTotals[TAbbr.TOS] / (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA] + tempTotals[TAbbr.TOS]);
-            tempMetrics.Add("TOR", tor);
+            var tor = tempTotalsOwn[TAbbr.TOS] / (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA] + tempTotalsOwn[TAbbr.TOS]);
+            tempMetricsOwn.Add("TOR", tor);
 
-            var orebP = tempTotals[TAbbr.OREB] / (tempTotals[TAbbr.OREB] + toppstats[TAbbr.DREB]);
-            tempMetrics.Add("OREB%", orebP);
+            var orebP = tempTotalsOwn[TAbbr.OREB] / (tempTotalsOwn[TAbbr.OREB] + tempTotalsOpp[TAbbr.DREB]);
+            tempMetricsOwn.Add("OREB%", orebP);
 
-            var ftr = tempTotals[TAbbr.FTM] / tempTotals[TAbbr.FGA];
-            tempMetrics.Add("FTR", ftr);
+            var ftr = tempTotalsOwn[TAbbr.FTM] / tempTotalsOwn[TAbbr.FGA];
+            tempMetricsOwn.Add("FTR", ftr);
 
             var tempPerGame = (!playoffs) ? PerGame : PlPerGame;
 
             var pwP = (((tempPerGame[TAbbr.PPG] - tempPerGame[TAbbr.PAPG]) * 2.7) + ((double) MainWindow.SeasonLength / 2))
                       / MainWindow.SeasonLength;
-            tempMetrics.Add("PW%", pwP);
+            tempMetricsOwn.Add("PW%", pwP);
 
-            var tsP = tempTotals[TAbbr.PF] / (2 * (tempTotals[TAbbr.FGA] + 0.44 * tempTotals[TAbbr.FTA]));
-            tempMetrics.Add("TS%", tsP);
+            var tsP = tempTotalsOwn[TAbbr.PF] / (2 * (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA]));
+            tempMetricsOwn.Add("TS%", tsP);
 
-            var tpr = tempTotals[TAbbr.TPA] / tempTotals[TAbbr.FGA];
-            tempMetrics.Add("3PR", tpr);
+            var tpr = tempTotalsOwn[TAbbr.TPA] / tempTotalsOwn[TAbbr.FGA];
+            tempMetricsOwn.Add("3PR", tpr);
 
-            var pythW = MainWindow.SeasonLength * (Math.Pow(tempTotals[TAbbr.PF], 16.5))
-                        / (Math.Pow(tempTotals[TAbbr.PF], 16.5) + Math.Pow(tempTotals[TAbbr.PA], 16.5));
-            tempMetrics.Add("PythW", pythW);
+            var pythW = MainWindow.SeasonLength * (Math.Pow(tempTotalsOwn[TAbbr.PF], 16.5))
+                        / (Math.Pow(tempTotalsOwn[TAbbr.PF], 16.5) + Math.Pow(tempTotalsOwn[TAbbr.PA], 16.5));
+            tempMetricsOwn.Add("PythW", pythW);
 
             var pythL = MainWindow.SeasonLength - pythW;
-            tempMetrics.Add("PythL", pythL);
+            tempMetricsOwn.Add("PythL", pythL);
 
-            var gmsc = tempTotals[TAbbr.PF] + 0.4 * tempTotals[TAbbr.FGM] - 0.7 * tempTotals[TAbbr.FGA]
-                       - 0.4 * (tempTotals[TAbbr.FTA] - tempTotals[TAbbr.FTM]) + 0.7 * tempTotals[TAbbr.OREB]
-                       + 0.3 * tempTotals[TAbbr.DREB] + tempTotals[TAbbr.STL] + 0.7 * tempTotals[TAbbr.AST]
-                       + 0.7 * tempTotals[TAbbr.BLK] - 0.4 * tempTotals[TAbbr.FOUL] - tempTotals[TAbbr.TOS];
-            tempMetrics.Add("GmSc", gmsc / games);
+            var gmsc = tempTotalsOwn[TAbbr.PF] + 0.4 * tempTotalsOwn[TAbbr.FGM] - 0.7 * tempTotalsOwn[TAbbr.FGA]
+                       - 0.4 * (tempTotalsOwn[TAbbr.FTA] - tempTotalsOwn[TAbbr.FTM]) + 0.7 * tempTotalsOwn[TAbbr.OREB]
+                       + 0.3 * tempTotalsOwn[TAbbr.DREB] + tempTotalsOwn[TAbbr.STL] + 0.7 * tempTotalsOwn[TAbbr.AST]
+                       + 0.7 * tempTotalsOwn[TAbbr.BLK] - 0.4 * tempTotalsOwn[TAbbr.FOUL] - tempTotalsOwn[TAbbr.TOS];
+            tempMetricsOwn.Add("GmSc", gmsc / games);
 
             if (!playoffs)
             {
-                Metrics = new Dictionary<string, double>(tempMetrics);
+                Metrics = new Dictionary<string, double>(tempMetricsOwn);
             }
             else
             {
-                PlMetrics = new Dictionary<string, double>(tempMetrics);
+                PlMetrics = new Dictionary<string, double>(tempMetricsOwn);
             }
         }
 

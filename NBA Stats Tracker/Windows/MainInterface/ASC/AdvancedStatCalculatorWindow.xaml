@@ -954,7 +954,7 @@
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}" Padding="2,0">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                Text="Pace; an estimate of possessions per the regular game length, used as a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
                                                 TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
                                     </TextBlock>
@@ -1251,7 +1251,7 @@
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}" Padding="2,0">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                Text="Pace; an estimate of possessions per the regular game length, used as a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
                                                 TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
                                     </TextBlock>
@@ -1962,7 +1962,7 @@
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}" Padding="2,0">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                Text="Pace; an estimate of possessions per the regular game length, used as a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
                                                 TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
                                     </TextBlock>
@@ -2259,7 +2259,7 @@
                                     <TextBlock Text="{Binding Pace, StringFormat=F1}" Padding="2,0">
                                         <TextBlock.ToolTip>
                                             <TextBlock
-                                                Text="Pace; a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
+                                                Text="Pace; an estimate of possessions per the regular game length, used as a measure of a team's pace used to leverage player metrics on the kind of game their teams play."
                                                 TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
                                     </TextBlock>
