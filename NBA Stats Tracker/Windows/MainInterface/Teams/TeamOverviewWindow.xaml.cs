@@ -316,7 +316,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             foreach (var r in _bseList)
             {
-                var bsr = r.BS.DeepClone();
+                var bsr = r.BS.CustomClone();
                 bsr.PrepareForDisplay(_tst, _curTeam);
                 _tbsList.Add(bsr);
             }

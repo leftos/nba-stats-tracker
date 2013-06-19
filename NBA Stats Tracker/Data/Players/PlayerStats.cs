@@ -1006,6 +1006,8 @@ namespace NBA_Stats_Tracker.Data.Players
             var pREB = pstats[PAbbr.OREB] + pstats[PAbbr.DREB];
             var tREB = tstats[TAbbr.OREB] + tstats[TAbbr.DREB];
 
+            var tempTeamMetricsOwn = !playoffs ? ts.Metrics : ts.PlMetrics;
+
             var tempMetrics = new Dictionary<string, double>();
 
             var gmSc = pstats[PAbbr.PTS] + 0.4 * pstats[PAbbr.FGM] - 0.7 * pstats[PAbbr.FGA]
@@ -1019,7 +1021,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
             if (!GmScOnly)
             {
-                #region temp_metrics that do not require Opponent Stats
+                #region Metrics that do not require Opponent Stats
 
                 var ASTp = pstats[PAbbr.AST] / (((pstats[PAbbr.MINS] / (tstats[TAbbr.MINS])) * tstats[TAbbr.FGM]) - pstats[PAbbr.FGM]);
                 tempMetrics.Add("AST%", ASTp);
@@ -1027,9 +1029,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 var EFGp = (pstats[PAbbr.FGM] + 0.5 * pstats[PAbbr.TPM]) / pstats[PAbbr.FGA];
                 tempMetrics.Add("EFG%", EFGp);
 
-                var tempOppMetrics = !playoffs ? tsopp.Metrics : tsopp.PlMetrics;
+                var tempTeamMetricsOpp = !playoffs ? tsopp.Metrics : tsopp.PlMetrics;
 
-                var STLp = (pstats[PAbbr.STL] * (tstats[TAbbr.MINS])) / (pstats[PAbbr.MINS] * tempOppMetrics["Poss"]);
+                var STLp = (pstats[PAbbr.STL] * (tstats[TAbbr.MINS])) / (pstats[PAbbr.MINS] * tempTeamMetricsOpp["Poss"]);
                 tempMetrics.Add("STL%", STLp);
 
                 var TOp = pstats[PAbbr.TOS] / (pstats[PAbbr.FGA] + 0.44 * pstats[PAbbr.FTA] + pstats[PAbbr.TOS]);
@@ -1065,7 +1067,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                 #endregion
 
-                #region temp_metrics that require Opponents stats
+                #region Metrics that require Opponents stats
 
                 if (ts.GetGames() == tsopp.GetGames())
                 {
@@ -1082,7 +1084,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     var REBp = (pREB * (tstats[TAbbr.MINS])) / (pstats[PAbbr.MINS] * (tREB + toppREB));
 
-                    #region temp_metrics that require league stats
+                    #region Metrics that require league stats
 
                     double aPER;
                     double PPR;
@@ -1118,6 +1120,105 @@ namespace NBA_Stats_Tracker.Data.Players
                     tempMetrics.Add("OREB%", ORBp);
                     tempMetrics.Add("REB%", REBp);
                     tempMetrics.Add("PPR", PPR);
+
+                    #region Offensive Rating
+
+                    var qAST = ((pstats[PAbbr.MINS] / (tstats[TAbbr.MINS] / 5))
+                                * (1.14 * ((tstats[TAbbr.AST] - pstats[PAbbr.AST]) / tstats[TAbbr.FGM])))
+                               + ((((tstats[TAbbr.AST] / tstats[TAbbr.MINS]) * pstats[PAbbr.MINS] * 5 - pstats[PAbbr.AST])
+                                   / ((tstats[TAbbr.FGM] / tstats[TAbbr.MINS]) * pstats[PAbbr.MINS] * 5 - pstats[PAbbr.FGM]))
+                                  * (1 - (pstats[PAbbr.MINS] / (tstats[TAbbr.MINS] / 5))));
+
+                    var fgPart = pstats[PAbbr.FGM]
+                                 * (1 - 0.5 * ((pstats[PAbbr.PTS] - pstats[PAbbr.FTM]) / (2 * pstats[PAbbr.FGA])) * qAST);
+
+                    var astPart = 0.5
+                                  * (((tstats[TAbbr.PF] - tstats[TAbbr.FTM]) - (pstats[PAbbr.PTS] - pstats[PAbbr.FTM]))
+                                     / (2 * (tstats[TAbbr.FGA] - pstats[PAbbr.FGA]))) * pstats[PAbbr.AST];
+
+                    var ftPart = (1 - Math.Pow(1 - (pstats[PAbbr.FTM] / pstats[PAbbr.FTA]), 2)) * 0.4 * pstats[PAbbr.FTA];
+
+                    var teamScPoss = tstats[TAbbr.FGM]
+                                     + (1 - Math.Pow(1 - (tstats[TAbbr.FTM] / tstats[TAbbr.FTA]), 2)) * tstats[TAbbr.FTA] * 0.4;
+
+                    var teamOREBPct = tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]);
+
+                    var teamPlayPct = teamScPoss / (tstats[TAbbr.FGA] + tstats[TAbbr.FTA] * 0.4 + tstats[TAbbr.TOS]);
+
+                    var teamOREBWeight = ((1 - teamOREBPct) * teamPlayPct)
+                                         / ((1 - teamOREBPct) * teamPlayPct + teamOREBPct * (1 - teamPlayPct));
+
+                    var orebPart = pstats[PAbbr.OREB] * teamOREBWeight * teamPlayPct;
+
+                    var scPoss = (fgPart + astPart + ftPart) * (1 - (tstats[TAbbr.OREB] / teamScPoss) * teamOREBWeight * teamPlayPct)
+                                 + orebPart;
+
+                    var fgxPoss = (pstats[PAbbr.FGA] - pstats[PAbbr.FGM]) * (1 - 1.07 * teamOREBPct);
+
+                    var ftxPoss = Math.Pow(1 - (pstats[PAbbr.FTM] / pstats[PAbbr.FTA]), 2) * 0.4 * pstats[PAbbr.FTA];
+
+                    var totPoss = scPoss + fgxPoss + ftxPoss + pstats[PAbbr.TOS];
+
+                    var pprodFGPart = 2 * (pstats[PAbbr.FGM] + 0.5 * pstats[PAbbr.TPM])
+                                      * (1 - 0.5 * ((pstats[PAbbr.PTS] - pstats[PAbbr.FTM]) / (2 * pstats[PAbbr.FGA])) * qAST);
+
+                    var pprodASTPart = 2
+                                       * ((tstats[TAbbr.FGM] - pstats[PAbbr.FGM] + 0.5 * (tstats[TAbbr.TPM] - pstats[PAbbr.TPM]))
+                                          / (tstats[TAbbr.FGM] - pstats[PAbbr.FGM])) * 0.5
+                                       * (((tstats[TAbbr.PF] - tstats[TAbbr.FTM]) - (pstats[PAbbr.PTS] - pstats[PAbbr.FTM]))
+                                          / (2 * (tstats[TAbbr.FGA] - pstats[PAbbr.FGA]))) * pstats[PAbbr.AST];
+
+                    var pprodOREBPart = pstats[PAbbr.OREB] * teamOREBWeight * teamPlayPct
+                                        * (tstats[TAbbr.PF]
+                                           / (tstats[TAbbr.FGM]
+                                              + (1 - Math.Pow(1 - (tstats[TAbbr.FTM] / tstats[TAbbr.FTA]), 2)) * 0.4
+                                              * tstats[TAbbr.FTA]));
+
+                    var pProd = (pprodFGPart + pprodASTPart + pstats[PAbbr.FTM])
+                                * (1 - (tstats[TAbbr.OREB] / teamScPoss) * teamOREBWeight * teamPlayPct) + pprodOREBPart;
+
+                    var ortg = 100 * (pProd / totPoss);
+
+                    var floorPct = scPoss / totPoss;
+
+                    tempMetrics.Add("ORTG", ortg);
+                    tempMetrics.Add("Floor%", floorPct);
+
+                    #endregion
+
+                    #region Defensive Rating
+
+                    var dorPct = toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + toppstats[TAbbr.DREB]);
+
+                    var dfgPct = toppstats[TAbbr.FGM] / toppstats[TAbbr.FGA];
+
+                    var fmWt = (dfgPct * (1 - dorPct)) / (dfgPct * (1 - dorPct) + (1 - dfgPct) * dorPct);
+
+                    var stops1 = pstats[PAbbr.STL] + pstats[PAbbr.BLK] * fmWt * (1 - 1.07 * dorPct) + pstats[PAbbr.DREB] * (1 - fmWt);
+
+                    var stops2 = (((toppstats[TAbbr.FGA] - toppstats[TAbbr.FGM] - tstats[TAbbr.BLK]) / tstats[TAbbr.MINS]) * fmWt
+                                  * (1 - 1.07 * dorPct) + ((toppstats[TAbbr.TOS] - tstats[TAbbr.STL]) / tstats[TAbbr.MINS]))
+                                 * pstats[PAbbr.MINS]
+                                 + (pstats[PAbbr.PTS] / tstats[TAbbr.PF]) * 0.4 * toppstats[TAbbr.FTA]
+                                 * Math.Pow(1 - (toppstats[TAbbr.FTM] / toppstats[TAbbr.FTA]), 2);
+
+                    var stops = stops1 + stops2;
+
+                    var stopPct = (stops * toppstats[TAbbr.MINS]) / (tempTeamMetricsOwn["Poss"] * pstats[PAbbr.MINS]);
+
+                    var dPtsPerScPoss = toppstats[TAbbr.PF]
+                                        / (toppstats[TAbbr.FGM]
+                                           + (1 - Math.Pow(1 - (toppstats[TAbbr.FTM] / toppstats[TAbbr.FTA]), 2))
+                                           * toppstats[TAbbr.FTA] * 0.4);
+
+                    var drtg = tempTeamMetricsOwn["DRTG"] + 0.2 * (100 * dPtsPerScPoss * (1 - stopPct) - tempTeamMetricsOwn["DRTG"]);
+
+                    var rtgd = ortg - drtg;
+
+                    tempMetrics.Add("DRTG", drtg);
+                    tempMetrics.Add("RTGd", rtgd);
+
+                    #endregion
                 }
                 else
                 {
@@ -1127,6 +1228,11 @@ namespace NBA_Stats_Tracker.Data.Players
                     tempMetrics.Add("OREB%", Double.NaN);
                     tempMetrics.Add("REB%", Double.NaN);
                     tempMetrics.Add("PPR", Double.NaN);
+
+                    tempMetrics.Add("ORTG", Double.NaN);
+                    tempMetrics.Add("Floor%", Double.NaN);
+                    tempMetrics.Add("DRTG", Double.NaN);
+                    tempMetrics.Add("RTGd", Double.NaN);
                 }
 
                 #endregion
@@ -1375,8 +1481,29 @@ namespace NBA_Stats_Tracker.Data.Players
             }
             ls.CalcMetrics(ls);
             ls.CalcMetrics(ls, true);
-            lps.CalcMetrics(ls, ls, ls, true);
-            lps.CalcMetrics(ls, ls, ls, true, playoffs: true);
+            foreach (var name in PAbbr.MetricsNames)
+            {
+                try
+                {
+                    lps.Metrics[name] =
+                        playerStats.Where(ps => !Double.IsNaN(ps.Value.Metrics[name]) && !Double.IsInfinity(ps.Value.Metrics[name]))
+                                   .Average(ps => ps.Value.Metrics[name]);
+                }
+                catch (InvalidOperationException)
+                {
+                    lps.Metrics[name] = Double.NaN;
+                }
+                try
+                {
+                    lps.PlMetrics[name] =
+                        playerStats.Where(ps => !Double.IsNaN(ps.Value.PlMetrics[name]) && !Double.IsInfinity(ps.Value.Metrics[name]))
+                                   .Average(ps => ps.Value.PlMetrics[name]);
+                }
+                catch (InvalidOperationException)
+                {
+                    lps.Metrics[name] = Double.NaN;
+                }
+            }
 
             var playerCount = (uint) playerStats.Count;
             for (var i = 0; i < lps.Totals.Length; i++)

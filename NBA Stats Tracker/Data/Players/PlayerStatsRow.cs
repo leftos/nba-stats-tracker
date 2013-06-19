@@ -89,7 +89,7 @@ namespace NBA_Stats_Tracker.Data.Players
             IsSigned = ps.IsSigned;
             IsHidden = ps.IsHidden;
             IsAllStar = ps.IsAllStar;
-            Injury = ps.Injury.DeepClone(null);
+            Injury = ps.Injury.CustomClone(null);
             IsNBAChampion = ps.IsNBAChampion;
             YearOfBirth = ps.YearOfBirth;
             YearsPro = ps.YearsPro;
@@ -107,173 +107,94 @@ namespace NBA_Stats_Tracker.Data.Players
             Height = ps.Height;
             Weight = ps.Weight;
 
-            if (!playoffs)
-            {
-                GP = ps.Totals[PAbbr.GP];
-                GS = ps.Totals[PAbbr.GS];
-                MINS = ps.Totals[PAbbr.MINS];
-                PTS = ps.Totals[PAbbr.PTS];
-                FGM = ps.Totals[PAbbr.FGM];
-                FGMPG = ((float) FGM / GP);
-                FGA = ps.Totals[PAbbr.FGA];
-                FGAPG = ((float) FGA / GP);
-                TPM = ps.Totals[PAbbr.TPM];
-                TPMPG = ((float) TPM / GP);
-                TPA = ps.Totals[PAbbr.TPA];
-                TPAPG = ((float) TPA / GP);
-                FTM = ps.Totals[PAbbr.FTM];
-                FTMPG = ((float) FTM / GP);
-                FTA = ps.Totals[PAbbr.FTA];
-                FTAPG = ((float) FTA / GP);
-                OREB = ps.Totals[PAbbr.OREB];
-                DREB = ps.Totals[PAbbr.DREB];
-                REB = (UInt16) (OREB + DREB);
-                STL = ps.Totals[PAbbr.STL];
-                TOS = ps.Totals[PAbbr.TOS];
-                BLK = ps.Totals[PAbbr.BLK];
-                AST = ps.Totals[PAbbr.AST];
-                FOUL = ps.Totals[PAbbr.FOUL];
+            var totals = !playoffs ? ps.Totals : ps.PlTotals;
+            var perGame = !playoffs ? ps.PerGame : ps.PlPerGame;
+            var metrics = !playoffs ? ps.Metrics : ps.PlMetrics;
 
-                MPG = ps.PerGame[PAbbr.MPG];
-                PPG = ps.PerGame[PAbbr.PPG];
-                FGp = ps.PerGame[PAbbr.FGp];
-                FGeff = ps.PerGame[PAbbr.FGeff];
-                TPp = ps.PerGame[PAbbr.TPp];
-                TPeff = ps.PerGame[PAbbr.TPeff];
-                FTp = ps.PerGame[PAbbr.FTp];
-                FTeff = ps.PerGame[PAbbr.FTeff];
-                RPG = ps.PerGame[PAbbr.RPG];
-                ORPG = ps.PerGame[PAbbr.ORPG];
-                DRPG = ps.PerGame[PAbbr.DRPG];
-                SPG = ps.PerGame[PAbbr.SPG];
-                TPG = ps.PerGame[PAbbr.TPG];
-                BPG = ps.PerGame[PAbbr.BPG];
-                APG = ps.PerGame[PAbbr.APG];
-                FPG = ps.PerGame[PAbbr.FPG];
+            GP = totals[PAbbr.GP];
+            GS = totals[PAbbr.GS];
+            MINS = totals[PAbbr.MINS];
+            PTS = totals[PAbbr.PTS];
+            FGM = totals[PAbbr.FGM];
+            FGMPG = ((float) FGM / GP);
+            FGA = totals[PAbbr.FGA];
+            FGAPG = ((float) FGA / GP);
+            TPM = totals[PAbbr.TPM];
+            TPMPG = ((float) TPM / GP);
+            TPA = totals[PAbbr.TPA];
+            TPAPG = ((float) TPA / GP);
+            FTM = totals[PAbbr.FTM];
+            FTMPG = ((float) FTM / GP);
+            FTA = totals[PAbbr.FTA];
+            FTAPG = ((float) FTA / GP);
+            OREB = totals[PAbbr.OREB];
+            DREB = totals[PAbbr.DREB];
+            REB = (UInt16) (OREB + DREB);
+            STL = totals[PAbbr.STL];
+            TOS = totals[PAbbr.TOS];
+            BLK = totals[PAbbr.BLK];
+            AST = totals[PAbbr.AST];
+            FOUL = totals[PAbbr.FOUL];
+
+            MPG = perGame[PAbbr.MPG];
+            PPG = perGame[PAbbr.PPG];
+            FGp = perGame[PAbbr.FGp];
+            FGeff = perGame[PAbbr.FGeff];
+            TPp = perGame[PAbbr.TPp];
+            TPeff = perGame[PAbbr.TPeff];
+            FTp = perGame[PAbbr.FTp];
+            FTeff = perGame[PAbbr.FTeff];
+            RPG = perGame[PAbbr.RPG];
+            ORPG = perGame[PAbbr.ORPG];
+            DRPG = perGame[PAbbr.DRPG];
+            SPG = perGame[PAbbr.SPG];
+            TPG = perGame[PAbbr.TPG];
+            BPG = perGame[PAbbr.BPG];
+            APG = perGame[PAbbr.APG];
+            FPG = perGame[PAbbr.FPG];
+
+            try
+            {
+                PTSR = metrics["PTSR"];
+                REBR = metrics["REBR"];
+                OREBR = metrics["OREBR"];
+                ASTR = metrics["ASTR"];
+                BLKR = metrics["BLKR"];
+                STLR = metrics["STLR"];
+                TOR = metrics["TOR"];
+                FTR = metrics["FTR"];
+                FTAR = metrics["FTAR"];
+                GmSc = metrics["GmSc"];
+                GmScE = metrics["GmScE"];
+                EFF = metrics["EFF"];
+                EFGp = metrics["EFG%"];
+                TSp = metrics["TS%"];
+                ASTp = metrics["AST%"];
+                STLp = metrics["STL%"];
+                TOp = metrics["TO%"];
+                USGp = metrics["USG%"];
 
                 try
                 {
-                    PTSR = ps.Metrics["PTSR"];
-                    REBR = ps.Metrics["REBR"];
-                    OREBR = ps.Metrics["OREBR"];
-                    ASTR = ps.Metrics["ASTR"];
-                    BLKR = ps.Metrics["BLKR"];
-                    STLR = ps.Metrics["STLR"];
-                    TOR = ps.Metrics["TOR"];
-                    FTR = ps.Metrics["FTR"];
-                    FTAR = ps.Metrics["FTAR"];
-                    GmSc = ps.Metrics["GmSc"];
-                    GmScE = ps.Metrics["GmScE"];
-                    EFF = ps.Metrics["EFF"];
-                    EFGp = ps.Metrics["EFG%"];
-                    TSp = ps.Metrics["TS%"];
-                    ASTp = ps.Metrics["AST%"];
-                    STLp = ps.Metrics["STL%"];
-                    TOp = ps.Metrics["TO%"];
-                    USGp = ps.Metrics["USG%"];
-
-                    try
-                    {
-                        PER = ps.Metrics["PER"];
-                    }
-                    catch (Exception)
-                    {
-                        PER = Double.NaN;
-                    }
-
-                    BLKp = ps.Metrics["BLK%"];
-                    DREBp = ps.Metrics["DREB%"];
-                    OREBp = ps.Metrics["OREB%"];
-                    REBp = ps.Metrics["REB%"];
-                    PPR = ps.Metrics["PPR"];
+                    PER = metrics["PER"];
                 }
-                catch (KeyNotFoundException)
+                catch (Exception)
                 {
+                    PER = Double.NaN;
                 }
+
+                BLKp = metrics["BLK%"];
+                DREBp = metrics["DREB%"];
+                OREBp = metrics["OREB%"];
+                REBp = metrics["REB%"];
+                PPR = metrics["PPR"];
+                ORTG = metrics["ORTG"];
+                Floorp = metrics["Floor%"];
+                DRTG = metrics["DRTG"];
+                RTGd = metrics["RTGd"];
             }
-            else
+            catch (KeyNotFoundException)
             {
-                GP = ps.PlTotals[PAbbr.GP];
-                GS = ps.PlTotals[PAbbr.GS];
-                MINS = ps.PlTotals[PAbbr.MINS];
-                PTS = ps.PlTotals[PAbbr.PTS];
-                FGM = ps.PlTotals[PAbbr.FGM];
-                FGMPG = ((float) FGM / GP);
-                FGA = ps.PlTotals[PAbbr.FGA];
-                FGAPG = ((float) FGA / GP);
-                TPM = ps.PlTotals[PAbbr.TPM];
-                TPMPG = ((float) TPM / GP);
-                TPA = ps.PlTotals[PAbbr.TPA];
-                TPAPG = (uint) ((double) TPA / GP);
-                FTM = ps.PlTotals[PAbbr.FTM];
-                FTMPG = ((float) FTM / GP);
-                FTA = ps.PlTotals[PAbbr.FTA];
-                FTAPG = ((float) FTA / GP);
-                OREB = ps.PlTotals[PAbbr.OREB];
-                DREB = ps.PlTotals[PAbbr.DREB];
-                REB = (UInt16) (OREB + DREB);
-                STL = ps.PlTotals[PAbbr.STL];
-                TOS = ps.PlTotals[PAbbr.TOS];
-                BLK = ps.PlTotals[PAbbr.BLK];
-                AST = ps.PlTotals[PAbbr.AST];
-                FOUL = ps.PlTotals[PAbbr.FOUL];
-
-                MPG = ps.PlPerGame[PAbbr.MPG];
-                PPG = ps.PlPerGame[PAbbr.PPG];
-                FGp = ps.PlPerGame[PAbbr.FGp];
-                FGeff = ps.PlPerGame[PAbbr.FGeff];
-                TPp = ps.PlPerGame[PAbbr.TPp];
-                TPeff = ps.PlPerGame[PAbbr.TPeff];
-                FTp = ps.PlPerGame[PAbbr.FTp];
-                FTeff = ps.PlPerGame[PAbbr.FTeff];
-                RPG = ps.PlPerGame[PAbbr.RPG];
-                ORPG = ps.PlPerGame[PAbbr.ORPG];
-                DRPG = ps.PlPerGame[PAbbr.DRPG];
-                SPG = ps.PlPerGame[PAbbr.SPG];
-                TPG = ps.PlPerGame[PAbbr.TPG];
-                BPG = ps.PlPerGame[PAbbr.BPG];
-                APG = ps.PlPerGame[PAbbr.APG];
-                FPG = ps.PlPerGame[PAbbr.FPG];
-
-                try
-                {
-                    PTSR = ps.PlMetrics["PTSR"];
-                    REBR = ps.PlMetrics["REBR"];
-                    OREBR = ps.PlMetrics["OREBR"];
-                    ASTR = ps.PlMetrics["ASTR"];
-                    BLKR = ps.PlMetrics["BLKR"];
-                    STLR = ps.PlMetrics["STLR"];
-                    TOR = ps.PlMetrics["TOR"];
-                    FTR = ps.PlMetrics["FTR"];
-                    FTAR = ps.PlMetrics["FTAR"];
-                    GmSc = ps.PlMetrics["GmSc"];
-                    GmScE = ps.PlMetrics["GmScE"];
-                    EFF = ps.PlMetrics["EFF"];
-                    EFGp = ps.PlMetrics["EFG%"];
-                    TSp = ps.PlMetrics["TS%"];
-                    ASTp = ps.PlMetrics["AST%"];
-                    STLp = ps.PlMetrics["STL%"];
-                    TOp = ps.PlMetrics["TO%"];
-                    USGp = ps.PlMetrics["USG%"];
-
-                    try
-                    {
-                        PER = ps.PlMetrics["PER"];
-                    }
-                    catch (Exception)
-                    {
-                        PER = Double.NaN;
-                    }
-
-                    BLKp = ps.PlMetrics["BLK%"];
-                    DREBp = ps.PlMetrics["DREB%"];
-                    OREBp = ps.PlMetrics["OREB%"];
-                    REBp = ps.PlMetrics["REB%"];
-                    PPR = ps.PlMetrics["PPR"];
-                }
-                catch (KeyNotFoundException)
-                {
-                }
             }
             if (calcRatings)
             {
@@ -1487,7 +1408,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = teamStats[TeamF];
             var gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
             var gamesPlayer = GP;
-            var newpsr = this.DeepClone();
+            var newpsr = this.CustomClone();
 
             var gpPctSetting = MainWindow.MyLeadersGPPctSetting;
             var gpPctRequired = MainWindow.MyLeadersGPPctRequired;
@@ -1567,7 +1488,7 @@ namespace NBA_Stats_Tracker.Data.Players
             var ts = teamStats[TeamF];
             var gamesTeam = (!playoffs) ? ts.GetGames() : ts.GetPlayoffGames();
             var gamesPlayer = GP;
-            var newpsr = this.DeepClone();
+            var newpsr = this.CustomClone();
 
             // Below functions found using Eureqa II
             var gamesRequired = (int) Math.Ceiling(0.8522 * gamesTeam); // Maximum error of 0
@@ -1771,6 +1692,10 @@ namespace NBA_Stats_Tracker.Data.Players
         public double OREBp { get; set; }
         public double REBp { get; set; }
         public double PPR { get; set; }
+        public double ORTG { get; set; }
+        public double DRTG { get; set; }
+        public double RTGd { get; set; }
+        public double Floorp { get; set; }
 
         #endregion
     }

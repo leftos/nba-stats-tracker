@@ -46,137 +46,75 @@ namespace NBA_Stats_Tracker.Data.Teams
             DisplayName = ts.DisplayName;
             IsHidden = ts.IsHidden;
 
-            if (!playoffs)
-            {
-                Games = ts.GetGames();
-                Wins = ts.Record[0];
-                Losses = ts.Record[1];
-                MINS = ts.Totals[TAbbr.MINS];
-                PF = ts.Totals[TAbbr.PF];
-                PA = ts.Totals[TAbbr.PA];
-                FGM = ts.Totals[TAbbr.FGM];
-                FGMPG = ((float) FGM / Games);
-                FGA = ts.Totals[TAbbr.FGA];
-                FGAPG = ((float) FGA / Games);
-                TPM = ts.Totals[TAbbr.TPM];
-                TPMPG = ((float) TPM / Games);
-                TPA = ts.Totals[TAbbr.TPA];
-                TPAPG = ((float) TPA / Games);
-                FTM = ts.Totals[TAbbr.FTM];
-                FTMPG = ((float) FTM / Games);
-                FTA = ts.Totals[TAbbr.FTA];
-                FTAPG = ((float) FTA / Games);
-                OREB = ts.Totals[TAbbr.OREB];
-                DREB = ts.Totals[TAbbr.DREB];
-                REB = (UInt16) (OREB + DREB);
-                STL = ts.Totals[TAbbr.STL];
-                TOS = ts.Totals[TAbbr.TOS];
-                BLK = ts.Totals[TAbbr.BLK];
-                AST = ts.Totals[TAbbr.AST];
-                FOUL = ts.Totals[TAbbr.FOUL];
+            Games = !playoffs ? ts.GetGames() : ts.GetPlayoffGames();
+            Wins = !playoffs ? ts.Record[0] : ts.PlRecord[0];
+            Losses = !playoffs ? ts.Record[1] : ts.PlRecord[1];
 
-                Wp = ts.PerGame[TAbbr.Wp];
-                Weff = ts.PerGame[TAbbr.Weff];
-                MPG = ts.PerGame[TAbbr.MPG];
-                PPG = ts.PerGame[TAbbr.PPG];
-                PAPG = ts.PerGame[TAbbr.PAPG];
-                FGp = ts.PerGame[TAbbr.FGp];
-                FGeff = ts.PerGame[TAbbr.FGeff];
-                TPp = ts.PerGame[TAbbr.TPp];
-                TPeff = ts.PerGame[TAbbr.TPeff];
-                FTp = ts.PerGame[TAbbr.FTp];
-                FTeff = ts.PerGame[TAbbr.FTeff];
-                RPG = ts.PerGame[TAbbr.RPG];
-                ORPG = ts.PerGame[TAbbr.ORPG];
-                DRPG = ts.PerGame[TAbbr.DRPG];
-                SPG = ts.PerGame[TAbbr.SPG];
-                TPG = ts.PerGame[TAbbr.TPG];
-                BPG = ts.PerGame[TAbbr.BPG];
-                APG = ts.PerGame[TAbbr.APG];
-                FPG = ts.PerGame[TAbbr.FPG];
+            var totals = !playoffs ? ts.Totals : ts.PlTotals;
+            var perGame = !playoffs ? ts.PerGame : ts.PlPerGame;
+            var metrics = !playoffs ? ts.Metrics : ts.PlMetrics;
 
-                Poss = ts.Metrics["PossPG"];
-                Pace = ts.Metrics["Pace"];
-                ORTG = ts.Metrics["ORTG"];
-                DRTG = ts.Metrics["DRTG"];
-                ASTp = ts.Metrics["AST%"];
-                DREBp = ts.Metrics["DREB%"];
-                EFGp = ts.Metrics["EFG%"];
-                EFFd = ts.Metrics["EFFd"];
-                TOR = ts.Metrics["TOR"];
-                OREBp = ts.Metrics["OREB%"];
-                FTR = ts.Metrics["FTR"];
-                PWp = ts.Metrics["PW%"];
-                TSp = ts.Metrics["TS%"];
-                TPR = ts.Metrics["3PR"];
-                PythW = ts.Metrics["PythW"];
-                PythL = ts.Metrics["PythL"];
-            }
-            else
-            {
-                Games = ts.GetPlayoffGames();
-                Wins = ts.PlRecord[0];
-                Losses = ts.PlRecord[1];
-                MINS = ts.PlTotals[TAbbr.MINS];
-                PF = ts.PlTotals[TAbbr.PF];
-                PA = ts.PlTotals[TAbbr.PA];
-                FGM = ts.PlTotals[TAbbr.FGM];
-                FGMPG = ((float) FGM / Games);
-                FGA = ts.PlTotals[TAbbr.FGA];
-                FGAPG = ((float) FGA / Games);
-                TPM = ts.PlTotals[TAbbr.TPM];
-                TPMPG = ((float) TPM / Games);
-                TPA = ts.PlTotals[TAbbr.TPA];
-                TPAPG = ((float) TPA / Games);
-                FTM = ts.PlTotals[TAbbr.FTM];
-                FTMPG = ((float) FTM / Games);
-                FTA = ts.PlTotals[TAbbr.FTA];
-                FTAPG = ((float) FTA / Games);
-                OREB = ts.PlTotals[TAbbr.OREB];
-                DREB = ts.PlTotals[TAbbr.DREB];
-                REB = (UInt16) (OREB + DREB);
-                STL = ts.PlTotals[TAbbr.STL];
-                TOS = ts.PlTotals[TAbbr.TOS];
-                BLK = ts.PlTotals[TAbbr.BLK];
-                AST = ts.PlTotals[TAbbr.AST];
-                FOUL = ts.PlTotals[TAbbr.FOUL];
+            MINS = totals[TAbbr.MINS];
+            PF = totals[TAbbr.PF];
+            PA = totals[TAbbr.PA];
+            FGM = totals[TAbbr.FGM];
+            FGMPG = ((float) FGM / Games);
+            FGA = totals[TAbbr.FGA];
+            FGAPG = ((float) FGA / Games);
+            TPM = totals[TAbbr.TPM];
+            TPMPG = ((float) TPM / Games);
+            TPA = totals[TAbbr.TPA];
+            TPAPG = ((float) TPA / Games);
+            FTM = totals[TAbbr.FTM];
+            FTMPG = ((float) FTM / Games);
+            FTA = totals[TAbbr.FTA];
+            FTAPG = ((float) FTA / Games);
+            OREB = totals[TAbbr.OREB];
+            DREB = totals[TAbbr.DREB];
+            REB = (UInt16) (OREB + DREB);
+            STL = totals[TAbbr.STL];
+            TOS = totals[TAbbr.TOS];
+            BLK = totals[TAbbr.BLK];
+            AST = totals[TAbbr.AST];
+            FOUL = totals[TAbbr.FOUL];
 
-                Wp = ts.PlPerGame[TAbbr.Wp];
-                Weff = ts.PlPerGame[TAbbr.Weff];
-                PPG = ts.PlPerGame[TAbbr.PPG];
-                PAPG = ts.PlPerGame[TAbbr.PAPG];
-                FGp = ts.PlPerGame[TAbbr.FGp];
-                FGeff = ts.PlPerGame[TAbbr.FGeff];
-                TPp = ts.PlPerGame[TAbbr.TPp];
-                TPeff = ts.PlPerGame[TAbbr.TPeff];
-                FTp = ts.PlPerGame[TAbbr.FTp];
-                FTeff = ts.PlPerGame[TAbbr.FTeff];
-                RPG = ts.PlPerGame[TAbbr.RPG];
-                ORPG = ts.PlPerGame[TAbbr.ORPG];
-                DRPG = ts.PlPerGame[TAbbr.DRPG];
-                SPG = ts.PlPerGame[TAbbr.SPG];
-                TPG = ts.PlPerGame[TAbbr.TPG];
-                BPG = ts.PlPerGame[TAbbr.BPG];
-                APG = ts.PlPerGame[TAbbr.APG];
-                FPG = ts.PlPerGame[TAbbr.FPG];
+            Wp = perGame[TAbbr.Wp];
+            Weff = perGame[TAbbr.Weff];
+            MPG = perGame[TAbbr.MPG];
+            PPG = perGame[TAbbr.PPG];
+            PAPG = perGame[TAbbr.PAPG];
+            PD = PPG - PAPG;
+            FGp = perGame[TAbbr.FGp];
+            FGeff = perGame[TAbbr.FGeff];
+            TPp = perGame[TAbbr.TPp];
+            TPeff = perGame[TAbbr.TPeff];
+            FTp = perGame[TAbbr.FTp];
+            FTeff = perGame[TAbbr.FTeff];
+            RPG = perGame[TAbbr.RPG];
+            ORPG = perGame[TAbbr.ORPG];
+            DRPG = perGame[TAbbr.DRPG];
+            SPG = perGame[TAbbr.SPG];
+            TPG = perGame[TAbbr.TPG];
+            BPG = perGame[TAbbr.BPG];
+            APG = perGame[TAbbr.APG];
+            FPG = perGame[TAbbr.FPG];
 
-                Poss = ts.PlMetrics["PossPG"];
-                Pace = ts.PlMetrics["Pace"];
-                ORTG = ts.PlMetrics["ORTG"];
-                DRTG = ts.PlMetrics["DRTG"];
-                ASTp = ts.PlMetrics["AST%"];
-                DREBp = ts.PlMetrics["DREB%"];
-                EFGp = ts.PlMetrics["EFG%"];
-                EFFd = ts.PlMetrics["EFFd"];
-                TOR = ts.PlMetrics["TOR"];
-                OREBp = ts.PlMetrics["OREB%"];
-                FTR = ts.PlMetrics["FTR"];
-                PWp = ts.PlMetrics["PW%"];
-                TSp = ts.PlMetrics["TS%"];
-                TPR = ts.PlMetrics["3PR"];
-                PythW = ts.PlMetrics["PythW"];
-                PythL = ts.PlMetrics["PythL"];
-            }
+            Poss = metrics["PossPG"];
+            Pace = metrics["Pace"];
+            ORTG = metrics["ORTG"];
+            DRTG = metrics["DRTG"];
+            ASTp = metrics["AST%"];
+            DREBp = metrics["DREB%"];
+            EFGp = metrics["EFG%"];
+            EFFd = metrics["EFFd"];
+            TOR = metrics["TOR"];
+            OREBp = metrics["OREB%"];
+            FTR = metrics["FTR"];
+            PWp = metrics["PW%"];
+            TSp = metrics["TS%"];
+            TPR = metrics["3PR"];
+            PythW = metrics["PythW"];
+            PythL = metrics["PythL"];
 
             CurStreak = ts.CurStreak;
         }
@@ -237,6 +175,7 @@ namespace NBA_Stats_Tracker.Data.Teams
         public float MPG { get; set; }
         public float PPG { get; set; }
         public float PAPG { get; set; }
+        public float PD { get; set; }
         public float FGp { get; set; }
         public float FGeff { get; set; }
         public float TPp { get; set; }

@@ -426,7 +426,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             tempMetricsOwn.Add("DRTG", drtg);
 
             var astP = (tempTotalsOwn[TAbbr.AST])
-                       / (tempTotalsOwn[TAbbr.FGA] + tempTotalsOwn[TAbbr.FTA] * 0.44 + tempTotalsOwn[TAbbr.AST] + tempTotalsOwn[TAbbr.TOS]);
+                       / (tempTotalsOwn[TAbbr.FGA] + tempTotalsOwn[TAbbr.FTA] * 0.44 + tempTotalsOwn[TAbbr.AST]
+                          + tempTotalsOwn[TAbbr.TOS]);
             tempMetricsOwn.Add("AST%", astP);
 
             var drebP = tempTotalsOwn[TAbbr.DREB] / (tempTotalsOwn[TAbbr.DREB] + tempTotalsOpp[TAbbr.OREB]);
@@ -438,7 +439,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             var effD = ortg - drtg;
             tempMetricsOwn.Add("EFFd", effD);
 
-            var tor = tempTotalsOwn[TAbbr.TOS] / (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA] + tempTotalsOwn[TAbbr.TOS]);
+            var tor = tempTotalsOwn[TAbbr.TOS]
+                      / (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA] + tempTotalsOwn[TAbbr.TOS]);
             tempMetricsOwn.Add("TOR", tor);
 
             var orebP = tempTotalsOwn[TAbbr.OREB] / (tempTotalsOwn[TAbbr.OREB] + tempTotalsOpp[TAbbr.DREB]);

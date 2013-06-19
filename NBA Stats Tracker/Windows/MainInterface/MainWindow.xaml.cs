@@ -1582,7 +1582,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <summary>Recalculates the opponent stats for all teams by accumulating the stats from the box scores.</summary>
         private static void recalculateOpponentStats()
         {
-            var temptst = TST.ToDictionary(to => to.Key, to => to.Value.DeepClone());
+            var temptst = TST.ToDictionary(to => to.Key, to => to.Value.CustomClone());
 
             foreach (var key in TSTOpp.Keys)
             {

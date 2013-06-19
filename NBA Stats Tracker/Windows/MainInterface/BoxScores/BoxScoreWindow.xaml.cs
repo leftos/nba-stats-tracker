@@ -1627,7 +1627,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                     continue;
                 }
 
-                var ps = _pst[pbs.PlayerID].Clone();
+                var ps = _pst[pbs.PlayerID].BinarySerializationClone();
                 ps.ResetStats();
                 ps.AddBoxScore(pbs, bs.IsPlayoff);
                 ps.CalcMetrics(ts, tsopp, ls);

@@ -480,6 +480,62 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
+                                                ClipboardContentBinding="{Binding ORTG}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ORTG, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Offensive Rating; a metric created by Dean Oliver that estimates how many points a player produces per hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="DRTG" SortMemberPath="DRTG"
+                                                ClipboardContentBinding="{Binding DRTG}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DRTG, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Defensive Rating; a metric created by Dean Oliver that estimates how many points a player allows per hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="RTGd" SortMemberPath="RTGd"
+                                                ClipboardContentBinding="{Binding RTGd}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RTGd, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Rating Differential; the difference between a player's offensive and defensive ratings, giving an estimate of how many more points a player produces rather than allows every hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Floor%" SortMemberPath="Floorp"
+                                                ClipboardContentBinding="{Binding Floorp}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Floorp, StringFormat=F3}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Floor Percentage; the percentage of the time a player wants to score and actually scores."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="GmSc" SortMemberPath="GmSc"
                                                 ClipboardContentBinding="{Binding GmSc}">
                             <DataGridTemplateColumn.CellTemplate>
@@ -1484,6 +1540,62 @@
                                         <TextBlock.ToolTip>
                                             <TextBlock
                                                 Text="Efficiency; an all-around measure of every aspect of the player's performance compared to the rest of the league."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="ORTG" SortMemberPath="ORTG"
+                                                ClipboardContentBinding="{Binding ORTG}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ORTG, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Offensive Rating; a metric created by Dean Oliver that estimates how many points a player produces per hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="DRTG" SortMemberPath="DRTG"
+                                                ClipboardContentBinding="{Binding DRTG}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DRTG, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Defensive Rating; a metric created by Dean Oliver that estimates how many points a player allows per hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="RTGd" SortMemberPath="RTGd"
+                                                ClipboardContentBinding="{Binding RTGd}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RTGd, StringFormat=F1}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Rating Differential; the difference between a player's offensive and defensive ratings, giving an estimate of how many more points a player produces rather than allows every hundred individual possessions."
+                                                TextWrapping="Wrap" MaxWidth="400" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Floor%" SortMemberPath="Floorp"
+                                                ClipboardContentBinding="{Binding Floorp}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Floorp, StringFormat=F3}">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock
+                                                Text="Floor Percentage; the percentage of the time a player wants to score and actually scores."
                                                 TextWrapping="Wrap" MaxWidth="400" />
                                         </TextBlock.ToolTip>
                                     </TextBlock>

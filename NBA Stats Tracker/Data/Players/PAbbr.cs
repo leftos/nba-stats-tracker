@@ -178,21 +178,24 @@ namespace NBA_Stats_Tracker.Data.Players
 
         public static readonly List<string> MetricsNames = new List<string>
             {
+                "PER",
+                "EFF",
+                "ORTG",
+                "DRTG",
                 "GmSc",
                 "GmScE",
-                "AST%",
+                "TS%",
                 "EFG%",
+                "Floor%",
+                "AST%",
+                "PPR",
                 "STL%",
                 "TO%",
-                "TS%",
                 "USG%",
-                "EFF",
-                "aPER",
                 "BLK%",
                 "DREB%",
                 "OREB%",
                 "REB%",
-                "PPR",
                 "PTSR",
                 "REBR",
                 "OREBR",
@@ -202,7 +205,7 @@ namespace NBA_Stats_Tracker.Data.Players
                 "TOR",
                 "FTR",
                 "FTAR",
-                "PER"
+                "aPER"
             };
 
         public static readonly Dictionary<string, double> MetricsDict = new Dictionary<string, double>(MetricsNames.Count);

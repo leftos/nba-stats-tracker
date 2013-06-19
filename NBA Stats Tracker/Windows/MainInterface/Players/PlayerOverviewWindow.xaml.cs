@@ -1683,7 +1683,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
                 var psOwn = new PlayerStats(_psr);
                 psOwn.ResetStats();
-                var psOpp = MainWindow.PST[selectedOppPlayerID].DeepClone();
+                var psOpp = MainWindow.PST[selectedOppPlayerID].CustomClone();
                 psOpp.ResetStats();
 
                 foreach (var bse in againstBSList)

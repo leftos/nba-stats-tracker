@@ -615,9 +615,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 madeNew = true;
             }
 
-            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
+            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
+            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
+            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.BinarySerializationClone());
 
             CreateDivisions();
 
@@ -942,7 +942,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     #endregion Match Player
 
                     var curPlayer = pst[playerID];
-                    var oldPlayer = curPlayer.Clone();
+                    var oldPlayer = curPlayer.BinarySerializationClone();
 
                     curPlayer.Position1 = (Position) Enum.Parse(typeof(Position), player["Pos"]);
                     curPlayer.Position2 = (Position) Enum.Parse(typeof(Position), player["SecondPos"]);
@@ -1099,12 +1099,11 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         {
                             if (count == 0)
                             {
-                                recMsg = 
-                                    string.Format(
-                                        "{0} has a new career-high in {1} ({2})",
-                                        curPlayer.FullInfo(tst, true, false),
-                                        PAbbr.CHTotals[i],
-                                        curPlayer.CareerHighs[i]);
+                                recMsg = string.Format(
+                                    "{0} has a new career-high in {1} ({2})",
+                                    curPlayer.FullInfo(tst, true, false),
+                                    PAbbr.CHTotals[i],
+                                    curPlayer.CareerHighs[i]);
                             }
                             else
                             {
@@ -1201,10 +1200,10 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             bse.BS.GameDate = SelectedDate;
                             TeamStats.AddTeamStatsFromBoxScore(bse.BS, ref oldTST, ref oldtstOpp, t1, t2);
                             MainWindow.BSHist.Add(bse);
-                            tst[t1] = oldTST[t1].Clone();
-                            tst[t2] = oldTST[t2].Clone();
-                            tstOpp[t1] = oldtstOpp[t1].Clone();
-                            tstOpp[t2] = oldtstOpp[t2].Clone();
+                            tst[t1] = oldTST[t1].BinarySerializationClone();
+                            tst[t2] = oldTST[t2].BinarySerializationClone();
+                            tstOpp[t1] = oldtstOpp[t1].BinarySerializationClone();
+                            tstOpp[t2] = oldtstOpp[t2].BinarySerializationClone();
                         }
                     }
                 }
@@ -1395,9 +1394,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 madeNew = true;
             }
 
-            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.Clone());
-            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.Clone());
+            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
+            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
+            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.BinarySerializationClone());
 
             CreateDivisions();
 

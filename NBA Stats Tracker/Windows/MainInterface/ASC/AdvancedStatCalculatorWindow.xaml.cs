@@ -1320,7 +1320,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
             {
                 if (advpst.All(pair => pair.Key != pbs.PlayerID))
                 {
-                    advpst.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].DeepClone());
+                    advpst.Add(pbs.PlayerID, MainWindow.PST[pbs.PlayerID].CustomClone());
                     advpst[pbs.PlayerID].ResetStats();
                 }
                 if (!doPlays)
@@ -1374,7 +1374,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     var curPlayer1ID = ((KeyValuePair<int, string>) ((cmbPlayer1).SelectedItem)).Key;
                     if (advpst.All(pair => pair.Key != curPlayer1ID))
                     {
-                        advpst.Add(curPlayer1ID, MainWindow.PST[curPlayer1ID].DeepClone());
+                        advpst.Add(curPlayer1ID, MainWindow.PST[curPlayer1ID].CustomClone());
                         advpst[curPlayer1ID].ResetStats();
                     }
                 }
@@ -1383,12 +1383,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ASC
                     var curPlayer2ID = ((KeyValuePair<int, string>) ((cmbPlayer2).SelectedItem)).Key;
                     if (advpst.All(pair => pair.Key != curPlayer2ID))
                     {
-                        advpst.Add(curPlayer2ID, MainWindow.PST[curPlayer2ID].DeepClone());
+                        advpst.Add(curPlayer2ID, MainWindow.PST[curPlayer2ID].CustomClone());
                         advpst[curPlayer2ID].ResetStats();
                     }
                 }
                 */
-                var tempbse = bse.Clone();
+                var tempbse = bse.BinarySerializationClone();
 
                 // Calculate
                 for (var i = 0; i < tempbse.PBSList.Count; i++)
