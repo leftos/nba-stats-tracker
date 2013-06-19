@@ -168,6 +168,8 @@ namespace NBA_Stats_Tracker
             Tools.AppRegistryKey = AppRegistryKey;
             Tools.OpenRegistryKey(true);
 
+            FrameworkCompatibilityPreferences.AreInactiveSelectionHighlightBrushKeysSupported = false;
+
             Trace.Listeners.Clear();
 
             var twtl = new TextWriterTraceListener(AppDocsPath + @"\tracelog.txt")
