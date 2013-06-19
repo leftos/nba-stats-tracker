@@ -27,6 +27,7 @@ namespace LeftosCommonLibrary
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
+    using System.Xml.Serialization;
 
     #endregion
 
@@ -322,9 +323,9 @@ namespace LeftosCommonLibrary
         /// <param name="original">The original object.</param>
         /// <param name="args">The arguments to pass to the constructor of the new object.</param>
         /// <returns>The copy of the object.</returns>
-        public static T DeepClone<T>(this T original, params Object[] args)
+        public static T CustomClone<T>(this T original, params Object[] args)
         {
-            return original.deepClone(new Dictionary<object, object>(), args);
+            return original.customClone(new Dictionary<object, object>(), args);
         }
 
         /// <summary>Creates a deep-cloned copy of an object.</summary>
@@ -333,7 +334,7 @@ namespace LeftosCommonLibrary
         /// <param name="copies">A dictionary containing the copies of the object.</param>
         /// <param name="args">The arguments to pass to the constructor of the new object.</param>
         /// <returns>The copy of the object.</returns>
-        private static T deepClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
+        private static T customClone<T>(this T original, Dictionary<object, object> copies, params Object[] args)
         {
             var t = original.GetType();
 
@@ -372,7 +373,7 @@ namespace LeftosCommonLibrary
                             * avoid types which do not support serialization ( e.g. NetworkStreams ) */
                         if (fieldValue != null && !ft.IsValueType && ft != typeof(String))
                         {
-                            fieldValue = fieldValue.deepClone(copies);
+                            fieldValue = fieldValue.customClone(copies);
                             /* Does not support parameters for subobjects nativly, but you can provide them when using
                                 * a delegate to create the objects instead of the Activator. Delegates should not work here
                                 * they need some more love */
@@ -408,7 +409,7 @@ namespace LeftosCommonLibrary
                             var value = resultArray.GetValue(indicies);
                             if (value != null)
                             {
-                                resultArray.SetValue(value.deepClone(copies), indicies);
+                                resultArray.SetValue(value.customClone(copies), indicies);
                             }
                         }
                     }
@@ -449,16 +450,32 @@ namespace LeftosCommonLibrary
         //
         /// <summary>Creates a deep-cloned copy of an object using serialization.</summary>
         /// <typeparam name="T">The type of the object.</typeparam>
-        /// <param name="realObject">The original object.</param>
+        /// <param name="obj">The original object.</param>
         /// <returns>The deep-cloned copy of the object.</returns>
-        public static T Clone<T>(this T realObject)
+        public static T BinarySerializationClone<T>(this T obj)
         {
             using (Stream objectStream = new MemoryStream())
             {
                 IFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(objectStream, realObject);
+                formatter.Serialize(objectStream, obj);
                 objectStream.Seek(0, SeekOrigin.Begin);
                 return (T) formatter.Deserialize(objectStream);
+            }
+        }
+
+        /// <summary>Creates a deep-cloned copy of an object using XML serialization.</summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="obj">The original object.</param>
+        /// <returns>The deep-cloned copy of the object.</returns>
+        public static T XmlSerializationClone<T>(this T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var xs = new XmlSerializer(typeof(T));
+                xs.Serialize(ms, obj);
+                ms.Position = 0;
+
+                return (T) xs.Deserialize(ms);
             }
         }
 
