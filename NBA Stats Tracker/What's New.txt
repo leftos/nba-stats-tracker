@@ -1,5 +1,9 @@
 NBA Stats Tracker - Version History
 
+	v1.16.7.1
+		- Improvement: Player ORTG will now be calculated even if FTA and/or FGA is 0
+		- Improvement: Box Score Window will remember last location and dimensions
+
 	v1.16.7
 		- Addition: Added ORTG, DRTG, Floor% metrics for players
 		- Improvement: League averages on metrics will be calculated by averaging the actual value of each metric of each player, if valid; this prevents league average metrics showing up as NaN if at least one player has a valid value for that metric
