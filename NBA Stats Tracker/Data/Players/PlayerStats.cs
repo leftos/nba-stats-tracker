@@ -1131,15 +1131,29 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     var fgPart = pstats[PAbbr.FGM]
                                  * (1 - 0.5 * ((pstats[PAbbr.PTS] - pstats[PAbbr.FTM]) / (2 * pstats[PAbbr.FGA])) * qAST);
-
+                    
                     var astPart = 0.5
                                   * (((tstats[TAbbr.PF] - tstats[TAbbr.FTM]) - (pstats[PAbbr.PTS] - pstats[PAbbr.FTM]))
                                      / (2 * (tstats[TAbbr.FGA] - pstats[PAbbr.FGA]))) * pstats[PAbbr.AST];
 
-                    var ftPart = (1 - Math.Pow(1 - (pstats[PAbbr.FTM] / pstats[PAbbr.FTA]), 2)) * 0.4 * pstats[PAbbr.FTA];
+                    var pFTp = pstats[PAbbr.FTM] / pstats[PAbbr.FTA];
+
+                    if (double.IsNaN(pFTp))
+                    {
+                        pFTp = 0;
+                    }
+
+                    var ftPart = (1 - Math.Pow(1 - pFTp, 2)) * 0.4 * pstats[PAbbr.FTA];
+
+                    var tFTp = tstats[TAbbr.FTM] / tstats[TAbbr.FTA];
+
+                    if (double.IsNaN(tFTp))
+                    {
+                        tFTp = 0;
+                    }
 
                     var teamScPoss = tstats[TAbbr.FGM]
-                                     + (1 - Math.Pow(1 - (tstats[TAbbr.FTM] / tstats[TAbbr.FTA]), 2)) * tstats[TAbbr.FTA] * 0.4;
+                                     + (1 - Math.Pow(1 - tFTp, 2)) * tstats[TAbbr.FTA] * 0.4;
 
                     var teamOREBPct = tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]);
 
@@ -1155,7 +1169,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     var fgxPoss = (pstats[PAbbr.FGA] - pstats[PAbbr.FGM]) * (1 - 1.07 * teamOREBPct);
 
-                    var ftxPoss = Math.Pow(1 - (pstats[PAbbr.FTM] / pstats[PAbbr.FTA]), 2) * 0.4 * pstats[PAbbr.FTA];
+                    var ftxPoss = Math.Pow(1 - pFTp, 2) * 0.4 * pstats[PAbbr.FTA];
 
                     var totPoss = scPoss + fgxPoss + ftxPoss + pstats[PAbbr.TOS];
 
@@ -1171,7 +1185,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     var pprodOREBPart = pstats[PAbbr.OREB] * teamOREBWeight * teamPlayPct
                                         * (tstats[TAbbr.PF]
                                            / (tstats[TAbbr.FGM]
-                                              + (1 - Math.Pow(1 - (tstats[TAbbr.FTM] / tstats[TAbbr.FTA]), 2)) * 0.4
+                                              + (1 - Math.Pow(1 - tFTp, 2)) * 0.4
                                               * tstats[TAbbr.FTA]));
 
                     var pProd = (pprodFGPart + pprodASTPart + pstats[PAbbr.FTM])
@@ -1180,7 +1194,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     var ortg = 100 * (pProd / totPoss);
 
                     var floorPct = scPoss / totPoss;
-
+                    
                     tempMetrics.Add("ORTG", ortg);
                     tempMetrics.Add("Floor%", floorPct);
 
