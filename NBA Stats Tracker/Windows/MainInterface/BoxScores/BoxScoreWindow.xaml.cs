@@ -89,6 +89,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         public BoxScoreWindow(Mode mode = Mode.Update)
         {
             InitializeComponent();
+
+            Top = Tools.GetRegistrySetting("BSY", Top);
+            Left = Tools.GetRegistrySetting("BSX", Left);
+            Height = Tools.GetRegistrySetting("BSHeight", Height);
+            Width = Tools.GetRegistrySetting("BSWidth", Width);
+
             _clickedOK = false;
             curMode = mode;
         }
@@ -333,8 +339,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
             dgvPlayersAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
             dgvPlayersHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-            dgvMetricAway.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-            dgvMetricHome.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvAwayPlayerMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+            dgvHomePlayerMetricStats.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
 
             dgvMetricAwayEFFColumn.Visibility = Visibility.Collapsed;
             dgvMetricAwayPERColumn.Visibility = Visibility.Collapsed;
@@ -1590,8 +1596,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
         /// <param name="team">1 if the away team's players' metric stats should be updated; anything else for the home team.</param>
         private void updateMetric(int team)
         {
-            var ts = new TeamStats(-1, cmbTeam1.SelectedItem.ToString());
-            var tsopp = new TeamStats(-1, cmbTeam2.SelectedItem.ToString());
+            var ts = new TeamStats(-1, team == 1 ? cmbTeam1.SelectedItem.ToString() : cmbTeam2.SelectedItem.ToString());
+            var tsopp = new TeamStats(-1, team == 1 ? cmbTeam2.SelectedItem.ToString() : cmbTeam1.SelectedItem.ToString());
 
             tryParseBS();
             if (!MainWindow.TempBSE_BS.Done)
@@ -1637,15 +1643,19 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             pmsrList.Sort((pmsr1, pmsr2) => pmsr1.GmSc.CompareTo(pmsr2.GmSc));
             pmsrList.Reverse();
 
+            var tsr = new TeamStatsRow(ts);
+
             if (team == 1)
             {
                 _psrListAway = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricAway.ItemsSource = _psrListAway;
+                dgvAwayPlayerMetricStats.ItemsSource = _psrListAway;
+                dgvAwayTeamMetricStats.ItemsSource = new[] { tsr };
             }
             else
             {
                 _psrListHome = new List<PlayerStatsRow>(pmsrList);
-                dgvMetricHome.ItemsSource = _psrListHome;
+                dgvHomePlayerMetricStats.ItemsSource = _psrListHome;
+                dgvHomeTeamMetricStats.ItemsSource = new[] { tsr };
             }
         }
 
@@ -2146,6 +2156,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 MainWindow.TempBSE_BS.Done = false;
             }
+
+            Tools.SetRegistrySetting("BSX", Left);
+            Tools.SetRegistrySetting("BSY", Top);
+            Tools.SetRegistrySetting("BSHeight", Height);
+            Tools.SetRegistrySetting("BSWidth", Width);
         }
 
         private void btnEditPlayByPlay_Click(object sender, RoutedEventArgs e)
