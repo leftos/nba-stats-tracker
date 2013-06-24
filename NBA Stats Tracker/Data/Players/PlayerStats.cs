@@ -1131,7 +1131,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     var fgPart = pstats[PAbbr.FGM]
                                  * (1 - 0.5 * ((pstats[PAbbr.PTS] - pstats[PAbbr.FTM]) / (2 * pstats[PAbbr.FGA])) * qAST);
-                    
+
                     var astPart = 0.5
                                   * (((tstats[TAbbr.PF] - tstats[TAbbr.FTM]) - (pstats[PAbbr.PTS] - pstats[PAbbr.FTM]))
                                      / (2 * (tstats[TAbbr.FGA] - pstats[PAbbr.FGA]))) * pstats[PAbbr.AST];
@@ -1152,8 +1152,7 @@ namespace NBA_Stats_Tracker.Data.Players
                         tFTp = 0;
                     }
 
-                    var teamScPoss = tstats[TAbbr.FGM]
-                                     + (1 - Math.Pow(1 - tFTp, 2)) * tstats[TAbbr.FTA] * 0.4;
+                    var teamScPoss = tstats[TAbbr.FGM] + (1 - Math.Pow(1 - tFTp, 2)) * tstats[TAbbr.FTA] * 0.4;
 
                     var teamOREBPct = tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]);
 
@@ -1184,9 +1183,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     var pprodOREBPart = pstats[PAbbr.OREB] * teamOREBWeight * teamPlayPct
                                         * (tstats[TAbbr.PF]
-                                           / (tstats[TAbbr.FGM]
-                                              + (1 - Math.Pow(1 - tFTp, 2)) * 0.4
-                                              * tstats[TAbbr.FTA]));
+                                           / (tstats[TAbbr.FGM] + (1 - Math.Pow(1 - tFTp, 2)) * 0.4 * tstats[TAbbr.FTA]));
 
                     var pProd = (pprodFGPart + pprodASTPart + pstats[PAbbr.FTM])
                                 * (1 - (tstats[TAbbr.OREB] / teamScPoss) * teamOREBWeight * teamPlayPct) + pprodOREBPart;
@@ -1194,7 +1191,7 @@ namespace NBA_Stats_Tracker.Data.Players
                     var ortg = 100 * (pProd / totPoss);
 
                     var floorPct = scPoss / totPoss;
-                    
+
                     tempMetrics.Add("ORTG", ortg);
                     tempMetrics.Add("Floor%", floorPct);
 
