@@ -764,8 +764,8 @@
                 <TabItem Header="Box Scores" x:Name="tabBoxScores">
                     <Grid>
                         <DataGrid Margin="0" Style="{StaticResource DataGridStyle}" AutoGenerateColumns="False"
-                                  FrozenColumnCount="2" HorizontalAlignment="Stretch" IsReadOnly="True"
-                                  MouseDoubleClick="dgvBoxScores_MouseDoubleClick"
+                                  FrozenColumnCount="3" HorizontalAlignment="Stretch" IsReadOnly="True"
+                                  MouseDoubleClick="dgvBoxScores_MouseDoubleClick" Sorting="statColumn_Sorting"
                                   x:Name="dgvBoxScores" VerticalAlignment="Stretch"
                                   d:DataContext="{d:DesignInstance players:PlayerBoxScore}">
                             <DataGrid.Columns>
