@@ -595,8 +595,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             dgMetrics.ItemsSource = new List<TeamStatsRow> { new TeamStatsRow(_curts) };
 
-            updatePBPStats(); 
-            
+            updatePBPStats();
+
             cmbGraphStat_SelectionChanged(null, null);
         }
 
@@ -3353,7 +3353,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             chart.Primitives.Clear();
             var orderedBSEList = _bseList.OrderBy(bse => bse.BS.GameDate).ToList();
             var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
-            for (int i = 0; i < orderedBSEList.Count; i++)
+            for (var i = 0; i < orderedBSEList.Count; i++)
             {
                 var bse = orderedBSEList[i];
                 bse.BS.PrepareForDisplay(_tst, _curts.ID);
@@ -3367,7 +3367,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 {
                     value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
                 }
-                cp.AddPoint(i+1, value);
+                cp.AddPoint(i + 1, value);
                 games++;
                 sum += value;
             }
@@ -3379,9 +3379,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                for (int i = 0; i < orderedBSEList.Count; i++)
+                for (var i = 0; i < orderedBSEList.Count; i++)
                 {
-                    cpavg.AddPoint(i+1, average);
+                    cpavg.AddPoint(i + 1, average);
                 }
                 cpavg.Color = Color.FromRgb(0, 0, 100);
                 cpavg.Dashed = true;
@@ -3404,6 +3404,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             chart.ResetPanAndZoom();
         }
+
         /// <summary>Populates the graph stat combo.</summary>
         private void populateGraphStatCombo()
         {

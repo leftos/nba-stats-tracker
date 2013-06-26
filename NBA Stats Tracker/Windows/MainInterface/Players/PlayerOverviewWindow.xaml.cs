@@ -704,7 +704,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _plRankingsPosition = new PlayerRankings(_playersSamePosition, true);
 
             _bseList = MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID)).ToList();
-            
+
             foreach (var bse in _bseList)
             {
                 var pbs = new PlayerBoxScore();
@@ -1891,7 +1891,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || _pbsListWithOut.Count < 1)
+            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1
+                || _pbsListWithOut.Count < 1)
             {
                 chart.Primitives.Clear();
                 chart.ResetPanAndZoom();
@@ -1908,7 +1909,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             chart.Primitives.Clear();
             var orderedPBSList = _pbsListWithOut.OrderBy(pbs => pbs.RealDate).ToList();
             var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
-            for (int i = 0; i < orderedPBSList.Count; i++)
+            for (var i = 0; i < orderedPBSList.Count; i++)
             {
                 var pbs = orderedPBSList[i];
                 if (pbs.IsOut)
@@ -1929,7 +1930,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 {
                     value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
                 }
-                cp.AddPoint(i+1, value);
+                cp.AddPoint(i + 1, value);
                 games++;
                 sum += value;
             }
@@ -1941,10 +1942,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                for (int i = 0; i < orderedPBSList.Count; i++)
+                for (var i = 0; i < orderedPBSList.Count; i++)
                 {
                     var pbs = orderedPBSList[i];
-                    cpavg.AddPoint(i+1, average);
+                    cpavg.AddPoint(i + 1, average);
                 }
                 cpavg.Color = Color.FromRgb(0, 0, 100);
                 cpavg.Dashed = true;

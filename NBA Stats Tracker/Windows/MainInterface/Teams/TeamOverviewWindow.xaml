@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
         xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
-        xmlns:sw="clr-namespace:Swordfish.WPF.Charts;assembly=Swordfish.WPF.Charts" mc:Ignorable="d" Title="Team Overview"
+        xmlns:sw="clr-namespace:Swordfish.WPF.Charts;assembly=Swordfish.WPF.Charts" mc:Ignorable="d"
+        Title="Team Overview"
         Height="570" MinHeight="570" Width="730"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         MinWidth="730" Closing="window_Closing">
