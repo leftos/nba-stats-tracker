@@ -426,6 +426,9 @@
     <None Include="Images\Red\Red-018.png" />
     <None Include="Images\Red\Red-019.png" />
     <None Include="Images\Red\Red-020.png" />
+    <Content Include="LeftosCommonLibrary.Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lgpl-2.1.txt" />
     <Content Include="LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
