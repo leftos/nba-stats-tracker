@@ -1891,7 +1891,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || _pbsList.Count < 1)
+            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1 || _pbsListWithOut.Count < 1)
             {
                 chart.Primitives.Clear();
                 chart.ResetPanAndZoom();
@@ -1900,6 +1900,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             var propToGet = cmbGraphStat.SelectedItem.ToString();
             propToGet = propToGet.Replace('3', 'T');
             propToGet = propToGet.Replace('%', 'p');
+            propToGet = propToGet.Replace("TO", "TOS");
 
             double sum = 0;
             double games = 0;
@@ -1907,8 +1908,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             chart.Primitives.Clear();
             var orderedPBSList = _pbsListWithOut.OrderBy(pbs => pbs.RealDate).ToList();
             var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
-            foreach (var pbs in orderedPBSList)
+            for (int i = 0; i < orderedPBSList.Count; i++)
             {
+                var pbs = orderedPBSList[i];
                 if (pbs.IsOut)
                 {
                     if (cp.Points.Count > 0)
@@ -1927,10 +1929,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 {
                     value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
                 }
-                cp.AddPoint(pbs.GameID, value);
+                cp.AddPoint(i+1, value);
                 games++;
                 sum += value;
-            } 
+            }
             if (cp.Points.Count > 0)
             {
                 chart.Primitives.Add(cp.CustomClone());
@@ -1939,18 +1941,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                foreach (var pbs in orderedPBSList)
+                for (int i = 0; i < orderedPBSList.Count; i++)
                 {
-                    cpavg.AddPoint(pbs.GameID, average);
+                    var pbs = orderedPBSList[i];
+                    cpavg.AddPoint(i+1, average);
                 }
                 cpavg.Color = Color.FromRgb(0, 0, 100);
                 cpavg.Dashed = true;
                 cpavg.ShowInLegend = false;
+
+                var cp2 = new ChartPrimitive();
+                cp2.AddPoint(chart.Primitives.First().Points.First().X, 0);
+                cp2.AddPoint(chart.Primitives.Last().Points.Last().X, 1);
+
                 chart.Primitives.Add(cpavg);
                 chart.RedrawPlotLines();
-                var cp2 = new ChartPrimitive();
-                cp2.AddPoint(orderedPBSList.First().GameID, 0);
-                cp2.AddPoint(orderedPBSList.Last().GameID, 1);
                 chart.Primitives.Add(cp2);
             }
             else
