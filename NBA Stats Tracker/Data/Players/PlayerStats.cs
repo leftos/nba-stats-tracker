@@ -1199,7 +1199,7 @@ namespace NBA_Stats_Tracker.Data.Players
 
                     #region Defensive Rating
 
-                    var dorPct = toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + toppstats[TAbbr.DREB]);
+                    var dorPct = toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + tstats[TAbbr.DREB]);
 
                     var dfgPct = toppstats[TAbbr.FGM] / toppstats[TAbbr.FGA];
 
