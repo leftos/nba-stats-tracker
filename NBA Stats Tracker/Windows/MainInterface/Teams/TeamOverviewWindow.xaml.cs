@@ -30,6 +30,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Media;
 
     using LeftosCommonLibrary;
     using LeftosCommonLibrary.CommonDialogs;
@@ -48,6 +49,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
     using NBA_Stats_Tracker.Windows.MiscDialogs;
 
     using SQLite_Database;
+
+    using Swordfish.WPF.Charts;
 
     #endregion
 
@@ -592,7 +595,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             dgMetrics.ItemsSource = new List<TeamStatsRow> { new TeamStatsRow(_curts) };
 
-            updatePBPStats();
+            updatePBPStats(); 
+            
+            cmbGraphStat_SelectionChanged(null, null);
         }
 
         /// <summary>Creates a DataView based on the current overview DataTable and refreshes the DataGrid.</summary>
@@ -1449,7 +1454,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 cmbTeam.SelectedIndex = -1;
             }
-
+            cmbGraphStat_SelectionChanged(null, null);
             MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
@@ -2492,6 +2497,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             chkHTHHideInjured.IsChecked = SQLiteIO.GetSetting("HTHHideInjured", true);
             chkMatchupHideInjured.IsChecked = chkHTHHideInjured.IsChecked;
+
+            populateGraphStatCombo();
+            cmbGraphStat.SelectedIndex = 0;
             //Following line commented out to allow for faster loading of Team Overview
             //cmbOppTeam.SelectedIndex = 1;
 
@@ -3324,6 +3332,139 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             SQLiteIO.SetSetting("HTHHideInjured", chkHTHHideInjured.IsChecked == true);
 
             cmbOppTeam_SelectionChanged(null, null);
+        }
+
+        private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || _bseList.Count < 1)
+            {
+                chart.Primitives.Clear();
+                chart.ResetPanAndZoom();
+                return;
+            }
+            var propToGet = cmbGraphStat.SelectedItem.ToString();
+            propToGet = propToGet.Replace('3', 'T');
+            propToGet = propToGet.Replace('%', 'p');
+            propToGet = propToGet.Replace("TO", "TOS");
+
+            double sum = 0;
+            double games = 0;
+
+            chart.Primitives.Clear();
+            var orderedBSEList = _bseList.OrderBy(bse => bse.BS.GameDate).ToList();
+            var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+            for (int i = 0; i < orderedBSEList.Count; i++)
+            {
+                var bse = orderedBSEList[i];
+                bse.BS.PrepareForDisplay(_tst, _curts.ID);
+                var propSuffix = bse.BS.Team1ID == _curts.ID ? 1 : 2;
+                var value = Convert.ToDouble(typeof(TeamBoxScore).GetProperty(propToGet + propSuffix).GetValue(bse.BS, null));
+                if (double.IsNaN(value))
+                {
+                    continue;
+                }
+                if (propToGet.Contains("p"))
+                {
+                    value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                }
+                cp.AddPoint(i+1, value);
+                games++;
+                sum += value;
+            }
+            if (cp.Points.Count > 0)
+            {
+                chart.Primitives.Add(cp);
+            }
+            if (chart.Primitives.Count > 0 && chart.Primitives.Sum(p => p.Points.Count) > 1)
+            {
+                var average = sum / games;
+                var cpavg = new ChartPrimitive();
+                for (int i = 0; i < orderedBSEList.Count; i++)
+                {
+                    cpavg.AddPoint(i+1, average);
+                }
+                cpavg.Color = Color.FromRgb(0, 0, 100);
+                cpavg.Dashed = true;
+                cpavg.ShowInLegend = false;
+                var cp2 = new ChartPrimitive();
+                cp2.AddPoint(chart.Primitives.First().Points.First().X, 0);
+                cp2.AddPoint(chart.Primitives.Last().Points.Last().X, 1);
+
+                chart.Primitives.Add(cpavg);
+                chart.RedrawPlotLines();
+                chart.Primitives.Add(cp2);
+            }
+            else
+            {
+                chart.RedrawPlotLines();
+                var cp2 = new ChartPrimitive();
+                cp2.AddPoint(1, 0);
+                cp2.AddPoint(2, 1);
+                chart.Primitives.Add(cp2);
+            }
+            chart.ResetPanAndZoom();
+        }
+        /// <summary>Populates the graph stat combo.</summary>
+        private void populateGraphStatCombo()
+        {
+            var stats = new List<string>
+                {
+                    "GmSc",
+                    "PTS",
+                    "FGM",
+                    "FGA",
+                    "FG%",
+                    "3PM",
+                    "3PA",
+                    "3P%",
+                    "FTM",
+                    "FTA",
+                    "FT%",
+                    "REB",
+                    "OREB",
+                    "DREB",
+                    "AST",
+                    "BLK",
+                    "STL",
+                    "TO",
+                    "FOUL"
+                };
+
+            stats.ForEach(s => cmbGraphStat.Items.Add(s));
+        }
+
+        /// <summary>Handles the Click event of the btnPrevStat control. Switches to the previous graph stat.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
+        private void btnPrevStat_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == 0)
+            {
+                cmbGraphStat.SelectedIndex = cmbGraphStat.Items.Count - 1;
+            }
+            else
+            {
+                cmbGraphStat.SelectedIndex--;
+            }
+        }
+
+        /// <summary>Handles the Click event of the btnNextStat control. Switches to the next graph stat.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">
+        ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
+        /// </param>
+        private void btnNextStat_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbGraphStat.SelectedIndex == cmbGraphStat.Items.Count - 1)
+            {
+                cmbGraphStat.SelectedIndex = 0;
+            }
+            else
+            {
+                cmbGraphStat.SelectedIndex++;
+            }
         }
     }
 }

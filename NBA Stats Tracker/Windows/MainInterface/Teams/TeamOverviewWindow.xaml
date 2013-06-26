@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:players="clr-namespace:NBA_Stats_Tracker.Data.Players"
-        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams" mc:Ignorable="d" Title="Team Overview"
+        xmlns:teams="clr-namespace:NBA_Stats_Tracker.Data.Teams"
+        xmlns:sw="clr-namespace:Swordfish.WPF.Charts;assembly=Swordfish.WPF.Charts" mc:Ignorable="d" Title="Team Overview"
         Height="570" MinHeight="570" Width="730"
         WindowStartupLocation="CenterScreen" Loaded="window_Loaded"
         MinWidth="730" Closing="window_Closing">
@@ -1566,6 +1567,19 @@
 
                             </DataGrid.Columns>
                         </DataGrid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Performance Graph">
+                    <Grid>
+                        <sw:XYLineChart x:Name="chart" Title="" XAxisLabel="" YAxisLabel=""
+                                        RenderTransformOrigin="0.5,0.5" Margin="0,19,0,0" />
+                        <ComboBox Height="23" Margin="0,6,0,0" Width="153"
+                                  HorizontalAlignment="Center" x:Name="cmbGraphStat"
+                                  SelectionChanged="cmbGraphStat_SelectionChanged" VerticalAlignment="Top" />
+                        <Button Height="23" Margin="0,6,190,0" Width="24" Click="btnPrevStat_Click" Content="&lt;"
+                                HorizontalAlignment="Center" x:Name="btnPrevStat" VerticalAlignment="Top" />
+                        <Button Height="23" Margin="190,6,0,0" Width="24" Click="btnNextStat_Click" Content="&gt;"
+                                HorizontalAlignment="Center" x:Name="btnNextStat" VerticalAlignment="Top" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Head-To-Head" Name="tabHTH">

@@ -225,6 +225,14 @@ namespace NBA_Stats_Tracker.Data.Teams
         public float FGp { get; set; }
         public float TPp { get; set; }
         public float FTp { get; set; }
+        public float FGp1 { get; set; }
+        public float TPp1 { get; set; }
+        public float FTp1 { get; set; }
+        public float FGp2 { get; set; }
+        public float TPp2 { get; set; }
+        public float FTp2 { get; set; }
+        public UInt16 DREB1 { get; set; }
+        public UInt16 DREB2 { get; set; }
         public ushort DisplayREB { get; set; }
         public ushort DisplayOREB { get; set; }
         public ushort DisplayAST { get; set; }
@@ -233,6 +241,9 @@ namespace NBA_Stats_Tracker.Data.Teams
         public ushort DisplaySTL { get; set; }
         public ushort DisplayFOUL { get; set; }
         public double DisplayGmSc { get; set; }
+
+        public double GmSc1 { get; set; }
+        public double GmSc2 { get; set; }
 
         /// <summary>Prepares the presentation fields of the class.</summary>
         /// <param name="teamID">The team.</param>
@@ -247,15 +258,20 @@ namespace NBA_Stats_Tracker.Data.Teams
         /// <param name="teamID">The team.</param>
         public void PrepareForDisplay(Dictionary<int, TeamStats> tst, int teamID)
         {
+            FGp1 = (float) FGM1 / FGA1;
+            TPp1 = (float) TPM1 / TPA1;
+            FTp1 = (float) FTM1 / FTA1;
+            FGp2 = (float) FGM2 / FGA2;
+            TPp2 = (float) TPM2 / TPA2;
+            FTp2 = (float) FTM2 / FTA2;
+            DREB1 = (ushort) (REB1 - OREB1);
+            DREB2 = (ushort) (REB2 - OREB2);
             if (teamID == Team1ID)
             {
                 DisplayTeam = tst[Team1ID].DisplayName;
                 DisplayOpponent = tst[Team2ID].DisplayName;
                 DisplayLocation = "Away";
                 DisplayResult = PTS1 > PTS2 ? "W " : "L ";
-                FGp = (float) FGM1 / FGA1;
-                TPp = (float) TPM1 / TPA1;
-                FTp = (float) FTM1 / FTA1;
                 DisplayREB = REB1;
                 DisplayOREB = OREB1;
                 DisplayAST = AST1;
@@ -263,13 +279,19 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DisplayBLK = BLK1;
                 DisplaySTL = STL1;
                 DisplayFOUL = FOUL1;
+                FGp = FGp1;
+                TPp = TPp1;
+                FTp = FTp1;
 
                 var temp = new TeamStats();
                 var tempopp = new TeamStats();
                 TeamStats.AddTeamStatsFromBoxScore(this, ref temp, ref tempopp);
                 temp.CalcMetrics(tempopp);
+                tempopp.CalcMetrics(temp);
 
                 DisplayGmSc = temp.Metrics["GmSc"];
+                GmSc1 = temp.Metrics["GmSc"];
+                GmSc2 = tempopp.Metrics["GmSc"];
             }
             else
             {
@@ -277,9 +299,6 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DisplayOpponent = tst[Team1ID].DisplayName;
                 DisplayLocation = "Home";
                 DisplayResult = PTS1 < PTS2 ? "W " : "L ";
-                FGp = (float) FGM2 / FGA2;
-                TPp = (float) TPM2 / TPA2;
-                FTp = (float) FTM2 / FTA2;
                 DisplayREB = REB2;
                 DisplayOREB = OREB2;
                 DisplayAST = AST2;
@@ -287,13 +306,19 @@ namespace NBA_Stats_Tracker.Data.Teams
                 DisplayBLK = BLK2;
                 DisplaySTL = STL2;
                 DisplayFOUL = FOUL2;
+                FGp = FGp2;
+                TPp = TPp2;
+                FTp = FTp2;
 
                 var temp = new TeamStats();
                 var tempopp = new TeamStats();
                 TeamStats.AddTeamStatsFromBoxScore(this, ref tempopp, ref temp);
                 temp.CalcMetrics(tempopp);
+                tempopp.CalcMetrics(temp);
 
                 DisplayGmSc = temp.Metrics["GmSc"];
+                GmSc2 = temp.Metrics["GmSc"];
+                GmSc1 = tempopp.Metrics["GmSc"];
             }
             DisplayResult += PTS1 + "-" + PTS2;
         }
