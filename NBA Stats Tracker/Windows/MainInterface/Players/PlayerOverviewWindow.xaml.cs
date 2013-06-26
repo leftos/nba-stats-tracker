@@ -1906,7 +1906,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             double sum = 0;
             double games = 0;
 
-            foreach (var pbs in _pbsList)
+            foreach (var pbs in _pbsList.OrderBy(pbs => pbs.RealDate))
             {
                 i++;
                 var value = Convert.ToDouble(typeof(PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
