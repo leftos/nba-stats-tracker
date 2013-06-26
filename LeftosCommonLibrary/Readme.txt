@@ -20,6 +20,8 @@
 			(http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader)
 		  under the MIT license:
 			(http://www.opensource.org/licenses/mit-license.php)
+		- Uses the Detect Encoding for In- and Outgoing Text project by Carsten Zeumer
+			(http://www.codeproject.com/Articles/17201/Detect-Encoding-for-In-and-Outgoing-Text)
 
 
 	License

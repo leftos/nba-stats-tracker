@@ -39,6 +39,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EncodingTools">
+      <HintPath>.\EncodingTools.dll</HintPath>
+    </Reference>
     <Reference Include="LumenWorks.Framework.IO">
       <HintPath>.\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>

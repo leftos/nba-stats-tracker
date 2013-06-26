@@ -30,6 +30,8 @@ namespace LeftosCommonLibrary
 
     using LumenWorks.Framework.IO.Csv;
 
+    using href.Utils;
+
     #endregion
 
     /// <summary>Provides methods to convert from and to CSV data.</summary>
@@ -67,17 +69,20 @@ namespace LeftosCommonLibrary
         /// </returns>
         public static List<Dictionary<string, string>> DictionaryListFromCSVFile(string path, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(
-                new StreamReader(path),
-                true,
-                useCultureSeparator ? ListSeparator : detectSeparator(path),
-                '\"',
-                '\"',
-                '\0',
-                ValueTrimmingOptions.UnquotedOnly);
-            var dictList = dictionaryListFromCSV(cr);
-
-            return dictList;
+            var detectedSeparator = detectSeparator(path);
+            using (var streamReader = EncodingTools.OpenTextFile(path))
+            {
+                var cr = new CsvReader(
+                    streamReader,
+                    true,
+                    useCultureSeparator ? ListSeparator : detectedSeparator,
+                    '\"',
+                    '\"',
+                    '\0',
+                    ValueTrimmingOptions.UnquotedOnly);
+                var dictList = dictionaryListFromCSV(cr);
+                return dictList;
+            }
         }
 
         /// <summary>Converts CSV data from a string into a list of dictionaries.</summary>
@@ -115,17 +120,20 @@ namespace LeftosCommonLibrary
         /// <returns>A list of string arrays containing the CSV data.</returns>
         public static List<string[]> ArrayListFromCSVFile(string path, bool hasHeaders = true, bool useCultureSeparator = false)
         {
-            var cr = new CsvReader(
-                new StreamReader(path),
-                hasHeaders,
-                useCultureSeparator ? ListSeparator : detectSeparator(path),
-                '\"',
-                '\"',
-                '\0',
-                ValueTrimmingOptions.UnquotedOnly);
-            var arrayList = arrayListFromCSV(cr);
-
-            return arrayList;
+            var detectedSeparator = detectSeparator(path);
+            using (
+                var cr = new CsvReader(
+                    EncodingTools.OpenTextFile(path),
+                    hasHeaders,
+                    useCultureSeparator ? ListSeparator : detectedSeparator,
+                    '\"',
+                    '\"',
+                    '\0',
+                    ValueTrimmingOptions.UnquotedOnly))
+            {
+                var arrayList = arrayListFromCSV(cr);
+                return arrayList;
+            }
         }
 
         /// <summary>Converts CSV data from a string into a list of string arrays.</summary>

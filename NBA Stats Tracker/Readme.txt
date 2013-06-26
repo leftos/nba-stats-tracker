@@ -214,7 +214,8 @@ Development Credits
 		Uses an Object DeepCloning Code Example by Rahul Dantkale of Indigo Architects (http://www.codeproject.com/Articles/23983/Object-Cloning-at-its-simplest)
 		Uses a Sortable Binding List implementation by Tim Van Wassenhove (http://www.timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/)
 		Uses Swordfish Charts v1.1 by John Stewien (http://www.codeproject.com/Articles/17097/WPF-Chart-Control-With-Pan-Zoom-and-More) with minor personal edits
-		Uses an optimized implementation of DataTable.Load based on Amit Choudhary's work (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)
+		Uses an optimized implementation of DataTable.Load based on Amit Choudhary's work (http://www.cshandler.com/2011/10/fastest-way-to-populate-datatable-using.html)		
+		Uses the Detect Encoding for In- and Outgoing Text project by Carsten Zeumer (http://www.codeproject.com/Articles/17201/Detect-Encoding-for-In-and-Outgoing-Text)
 	
 	
 Discussion/Support Thread
@@ -253,6 +254,7 @@ License Information
 			SQLite
 			System.Data.SQLite
 			Swordfish Charts
+			Detect Encoding for In- and Outgoing Text
 
 		Common Development and Distribution License (CDDL-1.0)
 		http://opensource.org/licenses/CDDL-1.0
