@@ -71,7 +71,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private ObservableCollection<KeyValuePair<int, string>> _oppPlayersList = new ObservableCollection<KeyValuePair<int, string>>();
 
-        private ObservableCollection<PlayerBoxScore> _pbsList;
+        private ObservableCollection<PlayerBoxScore> _pbsList, _pbsListWithOut;
         private PlayerStatsRow _plPSR;
         private PlayerRankings _plRankingsActive;
         private PlayerRankings _plRankingsPosition;
@@ -335,6 +335,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _selectedPlayerID = ((KeyValuePair<int, string>) (((cmbPlayer)).SelectedItem)).Key;
 
             _pbsList = new ObservableCollection<PlayerBoxScore>();
+            _pbsListWithOut = new ObservableCollection<PlayerBoxScore>();
 
             try
             {
@@ -703,17 +704,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _plRankingsPosition = new PlayerRankings(_playersSamePosition, true);
 
             _bseList = MainWindow.BSHist.Where(bse => bse.PBSList.Any(pbs => pbs.PlayerID == _psr.ID)).ToList();
-
+            
             foreach (var bse in _bseList)
             {
                 var pbs = new PlayerBoxScore();
                 pbs = bse.PBSList.Single(pbs1 => pbs1.PlayerID == _psr.ID);
+                pbs.AddInfoFromTeamBoxScore(bse.BS, MainWindow.TST);
+                pbs.CalcMetrics(bse.BS);
+                _pbsListWithOut.Add(pbs);
                 if (pbs.IsOut)
                 {
                     continue;
                 }
-                pbs.AddInfoFromTeamBoxScore(bse.BS, MainWindow.TST);
-                pbs.CalcMetrics(bse.BS);
                 _pbsList.Add(pbs);
             }
 
@@ -1895,10 +1897,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 chart.ResetPanAndZoom();
                 return;
             }
-
-            var cp = new ChartPrimitive();
-            double i = 0;
-
             var propToGet = cmbGraphStat.SelectedItem.ToString();
             propToGet = propToGet.Replace('3', 'T');
             propToGet = propToGet.Replace('%', 'p');
@@ -1906,43 +1904,63 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             double sum = 0;
             double games = 0;
 
-            foreach (var pbs in _pbsList.OrderBy(pbs => pbs.RealDate))
-            {
-                i++;
-                var value = Convert.ToDouble(typeof(PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
-                if (!double.IsNaN(value))
-                {
-                    if (propToGet.Contains("p"))
-                    {
-                        value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
-                    }
-                    cp.AddPoint(i, value);
-                    games++;
-                    sum += value;
-                }
-            }
-            cp.Label = cmbGraphStat.SelectedItem.ToString();
-            cp.ShowInLegend = false;
             chart.Primitives.Clear();
+            var orderedPBSList = _pbsListWithOut.OrderBy(pbs => pbs.RealDate).ToList();
+            var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+            foreach (var pbs in orderedPBSList)
+            {
+                if (pbs.IsOut)
+                {
+                    if (cp.Points.Count > 0)
+                    {
+                        chart.Primitives.Add(cp.CustomClone());
+                        cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+                    }
+                    continue;
+                }
+                var value = Convert.ToDouble(typeof(PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
+                if (double.IsNaN(value))
+                {
+                    continue;
+                }
+                if (propToGet.Contains("p"))
+                {
+                    value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                }
+                cp.AddPoint(pbs.GameID, value);
+                games++;
+                sum += value;
+            } 
             if (cp.Points.Count > 0)
+            {
+                chart.Primitives.Add(cp.CustomClone());
+            }
+            if (chart.Primitives.Count > 0 && chart.Primitives.Sum(p => p.Points.Count) > 1)
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                for (var j = 1; j <= i; j++)
+                foreach (var pbs in orderedPBSList)
                 {
-                    cpavg.AddPoint(j, average);
+                    cpavg.AddPoint(pbs.GameID, average);
                 }
                 cpavg.Color = Color.FromRgb(0, 0, 100);
                 cpavg.Dashed = true;
                 cpavg.ShowInLegend = false;
                 chart.Primitives.Add(cpavg);
-                chart.Primitives.Add(cp);
+                chart.RedrawPlotLines();
+                var cp2 = new ChartPrimitive();
+                cp2.AddPoint(orderedPBSList.First().GameID, 0);
+                cp2.AddPoint(orderedPBSList.Last().GameID, 1);
+                chart.Primitives.Add(cp2);
             }
-            chart.RedrawPlotLines();
-            var cp2 = new ChartPrimitive();
-            cp2.AddPoint(1, 0);
-            cp2.AddPoint(i, 1);
-            chart.Primitives.Add(cp2);
+            else
+            {
+                chart.RedrawPlotLines();
+                var cp2 = new ChartPrimitive();
+                cp2.AddPoint(1, 0);
+                cp2.AddPoint(2, 1);
+                chart.Primitives.Add(cp2);
+            }
             chart.ResetPanAndZoom();
         }
 
