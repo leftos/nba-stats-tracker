@@ -50,6 +50,25 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
+            if (lstAvailableAway.SelectedItems.Count == 1 && lstAvailableHome.SelectedItems.Count == 1
+                && lstAvailableAway.SelectedItem.ToString() != lstAvailableHome.SelectedItem.ToString())
+            {
+                var result =
+                    MessageBox.Show(
+                        "You didn't add the matchup between the two teams you selected. "
+                        + "Would you like it to be added before continuing so that its " + "box score can be calculated?",
+                        App.AppName,
+                        MessageBoxButton.YesNoCancel,
+                        MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    btnAddGame_Click(null, null);
+                }
+                else if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+            }
             REDitor.SelectedDate = dtpToday.SelectedDate.GetValueOrDefault();
             DialogResult = true;
             Close();
@@ -57,7 +76,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private void btnAddGame_Click(object sender, RoutedEventArgs e)
         {
-            if (lstAvailableAway.SelectedItems.Count == 1 && lstAvailableHome.SelectedItems.Count == 1)
+            if (lstAvailableAway.SelectedItems.Count == 1 && lstAvailableHome.SelectedItems.Count == 1
+                && lstAvailableAway.SelectedItem.ToString() != lstAvailableHome.SelectedItem.ToString())
             {
                 var away = lstAvailableAway.SelectedItem;
                 var home = lstAvailableHome.SelectedItem;
@@ -68,10 +88,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                 lstAvailableHome.Items.Remove(away);
                 lstAvailableHome.Items.Remove(home);
                 lstAvailableAway.Items.Remove(away);
-                /*
-                if (lstAvailableAway.Items.Count == 0 && lstAvailableHome.Items.Count == 0)
-                    btnOK.IsEnabled = true;
-                */
             }
             else
             {
