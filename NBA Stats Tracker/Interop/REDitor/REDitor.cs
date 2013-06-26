@@ -968,7 +968,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     if (playerSeasonStats != null)
                     {
                         var teamReal = pTeam.ToString();
-                        var team1 = playerSeasonStats["TeamID2"];
                         var team2 = playerSeasonStats["TeamID1"];
                         //bool hasBeenTraded = (team1 != "-1");
 
@@ -1393,10 +1392,6 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 tstOpp = new Dictionary<int, TeamStats>();
                 madeNew = true;
             }
-
-            var oldTST = tst.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
-            var oldtstOpp = tstOpp.ToDictionary(ts => ts.Key, ts => ts.Value.BinarySerializationClone());
-            var oldPST = pst.ToDictionary(ps => ps.Key, ps => ps.Value.BinarySerializationClone());
 
             CreateDivisions();
 
@@ -1941,7 +1936,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// <param name="oldPST">The old player stats dictionary.</param>
         /// <param name="id">The player's ID.</param>
         /// <param name="stat">The stat.</param>
-        /// <returns></returns>
+        /// <param name="isPlayoff">Whether to compare the playoff stats, instead of the regular season ones.</param>
+        /// <returns>The difference between the stats.</returns>
         private static ushort getDiff(
             Dictionary<int, PlayerStats> pst, Dictionary<int, PlayerStats> oldPST, int id, int stat, bool isPlayoff = false)
         {
@@ -1952,7 +1948,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// <param name="newPS">The new player stats instance.</param>
         /// <param name="oldPS">The old player stats instance.</param>
         /// <param name="stat">The stat.</param>
-        /// <returns></returns>
+        /// <param name="isPlayoff">Whether to compare the playoff stats, instead of the regular season ones.</param>
+        /// <returns>The difference between the stats.</returns>
         private static ushort getDiff(PlayerStats newPS, PlayerStats oldPS, int stat, bool isPlayoff = false)
         {
             return !isPlayoff
@@ -2245,7 +2242,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
         /// <param name="players">The resulting players information dictionary list.</param>
         /// <param name="teamStats">The resulting team stats dictionary list.</param>
         /// <param name="playerStats">The resulting player stats dictionary list.</param>
-        /// <returns></returns>
+        /// <param name="nba2KVersion">Returns the detected NBA 2K version.</param>
+        /// <returns>0 if the dictionaries were populated correctly, -1 if an error occurred.</returns>
         private static int populateREDitorDictionaryLists(
             string folder,
             out List<Dictionary<string, string>> teams,
