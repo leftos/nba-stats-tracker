@@ -384,15 +384,25 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
 
             var tempTotalsOpp = new double[tsopp.Totals.Length];
-            for (var i = 0; i < tsopp.Totals.Length; i++)
+            if ((!playoffs && (GetGames() != tsopp.GetGames())) || (playoffs && (GetPlayoffGames() != tsopp.GetPlayoffGames())))
             {
-                if (!playoffs)
+                for (var i = 0; i < tsopp.Totals.Length; i++)
                 {
-                    tempTotalsOpp[i] = tsopp.Totals[i];
+                    tempTotalsOpp[i] = double.NaN;
                 }
-                else
+            }
+            else
+            {
+                for (var i = 0; i < tsopp.Totals.Length; i++)
                 {
-                    tempTotalsOpp[i] = tsopp.PlTotals[i];
+                    if (!playoffs)
+                    {
+                        tempTotalsOpp[i] = tsopp.Totals[i];
+                    }
+                    else
+                    {
+                        tempTotalsOpp[i] = tsopp.PlTotals[i];
+                    }
                 }
             }
 
