@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.8
+		- Addition: Added Performance Graph tab to Team Overview
+		- Improvement: Improved Player Overview's Performance Graph to have breaks for games the player was out
+		- Improvement: Various other minor improvements and fixes to Player Overview's Performance Graph
+
 	v1.16.7.1
 		- Improvement: Player ORTG will now be calculated even if FTA and/or FGA is 0
 		- Improvement: Box Score Window will remember last location and dimensions
