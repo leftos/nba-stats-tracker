@@ -1222,6 +1222,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private async void btnSaveCustomTeam_Click(object sender, RoutedEventArgs e)
         {
+            if (cmbTeam.SelectedIndex == -1)
+            {
+                return;
+            }
             if (rbStatsBetween.IsChecked.GetValueOrDefault())
             {
                 MessageBox.Show(
@@ -3046,6 +3050,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void btnChangeDivision_Click(object sender, RoutedEventArgs e)
         {
+            if (cmbTeam.SelectedIndex == -1)
+            {
+                return;
+            }
             if (MainWindow.Tf.IsBetween)
             {
                 MessageBox.Show(
