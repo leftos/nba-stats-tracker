@@ -21,7 +21,6 @@ namespace NBA_Stats_Tracker.Data.Players
     #region Using Directives
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;

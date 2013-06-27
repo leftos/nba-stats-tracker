@@ -1134,7 +1134,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                         msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][TAbbrPG.BPG], tempPerGame[TAbbrPG.BPG]);
                         break;
                     case TAbbrPG.DRPG:
-                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.DRPG], tempPerGame[TAbbrPG.DRPG]);
+                        msg += String.Format(
+                            "defensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.DRPG], tempPerGame[TAbbrPG.DRPG]);
                         break;
                     case TAbbrPG.FGeff:
                         msg += String.Format(
@@ -1154,7 +1155,8 @@ namespace NBA_Stats_Tracker.Data.Teams
                             tempPerGame[TAbbrPG.FTp]);
                         break;
                     case TAbbrPG.ORPG:
-                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.ORPG], tempPerGame[TAbbrPG.ORPG]);
+                        msg += String.Format(
+                            "offensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.ORPG], tempPerGame[TAbbrPG.ORPG]);
                         break;
                     case TAbbrPG.PAPG:
                         msg += String.Format(

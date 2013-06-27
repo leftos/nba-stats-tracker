@@ -159,7 +159,8 @@ namespace NBA_Stats_Tracker.Data.Players
                 "MPG"
             };
 
-        public static readonly List<string> MetricsNames = new List<string> {
+        public static readonly List<string> MetricsNames = new List<string>
+            {
                 "PER",
                 "EFF",
                 "ORTG",

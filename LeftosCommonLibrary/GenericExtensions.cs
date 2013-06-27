@@ -531,14 +531,14 @@ namespace LeftosCommonLibrary
             return item;
         }
 
-        /// <summary>
-        /// Gets the value of the specified property via reflection.
-        /// </summary>
+        /// <summary>Gets the value of the specified property via reflection.</summary>
         /// <typeparam name="TObj">The type of the object.</typeparam>
         /// <typeparam name="TReturn">The return type.</typeparam>
         /// <param name="obj">The object.</param>
         /// <param name="property">The property.</param>
-        /// <returns>The value of the property converted to <c>TReturn</c>.</returns>
+        /// <returns>
+        ///     The value of the property converted to <c>TReturn</c>.
+        /// </returns>
         public static TReturn GetValue<TObj, TReturn>(this TObj obj, string property)
         {
             if (!property.Contains("["))
@@ -555,9 +555,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        /// Compares the two objects based on the specified property via reflection.
-        /// </summary>
+        /// <summary>Compares the two objects based on the specified property via reflection.</summary>
         /// <typeparam name="TObj">The type of the objects.</typeparam>
         /// <param name="obj1">The first object.</param>
         /// <param name="obj2">The second object.</param>
@@ -581,9 +579,7 @@ namespace LeftosCommonLibrary
             }
         }
 
-        /// <summary>
-        /// Compares the object to another one based on the specified property via reflection.
-        /// </summary>
+        /// <summary>Compares the object to another one based on the specified property via reflection.</summary>
         /// <typeparam name="TObj">The type of the object.</typeparam>
         /// <param name="lhs">The current object.</param>
         /// <param name="rhs">The object to compare to.</param>

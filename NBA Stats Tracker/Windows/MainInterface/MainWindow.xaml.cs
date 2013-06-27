@@ -316,7 +316,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
             }
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            
+
             SearchCache = new List<SearchItem>();
 
             #region Keyboard Shortcuts

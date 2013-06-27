@@ -989,8 +989,8 @@
                         <Button Height="23" Margin="197,6,0,0" Width="24" Click="btnNextStat_Click" Content="&gt;"
                                 HorizontalAlignment="Left" x:Name="btnNextStat" VerticalAlignment="Top" />
                         <ComboBox Height="23" Margin="0,6,10,0" Width="153"
-                        	HorizontalAlignment="Right" x:Name="cmbGraphInterval"
-                        	SelectionChanged="cmbGraphInterval_SelectionChanged" VerticalAlignment="Top" />
+                                  HorizontalAlignment="Right" x:Name="cmbGraphInterval"
+                                  SelectionChanged="cmbGraphInterval_SelectionChanged" VerticalAlignment="Top" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Scouting Report">

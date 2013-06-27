@@ -2821,7 +2821,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                     MessageBoxImage.Information);
                 return;
             }
-            string newname = "";
+            var newname = "";
             try
             {
                 while (true)
@@ -3396,13 +3396,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbOppTeam_SelectionChanged(null, null);
         }
 
-        private enum Intervals
-        {
-            EveryGame,
-            Monthly,
-            Yearly
-        };
-
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbGraphInterval.SelectedIndex == -1)
@@ -3460,7 +3453,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                         bse.BS.PrepareForDisplay(_tst, _curts.ID);
 
                         var isTeamAway = bse.BS.Team1ID == _curts.ID;
-                        string propToGetFinal = propToGet;
+                        var propToGetFinal = propToGet;
                         if (propToGet == "PF")
                         {
                             propToGetFinal = isTeamAway ? "PTS1" : "PTS2";
@@ -3654,5 +3647,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         {
             cmbGraphStat_SelectionChanged(null, null);
         }
+
+        #region Nested type: Intervals
+
+        private enum Intervals
+        {
+            EveryGame,
+            Monthly,
+            Yearly
+        };
+
+        #endregion
     }
 }

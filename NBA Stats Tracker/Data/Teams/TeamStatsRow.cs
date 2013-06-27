@@ -120,8 +120,6 @@ namespace NBA_Stats_Tracker.Data.Teams
             CurStreak = ts.CurStreak;
         }
 
-        public double GmSc { get; set; }
-
         public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false)
             : this(ts, playoffs)
         {
@@ -150,6 +148,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             CalculateTotalContracts(pst);
             CalculatePlayerCounts(pst);
         }
+
+        public double GmSc { get; set; }
 
         public int ID { get; set; }
         public uint Games { get; set; }
@@ -336,7 +336,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PBPSList[6].AddOtherStats(teamPlayerIDs, pbpeList, false);
             }
         }
-        
+
         public TResult GetValue<TResult>(string prop)
         {
             return this.GetValue<TeamStatsRow, TResult>(prop);

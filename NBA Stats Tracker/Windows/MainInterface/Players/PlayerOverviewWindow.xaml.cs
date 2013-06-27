@@ -1900,13 +1900,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvOverviewStats.DataContext = dvOv;
         }
 
-        private enum Intervals
-        {
-            EveryGame,
-            Monthly,
-            Yearly
-        };
-
         /// <summary>
         ///     Handles the SelectionChanged event of the cmbGraphStat control. Calculates and displays the player's performance graph for
         ///     the newly selected stat.
@@ -2323,5 +2316,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             cmbGraphStat_SelectionChanged(null, null);
         }
+
+        #region Nested type: Intervals
+
+        private enum Intervals
+        {
+            EveryGame,
+            Monthly,
+            Yearly
+        };
+
+        #endregion
     }
 }
