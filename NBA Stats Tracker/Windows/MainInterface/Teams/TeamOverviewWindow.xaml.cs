@@ -2775,6 +2775,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         /// </param>
         private void btnChangeName_Click(object sender, RoutedEventArgs e)
         {
+            if (cmbTeam.SelectedIndex == -1)
+            {
+                return;
+            }
             if (MainWindow.Tf.IsBetween)
             {
                 MessageBox.Show(
@@ -2784,17 +2788,31 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                     MessageBoxImage.Information);
                 return;
             }
+            string newname = "";
             try
             {
-                var ibw = new InputBoxWindow("Please enter the new name for the team", _tst[_curTeam].DisplayName);
-                ibw.ShowDialog();
+                while (true)
+                {
+                    var ibw = new InputBoxWindow("Please enter the new name for the team", _tst[_curTeam].DisplayName);
+                    if (ibw.ShowDialog() != true)
+                    {
+                        return;
+                    }
+                    newname = InputBoxWindow.UserInput;
+                    if (_tst.Any(pair => pair.Value.DisplayName == newname))
+                    {
+                        MessageBox.Show("A team already exists with that name.");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             catch
             {
                 return;
             }
-
-            var newname = InputBoxWindow.UserInput;
             var dict = new Dictionary<string, string> { { "DisplayName", newname } };
             _db.Update(MainWindow.TeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
             _db.Update(MainWindow.PlTeamsT, dict, "Name LIKE \"" + _curTeam + "\"");
