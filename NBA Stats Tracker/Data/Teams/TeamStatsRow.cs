@@ -333,5 +333,10 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PBPSList[6].AddOtherStats(teamPlayerIDs, pbpeList, false);
             }
         }
+        
+        public TResult GetValue<TResult>(string prop)
+        {
+            return this.GetValue<TeamStatsRow, TResult>(prop);
+        }
     }
 }

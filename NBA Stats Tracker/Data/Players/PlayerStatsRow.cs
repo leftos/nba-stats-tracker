@@ -1649,39 +1649,9 @@ namespace NBA_Stats_Tracker.Data.Players
             }
         }
 
-        public static int Compare(string property, PlayerStatsRow pmsr1, PlayerStatsRow pmsr2)
+        public TResult GetValue<TResult>(string prop)
         {
-            if (property.Contains("["))
-            {
-                var index = property.Split('[')[1].Split(']')[0].ToInt32();
-                property = property.Split('[')[0];
-                return
-                    Convert.ToDouble((typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr1, null) as IList)[index])
-                           .CompareTo(
-                               Convert.ToDouble((typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null) as IList)[index]));
-            }
-            else
-            {
-                return
-                    Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr1, null))
-                           .CompareTo(Convert.ToDouble(typeof(PlayerStatsRow).GetProperty(property).GetValue(pmsr2, null)));
-            }
-        }
-
-        public T GetValue<T>(string property)
-        {
-            if (property.Contains("["))
-            {
-                var index = property.Split('[')[1].Split(']')[0].ToInt32();
-                property = property.Split('[')[0];
-                return
-                    (T)
-                    Convert.ChangeType((typeof(PlayerStatsRow).GetProperty(property).GetValue(this, null) as IList)[index], typeof(T));
-            }
-            else
-            {
-                return (T) Convert.ChangeType(typeof(PlayerStatsRow).GetProperty(property).GetValue(this, null), typeof(T));
-            }
+            return this.GetValue<PlayerStatsRow, TResult>(prop);
         }
 
         #region Metrics that require opponents' stats

@@ -2233,27 +2233,27 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             _pgList = psrList.Where(row => (row.Position1S == "PG" || row.Position2S == "PG"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
-            _pgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _pgList.Sort((pmsr1, pmsr2) => GenericExtensions.Compare(pmsr1, pmsr2, property));
             _pgList.Reverse();
             _sgList = psrList.Where(row => (row.Position1S == "SG" || row.Position2S == "SG"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
-            _sgList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _sgList.Sort((pmsr1, pmsr2) => GenericExtensions.Compare(pmsr1, pmsr2, property));
             _sgList.Reverse();
             _sfList = psrList.Where(row => (row.Position1S == "SF" || row.Position2S == "SF"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
-            _sfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _sfList.Sort((pmsr1, pmsr2) => GenericExtensions.Compare(pmsr1, pmsr2, property));
             _sfList.Reverse();
             _pfList = psrList.Where(row => (row.Position1S == "PF" || row.Position2S == "PF"))
                 // && row.IsInjured == false)
                              .Take(10).ToList();
-            _pfList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _pfList.Sort((pmsr1, pmsr2) => GenericExtensions.Compare(pmsr1, pmsr2, property));
             _pfList.Reverse();
             _cList = psrList.Where(row => (row.Position1S == "C" || row.Position2S == "C"))
                 // && row.IsInjured == false)
                             .Take(10).ToList();
-            _cList.Sort((pmsr1, pmsr2) => PlayerStatsRow.Compare(property, pmsr1, pmsr2));
+            _cList.Sort((pmsr1, pmsr2) => GenericExtensions.Compare(pmsr1, pmsr2, property));
             _cList.Reverse();
             _permutations = new List<StartingFivePermutation>();
 

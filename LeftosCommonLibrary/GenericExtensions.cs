@@ -21,6 +21,7 @@ namespace LeftosCommonLibrary
     #region Using Directives
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Data;
     using System.IO;
@@ -53,11 +54,11 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Tools.WriteToTrace(string.Format("FormatException for key {0} with value {1}", key, dict[key]));
+                Tools.WriteToTrace(String.Format("FormatException for key {0} with value {1}", key, dict[key]));
             }
             catch (KeyNotFoundException)
             {
-                Tools.WriteToTrace(string.Format("KeyNotFoundException for key {0}", key));
+                Tools.WriteToTrace(String.Format("KeyNotFoundException for key {0}", key));
             }
         }
 
@@ -88,11 +89,11 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Tools.WriteToTrace(string.Format("FormatException for key {0} with value {1}", key, dict[key]));
+                Tools.WriteToTrace(String.Format("FormatException for key {0} with value {1}", key, dict[key]));
             }
             catch (KeyNotFoundException)
             {
-                Tools.WriteToTrace(string.Format("KeyNotFoundException for key {0}", key));
+                Tools.WriteToTrace(String.Format("KeyNotFoundException for key {0}", key));
             }
         }
 
@@ -125,22 +126,22 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (InvalidCastException)
             {
-                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (FormatException)
             {
-                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (ArgumentException)
             {
-                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 return onErrorRemain ? variable : default(T);
             }
             catch (KeyNotFoundException)
@@ -177,7 +178,7 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -189,7 +190,7 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -201,7 +202,7 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -213,7 +214,7 @@ namespace LeftosCommonLibrary
             }
             catch (ArgumentException)
             {
-                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -266,7 +267,7 @@ namespace LeftosCommonLibrary
             }
             catch (OverflowException)
             {
-                Tools.WriteToTrace(string.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("OverflowException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -278,7 +279,7 @@ namespace LeftosCommonLibrary
             }
             catch (InvalidCastException)
             {
-                Tools.WriteToTrace(string.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("InvalidCastException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -290,7 +291,7 @@ namespace LeftosCommonLibrary
             }
             catch (FormatException)
             {
-                Tools.WriteToTrace(string.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("FormatException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -302,7 +303,7 @@ namespace LeftosCommonLibrary
             }
             catch (ArgumentException)
             {
-                Tools.WriteToTrace(string.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
+                Tools.WriteToTrace(String.Format("ArgumentException for key {0} with value '{1}'", key, dict[key]));
                 if (onErrorRemain)
                 {
                     return variable;
@@ -528,6 +529,69 @@ namespace LeftosCommonLibrary
             var item = list[0];
             list.RemoveAt(0);
             return item;
+        }
+
+        /// <summary>
+        /// Gets the value of the specified property via reflection.
+        /// </summary>
+        /// <typeparam name="TObj">The type of the object.</typeparam>
+        /// <typeparam name="TReturn">The return type.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <param name="property">The property.</param>
+        /// <returns>The value of the property converted to <c>TReturn</c>.</returns>
+        public static TReturn GetValue<TObj, TReturn>(this TObj obj, string property)
+        {
+            if (!property.Contains("["))
+            {
+                return (TReturn) Convert.ChangeType(typeof(TObj).GetProperty(property).GetValue(obj, null), typeof(TReturn));
+            }
+            else
+            {
+                var index = property.Split('[')[1].Split(']')[0].ToInt32();
+                property = property.Split('[')[0];
+                return
+                    (TReturn)
+                    Convert.ChangeType(((IList) typeof(TObj).GetProperty(property).GetValue(obj, null))[index], typeof(TReturn));
+            }
+        }
+
+        /// <summary>
+        /// Compares the two objects based on the specified property via reflection.
+        /// </summary>
+        /// <typeparam name="TObj">The type of the objects.</typeparam>
+        /// <param name="obj1">The first object.</param>
+        /// <param name="obj2">The second object.</param>
+        /// <param name="property">The property.</param>
+        /// <returns>-1 if first object's property value is less than the second's, 0 if equal, 1 if more than.</returns>
+        public static int Compare<TObj>(TObj obj1, TObj obj2, string property)
+        {
+            if (!property.Contains("["))
+            {
+                return
+                    Convert.ToDouble(typeof(TObj).GetProperty(property).GetValue(obj1, null))
+                           .CompareTo(Convert.ToDouble(typeof(TObj).GetProperty(property).GetValue(obj2, null)));
+            }
+            else
+            {
+                var index = property.Split('[')[1].Split(']')[0].ToInt32();
+                property = property.Split('[')[0];
+                return
+                    Convert.ToDouble(((IList) typeof(TObj).GetProperty(property).GetValue(obj1, null))[index])
+                           .CompareTo(Convert.ToDouble(((IList) typeof(TObj).GetProperty(property).GetValue(obj2, null))[index]));
+            }
+        }
+
+        /// <summary>
+        /// Compares the object to another one based on the specified property via reflection.
+        /// </summary>
+        /// <typeparam name="TObj">The type of the object.</typeparam>
+        /// <param name="lhs">The current object.</param>
+        /// <param name="rhs">The object to compare to.</param>
+        /// <param name="property">The property.</param>
+        /// <returns>-1 if first object's property value is less than the second's, 0 if equal, 1 if more than.</returns>
+        public static int CompareTo<TObj>(this TObj lhs, TObj rhs, string property)
+        {
+            return Compare(lhs, rhs, property);
         }
     }
 }
