@@ -980,14 +980,17 @@
                 <TabItem Header="Performance Graph">
                     <Grid>
                         <sw:XYLineChart x:Name="chart" Title="" XAxisLabel="" YAxisLabel=""
-                                        RenderTransformOrigin="0.5,0.5" Margin="0,19,0,0" />
-                        <ComboBox Height="23" Margin="0,6,0,0" Width="153"
-                                  HorizontalAlignment="Center" x:Name="cmbGraphStat"
+                                        RenderTransformOrigin="0.5,0.5" Margin="0,19,15,0" />
+                        <ComboBox Height="23" Margin="39,6,0,0" Width="153"
+                                  HorizontalAlignment="Left" x:Name="cmbGraphStat"
                                   SelectionChanged="cmbGraphStat_SelectionChanged" VerticalAlignment="Top" />
-                        <Button Height="23" Margin="0,6,190,0" Width="24" Click="btnPrevStat_Click" Content="&lt;"
-                                HorizontalAlignment="Center" x:Name="btnPrevStat" VerticalAlignment="Top" />
-                        <Button Height="23" Margin="190,6,0,0" Width="24" Click="btnNextStat_Click" Content="&gt;"
-                                HorizontalAlignment="Center" x:Name="btnNextStat" VerticalAlignment="Top" />
+                        <Button Height="23" Margin="10,6,0,0" Width="24" Click="btnPrevStat_Click" Content="&lt;"
+                                HorizontalAlignment="Left" x:Name="btnPrevStat" VerticalAlignment="Top" />
+                        <Button Height="23" Margin="197,6,0,0" Width="24" Click="btnNextStat_Click" Content="&gt;"
+                                HorizontalAlignment="Left" x:Name="btnNextStat" VerticalAlignment="Top" />
+                        <ComboBox Height="23" Margin="0,6,10,0" Width="153"
+                        	HorizontalAlignment="Right" x:Name="cmbGraphInterval"
+                        	SelectionChanged="cmbGraphInterval_SelectionChanged" VerticalAlignment="Top" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Scouting Report">

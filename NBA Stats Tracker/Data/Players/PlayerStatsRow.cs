@@ -153,49 +153,35 @@ namespace NBA_Stats_Tracker.Data.Players
             APG = perGame[PAbbrPG.APG];
             FPG = perGame[PAbbrPG.FPG];
 
-            try
-            {
-                PTSR = metrics["PTSR"];
-                REBR = metrics["REBR"];
-                OREBR = metrics["OREBR"];
-                ASTR = metrics["ASTR"];
-                BLKR = metrics["BLKR"];
-                STLR = metrics["STLR"];
-                TOR = metrics["TOR"];
-                FTR = metrics["FTR"];
-                FTAR = metrics["FTAR"];
-                GmSc = metrics["GmSc"];
-                GmScE = metrics["GmScE"];
-                EFF = metrics["EFF"];
-                EFGp = metrics["EFG%"];
-                TSp = metrics["TS%"];
-                ASTp = metrics["AST%"];
-                STLp = metrics["STL%"];
-                TOp = metrics["TO%"];
-                USGp = metrics["USG%"];
+            GmSc = metrics["GmSc"];
+            GmScE = metrics["GmScE"];
+            PTSR = metrics["PTSR"];
+            REBR = metrics["REBR"];
+            OREBR = metrics["OREBR"];
+            ASTR = metrics["ASTR"];
+            BLKR = metrics["BLKR"];
+            STLR = metrics["STLR"];
+            TOR = metrics["TOR"];
+            FTR = metrics["FTR"];
+            FTAR = metrics["FTAR"];
+            EFF = metrics["EFF"];
+            EFGp = metrics["EFG%"];
+            TSp = metrics["TS%"];
+            ASTp = metrics["AST%"];
+            STLp = metrics["STL%"];
+            TOp = metrics["TO%"];
+            USGp = metrics["USG%"];
+            PER = metrics["PER"];
+            BLKp = metrics["BLK%"];
+            DREBp = metrics["DREB%"];
+            OREBp = metrics["OREB%"];
+            REBp = metrics["REB%"];
+            PPR = metrics["PPR"];
+            ORTG = metrics["ORTG"];
+            Floorp = metrics["Floor%"];
+            DRTG = metrics["DRTG"];
+            RTGd = metrics["RTGd"];
 
-                try
-                {
-                    PER = metrics["PER"];
-                }
-                catch (Exception)
-                {
-                    PER = Double.NaN;
-                }
-
-                BLKp = metrics["BLK%"];
-                DREBp = metrics["DREB%"];
-                OREBp = metrics["OREB%"];
-                REBp = metrics["REB%"];
-                PPR = metrics["PPR"];
-                ORTG = metrics["ORTG"];
-                Floorp = metrics["Floor%"];
-                DRTG = metrics["DRTG"];
-                RTGd = metrics["RTGd"];
-            }
-            catch (KeyNotFoundException)
-            {
-            }
             if (calcRatings)
             {
                 calculate2KRatings(playoffs);

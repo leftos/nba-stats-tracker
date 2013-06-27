@@ -316,13 +316,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
             }
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var metricsNames = PlayerStatsHelper.MetricsNames;
-            foreach (var name in metricsNames)
-            {
-                PlayerStatsHelper.MetricsDict.Add(name, double.NaN);
-            }
-
+            
             SearchCache = new List<SearchItem>();
 
             #region Keyboard Shortcuts

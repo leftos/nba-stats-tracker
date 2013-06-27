@@ -71,6 +71,27 @@ namespace NBA_Stats_Tracker.Data.Teams
                 { 19, "MPG" }
             };
 
+        public static readonly Dictionary<string, string> TotalsToPerGame = new Dictionary<string, string>
+            {
+                { "PF", "PPG" },
+                { "PA", "PAPG" },
+                { "FGM", "FGMPG" },
+                { "FGA", "FGAPG" },
+                { "TPM", "TPMPG" },
+                { "TPA", "TPAPG" },
+                { "FTM", "FTMPG" },
+                { "FTA", "FTAPG" },
+                { "REB", "RPG" },
+                { "OREB", "ORPG" },
+                { "DREB", "DRPG" },
+                { "STL", "SPG" },
+                { "BLK", "BPG" },
+                { "TOS", "TPG" },
+                { "AST", "APG" },
+                { "FOUL", "FPG" },
+                { "MINS", "MPG" }
+            };
+
         public static readonly List<string> ExtendedTotals = new List<string>
             {
                 "PF",

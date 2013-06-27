@@ -596,8 +596,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dgMetrics.ItemsSource = new List<TeamStatsRow> { new TeamStatsRow(_curts) };
 
             updatePBPStats();
-
-            cmbGraphStat_SelectionChanged(null, null);
         }
 
         /// <summary>Creates a DataView based on the current overview DataTable and refreshes the DataGrid.</summary>
@@ -736,6 +734,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                 dgMetrics.ItemsSource = null;
                 dgOther.ItemsSource = null;
                 dgShooting.ItemsSource = null;
+                clearGraph();
 
                 if (cmbTeam.SelectedIndex == -1)
                 {
@@ -781,6 +780,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             updateRecords();
 
             tbcTeamOverview_SelectionChanged(null, null);
+
+            cmbGraphStat_SelectionChanged(null, null);
         }
 
         private void updateRecords()
@@ -1458,7 +1459,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 cmbTeam.SelectedIndex = -1;
             }
-            cmbGraphStat_SelectionChanged(null, null);
             MainWindow.MWInstance.StopProgressWatchTimer();
             IsEnabled = true;
         }
@@ -2293,31 +2293,59 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             dr["STL"] = String.Format("{0:F1}", PerGame[TAbbrPG.SPG]);
             dr["BLK"] = String.Format("{0:F1}", PerGame[TAbbrPG.BPG]);
             dr["FOUL"] = String.Format("{0:F1}", PerGame[TAbbrPG.FPG]);
-            dr["MINS"] = String.Format("{0:F1}", PerGame[TAbbrT.MINS]);
+            dr["MINS"] = String.Format("{0:F1}", PerGame[TAbbrPG.MPG]);
         }
 
-        private static TeamStats createTeamStatsFromDataRow(DataRow dr, bool playoffs = false)
+        private static void createTeamStatsFromDataRow(ref TeamStats ts, DataRow dr, bool playoffs = false)
         {
-            var ts = new TeamStats();
+            var Totals = !playoffs ? ts.Totals : ts.PlTotals;
             var PerGame = !playoffs ? ts.PerGame : ts.PlPerGame;
             var Record = !playoffs ? ts.Record : ts.PlRecord;
             Record[0] = ParseCell.GetUInt16(dr, "Wins");
             Record[1] = ParseCell.GetUInt16(dr, "Losses");
             PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
             PerGame[TAbbrPG.Weff] = ParseCell.GetFloat(dr, "Weff");
-            PerGame[TAbbrPG.PPG] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.PAPG] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.PD] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.FGp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.FGeff] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.TPp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
-            PerGame[TAbbrPG.Wp] = ParseCell.GetFloat(dr, "W%");
+            PerGame[TAbbrPG.PPG] = ParseCell.GetFloat(dr, "PF");
+            PerGame[TAbbrPG.PAPG] = ParseCell.GetFloat(dr, "PA");
+            PerGame[TAbbrPG.PD] = ParseCell.GetFloat(dr, "PD");
+            PerGame[TAbbrPG.FGp] = ParseCell.GetFloat(dr, "FG");
+            PerGame[TAbbrPG.FGeff] = ParseCell.GetFloat(dr, "FGeff");
+            PerGame[TAbbrPG.TPp] = ParseCell.GetFloat(dr, "3PT");
+            PerGame[TAbbrPG.TPeff] = ParseCell.GetFloat(dr, "3Peff");
+            PerGame[TAbbrPG.FTp] = ParseCell.GetFloat(dr, "FT");
+            PerGame[TAbbrPG.FTeff] = ParseCell.GetFloat(dr, "FTeff");
+            PerGame[TAbbrPG.RPG] = ParseCell.GetFloat(dr, "REB");
+            PerGame[TAbbrPG.ORPG] = ParseCell.GetFloat(dr, "OREB");
+            PerGame[TAbbrPG.DRPG] = ParseCell.GetFloat(dr, "DREB");
+            PerGame[TAbbrPG.APG] = ParseCell.GetFloat(dr, "AST");
+            PerGame[TAbbrPG.TPG] = ParseCell.GetFloat(dr, "TO");
+            PerGame[TAbbrPG.SPG] = ParseCell.GetFloat(dr, "STL");
+            PerGame[TAbbrPG.BPG] = ParseCell.GetFloat(dr, "BLK");
+            PerGame[TAbbrPG.FPG] = ParseCell.GetFloat(dr, "FOUL");
+            PerGame[TAbbrPG.MPG] = ParseCell.GetFloat(dr, "MINS");
+
+            var games = Record[0] + Record[1];
+
+            Totals[TAbbrT.PF] = Convert.ToUInt32(PerGame[TAbbrPG.PPG] * games);
+            Totals[TAbbrT.PA] = Convert.ToUInt32(PerGame[TAbbrPG.PAPG] * games);
+
+            Totals[TAbbrT.FGM] = Convert.ToUInt32((PerGame[TAbbrPG.FGeff] / PerGame[TAbbrPG.FGp]) * games);
+            Totals[TAbbrT.FGA] = Convert.ToUInt32(Totals[TAbbrT.FGM] / PerGame[TAbbrPG.FGp]);
+
+            Totals[TAbbrT.TPM] = Convert.ToUInt32((PerGame[TAbbrPG.TPeff] / PerGame[TAbbrPG.TPp]) * games);
+            Totals[TAbbrT.TPA] = Convert.ToUInt32(Totals[TAbbrT.TPM] / PerGame[TAbbrPG.TPp]);
+
+            Totals[TAbbrT.FTM] = Convert.ToUInt32((PerGame[TAbbrPG.FTeff] / PerGame[TAbbrPG.FTp]) * games);
+            Totals[TAbbrT.FTA] = Convert.ToUInt32(Totals[TAbbrT.FTM] / PerGame[TAbbrPG.FTp]);
+
+            Totals[TAbbrT.DREB] = Convert.ToUInt32(PerGame[TAbbrPG.DRPG] * games);
+            Totals[TAbbrT.OREB] = Convert.ToUInt32(PerGame[TAbbrPG.ORPG] * games);
+            Totals[TAbbrT.AST] = Convert.ToUInt32(PerGame[TAbbrPG.APG] * games);
+            Totals[TAbbrT.TOS] = Convert.ToUInt32(PerGame[TAbbrPG.TPG] * games);
+            Totals[TAbbrT.STL] = Convert.ToUInt32(PerGame[TAbbrPG.SPG] * games);
+            Totals[TAbbrT.BLK] = Convert.ToUInt32(PerGame[TAbbrPG.BPG] * games);
+            Totals[TAbbrT.FOUL] = Convert.ToUInt32(PerGame[TAbbrPG.FPG] * games);
+            Totals[TAbbrT.MINS] = Convert.ToUInt32(PerGame[TAbbrPG.MPG] * games);
         }
 
         /// <summary>
@@ -2511,6 +2539,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             populateGraphStatCombo();
             cmbGraphStat.SelectedIndex = 0;
+            cmbGraphInterval.SelectedIndex = 0;
             //Following line commented out to allow for faster loading of Team Overview
             //cmbOppTeam.SelectedIndex = 1;
 
@@ -3367,14 +3396,50 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             cmbOppTeam_SelectionChanged(null, null);
         }
 
+        private enum Intervals
+        {
+            EveryGame,
+            Monthly,
+            Yearly
+        };
+
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || _bseList.Count < 1)
+            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbGraphInterval.SelectedIndex == -1)
             {
-                chart.Primitives.Clear();
-                chart.ResetPanAndZoom();
+                clearGraph();
                 return;
             }
+            var intervalItem = cmbGraphInterval.SelectedItem.ToString();
+            var yearlyRows = _dtYea.Rows.Cast<DataRow>().Where(dr => dr[0].ToString().StartsWith("Season")).ToList();
+            var monthlyStats = MainWindow.SplitTeamStats[_curts.ID].Where(pair => pair.Key.StartsWith("M ")).ToList();
+            var orderedBSEList = _bseList.OrderBy(bse => bse.BS.GameDate).ToList();
+            Intervals interval;
+            int count;
+            switch (intervalItem)
+            {
+                case "Every Game":
+                    interval = Intervals.EveryGame;
+                    count = orderedBSEList.Count;
+                    break;
+                case "Monthly":
+                    interval = Intervals.Monthly;
+                    count = monthlyStats.Count;
+                    break;
+                case "Yearly":
+                    interval = Intervals.Yearly;
+                    count = yearlyRows.Count;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (count < 2)
+            {
+                clearGraph();
+                return;
+            }
+
             var propToGet = cmbGraphStat.SelectedItem.ToString();
             propToGet = propToGet.Replace('3', 'T');
             propToGet = propToGet.Replace('%', 'p');
@@ -3384,26 +3449,98 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             double games = 0;
 
             chart.Primitives.Clear();
-            var orderedBSEList = _bseList.OrderBy(bse => bse.BS.GameDate).ToList();
             var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
-            for (var i = 0; i < orderedBSEList.Count; i++)
+
+            switch (interval)
             {
-                var bse = orderedBSEList[i];
-                bse.BS.PrepareForDisplay(_tst, _curts.ID);
-                var propSuffix = bse.BS.Team1ID == _curts.ID ? 1 : 2;
-                var value = Convert.ToDouble(typeof(TeamBoxScore).GetProperty(propToGet + propSuffix).GetValue(bse.BS, null));
-                if (double.IsNaN(value))
-                {
-                    continue;
-                }
-                if (propToGet.Contains("p"))
-                {
-                    value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
-                }
-                cp.AddPoint(i + 1, value);
-                games++;
-                sum += value;
+                case Intervals.EveryGame:
+                    for (var i = 0; i < count; i++)
+                    {
+                        var bse = orderedBSEList[i];
+                        bse.BS.PrepareForDisplay(_tst, _curts.ID);
+
+                        var isTeamAway = bse.BS.Team1ID == _curts.ID;
+                        string propToGetFinal = propToGet;
+                        if (propToGet == "PF")
+                        {
+                            propToGetFinal = isTeamAway ? "PTS1" : "PTS2";
+                        }
+                        else if (propToGet == "PA")
+                        {
+                            propToGetFinal = isTeamAway ? "PTS2" : "PTS1";
+                        }
+                        else
+                        {
+                            propToGetFinal += (isTeamAway ? 1 : 2).ToString();
+                        }
+                        var value = bse.BS.GetValue<TeamBoxScore, double>(propToGetFinal);
+                        if (double.IsNaN(value))
+                        {
+                            continue;
+                        }
+                        if (propToGet.Contains("p"))
+                        {
+                            value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                        }
+                        cp.AddPoint(i + 1, value);
+                        games++;
+                        sum += value;
+                    }
+                    break;
+                case Intervals.Monthly:
+                    monthlyStats = monthlyStats.OrderBy(ms => ms.Key).ToList();
+                    if (TeamStatsHelper.TotalsToPerGame.ContainsKey(propToGet))
+                    {
+                        propToGet = TeamStatsHelper.TotalsToPerGame[propToGet];
+                    }
+                    for (var i = 0; i < count; i++)
+                    {
+                        var ts = monthlyStats[i].Value;
+                        ts.CalcMetrics(new TeamStats());
+                        var tsr = new TeamStatsRow(ts);
+                        var value = tsr.GetValue<double>(propToGet);
+                        if (double.IsNaN(value))
+                        {
+                            continue;
+                        }
+                        if (propToGet.Contains("p"))
+                        {
+                            value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                        }
+                        cp.AddPoint(i + 1, value);
+                        games++;
+                        sum += value;
+                    }
+                    break;
+                case Intervals.Yearly:
+                    if (TeamStatsHelper.TotalsToPerGame.ContainsKey(propToGet))
+                    {
+                        propToGet = TeamStatsHelper.TotalsToPerGame[propToGet];
+                    }
+                    for (var i = 0; i < count; i++)
+                    {
+                        var ts = new TeamStats();
+                        createTeamStatsFromDataRow(ref ts, _dtYea.Rows.Cast<DataRow>().ToList()[i]);
+                        ts.CalcMetrics(new TeamStats());
+                        var tsr = new TeamStatsRow(ts);
+                        var value = tsr.GetValue<TeamStatsRow, double>(propToGet);
+                        if (double.IsNaN(value))
+                        {
+                            continue;
+                        }
+                        if (propToGet.Contains("p"))
+                        {
+                            value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                        }
+                        cp.AddPoint(i + 1, value);
+                        games++;
+                        sum += value;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
             if (cp.Points.Count > 0)
             {
                 chart.Primitives.Add(cp);
@@ -3412,7 +3549,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                for (var i = 0; i < orderedBSEList.Count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     cpavg.AddPoint(i + 1, average);
                 }
@@ -3438,13 +3575,21 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             chart.ResetPanAndZoom();
         }
 
+        private void clearGraph()
+        {
+            chart.Primitives.Clear();
+            chart.RedrawPlotLines();
+            chart.ResetPanAndZoom();
+        }
+
         /// <summary>Populates the graph stat combo.</summary>
         private void populateGraphStatCombo()
         {
             var stats = new List<string>
                 {
                     "GmSc",
-                    "PTS",
+                    "PF",
+                    "PA",
                     "FGM",
                     "FGA",
                     "FG%",
@@ -3464,7 +3609,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
                     "FOUL"
                 };
 
-            stats.ForEach(s => cmbGraphStat.Items.Add(s));
+            cmbGraphStat.ItemsSource = stats;
+
+            var intervals = new List<string> { "Every Game", "Monthly", "Yearly" };
+
+            cmbGraphInterval.ItemsSource = intervals;
         }
 
         /// <summary>Handles the Click event of the btnPrevStat control. Switches to the previous graph stat.</summary>
@@ -3499,6 +3648,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             {
                 cmbGraphStat.SelectedIndex++;
             }
+        }
+
+        private void cmbGraphInterval_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cmbGraphStat_SelectionChanged(null, null);
         }
     }
 }

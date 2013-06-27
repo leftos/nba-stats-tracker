@@ -115,9 +115,12 @@ namespace NBA_Stats_Tracker.Data.Teams
             TPR = metrics["3PR"];
             PythW = metrics["PythW"];
             PythL = metrics["PythL"];
+            GmSc = metrics["GmSc"];
 
             CurStreak = ts.CurStreak;
         }
+
+        public double GmSc { get; set; }
 
         public TeamStatsRow(TeamStats ts, Dictionary<int, PlayerStats> pst, bool playoffs = false)
             : this(ts, playoffs)

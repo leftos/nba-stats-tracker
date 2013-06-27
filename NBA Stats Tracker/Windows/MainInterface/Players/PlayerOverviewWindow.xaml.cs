@@ -88,6 +88,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private List<PlayerPBPStats> _shstList;
         private ObservableCollection<PlayerStatsRow> _splitPSRs;
         private List<string> _teams;
+        private List<PlayerStatsRow> _yearlyPSRList;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlayerOverviewWindow" /> class.
@@ -327,6 +328,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void cmbPlayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            clearGraph();
+
             if (cmbPlayer.SelectedIndex == -1)
             {
                 return;
@@ -380,11 +383,28 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 cmbGraphStat.SelectedIndex = 0;
             }
+
+            if (cmbGraphInterval.SelectedIndex == -1)
+            {
+                cmbGraphInterval.SelectedIndex = 0;
+            }
+
+            cmbGraphStat_SelectionChanged(null, null);
         }
 
         private static List<string> getFacts(int id, PlayerRankings rankings, bool onlyLeaders = false, bool playoffs = false)
         {
-            var leadersStats = new List<int> { PAbbrPG.PPG, PAbbrPG.FGp, PAbbrPG.TPp, PAbbrPG.FTp, PAbbrPG.RPG, PAbbrPG.SPG, PAbbrPG.APG, PAbbrPG.BPG };
+            var leadersStats = new List<int>
+                {
+                    PAbbrPG.PPG,
+                    PAbbrPG.FGp,
+                    PAbbrPG.TPp,
+                    PAbbrPG.FTp,
+                    PAbbrPG.RPG,
+                    PAbbrPG.SPG,
+                    PAbbrPG.APG,
+                    PAbbrPG.BPG
+                };
             var count = 0;
             var facts = new List<string>();
             for (var i = 0; i < rankings.RankingsPerGame[id].Length; i++)
@@ -607,12 +627,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// <summary>Updates the tab viewing the year-by-year overview of the player's stats.</summary>
         private void updateYearlyReport()
         {
-            var psrList = new List<PlayerStatsRow>();
             var psCareer =
                 new PlayerStats(new Player(_psr.ID, _psr.TeamF, _psr.LastName, _psr.FirstName, _psr.Position1, _psr.Position2));
 
             var qr = "SELECT * FROM PastPlayerStats WHERE PlayerID = " + _psr.ID + " ORDER BY CAST(\"SOrder\" AS INTEGER)";
             var dt = _db.GetDataTable(qr);
+            _yearlyPSRList = new List<PlayerStatsRow>();
             foreach (DataRow dr in dt.Rows)
             {
                 var ps = new PlayerStats();
@@ -629,7 +649,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         TeamSDisplay = ParseCell.GetString(dr, "TeamSta")
                     };
 
-                psrList.Add(curPSR);
+                _yearlyPSRList.Add(curPSR);
 
                 psCareer.AddPlayerStats(ps);
             }
@@ -653,7 +673,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                     var psr2 = new PlayerStatsRow(ps, "Season " + MainWindow.GetSeasonName(i));
                     psr2.TeamFDisplay = Misc.GetDisplayName(displayNames, psr2.TeamF);
                     psr2.TeamSDisplay = Misc.GetDisplayName(displayNames, psr2.TeamS);
-                    psrList.Add(psr2);
+                    _yearlyPSRList.Add(psr2);
                     psCareer.AddPlayerStats(ps);
                 }
 
@@ -674,17 +694,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                         var psr2 = new PlayerStatsRow(ps, "Playoffs " + MainWindow.GetSeasonName(i), true);
                         psr2.TeamFDisplay = Misc.GetDisplayName(displayNames, psr2.TeamF);
                         psr2.TeamSDisplay = Misc.GetDisplayName(displayNames, psr2.TeamS);
-                        psrList.Add(psr2);
+                        _yearlyPSRList.Add(psr2);
                         psCareer.AddPlayerStats(ps, true);
                     }
                 }
             }
 
             PlayerStats.CalculateRates(psCareer.Totals, ref psCareer.Metrics);
-            psrList.Add(new PlayerStatsRow(psCareer, "Career", "Career"));
+            _yearlyPSRList.Add(new PlayerStatsRow(psCareer, "Career", "Career"));
 
-            var psrListCollection = new ListCollectionView(psrList);
-            Debug.Assert(psrListCollection.GroupDescriptions != null, "psrListCollection.GroupDescriptions != null");
+            var psrListCollection = new ListCollectionView(_yearlyPSRList);
             psrListCollection.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             dgvYearly.ItemsSource = psrListCollection;
         }
@@ -1881,6 +1900,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             dgvOverviewStats.DataContext = dvOv;
         }
 
+        private enum Intervals
+        {
+            EveryGame,
+            Monthly,
+            Yearly
+        };
+
         /// <summary>
         ///     Handles the SelectionChanged event of the cmbGraphStat control. Calculates and displays the player's performance graph for
         ///     the newly selected stat.
@@ -1891,13 +1917,42 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbPlayer.SelectedIndex == -1
-                || _pbsListWithOut.Count < 1)
+            if (cmbGraphStat.SelectedIndex == -1 || cmbGraphInterval.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1
+                || cmbPlayer.SelectedIndex == -1)
             {
-                chart.Primitives.Clear();
-                chart.ResetPanAndZoom();
+                clearGraph();
                 return;
             }
+            var intervalItem = cmbGraphInterval.SelectedItem.ToString();
+            var yearlyStats = _yearlyPSRList.Where(psr => psr.Type.StartsWith("Season ")).ToList();
+            var monthlyStats = MainWindow.SplitPlayerStats[_psr.ID].Where(pair => pair.Key.StartsWith("M ")).ToList();
+
+            int count;
+            Intervals interval;
+            switch (intervalItem)
+            {
+                case "Every Game":
+                    interval = Intervals.EveryGame;
+                    count = _pbsListWithOut.Count;
+                    break;
+                case "Monthly":
+                    interval = Intervals.Monthly;
+                    count = monthlyStats.Count;
+                    break;
+                case "Yearly":
+                    interval = Intervals.Yearly;
+                    count = yearlyStats.Count;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (count < 2)
+            {
+                clearGraph();
+                return;
+            }
+
             var propToGet = cmbGraphStat.SelectedItem.ToString();
             propToGet = propToGet.Replace('3', 'T');
             propToGet = propToGet.Replace('%', 'p');
@@ -1907,33 +1962,81 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             double games = 0;
 
             chart.Primitives.Clear();
-            var orderedPBSList = _pbsListWithOut.OrderBy(pbs => pbs.RealDate).ToList();
             var cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
-            for (var i = 0; i < orderedPBSList.Count; i++)
+
+            switch (interval)
             {
-                var pbs = orderedPBSList[i];
-                if (pbs.IsOut)
-                {
-                    if (cp.Points.Count > 0)
+                case Intervals.EveryGame:
+                    var orderedPBSList = _pbsListWithOut.OrderBy(pbs => pbs.RealDate).ToList();
+                    for (var i = 0; i < orderedPBSList.Count; i++)
                     {
-                        chart.Primitives.Add(cp.CustomClone());
-                        cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+                        var pbs = orderedPBSList[i];
+                        if (pbs.IsOut)
+                        {
+                            if (cp.Points.Count > 0)
+                            {
+                                chart.Primitives.Add(cp.CustomClone());
+                                cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+                            }
+                            continue;
+                        }
+                        var value = Convert.ToDouble(typeof(PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
+                        if (double.IsNaN(value))
+                        {
+                            continue;
+                        }
+                        if (propToGet.Contains("p"))
+                        {
+                            value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                        }
+                        cp.AddPoint(i + 1, value);
+                        games++;
+                        sum += value;
                     }
-                    continue;
-                }
-                var value = Convert.ToDouble(typeof(PlayerBoxScore).GetProperty(propToGet).GetValue(pbs, null));
-                if (double.IsNaN(value))
-                {
-                    continue;
-                }
-                if (propToGet.Contains("p"))
-                {
-                    value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
-                }
-                cp.AddPoint(i + 1, value);
-                games++;
-                sum += value;
+                    break;
+                case Intervals.Monthly:
+                case Intervals.Yearly:
+                    if (interval == Intervals.Monthly)
+                    {
+                        monthlyStats = monthlyStats.OrderBy(ms => ms.Key).ToList();
+                    }
+                    if (PlayerStatsHelper.TotalsToPerGame.ContainsKey(propToGet))
+                    {
+                        propToGet = PlayerStatsHelper.TotalsToPerGame[propToGet];
+                    }
+                    for (var i = 0; i < count; i ++)
+                    {
+                        var ps = interval == Intervals.Monthly ? monthlyStats[i].Value : new PlayerStats(yearlyStats[i]);
+                        if (ps.Totals[PAbbrT.GP] == 0)
+                        {
+                            if (cp.Points.Count > 0)
+                            {
+                                chart.Primitives.Add(cp.CustomClone());
+                                cp = new ChartPrimitive { Label = cmbGraphStat.SelectedItem.ToString(), ShowInLegend = false };
+                            }
+                            continue;
+                        }
+                        var dummyTs = new TeamStats();
+                        ps.CalcMetrics(dummyTs, dummyTs, dummyTs, GmScOnly: true);
+                        var psr = new PlayerStatsRow(ps, calcRatings: false);
+                        var value = psr.GetValue<double>(propToGet);
+                        if (double.IsNaN(value))
+                        {
+                            continue;
+                        }
+                        if (propToGet.Contains("p"))
+                        {
+                            value = Convert.ToDouble(Convert.ToInt32(value * 1000)) / 1000;
+                        }
+                        cp.AddPoint(i + 1, value);
+                        games++;
+                        sum += value;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
             if (cp.Points.Count > 0)
             {
                 chart.Primitives.Add(cp.CustomClone());
@@ -1942,9 +2045,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             {
                 var average = sum / games;
                 var cpavg = new ChartPrimitive();
-                for (var i = 0; i < orderedPBSList.Count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    var pbs = orderedPBSList[i];
                     cpavg.AddPoint(i + 1, average);
                 }
                 cpavg.Color = Color.FromRgb(0, 0, 100);
@@ -1967,6 +2069,13 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 cp2.AddPoint(2, 1);
                 chart.Primitives.Add(cp2);
             }
+            chart.ResetPanAndZoom();
+        }
+
+        private void clearGraph()
+        {
+            chart.Primitives.Clear();
+            chart.RedrawPlotLines();
             chart.ResetPanAndZoom();
         }
 
@@ -1998,6 +2107,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
                 };
 
             stats.ForEach(s => cmbGraphStat.Items.Add(s));
+
+            var intervals = new List<string> { "Every Game", "Monthly", "Yearly" };
+
+            cmbGraphInterval.ItemsSource = intervals;
         }
 
         /// <summary>Handles the Click event of the btnPrevStat control. Switches to the previous graph stat.</summary>
@@ -2204,6 +2317,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
             var w = new ShotChartWindow(dict, Equals(sender, btnShotChartOff));
             w.ShowDialog();
+        }
+
+        private void cmbGraphInterval_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cmbGraphStat_SelectionChanged(null, null);
         }
     }
 }

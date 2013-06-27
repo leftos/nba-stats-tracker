@@ -21,6 +21,7 @@ namespace NBA_Stats_Tracker.Data.Players
     #region Using Directives
 
     using System.Collections.Generic;
+    using System.Linq;
 
     #endregion
 
@@ -90,6 +91,26 @@ namespace NBA_Stats_Tracker.Data.Players
                 { 15, "RPG" }
             };
 
+        public static readonly Dictionary<string, string> TotalsToPerGame = new Dictionary<string, string>
+            {
+                { "PTS", "PPG" },
+                { "FGM", "FGMPG" },
+                { "FGA", "FGAPG" },
+                { "TPM", "TPMPG" },
+                { "TPA", "TPAPG" },
+                { "FTM", "FTMPG" },
+                { "FTA", "FTAPG" },
+                { "REB", "RPG" },
+                { "OREB", "ORPG" },
+                { "DREB", "DRPG" },
+                { "STL", "SPG" },
+                { "BLK", "BPG" },
+                { "TOS", "TPG" },
+                { "AST", "APG" },
+                { "FOUL", "FPG" },
+                { "MINS", "MPG" }
+            };
+
         public static readonly List<string> ExtendedTotals = new List<string>
             {
                 "GP",
@@ -138,12 +159,12 @@ namespace NBA_Stats_Tracker.Data.Players
                 "MPG"
             };
 
-        public static readonly List<string> MetricsNames = new List<string>
-            {
+        public static readonly List<string> MetricsNames = new List<string> {
                 "PER",
                 "EFF",
                 "ORTG",
                 "DRTG",
+                "RTGd",
                 "GmSc",
                 "GmScE",
                 "TS%",
@@ -170,7 +191,9 @@ namespace NBA_Stats_Tracker.Data.Players
                 "aPER"
             };
 
-        public static readonly Dictionary<string, double> MetricsDict = new Dictionary<string, double>(MetricsNames.Count);
+        public static readonly Dictionary<string, double> MetricsDict =
+            MetricsNames.Select(name => new KeyValuePair<string, double>(name, double.NaN))
+                        .ToDictionary(pair => pair.Key, pair => pair.Value);
     }
 
     // Unlike TeamStats which was designed before REDitor implemented such stats,
