@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.9
+		- Addition: Added Monthly and Yearly Graphs to Team & Player Overview
+		- Fix: Change Team Name will not allow the user to change the team's name to an existing one
+		- Fix: Change Team Name, Change Division & Save Current Team (Team Overview) will not work if a team isn't selected.
+
 	v1.16.8.1
 		- Improvement: A message box pops up in the Pick Games window during a REDitor import if the user has selected two teams but hasn't added the game between them
 		- Fix: Fixed a miscalculation during the players' DRTG metric calculation
