@@ -113,22 +113,22 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Record[0] = tsr.Wins;
                 Record[1] = tsr.Losses;
 
-                Totals[TAbbr.MINS] = tsr.MINS;
-                Totals[TAbbr.PF] = tsr.PF;
-                Totals[TAbbr.PA] = tsr.PA;
-                Totals[TAbbr.FGM] = tsr.FGM;
-                Totals[TAbbr.FGA] = tsr.FGA;
-                Totals[TAbbr.TPM] = tsr.TPM;
-                Totals[TAbbr.TPA] = tsr.TPA;
-                Totals[TAbbr.FTM] = tsr.FTM;
-                Totals[TAbbr.FTA] = tsr.FTA;
-                Totals[TAbbr.OREB] = tsr.OREB;
-                Totals[TAbbr.DREB] = tsr.DREB;
-                Totals[TAbbr.STL] = tsr.STL;
-                Totals[TAbbr.TOS] = tsr.TOS;
-                Totals[TAbbr.BLK] = tsr.BLK;
-                Totals[TAbbr.AST] = tsr.AST;
-                Totals[TAbbr.FOUL] = tsr.FOUL;
+                Totals[TAbbrT.MINS] = tsr.MINS;
+                Totals[TAbbrT.PF] = tsr.PF;
+                Totals[TAbbrT.PA] = tsr.PA;
+                Totals[TAbbrT.FGM] = tsr.FGM;
+                Totals[TAbbrT.FGA] = tsr.FGA;
+                Totals[TAbbrT.TPM] = tsr.TPM;
+                Totals[TAbbrT.TPA] = tsr.TPA;
+                Totals[TAbbrT.FTM] = tsr.FTM;
+                Totals[TAbbrT.FTA] = tsr.FTA;
+                Totals[TAbbrT.OREB] = tsr.OREB;
+                Totals[TAbbrT.DREB] = tsr.DREB;
+                Totals[TAbbrT.STL] = tsr.STL;
+                Totals[TAbbrT.TOS] = tsr.TOS;
+                Totals[TAbbrT.BLK] = tsr.BLK;
+                Totals[TAbbrT.AST] = tsr.AST;
+                Totals[TAbbrT.FOUL] = tsr.FOUL;
 
                 Metrics["PossPG"] = tsr.Poss;
                 Metrics["Pace"] = tsr.Pace;
@@ -152,22 +152,22 @@ namespace NBA_Stats_Tracker.Data.Teams
                 PlRecord[0] = tsr.Wins;
                 PlRecord[1] = tsr.Losses;
 
-                PlTotals[TAbbr.MINS] = tsr.MINS;
-                PlTotals[TAbbr.PF] = tsr.PF;
-                PlTotals[TAbbr.PA] = tsr.PA;
-                PlTotals[TAbbr.FGM] = tsr.FGM;
-                PlTotals[TAbbr.FGA] = tsr.FGA;
-                PlTotals[TAbbr.TPM] = tsr.TPM;
-                PlTotals[TAbbr.TPA] = tsr.TPA;
-                PlTotals[TAbbr.FTM] = tsr.FTM;
-                PlTotals[TAbbr.FTA] = tsr.FTA;
-                PlTotals[TAbbr.OREB] = tsr.OREB;
-                PlTotals[TAbbr.DREB] = tsr.DREB;
-                PlTotals[TAbbr.STL] = tsr.STL;
-                PlTotals[TAbbr.TOS] = tsr.TOS;
-                PlTotals[TAbbr.BLK] = tsr.BLK;
-                PlTotals[TAbbr.AST] = tsr.AST;
-                PlTotals[TAbbr.FOUL] = tsr.FOUL;
+                PlTotals[TAbbrT.MINS] = tsr.MINS;
+                PlTotals[TAbbrT.PF] = tsr.PF;
+                PlTotals[TAbbrT.PA] = tsr.PA;
+                PlTotals[TAbbrT.FGM] = tsr.FGM;
+                PlTotals[TAbbrT.FGA] = tsr.FGA;
+                PlTotals[TAbbrT.TPM] = tsr.TPM;
+                PlTotals[TAbbrT.TPA] = tsr.TPA;
+                PlTotals[TAbbrT.FTM] = tsr.FTM;
+                PlTotals[TAbbrT.FTA] = tsr.FTA;
+                PlTotals[TAbbrT.OREB] = tsr.OREB;
+                PlTotals[TAbbrT.DREB] = tsr.DREB;
+                PlTotals[TAbbrT.STL] = tsr.STL;
+                PlTotals[TAbbrT.TOS] = tsr.TOS;
+                PlTotals[TAbbrT.BLK] = tsr.BLK;
+                PlTotals[TAbbrT.AST] = tsr.AST;
+                PlTotals[TAbbrT.FOUL] = tsr.FOUL;
 
                 PlMetrics["PossPG"] = tsr.Poss;
                 PlMetrics["Pace"] = tsr.Pace;
@@ -232,7 +232,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             Division = 0;
             Conference = 0;
 
-            TAbbr.MetricsNames.ForEach(
+            TeamStatsHelper.MetricsNames.ForEach(
                 metricName =>
                     {
                         Metrics.Add(metricName, double.NaN);
@@ -246,47 +246,47 @@ namespace NBA_Stats_Tracker.Data.Teams
             var games = Record[0] + Record[1];
             var plGames = PlRecord[0] + PlRecord[1];
 
-            PerGame[TAbbr.Wp] = (float) Record[0] / games;
-            PerGame[TAbbr.Weff] = PerGame[TAbbr.Wp] * Record[0];
-            PerGame[TAbbr.PPG] = (float) Totals[TAbbr.PF] / games;
-            PerGame[TAbbr.PAPG] = (float) Totals[TAbbr.PA] / games;
-            PerGame[TAbbr.FGp] = (float) Totals[TAbbr.FGM] / Totals[TAbbr.FGA];
-            PerGame[TAbbr.FGeff] = PerGame[TAbbr.FGp] * ((float) Totals[TAbbr.FGM] / games);
-            PerGame[TAbbr.TPp] = (float) Totals[TAbbr.TPM] / Totals[TAbbr.TPA];
-            PerGame[TAbbr.TPeff] = PerGame[TAbbr.TPp] * ((float) Totals[TAbbr.TPM] / games);
-            PerGame[TAbbr.FTp] = (float) Totals[TAbbr.FTM] / Totals[TAbbr.FTA];
-            PerGame[TAbbr.FTeff] = PerGame[TAbbr.FTp] * ((float) Totals[TAbbr.FTM] / games);
-            PerGame[TAbbr.RPG] = (float) (Totals[TAbbr.OREB] + Totals[TAbbr.DREB]) / games;
-            PerGame[TAbbr.ORPG] = (float) Totals[TAbbr.OREB] / games;
-            PerGame[TAbbr.DRPG] = (float) Totals[TAbbr.DREB] / games;
-            PerGame[TAbbr.SPG] = (float) Totals[TAbbr.STL] / games;
-            PerGame[TAbbr.BPG] = (float) Totals[TAbbr.BLK] / games;
-            PerGame[TAbbr.TPG] = (float) Totals[TAbbr.TOS] / games;
-            PerGame[TAbbr.APG] = (float) Totals[TAbbr.AST] / games;
-            PerGame[TAbbr.FPG] = (float) Totals[TAbbr.FOUL] / games;
-            PerGame[TAbbr.PD] = PerGame[TAbbr.PPG] - PerGame[TAbbr.PAPG];
-            PerGame[TAbbr.MPG] = (float) Totals[TAbbr.MINS] / games;
+            PerGame[TAbbrPG.Wp] = (float) Record[0] / games;
+            PerGame[TAbbrPG.Weff] = PerGame[TAbbrPG.Wp] * Record[0];
+            PerGame[TAbbrPG.PPG] = (float) Totals[TAbbrT.PF] / games;
+            PerGame[TAbbrPG.PAPG] = (float) Totals[TAbbrT.PA] / games;
+            PerGame[TAbbrPG.FGp] = (float) Totals[TAbbrT.FGM] / Totals[TAbbrT.FGA];
+            PerGame[TAbbrPG.FGeff] = PerGame[TAbbrPG.FGp] * ((float) Totals[TAbbrT.FGM] / games);
+            PerGame[TAbbrPG.TPp] = (float) Totals[TAbbrT.TPM] / Totals[TAbbrT.TPA];
+            PerGame[TAbbrPG.TPeff] = PerGame[TAbbrPG.TPp] * ((float) Totals[TAbbrT.TPM] / games);
+            PerGame[TAbbrPG.FTp] = (float) Totals[TAbbrT.FTM] / Totals[TAbbrT.FTA];
+            PerGame[TAbbrPG.FTeff] = PerGame[TAbbrPG.FTp] * ((float) Totals[TAbbrT.FTM] / games);
+            PerGame[TAbbrPG.RPG] = (float) (Totals[TAbbrT.OREB] + Totals[TAbbrT.DREB]) / games;
+            PerGame[TAbbrPG.ORPG] = (float) Totals[TAbbrT.OREB] / games;
+            PerGame[TAbbrPG.DRPG] = (float) Totals[TAbbrT.DREB] / games;
+            PerGame[TAbbrPG.SPG] = (float) Totals[TAbbrT.STL] / games;
+            PerGame[TAbbrPG.BPG] = (float) Totals[TAbbrT.BLK] / games;
+            PerGame[TAbbrPG.TPG] = (float) Totals[TAbbrT.TOS] / games;
+            PerGame[TAbbrPG.APG] = (float) Totals[TAbbrT.AST] / games;
+            PerGame[TAbbrPG.FPG] = (float) Totals[TAbbrT.FOUL] / games;
+            PerGame[TAbbrPG.PD] = PerGame[TAbbrPG.PPG] - PerGame[TAbbrPG.PAPG];
+            PerGame[TAbbrPG.MPG] = (float) Totals[TAbbrT.MINS] / games;
 
-            PlPerGame[TAbbr.Wp] = (float) PlRecord[0] / plGames;
-            PlPerGame[TAbbr.Weff] = PlPerGame[TAbbr.Wp] * PlRecord[0];
-            PlPerGame[TAbbr.PPG] = (float) PlTotals[TAbbr.PF] / plGames;
-            PlPerGame[TAbbr.PAPG] = (float) PlTotals[TAbbr.PA] / plGames;
-            PlPerGame[TAbbr.FGp] = (float) PlTotals[TAbbr.FGM] / PlTotals[TAbbr.FGA];
-            PlPerGame[TAbbr.FGeff] = PlPerGame[TAbbr.FGp] * ((float) PlTotals[TAbbr.FGM] / plGames);
-            PlPerGame[TAbbr.TPp] = (float) PlTotals[TAbbr.TPM] / PlTotals[TAbbr.TPA];
-            PlPerGame[TAbbr.TPeff] = PlPerGame[TAbbr.TPp] * ((float) PlTotals[TAbbr.TPM] / plGames);
-            PlPerGame[TAbbr.FTp] = (float) PlTotals[TAbbr.FTM] / PlTotals[TAbbr.FTA];
-            PlPerGame[TAbbr.FTeff] = PlPerGame[TAbbr.FTp] * ((float) PlTotals[TAbbr.FTM] / plGames);
-            PlPerGame[TAbbr.RPG] = (float) (PlTotals[TAbbr.OREB] + PlTotals[TAbbr.DREB]) / plGames;
-            PlPerGame[TAbbr.ORPG] = (float) PlTotals[TAbbr.OREB] / plGames;
-            PlPerGame[TAbbr.DRPG] = (float) PlTotals[TAbbr.DREB] / plGames;
-            PlPerGame[TAbbr.SPG] = (float) PlTotals[TAbbr.STL] / plGames;
-            PlPerGame[TAbbr.BPG] = (float) PlTotals[TAbbr.BLK] / plGames;
-            PlPerGame[TAbbr.TPG] = (float) PlTotals[TAbbr.TOS] / plGames;
-            PlPerGame[TAbbr.APG] = (float) PlTotals[TAbbr.AST] / plGames;
-            PlPerGame[TAbbr.FPG] = (float) PlTotals[TAbbr.FOUL] / plGames;
-            PlPerGame[TAbbr.PD] = PlPerGame[TAbbr.PPG] - PlPerGame[TAbbr.PAPG];
-            PlPerGame[TAbbr.MPG] = (float) PlTotals[TAbbr.MINS] / plGames;
+            PlPerGame[TAbbrPG.Wp] = (float) PlRecord[0] / plGames;
+            PlPerGame[TAbbrPG.Weff] = PlPerGame[TAbbrPG.Wp] * PlRecord[0];
+            PlPerGame[TAbbrPG.PPG] = (float) PlTotals[TAbbrT.PF] / plGames;
+            PlPerGame[TAbbrPG.PAPG] = (float) PlTotals[TAbbrT.PA] / plGames;
+            PlPerGame[TAbbrPG.FGp] = (float) PlTotals[TAbbrT.FGM] / PlTotals[TAbbrT.FGA];
+            PlPerGame[TAbbrPG.FGeff] = PlPerGame[TAbbrPG.FGp] * ((float) PlTotals[TAbbrT.FGM] / plGames);
+            PlPerGame[TAbbrPG.TPp] = (float) PlTotals[TAbbrT.TPM] / PlTotals[TAbbrT.TPA];
+            PlPerGame[TAbbrPG.TPeff] = PlPerGame[TAbbrPG.TPp] * ((float) PlTotals[TAbbrT.TPM] / plGames);
+            PlPerGame[TAbbrPG.FTp] = (float) PlTotals[TAbbrT.FTM] / PlTotals[TAbbrT.FTA];
+            PlPerGame[TAbbrPG.FTeff] = PlPerGame[TAbbrPG.FTp] * ((float) PlTotals[TAbbrT.FTM] / plGames);
+            PlPerGame[TAbbrPG.RPG] = (float) (PlTotals[TAbbrT.OREB] + PlTotals[TAbbrT.DREB]) / plGames;
+            PlPerGame[TAbbrPG.ORPG] = (float) PlTotals[TAbbrT.OREB] / plGames;
+            PlPerGame[TAbbrPG.DRPG] = (float) PlTotals[TAbbrT.DREB] / plGames;
+            PlPerGame[TAbbrPG.SPG] = (float) PlTotals[TAbbrT.STL] / plGames;
+            PlPerGame[TAbbrPG.BPG] = (float) PlTotals[TAbbrT.BLK] / plGames;
+            PlPerGame[TAbbrPG.TPG] = (float) PlTotals[TAbbrT.TOS] / plGames;
+            PlPerGame[TAbbrPG.APG] = (float) PlTotals[TAbbrT.AST] / plGames;
+            PlPerGame[TAbbrPG.FPG] = (float) PlTotals[TAbbrT.FOUL] / plGames;
+            PlPerGame[TAbbrPG.PD] = PlPerGame[TAbbrPG.PPG] - PlPerGame[TAbbrPG.PAPG];
+            PlPerGame[TAbbrPG.MPG] = (float) PlTotals[TAbbrT.MINS] / plGames;
         }
 
         /// <summary>Calculates the league PerGame.</summary>
@@ -307,8 +307,8 @@ namespace NBA_Stats_Tracker.Data.Teams
             ls.Record[1] /= teamCount;
             ls.PlRecord[0] /= teamCount;
             ls.PlRecord[1] /= teamCount;
-            ls.PerGame[TAbbr.Weff] /= teamCount;
-            ls.PlPerGame[TAbbr.Weff] /= teamCount;
+            ls.PerGame[TAbbrPG.Weff] /= teamCount;
+            ls.PlPerGame[TAbbrPG.Weff] /= teamCount;
 
             return ls;
         }
@@ -426,62 +426,62 @@ namespace NBA_Stats_Tracker.Data.Teams
                 Console.WriteLine("Possessions metric couldn't be calculated for team " + ID);
             }
 
-            var pace = MainWindow.GameLength * ((tempMetricsOwn["Poss"] + tempMetricsOpp["Poss"]) / (2 * (tempTotalsOwn[TAbbr.MINS])));
+            var pace = MainWindow.GameLength * ((tempMetricsOwn["Poss"] + tempMetricsOpp["Poss"]) / (2 * (tempTotalsOwn[TAbbrT.MINS])));
             tempMetricsOwn.Add("Pace", pace);
 
-            var ortg = (tempTotalsOwn[TAbbr.PF] / tempMetricsOwn["Poss"]) * 100;
+            var ortg = (tempTotalsOwn[TAbbrT.PF] / tempMetricsOwn["Poss"]) * 100;
             tempMetricsOwn.Add("ORTG", ortg);
 
-            var drtg = (tempTotalsOwn[TAbbr.PA] / tempMetricsOwn["Poss"]) * 100;
+            var drtg = (tempTotalsOwn[TAbbrT.PA] / tempMetricsOwn["Poss"]) * 100;
             tempMetricsOwn.Add("DRTG", drtg);
 
-            var astP = (tempTotalsOwn[TAbbr.AST])
-                       / (tempTotalsOwn[TAbbr.FGA] + tempTotalsOwn[TAbbr.FTA] * 0.44 + tempTotalsOwn[TAbbr.AST]
-                          + tempTotalsOwn[TAbbr.TOS]);
+            var astP = (tempTotalsOwn[TAbbrT.AST])
+                       / (tempTotalsOwn[TAbbrT.FGA] + tempTotalsOwn[TAbbrT.FTA] * 0.44 + tempTotalsOwn[TAbbrT.AST]
+                          + tempTotalsOwn[TAbbrT.TOS]);
             tempMetricsOwn.Add("AST%", astP);
 
-            var drebP = tempTotalsOwn[TAbbr.DREB] / (tempTotalsOwn[TAbbr.DREB] + tempTotalsOpp[TAbbr.OREB]);
+            var drebP = tempTotalsOwn[TAbbrT.DREB] / (tempTotalsOwn[TAbbrT.DREB] + tempTotalsOpp[TAbbrT.OREB]);
             tempMetricsOwn.Add("DREB%", drebP);
 
-            var efgP = (tempTotalsOwn[TAbbr.FGM] + tempTotalsOwn[TAbbr.TPM] * 0.5) / tempTotalsOwn[TAbbr.FGA];
+            var efgP = (tempTotalsOwn[TAbbrT.FGM] + tempTotalsOwn[TAbbrT.TPM] * 0.5) / tempTotalsOwn[TAbbrT.FGA];
             tempMetricsOwn.Add("EFG%", efgP);
 
             var effD = ortg - drtg;
             tempMetricsOwn.Add("EFFd", effD);
 
-            var tor = tempTotalsOwn[TAbbr.TOS]
-                      / (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA] + tempTotalsOwn[TAbbr.TOS]);
+            var tor = tempTotalsOwn[TAbbrT.TOS]
+                      / (tempTotalsOwn[TAbbrT.FGA] + 0.44 * tempTotalsOwn[TAbbrT.FTA] + tempTotalsOwn[TAbbrT.TOS]);
             tempMetricsOwn.Add("TOR", tor);
 
-            var orebP = tempTotalsOwn[TAbbr.OREB] / (tempTotalsOwn[TAbbr.OREB] + tempTotalsOpp[TAbbr.DREB]);
+            var orebP = tempTotalsOwn[TAbbrT.OREB] / (tempTotalsOwn[TAbbrT.OREB] + tempTotalsOpp[TAbbrT.DREB]);
             tempMetricsOwn.Add("OREB%", orebP);
 
-            var ftr = tempTotalsOwn[TAbbr.FTM] / tempTotalsOwn[TAbbr.FGA];
+            var ftr = tempTotalsOwn[TAbbrT.FTM] / tempTotalsOwn[TAbbrT.FGA];
             tempMetricsOwn.Add("FTR", ftr);
 
             var tempPerGame = (!playoffs) ? PerGame : PlPerGame;
 
-            var pwP = (((tempPerGame[TAbbr.PPG] - tempPerGame[TAbbr.PAPG]) * 2.7) + ((double) MainWindow.SeasonLength / 2))
+            var pwP = (((tempPerGame[TAbbrPG.PPG] - tempPerGame[TAbbrPG.PAPG]) * 2.7) + ((double) MainWindow.SeasonLength / 2))
                       / MainWindow.SeasonLength;
             tempMetricsOwn.Add("PW%", pwP);
 
-            var tsP = tempTotalsOwn[TAbbr.PF] / (2 * (tempTotalsOwn[TAbbr.FGA] + 0.44 * tempTotalsOwn[TAbbr.FTA]));
+            var tsP = tempTotalsOwn[TAbbrT.PF] / (2 * (tempTotalsOwn[TAbbrT.FGA] + 0.44 * tempTotalsOwn[TAbbrT.FTA]));
             tempMetricsOwn.Add("TS%", tsP);
 
-            var tpr = tempTotalsOwn[TAbbr.TPA] / tempTotalsOwn[TAbbr.FGA];
+            var tpr = tempTotalsOwn[TAbbrT.TPA] / tempTotalsOwn[TAbbrT.FGA];
             tempMetricsOwn.Add("3PR", tpr);
 
-            var pythW = MainWindow.SeasonLength * (Math.Pow(tempTotalsOwn[TAbbr.PF], 16.5))
-                        / (Math.Pow(tempTotalsOwn[TAbbr.PF], 16.5) + Math.Pow(tempTotalsOwn[TAbbr.PA], 16.5));
+            var pythW = MainWindow.SeasonLength * (Math.Pow(tempTotalsOwn[TAbbrT.PF], 16.5))
+                        / (Math.Pow(tempTotalsOwn[TAbbrT.PF], 16.5) + Math.Pow(tempTotalsOwn[TAbbrT.PA], 16.5));
             tempMetricsOwn.Add("PythW", pythW);
 
             var pythL = MainWindow.SeasonLength - pythW;
             tempMetricsOwn.Add("PythL", pythL);
 
-            var gmsc = tempTotalsOwn[TAbbr.PF] + 0.4 * tempTotalsOwn[TAbbr.FGM] - 0.7 * tempTotalsOwn[TAbbr.FGA]
-                       - 0.4 * (tempTotalsOwn[TAbbr.FTA] - tempTotalsOwn[TAbbr.FTM]) + 0.7 * tempTotalsOwn[TAbbr.OREB]
-                       + 0.3 * tempTotalsOwn[TAbbr.DREB] + tempTotalsOwn[TAbbr.STL] + 0.7 * tempTotalsOwn[TAbbr.AST]
-                       + 0.7 * tempTotalsOwn[TAbbr.BLK] - 0.4 * tempTotalsOwn[TAbbr.FOUL] - tempTotalsOwn[TAbbr.TOS];
+            var gmsc = tempTotalsOwn[TAbbrT.PF] + 0.4 * tempTotalsOwn[TAbbrT.FGM] - 0.7 * tempTotalsOwn[TAbbrT.FGA]
+                       - 0.4 * (tempTotalsOwn[TAbbrT.FTA] - tempTotalsOwn[TAbbrT.FTM]) + 0.7 * tempTotalsOwn[TAbbrT.OREB]
+                       + 0.3 * tempTotalsOwn[TAbbrT.DREB] + tempTotalsOwn[TAbbrT.STL] + 0.7 * tempTotalsOwn[TAbbrT.AST]
+                       + 0.7 * tempTotalsOwn[TAbbrT.BLK] - 0.4 * tempTotalsOwn[TAbbrT.FOUL] - tempTotalsOwn[TAbbrT.TOS];
             tempMetricsOwn.Add("GmSc", gmsc / games);
 
             if (!playoffs)
@@ -501,12 +501,12 @@ namespace NBA_Stats_Tracker.Data.Teams
         private static double calcPossMetric(double[] tstats, double[] toppstats)
         {
             var poss = 0.5
-                       * ((tstats[TAbbr.FGA] + 0.4 * tstats[TAbbr.FTA]
-                           - 1.07 * (tstats[TAbbr.OREB] / (tstats[TAbbr.OREB] + toppstats[TAbbr.DREB]))
-                             * (tstats[TAbbr.FGA] - tstats[TAbbr.FGM]) + tstats[TAbbr.TOS])
-                          + (toppstats[TAbbr.FGA] + 0.4 * toppstats[TAbbr.FTA]
-                             - 1.07 * (toppstats[TAbbr.OREB] / (toppstats[TAbbr.OREB] + tstats[TAbbr.DREB]))
-                               * (toppstats[TAbbr.FGA] - toppstats[TAbbr.FGM]) + toppstats[TAbbr.TOS]));
+                       * ((tstats[TAbbrT.FGA] + 0.4 * tstats[TAbbrT.FTA]
+                           - 1.07 * (tstats[TAbbrT.OREB] / (tstats[TAbbrT.OREB] + toppstats[TAbbrT.DREB]))
+                             * (tstats[TAbbrT.FGA] - tstats[TAbbrT.FGM]) + tstats[TAbbrT.TOS])
+                          + (toppstats[TAbbrT.FGA] + 0.4 * toppstats[TAbbrT.FTA]
+                             - 1.07 * (toppstats[TAbbrT.OREB] / (toppstats[TAbbrT.OREB] + tstats[TAbbrT.DREB]))
+                               * (toppstats[TAbbrT.FGA] - toppstats[TAbbrT.FGM]) + toppstats[TAbbrT.TOS]));
             return poss;
         }
 
@@ -861,7 +861,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg += "You won't have to worry about their scoring, one of the least 10 efficient in the league.";
             }
 
-            var comp = rating[ID][TAbbr.FGeff] - rating[ID][TAbbr.FGp];
+            var comp = rating[ID][TAbbrPG.FGeff] - rating[ID][TAbbrPG.FGp];
             if (comp < -topHalf)
             {
                 msg +=
@@ -875,10 +875,10 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             msg += String.Format(
                 " (#{0} in FG%: {1:F3} - #{2} in FGeff: {3:F2})",
-                rating[ID][TAbbr.FGp],
-                tempPerGame[TAbbr.FGp],
-                rating[ID][TAbbr.FGeff],
-                tempPerGame[TAbbr.FGeff]);
+                rating[ID][TAbbrPG.FGp],
+                tempPerGame[TAbbrPG.FGp],
+                rating[ID][TAbbrPG.FGeff],
+                tempPerGame[TAbbrPG.FGeff]);
             msg += "\n";
 
             if (rating[ID][5] <= 5)
@@ -900,7 +900,7 @@ namespace NBA_Stats_Tracker.Data.Teams
                 msg += "Definitely not a threat from 3pt land, one of the worst in the league. They waste too many shots from there.";
             }
 
-            comp = rating[ID][TAbbr.TPeff] - rating[ID][TAbbr.TPp];
+            comp = rating[ID][TAbbrPG.TPeff] - rating[ID][TAbbrPG.TPp];
             if (comp < -topHalf)
             {
                 msg += "\nThey'll get enough 3 pointers to go down each night, but not on a good enough percentage for that amount.";
@@ -912,10 +912,10 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             msg += String.Format(
                 " (#{0} in 3P%: {1:F3} - #{2} in 3Peff: {3:F2})",
-                rating[ID][TAbbr.TPp],
-                tempPerGame[TAbbr.TPp],
-                rating[ID][TAbbr.TPeff],
-                tempPerGame[TAbbr.TPeff]);
+                rating[ID][TAbbrPG.TPp],
+                tempPerGame[TAbbrPG.TPp],
+                rating[ID][TAbbrPG.TPeff],
+                tempPerGame[TAbbrPG.TPeff]);
             msg += "\n";
 
             if (rating[ID][7] <= 5)
@@ -935,7 +935,7 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             else if (rating[ID][7] <= teamCount)
             {
-                if (rating[ID][TAbbr.FTp] < topHalf)
+                if (rating[ID][TAbbrPG.FTp] < topHalf)
                 {
                     msg +=
                         "A team that you'll enjoy playing hard and aggressively against on defense. They don't know how to get to the line.";
@@ -949,11 +949,11 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             msg += String.Format(
                 " (#{0} in FT%: {1:F3} - #{2} in FTeff: {3:F2})",
-                rating[ID][TAbbr.FTp],
-                tempPerGame[TAbbr.FTp],
-                rating[ID][TAbbr.FTeff],
-                tempPerGame[TAbbr.FTeff]);
-            comp = rating[ID][TAbbr.FTeff] - rating[ID][TAbbr.FTp];
+                rating[ID][TAbbrPG.FTp],
+                tempPerGame[TAbbrPG.FTp],
+                rating[ID][TAbbrPG.FTeff],
+                tempPerGame[TAbbrPG.FTeff]);
+            comp = rating[ID][TAbbrPG.FTeff] - rating[ID][TAbbrPG.FTp];
             if (comp < -topHalf)
             {
                 msg +=
@@ -983,28 +983,28 @@ namespace NBA_Stats_Tracker.Data.Teams
                     "A team that seems to have some selfish players around, nobody really that efficient to carry the team into high percentages.";
             }
 
-            msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][TAbbr.APG], tempPerGame[TAbbr.APG]);
+            msg += String.Format(" (#{0} in APG: {1:F1})", rating[ID][TAbbrPG.APG], tempPerGame[TAbbrPG.APG]);
             msg += "\n\n";
 
-            if (rating[ID][TAbbr.PAPG] <= 5)
+            if (rating[ID][TAbbrPG.PAPG] <= 5)
             {
                 msg +=
                     "Don't expect to get your score high against them. An elite defensive team, top 5 in points against them each night.";
             }
-            else if (rating[ID][TAbbr.PAPG] <= topThird)
+            else if (rating[ID][TAbbrPG.PAPG] <= topThird)
             {
                 msg += "One of the better defensive teams out there, limiting their opponents to low scores night in, night out.";
             }
-            else if (rating[ID][TAbbr.PAPG] <= secondThird)
+            else if (rating[ID][TAbbrPG.PAPG] <= secondThird)
             {
                 msg += "Average defensively, not much to show for it, but they're no blow-outs.";
             }
-            else if (rating[ID][TAbbr.PAPG] <= teamCount)
+            else if (rating[ID][TAbbrPG.PAPG] <= teamCount)
             {
                 msg += "This team has just forgotten what defense is. They're one of the 10 easiest teams to score against.";
             }
 
-            msg += String.Format(" (#{0} in PAPG: {1:F1})", rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
+            msg += String.Format(" (#{0} in PAPG: {1:F1})", rating[ID][TAbbrPG.PAPG], tempPerGame[TAbbrPG.PAPG]);
             msg += "\n\n";
 
             if ((rating[ID][9] <= topThird) && (rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -1046,12 +1046,12 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             msg += String.Format(
                 " (#{0} in RPG: {1:F1}, #{2} in ORPG: {3:F1}, #{4} in DRPG: {5:F1})",
-                rating[ID][TAbbr.RPG],
-                tempPerGame[TAbbr.RPG],
-                rating[ID][TAbbr.ORPG],
-                tempPerGame[TAbbr.ORPG],
-                rating[ID][TAbbr.DRPG],
-                tempPerGame[TAbbr.DRPG]);
+                rating[ID][TAbbrPG.RPG],
+                tempPerGame[TAbbrPG.RPG],
+                rating[ID][TAbbrPG.ORPG],
+                tempPerGame[TAbbrPG.ORPG],
+                rating[ID][TAbbrPG.DRPG],
+                tempPerGame[TAbbrPG.DRPG]);
             msg += "\n\n";
 
             if ((rating[ID][11] <= topThird) && (rating[ID][12] <= topThird))
@@ -1075,10 +1075,10 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             msg += String.Format(
                 " (#{0} in SPG: {1:F1}, #{2} in BPG: {3:F1})\n",
-                rating[ID][TAbbr.SPG],
-                tempPerGame[TAbbr.SPG],
-                rating[ID][TAbbr.BPG],
-                tempPerGame[TAbbr.BPG]);
+                rating[ID][TAbbrPG.SPG],
+                tempPerGame[TAbbrPG.SPG],
+                rating[ID][TAbbrPG.BPG],
+                tempPerGame[TAbbrPG.BPG]);
 
             if ((rating[ID][13] > topHalf) && (rating[ID][15] > topHalf))
             {
@@ -1103,10 +1103,10 @@ namespace NBA_Stats_Tracker.Data.Teams
             }
             msg += String.Format(
                 " (#{0} in TPG: {1:F1}, #{2} in FPG: {3:F1})",
-                rating[ID][TAbbr.TPG],
-                tempPerGame[TAbbr.TPG],
-                rating[ID][TAbbr.FPG],
-                tempPerGame[TAbbr.FPG]);
+                rating[ID][TAbbrPG.TPG],
+                tempPerGame[TAbbrPG.TPG],
+                rating[ID][TAbbrPG.FPG],
+                tempPerGame[TAbbrPG.FPG]);
 
             msg += "\n\n";
 
@@ -1127,57 +1127,57 @@ namespace NBA_Stats_Tracker.Data.Teams
                 }
                 switch (strengths[m])
                 {
-                    case TAbbr.APG:
-                        msg += String.Format("assists (#{0}, {1:F1}), ", rating[ID][TAbbr.APG], tempPerGame[TAbbr.APG]);
+                    case TAbbrPG.APG:
+                        msg += String.Format("assists (#{0}, {1:F1}), ", rating[ID][TAbbrPG.APG], tempPerGame[TAbbrPG.APG]);
                         break;
-                    case TAbbr.BPG:
-                        msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][TAbbr.BPG], tempPerGame[TAbbr.BPG]);
+                    case TAbbrPG.BPG:
+                        msg += String.Format("blocks (#{0}, {1:F1}), ", rating[ID][TAbbrPG.BPG], tempPerGame[TAbbrPG.BPG]);
                         break;
-                    case TAbbr.DRPG:
-                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbr.DRPG], tempPerGame[TAbbr.DRPG]);
+                    case TAbbrPG.DRPG:
+                        msg += String.Format("defensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.DRPG], tempPerGame[TAbbrPG.DRPG]);
                         break;
-                    case TAbbr.FGeff:
+                    case TAbbrPG.FGeff:
                         msg += String.Format(
                             "field goals (#{0}, {1:F1} per game on {2:F3}), ",
-                            rating[ID][TAbbr.FGeff],
-                            (double) tempTotals[TAbbr.FGM] / GetGames(),
-                            tempPerGame[TAbbr.FGp]);
+                            rating[ID][TAbbrPG.FGeff],
+                            (double) tempTotals[TAbbrT.FGM] / GetGames(),
+                            tempPerGame[TAbbrPG.FGp]);
                         break;
-                    case TAbbr.FPG:
-                        msg += String.Format("fouls (#{0}, {1:F1}), ", rating[ID][TAbbr.FPG], tempPerGame[TAbbr.FPG]);
+                    case TAbbrPG.FPG:
+                        msg += String.Format("fouls (#{0}, {1:F1}), ", rating[ID][TAbbrPG.FPG], tempPerGame[TAbbrPG.FPG]);
                         break;
-                    case TAbbr.FTeff:
+                    case TAbbrPG.FTeff:
                         msg += String.Format(
                             "free throws (#{0}, {1:F1} per game on {2:F3}), ",
-                            rating[ID][TAbbr.FTeff],
-                            (double) tempTotals[TAbbr.FTM] / GetGames(),
-                            tempPerGame[TAbbr.FTp]);
+                            rating[ID][TAbbrPG.FTeff],
+                            (double) tempTotals[TAbbrT.FTM] / GetGames(),
+                            tempPerGame[TAbbrPG.FTp]);
                         break;
-                    case TAbbr.ORPG:
-                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbr.ORPG], tempPerGame[TAbbr.ORPG]);
+                    case TAbbrPG.ORPG:
+                        msg += String.Format("offensive rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.ORPG], tempPerGame[TAbbrPG.ORPG]);
                         break;
-                    case TAbbr.PAPG:
+                    case TAbbrPG.PAPG:
                         msg += String.Format(
-                            "points allowed per game (#{0}, {1:F1}), ", rating[ID][TAbbr.PAPG], tempPerGame[TAbbr.PAPG]);
+                            "points allowed per game (#{0}, {1:F1}), ", rating[ID][TAbbrPG.PAPG], tempPerGame[TAbbrPG.PAPG]);
                         break;
-                    case TAbbr.PPG:
-                        msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][TAbbr.PPG], tempPerGame[TAbbr.PPG]);
+                    case TAbbrPG.PPG:
+                        msg += String.Format("scoring (#{0}, {1:F1}), ", rating[ID][TAbbrPG.PPG], tempPerGame[TAbbrPG.PPG]);
                         break;
-                    case TAbbr.RPG:
-                        msg += String.Format("rebounds (#{0}, {1:F1}), ", rating[ID][TAbbr.RPG], tempPerGame[TAbbr.RPG]);
+                    case TAbbrPG.RPG:
+                        msg += String.Format("rebounds (#{0}, {1:F1}), ", rating[ID][TAbbrPG.RPG], tempPerGame[TAbbrPG.RPG]);
                         break;
-                    case TAbbr.SPG:
-                        msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][TAbbr.SPG], tempPerGame[TAbbr.SPG]);
+                    case TAbbrPG.SPG:
+                        msg += String.Format("steals (#{0}, {1:F1}), ", rating[ID][TAbbrPG.SPG], tempPerGame[TAbbrPG.SPG]);
                         break;
-                    case TAbbr.TPG:
-                        msg += String.Format("turnovers (#{0}, {1:F1}), ", rating[ID][TAbbr.TPG], tempPerGame[TAbbr.TPG]);
+                    case TAbbrPG.TPG:
+                        msg += String.Format("turnovers (#{0}, {1:F1}), ", rating[ID][TAbbrPG.TPG], tempPerGame[TAbbrPG.TPG]);
                         break;
-                    case TAbbr.TPeff:
+                    case TAbbrPG.TPeff:
                         msg += String.Format(
                             "three-pointers (#{0}, {1:F1} per game on {2:F3}), ",
-                            rating[ID][TAbbr.TPeff],
-                            (double) tempTotals[TAbbr.TPM] / GetGames(),
-                            tempPerGame[TAbbr.TPp]);
+                            rating[ID][TAbbrPG.TPeff],
+                            (double) tempTotals[TAbbrT.TPM] / GetGames(),
+                            tempPerGame[TAbbrPG.TPp]);
                         break;
                     default:
                         j++;
@@ -1270,67 +1270,67 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts2.Record[0]++;
                 }
                 // Add minutes played
-                ts1.Totals[TAbbr.MINS] += bsToAdd.MINS1;
-                ts2.Totals[TAbbr.MINS] += bsToAdd.MINS2;
+                ts1.Totals[TAbbrT.MINS] += bsToAdd.MINS1;
+                ts2.Totals[TAbbrT.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                ts1.Totals[TAbbr.PF] += bsToAdd.PTS1;
-                ts2.Totals[TAbbr.PF] += bsToAdd.PTS2;
+                ts1.Totals[TAbbrT.PF] += bsToAdd.PTS1;
+                ts2.Totals[TAbbrT.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                ts1.Totals[TAbbr.PA] += bsToAdd.PTS2;
-                ts2.Totals[TAbbr.PA] += bsToAdd.PTS1;
+                ts1.Totals[TAbbrT.PA] += bsToAdd.PTS2;
+                ts2.Totals[TAbbrT.PA] += bsToAdd.PTS1;
 
                 //
-                ts1.Totals[TAbbr.FGM] += bsToAdd.FGM1;
-                ts2.Totals[TAbbr.FGM] += bsToAdd.FGM2;
+                ts1.Totals[TAbbrT.FGM] += bsToAdd.FGM1;
+                ts2.Totals[TAbbrT.FGM] += bsToAdd.FGM2;
 
-                ts1.Totals[TAbbr.FGA] += bsToAdd.FGA1;
-                ts2.Totals[TAbbr.FGA] += bsToAdd.FGA2;
-
-                //
-                ts1.Totals[TAbbr.TPM] += bsToAdd.TPM1;
-                ts2.Totals[TAbbr.TPM] += bsToAdd.TPM2;
+                ts1.Totals[TAbbrT.FGA] += bsToAdd.FGA1;
+                ts2.Totals[TAbbrT.FGA] += bsToAdd.FGA2;
 
                 //
-                ts1.Totals[TAbbr.TPA] += bsToAdd.TPA1;
-                ts2.Totals[TAbbr.TPA] += bsToAdd.TPA2;
+                ts1.Totals[TAbbrT.TPM] += bsToAdd.TPM1;
+                ts2.Totals[TAbbrT.TPM] += bsToAdd.TPM2;
 
                 //
-                ts1.Totals[TAbbr.FTM] += bsToAdd.FTM1;
-                ts2.Totals[TAbbr.FTM] += bsToAdd.FTM2;
+                ts1.Totals[TAbbrT.TPA] += bsToAdd.TPA1;
+                ts2.Totals[TAbbrT.TPA] += bsToAdd.TPA2;
 
                 //
-                ts1.Totals[TAbbr.FTA] += bsToAdd.FTA1;
-                ts2.Totals[TAbbr.FTA] += bsToAdd.FTA2;
+                ts1.Totals[TAbbrT.FTM] += bsToAdd.FTM1;
+                ts2.Totals[TAbbrT.FTM] += bsToAdd.FTM2;
 
                 //
-                ts1.Totals[TAbbr.OREB] += bsToAdd.OREB1;
-                ts2.Totals[TAbbr.OREB] += bsToAdd.OREB2;
+                ts1.Totals[TAbbrT.FTA] += bsToAdd.FTA1;
+                ts2.Totals[TAbbrT.FTA] += bsToAdd.FTA2;
 
                 //
-                ts1.Totals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
-                ts2.Totals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
+                ts1.Totals[TAbbrT.OREB] += bsToAdd.OREB1;
+                ts2.Totals[TAbbrT.OREB] += bsToAdd.OREB2;
 
                 //
-                ts1.Totals[TAbbr.STL] += bsToAdd.STL1;
-                ts2.Totals[TAbbr.STL] += bsToAdd.STL2;
+                ts1.Totals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                ts2.Totals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                ts1.Totals[TAbbr.TOS] += bsToAdd.TOS1;
-                ts2.Totals[TAbbr.TOS] += bsToAdd.TOS2;
+                ts1.Totals[TAbbrT.STL] += bsToAdd.STL1;
+                ts2.Totals[TAbbrT.STL] += bsToAdd.STL2;
 
                 //
-                ts1.Totals[TAbbr.BLK] += bsToAdd.BLK1;
-                ts2.Totals[TAbbr.BLK] += bsToAdd.BLK2;
+                ts1.Totals[TAbbrT.TOS] += bsToAdd.TOS1;
+                ts2.Totals[TAbbrT.TOS] += bsToAdd.TOS2;
 
                 //
-                ts1.Totals[TAbbr.AST] += bsToAdd.AST1;
-                ts2.Totals[TAbbr.AST] += bsToAdd.AST2;
+                ts1.Totals[TAbbrT.BLK] += bsToAdd.BLK1;
+                ts2.Totals[TAbbrT.BLK] += bsToAdd.BLK2;
 
                 //
-                ts1.Totals[TAbbr.FOUL] += bsToAdd.FOUL1;
-                ts2.Totals[TAbbr.FOUL] += bsToAdd.FOUL2;
+                ts1.Totals[TAbbrT.AST] += bsToAdd.AST1;
+                ts2.Totals[TAbbrT.AST] += bsToAdd.AST2;
+
+                //
+                ts1.Totals[TAbbrT.FOUL] += bsToAdd.FOUL1;
+                ts2.Totals[TAbbrT.FOUL] += bsToAdd.FOUL2;
 
                 // Opponents Team Stats
                 // Add win & loss
@@ -1345,67 +1345,67 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp1.Record[0]++;
                 }
                 // Add minutes played
-                tsopp2.Totals[TAbbr.MINS] += bsToAdd.MINS1;
-                tsopp1.Totals[TAbbr.MINS] += bsToAdd.MINS2;
+                tsopp2.Totals[TAbbrT.MINS] += bsToAdd.MINS1;
+                tsopp1.Totals[TAbbrT.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                tsopp2.Totals[TAbbr.PF] += bsToAdd.PTS1;
-                tsopp1.Totals[TAbbr.PF] += bsToAdd.PTS2;
+                tsopp2.Totals[TAbbrT.PF] += bsToAdd.PTS1;
+                tsopp1.Totals[TAbbrT.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                tsopp2.Totals[TAbbr.PA] += bsToAdd.PTS2;
-                tsopp1.Totals[TAbbr.PA] += bsToAdd.PTS1;
+                tsopp2.Totals[TAbbrT.PA] += bsToAdd.PTS2;
+                tsopp1.Totals[TAbbrT.PA] += bsToAdd.PTS1;
 
                 //
-                tsopp2.Totals[TAbbr.FGM] += bsToAdd.FGM1;
-                tsopp1.Totals[TAbbr.FGM] += bsToAdd.FGM2;
+                tsopp2.Totals[TAbbrT.FGM] += bsToAdd.FGM1;
+                tsopp1.Totals[TAbbrT.FGM] += bsToAdd.FGM2;
 
-                tsopp2.Totals[TAbbr.FGA] += bsToAdd.FGA1;
-                tsopp1.Totals[TAbbr.FGA] += bsToAdd.FGA2;
-
-                //
-                tsopp2.Totals[TAbbr.TPM] += bsToAdd.TPM1;
-                tsopp1.Totals[TAbbr.TPM] += bsToAdd.TPM2;
+                tsopp2.Totals[TAbbrT.FGA] += bsToAdd.FGA1;
+                tsopp1.Totals[TAbbrT.FGA] += bsToAdd.FGA2;
 
                 //
-                tsopp2.Totals[TAbbr.TPA] += bsToAdd.TPA1;
-                tsopp1.Totals[TAbbr.TPA] += bsToAdd.TPA2;
+                tsopp2.Totals[TAbbrT.TPM] += bsToAdd.TPM1;
+                tsopp1.Totals[TAbbrT.TPM] += bsToAdd.TPM2;
 
                 //
-                tsopp2.Totals[TAbbr.FTM] += bsToAdd.FTM1;
-                tsopp1.Totals[TAbbr.FTM] += bsToAdd.FTM2;
+                tsopp2.Totals[TAbbrT.TPA] += bsToAdd.TPA1;
+                tsopp1.Totals[TAbbrT.TPA] += bsToAdd.TPA2;
 
                 //
-                tsopp2.Totals[TAbbr.FTA] += bsToAdd.FTA1;
-                tsopp1.Totals[TAbbr.FTA] += bsToAdd.FTA2;
+                tsopp2.Totals[TAbbrT.FTM] += bsToAdd.FTM1;
+                tsopp1.Totals[TAbbrT.FTM] += bsToAdd.FTM2;
 
                 //
-                tsopp2.Totals[TAbbr.OREB] += bsToAdd.OREB1;
-                tsopp1.Totals[TAbbr.OREB] += bsToAdd.OREB2;
+                tsopp2.Totals[TAbbrT.FTA] += bsToAdd.FTA1;
+                tsopp1.Totals[TAbbrT.FTA] += bsToAdd.FTA2;
 
                 //
-                tsopp2.Totals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
-                tsopp1.Totals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
+                tsopp2.Totals[TAbbrT.OREB] += bsToAdd.OREB1;
+                tsopp1.Totals[TAbbrT.OREB] += bsToAdd.OREB2;
 
                 //
-                tsopp2.Totals[TAbbr.STL] += bsToAdd.STL1;
-                tsopp1.Totals[TAbbr.STL] += bsToAdd.STL2;
+                tsopp2.Totals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                tsopp1.Totals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                tsopp2.Totals[TAbbr.TOS] += bsToAdd.TOS1;
-                tsopp1.Totals[TAbbr.TOS] += bsToAdd.TOS2;
+                tsopp2.Totals[TAbbrT.STL] += bsToAdd.STL1;
+                tsopp1.Totals[TAbbrT.STL] += bsToAdd.STL2;
 
                 //
-                tsopp2.Totals[TAbbr.BLK] += bsToAdd.BLK1;
-                tsopp1.Totals[TAbbr.BLK] += bsToAdd.BLK2;
+                tsopp2.Totals[TAbbrT.TOS] += bsToAdd.TOS1;
+                tsopp1.Totals[TAbbrT.TOS] += bsToAdd.TOS2;
 
                 //
-                tsopp2.Totals[TAbbr.AST] += bsToAdd.AST1;
-                tsopp1.Totals[TAbbr.AST] += bsToAdd.AST2;
+                tsopp2.Totals[TAbbrT.BLK] += bsToAdd.BLK1;
+                tsopp1.Totals[TAbbrT.BLK] += bsToAdd.BLK2;
 
                 //
-                tsopp2.Totals[TAbbr.FOUL] += bsToAdd.FOUL1;
-                tsopp1.Totals[TAbbr.FOUL] += bsToAdd.FOUL2;
+                tsopp2.Totals[TAbbrT.AST] += bsToAdd.AST1;
+                tsopp1.Totals[TAbbrT.AST] += bsToAdd.AST2;
+
+                //
+                tsopp2.Totals[TAbbrT.FOUL] += bsToAdd.FOUL1;
+                tsopp1.Totals[TAbbrT.FOUL] += bsToAdd.FOUL2;
             }
             else
             {
@@ -1421,67 +1421,67 @@ namespace NBA_Stats_Tracker.Data.Teams
                     ts2.PlRecord[0]++;
                 }
                 // Add minutes played
-                ts1.PlTotals[TAbbr.MINS] += bsToAdd.MINS1;
-                ts2.PlTotals[TAbbr.MINS] += bsToAdd.MINS2;
+                ts1.PlTotals[TAbbrT.MINS] += bsToAdd.MINS1;
+                ts2.PlTotals[TAbbrT.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                ts1.PlTotals[TAbbr.PF] += bsToAdd.PTS1;
-                ts2.PlTotals[TAbbr.PF] += bsToAdd.PTS2;
+                ts1.PlTotals[TAbbrT.PF] += bsToAdd.PTS1;
+                ts2.PlTotals[TAbbrT.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                ts1.PlTotals[TAbbr.PA] += bsToAdd.PTS2;
-                ts2.PlTotals[TAbbr.PA] += bsToAdd.PTS1;
+                ts1.PlTotals[TAbbrT.PA] += bsToAdd.PTS2;
+                ts2.PlTotals[TAbbrT.PA] += bsToAdd.PTS1;
 
                 //
-                ts1.PlTotals[TAbbr.FGM] += bsToAdd.FGM1;
-                ts2.PlTotals[TAbbr.FGM] += bsToAdd.FGM2;
+                ts1.PlTotals[TAbbrT.FGM] += bsToAdd.FGM1;
+                ts2.PlTotals[TAbbrT.FGM] += bsToAdd.FGM2;
 
-                ts1.PlTotals[TAbbr.FGA] += bsToAdd.FGA1;
-                ts2.PlTotals[TAbbr.FGA] += bsToAdd.FGA2;
-
-                //
-                ts1.PlTotals[TAbbr.TPM] += bsToAdd.TPM1;
-                ts2.PlTotals[TAbbr.TPM] += bsToAdd.TPM2;
+                ts1.PlTotals[TAbbrT.FGA] += bsToAdd.FGA1;
+                ts2.PlTotals[TAbbrT.FGA] += bsToAdd.FGA2;
 
                 //
-                ts1.PlTotals[TAbbr.TPA] += bsToAdd.TPA1;
-                ts2.PlTotals[TAbbr.TPA] += bsToAdd.TPA2;
+                ts1.PlTotals[TAbbrT.TPM] += bsToAdd.TPM1;
+                ts2.PlTotals[TAbbrT.TPM] += bsToAdd.TPM2;
 
                 //
-                ts1.PlTotals[TAbbr.FTM] += bsToAdd.FTM1;
-                ts2.PlTotals[TAbbr.FTM] += bsToAdd.FTM2;
+                ts1.PlTotals[TAbbrT.TPA] += bsToAdd.TPA1;
+                ts2.PlTotals[TAbbrT.TPA] += bsToAdd.TPA2;
 
                 //
-                ts1.PlTotals[TAbbr.FTA] += bsToAdd.FTA1;
-                ts2.PlTotals[TAbbr.FTA] += bsToAdd.FTA2;
+                ts1.PlTotals[TAbbrT.FTM] += bsToAdd.FTM1;
+                ts2.PlTotals[TAbbrT.FTM] += bsToAdd.FTM2;
 
                 //
-                ts1.PlTotals[TAbbr.OREB] += bsToAdd.OREB1;
-                ts2.PlTotals[TAbbr.OREB] += bsToAdd.OREB2;
+                ts1.PlTotals[TAbbrT.FTA] += bsToAdd.FTA1;
+                ts2.PlTotals[TAbbrT.FTA] += bsToAdd.FTA2;
 
                 //
-                ts1.PlTotals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
-                ts2.PlTotals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
+                ts1.PlTotals[TAbbrT.OREB] += bsToAdd.OREB1;
+                ts2.PlTotals[TAbbrT.OREB] += bsToAdd.OREB2;
 
                 //
-                ts1.PlTotals[TAbbr.STL] += bsToAdd.STL1;
-                ts2.PlTotals[TAbbr.STL] += bsToAdd.STL2;
+                ts1.PlTotals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                ts2.PlTotals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                ts1.PlTotals[TAbbr.TOS] += bsToAdd.TOS1;
-                ts2.PlTotals[TAbbr.TOS] += bsToAdd.TOS2;
+                ts1.PlTotals[TAbbrT.STL] += bsToAdd.STL1;
+                ts2.PlTotals[TAbbrT.STL] += bsToAdd.STL2;
 
                 //
-                ts1.PlTotals[TAbbr.BLK] += bsToAdd.BLK1;
-                ts2.PlTotals[TAbbr.BLK] += bsToAdd.BLK2;
+                ts1.PlTotals[TAbbrT.TOS] += bsToAdd.TOS1;
+                ts2.PlTotals[TAbbrT.TOS] += bsToAdd.TOS2;
 
                 //
-                ts1.PlTotals[TAbbr.AST] += bsToAdd.AST1;
-                ts2.PlTotals[TAbbr.AST] += bsToAdd.AST2;
+                ts1.PlTotals[TAbbrT.BLK] += bsToAdd.BLK1;
+                ts2.PlTotals[TAbbrT.BLK] += bsToAdd.BLK2;
 
                 //
-                ts1.PlTotals[TAbbr.FOUL] += bsToAdd.FOUL1;
-                ts2.PlTotals[TAbbr.FOUL] += bsToAdd.FOUL2;
+                ts1.PlTotals[TAbbrT.AST] += bsToAdd.AST1;
+                ts2.PlTotals[TAbbrT.AST] += bsToAdd.AST2;
+
+                //
+                ts1.PlTotals[TAbbrT.FOUL] += bsToAdd.FOUL1;
+                ts2.PlTotals[TAbbrT.FOUL] += bsToAdd.FOUL2;
 
                 // Opponents Team Stats
                 // Add win & loss
@@ -1496,67 +1496,67 @@ namespace NBA_Stats_Tracker.Data.Teams
                     tsopp1.PlRecord[0]++;
                 }
                 // Add minutes played
-                tsopp2.PlTotals[TAbbr.MINS] += bsToAdd.MINS1;
-                tsopp1.PlTotals[TAbbr.MINS] += bsToAdd.MINS2;
+                tsopp2.PlTotals[TAbbrT.MINS] += bsToAdd.MINS1;
+                tsopp1.PlTotals[TAbbrT.MINS] += bsToAdd.MINS2;
 
                 // Add Points For
-                tsopp2.PlTotals[TAbbr.PF] += bsToAdd.PTS1;
-                tsopp1.PlTotals[TAbbr.PF] += bsToAdd.PTS2;
+                tsopp2.PlTotals[TAbbrT.PF] += bsToAdd.PTS1;
+                tsopp1.PlTotals[TAbbrT.PF] += bsToAdd.PTS2;
 
                 // Add Points Against
-                tsopp2.PlTotals[TAbbr.PA] += bsToAdd.PTS2;
-                tsopp1.PlTotals[TAbbr.PA] += bsToAdd.PTS1;
+                tsopp2.PlTotals[TAbbrT.PA] += bsToAdd.PTS2;
+                tsopp1.PlTotals[TAbbrT.PA] += bsToAdd.PTS1;
 
                 //
-                tsopp2.PlTotals[TAbbr.FGM] += bsToAdd.FGM1;
-                tsopp1.PlTotals[TAbbr.FGM] += bsToAdd.FGM2;
+                tsopp2.PlTotals[TAbbrT.FGM] += bsToAdd.FGM1;
+                tsopp1.PlTotals[TAbbrT.FGM] += bsToAdd.FGM2;
 
-                tsopp2.PlTotals[TAbbr.FGA] += bsToAdd.FGA1;
-                tsopp1.PlTotals[TAbbr.FGA] += bsToAdd.FGA2;
-
-                //
-                tsopp2.PlTotals[TAbbr.TPM] += bsToAdd.TPM1;
-                tsopp1.PlTotals[TAbbr.TPM] += bsToAdd.TPM2;
+                tsopp2.PlTotals[TAbbrT.FGA] += bsToAdd.FGA1;
+                tsopp1.PlTotals[TAbbrT.FGA] += bsToAdd.FGA2;
 
                 //
-                tsopp2.PlTotals[TAbbr.TPA] += bsToAdd.TPA1;
-                tsopp1.PlTotals[TAbbr.TPA] += bsToAdd.TPA2;
+                tsopp2.PlTotals[TAbbrT.TPM] += bsToAdd.TPM1;
+                tsopp1.PlTotals[TAbbrT.TPM] += bsToAdd.TPM2;
 
                 //
-                tsopp2.PlTotals[TAbbr.FTM] += bsToAdd.FTM1;
-                tsopp1.PlTotals[TAbbr.FTM] += bsToAdd.FTM2;
+                tsopp2.PlTotals[TAbbrT.TPA] += bsToAdd.TPA1;
+                tsopp1.PlTotals[TAbbrT.TPA] += bsToAdd.TPA2;
 
                 //
-                tsopp2.PlTotals[TAbbr.FTA] += bsToAdd.FTA1;
-                tsopp1.PlTotals[TAbbr.FTA] += bsToAdd.FTA2;
+                tsopp2.PlTotals[TAbbrT.FTM] += bsToAdd.FTM1;
+                tsopp1.PlTotals[TAbbrT.FTM] += bsToAdd.FTM2;
 
                 //
-                tsopp2.PlTotals[TAbbr.OREB] += bsToAdd.OREB1;
-                tsopp1.PlTotals[TAbbr.OREB] += bsToAdd.OREB2;
+                tsopp2.PlTotals[TAbbrT.FTA] += bsToAdd.FTA1;
+                tsopp1.PlTotals[TAbbrT.FTA] += bsToAdd.FTA2;
 
                 //
-                tsopp2.PlTotals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
-                tsopp1.PlTotals[TAbbr.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
+                tsopp2.PlTotals[TAbbrT.OREB] += bsToAdd.OREB1;
+                tsopp1.PlTotals[TAbbrT.OREB] += bsToAdd.OREB2;
 
                 //
-                tsopp2.PlTotals[TAbbr.STL] += bsToAdd.STL1;
-                tsopp1.PlTotals[TAbbr.STL] += bsToAdd.STL2;
+                tsopp2.PlTotals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB1 - bsToAdd.OREB1);
+                tsopp1.PlTotals[TAbbrT.DREB] += Convert.ToUInt16(bsToAdd.REB2 - bsToAdd.OREB2);
 
                 //
-                tsopp2.PlTotals[TAbbr.TOS] += bsToAdd.TOS1;
-                tsopp1.PlTotals[TAbbr.TOS] += bsToAdd.TOS2;
+                tsopp2.PlTotals[TAbbrT.STL] += bsToAdd.STL1;
+                tsopp1.PlTotals[TAbbrT.STL] += bsToAdd.STL2;
 
                 //
-                tsopp2.PlTotals[TAbbr.BLK] += bsToAdd.BLK1;
-                tsopp1.PlTotals[TAbbr.BLK] += bsToAdd.BLK2;
+                tsopp2.PlTotals[TAbbrT.TOS] += bsToAdd.TOS1;
+                tsopp1.PlTotals[TAbbrT.TOS] += bsToAdd.TOS2;
 
                 //
-                tsopp2.PlTotals[TAbbr.AST] += bsToAdd.AST1;
-                tsopp1.PlTotals[TAbbr.AST] += bsToAdd.AST2;
+                tsopp2.PlTotals[TAbbrT.BLK] += bsToAdd.BLK1;
+                tsopp1.PlTotals[TAbbrT.BLK] += bsToAdd.BLK2;
 
                 //
-                tsopp2.PlTotals[TAbbr.FOUL] += bsToAdd.FOUL1;
-                tsopp1.PlTotals[TAbbr.FOUL] += bsToAdd.FOUL2;
+                tsopp2.PlTotals[TAbbrT.AST] += bsToAdd.AST1;
+                tsopp1.PlTotals[TAbbrT.AST] += bsToAdd.AST2;
+
+                //
+                tsopp2.PlTotals[TAbbrT.FOUL] += bsToAdd.FOUL1;
+                tsopp1.PlTotals[TAbbrT.FOUL] += bsToAdd.FOUL2;
             }
 
             ts1.CalcAvg();
@@ -1668,45 +1668,45 @@ namespace NBA_Stats_Tracker.Data.Teams
                     {
                         ts.Record[1]++;
                     }
-                    tsopp.Totals[TAbbr.MINS] = ts.Totals[TAbbr.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
-                    tsopp.Totals[TAbbr.PA] = ts.Totals[TAbbr.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
-                    tsopp.Totals[TAbbr.PF] = ts.Totals[TAbbr.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.Totals[TAbbrT.MINS] = ts.Totals[TAbbrT.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.Totals[TAbbrT.PA] = ts.Totals[TAbbrT.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.Totals[TAbbrT.PF] = ts.Totals[TAbbrT.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
 
-                    ts.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                    ts.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                    ts.Totals[TAbbr.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                    ts.Totals[TAbbr.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                    ts.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                    ts.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    ts.Totals[TAbbrT.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.Totals[TAbbrT.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.Totals[TAbbrT.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.Totals[TAbbrT.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.Totals[TAbbrT.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.Totals[TAbbrT.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
                     var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
                     var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
-                    ts.Totals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
-                    ts.Totals[TAbbr.OREB] += t1OREB;
+                    ts.Totals[TAbbrT.DREB] += (ushort) (t1REB - t1OREB);
+                    ts.Totals[TAbbrT.OREB] += t1OREB;
 
-                    ts.Totals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
-                    ts.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
-                    ts.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
-                    ts.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
+                    ts.Totals[TAbbrT.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.Totals[TAbbrT.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.Totals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    ts.Totals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    ts.Totals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
 
-                    tsopp.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                    tsopp.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                    tsopp.Totals[TAbbr.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                    tsopp.Totals[TAbbr.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                    tsopp.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                    tsopp.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    tsopp.Totals[TAbbrT.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.Totals[TAbbrT.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.Totals[TAbbrT.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.Totals[TAbbrT.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.Totals[TAbbrT.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.Totals[TAbbrT.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
                     var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
                     var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
-                    tsopp.Totals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
-                    tsopp.Totals[TAbbr.OREB] += t2OREB;
+                    tsopp.Totals[TAbbrT.DREB] += (ushort) (t2REB - t2OREB);
+                    tsopp.Totals[TAbbrT.OREB] += t2OREB;
 
-                    tsopp.Totals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
-                    tsopp.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
-                    tsopp.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
-                    tsopp.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
+                    tsopp.Totals[TAbbrT.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.Totals[TAbbrT.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.Totals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    tsopp.Totals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    tsopp.Totals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -1718,45 +1718,45 @@ namespace NBA_Stats_Tracker.Data.Teams
                     {
                         ts.Record[1]++;
                     }
-                    tsopp.Totals[TAbbr.MINS] = ts.Totals[TAbbr.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
-                    tsopp.Totals[TAbbr.PA] = ts.Totals[TAbbr.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
-                    tsopp.Totals[TAbbr.PF] = ts.Totals[TAbbr.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.Totals[TAbbrT.MINS] = ts.Totals[TAbbrT.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.Totals[TAbbrT.PA] = ts.Totals[TAbbrT.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.Totals[TAbbrT.PF] = ts.Totals[TAbbrT.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
 
-                    ts.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                    ts.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                    ts.Totals[TAbbr.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                    ts.Totals[TAbbr.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                    ts.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                    ts.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    ts.Totals[TAbbrT.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.Totals[TAbbrT.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.Totals[TAbbrT.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.Totals[TAbbrT.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.Totals[TAbbrT.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.Totals[TAbbrT.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
                     var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
                     var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
-                    ts.Totals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
-                    ts.Totals[TAbbr.OREB] += t2OREB;
+                    ts.Totals[TAbbrT.DREB] += (ushort) (t2REB - t2OREB);
+                    ts.Totals[TAbbrT.OREB] += t2OREB;
 
-                    ts.Totals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
-                    ts.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
-                    ts.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
-                    ts.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
+                    ts.Totals[TAbbrT.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.Totals[TAbbrT.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.Totals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    ts.Totals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    ts.Totals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
 
-                    tsopp.Totals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                    tsopp.Totals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                    tsopp.Totals[TAbbr.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                    tsopp.Totals[TAbbr.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                    tsopp.Totals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                    tsopp.Totals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    tsopp.Totals[TAbbrT.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.Totals[TAbbrT.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.Totals[TAbbrT.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.Totals[TAbbrT.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.Totals[TAbbrT.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.Totals[TAbbrT.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
                     var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
                     var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
-                    tsopp.Totals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
-                    tsopp.Totals[TAbbr.OREB] += t1OREB;
+                    tsopp.Totals[TAbbrT.DREB] += (ushort) (t1REB - t1OREB);
+                    tsopp.Totals[TAbbrT.OREB] += t1OREB;
 
-                    tsopp.Totals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
-                    tsopp.Totals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.Totals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
-                    tsopp.Totals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
-                    tsopp.Totals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
+                    tsopp.Totals[TAbbrT.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.Totals[TAbbrT.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.Totals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    tsopp.Totals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    tsopp.Totals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
                 }
 
                 tsopp.Record[1] = ts.Record[0];
@@ -1776,45 +1776,45 @@ namespace NBA_Stats_Tracker.Data.Teams
                     {
                         ts.PlRecord[1]++;
                     }
-                    tsopp.PlTotals[TAbbr.MINS] = ts.PlTotals[TAbbr.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
-                    tsopp.PlTotals[TAbbr.PA] = ts.PlTotals[TAbbr.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
-                    tsopp.PlTotals[TAbbr.PF] = ts.PlTotals[TAbbr.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.PlTotals[TAbbrT.MINS] = ts.PlTotals[TAbbrT.MINS] += Convert.ToUInt16(r["T1MINS"].ToString());
+                    tsopp.PlTotals[TAbbrT.PA] = ts.PlTotals[TAbbrT.PF] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.PlTotals[TAbbrT.PF] = ts.PlTotals[TAbbrT.PA] += Convert.ToUInt16(r["T2PTS"].ToString());
 
-                    ts.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                    ts.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                    ts.PlTotals[TAbbr.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                    ts.PlTotals[TAbbr.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                    ts.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                    ts.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    ts.PlTotals[TAbbrT.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    ts.PlTotals[TAbbrT.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    ts.PlTotals[TAbbrT.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    ts.PlTotals[TAbbrT.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    ts.PlTotals[TAbbrT.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    ts.PlTotals[TAbbrT.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
                     var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
                     var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
-                    ts.PlTotals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
-                    ts.PlTotals[TAbbr.OREB] += t1OREB;
+                    ts.PlTotals[TAbbrT.DREB] += (ushort) (t1REB - t1OREB);
+                    ts.PlTotals[TAbbrT.OREB] += t1OREB;
 
-                    ts.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
-                    ts.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    ts.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
-                    ts.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
-                    ts.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
+                    ts.PlTotals[TAbbrT.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    ts.PlTotals[TAbbrT.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    ts.PlTotals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    ts.PlTotals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    ts.PlTotals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
 
-                    tsopp.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                    tsopp.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                    tsopp.PlTotals[TAbbr.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                    tsopp.PlTotals[TAbbr.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                    tsopp.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                    tsopp.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    tsopp.PlTotals[TAbbrT.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    tsopp.PlTotals[TAbbrT.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    tsopp.PlTotals[TAbbrT.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    tsopp.PlTotals[TAbbrT.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    tsopp.PlTotals[TAbbrT.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    tsopp.PlTotals[TAbbrT.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
                     var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
                     var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
-                    tsopp.PlTotals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
-                    tsopp.PlTotals[TAbbr.OREB] += t2OREB;
+                    tsopp.PlTotals[TAbbrT.DREB] += (ushort) (t2REB - t2OREB);
+                    tsopp.PlTotals[TAbbrT.OREB] += t2OREB;
 
-                    tsopp.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
-                    tsopp.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    tsopp.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
-                    tsopp.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
-                    tsopp.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
+                    tsopp.PlTotals[TAbbrT.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    tsopp.PlTotals[TAbbrT.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    tsopp.PlTotals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    tsopp.PlTotals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    tsopp.PlTotals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
                 }
                 else
                 {
@@ -1826,45 +1826,45 @@ namespace NBA_Stats_Tracker.Data.Teams
                     {
                         ts.PlRecord[1]++;
                     }
-                    tsopp.PlTotals[TAbbr.MINS] = ts.PlTotals[TAbbr.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
-                    tsopp.PlTotals[TAbbr.PA] = ts.PlTotals[TAbbr.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
-                    tsopp.PlTotals[TAbbr.PF] = ts.PlTotals[TAbbr.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
+                    tsopp.PlTotals[TAbbrT.MINS] = ts.PlTotals[TAbbrT.MINS] += Convert.ToUInt16(r["T2MINS"].ToString());
+                    tsopp.PlTotals[TAbbrT.PA] = ts.PlTotals[TAbbrT.PF] += Convert.ToUInt16(r["T2PTS"].ToString());
+                    tsopp.PlTotals[TAbbrT.PF] = ts.PlTotals[TAbbrT.PA] += Convert.ToUInt16(r["T1PTS"].ToString());
 
-                    ts.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
-                    ts.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
-                    ts.PlTotals[TAbbr.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
-                    ts.PlTotals[TAbbr.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
-                    ts.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
-                    ts.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
+                    ts.PlTotals[TAbbrT.FGM] += Convert.ToUInt16(r["T2FGM"].ToString());
+                    ts.PlTotals[TAbbrT.FGA] += Convert.ToUInt16(r["T2FGA"].ToString());
+                    ts.PlTotals[TAbbrT.TPM] += Convert.ToUInt16(r["T23PM"].ToString());
+                    ts.PlTotals[TAbbrT.TPA] += Convert.ToUInt16(r["T23PA"].ToString());
+                    ts.PlTotals[TAbbrT.FTM] += Convert.ToUInt16(r["T2FTM"].ToString());
+                    ts.PlTotals[TAbbrT.FTA] += Convert.ToUInt16(r["T2FTA"].ToString());
 
                     var t2REB = Convert.ToUInt16(r["T2REB"].ToString());
                     var t2OREB = Convert.ToUInt16(r["T2OREB"].ToString());
-                    ts.PlTotals[TAbbr.DREB] += (ushort) (t2REB - t2OREB);
-                    ts.PlTotals[TAbbr.OREB] += t2OREB;
+                    ts.PlTotals[TAbbrT.DREB] += (ushort) (t2REB - t2OREB);
+                    ts.PlTotals[TAbbrT.OREB] += t2OREB;
 
-                    ts.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T2STL"].ToString());
-                    ts.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
-                    ts.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T2BLK");
-                    ts.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T2AST");
-                    ts.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
+                    ts.PlTotals[TAbbrT.STL] += Convert.ToUInt16(r["T2STL"].ToString());
+                    ts.PlTotals[TAbbrT.TOS] += Convert.ToUInt16(r["T2TOS"].ToString());
+                    ts.PlTotals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T2BLK");
+                    ts.PlTotals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T2AST");
+                    ts.PlTotals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T2FOUL");
 
-                    tsopp.PlTotals[TAbbr.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
-                    tsopp.PlTotals[TAbbr.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
-                    tsopp.PlTotals[TAbbr.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
-                    tsopp.PlTotals[TAbbr.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
-                    tsopp.PlTotals[TAbbr.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
-                    tsopp.PlTotals[TAbbr.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
+                    tsopp.PlTotals[TAbbrT.FGM] += Convert.ToUInt16(r["T1FGM"].ToString());
+                    tsopp.PlTotals[TAbbrT.FGA] += Convert.ToUInt16(r["T1FGA"].ToString());
+                    tsopp.PlTotals[TAbbrT.TPM] += Convert.ToUInt16(r["T13PM"].ToString());
+                    tsopp.PlTotals[TAbbrT.TPA] += Convert.ToUInt16(r["T13PA"].ToString());
+                    tsopp.PlTotals[TAbbrT.FTM] += Convert.ToUInt16(r["T1FTM"].ToString());
+                    tsopp.PlTotals[TAbbrT.FTA] += Convert.ToUInt16(r["T1FTA"].ToString());
 
                     var t1REB = Convert.ToUInt16(r["T1REB"].ToString());
                     var t1OREB = Convert.ToUInt16(r["T1OREB"].ToString());
-                    tsopp.PlTotals[TAbbr.DREB] += (ushort) (t1REB - t1OREB);
-                    tsopp.PlTotals[TAbbr.OREB] += t1OREB;
+                    tsopp.PlTotals[TAbbrT.DREB] += (ushort) (t1REB - t1OREB);
+                    tsopp.PlTotals[TAbbrT.OREB] += t1OREB;
 
-                    tsopp.PlTotals[TAbbr.STL] += Convert.ToUInt16(r["T1STL"].ToString());
-                    tsopp.PlTotals[TAbbr.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
-                    tsopp.PlTotals[TAbbr.BLK] += ParseCell.GetUInt16(r, "T1BLK");
-                    tsopp.PlTotals[TAbbr.AST] += ParseCell.GetUInt16(r, "T1AST");
-                    tsopp.PlTotals[TAbbr.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
+                    tsopp.PlTotals[TAbbrT.STL] += Convert.ToUInt16(r["T1STL"].ToString());
+                    tsopp.PlTotals[TAbbrT.TOS] += Convert.ToUInt16(r["T1TOS"].ToString());
+                    tsopp.PlTotals[TAbbrT.BLK] += ParseCell.GetUInt16(r, "T1BLK");
+                    tsopp.PlTotals[TAbbrT.AST] += ParseCell.GetUInt16(r, "T1AST");
+                    tsopp.PlTotals[TAbbrT.FOUL] += ParseCell.GetUInt16(r, "T1FOUL");
                 }
 
                 tsopp.PlRecord[1] = ts.PlRecord[0];

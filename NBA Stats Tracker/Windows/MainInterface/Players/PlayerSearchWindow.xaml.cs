@@ -54,22 +54,22 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         private readonly List<string> _customExpressions = new List<string>();
         private readonly List<string> _customMetricNames;
         private readonly string _folder = App.AppDocsPath + @"\Search Filters";
-        private readonly List<string> _metrics = PAbbr.MetricsNames;
+        private readonly List<string> _metrics = PlayerStatsHelper.MetricsNames;
 
         private readonly List<string> _numericComparisons = new List<string> { "<", "<=", "=", ">=", ">" };
         private readonly List<string> _numericOperators = new List<string> { "+", "-", "*", "/", "(", ")" };
         private readonly List<string> _numericPSRPropertyNames = new List<string>();
         private readonly List<string> _numericTSRPropertyNames = new List<string>();
-        private readonly List<string> _perGame = PAbbr.ExtendedPerGame;
+        private readonly List<string> _perGame = PlayerStatsHelper.ExtendedPerGame;
 
         private readonly List<string> _positions = new List<string> { "Any", "None", "PG", "SG", "SF", "PF", "C" };
         private readonly List<string> _splitOn = new List<string>();
         private readonly List<string> _stringOptions = new List<string> { "Contains", "Is" };
 
-        private readonly List<string> _teamMetrics = TAbbr.MetricsNames;
-        private readonly List<string> _teamPerGame = TAbbr.ExtendedPerGame;
-        private readonly List<string> _teamTotals = TAbbr.ExtendedTotals;
-        private readonly List<string> _totals = PAbbr.ExtendedTotals;
+        private readonly List<string> _teamMetrics = TeamStatsHelper.MetricsNames;
+        private readonly List<string> _teamPerGame = TeamStatsHelper.ExtendedPerGame;
+        private readonly List<string> _teamTotals = TeamStatsHelper.ExtendedTotals;
+        private readonly List<string> _totals = PlayerStatsHelper.ExtendedTotals;
 
         private List<PlayerStatsRow> _cList;
         private bool _changingTimeframe;
@@ -2335,9 +2335,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         {
             var situationals = new List<string>();
             var temp = new List<string>();
-            temp.AddRange(PAbbr.MetricsNames);
-            temp.AddRange(PAbbr.PerGame.Values);
-            temp.AddRange(PAbbr.Totals.Values);
+            temp.AddRange(PlayerStatsHelper.MetricsNames);
+            temp.AddRange(PlayerStatsHelper.PerGame.Values);
+            temp.AddRange(PlayerStatsHelper.Totals.Values);
             var psrProps = typeof(PlayerStatsRow).GetProperties().Select(prop => prop.Name).ToList();
             situationals.AddRange(
                 from t in temp let realName = t.Replace("%", "p").Replace("3", "T") where psrProps.Contains(realName) select t);

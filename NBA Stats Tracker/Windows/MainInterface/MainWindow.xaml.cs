@@ -317,10 +317,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             }
             UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            var metricsNames = PAbbr.MetricsNames;
+            var metricsNames = PlayerStatsHelper.MetricsNames;
             foreach (var name in metricsNames)
             {
-                PAbbr.MetricsDict.Add(name, double.NaN);
+                PlayerStatsHelper.MetricsDict.Add(name, double.NaN);
             }
 
             SearchCache = new List<SearchItem>();
@@ -2695,9 +2695,9 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             float ppg;
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.PPG][1]];
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.PPG][1]];
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 3, PAbbr.PPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 3, PAbbrPG.PPG);
                 s = String.Format(
                     "PPG Leader: {0} {1} ({2}) ({3:F1} PPG, {4})",
                     curL.FirstName,
@@ -2715,10 +2715,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FGp).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.FGp][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.FGp][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.FGp);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.FGp);
                 s = String.Format(
                     "FG% Leader: {0} {1} ({2}) ({3:F3} FG%, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2737,10 +2737,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.RPG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.RPG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.RPG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.RPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.RPG);
                 s = String.Format(
                     "RPG Leader: {0} {1} ({2}) ({3:F1} RPG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2759,10 +2759,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.BPG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.BPG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.BPG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.BPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.BPG);
                 s = String.Format(
                     "BPG Leader: {0} {1} ({2}) ({3:F1} BPG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2781,10 +2781,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.APG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.APG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.APG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.APG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.APG);
                 s = String.Format(
                     "APG Leader: {0} {1} ({2}) ({3:F1} APG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2803,10 +2803,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.SPG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.SPG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.SPG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.SPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.SPG);
                 s = String.Format(
                     "SPG Leader: {0} {1} ({2}) ({3:F1} SPG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2825,10 +2825,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.ORPG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.ORPG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.ORPG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.ORPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.ORPG);
                 s = String.Format(
                     "ORPG Leader: {0} {1} ({2}) ({3:F1} ORPG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2847,10 +2847,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.DRPG).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.DRPG][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.DRPG][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.DRPG);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.DRPG);
                 s = String.Format(
                     "DRPG Leader: {0} {1} ({2}) ({3:F1} DRPG, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2869,10 +2869,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.TPp).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.TPp][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.TPp][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.TPp);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.TPp);
                 s = String.Format(
                     "3P% Leader: {0} {1} ({2}) ({3:F3} 3P%, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2891,10 +2891,10 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             //curL = psrList.Single(psr => psr.ID == leadersPSRList.OrderByDescending(pair => pair.FTp).First().ID);
             try
             {
-                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbr.FTp][1]];
-                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbr.PPG] : curL.PPG;
+                curL = psrList[SeasonLeadersRankings.RevRankingsPerGame[PAbbrPG.FTp][1]];
+                ppg = double.IsNaN(curL.PPG) ? PST[curL.ID].PerGame[PAbbrPG.PPG] : curL.PPG;
 
-                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbr.FTp);
+                m = getBestStatsForMarquee(curL, SeasonLeadersRankings, 2, PAbbrPG.FTp);
                 s = String.Format(
                     "FT% Leader: {0} {1} ({2}) ({3:F3} FT%, {5:F1} PPG, {4})",
                     curL.FirstName,
@@ -2927,8 +2927,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             {
                 dict.Add(k, rankingsActive.RankingsPerGame[curLr.ID][k]);
             }
-            dict[PAbbr.FPG] = PST.Count + 1 - dict[PAbbr.FPG];
-            dict[PAbbr.TPG] = PST.Count + 1 - dict[PAbbr.TPG];
+            dict[PAbbrPG.FPG] = PST.Count + 1 - dict[PAbbrPG.FPG];
+            dict[PAbbrPG.TPG] = PST.Count + 1 - dict[PAbbrPG.TPG];
             //dict[t.PAPG] = pst.Count + 1 - dict[t.PAPG];
             var strengths = (from entry in dict orderby entry.Value ascending select entry.Key).ToList();
             var m = 0;
@@ -2939,7 +2939,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 {
                     break;
                 }
-                if (strengths[m] == statToIgnore || strengths[m] == PAbbr.PPG || strengths[m] == PAbbr.DRPG)
+                if (strengths[m] == statToIgnore || strengths[m] == PAbbrPG.PPG || strengths[m] == PAbbrPG.DRPG)
                 {
                     j++;
                     m++;
@@ -2947,40 +2947,40 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 }
                 switch (strengths[m])
                 {
-                    case PAbbr.APG:
+                    case PAbbrPG.APG:
                         s += String.Format("{0:F1} APG, ", curLr.APG);
                         break;
-                    case PAbbr.BPG:
+                    case PAbbrPG.BPG:
                         s += String.Format("{0:F1} BPG, ", curLr.BPG);
                         break;
-                    case PAbbr.DRPG:
+                    case PAbbrPG.DRPG:
                         s += String.Format("{0:F1} DRPG, ", curLr.DRPG);
                         break;
-                    case PAbbr.FGp:
+                    case PAbbrPG.FGp:
                         s += String.Format("{0:F3} FG%, ", curLr.FGp);
                         break;
-                    case PAbbr.FPG:
+                    case PAbbrPG.FPG:
                         s += String.Format("{0:F1} FPG, ", curLr.FPG);
                         break;
-                    case PAbbr.FTp:
+                    case PAbbrPG.FTp:
                         s += String.Format("{0:F3} FT%, ", curLr.FTp);
                         break;
-                    case PAbbr.ORPG:
+                    case PAbbrPG.ORPG:
                         s += String.Format("{0:F1} ORPG, ", curLr.ORPG);
                         break;
-                    case PAbbr.PPG:
+                    case PAbbrPG.PPG:
                         s += String.Format("{0:F1} PPG, ", curLr.PPG);
                         break;
-                    case PAbbr.RPG:
+                    case PAbbrPG.RPG:
                         s += String.Format("{0:F1} RPG, ", curLr.RPG);
                         break;
-                    case PAbbr.SPG:
+                    case PAbbrPG.SPG:
                         s += String.Format("{0:F1} SPG, ", curLr.SPG);
                         break;
-                    case PAbbr.TPG:
+                    case PAbbrPG.TPG:
                         s += String.Format("{0:F1} TPG, ", curLr.TPG);
                         break;
-                    case PAbbr.TPp:
+                    case PAbbrPG.TPp:
                         s += String.Format("{0:F3} 3P%, ", curLr.TPp);
                         break;
                     default:

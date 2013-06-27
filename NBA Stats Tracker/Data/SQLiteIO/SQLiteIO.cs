@@ -611,22 +611,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "Conference", tstToSave[key].Conference.ToString() },
                         { "WIN", tstToSave[key].Record[0].ToString() },
                         { "LOSS", tstToSave[key].Record[1].ToString() },
-                        { "MINS", tstToSave[key].Totals[TAbbr.MINS].ToString() },
-                        { "PF", tstToSave[key].Totals[TAbbr.PF].ToString() },
-                        { "PA", tstToSave[key].Totals[TAbbr.PA].ToString() },
-                        { "FGM", tstToSave[key].Totals[TAbbr.FGM].ToString() },
-                        { "FGA", tstToSave[key].Totals[TAbbr.FGA].ToString() },
-                        { "TPM", tstToSave[key].Totals[TAbbr.TPM].ToString() },
-                        { "TPA", tstToSave[key].Totals[TAbbr.TPA].ToString() },
-                        { "FTM", tstToSave[key].Totals[TAbbr.FTM].ToString() },
-                        { "FTA", tstToSave[key].Totals[TAbbr.FTA].ToString() },
-                        { "OREB", tstToSave[key].Totals[TAbbr.OREB].ToString() },
-                        { "DREB", tstToSave[key].Totals[TAbbr.DREB].ToString() },
-                        { "STL", tstToSave[key].Totals[TAbbr.STL].ToString() },
-                        { "TOS", tstToSave[key].Totals[TAbbr.TOS].ToString() },
-                        { "BLK", tstToSave[key].Totals[TAbbr.BLK].ToString() },
-                        { "AST", tstToSave[key].Totals[TAbbr.AST].ToString() },
-                        { "FOUL", tstToSave[key].Totals[TAbbr.FOUL].ToString() },
+                        { "MINS", tstToSave[key].Totals[TAbbrT.MINS].ToString() },
+                        { "PF", tstToSave[key].Totals[TAbbrT.PF].ToString() },
+                        { "PA", tstToSave[key].Totals[TAbbrT.PA].ToString() },
+                        { "FGM", tstToSave[key].Totals[TAbbrT.FGM].ToString() },
+                        { "FGA", tstToSave[key].Totals[TAbbrT.FGA].ToString() },
+                        { "TPM", tstToSave[key].Totals[TAbbrT.TPM].ToString() },
+                        { "TPA", tstToSave[key].Totals[TAbbrT.TPA].ToString() },
+                        { "FTM", tstToSave[key].Totals[TAbbrT.FTM].ToString() },
+                        { "FTA", tstToSave[key].Totals[TAbbrT.FTA].ToString() },
+                        { "OREB", tstToSave[key].Totals[TAbbrT.OREB].ToString() },
+                        { "DREB", tstToSave[key].Totals[TAbbrT.DREB].ToString() },
+                        { "STL", tstToSave[key].Totals[TAbbrT.STL].ToString() },
+                        { "TOS", tstToSave[key].Totals[TAbbrT.TOS].ToString() },
+                        { "BLK", tstToSave[key].Totals[TAbbrT.BLK].ToString() },
+                        { "AST", tstToSave[key].Totals[TAbbrT.AST].ToString() },
+                        { "FOUL", tstToSave[key].Totals[TAbbrT.FOUL].ToString() },
                         { "OFFSET", tstToSave[key].Offset.ToString() }
                     };
 
@@ -642,22 +642,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "Conference", tstToSave[key].Conference.ToString() },
                         { "WIN", tstToSave[key].PlRecord[0].ToString() },
                         { "LOSS", tstToSave[key].PlRecord[1].ToString() },
-                        { "MINS", tstToSave[key].PlTotals[TAbbr.MINS].ToString() },
-                        { "PF", tstToSave[key].PlTotals[TAbbr.PF].ToString() },
-                        { "PA", tstToSave[key].PlTotals[TAbbr.PA].ToString() },
-                        { "FGM", tstToSave[key].PlTotals[TAbbr.FGM].ToString() },
-                        { "FGA", tstToSave[key].PlTotals[TAbbr.FGA].ToString() },
-                        { "TPM", tstToSave[key].PlTotals[TAbbr.TPM].ToString() },
-                        { "TPA", tstToSave[key].PlTotals[TAbbr.TPA].ToString() },
-                        { "FTM", tstToSave[key].PlTotals[TAbbr.FTM].ToString() },
-                        { "FTA", tstToSave[key].PlTotals[TAbbr.FTA].ToString() },
-                        { "OREB", tstToSave[key].PlTotals[TAbbr.OREB].ToString() },
-                        { "DREB", tstToSave[key].PlTotals[TAbbr.DREB].ToString() },
-                        { "STL", tstToSave[key].PlTotals[TAbbr.STL].ToString() },
-                        { "TOS", tstToSave[key].PlTotals[TAbbr.TOS].ToString() },
-                        { "BLK", tstToSave[key].PlTotals[TAbbr.BLK].ToString() },
-                        { "AST", tstToSave[key].PlTotals[TAbbr.AST].ToString() },
-                        { "FOUL", tstToSave[key].PlTotals[TAbbr.FOUL].ToString() },
+                        { "MINS", tstToSave[key].PlTotals[TAbbrT.MINS].ToString() },
+                        { "PF", tstToSave[key].PlTotals[TAbbrT.PF].ToString() },
+                        { "PA", tstToSave[key].PlTotals[TAbbrT.PA].ToString() },
+                        { "FGM", tstToSave[key].PlTotals[TAbbrT.FGM].ToString() },
+                        { "FGA", tstToSave[key].PlTotals[TAbbrT.FGA].ToString() },
+                        { "TPM", tstToSave[key].PlTotals[TAbbrT.TPM].ToString() },
+                        { "TPA", tstToSave[key].PlTotals[TAbbrT.TPA].ToString() },
+                        { "FTM", tstToSave[key].PlTotals[TAbbrT.FTM].ToString() },
+                        { "FTA", tstToSave[key].PlTotals[TAbbrT.FTA].ToString() },
+                        { "OREB", tstToSave[key].PlTotals[TAbbrT.OREB].ToString() },
+                        { "DREB", tstToSave[key].PlTotals[TAbbrT.DREB].ToString() },
+                        { "STL", tstToSave[key].PlTotals[TAbbrT.STL].ToString() },
+                        { "TOS", tstToSave[key].PlTotals[TAbbrT.TOS].ToString() },
+                        { "BLK", tstToSave[key].PlTotals[TAbbrT.BLK].ToString() },
+                        { "AST", tstToSave[key].PlTotals[TAbbrT.AST].ToString() },
+                        { "FOUL", tstToSave[key].PlTotals[TAbbrT.FOUL].ToString() },
                         { "OFFSET", tstToSave[key].PlOffset.ToString() }
                     };
 
@@ -715,22 +715,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "Conference", tstOppToSave[key].Conference.ToString() },
                         { "WIN", tstOppToSave[key].Record[0].ToString() },
                         { "LOSS", tstOppToSave[key].Record[1].ToString() },
-                        { "MINS", tstOppToSave[key].Totals[TAbbr.MINS].ToString() },
-                        { "PF", tstOppToSave[key].Totals[TAbbr.PF].ToString() },
-                        { "PA", tstOppToSave[key].Totals[TAbbr.PA].ToString() },
-                        { "FGM", tstOppToSave[key].Totals[TAbbr.FGM].ToString() },
-                        { "FGA", tstOppToSave[key].Totals[TAbbr.FGA].ToString() },
-                        { "TPM", tstOppToSave[key].Totals[TAbbr.TPM].ToString() },
-                        { "TPA", tstOppToSave[key].Totals[TAbbr.TPA].ToString() },
-                        { "FTM", tstOppToSave[key].Totals[TAbbr.FTM].ToString() },
-                        { "FTA", tstOppToSave[key].Totals[TAbbr.FTA].ToString() },
-                        { "OREB", tstOppToSave[key].Totals[TAbbr.OREB].ToString() },
-                        { "DREB", tstOppToSave[key].Totals[TAbbr.DREB].ToString() },
-                        { "STL", tstOppToSave[key].Totals[TAbbr.STL].ToString() },
-                        { "TOS", tstOppToSave[key].Totals[TAbbr.TOS].ToString() },
-                        { "BLK", tstOppToSave[key].Totals[TAbbr.BLK].ToString() },
-                        { "AST", tstOppToSave[key].Totals[TAbbr.AST].ToString() },
-                        { "FOUL", tstOppToSave[key].Totals[TAbbr.FOUL].ToString() },
+                        { "MINS", tstOppToSave[key].Totals[TAbbrT.MINS].ToString() },
+                        { "PF", tstOppToSave[key].Totals[TAbbrT.PF].ToString() },
+                        { "PA", tstOppToSave[key].Totals[TAbbrT.PA].ToString() },
+                        { "FGM", tstOppToSave[key].Totals[TAbbrT.FGM].ToString() },
+                        { "FGA", tstOppToSave[key].Totals[TAbbrT.FGA].ToString() },
+                        { "TPM", tstOppToSave[key].Totals[TAbbrT.TPM].ToString() },
+                        { "TPA", tstOppToSave[key].Totals[TAbbrT.TPA].ToString() },
+                        { "FTM", tstOppToSave[key].Totals[TAbbrT.FTM].ToString() },
+                        { "FTA", tstOppToSave[key].Totals[TAbbrT.FTA].ToString() },
+                        { "OREB", tstOppToSave[key].Totals[TAbbrT.OREB].ToString() },
+                        { "DREB", tstOppToSave[key].Totals[TAbbrT.DREB].ToString() },
+                        { "STL", tstOppToSave[key].Totals[TAbbrT.STL].ToString() },
+                        { "TOS", tstOppToSave[key].Totals[TAbbrT.TOS].ToString() },
+                        { "BLK", tstOppToSave[key].Totals[TAbbrT.BLK].ToString() },
+                        { "AST", tstOppToSave[key].Totals[TAbbrT.AST].ToString() },
+                        { "FOUL", tstOppToSave[key].Totals[TAbbrT.FOUL].ToString() },
                         { "OFFSET", tstOppToSave[key].Offset.ToString() }
                     };
 
@@ -746,22 +746,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "Conference", tstOppToSave[key].Conference.ToString() },
                         { "WIN", tstOppToSave[key].PlRecord[0].ToString() },
                         { "LOSS", tstOppToSave[key].PlRecord[1].ToString() },
-                        { "MINS", tstOppToSave[key].PlTotals[TAbbr.MINS].ToString() },
-                        { "PF", tstOppToSave[key].PlTotals[TAbbr.PF].ToString() },
-                        { "PA", tstOppToSave[key].PlTotals[TAbbr.PA].ToString() },
-                        { "FGM", tstOppToSave[key].PlTotals[TAbbr.FGM].ToString() },
-                        { "FGA", tstOppToSave[key].PlTotals[TAbbr.FGA].ToString() },
-                        { "TPM", tstOppToSave[key].PlTotals[TAbbr.TPM].ToString() },
-                        { "TPA", tstOppToSave[key].PlTotals[TAbbr.TPA].ToString() },
-                        { "FTM", tstOppToSave[key].PlTotals[TAbbr.FTM].ToString() },
-                        { "FTA", tstOppToSave[key].PlTotals[TAbbr.FTA].ToString() },
-                        { "OREB", tstOppToSave[key].PlTotals[TAbbr.OREB].ToString() },
-                        { "DREB", tstOppToSave[key].PlTotals[TAbbr.DREB].ToString() },
-                        { "STL", tstOppToSave[key].PlTotals[TAbbr.STL].ToString() },
-                        { "TOS", tstOppToSave[key].PlTotals[TAbbr.TOS].ToString() },
-                        { "BLK", tstOppToSave[key].PlTotals[TAbbr.BLK].ToString() },
-                        { "AST", tstOppToSave[key].PlTotals[TAbbr.AST].ToString() },
-                        { "FOUL", tstOppToSave[key].PlTotals[TAbbr.FOUL].ToString() },
+                        { "MINS", tstOppToSave[key].PlTotals[TAbbrT.MINS].ToString() },
+                        { "PF", tstOppToSave[key].PlTotals[TAbbrT.PF].ToString() },
+                        { "PA", tstOppToSave[key].PlTotals[TAbbrT.PA].ToString() },
+                        { "FGM", tstOppToSave[key].PlTotals[TAbbrT.FGM].ToString() },
+                        { "FGA", tstOppToSave[key].PlTotals[TAbbrT.FGA].ToString() },
+                        { "TPM", tstOppToSave[key].PlTotals[TAbbrT.TPM].ToString() },
+                        { "TPA", tstOppToSave[key].PlTotals[TAbbrT.TPA].ToString() },
+                        { "FTM", tstOppToSave[key].PlTotals[TAbbrT.FTM].ToString() },
+                        { "FTA", tstOppToSave[key].PlTotals[TAbbrT.FTA].ToString() },
+                        { "OREB", tstOppToSave[key].PlTotals[TAbbrT.OREB].ToString() },
+                        { "DREB", tstOppToSave[key].PlTotals[TAbbrT.DREB].ToString() },
+                        { "STL", tstOppToSave[key].PlTotals[TAbbrT.STL].ToString() },
+                        { "TOS", tstOppToSave[key].PlTotals[TAbbrT.TOS].ToString() },
+                        { "BLK", tstOppToSave[key].PlTotals[TAbbrT.BLK].ToString() },
+                        { "AST", tstOppToSave[key].PlTotals[TAbbrT.AST].ToString() },
+                        { "FOUL", tstOppToSave[key].PlTotals[TAbbrT.FOUL].ToString() },
                         { "OFFSET", tstOppToSave[key].PlOffset.ToString() }
                     };
 
@@ -868,23 +868,23 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                         { "InjuryDaysLeft", ps.Injury.InjuryDaysLeft.ToString() },
                         { "TeamFin", ps.TeamF.ToString() },
                         { "TeamSta", ps.TeamS.ToString() },
-                        { "GP", ps.Totals[PAbbr.GP].ToString() },
-                        { "GS", ps.Totals[PAbbr.GS].ToString() },
-                        { "MINS", ps.Totals[PAbbr.MINS].ToString() },
-                        { "PTS", ps.Totals[PAbbr.PTS].ToString() },
-                        { "FGM", ps.Totals[PAbbr.FGM].ToString() },
-                        { "FGA", ps.Totals[PAbbr.FGA].ToString() },
-                        { "TPM", ps.Totals[PAbbr.TPM].ToString() },
-                        { "TPA", ps.Totals[PAbbr.TPA].ToString() },
-                        { "FTM", ps.Totals[PAbbr.FTM].ToString() },
-                        { "FTA", ps.Totals[PAbbr.FTA].ToString() },
-                        { "OREB", ps.Totals[PAbbr.OREB].ToString() },
-                        { "DREB", ps.Totals[PAbbr.DREB].ToString() },
-                        { "STL", ps.Totals[PAbbr.STL].ToString() },
-                        { "TOS", ps.Totals[PAbbr.TOS].ToString() },
-                        { "BLK", ps.Totals[PAbbr.BLK].ToString() },
-                        { "AST", ps.Totals[PAbbr.AST].ToString() },
-                        { "FOUL", ps.Totals[PAbbr.FOUL].ToString() },
+                        { "GP", ps.Totals[PAbbrT.GP].ToString() },
+                        { "GS", ps.Totals[PAbbrT.GS].ToString() },
+                        { "MINS", ps.Totals[PAbbrT.MINS].ToString() },
+                        { "PTS", ps.Totals[PAbbrT.PTS].ToString() },
+                        { "FGM", ps.Totals[PAbbrT.FGM].ToString() },
+                        { "FGA", ps.Totals[PAbbrT.FGA].ToString() },
+                        { "TPM", ps.Totals[PAbbrT.TPM].ToString() },
+                        { "TPA", ps.Totals[PAbbrT.TPA].ToString() },
+                        { "FTM", ps.Totals[PAbbrT.FTM].ToString() },
+                        { "FTA", ps.Totals[PAbbrT.FTA].ToString() },
+                        { "OREB", ps.Totals[PAbbrT.OREB].ToString() },
+                        { "DREB", ps.Totals[PAbbrT.DREB].ToString() },
+                        { "STL", ps.Totals[PAbbrT.STL].ToString() },
+                        { "TOS", ps.Totals[PAbbrT.TOS].ToString() },
+                        { "BLK", ps.Totals[PAbbrT.BLK].ToString() },
+                        { "AST", ps.Totals[PAbbrT.AST].ToString() },
+                        { "FOUL", ps.Totals[PAbbrT.FOUL].ToString() },
                         { "isAllStar", ps.IsAllStar.ToString() },
                         { "isNBAChampion", ps.IsNBAChampion.ToString() },
                         { "ContractY1", ps.Contract.TryGetSalary(1).ToString() },
@@ -901,43 +901,43 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
                 var plDict = new Dictionary<string, string>
                     {
                         { "ID", ps.ID.ToString() },
-                        { "GP", ps.PlTotals[PAbbr.GP].ToString() },
-                        { "GS", ps.PlTotals[PAbbr.GS].ToString() },
-                        { "MINS", ps.PlTotals[PAbbr.MINS].ToString() },
-                        { "PTS", ps.PlTotals[PAbbr.PTS].ToString() },
-                        { "FGM", ps.PlTotals[PAbbr.FGM].ToString() },
-                        { "FGA", ps.PlTotals[PAbbr.FGA].ToString() },
-                        { "TPM", ps.PlTotals[PAbbr.TPM].ToString() },
-                        { "TPA", ps.PlTotals[PAbbr.TPA].ToString() },
-                        { "FTM", ps.PlTotals[PAbbr.FTM].ToString() },
-                        { "FTA", ps.PlTotals[PAbbr.FTA].ToString() },
-                        { "OREB", ps.PlTotals[PAbbr.OREB].ToString() },
-                        { "DREB", ps.PlTotals[PAbbr.DREB].ToString() },
-                        { "STL", ps.PlTotals[PAbbr.STL].ToString() },
-                        { "TOS", ps.PlTotals[PAbbr.TOS].ToString() },
-                        { "BLK", ps.PlTotals[PAbbr.BLK].ToString() },
-                        { "AST", ps.PlTotals[PAbbr.AST].ToString() },
-                        { "FOUL", ps.PlTotals[PAbbr.FOUL].ToString() }
+                        { "GP", ps.PlTotals[PAbbrT.GP].ToString() },
+                        { "GS", ps.PlTotals[PAbbrT.GS].ToString() },
+                        { "MINS", ps.PlTotals[PAbbrT.MINS].ToString() },
+                        { "PTS", ps.PlTotals[PAbbrT.PTS].ToString() },
+                        { "FGM", ps.PlTotals[PAbbrT.FGM].ToString() },
+                        { "FGA", ps.PlTotals[PAbbrT.FGA].ToString() },
+                        { "TPM", ps.PlTotals[PAbbrT.TPM].ToString() },
+                        { "TPA", ps.PlTotals[PAbbrT.TPA].ToString() },
+                        { "FTM", ps.PlTotals[PAbbrT.FTM].ToString() },
+                        { "FTA", ps.PlTotals[PAbbrT.FTA].ToString() },
+                        { "OREB", ps.PlTotals[PAbbrT.OREB].ToString() },
+                        { "DREB", ps.PlTotals[PAbbrT.DREB].ToString() },
+                        { "STL", ps.PlTotals[PAbbrT.STL].ToString() },
+                        { "TOS", ps.PlTotals[PAbbrT.TOS].ToString() },
+                        { "BLK", ps.PlTotals[PAbbrT.BLK].ToString() },
+                        { "AST", ps.PlTotals[PAbbrT.AST].ToString() },
+                        { "FOUL", ps.PlTotals[PAbbrT.FOUL].ToString() }
                     };
                 var chDict = new Dictionary<string, string>
                     {
                         { "PlayerID", ps.ID.ToString() },
-                        { "MINS", ps.CareerHighs[PAbbr.MINS].ToString() },
-                        { "PTS", ps.CareerHighs[PAbbr.PTS].ToString() },
-                        { "FGM", ps.CareerHighs[PAbbr.FGM].ToString() },
-                        { "FGA", ps.CareerHighs[PAbbr.FGA].ToString() },
-                        { "TPM", ps.CareerHighs[PAbbr.TPM].ToString() },
-                        { "TPA", ps.CareerHighs[PAbbr.TPA].ToString() },
-                        { "FTM", ps.CareerHighs[PAbbr.FTM].ToString() },
-                        { "FTA", ps.CareerHighs[PAbbr.FTA].ToString() },
-                        { "REB", ps.CareerHighs[PAbbr.REB].ToString() },
-                        { "OREB", ps.CareerHighs[PAbbr.OREB].ToString() },
-                        { "DREB", ps.CareerHighs[PAbbr.DREB].ToString() },
-                        { "STL", ps.CareerHighs[PAbbr.STL].ToString() },
-                        { "TOS", ps.CareerHighs[PAbbr.TOS].ToString() },
-                        { "BLK", ps.CareerHighs[PAbbr.BLK].ToString() },
-                        { "AST", ps.CareerHighs[PAbbr.AST].ToString() },
-                        { "FOUL", ps.CareerHighs[PAbbr.FOUL].ToString() }
+                        { "MINS", ps.CareerHighs[PAbbrT.MINS].ToString() },
+                        { "PTS", ps.CareerHighs[PAbbrT.PTS].ToString() },
+                        { "FGM", ps.CareerHighs[PAbbrT.FGM].ToString() },
+                        { "FGA", ps.CareerHighs[PAbbrT.FGA].ToString() },
+                        { "TPM", ps.CareerHighs[PAbbrT.TPM].ToString() },
+                        { "TPA", ps.CareerHighs[PAbbrT.TPA].ToString() },
+                        { "FTM", ps.CareerHighs[PAbbrT.FTM].ToString() },
+                        { "FTA", ps.CareerHighs[PAbbrT.FTA].ToString() },
+                        { "REB", ps.CareerHighs[PAbbrT.REB].ToString() },
+                        { "OREB", ps.CareerHighs[PAbbrT.OREB].ToString() },
+                        { "DREB", ps.CareerHighs[PAbbrT.DREB].ToString() },
+                        { "STL", ps.CareerHighs[PAbbrT.STL].ToString() },
+                        { "TOS", ps.CareerHighs[PAbbrT.TOS].ToString() },
+                        { "BLK", ps.CareerHighs[PAbbrT.BLK].ToString() },
+                        { "AST", ps.CareerHighs[PAbbrT.AST].ToString() },
+                        { "FOUL", ps.CareerHighs[PAbbrT.FOUL].ToString() }
                     };
 
                 sqlinsert.Add(dict);
@@ -1400,22 +1400,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             ts.PlOffset = Convert.ToInt32(r["OFFSET"].ToString());
             ts.PlRecord[0] = Convert.ToByte(r["WIN"].ToString());
             ts.PlRecord[1] = Convert.ToByte(r["LOSS"].ToString());
-            ts.PlTotals[TAbbr.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-            ts.PlTotals[TAbbr.PF] = Convert.ToUInt16(r["PF"].ToString());
-            ts.PlTotals[TAbbr.PA] = Convert.ToUInt16(r["PA"].ToString());
-            ts.PlTotals[TAbbr.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-            ts.PlTotals[TAbbr.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-            ts.PlTotals[TAbbr.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-            ts.PlTotals[TAbbr.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-            ts.PlTotals[TAbbr.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-            ts.PlTotals[TAbbr.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-            ts.PlTotals[TAbbr.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-            ts.PlTotals[TAbbr.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-            ts.PlTotals[TAbbr.STL] = Convert.ToUInt16(r["STL"].ToString());
-            ts.PlTotals[TAbbr.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-            ts.PlTotals[TAbbr.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-            ts.PlTotals[TAbbr.AST] = Convert.ToUInt16(r["AST"].ToString());
-            ts.PlTotals[TAbbr.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            ts.PlTotals[TAbbrT.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+            ts.PlTotals[TAbbrT.PF] = Convert.ToUInt16(r["PF"].ToString());
+            ts.PlTotals[TAbbrT.PA] = Convert.ToUInt16(r["PA"].ToString());
+            ts.PlTotals[TAbbrT.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+            ts.PlTotals[TAbbrT.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+            ts.PlTotals[TAbbrT.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+            ts.PlTotals[TAbbrT.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+            ts.PlTotals[TAbbrT.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+            ts.PlTotals[TAbbrT.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+            ts.PlTotals[TAbbrT.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+            ts.PlTotals[TAbbrT.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+            ts.PlTotals[TAbbrT.STL] = Convert.ToUInt16(r["STL"].ToString());
+            ts.PlTotals[TAbbrT.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+            ts.PlTotals[TAbbrT.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+            ts.PlTotals[TAbbrT.AST] = Convert.ToUInt16(r["AST"].ToString());
+            ts.PlTotals[TAbbrT.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
             ts.CalcAvg();
 
@@ -1466,22 +1466,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             tsopp.Offset = Convert.ToInt32(r["OFFSET"].ToString());
             tsopp.Record[0] = Convert.ToByte(r["WIN"].ToString());
             tsopp.Record[1] = Convert.ToByte(r["LOSS"].ToString());
-            tsopp.Totals[TAbbr.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-            tsopp.Totals[TAbbr.PF] = Convert.ToUInt16(r["PF"].ToString());
-            tsopp.Totals[TAbbr.PA] = Convert.ToUInt16(r["PA"].ToString());
-            tsopp.Totals[TAbbr.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-            tsopp.Totals[TAbbr.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-            tsopp.Totals[TAbbr.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-            tsopp.Totals[TAbbr.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-            tsopp.Totals[TAbbr.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-            tsopp.Totals[TAbbr.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-            tsopp.Totals[TAbbr.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-            tsopp.Totals[TAbbr.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-            tsopp.Totals[TAbbr.STL] = Convert.ToUInt16(r["STL"].ToString());
-            tsopp.Totals[TAbbr.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-            tsopp.Totals[TAbbr.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-            tsopp.Totals[TAbbr.AST] = Convert.ToUInt16(r["AST"].ToString());
-            tsopp.Totals[TAbbr.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            tsopp.Totals[TAbbrT.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+            tsopp.Totals[TAbbrT.PF] = Convert.ToUInt16(r["PF"].ToString());
+            tsopp.Totals[TAbbrT.PA] = Convert.ToUInt16(r["PA"].ToString());
+            tsopp.Totals[TAbbrT.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+            tsopp.Totals[TAbbrT.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+            tsopp.Totals[TAbbrT.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+            tsopp.Totals[TAbbrT.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+            tsopp.Totals[TAbbrT.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+            tsopp.Totals[TAbbrT.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+            tsopp.Totals[TAbbrT.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+            tsopp.Totals[TAbbrT.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+            tsopp.Totals[TAbbrT.STL] = Convert.ToUInt16(r["STL"].ToString());
+            tsopp.Totals[TAbbrT.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+            tsopp.Totals[TAbbrT.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+            tsopp.Totals[TAbbrT.AST] = Convert.ToUInt16(r["AST"].ToString());
+            tsopp.Totals[TAbbrT.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
             if (maxSeason == season)
             {
@@ -1497,22 +1497,22 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             tsopp.PlOffset = Convert.ToInt32(r["OFFSET"].ToString());
             tsopp.PlRecord[0] = Convert.ToByte(r["WIN"].ToString());
             tsopp.PlRecord[1] = Convert.ToByte(r["LOSS"].ToString());
-            tsopp.PlTotals[TAbbr.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-            tsopp.PlTotals[TAbbr.PF] = Convert.ToUInt16(r["PF"].ToString());
-            tsopp.PlTotals[TAbbr.PA] = Convert.ToUInt16(r["PA"].ToString());
-            tsopp.PlTotals[TAbbr.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-            tsopp.PlTotals[TAbbr.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-            tsopp.PlTotals[TAbbr.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-            tsopp.PlTotals[TAbbr.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-            tsopp.PlTotals[TAbbr.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-            tsopp.PlTotals[TAbbr.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-            tsopp.PlTotals[TAbbr.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-            tsopp.PlTotals[TAbbr.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-            tsopp.PlTotals[TAbbr.STL] = Convert.ToUInt16(r["STL"].ToString());
-            tsopp.PlTotals[TAbbr.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-            tsopp.PlTotals[TAbbr.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-            tsopp.PlTotals[TAbbr.AST] = Convert.ToUInt16(r["AST"].ToString());
-            tsopp.PlTotals[TAbbr.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+            tsopp.PlTotals[TAbbrT.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+            tsopp.PlTotals[TAbbrT.PF] = Convert.ToUInt16(r["PF"].ToString());
+            tsopp.PlTotals[TAbbrT.PA] = Convert.ToUInt16(r["PA"].ToString());
+            tsopp.PlTotals[TAbbrT.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+            tsopp.PlTotals[TAbbrT.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+            tsopp.PlTotals[TAbbrT.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+            tsopp.PlTotals[TAbbrT.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+            tsopp.PlTotals[TAbbrT.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+            tsopp.PlTotals[TAbbrT.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+            tsopp.PlTotals[TAbbrT.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+            tsopp.PlTotals[TAbbrT.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+            tsopp.PlTotals[TAbbrT.STL] = Convert.ToUInt16(r["STL"].ToString());
+            tsopp.PlTotals[TAbbrT.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+            tsopp.PlTotals[TAbbrT.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+            tsopp.PlTotals[TAbbrT.AST] = Convert.ToUInt16(r["AST"].ToString());
+            tsopp.PlTotals[TAbbrT.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
 
             tsopp.CalcAvg();
         }
@@ -1524,43 +1524,43 @@ namespace NBA_Stats_Tracker.Data.SQLiteIO
             {
                 ts.Record[0] = Convert.ToByte(r["WIN"].ToString());
                 ts.Record[1] = Convert.ToByte(r["LOSS"].ToString());
-                ts.Totals[TAbbr.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-                ts.Totals[TAbbr.PF] = Convert.ToUInt16(r["PF"].ToString());
-                ts.Totals[TAbbr.PA] = Convert.ToUInt16(r["PA"].ToString());
-                ts.Totals[TAbbr.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                ts.Totals[TAbbr.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                ts.Totals[TAbbr.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                ts.Totals[TAbbr.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                ts.Totals[TAbbr.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                ts.Totals[TAbbr.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                ts.Totals[TAbbr.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                ts.Totals[TAbbr.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                ts.Totals[TAbbr.STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.Totals[TAbbr.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-                ts.Totals[TAbbr.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                ts.Totals[TAbbr.AST] = Convert.ToUInt16(r["AST"].ToString());
-                ts.Totals[TAbbr.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                ts.Totals[TAbbrT.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+                ts.Totals[TAbbrT.PF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.Totals[TAbbrT.PA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.Totals[TAbbrT.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.Totals[TAbbrT.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.Totals[TAbbrT.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.Totals[TAbbrT.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.Totals[TAbbrT.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.Totals[TAbbrT.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.Totals[TAbbrT.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.Totals[TAbbrT.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.Totals[TAbbrT.STL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.Totals[TAbbrT.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.Totals[TAbbrT.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.Totals[TAbbrT.AST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.Totals[TAbbrT.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
             }
             else
             {
                 ts.PlRecord[0] = Convert.ToByte(r["WIN"].ToString());
                 ts.PlRecord[1] = Convert.ToByte(r["LOSS"].ToString());
-                ts.PlTotals[TAbbr.MINS] = Convert.ToUInt16(r["MINS"].ToString());
-                ts.PlTotals[TAbbr.PF] = Convert.ToUInt16(r["PF"].ToString());
-                ts.PlTotals[TAbbr.PA] = Convert.ToUInt16(r["PA"].ToString());
-                ts.PlTotals[TAbbr.FGM] = Convert.ToUInt16(r["FGM"].ToString());
-                ts.PlTotals[TAbbr.FGA] = Convert.ToUInt16(r["FGA"].ToString());
-                ts.PlTotals[TAbbr.TPM] = Convert.ToUInt16(r["TPM"].ToString());
-                ts.PlTotals[TAbbr.TPA] = Convert.ToUInt16(r["TPA"].ToString());
-                ts.PlTotals[TAbbr.FTM] = Convert.ToUInt16(r["FTM"].ToString());
-                ts.PlTotals[TAbbr.FTA] = Convert.ToUInt16(r["FTA"].ToString());
-                ts.PlTotals[TAbbr.OREB] = Convert.ToUInt16(r["OREB"].ToString());
-                ts.PlTotals[TAbbr.DREB] = Convert.ToUInt16(r["DREB"].ToString());
-                ts.PlTotals[TAbbr.STL] = Convert.ToUInt16(r["STL"].ToString());
-                ts.PlTotals[TAbbr.TOS] = Convert.ToUInt16(r["TOS"].ToString());
-                ts.PlTotals[TAbbr.BLK] = Convert.ToUInt16(r["BLK"].ToString());
-                ts.PlTotals[TAbbr.AST] = Convert.ToUInt16(r["AST"].ToString());
-                ts.PlTotals[TAbbr.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
+                ts.PlTotals[TAbbrT.MINS] = Convert.ToUInt16(r["MINS"].ToString());
+                ts.PlTotals[TAbbrT.PF] = Convert.ToUInt16(r["PF"].ToString());
+                ts.PlTotals[TAbbrT.PA] = Convert.ToUInt16(r["PA"].ToString());
+                ts.PlTotals[TAbbrT.FGM] = Convert.ToUInt16(r["FGM"].ToString());
+                ts.PlTotals[TAbbrT.FGA] = Convert.ToUInt16(r["FGA"].ToString());
+                ts.PlTotals[TAbbrT.TPM] = Convert.ToUInt16(r["TPM"].ToString());
+                ts.PlTotals[TAbbrT.TPA] = Convert.ToUInt16(r["TPA"].ToString());
+                ts.PlTotals[TAbbrT.FTM] = Convert.ToUInt16(r["FTM"].ToString());
+                ts.PlTotals[TAbbrT.FTA] = Convert.ToUInt16(r["FTA"].ToString());
+                ts.PlTotals[TAbbrT.OREB] = Convert.ToUInt16(r["OREB"].ToString());
+                ts.PlTotals[TAbbrT.DREB] = Convert.ToUInt16(r["DREB"].ToString());
+                ts.PlTotals[TAbbrT.STL] = Convert.ToUInt16(r["STL"].ToString());
+                ts.PlTotals[TAbbrT.TOS] = Convert.ToUInt16(r["TOS"].ToString());
+                ts.PlTotals[TAbbrT.BLK] = Convert.ToUInt16(r["BLK"].ToString());
+                ts.PlTotals[TAbbrT.AST] = Convert.ToUInt16(r["AST"].ToString());
+                ts.PlTotals[TAbbrT.FOUL] = Convert.ToUInt16(r["FOUL"].ToString());
             }
             ts.CalcAvg();
         }

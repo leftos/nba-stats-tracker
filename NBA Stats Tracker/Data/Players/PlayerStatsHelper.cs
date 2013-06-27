@@ -24,47 +24,9 @@ namespace NBA_Stats_Tracker.Data.Players
 
     #endregion
 
-    /// <summary>A list of constant pseudonyms for specific entries in the players' stats arrays.</summary>
-    public static class PAbbr
+    /// <summary>Lists and dictionaries to help access and create lists of player stats.</summary>
+    public static class PlayerStatsHelper
     {
-        public const int GP = 0,
-                         GS = 1,
-                         MINS = 2,
-                         PTS = 3,
-                         DREB = 4,
-                         OREB = 5,
-                         AST = 6,
-                         STL = 7,
-                         BLK = 8,
-                         TOS = 9,
-                         FOUL = 10,
-                         FGM = 11,
-                         FGA = 12,
-                         TPM = 13,
-                         TPA = 14,
-                         FTM = 15,
-                         FTA = 16;
-
-        /// <summary>Only to be used with CareerHighs</summary>
-        public const int REB = 17; // REB used only for CareerHighs
-
-        public const int MPG = 0,
-                         PPG = 1,
-                         DRPG = 2,
-                         ORPG = 3,
-                         APG = 4,
-                         SPG = 5,
-                         BPG = 6,
-                         TPG = 7,
-                         FPG = 8,
-                         FGp = 9,
-                         FGeff = 10,
-                         TPp = 11,
-                         TPeff = 12,
-                         FTp = 13,
-                         FTeff = 14,
-                         RPG = 15;
-
         public static readonly Dictionary<int, string> Totals = new Dictionary<int, string>
             {
                 { 0, "GP" },

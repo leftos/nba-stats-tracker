@@ -30,22 +30,22 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             PlayerID = playerID;
             Type = type;
-            MINS = highs[PAbbr.MINS];
-            PTS = highs[PAbbr.PTS];
-            FGM = highs[PAbbr.FGM];
-            FGA = highs[PAbbr.FGA];
-            TPM = highs[PAbbr.TPM];
-            TPA = highs[PAbbr.TPA];
-            FTM = highs[PAbbr.FTM];
-            FTA = highs[PAbbr.FTA];
-            REB = highs[PAbbr.REB];
-            OREB = highs[PAbbr.OREB];
-            DREB = highs[PAbbr.DREB];
-            STL = highs[PAbbr.STL];
-            TOS = highs[PAbbr.TOS];
-            BLK = highs[PAbbr.BLK];
-            AST = highs[PAbbr.AST];
-            FOUL = highs[PAbbr.FOUL];
+            MINS = highs[PAbbrT.MINS];
+            PTS = highs[PAbbrT.PTS];
+            FGM = highs[PAbbrT.FGM];
+            FGA = highs[PAbbrT.FGA];
+            TPM = highs[PAbbrT.TPM];
+            TPA = highs[PAbbrT.TPA];
+            FTM = highs[PAbbrT.FTM];
+            FTA = highs[PAbbrT.FTA];
+            REB = highs[PAbbrT.REB];
+            OREB = highs[PAbbrT.OREB];
+            DREB = highs[PAbbrT.DREB];
+            STL = highs[PAbbrT.STL];
+            TOS = highs[PAbbrT.TOS];
+            BLK = highs[PAbbrT.BLK];
+            AST = highs[PAbbrT.AST];
+            FOUL = highs[PAbbrT.FOUL];
         }
 
         public int PlayerID { get; set; }

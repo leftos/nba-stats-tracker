@@ -104,10 +104,13 @@
     <Compile Include="Data\Players\Injuries\PlayerInjuryNameComparerDesc.cs" />
     <Compile Include="Data\Players\LivePlayerBoxScore.cs" />
     <Compile Include="Data\BoxScores\BoxScoreEntry.cs" />
+    <Compile Include="Data\Players\PAbbrPG.cs" />
+    <Compile Include="Data\Players\PAbbrT.cs" />
     <Compile Include="Data\Players\PlayerHighsRow.cs" />
     <Compile Include="Data\Players\PlayerPBPStats.cs" />
     <Compile Include="Data\SQLiteIO\SQLiteIO.cs" />
-    <Compile Include="Data\Players\PAbbr.cs" />
+    <Compile Include="Data\Players\PlayerStatsHelper.cs" />
+    <Compile Include="Data\Teams\TAbbrPG.cs" />
     <Compile Include="Data\Teams\TeamStreakComparerAsc.cs" />
     <Compile Include="Data\Teams\TeamStreakComparerDesc.cs" />
     <Compile Include="Data\Teams\TeamNameComparerDesc.cs" />
@@ -121,10 +124,11 @@
     <Compile Include="Data\Players\PlayerStats.cs" />
     <Compile Include="Data\Players\PlayerStatsRow.cs" />
     <Compile Include="Data\Players\Position.cs" />
-    <Compile Include="Data\Teams\TAbbr.cs" />
+    <Compile Include="Data\Teams\TeamStatsHelper.cs" />
     <Compile Include="Data\Teams\TeamRankings.cs" />
     <Compile Include="Data\Teams\TeamStats.cs" />
     <Compile Include="Data\Teams\TeamStatsRow.cs" />
+    <Compile Include="Data\Teams\TAbbrT.cs" />
     <Compile Include="Helper\ListExtensions\ListExtensions.cs" />
     <Compile Include="Helper\Miscellaneous\ComboBoxItemWithIsEnabled.cs" />
     <Compile Include="Helper\Miscellaneous\Misc.cs" />

@@ -1336,60 +1336,60 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
             {
                 var ps = MainWindow.PST[pbs.PlayerID];
                 var playerBSCount = MainWindow.BSHist.Count(bse => bse.PBSList.Any(e => e.PlayerID == ps.ID && !e.IsOut));
-                var playerGP = ps.Totals[PAbbr.GP];
+                var playerGP = ps.Totals[PAbbrT.GP];
                 var ch = ps.CareerHighs;
                 var info = playerBSCount != playerGP ? " (Incomplete data)" : "";
                 var playerIntroText = ps.FullNameGivenFirst + info + ": ";
                 var text = playerIntroText;
-                if (pbs.AST > 0 && pbs.AST >= ch[PAbbr.AST])
+                if (pbs.AST > 0 && pbs.AST >= ch[PAbbrT.AST])
                 {
                     text += String.Format("AST ({0}), ", pbs.AST);
                 }
-                if (pbs.BLK > 0 && pbs.BLK >= ch[PAbbr.BLK])
+                if (pbs.BLK > 0 && pbs.BLK >= ch[PAbbrT.BLK])
                 {
                     text += String.Format("BLK ({0}), ", pbs.BLK);
                 }
-                if (pbs.DREB > 0 && pbs.DREB >= ch[PAbbr.DREB])
+                if (pbs.DREB > 0 && pbs.DREB >= ch[PAbbrT.DREB])
                 {
                     text += String.Format("DREB ({0}), ", pbs.DREB);
                 }
-                if (pbs.OREB > 0 && pbs.OREB >= ch[PAbbr.OREB])
+                if (pbs.OREB > 0 && pbs.OREB >= ch[PAbbrT.OREB])
                 {
                     text += String.Format("OREB ({0}), ", pbs.OREB);
                 }
-                if (pbs.REB > 0 && pbs.REB >= ch[PAbbr.REB])
+                if (pbs.REB > 0 && pbs.REB >= ch[PAbbrT.REB])
                 {
                     text += String.Format("REB ({0}), ", pbs.REB);
                 }
-                if (pbs.STL > 0 && pbs.STL >= ch[PAbbr.STL])
+                if (pbs.STL > 0 && pbs.STL >= ch[PAbbrT.STL])
                 {
                     text += String.Format("STL ({0}), ", pbs.STL);
                 }
-                if (pbs.FGM > 0 && pbs.FGM >= ch[PAbbr.FGM])
+                if (pbs.FGM > 0 && pbs.FGM >= ch[PAbbrT.FGM])
                 {
                     text += String.Format("FGM ({0}), ", pbs.FGM);
                 }
-                if (pbs.FGA > 0 && pbs.FGA >= ch[PAbbr.FGA])
+                if (pbs.FGA > 0 && pbs.FGA >= ch[PAbbrT.FGA])
                 {
                     text += String.Format("FGA ({0}), ", pbs.FGA);
                 }
-                if (pbs.TPM > 0 && pbs.TPM >= ch[PAbbr.TPM])
+                if (pbs.TPM > 0 && pbs.TPM >= ch[PAbbrT.TPM])
                 {
                     text += String.Format("TPM ({0}), ", pbs.TPM);
                 }
-                if (pbs.TPA > 0 && pbs.TPA >= ch[PAbbr.TPA])
+                if (pbs.TPA > 0 && pbs.TPA >= ch[PAbbrT.TPA])
                 {
                     text += String.Format("TPA ({0}), ", pbs.TPA);
                 }
-                if (pbs.FTM > 0 && pbs.FTM >= ch[PAbbr.FTM])
+                if (pbs.FTM > 0 && pbs.FTM >= ch[PAbbrT.FTM])
                 {
                     text += String.Format("FTM ({0}), ", pbs.FTM);
                 }
-                if (pbs.FTA > 0 && pbs.FTA >= ch[PAbbr.FTA])
+                if (pbs.FTA > 0 && pbs.FTA >= ch[PAbbrT.FTA])
                 {
                     text += String.Format("FTA ({0}), ", pbs.FTA);
                 }
-                if (pbs.PTS > 0 && pbs.PTS >= ch[PAbbr.PTS])
+                if (pbs.PTS > 0 && pbs.PTS >= ch[PAbbrT.PTS])
                 {
                     text += String.Format("PTS ({0}), ", pbs.PTS);
                 }

@@ -56,7 +56,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(averages);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != TAbbr.FPG && j != TAbbr.TPG && j != TAbbr.PAPG)
+                if (j != TAbbrPG.FPG && j != TAbbrPG.TPG && j != TAbbrPG.PAPG)
                 {
                     tempList.Reverse();
                 }
@@ -84,7 +84,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
                 var tempList = new List<KeyValuePair<int, float>>(totals);
                 tempList.Sort((x, y) => x.Value.CompareTo(y.Value));
-                if (j != TAbbr.FOUL && j != TAbbr.TOS && j != TAbbr.PA)
+                if (j != TAbbrT.FOUL && j != TAbbrT.TOS && j != TAbbrT.PA)
                 {
                     tempList.Reverse();
                 }
@@ -99,7 +99,7 @@ namespace NBA_Stats_Tracker.Data.Teams
 
             var badMetrics = new List<string> { "DRTG", "TOR", "PythL" };
             RankingsMetrics = new Dictionary<int, Dictionary<string, int>>();
-            var metricsNames = TAbbr.MetricsNames;
+            var metricsNames = TeamStatsHelper.MetricsNames;
             for (var i = 0; i < tst.Count; i++)
             {
                 RankingsMetrics[i] = new Dictionary<string, int>();

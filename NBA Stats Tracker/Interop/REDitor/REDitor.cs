@@ -682,60 +682,60 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     tst[id].Record[0] = Convert.ToByte(sStats["Wins"]);
                     tst[id].Record[1] = Convert.ToByte(sStats["Losses"]);
-                    tst[id].Totals[TAbbr.MINS] = Convert.ToUInt16(sStats["Mins"]);
-                    tst[id].Totals[TAbbr.PF] = Convert.ToUInt16(sStats["PtsFor"]);
-                    tst[id].Totals[TAbbr.PA] = Convert.ToUInt16(sStats["PtsAg"]);
-                    tst[id].Totals[TAbbr.FGM] = Convert.ToUInt16(sStats["FGMade"]);
-                    tst[id].Totals[TAbbr.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
+                    tst[id].Totals[TAbbrT.MINS] = Convert.ToUInt16(sStats["Mins"]);
+                    tst[id].Totals[TAbbrT.PF] = Convert.ToUInt16(sStats["PtsFor"]);
+                    tst[id].Totals[TAbbrT.PA] = Convert.ToUInt16(sStats["PtsAg"]);
+                    tst[id].Totals[TAbbrT.FGM] = Convert.ToUInt16(sStats["FGMade"]);
+                    tst[id].Totals[TAbbrT.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
                     try
                     {
-                        tst[id].Totals[TAbbr.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
-                        tst[id].Totals[TAbbr.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
+                        tst[id].Totals[TAbbrT.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
+                        tst[id].Totals[TAbbrT.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
                     }
                     catch (KeyNotFoundException)
                     {
-                        tst[id].Totals[TAbbr.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
-                        tst[id].Totals[TAbbr.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
+                        tst[id].Totals[TAbbrT.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
+                        tst[id].Totals[TAbbrT.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
                     }
-                    tst[id].Totals[TAbbr.FTM] = Convert.ToUInt16(sStats["FTMade"]);
-                    tst[id].Totals[TAbbr.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
-                    tst[id].Totals[TAbbr.DREB] = Convert.ToUInt16(sStats["DRebs"]);
-                    tst[id].Totals[TAbbr.OREB] = Convert.ToUInt16(sStats["ORebs"]);
-                    tst[id].Totals[TAbbr.STL] = Convert.ToUInt16(sStats["Steals"]);
-                    tst[id].Totals[TAbbr.BLK] = Convert.ToUInt16(sStats["Blocks"]);
-                    tst[id].Totals[TAbbr.AST] = Convert.ToUInt16(sStats["Assists"]);
-                    tst[id].Totals[TAbbr.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
-                    tst[id].Totals[TAbbr.TOS] = Convert.ToUInt16(sStats["TOs"]);
+                    tst[id].Totals[TAbbrT.FTM] = Convert.ToUInt16(sStats["FTMade"]);
+                    tst[id].Totals[TAbbrT.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
+                    tst[id].Totals[TAbbrT.DREB] = Convert.ToUInt16(sStats["DRebs"]);
+                    tst[id].Totals[TAbbrT.OREB] = Convert.ToUInt16(sStats["ORebs"]);
+                    tst[id].Totals[TAbbrT.STL] = Convert.ToUInt16(sStats["Steals"]);
+                    tst[id].Totals[TAbbrT.BLK] = Convert.ToUInt16(sStats["Blocks"]);
+                    tst[id].Totals[TAbbrT.AST] = Convert.ToUInt16(sStats["Assists"]);
+                    tst[id].Totals[TAbbrT.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
+                    tst[id].Totals[TAbbrT.TOS] = Convert.ToUInt16(sStats["TOs"]);
 
                     if (pStatsID != -1)
                     {
                         var pStats = teamStats.Single(s => s["ID"] == pStatsID.ToString());
                         tst[id].PlRecord[0] = Convert.ToByte(pStats["Wins"]);
                         tst[id].PlRecord[1] = Convert.ToByte(pStats["Losses"]);
-                        tst[id].PlTotals[TAbbr.MINS] = Convert.ToUInt16(pStats["Mins"]);
-                        tst[id].PlTotals[TAbbr.PF] = Convert.ToUInt16(pStats["PtsFor"]);
-                        tst[id].PlTotals[TAbbr.PA] = Convert.ToUInt16(pStats["PtsAg"]);
-                        tst[id].PlTotals[TAbbr.FGM] = Convert.ToUInt16(pStats["FGMade"]);
-                        tst[id].PlTotals[TAbbr.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
+                        tst[id].PlTotals[TAbbrT.MINS] = Convert.ToUInt16(pStats["Mins"]);
+                        tst[id].PlTotals[TAbbrT.PF] = Convert.ToUInt16(pStats["PtsFor"]);
+                        tst[id].PlTotals[TAbbrT.PA] = Convert.ToUInt16(pStats["PtsAg"]);
+                        tst[id].PlTotals[TAbbrT.FGM] = Convert.ToUInt16(pStats["FGMade"]);
+                        tst[id].PlTotals[TAbbrT.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
                         try
                         {
-                            tst[id].PlTotals[TAbbr.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
-                            tst[id].PlTotals[TAbbr.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
+                            tst[id].PlTotals[TAbbrT.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
+                            tst[id].PlTotals[TAbbrT.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
                         }
                         catch (KeyNotFoundException)
                         {
-                            tst[id].PlTotals[TAbbr.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
-                            tst[id].PlTotals[TAbbr.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
+                            tst[id].PlTotals[TAbbrT.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
+                            tst[id].PlTotals[TAbbrT.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
                         }
-                        tst[id].PlTotals[TAbbr.FTM] = Convert.ToUInt16(pStats["FTMade"]);
-                        tst[id].PlTotals[TAbbr.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
-                        tst[id].PlTotals[TAbbr.DREB] = Convert.ToUInt16(pStats["DRebs"]);
-                        tst[id].PlTotals[TAbbr.OREB] = Convert.ToUInt16(pStats["ORebs"]);
-                        tst[id].PlTotals[TAbbr.STL] = Convert.ToUInt16(pStats["Steals"]);
-                        tst[id].PlTotals[TAbbr.BLK] = Convert.ToUInt16(pStats["Blocks"]);
-                        tst[id].PlTotals[TAbbr.AST] = Convert.ToUInt16(pStats["Assists"]);
-                        tst[id].PlTotals[TAbbr.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
-                        tst[id].PlTotals[TAbbr.TOS] = Convert.ToUInt16(pStats["TOs"]);
+                        tst[id].PlTotals[TAbbrT.FTM] = Convert.ToUInt16(pStats["FTMade"]);
+                        tst[id].PlTotals[TAbbrT.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
+                        tst[id].PlTotals[TAbbrT.DREB] = Convert.ToUInt16(pStats["DRebs"]);
+                        tst[id].PlTotals[TAbbrT.OREB] = Convert.ToUInt16(pStats["ORebs"]);
+                        tst[id].PlTotals[TAbbrT.STL] = Convert.ToUInt16(pStats["Steals"]);
+                        tst[id].PlTotals[TAbbrT.BLK] = Convert.ToUInt16(pStats["Blocks"]);
+                        tst[id].PlTotals[TAbbrT.AST] = Convert.ToUInt16(pStats["Assists"]);
+                        tst[id].PlTotals[TAbbrT.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
+                        tst[id].PlTotals[TAbbrT.TOS] = Convert.ToUInt16(pStats["TOs"]);
                     }
                 }
 
@@ -1090,7 +1090,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     var recMsg = "";
                     for (var i = 0; i < curPlayer.CareerHighs.Count(); i++)
                     {
-                        if (i == PAbbr.MINS || i == PAbbr.TOS || i == PAbbr.FOUL)
+                        if (i == PAbbrT.MINS || i == PAbbrT.TOS || i == PAbbrT.FOUL)
                         {
                             continue;
                         }
@@ -1101,12 +1101,12 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 recMsg = string.Format(
                                     "{0} has a new career-high in {1} ({2})",
                                     curPlayer.FullInfo(tst, true, false),
-                                    PAbbr.CHTotals[i],
+                                    PlayerStatsHelper.CHTotals[i],
                                     curPlayer.CareerHighs[i]);
                             }
                             else
                             {
-                                recMsg += string.Format(", {0} ({1})", PAbbr.CHTotals[i], curPlayer.CareerHighs[i]);
+                                recMsg += string.Format(", {0} ({1})", PlayerStatsHelper.CHTotals[i], curPlayer.CareerHighs[i]);
                             }
                             count++;
                         }
@@ -1179,8 +1179,8 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 bse.PBSList.Where(pbs => pbs.TeamID == bse.BS.Team1ID),
                                 bse.PBSList.Where(pbs => pbs.TeamID == bse.BS.Team2ID));
 
-                            if (teamBoxScore.PTS1 != getDiff(tst, oldTST, t1, TAbbr.PF, teamBoxScore.IsPlayoff)
-                                || teamBoxScore.PTS2 != getDiff(tst, oldTST, t2, TAbbr.PF, teamBoxScore.IsPlayoff))
+                            if (teamBoxScore.PTS1 != getDiff(tst, oldTST, t1, TAbbrT.PF, teamBoxScore.IsPlayoff)
+                                || teamBoxScore.PTS2 != getDiff(tst, oldTST, t2, TAbbrT.PF, teamBoxScore.IsPlayoff))
                             {
                                 var localtst = tst;
                                 Tools.AppInvoke(
@@ -1455,30 +1455,30 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     curTeam.Record[0] = Convert.ToByte(sStats["Wins"]);
                     curTeam.Record[1] = Convert.ToByte(sStats["Losses"]);
-                    curTeam.Totals[TAbbr.MINS] = Convert.ToUInt16(sStats["Mins"]);
-                    curTeam.Totals[TAbbr.PF] = Convert.ToUInt16(sStats["PtsFor"]);
-                    curTeam.Totals[TAbbr.PA] = Convert.ToUInt16(sStats["PtsAg"]);
-                    curTeam.Totals[TAbbr.FGM] = Convert.ToUInt16(sStats["FGMade"]);
-                    curTeam.Totals[TAbbr.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
+                    curTeam.Totals[TAbbrT.MINS] = Convert.ToUInt16(sStats["Mins"]);
+                    curTeam.Totals[TAbbrT.PF] = Convert.ToUInt16(sStats["PtsFor"]);
+                    curTeam.Totals[TAbbrT.PA] = Convert.ToUInt16(sStats["PtsAg"]);
+                    curTeam.Totals[TAbbrT.FGM] = Convert.ToUInt16(sStats["FGMade"]);
+                    curTeam.Totals[TAbbrT.FGA] = Convert.ToUInt16(sStats["FGAtt"]);
                     try
                     {
-                        curTeam.Totals[TAbbr.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
-                        curTeam.Totals[TAbbr.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
+                        curTeam.Totals[TAbbrT.TPM] = Convert.ToUInt16(sStats["3PTMade"]);
+                        curTeam.Totals[TAbbrT.TPA] = Convert.ToUInt16(sStats["3PTAtt"]);
                     }
                     catch (KeyNotFoundException)
                     {
-                        curTeam.Totals[TAbbr.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
-                        curTeam.Totals[TAbbr.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
+                        curTeam.Totals[TAbbrT.TPM] = Convert.ToUInt16(sStats["TPTMade"]);
+                        curTeam.Totals[TAbbrT.TPA] = Convert.ToUInt16(sStats["TPTAtt"]);
                     }
-                    curTeam.Totals[TAbbr.FTM] = Convert.ToUInt16(sStats["FTMade"]);
-                    curTeam.Totals[TAbbr.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
-                    curTeam.Totals[TAbbr.DREB] = Convert.ToUInt16(sStats["DRebs"]);
-                    curTeam.Totals[TAbbr.OREB] = Convert.ToUInt16(sStats["ORebs"]);
-                    curTeam.Totals[TAbbr.STL] = Convert.ToUInt16(sStats["Steals"]);
-                    curTeam.Totals[TAbbr.BLK] = Convert.ToUInt16(sStats["Blocks"]);
-                    curTeam.Totals[TAbbr.AST] = Convert.ToUInt16(sStats["Assists"]);
-                    curTeam.Totals[TAbbr.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
-                    curTeam.Totals[TAbbr.TOS] = Convert.ToUInt16(sStats["TOs"]);
+                    curTeam.Totals[TAbbrT.FTM] = Convert.ToUInt16(sStats["FTMade"]);
+                    curTeam.Totals[TAbbrT.FTA] = Convert.ToUInt16(sStats["FTAtt"]);
+                    curTeam.Totals[TAbbrT.DREB] = Convert.ToUInt16(sStats["DRebs"]);
+                    curTeam.Totals[TAbbrT.OREB] = Convert.ToUInt16(sStats["ORebs"]);
+                    curTeam.Totals[TAbbrT.STL] = Convert.ToUInt16(sStats["Steals"]);
+                    curTeam.Totals[TAbbrT.BLK] = Convert.ToUInt16(sStats["Blocks"]);
+                    curTeam.Totals[TAbbrT.AST] = Convert.ToUInt16(sStats["Assists"]);
+                    curTeam.Totals[TAbbrT.FOUL] = Convert.ToUInt16(sStats["Fouls"]);
+                    curTeam.Totals[TAbbrT.TOS] = Convert.ToUInt16(sStats["TOs"]);
                     //tstOpp[id].stats[t.TO] = Convert.ToUInt16(sStats["TOsAg"]);
 
                     if (pStatsID != -1)
@@ -1494,30 +1494,30 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                                 });
                         curTeam.PlRecord[0] = Convert.ToByte(pStats["Wins"]);
                         curTeam.PlRecord[1] = Convert.ToByte(pStats["Losses"]);
-                        curTeam.PlTotals[TAbbr.MINS] = Convert.ToUInt16(pStats["Mins"]);
-                        curTeam.PlTotals[TAbbr.PF] = Convert.ToUInt16(pStats["PtsFor"]);
-                        curTeam.PlTotals[TAbbr.PA] = Convert.ToUInt16(pStats["PtsAg"]);
-                        curTeam.PlTotals[TAbbr.FGM] = Convert.ToUInt16(pStats["FGMade"]);
-                        curTeam.PlTotals[TAbbr.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
+                        curTeam.PlTotals[TAbbrT.MINS] = Convert.ToUInt16(pStats["Mins"]);
+                        curTeam.PlTotals[TAbbrT.PF] = Convert.ToUInt16(pStats["PtsFor"]);
+                        curTeam.PlTotals[TAbbrT.PA] = Convert.ToUInt16(pStats["PtsAg"]);
+                        curTeam.PlTotals[TAbbrT.FGM] = Convert.ToUInt16(pStats["FGMade"]);
+                        curTeam.PlTotals[TAbbrT.FGA] = Convert.ToUInt16(pStats["FGAtt"]);
                         try
                         {
-                            curTeam.PlTotals[TAbbr.TPM] = Convert.ToUInt16(pStats["3PTMade"]);
-                            curTeam.PlTotals[TAbbr.TPA] = Convert.ToUInt16(pStats["3PTAtt"]);
+                            curTeam.PlTotals[TAbbrT.TPM] = Convert.ToUInt16(pStats["3PTMade"]);
+                            curTeam.PlTotals[TAbbrT.TPA] = Convert.ToUInt16(pStats["3PTAtt"]);
                         }
                         catch (KeyNotFoundException)
                         {
-                            curTeam.PlTotals[TAbbr.TPM] = Convert.ToUInt16(pStats["TPTMade"]);
-                            curTeam.PlTotals[TAbbr.TPA] = Convert.ToUInt16(pStats["TPTAtt"]);
+                            curTeam.PlTotals[TAbbrT.TPM] = Convert.ToUInt16(pStats["TPTMade"]);
+                            curTeam.PlTotals[TAbbrT.TPA] = Convert.ToUInt16(pStats["TPTAtt"]);
                         }
-                        curTeam.PlTotals[TAbbr.FTM] = Convert.ToUInt16(pStats["FTMade"]);
-                        curTeam.PlTotals[TAbbr.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
-                        curTeam.PlTotals[TAbbr.DREB] = Convert.ToUInt16(pStats["DRebs"]);
-                        curTeam.PlTotals[TAbbr.OREB] = Convert.ToUInt16(pStats["ORebs"]);
-                        curTeam.PlTotals[TAbbr.STL] = Convert.ToUInt16(pStats["Steals"]);
-                        curTeam.PlTotals[TAbbr.BLK] = Convert.ToUInt16(pStats["Blocks"]);
-                        curTeam.PlTotals[TAbbr.AST] = Convert.ToUInt16(pStats["Assists"]);
-                        curTeam.PlTotals[TAbbr.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
-                        curTeam.PlTotals[TAbbr.TOS] = Convert.ToUInt16(pStats["TOs"]);
+                        curTeam.PlTotals[TAbbrT.FTM] = Convert.ToUInt16(pStats["FTMade"]);
+                        curTeam.PlTotals[TAbbrT.FTA] = Convert.ToUInt16(pStats["FTAtt"]);
+                        curTeam.PlTotals[TAbbrT.DREB] = Convert.ToUInt16(pStats["DRebs"]);
+                        curTeam.PlTotals[TAbbrT.OREB] = Convert.ToUInt16(pStats["ORebs"]);
+                        curTeam.PlTotals[TAbbrT.STL] = Convert.ToUInt16(pStats["Steals"]);
+                        curTeam.PlTotals[TAbbrT.BLK] = Convert.ToUInt16(pStats["Blocks"]);
+                        curTeam.PlTotals[TAbbrT.AST] = Convert.ToUInt16(pStats["Assists"]);
+                        curTeam.PlTotals[TAbbrT.FOUL] = Convert.ToUInt16(pStats["Fouls"]);
+                        curTeam.PlTotals[TAbbrT.TOS] = Convert.ToUInt16(pStats["TOs"]);
                         //tstOpp[id].pl_stats[t.TO] = Convert.ToUInt16(pStats["TOsAg"]);
                     }
                 }
@@ -1720,31 +1720,31 @@ namespace NBA_Stats_Tracker.Interop.REDitor
             PlayerStats ps, Dictionary<string, string> redPlayerStats, NBA2KVersion nba2KVersion, bool playoffs)
         {
             var arr = !playoffs ? ps.Totals : ps.PlTotals;
-            arr[PAbbr.GP] = Convert.ToUInt16(redPlayerStats["GamesP"]);
-            arr[PAbbr.GS] = Convert.ToUInt16(redPlayerStats["GamesS"]);
-            arr[PAbbr.MINS] = Convert.ToUInt16(redPlayerStats["Minutes"]);
-            arr[PAbbr.PTS] = Convert.ToUInt16(redPlayerStats["Points"]);
-            arr[PAbbr.DREB] = Convert.ToUInt16(redPlayerStats["DRebs"]);
-            arr[PAbbr.OREB] = Convert.ToUInt16(redPlayerStats["ORebs"]);
-            arr[PAbbr.AST] = Convert.ToUInt16(redPlayerStats["Assists"]);
-            arr[PAbbr.STL] = Convert.ToUInt16(redPlayerStats["Steals"]);
-            arr[PAbbr.BLK] = Convert.ToUInt16(redPlayerStats["Blocks"]);
-            arr[PAbbr.TOS] = Convert.ToUInt16(redPlayerStats["TOs"]);
-            arr[PAbbr.FOUL] = Convert.ToUInt16(redPlayerStats["Fouls"]);
-            arr[PAbbr.FGM] = Convert.ToUInt16(redPlayerStats["FGMade"]);
-            arr[PAbbr.FGA] = Convert.ToUInt16(redPlayerStats["FGAtt"]);
+            arr[PAbbrT.GP] = Convert.ToUInt16(redPlayerStats["GamesP"]);
+            arr[PAbbrT.GS] = Convert.ToUInt16(redPlayerStats["GamesS"]);
+            arr[PAbbrT.MINS] = Convert.ToUInt16(redPlayerStats["Minutes"]);
+            arr[PAbbrT.PTS] = Convert.ToUInt16(redPlayerStats["Points"]);
+            arr[PAbbrT.DREB] = Convert.ToUInt16(redPlayerStats["DRebs"]);
+            arr[PAbbrT.OREB] = Convert.ToUInt16(redPlayerStats["ORebs"]);
+            arr[PAbbrT.AST] = Convert.ToUInt16(redPlayerStats["Assists"]);
+            arr[PAbbrT.STL] = Convert.ToUInt16(redPlayerStats["Steals"]);
+            arr[PAbbrT.BLK] = Convert.ToUInt16(redPlayerStats["Blocks"]);
+            arr[PAbbrT.TOS] = Convert.ToUInt16(redPlayerStats["TOs"]);
+            arr[PAbbrT.FOUL] = Convert.ToUInt16(redPlayerStats["Fouls"]);
+            arr[PAbbrT.FGM] = Convert.ToUInt16(redPlayerStats["FGMade"]);
+            arr[PAbbrT.FGA] = Convert.ToUInt16(redPlayerStats["FGAtt"]);
             try
             {
-                arr[PAbbr.TPM] = Convert.ToUInt16(redPlayerStats["3PTMade"]);
-                arr[PAbbr.TPA] = Convert.ToUInt16(redPlayerStats["3PTAtt"]);
+                arr[PAbbrT.TPM] = Convert.ToUInt16(redPlayerStats["3PTMade"]);
+                arr[PAbbrT.TPA] = Convert.ToUInt16(redPlayerStats["3PTAtt"]);
             }
             catch (KeyNotFoundException)
             {
-                arr[PAbbr.TPM] = Convert.ToUInt16(redPlayerStats["TPTMade"]);
-                arr[PAbbr.TPA] = Convert.ToUInt16(redPlayerStats["TPTAtt"]);
+                arr[PAbbrT.TPM] = Convert.ToUInt16(redPlayerStats["TPTMade"]);
+                arr[PAbbrT.TPA] = Convert.ToUInt16(redPlayerStats["TPTAtt"]);
             }
-            arr[PAbbr.FTM] = Convert.ToUInt16(redPlayerStats["FTMade"]);
-            arr[PAbbr.FTA] = Convert.ToUInt16(redPlayerStats["FTAtt"]);
+            arr[PAbbrT.FTM] = Convert.ToUInt16(redPlayerStats["FTMade"]);
+            arr[PAbbrT.FTA] = Convert.ToUInt16(redPlayerStats["FTAtt"]);
 
             if (nba2KVersion == NBA2KVersion.NBA2K12)
             {
@@ -1760,19 +1760,19 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
         private static void importPlayerCareerHighs(PlayerStats ps, Dictionary<string, string> redPlayer)
         {
-            ps.CareerHighs[PAbbr.PTS] = Convert.ToUInt16(redPlayer["GH_CarPts"]);
-            ps.CareerHighs[PAbbr.FGM] = Convert.ToUInt16(redPlayer["GH_CarFGM"]);
-            ps.CareerHighs[PAbbr.FGA] = Convert.ToUInt16(redPlayer["GH_CarFGA"]);
-            ps.CareerHighs[PAbbr.TPM] = Convert.ToUInt16(redPlayer["GH_Car3PM"]);
-            ps.CareerHighs[PAbbr.TPA] = Convert.ToUInt16(redPlayer["GH_Car3PA"]);
-            ps.CareerHighs[PAbbr.FTM] = Convert.ToUInt16(redPlayer["GH_CarFTM"]);
-            ps.CareerHighs[PAbbr.FTA] = Convert.ToUInt16(redPlayer["GH_CarFTA"]);
-            ps.CareerHighs[PAbbr.OREB] = Convert.ToUInt16(redPlayer["GH_CarOReb"]);
-            ps.CareerHighs[PAbbr.DREB] = Convert.ToUInt16(redPlayer["GH_CarDReb"]);
-            ps.CareerHighs[PAbbr.REB] = Convert.ToUInt16(redPlayer["GH_CarRebs"]);
-            ps.CareerHighs[PAbbr.AST] = Convert.ToUInt16(redPlayer["GH_CarAst"]);
-            ps.CareerHighs[PAbbr.STL] = Convert.ToUInt16(redPlayer["GH_CarStl"]);
-            ps.CareerHighs[PAbbr.BLK] = Convert.ToUInt16(redPlayer["GH_CarBlk"]);
+            ps.CareerHighs[PAbbrT.PTS] = Convert.ToUInt16(redPlayer["GH_CarPts"]);
+            ps.CareerHighs[PAbbrT.FGM] = Convert.ToUInt16(redPlayer["GH_CarFGM"]);
+            ps.CareerHighs[PAbbrT.FGA] = Convert.ToUInt16(redPlayer["GH_CarFGA"]);
+            ps.CareerHighs[PAbbrT.TPM] = Convert.ToUInt16(redPlayer["GH_Car3PM"]);
+            ps.CareerHighs[PAbbrT.TPA] = Convert.ToUInt16(redPlayer["GH_Car3PA"]);
+            ps.CareerHighs[PAbbrT.FTM] = Convert.ToUInt16(redPlayer["GH_CarFTM"]);
+            ps.CareerHighs[PAbbrT.FTA] = Convert.ToUInt16(redPlayer["GH_CarFTA"]);
+            ps.CareerHighs[PAbbrT.OREB] = Convert.ToUInt16(redPlayer["GH_CarOReb"]);
+            ps.CareerHighs[PAbbrT.DREB] = Convert.ToUInt16(redPlayer["GH_CarDReb"]);
+            ps.CareerHighs[PAbbrT.REB] = Convert.ToUInt16(redPlayer["GH_CarRebs"]);
+            ps.CareerHighs[PAbbrT.AST] = Convert.ToUInt16(redPlayer["GH_CarAst"]);
+            ps.CareerHighs[PAbbrT.STL] = Convert.ToUInt16(redPlayer["GH_CarStl"]);
+            ps.CareerHighs[PAbbrT.BLK] = Convert.ToUInt16(redPlayer["GH_CarBlk"]);
         }
 
         /// <summary>Creates the NBA divisions and conferences.</summary>
@@ -1851,9 +1851,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     IsPlayoff = isPlayoff,
                     Team1ID = t1,
-                    MINS1 = getDiff(tst, oldTST, t1, TAbbr.MINS, isPlayoff),
+                    MINS1 = getDiff(tst, oldTST, t1, TAbbrT.MINS, isPlayoff),
                     Team2ID = t2,
-                    MINS2 = getDiff(tst, oldTST, t2, TAbbr.MINS, isPlayoff)
+                    MINS2 = getDiff(tst, oldTST, t2, TAbbrT.MINS, isPlayoff)
                 };
 
             var bse = new BoxScoreEntry(bs) { PBSList = new List<PlayerBoxScore>() };
@@ -1872,29 +1872,29 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 var oldPlayer = oldplayerKVP.Value;
 
                 PlayerBoxScore pbs;
-                if (getDiff(newPlayer, oldPlayer, PAbbr.GP) == 1)
+                if (getDiff(newPlayer, oldPlayer, PAbbrT.GP) == 1)
                 {
                     pbs = new PlayerBoxScore
                         {
                             PlayerID = newPlayer.ID,
                             TeamID = newPlayer.TeamF,
-                            IsStarter = (getDiff(newPlayer, oldPlayer, PAbbr.GS) == 1),
+                            IsStarter = (getDiff(newPlayer, oldPlayer, PAbbrT.GS) == 1),
                             PlayedInjured = newPlayer.Injury.IsInjured,
-                            MINS = getDiff(newPlayer, oldPlayer, PAbbr.MINS),
-                            PTS = getDiff(newPlayer, oldPlayer, PAbbr.PTS),
-                            OREB = getDiff(newPlayer, oldPlayer, PAbbr.OREB),
-                            DREB = getDiff(newPlayer, oldPlayer, PAbbr.DREB),
-                            AST = getDiff(newPlayer, oldPlayer, PAbbr.AST),
-                            STL = getDiff(newPlayer, oldPlayer, PAbbr.STL),
-                            BLK = getDiff(newPlayer, oldPlayer, PAbbr.BLK),
-                            TOS = getDiff(newPlayer, oldPlayer, PAbbr.TOS),
-                            FGM = getDiff(newPlayer, oldPlayer, PAbbr.FGM),
-                            FGA = getDiff(newPlayer, oldPlayer, PAbbr.FGA),
-                            TPM = getDiff(newPlayer, oldPlayer, PAbbr.TPM),
-                            TPA = getDiff(newPlayer, oldPlayer, PAbbr.TPA),
-                            FTM = getDiff(newPlayer, oldPlayer, PAbbr.FTM),
-                            FTA = getDiff(newPlayer, oldPlayer, PAbbr.FTA),
-                            FOUL = getDiff(newPlayer, oldPlayer, PAbbr.FOUL)
+                            MINS = getDiff(newPlayer, oldPlayer, PAbbrT.MINS),
+                            PTS = getDiff(newPlayer, oldPlayer, PAbbrT.PTS),
+                            OREB = getDiff(newPlayer, oldPlayer, PAbbrT.OREB),
+                            DREB = getDiff(newPlayer, oldPlayer, PAbbrT.DREB),
+                            AST = getDiff(newPlayer, oldPlayer, PAbbrT.AST),
+                            STL = getDiff(newPlayer, oldPlayer, PAbbrT.STL),
+                            BLK = getDiff(newPlayer, oldPlayer, PAbbrT.BLK),
+                            TOS = getDiff(newPlayer, oldPlayer, PAbbrT.TOS),
+                            FGM = getDiff(newPlayer, oldPlayer, PAbbrT.FGM),
+                            FGA = getDiff(newPlayer, oldPlayer, PAbbrT.FGA),
+                            TPM = getDiff(newPlayer, oldPlayer, PAbbrT.TPM),
+                            TPA = getDiff(newPlayer, oldPlayer, PAbbrT.TPA),
+                            FTM = getDiff(newPlayer, oldPlayer, PAbbrT.FTM),
+                            FTA = getDiff(newPlayer, oldPlayer, PAbbrT.FTA),
+                            FOUL = getDiff(newPlayer, oldPlayer, PAbbrT.FOUL)
                         };
                     pbs.REB = (ushort) (pbs.OREB + pbs.DREB);
                     pbs.FGp = (float) pbs.FGM / pbs.FGA;
@@ -2016,30 +2016,30 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 {
                     teamStats[sStatsIndex]["Wins"] = ts.Record[0].ToString();
                     teamStats[sStatsIndex]["Losses"] = ts.Record[1].ToString();
-                    teamStats[sStatsIndex]["Mins"] = ts.Totals[TAbbr.MINS].ToString();
-                    teamStats[sStatsIndex]["PtsFor"] = ts.Totals[TAbbr.PF].ToString();
-                    teamStats[sStatsIndex]["PtsAg"] = ts.Totals[TAbbr.PA].ToString();
-                    teamStats[sStatsIndex]["FGMade"] = ts.Totals[TAbbr.FGM].ToString();
-                    teamStats[sStatsIndex]["FGAtt"] = ts.Totals[TAbbr.FGA].ToString();
+                    teamStats[sStatsIndex]["Mins"] = ts.Totals[TAbbrT.MINS].ToString();
+                    teamStats[sStatsIndex]["PtsFor"] = ts.Totals[TAbbrT.PF].ToString();
+                    teamStats[sStatsIndex]["PtsAg"] = ts.Totals[TAbbrT.PA].ToString();
+                    teamStats[sStatsIndex]["FGMade"] = ts.Totals[TAbbrT.FGM].ToString();
+                    teamStats[sStatsIndex]["FGAtt"] = ts.Totals[TAbbrT.FGA].ToString();
                     try
                     {
-                        teamStats[sStatsIndex]["3PTMade"] = ts.Totals[TAbbr.TPM].ToString();
-                        teamStats[sStatsIndex]["3PTAtt"] = ts.Totals[TAbbr.TPA].ToString();
+                        teamStats[sStatsIndex]["3PTMade"] = ts.Totals[TAbbrT.TPM].ToString();
+                        teamStats[sStatsIndex]["3PTAtt"] = ts.Totals[TAbbrT.TPA].ToString();
                     }
                     catch (KeyNotFoundException)
                     {
-                        teamStats[sStatsIndex]["TPTMade"] = ts.Totals[TAbbr.TPM].ToString();
-                        teamStats[sStatsIndex]["TPTAtt"] = ts.Totals[TAbbr.TPA].ToString();
+                        teamStats[sStatsIndex]["TPTMade"] = ts.Totals[TAbbrT.TPM].ToString();
+                        teamStats[sStatsIndex]["TPTAtt"] = ts.Totals[TAbbrT.TPA].ToString();
                     }
-                    teamStats[sStatsIndex]["FTMade"] = ts.Totals[TAbbr.FTM].ToString();
-                    teamStats[sStatsIndex]["FTAtt"] = ts.Totals[TAbbr.FTA].ToString();
-                    teamStats[sStatsIndex]["DRebs"] = ts.Totals[TAbbr.DREB].ToString();
-                    teamStats[sStatsIndex]["ORebs"] = ts.Totals[TAbbr.OREB].ToString();
-                    teamStats[sStatsIndex]["Steals"] = ts.Totals[TAbbr.STL].ToString();
-                    teamStats[sStatsIndex]["Blocks"] = ts.Totals[TAbbr.BLK].ToString();
-                    teamStats[sStatsIndex]["Assists"] = ts.Totals[TAbbr.AST].ToString();
-                    teamStats[sStatsIndex]["Fouls"] = ts.Totals[TAbbr.FOUL].ToString();
-                    teamStats[sStatsIndex]["TOs"] = ts.Totals[TAbbr.TOS].ToString();
+                    teamStats[sStatsIndex]["FTMade"] = ts.Totals[TAbbrT.FTM].ToString();
+                    teamStats[sStatsIndex]["FTAtt"] = ts.Totals[TAbbrT.FTA].ToString();
+                    teamStats[sStatsIndex]["DRebs"] = ts.Totals[TAbbrT.DREB].ToString();
+                    teamStats[sStatsIndex]["ORebs"] = ts.Totals[TAbbrT.OREB].ToString();
+                    teamStats[sStatsIndex]["Steals"] = ts.Totals[TAbbrT.STL].ToString();
+                    teamStats[sStatsIndex]["Blocks"] = ts.Totals[TAbbrT.BLK].ToString();
+                    teamStats[sStatsIndex]["Assists"] = ts.Totals[TAbbrT.AST].ToString();
+                    teamStats[sStatsIndex]["Fouls"] = ts.Totals[TAbbrT.FOUL].ToString();
+                    teamStats[sStatsIndex]["TOs"] = ts.Totals[TAbbrT.TOS].ToString();
                 }
 
                 if (pStatsID != -1)
@@ -2058,30 +2058,30 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     {
                         teamStats[pStatsIndex]["Wins"] = ts.PlRecord[0].ToString();
                         teamStats[pStatsIndex]["Losses"] = ts.PlRecord[1].ToString();
-                        teamStats[pStatsIndex]["Mins"] = ts.PlTotals[TAbbr.MINS].ToString();
-                        teamStats[pStatsIndex]["PtsFor"] = ts.PlTotals[TAbbr.PF].ToString();
-                        teamStats[pStatsIndex]["PtsAg"] = ts.PlTotals[TAbbr.PA].ToString();
-                        teamStats[pStatsIndex]["FGMade"] = ts.PlTotals[TAbbr.FGM].ToString();
-                        teamStats[pStatsIndex]["FGAtt"] = ts.PlTotals[TAbbr.FGA].ToString();
+                        teamStats[pStatsIndex]["Mins"] = ts.PlTotals[TAbbrT.MINS].ToString();
+                        teamStats[pStatsIndex]["PtsFor"] = ts.PlTotals[TAbbrT.PF].ToString();
+                        teamStats[pStatsIndex]["PtsAg"] = ts.PlTotals[TAbbrT.PA].ToString();
+                        teamStats[pStatsIndex]["FGMade"] = ts.PlTotals[TAbbrT.FGM].ToString();
+                        teamStats[pStatsIndex]["FGAtt"] = ts.PlTotals[TAbbrT.FGA].ToString();
                         try
                         {
-                            teamStats[pStatsIndex]["3PTMade"] = ts.PlTotals[TAbbr.TPM].ToString();
-                            teamStats[pStatsIndex]["3PTAtt"] = ts.PlTotals[TAbbr.TPA].ToString();
+                            teamStats[pStatsIndex]["3PTMade"] = ts.PlTotals[TAbbrT.TPM].ToString();
+                            teamStats[pStatsIndex]["3PTAtt"] = ts.PlTotals[TAbbrT.TPA].ToString();
                         }
                         catch (KeyNotFoundException)
                         {
-                            teamStats[pStatsIndex]["TPTMade"] = ts.PlTotals[TAbbr.TPM].ToString();
-                            teamStats[pStatsIndex]["TPTAtt"] = ts.PlTotals[TAbbr.TPA].ToString();
+                            teamStats[pStatsIndex]["TPTMade"] = ts.PlTotals[TAbbrT.TPM].ToString();
+                            teamStats[pStatsIndex]["TPTAtt"] = ts.PlTotals[TAbbrT.TPA].ToString();
                         }
-                        teamStats[pStatsIndex]["FTMade"] = ts.PlTotals[TAbbr.FTM].ToString();
-                        teamStats[pStatsIndex]["FTAtt"] = ts.PlTotals[TAbbr.FTA].ToString();
-                        teamStats[pStatsIndex]["DRebs"] = ts.PlTotals[TAbbr.DREB].ToString();
-                        teamStats[pStatsIndex]["ORebs"] = ts.PlTotals[TAbbr.OREB].ToString();
-                        teamStats[pStatsIndex]["Steals"] = ts.PlTotals[TAbbr.STL].ToString();
-                        teamStats[pStatsIndex]["Blocks"] = ts.PlTotals[TAbbr.BLK].ToString();
-                        teamStats[pStatsIndex]["Assists"] = ts.PlTotals[TAbbr.AST].ToString();
-                        teamStats[pStatsIndex]["Fouls"] = ts.PlTotals[TAbbr.FOUL].ToString();
-                        teamStats[pStatsIndex]["TOs"] = ts.PlTotals[TAbbr.TOS].ToString();
+                        teamStats[pStatsIndex]["FTMade"] = ts.PlTotals[TAbbrT.FTM].ToString();
+                        teamStats[pStatsIndex]["FTAtt"] = ts.PlTotals[TAbbrT.FTA].ToString();
+                        teamStats[pStatsIndex]["DRebs"] = ts.PlTotals[TAbbrT.DREB].ToString();
+                        teamStats[pStatsIndex]["ORebs"] = ts.PlTotals[TAbbrT.OREB].ToString();
+                        teamStats[pStatsIndex]["Steals"] = ts.PlTotals[TAbbrT.STL].ToString();
+                        teamStats[pStatsIndex]["Blocks"] = ts.PlTotals[TAbbrT.BLK].ToString();
+                        teamStats[pStatsIndex]["Assists"] = ts.PlTotals[TAbbrT.AST].ToString();
+                        teamStats[pStatsIndex]["Fouls"] = ts.PlTotals[TAbbrT.FOUL].ToString();
+                        teamStats[pStatsIndex]["TOs"] = ts.PlTotals[TAbbrT.TOS].ToString();
                     }
                 }
             }
@@ -2136,31 +2136,31 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (playerSeasonStatsIndex != -1)
                     {
-                        playerStats[playerSeasonStatsIndex]["GamesP"] = ps.Totals[PAbbr.GP].ToString();
-                        playerStats[playerSeasonStatsIndex]["GamesS"] = ps.Totals[PAbbr.GS].ToString();
-                        playerStats[playerSeasonStatsIndex]["Minutes"] = ps.Totals[PAbbr.MINS].ToString();
-                        playerStats[playerSeasonStatsIndex]["Points"] = ps.Totals[PAbbr.PTS].ToString();
-                        playerStats[playerSeasonStatsIndex]["DRebs"] = ps.Totals[PAbbr.DREB].ToString();
-                        playerStats[playerSeasonStatsIndex]["ORebs"] = ps.Totals[PAbbr.OREB].ToString();
-                        playerStats[playerSeasonStatsIndex]["Assists"] = ps.Totals[PAbbr.AST].ToString();
-                        playerStats[playerSeasonStatsIndex]["Steals"] = ps.Totals[PAbbr.STL].ToString();
-                        playerStats[playerSeasonStatsIndex]["Blocks"] = ps.Totals[PAbbr.BLK].ToString();
-                        playerStats[playerSeasonStatsIndex]["TOs"] = ps.Totals[PAbbr.TOS].ToString();
-                        playerStats[playerSeasonStatsIndex]["Fouls"] = ps.Totals[PAbbr.FOUL].ToString();
-                        playerStats[playerSeasonStatsIndex]["FGMade"] = ps.Totals[PAbbr.FGM].ToString();
-                        playerStats[playerSeasonStatsIndex]["FGAtt"] = ps.Totals[PAbbr.FGA].ToString();
+                        playerStats[playerSeasonStatsIndex]["GamesP"] = ps.Totals[PAbbrT.GP].ToString();
+                        playerStats[playerSeasonStatsIndex]["GamesS"] = ps.Totals[PAbbrT.GS].ToString();
+                        playerStats[playerSeasonStatsIndex]["Minutes"] = ps.Totals[PAbbrT.MINS].ToString();
+                        playerStats[playerSeasonStatsIndex]["Points"] = ps.Totals[PAbbrT.PTS].ToString();
+                        playerStats[playerSeasonStatsIndex]["DRebs"] = ps.Totals[PAbbrT.DREB].ToString();
+                        playerStats[playerSeasonStatsIndex]["ORebs"] = ps.Totals[PAbbrT.OREB].ToString();
+                        playerStats[playerSeasonStatsIndex]["Assists"] = ps.Totals[PAbbrT.AST].ToString();
+                        playerStats[playerSeasonStatsIndex]["Steals"] = ps.Totals[PAbbrT.STL].ToString();
+                        playerStats[playerSeasonStatsIndex]["Blocks"] = ps.Totals[PAbbrT.BLK].ToString();
+                        playerStats[playerSeasonStatsIndex]["TOs"] = ps.Totals[PAbbrT.TOS].ToString();
+                        playerStats[playerSeasonStatsIndex]["Fouls"] = ps.Totals[PAbbrT.FOUL].ToString();
+                        playerStats[playerSeasonStatsIndex]["FGMade"] = ps.Totals[PAbbrT.FGM].ToString();
+                        playerStats[playerSeasonStatsIndex]["FGAtt"] = ps.Totals[PAbbrT.FGA].ToString();
                         try
                         {
-                            playerStats[playerSeasonStatsIndex]["3PTMade"] = ps.Totals[PAbbr.TPM].ToString();
-                            playerStats[playerSeasonStatsIndex]["3PTAtt"] = ps.Totals[PAbbr.TPA].ToString();
+                            playerStats[playerSeasonStatsIndex]["3PTMade"] = ps.Totals[PAbbrT.TPM].ToString();
+                            playerStats[playerSeasonStatsIndex]["3PTAtt"] = ps.Totals[PAbbrT.TPA].ToString();
                         }
                         catch (KeyNotFoundException)
                         {
-                            playerStats[playerSeasonStatsIndex]["TPTMade"] = ps.Totals[PAbbr.TPM].ToString();
-                            playerStats[playerSeasonStatsIndex]["TPTAtt"] = ps.Totals[PAbbr.TPA].ToString();
+                            playerStats[playerSeasonStatsIndex]["TPTMade"] = ps.Totals[PAbbrT.TPM].ToString();
+                            playerStats[playerSeasonStatsIndex]["TPTAtt"] = ps.Totals[PAbbrT.TPA].ToString();
                         }
-                        playerStats[playerSeasonStatsIndex]["FTMade"] = ps.Totals[PAbbr.FTM].ToString();
-                        playerStats[playerSeasonStatsIndex]["FTAtt"] = ps.Totals[PAbbr.FTA].ToString();
+                        playerStats[playerSeasonStatsIndex]["FTMade"] = ps.Totals[PAbbrT.FTM].ToString();
+                        playerStats[playerSeasonStatsIndex]["FTAtt"] = ps.Totals[PAbbrT.FTA].ToString();
                         if (nba2KVersion == NBA2KVersion.NBA2K12)
                         {
                             playerStats[playerSeasonStatsIndex]["IsAStar"] = (ps.IsAllStar ? 1 : 0).ToString();
@@ -2175,31 +2175,31 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
                     if (playerPlayoffStatsIndex != -1)
                     {
-                        playerStats[playerPlayoffStatsIndex]["GamesP"] = ps.PlTotals[PAbbr.GP].ToString();
-                        playerStats[playerPlayoffStatsIndex]["GamesS"] = ps.PlTotals[PAbbr.GS].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Minutes"] = ps.PlTotals[PAbbr.MINS].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Points"] = ps.PlTotals[PAbbr.PTS].ToString();
-                        playerStats[playerPlayoffStatsIndex]["DRebs"] = ps.PlTotals[PAbbr.DREB].ToString();
-                        playerStats[playerPlayoffStatsIndex]["ORebs"] = ps.PlTotals[PAbbr.OREB].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Assists"] = ps.PlTotals[PAbbr.AST].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Steals"] = ps.PlTotals[PAbbr.STL].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Blocks"] = ps.PlTotals[PAbbr.BLK].ToString();
-                        playerStats[playerPlayoffStatsIndex]["TOs"] = ps.PlTotals[PAbbr.TOS].ToString();
-                        playerStats[playerPlayoffStatsIndex]["Fouls"] = ps.PlTotals[PAbbr.FOUL].ToString();
-                        playerStats[playerPlayoffStatsIndex]["FGMade"] = ps.PlTotals[PAbbr.FGM].ToString();
-                        playerStats[playerPlayoffStatsIndex]["FGAtt"] = ps.PlTotals[PAbbr.FGA].ToString();
+                        playerStats[playerPlayoffStatsIndex]["GamesP"] = ps.PlTotals[PAbbrT.GP].ToString();
+                        playerStats[playerPlayoffStatsIndex]["GamesS"] = ps.PlTotals[PAbbrT.GS].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Minutes"] = ps.PlTotals[PAbbrT.MINS].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Points"] = ps.PlTotals[PAbbrT.PTS].ToString();
+                        playerStats[playerPlayoffStatsIndex]["DRebs"] = ps.PlTotals[PAbbrT.DREB].ToString();
+                        playerStats[playerPlayoffStatsIndex]["ORebs"] = ps.PlTotals[PAbbrT.OREB].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Assists"] = ps.PlTotals[PAbbrT.AST].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Steals"] = ps.PlTotals[PAbbrT.STL].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Blocks"] = ps.PlTotals[PAbbrT.BLK].ToString();
+                        playerStats[playerPlayoffStatsIndex]["TOs"] = ps.PlTotals[PAbbrT.TOS].ToString();
+                        playerStats[playerPlayoffStatsIndex]["Fouls"] = ps.PlTotals[PAbbrT.FOUL].ToString();
+                        playerStats[playerPlayoffStatsIndex]["FGMade"] = ps.PlTotals[PAbbrT.FGM].ToString();
+                        playerStats[playerPlayoffStatsIndex]["FGAtt"] = ps.PlTotals[PAbbrT.FGA].ToString();
                         try
                         {
-                            playerStats[playerPlayoffStatsIndex]["3PTMade"] = ps.PlTotals[PAbbr.TPM].ToString();
-                            playerStats[playerPlayoffStatsIndex]["3PTAtt"] = ps.PlTotals[PAbbr.TPA].ToString();
+                            playerStats[playerPlayoffStatsIndex]["3PTMade"] = ps.PlTotals[PAbbrT.TPM].ToString();
+                            playerStats[playerPlayoffStatsIndex]["3PTAtt"] = ps.PlTotals[PAbbrT.TPA].ToString();
                         }
                         catch (KeyNotFoundException)
                         {
-                            playerStats[playerPlayoffStatsIndex]["TPTMade"] = ps.PlTotals[PAbbr.TPM].ToString();
-                            playerStats[playerPlayoffStatsIndex]["TPTAtt"] = ps.PlTotals[PAbbr.TPA].ToString();
+                            playerStats[playerPlayoffStatsIndex]["TPTMade"] = ps.PlTotals[PAbbrT.TPM].ToString();
+                            playerStats[playerPlayoffStatsIndex]["TPTAtt"] = ps.PlTotals[PAbbrT.TPA].ToString();
                         }
-                        playerStats[playerPlayoffStatsIndex]["FTMade"] = ps.PlTotals[PAbbr.FTM].ToString();
-                        playerStats[playerPlayoffStatsIndex]["FTAtt"] = ps.PlTotals[PAbbr.FTA].ToString();
+                        playerStats[playerPlayoffStatsIndex]["FTMade"] = ps.PlTotals[PAbbrT.FTM].ToString();
+                        playerStats[playerPlayoffStatsIndex]["FTAtt"] = ps.PlTotals[PAbbrT.FTA].ToString();
                         if (nba2KVersion == NBA2KVersion.NBA2K12)
                         {
                             playerStats[playerPlayoffStatsIndex]["IsAStar"] = (ps.IsAllStar ? 1 : 0).ToString();
