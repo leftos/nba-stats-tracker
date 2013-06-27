@@ -79,7 +79,7 @@ namespace LeftosCommonLibrary
         /// <param name="r">The row.</param>
         /// <param name="columnName">Name of the column.</param>
         /// <returns></returns>
-        public static double GetFloat(DataRow r, string columnName)
+        public static float GetFloat(DataRow r, string columnName)
         {
             return Convert.ToSingle(r[columnName].ToString());
         }
