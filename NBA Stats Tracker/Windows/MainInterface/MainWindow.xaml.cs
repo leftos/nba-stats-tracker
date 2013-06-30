@@ -1746,11 +1746,15 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 return;
             }
 
+            await saveAndReloadSeason();
+        }
+
+        private async Task saveAndReloadSeason()
+        {
             IsEnabled = false;
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
-            await
-                Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+            await Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
             await UpdateAllData(true);
             StopProgressWatchTimer();
             txtFile.Text = CurrentDB;
@@ -1848,11 +1852,18 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
         /// <param name="e">
         ///     The <see cref="RoutedEventArgs" /> instance containing the event data.
         /// </param>
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private async void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(CurrentDB))
             {
                 return;
+            }
+            if (Tf.IsBetween)
+            {
+                IsEnabled = false;
+                Tf = new Timeframe(CurSeason);
+                await UpdateAllData();
+                IsEnabled = true;
             }
 
             AddInfo = "";
@@ -1884,12 +1895,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                         TST[newid] = new TeamStats(newid, newTeams[i]);
                         TSTOpp[newid] = new TeamStats(newid, newTeams[i]);
                     }
-                    SQLiteIO.SaveSeasonToDatabase();
+                    await saveAndReloadSeason();
                     UpdateStatus("Teams were added, database saved.");
                 }
                 else
                 {
-                    SQLiteIO.SavePlayersToDatabase(CurrentDB, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB));
+                    await saveAndReloadSeason();
                     UpdateStatus("Players were added, database saved.");
                 }
             }

@@ -50,6 +50,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                           .OrderBy(ts => ts.DisplayName)
                           .Select(ts => new KeyValuePair<string, int>(ts.DisplayName, ts.ID))
                           .ToList();
+            teamsList.Add(new KeyValuePair<string, int>("Free Agency", -1));
             teams = new ObservableCollection<KeyValuePair<string, int>>(teamsList);
 
             players = new ObservableCollection<Player>();
@@ -83,13 +84,12 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                 var i = SQLiteIO.GetMaxPlayerID(MainWindow.CurrentDB);
                 foreach (var p in players)
                 {
-                    if (String.IsNullOrWhiteSpace(p.LastName) || p.Team == -1)
+                    if (String.IsNullOrWhiteSpace(p.LastName))
                     {
-                        MessageBox.Show("You have to enter the Last Name and Team for all players");
+                        MessageBox.Show("You have to enter the Last Name for all players.", App.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     p.ID = ++i;
-                    newpst.Add(p.ID, new PlayerStats(p, true));
                     PlayerStats ps;
                     try
                     {

@@ -31,20 +31,21 @@
                               PreviewKeyDown="dgvAddPlayers_PreviewKeyDown"
                               d:DataContext="{d:DesignInstance players:Player}" ClipboardCopyMode="IncludeHeader">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
-                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName, Mode=TwoWay}" />
+                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName, Mode=TwoWay}" />
                             <DataGridComboBoxColumn x:Name="teamColumn" Header="Team" DisplayMemberPath="Key"
-                                                    SelectedValueBinding="{Binding Team}" SelectedValuePath="Value" />
+                                                    SelectedValueBinding="{Binding Team, Mode=TwoWay}"
+                                                    SelectedValuePath="Value" />
                             <DataGridComboBoxColumn Header="Position"
                                                     SelectedValueBinding="{Binding Position1, Mode=TwoWay}"
                                                     ItemsSource="{Binding Source={StaticResource PositionsList}}" />
                             <DataGridComboBoxColumn Header="2nd Position"
                                                     SelectedValueBinding="{Binding Position2, Mode=TwoWay}"
                                                     ItemsSource="{Binding Source={StaticResource PositionsList}}" />
-                            <DataGridTextColumn Header="Height" Binding="{Binding Height}" />
-                            <DataGridTextColumn Header="Weight" Binding="{Binding Weight}" />
-                            <DataGridTextColumn Header="Year of Birth" Binding="{Binding YearOfBirth}" />
-                            <DataGridTextColumn Header="Years Pro" Binding="{Binding YearsPro}" />
+                            <DataGridTextColumn Header="Height" Binding="{Binding Height, Mode=TwoWay}" />
+                            <DataGridTextColumn Header="Weight" Binding="{Binding Weight, Mode=TwoWay}" />
+                            <DataGridTextColumn Header="Year of Birth" Binding="{Binding YearOfBirth, Mode=TwoWay}" />
+                            <DataGridTextColumn Header="Years Pro" Binding="{Binding YearsPro, Mode=TwoWay}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
