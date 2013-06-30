@@ -535,13 +535,13 @@ namespace NBA_Stats_Tracker.Data.Players
                 {
                     throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
                 }
-                parts[1] = parts[1].Replace("\"", "");
+                parts[1] = parts[1].Replace("\"", "").Replace("\'\'", "");
                 var allInches = Convert.ToInt32(parts[0]) * 12 + Convert.ToInt32(parts[1]);
                 return (allInches) / 0.393701;
             }
             catch
             {
-                throw new Exception(value + " is not a proper value for imperial height.");
+                throw new FormatException(value + " is not a proper value for imperial height.");
             }
         }
 

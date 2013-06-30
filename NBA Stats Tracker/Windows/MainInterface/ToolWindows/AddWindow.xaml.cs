@@ -90,6 +90,17 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                     }
                     p.ID = ++i;
                     newpst.Add(p.ID, new PlayerStats(p, true));
+                    PlayerStats ps;
+                    try
+                    {
+                        ps = new PlayerStats(p, true);
+                    }
+                    catch (FormatException ex)
+                    {
+                        MessageBox.Show(ex.Message, App.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    newpst.Add(p.ID, ps);
                 }
                 MainWindow.PST = newpst;
                 MainWindow.AddInfo = "$$NST Players Added";
