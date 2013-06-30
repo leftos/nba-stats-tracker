@@ -1876,7 +1876,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             txtCustomName.Text = "";
             txtCustomExp.Text = "";
             txtCustomDP.Text = "";
-            cmbCustomComp.SelectedIndex = -1;
             txtCustomVal.Text = "";
         }
 

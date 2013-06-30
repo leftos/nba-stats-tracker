@@ -1,7 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.9.4
+		- Fix: Fixed crash when adding a Custom Expression in Player Search when for some reason there was no selection made as to the resulting value comparison filter
+
 	v1.16.9.3
-		- Fix: Fix crash when hitting enter or tab at the last cell of the last row of some datagrids (e.g. the Box Score's player stats)
+		- Fix: Fixed crash when hitting enter or tab at the last cell of the last row of some datagrids (e.g. the Box Score's player stats)
 
 	v1.16.9.2
 		- Fix: Allow both two single quotes and double quotes to trail the height value (if imperial) when editing a height
