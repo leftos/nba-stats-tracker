@@ -95,6 +95,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
         private string _teamBestG = "";
         private Dictionary<int, TeamStats> _tst;
         private Dictionary<int, TeamStats> _tstOpp;
+        private TeamStatsRow _curTSR;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TeamOverviewWindow" /> class.
@@ -593,7 +594,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
             #endregion
 
-            dgMetrics.ItemsSource = new List<TeamStatsRow> { new TeamStatsRow(_curts) };
+            _curTSR = new TeamStatsRow(_curts);
+            dgMetrics.ItemsSource = new List<TeamStatsRow> { _curTSR };
 
             updatePBPStats();
         }
@@ -3398,6 +3400,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
 
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            updateGraph();
+        }
+
+        private void updateGraph()
+        {
             if (cmbGraphStat.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1 || cmbGraphInterval.SelectedIndex == -1)
             {
                 clearGraph();
@@ -3540,7 +3547,28 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Teams
             }
             if (chart.Primitives.Count > 0 && chart.Primitives.Sum(p => p.Points.Count) > 1)
             {
-                var average = sum / games;
+                //var average = sum / games;
+                if (TeamStatsHelper.TotalsToPerGame.ContainsKey(propToGet))
+                {
+                    propToGet = TeamStatsHelper.TotalsToPerGame[propToGet];
+                }
+                double average;
+                switch (interval)
+                {
+                    case Intervals.EveryGame:
+                    case Intervals.Monthly:
+                        average = _curTSR.GetValue<double>(propToGet);
+                        break;
+                    case Intervals.Yearly:
+                        var ts = new TeamStats();
+                        createTeamStatsFromDataRow(ref ts, _dtYea.Rows.Cast<DataRow>().ToList().Last());
+                        ts.CalcMetrics(new TeamStats());
+                        var tsr = new TeamStatsRow(ts);
+                        average = tsr.GetValue<double>(propToGet);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
                 var cpavg = new ChartPrimitive();
                 for (var i = 0; i < count; i++)
                 {

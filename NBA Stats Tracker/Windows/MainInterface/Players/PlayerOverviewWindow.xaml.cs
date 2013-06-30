@@ -1910,6 +1910,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
         /// </param>
         private void cmbGraphStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            updateGraph();
+        }
+
+        private void updateGraph()
+        {
             if (cmbGraphStat.SelectedIndex == -1 || cmbGraphInterval.SelectedIndex == -1 || cmbTeam.SelectedIndex == -1
                 || cmbPlayer.SelectedIndex == -1)
             {
@@ -2036,7 +2041,24 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             }
             if (chart.Primitives.Count > 0 && chart.Primitives.Sum(p => p.Points.Count) > 1)
             {
-                var average = sum / games;
+                if (PlayerStatsHelper.TotalsToPerGame.ContainsKey(propToGet))
+                {
+                    propToGet = PlayerStatsHelper.TotalsToPerGame[propToGet];
+                }
+                double average;
+                switch (interval)
+                {
+                    case Intervals.EveryGame:
+                    case Intervals.Monthly:
+                        average = _psr.GetValue<double>(propToGet);
+                        break;
+                    case Intervals.Yearly:
+                        average = _yearlyPSRList.Last().GetValue<double>(propToGet);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                //var average = sum / games;
                 var cpavg = new ChartPrimitive();
                 for (var i = 0; i < count; i++)
                 {
