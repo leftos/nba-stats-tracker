@@ -1805,6 +1805,11 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
 
         private void btnCustomExpAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (cmbCustomComp.SelectedIndex == -1)
+            {
+                cmbCustomComp.SelectedItem = "All";
+            }
+
             var name = txtCustomName.Text;
             var decimalPoints = txtCustomDP.Text;
             var exp = txtCustomExp.Text;
@@ -1813,11 +1818,6 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.Players
             if (String.IsNullOrWhiteSpace(name) || String.IsNullOrWhiteSpace(exp) || String.IsNullOrWhiteSpace(decimalPoints))
             {
                 return;
-            }
-
-            if (cmbCustomComp.SelectedIndex == -1)
-            {
-                cmbCustomComp.SelectedItem = "All";
             }
 
             if (!Tools.CheckForBalancedBracketing(exp))
