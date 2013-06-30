@@ -530,12 +530,8 @@ namespace NBA_Stats_Tracker.Data.Players
         {
             try
             {
-                var parts = value.Split('\'');
-                if (parts.Length != 2)
-                {
-                    throw new Exception("Tried to split imperial height string, got " + parts.Length + " parts instead of 2.");
-                }
-                parts[1] = parts[1].Replace("\"", "").Replace("\'\'", "");
+                value = value.TrimEnd(new[] { '\'', '\"' });
+                var parts = value.Split(new[] { '\'' }, 2);
                 var allInches = Convert.ToInt32(parts[0]) * 12 + Convert.ToInt32(parts[1]);
                 return (allInches) / 0.393701;
             }
