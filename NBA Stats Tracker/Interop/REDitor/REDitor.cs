@@ -82,14 +82,19 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var stg = s1 + s2;
 
-            var sfd = new SaveFileDialog
-                {
-                    Title = "Save Active Teams List",
-                    Filter = "Active Teams List (*.red)|*.red",
-                    DefaultExt = "red",
-                    InitialDirectory = App.AppDocsPath
-                };
-            sfd.ShowDialog();
+            SaveFileDialog sfd = null;
+            Tools.AppInvoke(
+                () =>
+                    {
+                        sfd = new SaveFileDialog
+                            {
+                                Title = "Save Active Teams List",
+                                Filter = "Active Teams List (*.red)|*.red",
+                                DefaultExt = "red",
+                                InitialDirectory = App.AppDocsPath
+                            };
+                        sfd.ShowDialog();
+                    });
 
             if (String.IsNullOrWhiteSpace(sfd.FileName))
             {
@@ -589,15 +594,20 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             return true;
                         }
                         return false;
-                    });
+                    }).ToList();
             if (activeTeams.Count < 30)
             {
-                var dlw = new DualListWindow(validTeams, activeTeams);
-                if (dlw.ShowDialog() == false)
+                bool? dialogResult = null;
+                Tools.AppInvoke(
+                    () =>
+                        {
+                            var dlw = new DualListWindow(validTeams, activeTeams);
+                            dialogResult = dlw.ShowDialog();
+                        });
+                if (dialogResult != true)
                 {
                     return -1;
                 }
-
                 activeTeams = new List<Dictionary<string, string>>(MainWindow.SelectedTeams);
 
                 if (MainWindow.SelectedTeamsChanged)
