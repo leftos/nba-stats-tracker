@@ -1,5 +1,8 @@
 NBA Stats Tracker - Version History
 
+	v1.16.9.2
+		- Fix: Allow both two single quotes and double quotes to trail the height value (if imperial) when editing a height
+
 	v1.16.9.1
 		- Fix: Fixed various bugs regarding adding teams & players
 		- Addition: Players to be added manually will default to Free Agency (Team ID -1)
