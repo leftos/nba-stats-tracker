@@ -439,18 +439,16 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
 
         private async void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (curMode == Mode.Update)
+            switch (curMode)
             {
-                tryParseBS();
-                if (MainWindow.TempBSE_BS.Done == false)
-                {
-                    return;
-                }
-            }
-            else
-            {
-                if (curMode == Mode.View)
-                {
+                case Mode.Update:
+                    tryParseBS();
+                    if (MainWindow.TempBSE_BS.Done == false)
+                    {
+                        return;
+                    }
+                    break;
+                case Mode.View:
                     var r = MessageBox.Show(
                         "Do you want to save any changes to this Box Score?",
                         "NBA Stats Tracker",
@@ -477,7 +475,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.BoxScores
                         MainWindow.TempBSE_BS.Done = false;
                         DialogResult = false;
                     }
-                }
+                    break;
             }
             _clickedOK = true;
             Close();

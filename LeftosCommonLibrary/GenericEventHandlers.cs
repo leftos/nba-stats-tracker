@@ -246,7 +246,8 @@ namespace LeftosCommonLibrary
                                 {
                                     dataGrid.Focus();
                                     dataGrid.SelectedIndex = 0;
-                                    dataGrid.CurrentCell = new DataGridCellInfo(dataGrid.Items[0], dataGrid.Columns[oldColumn + 1]);
+                                    var newColumnIndex = oldColumn != dataGrid.Columns.Count - 1 ? oldColumn + 1 : 0;
+                                    dataGrid.CurrentCell = new DataGridCellInfo(dataGrid.Items[0], dataGrid.Columns[newColumnIndex]);
 
                                     //dataGrid.BeginEdit();
                                     return null;
