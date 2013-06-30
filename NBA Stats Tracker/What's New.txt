@@ -1,5 +1,10 @@
 NBA Stats Tracker - Version History
 
+	v1.16.9.1
+		- Fix: Fixed various bugs regarding adding teams & players
+		- Addition: Players to be added manually will default to Free Agency (Team ID -1)
+		- Fix: Fixed crash during a REDitor import if not all 30 teams participating in the save's current season could be detected
+
 	v1.16.9
 		- Addition: Added Monthly and Yearly Graphs to Team & Player Overview
 		- Fix: Change Team Name will not allow the user to change the team's name to an existing one
