@@ -1,6 +1,7 @@
 NBA Stats Tracker - Version History
 
 	v1.16.9.4
+		- Improvement: Team & Player Overview's Performance Graphs now use the actual average instead of the average of the points that exist in the graph
 		- Fix: Fixed crash when adding a Custom Expression in Player Search when for some reason there was no selection made as to the resulting value comparison filter
 
 	v1.16.9.3
