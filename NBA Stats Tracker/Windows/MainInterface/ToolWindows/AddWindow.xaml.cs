@@ -86,7 +86,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface.ToolWindows
                 {
                     if (String.IsNullOrWhiteSpace(p.LastName))
                     {
-                        MessageBox.Show("You have to enter the Last Name for all players.", App.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(
+                            "You have to enter the Last Name for all players.", App.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     p.ID = ++i;

@@ -1754,7 +1754,8 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
             IsEnabled = false;
             startProgressWatchTimer();
             ProgressHelper.Progress = new ProgressInfo(0, "Saving database...");
-            await Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
+            await
+                Task.Run(() => SQLiteIO.SaveSeasonToDatabase(CurrentDB, TST, TSTOpp, PST, CurSeason, SQLiteIO.GetMaxSeason(CurrentDB)));
             await UpdateAllData(true);
             StopProgressWatchTimer();
             txtFile.Text = CurrentDB;
