@@ -154,7 +154,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                 "Kings",
                 "Timberwolves",
                 "Rockets",
-                "Hornets",
+                "Pelicans",
                 "Warriors"
             };
 
@@ -1287,7 +1287,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     { "Grizzlies", "MEM" },
                     { "Hawks", "ATL" },
                     { "Heat", "MIA" },
-                    { "Hornets", "NOH" },
+                    { "Pelicans", "NOP" },
                     { "Jazz", "UTA" },
                     { "Kings", "SAC" },
                     { "Knicks", "NYK" },
@@ -1321,7 +1321,7 @@ namespace NBA_Stats_Tracker.Windows.MainInterface
                     { "Grizzlies", 3 },
                     { "Hawks", 2 },
                     { "Heat", 2 },
-                    { "Hornets", 3 },
+                    { "Pelicans", 3 },
                     { "Jazz", 4 },
                     { "Kings", 5 },
                     { "Knicks", 0 },

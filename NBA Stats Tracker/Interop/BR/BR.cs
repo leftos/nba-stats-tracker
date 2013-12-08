@@ -1,6 +1,6 @@
 #region Copyright Notice
 
-//    Copyright 2011-2013 Eleftherios Aslanoglou
+//    Copyright 2011-2014 Eleftherios Aslanoglou
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -257,6 +257,11 @@ namespace NBA_Stats_Tracker.Interop.BR
                 var doc = htmlweb.Load(url);
 
                 var tables = doc.DocumentNode.SelectNodes("//table");
+                if (tables == null)
+                {
+                    // We've hit a 404 page. Not in the Playoffs yet.
+                    return null;
+                }
                 foreach (var cur in tables)
                 {
                     try
@@ -657,10 +662,10 @@ namespace NBA_Stats_Tracker.Interop.BR
         {
             string[] recordparts;
             var ds = getSeasonTeamStats(
-                @"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html", out recordparts);
+                @"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2014.html", out recordparts);
             teamStatsFromDataTable(ds.Tables[0], teamAbbr.Key, recordparts, out ts, out tsopp);
 
-            ds = getPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2013.html");
+            ds = getPlayerStats(@"http://www.basketball-reference.com/teams/" + teamAbbr.Value + @"/2014.html");
             playerStatsFromDataSet(ds, ts.ID, out pst);
         }
 
@@ -684,8 +689,11 @@ namespace NBA_Stats_Tracker.Interop.BR
         /// <param name="tstOpp">The opposing team stats dictionary.</param>
         public static void AddPlayoffTeamStats(ref Dictionary<int, TeamStats> tst, ref Dictionary<int, TeamStats> tstOpp)
         {
-            var ds = getPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2013.html");
-            playoffTeamStatsFromDataSet(ds, ref tst, ref tstOpp);
+            var ds = getPlayoffTeamStats("http://www.basketball-reference.com/playoffs/NBA_2014.html");
+            if (ds != null)
+            {
+                playoffTeamStatsFromDataSet(ds, ref tst, ref tstOpp);
+            }
         }
     }
 }
