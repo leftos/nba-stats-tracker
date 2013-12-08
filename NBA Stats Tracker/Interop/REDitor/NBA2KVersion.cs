@@ -21,6 +21,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
     public enum NBA2KVersion
     {
         NBA2K12,
-        NBA2K13
+        NBA2K13,
+        NBA2K14
     }
 }

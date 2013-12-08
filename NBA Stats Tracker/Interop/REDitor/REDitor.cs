@@ -23,6 +23,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -282,7 +283,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
 
             var validPlayers = players.FindAll(player => isValidPlayer(player, nba2KVersion));
 
-            var endAt = nba2KVersion == NBA2KVersion.NBA2K13 ? 19 : 20;
+            var endAt = nba2KVersion >= NBA2KVersion.NBA2K13 ? 19 : 20;
 
             var pw = new ProgressWindow("Please wait as player career stats are being imported...");
             pw.Show();
@@ -524,9 +525,17 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         return true;
                     }
                 }
-                else
+                else if (nba2KVersion == NBA2KVersion.NBA2K13)
                 {
                     if (player["IsRegNBA"] == "1" || player["IsSpecial"] == "1")
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    Debug.Assert(nba2KVersion == NBA2KVersion.NBA2K14);
+                    if (player["IsRegular"] == "1")
                     {
                         return true;
                     }
@@ -837,7 +846,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     }
 
                     Dictionary<string, string> playerPlayoffStats = null;
-                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    if (nba2KVersion >= NBA2KVersion.NBA2K13)
                     {
                         var playerPlayoffStatsID = player["StatPOs"];
                         try
@@ -1008,7 +1017,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         curPlayer.CalcAvg();
                     }
 
-                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    if (nba2KVersion >= NBA2KVersion.NBA2K13)
                     {
                         importPlayerCareerHighs(curPlayer, player);
                     }
@@ -1324,6 +1333,9 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     break;
                 case NBA2KVersion.NBA2K13:
                     legalTTypes = new List<string> { "0", "21" };
+                    break;
+                case NBA2KVersion.NBA2K14:
+                    legalTTypes = new List<string> { "0", "22" };
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1702,7 +1714,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                         ps.CalcAvg();
                     }
 
-                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    if (nba2KVersion >= NBA2KVersion.NBA2K13)
                     {
                         importPlayerCareerHighs(ps, player);
                     }
@@ -1761,7 +1773,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsAStar"]));
                 ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsChamp"]));
             }
-            else if (nba2KVersion == NBA2KVersion.NBA2K13)
+            else if (nba2KVersion >= NBA2KVersion.NBA2K13)
             {
                 ps.IsAllStar = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsAllStar"]));
                 ps.IsNBAChampion = Convert.ToBoolean(Convert.ToInt32(redPlayerStats["IsNBAChamp"]));
@@ -2138,7 +2150,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                     var playerSeasonStatsID = player["StatY0"];
                     var playerSeasonStatsIndex = playerStats.FindIndex(s => s["ID"] == playerSeasonStatsID);
                     var playerPlayoffStatsIndex = -1;
-                    if (nba2KVersion == NBA2KVersion.NBA2K13)
+                    if (nba2KVersion >= NBA2KVersion.NBA2K13)
                     {
                         var playerPlayoffStatsID = player["StatPOs"];
                         playerPlayoffStatsIndex = playerStats.FindIndex(s => s["ID"] == playerPlayoffStatsID);
@@ -2176,7 +2188,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             playerStats[playerSeasonStatsIndex]["IsAStar"] = (ps.IsAllStar ? 1 : 0).ToString();
                             playerStats[playerSeasonStatsIndex]["IsChamp"] = (ps.IsNBAChampion ? 1 : 0).ToString();
                         }
-                        else if (nba2KVersion == NBA2KVersion.NBA2K13)
+                        else if (nba2KVersion >= NBA2KVersion.NBA2K13)
                         {
                             playerStats[playerSeasonStatsIndex]["IsAllStar"] = (ps.IsAllStar ? 1 : 0).ToString();
                             playerStats[playerSeasonStatsIndex]["IsNBAChamp"] = (ps.IsNBAChampion ? 1 : 0).ToString();
@@ -2215,7 +2227,7 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                             playerStats[playerPlayoffStatsIndex]["IsAStar"] = (ps.IsAllStar ? 1 : 0).ToString();
                             playerStats[playerPlayoffStatsIndex]["IsChamp"] = (ps.IsNBAChampion ? 1 : 0).ToString();
                         }
-                        else if (nba2KVersion == NBA2KVersion.NBA2K13)
+                        else if (nba2KVersion >= NBA2KVersion.NBA2K13)
                         {
                             playerStats[playerPlayoffStatsIndex]["IsAllStar"] = (ps.IsAllStar ? 1 : 0).ToString();
                             playerStats[playerPlayoffStatsIndex]["IsNBAChamp"] = (ps.IsNBAChampion ? 1 : 0).ToString();
@@ -2268,7 +2280,22 @@ namespace NBA_Stats_Tracker.Interop.REDitor
                 players = CSV.DictionaryListFromCSVFile(folder + @"\Players.csv");
                 teamStats = CSV.DictionaryListFromCSVFile(folder + @"\Team_Stats.csv");
                 playerStats = CSV.DictionaryListFromCSVFile(folder + @"\Player_Stats.csv");
-                nba2KVersion = players[0].ContainsKey("PlType") ? NBA2KVersion.NBA2K12 : NBA2KVersion.NBA2K13;
+                if (players[0].ContainsKey("PlType"))
+                {
+                    nba2KVersion = NBA2KVersion.NBA2K12;
+                }
+                else if (players[0].ContainsKey("IsRegNBA"))
+                {
+                    nba2KVersion = NBA2KVersion.NBA2K13;
+                }
+                else if (players[0].ContainsKey("IsRegular"))
+                {
+                    nba2KVersion = NBA2KVersion.NBA2K14;
+                }
+                else
+                {
+                    throw new Exception("This is an unknown format");
+                }
             }
             catch (Exception ex)
             {
