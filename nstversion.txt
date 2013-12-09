@@ -1,7 +1,9 @@
-1.16.9.5
+1.16.10.0
 http://forums.nba-live.com/downloads.php?view=detail&df_id=5077
 http://www.nba-live.com/leftos/NBA Stats Tracker.exe
 http://forums.nba-live.com/viewtopic.php?f=149&t=91237
 http://students.ceid.upatras.gr/~aslanoglou/nstchangelog.txt
+
+v1.16.10.0 introduces compatibility with RED Modding Center for 2K14 saves.
 
 v1.16.9.5 updates B-R.com code to download 2013-14 stats.
